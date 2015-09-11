@@ -7,10 +7,11 @@
 <link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../../bower_components/paper-radio-button/paper-radio-button.html">
 <link rel="import" href="../../../bower_components/iron-icons/editor-icons.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 <link rel="import" href="../../../bower_components/nuxeo-elements/nx-operation.html">
-
 
 <dom-module id="popup-permission">
     <template>
@@ -54,18 +55,22 @@
                     </select>
                 </div>
                 <div>
-                    <div>[[i18n('label.permissions.from', 'From')]]</div>
+                    <div>[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
+                    <paper-radio-group selected="{{selectedTimeFrame}}">
+                        <paper-radio-button name="permanent" on-change="toggleTimeFrame">[[i18n('label.permissions.permanent', 'Permanent')]]</paper-radio-button>
+                        <paper-radio-button name="datebased" on-change="toggleTimeFrame">[[i18n('label.permissions.dateBased', 'Date based')]]</paper-radio-button>
+                    </paper-radio-group>
+                    <div class="timeFrameLabel disabled">[[i18n('label.permissions.from', 'From')]]</div>
                     <div>
-                        <paper-input id="begin" type="date" value="{{params.begin}}" />
+                        <paper-input id="begin" type="date" value="{{params.begin}}"
+                            disabled="{{disableTimeFrame}}"/>
+                    </div>
+                    <div class="timeFrameLabel disabled">[[i18n('label.permissions.to', 'To')]]</div>
+                    <div>
+                        <paper-input id="end" type="date" value="{{params.end}}"
+                            disabled="{{disableTimeFrame}}"/>
                     </div>
                 </div>
-                <div>
-                    <div>[[i18n('label.permissions.to', 'To')]]</div>
-                    <div>
-                        <paper-input id="end" type="date" value="{{params.end}}" />
-                    </div>
-                </div>
-
                 <div id="notification">
                     <template is="dom-if" if="{{showNotificationFields}}">
                         <div layout horizontal>
@@ -118,6 +123,14 @@
                 type: Boolean,
                 value: true,
                 computed: 'shouldShowNotification(ace)'
+            },
+            disableTimeFrame: {
+                type: Boolean,
+                value: true
+            },
+            selectedTimeFrame: {
+                type: String,
+                value: 'permanent'
             }
         },
 
@@ -142,7 +155,6 @@
             } else {
                 this.$.createOp.execute();
             }
-
         },
 
         handleResponse: function() {
@@ -168,15 +180,42 @@
             }
         },
 
+        toggleTimeFrame: function(event) {
+            var checked = event.element().checked;
+            var name = event.element().name;
+            this.set('selectedTimeFrame', name);
+            var disabled = (checked && name === 'datebased') ? false : true;
+            this.set('disableTimeFrame', disabled);
+            jQuery(this).find('.timeFrameLabel').each(function(i, ele) {
+                if (disabled) {
+                    jQuery(ele).addClass('disabled');
+                } else {
+                    jQuery(ele).removeClass('disabled');
+                }
+            });
+        },
+
         computeParams: function(ace) {
             if (ace !== null) {
                 this.$.allowedRights.value = ace.permission;
+                var dateBased = false;
                 if (ace.begin !== null) {
                     ace.begin = ace.begin.substring(0, ace.begin.indexOf('T'));
+                    dateBased = true;
                 }
                 if (ace.end !== null) {
                     ace.end = ace.end.substring(0, ace.end.indexOf('T'));
+                    dateBased = true;
                 }
+
+                if (dateBased) {
+                    this.set('disableTimeFrame', false);
+                    this.set('selectedTimeFrame', 'datebased');
+                    jQuery(this).find('.timeFrameLabel').each(function(i, ele) {
+                        jQuery(ele).removeClass('disabled');
+                    });
+                }
+
                 return ace;
             } else {
                 return {
@@ -185,6 +224,8 @@
                     begin: null,
                     end: null,
                     notify: true,
+                    disableTimeFrame: true,
+                    selectedTimeFrame: 'permanent',
                     comment: ''
                 };
             }

@@ -9,6 +9,7 @@
 <link rel="import" href="../../../bower_components/iron-icons/iron-icons.html"></link>
 <link rel="import" href="../../../permissions/components/popup-permission/popup-permission.html"></link>
 
+
 <dom-module id="document-permissions">
     <template>
         <nx-doc-resource id="doc" auto="true" doc-id="{{docId}}" doc-path="{{docPath}}" response="{{doc}}"
@@ -43,6 +44,24 @@
                                         <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                                             on-aceupdated="refresh"></popup-permission>
                                         <paper-icon-button icon="delete" on-click="localRightsDel" raised="true"></paper-icon-button>
+                                        <popup-confirm id="confirmation">
+                                            <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be deleted')]]</h2>
+
+                                            <table class="dataTable tmp-tab">
+                                                <tr class="tmp-tab">
+                                                    <th class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</th>
+                                                    <th class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</th>
+                                                    <th class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</th>
+                                                    <th class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</th>
+                                                </tr>
+                                                <tr>
+                                                    <td><span>{{ace.username}}</span></td>
+                                                    <td><span>{{ace.permission}}</span></td>
+                                                    <td><span>{{formatTimeFrame(ace)}}</span></td>
+                                                    <td><span>{{ace.creator}}</span></td>
+                                                </tr>
+                                            </table>
+                                        </popup-confirm>
                                     </template>
                                 </td>
                             </tr>
@@ -55,13 +74,21 @@
             </template>
         </div>
 
-        <template is="dom-if" if="{{hasInheritedAces}}">
-            <div class="bubbleBox">
-                <div class="bubbleHeader">
-                    <h3>[[i18n('label.permissions.inherited', 'Permissions inherited from upper levels')]]</h3>
+        <div class="bubbleBox">
+            <div class="bubbleHeader">
+                <h3>[[i18n('label.permissions.inherited', 'Permissions inherited from upper levels')]]</h3>
+                <template is="dom-if" if="{{hasInheritedAces}}">
                     <paper-button id="block" raised="true" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]</paper-button>
-                </div>
-                <div>
+                    <paper-tooltip for="block" fitToVisibleBounds="true" position="top" offset="35">[[i18n('label.permissions.blockTooltip', 'Only local permissions will then be applied. You and the administrators will be added to local permissions.')]]</paper-tooltip>
+                </template>
+                <template is="dom-if" if="{{!hasInheritedAces}}">
+                    <span class="label label-warning">[[i18n('label.permissions.blocked', 'Blocked')]]</span>
+                    <paper-button id="unblock" raised="true" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]</paper-button>
+                    <paper-tooltip for="unblock" fitToVisibleBounds="true" position="top" offset="35">[[i18n('label.permissions.unblockTooltip', 'Unblock tooltip')]]</paper-tooltip>
+                </template>
+            </div>
+            <div>
+                <template is="dom-if" if="{{hasInheritedAces}}">
                     <table class="dataTable tmp-tab">
                         <tr class="tmp-tab">
                             <th class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</th>
@@ -78,25 +105,12 @@
                             </tr>
                         </template>
                     </table>
-                </div>
+                </template>
+                <template is="dom-if" if="{{!hasInheritedAces}}">
+                    <p class="emptyResult">[[i18n('label.permissions.noInheritedText', 'Only local permissions are applied. Unblock to restore the permissions inheritance from upper levels.')]]</p>
+                </template>
             </div>
-        </template>
-
-        <template is="dom-if" if="{{!hasInheritedAces}}">
-            <div class="bubbleBox">
-                <div class="bubbleHeader">
-                    <h3>[[i18n('label.permissions.inherited', 'Permissions inherited from upper levels')]]</h3>
-                    <paper-button raised="true" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]</paper-button>
-                </div>
-                <div>
-                    <p class="emptyResult"></p>
-                </div>
-            </div>
-        </template>
-
-        <popup-confirm id="confirmation">
-            <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be deleted')]]</h2>
-        </popup-confirm>
+        </div>
 
         <nx-operation id="rmPermission" op="Document.RemovePermission" input="{{doc.uid}}" on-response="refresh"></nx-operation>
         <nx-operation id="blockOp" op="Document.BlockPermissionInheritance" input={{docId}}
@@ -160,20 +174,26 @@
             var end = ace.end;
             var format = 'D MMM YYYY';
 
+            var sinceStr = this.i18n('label.permissions.since', 'Since') + ' ';
+            var fromStr = this.i18n('label.permissions.from', 'From') + ' ';
+            var untilStr = this.i18n('label.permissions.until', 'Until') + ' ';
+            var untilMiddleStr = ' ' + this.i18n('label.permissions.untilMiddle', 'until') + ' ';
+
             if (begin !== null && end === null) {
-                return (now.isAfter(begin) ? 'Since ' : 'From ') + moment(begin).format(format);
+                return (now.isAfter(begin) ? sinceStr : fromStr) + moment(begin).format(format);
             } else if (begin === null && end !== null) {
-                return 'Until ' + moment(end).format(format);
+                return untilStr + moment(end).format(format);
             } else if (begin !== null && end != null) {
-                return (now.isAfter(begin) ? 'Since ' : 'From ') + moment(begin).format(format) + ' until ' + moment(end).format(format);
+                return (now.isAfter(begin) ? sinceStr : fromStr) + moment(begin).format(format) + untilMiddleStr + moment(end).format(format);
             } else {
-                return 'Permanent';
+                return this.i18n('label.permissions.permanent', 'Permanent');
             }
+            console.log(this);
         },
 
         localRightsDel: function(e, i) {
             var self = this;
-            this.$.confirmation.toggle(function() {
+            e.model.dataHost.previousElementSibling.toggle(function() {
                 // Walk on data hosts in order to retrieve the 'item' property from the repeat loop item context
                 var item = e.model.dataHost.dataHost.ace;
                 self.$.rmPermission.params = {
