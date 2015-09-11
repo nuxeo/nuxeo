@@ -9,7 +9,7 @@
     </processor>
 
     <processor name="sassCss" type="wroPre">
-      <class>org.nuxeo.theme.styling.wro.NxSassCssProcessor</class>
+      <class>org.nuxeo.theme.styling.wro.SassCssFlavorProcessor</class>
     </processor>
 
   </extension>

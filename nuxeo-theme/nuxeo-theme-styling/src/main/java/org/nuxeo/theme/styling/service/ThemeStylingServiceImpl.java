@@ -48,7 +48,7 @@ import org.nuxeo.theme.styling.service.descriptors.NegotiationDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.NegotiatorDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
-import org.nuxeo.theme.styling.service.descriptors.SassVariable;
+import org.nuxeo.theme.styling.service.descriptors.SassImport;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.palettes.PaletteParseException;
 import org.nuxeo.theme.styling.service.palettes.PaletteParser;
@@ -194,9 +194,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         }
 
         // set flavor sass variables
-        List<SassVariable> sassVars = flavor.getSassVariables();
+        List<SassImport> sassVars = flavor.getSassImports();
         if (sassVars != null) {
-            for (SassVariable var : sassVars) {
+            for (SassImport var : sassVars) {
                 String src = var.getSrc();
                 URL url = getUrlFromPath(src, extensionContext);
                 if (url == null) {

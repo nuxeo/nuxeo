@@ -46,7 +46,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.theme.styling.wro.NxSassCssProcessor;
+import org.nuxeo.theme.styling.wro.SassCssFlavorProcessor;
 
 import ro.isdc.wro.config.Context;
 import ro.isdc.wro.model.factory.DefaultWroModelFactoryDecorator;
@@ -102,7 +102,7 @@ public class TestSassResourceProcessor {
         WroModelFactory factory = DefaultWroModelFactoryDecorator.decorate(new NuxeoWroModelFactory(),
                 Collections.emptyList());
         WroTestUtils.init(factory);
-        victim = new NxSassCssProcessor();
+        victim = new SassCssFlavorProcessor();
         WroTestUtils.initProcessor(victim);
     }
 
@@ -113,7 +113,7 @@ public class TestSassResourceProcessor {
 
     @Test
     public void shouldSupportCorrectResourceTypes() {
-        WroTestUtils.assertProcessorSupportResourceTypes(new NxSassCssProcessor(), ResourceType.CSS);
+        WroTestUtils.assertProcessorSupportResourceTypes(new SassCssFlavorProcessor(), ResourceType.CSS);
     }
 
     @Test

@@ -34,7 +34,13 @@ import ro.isdc.wro.model.group.Inject;
 import ro.isdc.wro.model.resource.Resource;
 import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
 
-public abstract class NxAbstractProcessor implements ResourcePreProcessor {
+/**
+ *
+ * Extends this class to implement a flavor-based processor.
+ *
+ * @since 7.4
+ */
+public abstract class AbstractFlavorProcessor implements ResourcePreProcessor {
 
     @Inject
     protected ReadOnlyContext context;

@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
-import org.nuxeo.theme.styling.service.descriptors.SassVariable;
+import org.nuxeo.theme.styling.service.descriptors.SassImport;
 import org.w3c.css.sac.InputSource;
 
 import com.vaadin.sass.internal.ScssStylesheet;
@@ -49,12 +49,14 @@ import ro.isdc.wro.model.resource.ResourceType;
 import ro.isdc.wro.model.resource.SupportedResourceType;
 
 /**
+ * Use Sass css processor to replace variables, mixin, etc. according to a given flavor.
+ *
  * @since 7.4
  */
 @SupportedResourceType(ResourceType.CSS)
-public class NxSassCssProcessor extends NxAbstractProcessor {
+public class SassCssFlavorProcessor extends AbstractFlavorProcessor {
 
-    private static final Log log = LogFactory.getLog(NxSassCssProcessor.class);
+    private static final Log log = LogFactory.getLog(SassCssFlavorProcessor.class);
 
     public static final String ALIAS = "sassCss";
 
@@ -69,9 +71,9 @@ public class NxSassCssProcessor extends NxAbstractProcessor {
                     ThemeStylingService s = Framework.getService(ThemeStylingService.class);
                     FlavorDescriptor fd = s.getFlavor(flavorName);
                     if (fd != null) {
-                        List<SassVariable> sassVars = fd.getSassVariables();
+                        List<SassImport> sassVars = fd.getSassImports();
                         if (sassVars != null) {
-                            for (SassVariable var : sassVars) {
+                            for (SassImport var : sassVars) {
                                 varContents += var.getContent();
                             }
                         }

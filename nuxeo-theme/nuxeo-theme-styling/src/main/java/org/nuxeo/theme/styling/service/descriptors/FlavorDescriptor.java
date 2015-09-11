@@ -56,11 +56,20 @@ public class FlavorDescriptor implements Serializable {
     @XNode("palettePreview")
     PalettePreview palettePreview;
 
+    /**
+     * @since 7.4
+     */
+    @XNode("sass@append")
+    boolean appendSass;
+
     @XNode("presetsList@append")
     boolean appendPresets;
 
-    @XNodeList(value = "sassVariables/variable", type = ArrayList.class, componentType = SassVariable.class)
-    List<SassVariable> sassVariables;
+    /**
+     * @since 7.4
+     */
+    @XNodeList(value = "sass/import", type = ArrayList.class, componentType = SassImport.class)
+    List<SassImport> sassImports;
 
     @XNodeList(value = "presetsList/presets", type = ArrayList.class, componentType = FlavorPresets.class)
     List<FlavorPresets> presets;
@@ -94,13 +103,14 @@ public class FlavorDescriptor implements Serializable {
             }
             clone.setPresets(newPresets);
         }
-        List<SassVariable> sassVariables = getSassVariables();
+        clone.setAppendSass(getAppendSass());
+        List<SassImport> sassVariables = getSassImports();
         if (sassVariables != null) {
-            List<SassVariable> cSassVariables = new ArrayList<SassVariable>();
-            for (SassVariable var : sassVariables) {
+            List<SassImport> cSassVariables = new ArrayList<SassImport>();
+            for (SassImport var : sassVariables) {
                 cSassVariables.add(var.clone());
             }
-            clone.setSassVariables(cSassVariables);
+            clone.setSassImports(cSassVariables);
         }
         List<IconDescriptor> favicons = getFavicons();
         if (favicons != null) {
@@ -124,11 +134,19 @@ public class FlavorDescriptor implements Serializable {
         FlavorDescriptor f = (FlavorDescriptor) obj;
         return new EqualsBuilder().append(name, f.name).append(label, f.label).append(extendsFlavor,
                 f.extendsFlavor).append(logo, f.logo).append(palettePreview, f.palettePreview).append(appendPresets,
-                        f.appendPresets).append(presets, f.presets).append(favicons, f.favicons).isEquals();
+                        f.appendPresets).append(presets, f.presets).append(appendSass, f.appendSass).append(sassImports,
+                                f.sassImports).append(favicons, f.favicons).isEquals();
     }
 
     public boolean getAppendPresets() {
         return appendPresets;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public boolean getAppendSass() {
+        return appendSass;
     }
 
     public String getExtendsFlavor() {
@@ -165,8 +183,25 @@ public class FlavorDescriptor implements Serializable {
     /**
      * @since 7.4
      */
-    public List<SassVariable> getSassVariables() {
-        return sassVariables;
+    public List<SassImport> getSassImports() {
+        return sassImports;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (appendPresets ? 1231 : 1237);
+        result = prime * result + (appendSass ? 1231 : 1237);
+        result = prime * result + ((extendsFlavor == null) ? 0 : extendsFlavor.hashCode());
+        result = prime * result + ((favicons == null) ? 0 : favicons.hashCode());
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
+        result = prime * result + ((logo == null) ? 0 : logo.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((palettePreview == null) ? 0 : palettePreview.hashCode());
+        result = prime * result + ((presets == null) ? 0 : presets.hashCode());
+        result = prime * result + ((sassImports == null) ? 0 : sassImports.hashCode());
+        return result;
     }
 
     public void merge(FlavorDescriptor src) {
@@ -220,6 +255,21 @@ public class FlavorDescriptor implements Serializable {
             setPresets(merged);
         }
 
+        List<SassImport> newSassImports = src.getSassImports();
+        if (newSassImports != null) {
+            List<SassImport> merged = new ArrayList<SassImport>();
+            merged.addAll(newSassImports);
+            boolean keepOld = src.getAppendSass() || (newSassImports.isEmpty() && !src.getAppendSass());
+            if (keepOld) {
+                // add back old contributions
+                List<SassImport> oldSassImports = getSassImports();
+                if (oldSassImports != null) {
+                    merged.addAll(0, oldSassImports);
+                }
+            }
+            setSassImports(merged);
+        }
+
         List<IconDescriptor> newFavicons = src.getFavicons();
         if (newFavicons != null && !newFavicons.isEmpty()) {
             setFavicons(newFavicons);
@@ -229,6 +279,13 @@ public class FlavorDescriptor implements Serializable {
 
     public void setAppendPresets(boolean appendPresets) {
         this.appendPresets = appendPresets;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setAppendSass(boolean appendSass) {
+        this.appendSass = appendSass;
     }
 
     public void setExtendsFlavor(String extendsFlavor) {
@@ -265,8 +322,8 @@ public class FlavorDescriptor implements Serializable {
     /**
      * @since 7.4
      */
-    public void setSassVariables(List<SassVariable> sassVariables) {
-        this.sassVariables = sassVariables;
+    public void setSassImports(List<SassImport> sassImports) {
+        this.sassImports = sassImports;
     }
 
 }
