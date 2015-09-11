@@ -51,7 +51,7 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 @Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.convert",
         "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.template.manager.api",
         "org.nuxeo.template.manager", "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.manager.xdocreport",
-        "org.nuxeo.template.manager.jxls", "org.nuxeo.template.manager.samples" })
+        "org.nuxeo.template.manager.jxls", "org.nuxeo.template.manager.samples", "org.nuxeo.ecm.core.io" })
 public class TestImportedModelRendering {
 
     DocumentModel rootDocument;
@@ -89,7 +89,7 @@ public class TestImportedModelRendering {
         assertTrue(htmlContent.contains("<link class=\"component\" href=\"/nuxeo/site/templates/doc/"
                 + note4Web.getId() + "/"));
         assertTrue(htmlContent.contains("<title> Note4Web </title>"));
-        assertTrue(htmlContent.contains("<img src=\"/nuxeo/nxbigfile/test/" + note4Web.getId() + "/blobholder:1/"));
+        assertTrue(htmlContent.contains("<img src=\"/nuxeo/nxfile/test/" + note4Web.getId() + "/blobholder:1/"));
     }
 
     @Test

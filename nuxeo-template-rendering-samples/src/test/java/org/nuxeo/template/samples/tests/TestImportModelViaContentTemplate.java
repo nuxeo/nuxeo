@@ -50,6 +50,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
         "org.nuxeo.template.manager", //
         "org.nuxeo.template.manager.jaxrs", //
         "org.nuxeo.template.manager.samples", //
+        "org.nuxeo.ecm.core.io", //
 })
 public class TestImportModelViaContentTemplate {
 

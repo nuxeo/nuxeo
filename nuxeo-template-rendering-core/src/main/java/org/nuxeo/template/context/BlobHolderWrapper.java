@@ -85,7 +85,7 @@ public class BlobHolderWrapper {
         DownloadService downloadService = Framework.getService(DownloadService.class);
         String xpath = DownloadService.BLOBHOLDER_PREFIX + index;
         String filename = blobs.get(index).getFilename();
-        return getContextPathProperty() + downloadService.getDownloadUrl(doc, xpath, filename) + "?inline=true";
+        return getContextPathProperty() + "/" + downloadService.getDownloadUrl(doc, xpath, filename) + "?inline=true";
     }
 
     public String getBlobUrl(String name) {
