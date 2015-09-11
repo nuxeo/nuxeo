@@ -286,7 +286,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     protected void fireEventAfterWorkflowStarted(DocumentRoute route, CoreSession session) {
         Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-        eventProperties.put("initiator", route.getInitiator());
+        eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, route.getInitiator());
         eventProperties.put("modelId", route.getModelId());
         eventProperties.put("modelName", route.getModelName());
         if (route instanceof GraphRoute) {
@@ -1146,6 +1146,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     eventProperties.put("actors", (Serializable) actors);
                     eventProperties.put("modelId", routeInstance.getModelId());
                     eventProperties.put("modelName", routeInstance.getModelName());
+                    eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
                     eventProperties.put("comment", comment);
                     // compute duration since workflow started
                     long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
@@ -1207,6 +1208,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     eventProperties.put("delegatedActors", (Serializable) delegatedActors);
                     eventProperties.put("modelId", routeInstance.getModelId());
                     eventProperties.put("modelName", routeInstance.getModelName());
+                    eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
                     eventProperties.put("comment", comment);
 
                     // compute duration since workflow started

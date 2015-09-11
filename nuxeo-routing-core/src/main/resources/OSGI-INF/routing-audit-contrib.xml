@@ -12,7 +12,7 @@
       <extendedInfos>
         <extendedInfo expression="${message.properties.modelId}" key="modelId" />
         <extendedInfo expression="${message.properties.modelName}" key="modelName" />
-        <extendedInfo expression="${message.properties.initiator}" key="initiator" />
+        <extendedInfo expression="${message.properties.workflowInitiator}" key="workflowInitiator" />
         <extendedInfo expression="${message.properties.variables}" key="variables" />
       </extendedInfos>
     </event>
@@ -20,6 +20,7 @@
       <extendedInfos>
         <extendedInfo expression="${message.properties.modelId}" key="modelId" />
         <extendedInfo expression="${message.properties.modelName}" key="modelName" />
+        <extendedInfo expression="${message.properties.workflowInitiator}" key="workflowInitiator" />
         <extendedInfo expression="${message.properties.timeSinceWfStarted}" key="timeSinceWfStarted" />
         <extendedInfo expression="${message.properties.variables}" key="variables" />
       </extendedInfos>
@@ -29,6 +30,7 @@
         <extendedInfo expression="${principal.name}" key="user" />
         <extendedInfo expression="${message.properties.modelId}" key="modelId" />
         <extendedInfo expression="${message.properties.modelName}" key="modelName" />
+        <extendedInfo expression="${message.properties.workflowInitiator}" key="workflowInitiator" />
         <extendedInfo expression="${message.properties.pendingNodes}" key="pendingNodes" />
         <extendedInfo expression="${message.properties.variables}" key="variables" />
       </extendedInfos>
@@ -38,6 +40,7 @@
         <extendedInfo expression="${principal.properties.user}" key="user" />
         <extendedInfo expression="${message.properties.modelName}" key="modelName" />
         <extendedInfo expression="${message.properties.modelId}" key="modelId" />
+        <extendedInfo expression="${message.properties.workflowInitiator}" key="workflowInitiator" />
         <extendedInfo expression="${message.properties.taskName}" key="taskName" />
         <extendedInfo expression="${message.properties.actors}" key="actors" />
         <extendedInfo expression="${message.properties.nodeVariables}" key="nodeVariables" />
@@ -49,6 +52,7 @@
       <extendedInfos>
         <extendedInfo expression="${message.properties.user}" key="user" />
         <extendedInfo expression="${message.properties.modelName}" key="modelName" />
+        <extendedInfo expression="${message.properties.workflowInitiator}" key="workflowInitiator" />
         <extendedInfo expression="${message.properties.taskName}" key="taskName" />
         <extendedInfo expression="${message.properties.data}" key="data" />
         <extendedInfo expression="${message.properties.action}" key="action" />
@@ -63,6 +67,7 @@
         <extendedInfo expression="${principal.properties.user}" key="user" />
         <extendedInfo expression="${message.properties.modelName}" key="modelName" />
         <extendedInfo expression="${message.properties.modelId}" key="modelId" />
+        <extendedInfo expression="${message.properties.workflowInitiator}" key="workflowInitiator" />
         <extendedInfo expression="${message.properties.taskName}" key="taskName" />
         <extendedInfo expression="${message.properties.actors}" key="actors" />
         <extendedInfo expression="${message.properties.comment}" key="comment" />
@@ -75,6 +80,7 @@
         <extendedInfo expression="${principal.properties.user}" key="user" />
         <extendedInfo expression="${message.properties.modelName}" key="modelName" />
         <extendedInfo expression="${message.properties.modelId}" key="modelId" />
+        <extendedInfo expression="${message.properties.workflowInitiator}" key="workflowInitiator" />
         <extendedInfo expression="${message.properties.taskName}" key="taskName" />
         <extendedInfo expression="${message.properties.delegatedActors}" key="delegatedActors" />
         <extendedInfo expression="${message.properties.comment}" key="comment" />

@@ -58,7 +58,7 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
             eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, duration);
         }
 
-        eventProperties.put("initiator", this.getInitiator());
+        eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, this.getInitiator());
 
         // Add common info about workflow
         if (this instanceof GraphRoute) {

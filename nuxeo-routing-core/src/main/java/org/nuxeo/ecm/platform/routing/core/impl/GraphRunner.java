@@ -131,6 +131,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
                 eventProperties.put("modelName", graph.getModelName());
                 eventProperties.put("action", status);
                 eventProperties.put("data", (Serializable) varData);
+                eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, graph.getInitiator());
                 eventProperties.put("user", ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
                 eventProperties.put("nodeVariables", (Serializable) node.getVariables());
                 eventProperties.put("workflowVariables", (Serializable) graph.getVariables());
@@ -182,6 +183,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
             eventProperties.put("modelId", graph.getModelId());
             eventProperties.put("modelName", graph.getModelName());
             eventProperties.put("variables", (Serializable) graph.getVariables());
+            eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, graph.getInitiator());
             // Get the list of pending node
             List<String> pendingNodeNames = new ArrayList<String>();
             for (GraphNode suspendedNode : graph.getSuspendedNodes()) {
@@ -395,6 +397,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
             eventProperties.put("actors", actors);
             eventProperties.put("modelId", graph.getModelId());
             eventProperties.put("modelName", graph.getModelName());
+            eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, graph.getInitiator());
             eventProperties.put("nodeVariables", (Serializable) node.getVariables());
             if (routeInstance instanceof GraphRoute) {
                 eventProperties.put("workflowVariables", (Serializable) ((GraphRoute) routeInstance).getVariables());

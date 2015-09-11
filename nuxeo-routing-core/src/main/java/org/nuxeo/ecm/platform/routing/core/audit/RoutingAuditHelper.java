@@ -42,6 +42,10 @@ public final class RoutingAuditHelper {
 
     public static final String TIME_SINCE_TASK_STARTED = "timeSinceTaskStarted";
 
+    public static final String TASK_ACTOR = "taskActor";
+
+    public static final String WORKFLOW_INITATIOR = "workflowInitiator";
+
     /**
      * Query the audit for an entry of the Routing category matching the given event and returns the time elapsed  since it is recorded.
      *
