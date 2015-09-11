@@ -45,12 +45,6 @@
     </filter-mapping>
     <filter-mapping>
       <filter-name>NuxeoAuthenticationFilter</filter-name>
-      <url-pattern>/nxfile/*</url-pattern>
-      <dispatcher>REQUEST</dispatcher>
-      <dispatcher>FORWARD</dispatcher>
-    </filter-mapping>
-    <filter-mapping>
-      <filter-name>NuxeoAuthenticationFilter</filter-name>
       <url-pattern>/seam/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>

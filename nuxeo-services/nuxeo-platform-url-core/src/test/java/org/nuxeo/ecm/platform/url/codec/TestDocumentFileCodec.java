@@ -38,7 +38,7 @@ public class TestDocumentFileCodec {
 
     @Test
     public void testGetUrlFromDocumentView() {
-        DocumentFileCodec codec = new DocumentFileCodec();
+        DocumentFileCodec codec = new DocumentFileCodec("nxfile");
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
         Map<String, String> params = new HashMap<String, String>();
         params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, "file:content");
@@ -52,7 +52,7 @@ public class TestDocumentFileCodec {
     // same with spaces in file name
     @Test
     public void testGetUrlFromDocumentViewEncoding() {
-        DocumentFileCodec codec = new DocumentFileCodec();
+        DocumentFileCodec codec = new DocumentFileCodec("nxfile");
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
         Map<String, String> params = new HashMap<String, String>();
         params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, "file:content");
@@ -66,7 +66,7 @@ public class TestDocumentFileCodec {
     // same with reserved characters in file name and additional request params
     @Test
     public void testGetUrlFromDocumentViewWithReservedAndParams() {
-        DocumentFileCodec codec = new DocumentFileCodec();
+        DocumentFileCodec codec = new DocumentFileCodec("nxfile");
         DocumentLocation docLoc = new DocumentLocationImpl("demo", new IdRef("dbefd5a0-35ee-4ed2-a023-6817714f32cf"));
         Map<String, String> params = new HashMap<String, String>();
         params.put(DocumentFileCodec.FILE_PROPERTY_PATH_KEY, "file:content");
@@ -81,6 +81,7 @@ public class TestDocumentFileCodec {
     @Test
     public void testGetDocumentViewFromUrl() {
         DocumentFileCodec codec = new DocumentFileCodec();
+        codec.setPrefix("nxfile");
         String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/mydoc.odt";
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
@@ -97,7 +98,7 @@ public class TestDocumentFileCodec {
 
     @Test
     public void testGetDocumentViewFromUrlWithJsessionid() {
-        DocumentFileCodec codec = new DocumentFileCodec();
+        DocumentFileCodec codec = new DocumentFileCodec("nxfile");
         String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/mydoc.odt;jsessionid=38DE2293806643550EB569D8EB827219.nuxeo";
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
@@ -115,7 +116,7 @@ public class TestDocumentFileCodec {
     // same with spaces in file name
     @Test
     public void testGetDocumentViewFromUrlDecoding() {
-        DocumentFileCodec codec = new DocumentFileCodec();
+        DocumentFileCodec codec = new DocumentFileCodec("nxfile");
         String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/my%20doc%20%C3%A9.odt";
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
@@ -133,7 +134,7 @@ public class TestDocumentFileCodec {
     // same with reserved characters in file name and params
     @Test
     public void testGetDocumentViewFromUrlWithReservedAndParams() {
-        DocumentFileCodec codec = new DocumentFileCodec();
+        DocumentFileCodec codec = new DocumentFileCodec("nxfile");
         String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/my%20%5Bdoc%5D%3F%20%C3%A9.odt?foo=bar";
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 
@@ -152,7 +153,7 @@ public class TestDocumentFileCodec {
     // do the same with filename property path
     @Test
     public void testGetDocumentViewFromUrlNoViewId() {
-        DocumentFileCodec codec = new DocumentFileCodec();
+        DocumentFileCodec codec = new DocumentFileCodec("nxfile");
         String url = "nxfile/demo/dbefd5a0-35ee-4ed2-a023-6817714f32cf/file:content/mydoc.odt?FILENAME_PROPERTY_PATH=file:filename";
         DocumentView docView = codec.getDocumentViewFromUrl(url);
 

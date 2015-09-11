@@ -32,8 +32,6 @@
     <documentViewCodec name="docpath" enabled="true" default="false"
       prefix="nxpath"
       class="org.nuxeo.ecm.platform.url.codec.DocumentPathCodec" />
-    <documentViewCodec name="downloadFile" enabled="true" prefix="nxfile"
-      class="org.nuxeo.ecm.platform.url.codec.DocumentFileCodec" />
     <documentViewCodec name="editFile" enabled="true" prefix="nxeditfile"
       class="org.nuxeo.ecm.platform.url.codec.DocumentFileCodec" />
     <documentViewCodec name="pdfFile" enabled="true" prefix="nxpdffile"

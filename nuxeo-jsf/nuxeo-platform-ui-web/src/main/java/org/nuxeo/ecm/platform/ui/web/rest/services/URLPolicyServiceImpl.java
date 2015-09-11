@@ -38,6 +38,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.rest.StaticNavigationHandler;
@@ -48,6 +50,7 @@ import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
+import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -56,6 +59,9 @@ public class URLPolicyServiceImpl implements URLPolicyService {
     public static final String NAME = URLPolicyServiceImpl.class.getName();
 
     private static final Log log = LogFactory.getLog(URLPolicyServiceImpl.class);
+
+    // this used to be a codec but now delegates to DownloadService
+    public static final String DOWNLOADFILE_PATTERN = "downloadFile";
 
     protected final Map<String, URLPatternDescriptor> descriptors;
 
@@ -338,6 +344,23 @@ public class URLPolicyServiceImpl implements URLPolicyService {
 
     @Override
     public String getUrlFromDocumentView(String patternName, DocumentView docView, String baseUrl) {
+        if (DOWNLOADFILE_PATTERN.equals(patternName)) {
+            // this used to be a codec but now delegates to DownloadService
+            DownloadService downloadService = Framework.getService(DownloadService.class);
+            DocumentLocation docLoc = docView.getDocumentLocation();
+            String repositoryName = docLoc.getServerName();
+            String docId = docLoc.getDocRef().toString();
+            String xpath = docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY);
+            String filename = docView.getParameter(DocumentFileCodec.FILENAME_KEY);
+            String url = downloadService.getDownloadUrl(repositoryName, docId, xpath, filename);
+            if (!StringUtils.isBlank(baseUrl)) {
+                if (!baseUrl.endsWith("/")) {
+                    baseUrl += "/";
+                }
+                url = baseUrl + url;
+            }
+            return url;
+        }
         DocumentViewCodecManager docViewService = getDocumentViewCodecService();
         URLPatternDescriptor desc = getURLPatternDescriptor(patternName);
         String codecName = desc.getDocumentViewCodecName();

@@ -42,8 +42,6 @@ import org.nuxeo.ecm.platform.url.service.AbstractDocumentViewCodec;
 
 public class DocumentFileCodec extends AbstractDocumentViewCodec {
 
-    public static final String PREFIX = "nxfile";
-
     public static final String FILE_PROPERTY_PATH_KEY = "FILE_PROPERTY_PATH";
 
     /**
@@ -63,14 +61,7 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
     }
 
     public DocumentFileCodec(String prefix) {
-    }
-
-    @Override
-    public String getPrefix() {
-        if (prefix != null) {
-            return prefix;
-        }
-        return PREFIX;
+        this.prefix = prefix;
     }
 
     @Override

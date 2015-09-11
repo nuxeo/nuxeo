@@ -36,7 +36,7 @@ public interface DownloadService {
 
     String EVENT_NAME = "download";
 
-    String NXBIGFILE = "nxbigfile";
+    String NXFILE = "nxfile";
 
     String NXDOWNLOADINFO = "nxdownloadinfo";
 
