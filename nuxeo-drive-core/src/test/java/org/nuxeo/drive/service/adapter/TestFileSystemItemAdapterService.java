@@ -70,7 +70,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.runtime.reload" })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.core.io", "org.nuxeo.runtime.reload" })
 @LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml",
         "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-adapter-service-contrib.xml" })
 public class TestFileSystemItemAdapterService {

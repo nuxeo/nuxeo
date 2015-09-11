@@ -56,7 +56,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.query.api" })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.query.api",
+        "org.nuxeo.ecm.core.io" })
 public class TestCollectionSyncRootFolderItemFactory {
 
     private static final Log log = LogFactory.getLog(TestCollectionSyncRootFolderItemFactory.class);

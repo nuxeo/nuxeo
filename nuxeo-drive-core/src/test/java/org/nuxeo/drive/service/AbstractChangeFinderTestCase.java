@@ -78,7 +78,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core",
+        "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.core.io",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-types-contrib.xml" })
 public abstract class AbstractChangeFinderTestCase {
 

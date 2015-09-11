@@ -427,7 +427,7 @@ public class TestUserWorkspaceHierarchy {
         assertFalse(fileItem.isFolder());
         assertEquals(creator, fileItem.getCreator());
         assertEquals(lastContributor, fileItem.getLastContributor());
-        assertEquals("nxbigfile/test/" + doc.getId() + "/blobholder:0/" + name, fileItem.getDownloadURL());
+        assertEquals("nxfile/test/" + doc.getId() + "/blobholder:0/" + name, fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(((org.nuxeo.ecm.core.api.Blob) doc.getPropertyValue("file:content")).getDigest(),
                 fileItem.getDigest());

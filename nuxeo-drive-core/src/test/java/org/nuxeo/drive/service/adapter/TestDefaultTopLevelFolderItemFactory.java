@@ -58,7 +58,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.query.api" })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.core.io" })
 public class TestDefaultTopLevelFolderItemFactory {
 
     @Inject

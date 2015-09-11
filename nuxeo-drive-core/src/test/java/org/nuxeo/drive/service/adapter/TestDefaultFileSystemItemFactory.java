@@ -78,7 +78,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.core.io",
         "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
         "org.nuxeo.runtime.reload" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
@@ -456,7 +456,7 @@ public class TestDefaultFileSystemItemFactory {
         // ------------------------------------------------------
         FileItem fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
         String downloadURL = fileItem.getDownloadURL();
-        assertEquals("nxbigfile/test/" + file.getId() + "/blobholder:0/Joe.odt", downloadURL);
+        assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/Joe.odt", downloadURL);
 
         // ------------------------------------------------------------
         // FileItem#getDigestAlgorithm

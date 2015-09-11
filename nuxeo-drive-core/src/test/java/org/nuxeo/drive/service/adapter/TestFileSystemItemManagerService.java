@@ -69,7 +69,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.types.core",
+        "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.core.io",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestFileSystemItemManagerService {
@@ -235,7 +235,7 @@ public class TestFileSystemItemManagerService {
         assertTrue(fsItem.getCanDelete());
         FileItem fileFsItem = (FileItem) fsItem;
         assertTrue(fileFsItem.getCanUpdate());
-        assertEquals("nxbigfile/test/" + file.getId() + "/blobholder:0/Joe.odt", fileFsItem.getDownloadURL());
+        assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/Joe.odt", fileFsItem.getDownloadURL());
         assertEquals("MD5", fileFsItem.getDigestAlgorithm());
         assertEquals(file.getAdapter(BlobHolder.class).getBlob().getDigest(), fileFsItem.getDigest());
         Blob fileItemBlob = fileFsItem.getBlob();
@@ -412,7 +412,7 @@ public class TestFileSystemItemManagerService {
         Blob newFileBlob = (Blob) newFile.getPropertyValue("file:content");
         assertEquals("New file.odt", newFileBlob.getFilename());
         assertEquals("Content of a new file.", newFileBlob.getString());
-        assertEquals("nxbigfile/test/" + newFile.getId() + "/blobholder:0/New%20file.odt", fileItem.getDownloadURL());
+        assertEquals("nxfile/test/" + newFile.getId() + "/blobholder:0/New%20file.odt", fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(newFileBlob.getDigest(), fileItem.getDigest());
 
@@ -440,7 +440,7 @@ public class TestFileSystemItemManagerService {
         Blob updatedFileBlob = (Blob) updatedFile.getPropertyValue("file:content");
         assertEquals("New file.odt", updatedFileBlob.getFilename());
         assertEquals("Modified content of an existing file.", updatedFileBlob.getString());
-        assertEquals("nxbigfile/test/" + updatedFile.getId() + "/blobholder:0/New%20file.odt",
+        assertEquals("nxfile/test/" + updatedFile.getId() + "/blobholder:0/New%20file.odt",
                 fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(updatedFileBlob.getDigest(), fileItem.getDigest());
@@ -483,7 +483,7 @@ public class TestFileSystemItemManagerService {
         Blob fileBlob = (Blob) file.getPropertyValue("file:content");
         assertEquals("File new name.odt", fileBlob.getFilename());
         fileItem = (FileItem) fsItem;
-        assertEquals("nxbigfile/test/" + file.getId() + "/blobholder:0/File%20new%20name.odt",
+        assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/File%20new%20name.odt",
                 fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(fileBlob.getDigest(), fileItem.getDigest());
@@ -505,7 +505,7 @@ public class TestFileSystemItemManagerService {
         assertEquals("Renamed title-filename equality.odt", newFile.getTitle());
         newFileBlob = (Blob) newFile.getPropertyValue("file:content");
         assertEquals("Renamed title-filename equality.odt", newFileBlob.getFilename());
-        assertEquals("nxbigfile/test/" + newFile.getId() + "/blobholder:0/Renamed%20title-filename%20equality.odt",
+        assertEquals("nxfile/test/" + newFile.getId() + "/blobholder:0/Renamed%20title-filename%20equality.odt",
                 fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(newFileBlob.getDigest(), fileItem.getDigest());
