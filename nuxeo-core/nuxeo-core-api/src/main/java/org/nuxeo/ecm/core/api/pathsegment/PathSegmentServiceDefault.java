@@ -24,10 +24,13 @@ public class PathSegmentServiceDefault implements PathSegmentService {
 
     public Pattern stupidRegexp = Pattern.compile("^[- .,;?!:/\\\\'\"]*$");
 
-     // Constant kept for compatibility
+    /**
+     * @deprecated since 7.4, use {@link PathSegmentService#NUXEO_MAX_SEGMENT_SIZE_PROPERTY} instead
+     */
     public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = PathSegmentService.NUXEO_MAX_SEGMENT_SIZE_PROPERTY;
 
-    protected int maxSize = Integer.parseInt(Framework.getProperty(NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
+    protected int maxSize = Integer.parseInt(
+            Framework.getProperty(PathSegmentService.NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
 
     @Override
     public String generatePathSegment(DocumentModel doc) {
