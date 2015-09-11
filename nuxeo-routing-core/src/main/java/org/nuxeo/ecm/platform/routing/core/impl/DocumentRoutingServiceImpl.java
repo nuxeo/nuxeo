@@ -1141,12 +1141,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     // Audit task reassignment
                     Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
                     eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
-                    eventProperties.put("user", ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
                     eventProperties.put("taskName", task.getName());
                     eventProperties.put("actors", (Serializable) actors);
                     eventProperties.put("modelId", routeInstance.getModelId());
                     eventProperties.put("modelName", routeInstance.getModelName());
                     eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
+                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR, ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
                     eventProperties.put("comment", comment);
                     // compute duration since workflow started
                     long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
@@ -1203,12 +1203,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     // Audit task delegation
                     Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
                     eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
-                    eventProperties.put("user", ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
                     eventProperties.put("taskName", task.getName());
                     eventProperties.put("delegatedActors", (Serializable) delegatedActors);
                     eventProperties.put("modelId", routeInstance.getModelId());
                     eventProperties.put("modelName", routeInstance.getModelName());
                     eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
+                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR, ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
                     eventProperties.put("comment", comment);
 
                     // compute duration since workflow started

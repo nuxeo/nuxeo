@@ -132,7 +132,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
                 eventProperties.put("action", status);
                 eventProperties.put("data", (Serializable) varData);
                 eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, graph.getInitiator());
-                eventProperties.put("user", ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
+                eventProperties.put(RoutingAuditHelper.TASK_ACTOR, ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
                 eventProperties.put("nodeVariables", (Serializable) node.getVariables());
                 eventProperties.put("workflowVariables", (Serializable) graph.getVariables());
 
@@ -392,12 +392,12 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         for (Task task : tasks) {
             Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
             eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
-            eventProperties.put("user", ((NuxeoPrincipal) session.getPrincipal()).getOriginatingUser());
             eventProperties.put("taskName", node.getDocument().getTitle());
             eventProperties.put("actors", actors);
             eventProperties.put("modelId", graph.getModelId());
             eventProperties.put("modelName", graph.getModelName());
             eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, graph.getInitiator());
+            eventProperties.put(RoutingAuditHelper.TASK_ACTOR, ((NuxeoPrincipal) session.getPrincipal()).getOriginatingUser());
             eventProperties.put("nodeVariables", (Serializable) node.getVariables());
             if (routeInstance instanceof GraphRoute) {
                 eventProperties.put("workflowVariables", (Serializable) ((GraphRoute) routeInstance).getVariables());
