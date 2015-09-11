@@ -1,0 +1,17 @@
+html, body, .nx-page {
+  font: 100% $global-font !important;
+  color: $primary-color !important;
+}
+
+header.nxHeader {
+  background-color: $header-background;
+}
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
+
+.content .tabsContent { @include border-radius(10px); }

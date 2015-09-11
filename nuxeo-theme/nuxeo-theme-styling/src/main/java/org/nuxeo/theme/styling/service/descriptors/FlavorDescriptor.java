@@ -59,6 +59,9 @@ public class FlavorDescriptor implements Serializable {
     @XNode("presetsList@append")
     boolean appendPresets;
 
+    @XNodeList(value = "sassVariables/variable", type = ArrayList.class, componentType = SassVariable.class)
+    List<SassVariable> sassVariables;
+
     @XNodeList(value = "presetsList/presets", type = ArrayList.class, componentType = FlavorPresets.class)
     List<FlavorPresets> presets;
 
@@ -68,60 +71,68 @@ public class FlavorDescriptor implements Serializable {
     @XNodeList(value = "links/icon", type = ArrayList.class, componentType = IconDescriptor.class)
     List<IconDescriptor> favicons;
 
-    public String getName() {
-        return name;
+    @Override
+    public FlavorDescriptor clone() {
+        FlavorDescriptor clone = new FlavorDescriptor();
+        clone.setName(getName());
+        clone.setLabel(getLabel());
+        LogoDescriptor logo = getLogo();
+        if (logo != null) {
+            clone.setLogo(logo.clone());
+        }
+        PalettePreview pp = getPalettePreview();
+        if (pp != null) {
+            clone.setPalettePreview(pp.clone());
+        }
+        clone.setExtendsFlavor(getExtendsFlavor());
+        clone.setAppendPresets(getAppendPresets());
+        List<FlavorPresets> presets = getPresets();
+        if (presets != null) {
+            List<FlavorPresets> newPresets = new ArrayList<FlavorPresets>();
+            for (FlavorPresets item : presets) {
+                newPresets.add(item.clone());
+            }
+            clone.setPresets(newPresets);
+        }
+        List<SassVariable> sassVariables = getSassVariables();
+        if (sassVariables != null) {
+            List<SassVariable> cSassVariables = new ArrayList<SassVariable>();
+            for (SassVariable var : sassVariables) {
+                cSassVariables.add(var.clone());
+            }
+            clone.setSassVariables(cSassVariables);
+        }
+        List<IconDescriptor> favicons = getFavicons();
+        if (favicons != null) {
+            List<IconDescriptor> icons = new ArrayList<IconDescriptor>();
+            for (IconDescriptor icon : favicons) {
+                icons.add(icon.clone());
+            }
+            clone.setFavicons(icons);
+        }
+        return clone;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getExtendsFlavor() {
-        return extendsFlavor;
-    }
-
-    public void setExtendsFlavor(String extendsFlavor) {
-        this.extendsFlavor = extendsFlavor;
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FlavorDescriptor)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        FlavorDescriptor f = (FlavorDescriptor) obj;
+        return new EqualsBuilder().append(name, f.name).append(label, f.label).append(extendsFlavor,
+                f.extendsFlavor).append(logo, f.logo).append(palettePreview, f.palettePreview).append(appendPresets,
+                        f.appendPresets).append(presets, f.presets).append(favicons, f.favicons).isEquals();
     }
 
     public boolean getAppendPresets() {
         return appendPresets;
     }
 
-    public List<FlavorPresets> getPresets() {
-        return presets;
-    }
-
-    public void setPresets(List<FlavorPresets> presets) {
-        this.presets = presets;
-    }
-
-    public LogoDescriptor getLogo() {
-        return logo;
-    }
-
-    public void setLogo(LogoDescriptor logo) {
-        this.logo = logo;
-    }
-
-    public void setAppendPresets(boolean appendPresets) {
-        this.appendPresets = appendPresets;
-    }
-
-    public PalettePreview getPalettePreview() {
-        return palettePreview;
-    }
-
-    public void setPalettePreview(PalettePreview palettePreview) {
-        this.palettePreview = palettePreview;
+    public String getExtendsFlavor() {
+        return extendsFlavor;
     }
 
     /**
@@ -131,11 +142,31 @@ public class FlavorDescriptor implements Serializable {
         return favicons;
     }
 
+    public String getLabel() {
+        return label;
+    }
+
+    public LogoDescriptor getLogo() {
+        return logo;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public PalettePreview getPalettePreview() {
+        return palettePreview;
+    }
+
+    public List<FlavorPresets> getPresets() {
+        return presets;
+    }
+
     /**
      * @since 7.4
      */
-    public void setFavicons(List<IconDescriptor> favicons) {
-        this.favicons = favicons;
+    public List<SassVariable> getSassVariables() {
+        return sassVariables;
     }
 
     public void merge(FlavorDescriptor src) {
@@ -196,52 +227,46 @@ public class FlavorDescriptor implements Serializable {
 
     }
 
-    @Override
-    public FlavorDescriptor clone() {
-        FlavorDescriptor clone = new FlavorDescriptor();
-        clone.setName(getName());
-        clone.setLabel(getLabel());
-        LogoDescriptor logo = getLogo();
-        if (logo != null) {
-            clone.setLogo(logo.clone());
-        }
-        PalettePreview pp = getPalettePreview();
-        if (pp != null) {
-            clone.setPalettePreview(pp.clone());
-        }
-        clone.setExtendsFlavor(getExtendsFlavor());
-        clone.setAppendPresets(getAppendPresets());
-        List<FlavorPresets> presets = getPresets();
-        if (presets != null) {
-            List<FlavorPresets> newPresets = new ArrayList<FlavorPresets>();
-            for (FlavorPresets item : presets) {
-                newPresets.add(item.clone());
-            }
-            clone.setPresets(newPresets);
-        }
-        List<IconDescriptor> favicons = getFavicons();
-        if (favicons != null) {
-            List<IconDescriptor> icons = new ArrayList<IconDescriptor>();
-            for (IconDescriptor icon : favicons) {
-                icons.add(icon.clone());
-            }
-            clone.setFavicons(icons);
-        }
-        return clone;
+    public void setAppendPresets(boolean appendPresets) {
+        this.appendPresets = appendPresets;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof FlavorDescriptor)) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        FlavorDescriptor f = (FlavorDescriptor) obj;
-        return new EqualsBuilder().append(name, f.name).append(label, f.label).append(extendsFlavor, f.extendsFlavor).append(
-                logo, f.logo).append(palettePreview, f.palettePreview).append(appendPresets, f.appendPresets).append(
-                presets, f.presets).append(favicons, f.favicons).isEquals();
+    public void setExtendsFlavor(String extendsFlavor) {
+        this.extendsFlavor = extendsFlavor;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setFavicons(List<IconDescriptor> favicons) {
+        this.favicons = favicons;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setLogo(LogoDescriptor logo) {
+        this.logo = logo;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPalettePreview(PalettePreview palettePreview) {
+        this.palettePreview = palettePreview;
+    }
+
+    public void setPresets(List<FlavorPresets> presets) {
+        this.presets = presets;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setSassVariables(List<SassVariable> sassVariables) {
+        this.sassVariables = sassVariables;
     }
 
 }

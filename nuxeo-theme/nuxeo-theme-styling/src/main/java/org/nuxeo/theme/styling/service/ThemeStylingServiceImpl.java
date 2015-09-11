@@ -48,6 +48,7 @@ import org.nuxeo.theme.styling.service.descriptors.NegotiationDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.NegotiatorDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
+import org.nuxeo.theme.styling.service.descriptors.SassVariable;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.palettes.PaletteParseException;
 import org.nuxeo.theme.styling.service.palettes.PaletteParser;
@@ -191,6 +192,27 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 }
             }
         }
+
+        // set flavor sass variables
+        List<SassVariable> sassVars = flavor.getSassVariables();
+        if (sassVars != null) {
+            for (SassVariable var : sassVars) {
+                String src = var.getSrc();
+                URL url = getUrlFromPath(src, extensionContext);
+                if (url == null) {
+                    log.error(String.format("Could not find resource at '%s'", src));
+                } else {
+                    String content;
+                    try {
+                        content = new String(FileUtils.readBytes(url));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    var.setContent(content);
+                }
+            }
+        }
+
         flavorReg.addContribution(flavor);
     }
 

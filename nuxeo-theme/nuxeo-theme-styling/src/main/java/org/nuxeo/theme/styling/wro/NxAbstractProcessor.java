@@ -1,0 +1,75 @@
+/*
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
+ *
+ */
+
+package org.nuxeo.theme.styling.wro;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.ecm.web.resources.wro.provider.NuxeoUriLocator;
+
+import ro.isdc.wro.config.Context;
+import ro.isdc.wro.config.ReadOnlyContext;
+import ro.isdc.wro.config.jmx.WroConfiguration;
+import ro.isdc.wro.model.group.Inject;
+import ro.isdc.wro.model.resource.Resource;
+import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
+
+public abstract class NxAbstractProcessor implements ResourcePreProcessor {
+
+    @Inject
+    protected ReadOnlyContext context;
+
+    public abstract String getAlias();
+
+    @Override
+    public void process(Resource resource, Reader reader, Writer writer) throws IOException {
+        String flavor = getFlavor();
+        if (!StringUtils.isBlank(flavor) && isEnabled(resource)) {
+            process(resource, reader, writer, flavor);
+        } else {
+            process(resource, reader, writer, null);
+        }
+    }
+
+    protected abstract void process(final Resource resource, final Reader reader, final Writer writer,
+            String flavorName) throws IOException;
+
+    public String getEncoding() {
+        return Context.isContextSet() ? context.getConfig().getEncoding() : WroConfiguration.DEFAULT_ENCODING;
+    }
+
+    protected String getFlavor() {
+        String queryString = context.getRequest().getQueryString();
+        if (queryString != null) {
+            Map<String, String> params = URIUtils.getRequestParameters(queryString);
+            if (params != null && params.containsKey("flavor")) {
+                return params.get("flavor");
+            }
+        }
+        return null;
+    }
+
+    protected boolean isEnabled(final Resource resource) {
+        return NuxeoUriLocator.isProcessorEnabled(getAlias(), resource.getUri());
+    }
+}

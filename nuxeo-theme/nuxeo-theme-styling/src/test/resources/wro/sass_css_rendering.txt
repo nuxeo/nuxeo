@@ -1,0 +1,15 @@
+html, body, .nx-page {
+	font: 100% Georgia, serif !important;
+	color: red !important;
+}
+
+header.nxHeader {
+	background-color: yellow;
+}
+
+.content .tabsContent {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	-ms-border-radius: 10px;
+	border-radius: 10px;
+}

@@ -30,23 +30,15 @@ import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.io.output.WriterOutputStream;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.web.resources.wro.provider.NuxeoUriLocator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 
 import ro.isdc.wro.WroRuntimeException;
-import ro.isdc.wro.config.Context;
-import ro.isdc.wro.config.ReadOnlyContext;
-import ro.isdc.wro.config.jmx.WroConfiguration;
-import ro.isdc.wro.model.group.Inject;
 import ro.isdc.wro.model.resource.Resource;
 import ro.isdc.wro.model.resource.ResourceType;
 import ro.isdc.wro.model.resource.SupportedResourceType;
-import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
 
 /**
  * Wro processor to replace flavor variables inside linked CSS file.
@@ -54,25 +46,13 @@ import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
  * @since 7.3
  */
 @SupportedResourceType(ResourceType.CSS)
-public class FlavorResourceProcessor implements ResourcePreProcessor {
+public class FlavorResourceProcessor extends NxAbstractProcessor {
 
     private static final Log log = LogFactory.getLog(FlavorResourceProcessor.class);
 
     public static final String ALIAS = "flavor";
 
-    @Inject
-    private ReadOnlyContext context;
-
     @Override
-    public void process(Resource resource, Reader reader, Writer writer) throws IOException {
-        String flavor = getFlavor();
-        if (!StringUtils.isBlank(flavor) && isEnabled(resource)) {
-            process(resource, reader, writer, flavor);
-        } else {
-            process(resource, reader, writer, null);
-        }
-    }
-
     protected void process(final Resource resource, final Reader reader, final Writer writer, String flavorName)
             throws IOException {
         final InputStream is = new ProxyInputStream(new ReaderInputStream(reader, getEncoding())) {
@@ -96,8 +76,8 @@ public class FlavorResourceProcessor implements ResourcePreProcessor {
                 writer.flush();
             }
             is.close();
-            os.close();
         } catch (final Exception e) {
+            log.error("Error while serving resource " + resource.getUri(), e);
             throw WroRuntimeException.wrap(e);
         } finally {
             IOUtils.closeQuietly(is);
@@ -105,23 +85,9 @@ public class FlavorResourceProcessor implements ResourcePreProcessor {
         }
     }
 
-    protected String getEncoding() {
-        return Context.isContextSet() ? context.getConfig().getEncoding() : WroConfiguration.DEFAULT_ENCODING;
-    }
-
-    protected String getFlavor() {
-        String queryString = context.getRequest().getQueryString();
-        if (queryString != null) {
-            Map<String, String> params = URIUtils.getRequestParameters(queryString);
-            if (params != null && params.containsKey("flavor")) {
-                return params.get("flavor");
-            }
-        }
-        return null;
-    }
-
-    protected boolean isEnabled(final Resource resource) {
-        return NuxeoUriLocator.isProcessorEnabled(ALIAS, resource.getUri());
+    @Override
+    public String getAlias() {
+        return ALIAS;
     }
 
 }

@@ -69,6 +69,9 @@
           <color>#cfecff</color>
         </colors>
       </palettePreview>
+      <sassVariables>
+        <variable src="themes/sass/default_variables.scss" />
+      </sassVariables>
     </flavor>
 
     <!-- register it before and to check registration order has no impact on final 

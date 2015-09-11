@@ -10,7 +10,12 @@
         <processor>flavor</processor>
       </processors>
     </resource>
-
+    <resource name="sass_app.scss" type="css">
+      <path>themes/sass/app.scss</path>
+      <processors>
+        <processor>sassCss</processor>
+      </processors>
+    </resource>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
