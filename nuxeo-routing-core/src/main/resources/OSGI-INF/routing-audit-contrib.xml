@@ -20,7 +20,7 @@
       <extendedInfos>
         <extendedInfo expression="${message.properties.modelId}" key="modelId" />
         <extendedInfo expression="${message.properties.modelName}" key="modelName" />
-        <extendedInfo expression="${message.properties.duration}" key="duration" />
+        <extendedInfo expression="${message.properties.timeSinceWfStarted}" key="timeSinceWfStarted" />
         <extendedInfo expression="${message.properties.variables}" key="variables" />
       </extendedInfos>
     </event>
@@ -33,18 +33,6 @@
         <extendedInfo expression="${message.properties.variables}" key="variables" />
       </extendedInfos>
     </event>
-    <event name="afterWorkflowTaskEnded">
-      <extendedInfos>
-        <extendedInfo expression="${message.properties.user}" key="user" />
-        <extendedInfo expression="${message.properties.modelName}" key="modelName" />
-        <extendedInfo expression="${message.properties.taskName}" key="taskName" />
-        <extendedInfo expression="${message.properties.data}" key="data" />
-        <extendedInfo expression="${message.properties.action}" key="action" />
-        <extendedInfo expression="${message.properties.nodeVariables}" key="nodeVariables" />
-        <extendedInfo expression="${message.properties.workflowVariables}" key="workflowVariables" />
-        <extendedInfo expression="${message.properties.duration}" key="duration" />
-      </extendedInfos>
-    </event>
     <event name="afterWorkflowTaskCreated">
       <extendedInfos>
         <extendedInfo expression="${principal.properties.user}" key="user" />
@@ -54,6 +42,20 @@
         <extendedInfo expression="${message.properties.actors}" key="actors" />
         <extendedInfo expression="${message.properties.nodeVariables}" key="nodeVariables" />
         <extendedInfo expression="${message.properties.workflowVariables}" key="workflowVariables" />
+        <extendedInfo expression="${message.properties.timeSinceWfStarted}" key="timeSinceWfStarted" />
+      </extendedInfos>
+    </event>
+    <event name="afterWorkflowTaskEnded">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.user}" key="user" />
+        <extendedInfo expression="${message.properties.modelName}" key="modelName" />
+        <extendedInfo expression="${message.properties.taskName}" key="taskName" />
+        <extendedInfo expression="${message.properties.data}" key="data" />
+        <extendedInfo expression="${message.properties.action}" key="action" />
+        <extendedInfo expression="${message.properties.nodeVariables}" key="nodeVariables" />
+        <extendedInfo expression="${message.properties.workflowVariables}" key="workflowVariables" />
+        <extendedInfo expression="${message.properties.timeSinceTaskStarted}" key="timeSinceWfStarted" />
+        <extendedInfo expression="${message.properties.timeSinceWfStarted}" key="timeSinceWfStarted" />
       </extendedInfos>
     </event>
     <event name="afterWorkflowTaskReassigned">
@@ -64,6 +66,8 @@
         <extendedInfo expression="${message.properties.taskName}" key="taskName" />
         <extendedInfo expression="${message.properties.actors}" key="actors" />
         <extendedInfo expression="${message.properties.comment}" key="comment" />
+        <extendedInfo expression="${message.properties.timeSinceWfStarted}" key="timeSinceWfStarted" />
+        <extendedInfo expression="${message.properties.timeSinceTaskStarted}" key="timeSinceTaskStarted" />
       </extendedInfos>
     </event>
     <event name="afterWorkflowTaskDelegated">
@@ -74,6 +78,8 @@
         <extendedInfo expression="${message.properties.taskName}" key="taskName" />
         <extendedInfo expression="${message.properties.delegatedActors}" key="delegatedActors" />
         <extendedInfo expression="${message.properties.comment}" key="comment" />
+        <extendedInfo expression="${message.properties.timeSinceWfStarted}" key="timeSinceWfStarted" />
+        <extendedInfo expression="${message.properties.timeSinceTaskStarted}" key="timeSinceTaskStarted" />
       </extendedInfos>
     </event>
   </extension>

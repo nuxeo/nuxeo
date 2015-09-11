@@ -78,6 +78,7 @@ import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedEx
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
+import org.nuxeo.ecm.platform.routing.core.audit.RoutingAuditHelper;
 import org.nuxeo.ecm.platform.routing.core.listener.RouteModelsInitializator;
 import org.nuxeo.ecm.platform.routing.core.registries.RouteTemplateResourceRegistry;
 import org.nuxeo.ecm.platform.task.Task;
@@ -1146,6 +1147,16 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     eventProperties.put("modelId", routeInstance.getModelId());
                     eventProperties.put("modelName", routeInstance.getModelName());
                     eventProperties.put("comment", comment);
+                    // compute duration since workflow started
+                    long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
+                    if (timeSinceWfStarted >= 0) {
+                        eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
+                    }
+                    // compute duration since task started
+                    long timeSinceTaskStarted = RoutingAuditHelper.computeDurationSinceTaskStarted(task.getId());
+                    if (timeSinceWfStarted >= 0) {
+                        eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
+                    }
                     DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
                     envContext.setProperties(eventProperties);
                     EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
@@ -1197,6 +1208,18 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     eventProperties.put("modelId", routeInstance.getModelId());
                     eventProperties.put("modelName", routeInstance.getModelName());
                     eventProperties.put("comment", comment);
+
+                    // compute duration since workflow started
+                    long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
+                    if (timeSinceWfStarted >= 0) {
+                        eventProperties.put(RoutingAuditHelper.TIME_SINCE_WF_STARTED, timeSinceWfStarted);
+                    }
+                    // compute duration since task started
+                    long timeSinceTaskStarted = RoutingAuditHelper.computeDurationSinceTaskStarted(task.getId());
+                    if (timeSinceWfStarted >= 0) {
+                        eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
+                    }
+
                     DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
                     envContext.setProperties(eventProperties);
                     EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
