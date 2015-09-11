@@ -20,6 +20,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface PathSegmentService {
 
     /**
+     * @since 7.4
+     */
+    public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = "nuxeo.path.segment.maxsize";
+
+    /**
      * Generate the path segment to use for a {@link DocumentModel} that's about to be created.
      *
      * @param doc the document

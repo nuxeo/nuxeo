@@ -161,7 +161,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         return userCoreSession.getDocument(uwsDocRef);
     }
 
-    private PathRef getExistingUserWorkspacePathRef(CoreSession userCoreSession, String usedUsername,
+    protected PathRef getExistingUserWorkspacePathRef(CoreSession userCoreSession, String usedUsername,
             DocumentModel context) {
         PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(userCoreSession, usedUsername, context));
         if (userCoreSession.exists(uwsDocRef)) {

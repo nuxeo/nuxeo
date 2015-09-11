@@ -20,8 +20,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class PathSegmentServiceCompat implements PathSegmentService {
 
-    public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = "nuxeo.path.segment.maxsize";
-
     protected int maxSize = Integer.parseInt(Framework.getProperty(NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
 
     @Override
