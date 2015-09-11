@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 7.4
  */
 @XObject("variable")
-public class SassVariable {
+public class SassImport {
 
     @XNode("@src")
     String src;
@@ -35,8 +35,8 @@ public class SassVariable {
      */
     String content;
 
-    public SassVariable clone() {
-        SassVariable clone = new SassVariable();
+    public SassImport clone() {
+        SassImport clone = new SassImport();
         clone.setSrc(src);
         clone.setContent(content);
         return clone;
@@ -50,7 +50,7 @@ public class SassVariable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        SassVariable other = (SassVariable) obj;
+        SassImport other = (SassImport) obj;
         if (src == null) {
             if (other.src != null)
                 return false;

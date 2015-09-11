@@ -46,7 +46,7 @@ import ro.isdc.wro.model.resource.SupportedResourceType;
  * @since 7.3
  */
 @SupportedResourceType(ResourceType.CSS)
-public class FlavorResourceProcessor extends NxAbstractProcessor {
+public class FlavorResourceProcessor extends AbstractFlavorProcessor {
 
     private static final Log log = LogFactory.getLog(FlavorResourceProcessor.class);
 
