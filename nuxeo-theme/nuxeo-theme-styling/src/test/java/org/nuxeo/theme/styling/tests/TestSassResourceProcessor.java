@@ -62,7 +62,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * @since 7.3
+ * @since 7.4
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
