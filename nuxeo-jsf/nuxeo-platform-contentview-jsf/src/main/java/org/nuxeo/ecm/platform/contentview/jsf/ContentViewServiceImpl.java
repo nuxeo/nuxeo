@@ -143,6 +143,10 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
                 pageSizeBinding, showTitle.booleanValue(), showPageSizeSelector.booleanValue(),
                 showRefreshPage.booleanValue(), showFilterForm.booleanValue(), desc.getEmptySentence(),
                 translateEmptySentence.booleanValue());
+        contentView.setWaitForExecutionSentence(desc.getWaitForExecutionSentence());
+        if (desc.getWaitForExecution() != null) {
+            contentView.setWaitForExecution(desc.getWaitForExecution().booleanValue());
+        }
         return contentView;
     }
 

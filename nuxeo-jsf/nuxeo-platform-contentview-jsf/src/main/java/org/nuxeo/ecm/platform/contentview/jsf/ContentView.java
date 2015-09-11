@@ -347,4 +347,29 @@ public interface ContentView extends Serializable {
      */
     boolean getTranslateEmptySentence();
 
+    /**
+     * Returns the sentence to display when content viez is waiting for a first execution.
+     *
+     * @since 7.4
+     */
+    String getWaitForExecutionSentence();
+
+    /**
+     * Returns true if content view will not display results until an explicit search is executed.
+     *
+     * @see ContentView#isExecuted()
+     * @since 7.4
+     */
+    boolean isWaitForExecution();
+
+    /**
+     * Returns true if content view has been executed.
+     * <p>
+     * Execution is detected when either {@link #refreshPageProvider()} or {@link #refreshAndRewindPageProvider()}
+     * methods are called.
+     *
+     * @since 7.4
+     */
+    public boolean isExecuted();
+
 }

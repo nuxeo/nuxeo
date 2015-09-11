@@ -382,6 +382,22 @@ public class SearchUIActions implements Serializable {
         return null;
     }
 
+    /**
+     * Retsurns true if current search can be saved.
+     * <p>
+     * Returns false if current content view is waiting for a first execution.
+     *
+     * @since 7.4
+     */
+    public boolean getCanSaveSearch() {
+        ContentView contentView = contentViewActions.getContentView(getCurrentContentViewName());
+        if (contentView != null) {
+            boolean res = !contentView.isWaitForExecution() || contentView.isExecuted();
+            return res;
+        }
+        return false;
+    }
+
     public void cancelSaveSearch() {
         savedSearchTitle = null;
     }

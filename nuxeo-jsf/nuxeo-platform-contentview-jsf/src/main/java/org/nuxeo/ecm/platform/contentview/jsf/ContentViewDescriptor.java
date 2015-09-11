@@ -51,6 +51,12 @@ public class ContentViewDescriptor {
     @XNode("emptySentence")
     String emptySentence;
 
+    /**
+     * @since 7.4
+     */
+    @XNode("waitForExecutionSentence")
+    String waitForExecutionSentence;
+
     @XNode("translateEmptySentence")
     Boolean translateEmptySentence;
 
@@ -119,6 +125,12 @@ public class ContentViewDescriptor {
 
     @XNode("showFilterForm")
     Boolean showFilterForm;
+
+    /**
+     * @since 7.4
+     */
+    @XNode("waitForExecution")
+    Boolean waitForExecution;
 
     @XNodeList(value = "refresh/event", type = ArrayList.class, componentType = String.class)
     List<String> refreshEventNames;
@@ -275,6 +287,13 @@ public class ContentViewDescriptor {
     }
 
     /**
+     * @since 7.4
+     */
+    public String getWaitForExecutionSentence() {
+        return waitForExecutionSentence;
+    }
+
+    /**
      * @since 5.4.2
      */
     public Boolean getTranslateEmptySentence() {
@@ -318,6 +337,181 @@ public class ContentViewDescriptor {
         return pageProviderProperties;
     }
 
+    /**
+     * @since 7.4
+     */
+    public Boolean getWaitForExecution() {
+        return waitForExecution;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void merge(ContentViewDescriptor newDesc) {
+        this.setEnabled(newDesc.isEnabled());
+
+        String title = newDesc.getTitle();
+        if (title != null) {
+            this.title = title;
+        }
+
+        Boolean translateTitle = newDesc.getTranslateTitle();
+        if (translateTitle != null) {
+            this.translateTitle = translateTitle;
+        }
+
+        String emptySentence = newDesc.getEmptySentence();
+        if (emptySentence != null) {
+            this.emptySentence = emptySentence;
+        }
+
+        String waitForExecutionSentence = newDesc.getEmptySentence();
+        if (waitForExecutionSentence != null) {
+            this.waitForExecutionSentence = waitForExecutionSentence;
+        }
+
+        Boolean translateEmptySentence = newDesc.getTranslateEmptySentence();
+        if (translateEmptySentence != null) {
+            this.translateEmptySentence = translateEmptySentence;
+        }
+
+        String iconPath = newDesc.getIconPath();
+        if (iconPath != null) {
+            this.iconPath = iconPath;
+        }
+
+        List<String> actions = newDesc.getActionCategories();
+        if (actions != null && !actions.isEmpty()) {
+            this.actionCategories = actions;
+        }
+
+        String cacheKey = newDesc.getCacheKey();
+        if (cacheKey != null) {
+            this.cacheKey = cacheKey;
+        }
+
+        Integer cacheSize = newDesc.getCacheSize();
+        if (cacheSize != null) {
+            this.cacheSize = cacheSize;
+        }
+
+        CoreQueryPageProviderDescriptor coreDesc = newDesc.getCoreQueryPageProvider();
+        if (coreDesc != null && coreDesc.isEnabled()) {
+            this.coreQueryPageProvider = coreDesc;
+            // make sure other page providers are reset
+            this.genericPageProvider = null;
+            this.referencePageProvider = null;
+        }
+
+        GenericPageProviderDescriptor genDesc = newDesc.getGenericPageProvider();
+        if (genDesc != null && genDesc.isEnabled()) {
+            this.genericPageProvider = genDesc;
+            // make sure other page providers are reset
+            this.coreQueryPageProvider = null;
+            this.referencePageProvider = null;
+        }
+
+        ReferencePageProviderDescriptor refDesc = newDesc.getReferencePageProvider();
+        if (refDesc != null && refDesc.isEnabled()) {
+            this.referencePageProvider = refDesc;
+            // make sure other page providers are reset
+            this.coreQueryPageProvider = null;
+            this.genericPageProvider = null;
+        }
+
+        String pagination = newDesc.getPagination();
+        if (pagination != null) {
+            this.pagination = pagination;
+        }
+
+        List<String> events = newDesc.getRefreshEventNames();
+        if (events != null && !events.isEmpty()) {
+            this.refreshEventNames = events;
+        }
+        events = newDesc.getResetEventNames();
+        if (events != null && !events.isEmpty()) {
+            this.resetEventNames = events;
+        }
+
+        ContentViewLayoutImpl searchLayout = newDesc.getSearchLayout();
+        if (searchLayout != null) {
+            this.searchLayout = searchLayout;
+        }
+
+        List<ContentViewLayout> resultLayouts = newDesc.getResultLayouts();
+        if (resultLayouts != null) {
+            Boolean appendResultLayout = newDesc.getAppendResultLayouts();
+            if (Boolean.TRUE.equals(appendResultLayout) || resultLayouts.isEmpty()) {
+                List<ContentViewLayout> allLayouts = new ArrayList<ContentViewLayout>();
+                if (this.resultLayouts != null) {
+                    allLayouts.addAll(this.resultLayouts);
+                }
+                allLayouts.addAll(resultLayouts);
+                this.resultLayouts = allLayouts;
+            } else {
+                this.resultLayouts = resultLayouts;
+            }
+        }
+
+        List<String> flags = newDesc.getFlags();
+        if (flags != null && !flags.isEmpty()) {
+            this.flags = flags;
+        }
+
+        String selectionList = newDesc.getSelectionListName();
+        if (selectionList != null) {
+            this.selectionList = selectionList;
+        }
+
+        Boolean useGlobalPageSize = newDesc.getUseGlobalPageSize();
+        if (useGlobalPageSize != null) {
+            this.useGlobalPageSize = useGlobalPageSize;
+        }
+
+        Boolean showTitle = newDesc.getShowTitle();
+        if (showTitle != null) {
+            this.showTitle = showTitle;
+        }
+
+        // avoid override when setting the default value => use the field, not
+        // the API, for merge
+        Boolean showPageSizeSelector = newDesc.showPageSizeSelector;
+        if (showPageSizeSelector != null) {
+            this.showPageSizeSelector = showPageSizeSelector;
+        }
+
+        Boolean showRefreshCommand = newDesc.showRefreshCommand;
+        if (showRefreshCommand != null) {
+            this.showRefreshCommand = showRefreshCommand;
+        }
+
+        Boolean showFilterForm = newDesc.getShowFilterForm();
+        if (showFilterForm != null) {
+            this.showFilterForm = showFilterForm;
+        }
+
+        String searchDocument = newDesc.getSearchDocumentBinding();
+        if (searchDocument != null) {
+            this.searchDocument = searchDocument;
+        }
+
+        String resultCols = newDesc.getResultColumnsBinding();
+        if (resultCols != null) {
+            this.resultColumns = resultCols;
+        }
+
+        String resultLayout = newDesc.getResultLayoutBinding();
+        if (resultLayout != null) {
+            this.resultLayout = resultLayout;
+        }
+
+        Boolean waitForFilter = newDesc.getWaitForExecution();
+        if (waitForFilter != null) {
+            this.waitForExecution = waitForFilter;
+        }
+
+    }
+
     @Override
     public ContentViewDescriptor clone() {
         ContentViewDescriptor clone = new ContentViewDescriptor();
@@ -326,6 +520,7 @@ public class ContentViewDescriptor {
         clone.title = getTitle();
         clone.translateTitle = getTranslateTitle();
         clone.emptySentence = getEmptySentence();
+        clone.waitForExecutionSentence = getWaitForExecutionSentence();
         clone.translateEmptySentence = getTranslateEmptySentence();
         clone.iconPath = getIconPath();
         CoreQueryPageProviderDescriptor cpp = getCoreQueryPageProvider();
@@ -384,6 +579,7 @@ public class ContentViewDescriptor {
             clone.resetEventNames = new ArrayList<String>();
             clone.resetEventNames.addAll(reset);
         }
+        clone.waitForExecution = getWaitForExecution();
         return clone;
     }
 }

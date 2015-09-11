@@ -118,6 +118,10 @@
       </coreQueryPageProvider>
 
       <searchLayout name="default_search_layout" />
+      <waitForExecution>true</waitForExecution>
+      <waitForExecutionSentence>
+        label.search.waitForExecution
+      </waitForExecutionSentence>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>false</useGlobalPageSize>
@@ -182,6 +186,10 @@
       </coreQueryPageProvider>
 
       <searchLayout name="simple_search_layout" />
+      <waitForExecution>true</waitForExecution>
+      <waitForExecutionSentence>
+        label.search.waitForExecution
+      </waitForExecutionSentence>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
@@ -227,6 +235,8 @@
         <!-- sort column="dc:title" ascending="true" / sort by fulltext relevance -->
         <pageSize>20</pageSize>
       </coreQueryPageProvider>
+
+      <waitForExecution>true</waitForExecution>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>

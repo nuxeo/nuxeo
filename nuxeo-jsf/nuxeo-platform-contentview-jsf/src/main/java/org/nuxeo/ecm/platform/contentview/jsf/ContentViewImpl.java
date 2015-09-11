@@ -127,6 +127,12 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
 
     protected String sortInfosBinding;
 
+    protected boolean waitForExecution = false;
+
+    protected String waitForExecutionSentence;
+
+    protected boolean executed = false;
+
     public ContentViewImpl(String name, String title, boolean translateTitle, String iconPath, String selectionList,
             String pagination, List<String> actionCategories, ContentViewLayout searchLayout,
             List<ContentViewLayout> resultLayouts, List<String> flags, String cacheKey, Integer cacheSize,
@@ -302,6 +308,11 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
     @Override
     public PageProvider<?> getPageProvider(DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
             Long currentPage, Object... params) {
+        // do not return any page provider if filter has not been done yet
+        if (isWaitForExecution() && !isExecuted()) {
+            return null;
+        }
+
         // resolve search doc so that it can be used in EL expressions defined
         // in XML configuration
         boolean setSearchDoc = false;
@@ -402,6 +413,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         if (pageProvider != null) {
             pageProvider.refresh();
         }
+        setExecuted(true);
     }
 
     @Override
@@ -410,6 +422,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
             pageProvider.refresh();
             pageProvider.firstPage();
         }
+        setExecuted(true);
     }
 
     @Override
@@ -778,6 +791,42 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
                 agg.resetSelection();
             }
         }
+    }
+
+    @Override
+    public String getWaitForExecutionSentence() {
+        return waitForExecutionSentence;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setWaitForExecutionSentence(String waitForExecutionSentence) {
+        this.waitForExecutionSentence = waitForExecutionSentence;
+    }
+
+    @Override
+    public boolean isWaitForExecution() {
+        return waitForExecution;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setWaitForExecution(boolean waitForExecution) {
+        this.waitForExecution = waitForExecution;
+    }
+
+    @Override
+    public boolean isExecuted() {
+        return executed;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setExecuted(boolean executed) {
+        this.executed = executed;
     }
 
 }

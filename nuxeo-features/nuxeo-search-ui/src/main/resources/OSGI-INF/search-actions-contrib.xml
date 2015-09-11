@@ -29,6 +29,7 @@
         <property name="ajaxSupport">true</property>
       </properties>
       <filter-id>notNxqlSearchSelected</filter-id>
+      <filter-id>canSaveSearch</filter-id>
     </action>
 
     <action id="submitSearch" link="#{searchUIActions.refreshAndRewind()}"
@@ -159,6 +160,12 @@
     <filter id="notNxqlSearchSelected">
       <rule grant="false">
         <condition>#{searchUIActions.isNxqlSearchSelected()}</condition>
+      </rule>
+    </filter>
+
+    <filter id="canSaveSearch">
+      <rule grant="true">
+        <condition>#{searchUIActions.getCanSaveSearch()}</condition>
       </rule>
     </filter>
 

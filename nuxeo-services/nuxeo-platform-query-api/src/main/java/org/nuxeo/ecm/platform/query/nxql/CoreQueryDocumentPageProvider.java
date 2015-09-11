@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
@@ -329,6 +328,13 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
         return query;
     }
 
+    /**
+     * Filter to use when processing results.
+     * <p>
+     * Defaults to null (no filter applied), method to be overridden by subclasses.
+     *
+     * @since 6.0
+     */
     protected Filter getFilter() {
         return null;
     }

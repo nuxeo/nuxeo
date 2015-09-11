@@ -150,12 +150,14 @@
                     </c:if>
                   </a>
                   <ui:insert name="content_view_selector">
-                    <ui:include src="/incl/content_view_upper_actions.xhtml">
-                      <ui:param name="contentIdToBeReRendered"
-                        value="#{nxu:joinRender(nxu:componentAbsoluteId(component, resultsPanelId), ajaxReRender)}" />
-                      <ui:param name="actionStyleClass" value="smallButton" />
-                    </ui:include>
-                    <div style="clear:both;" />
+                    <c:if test="#{provider != null}">
+                      <ui:include src="/incl/content_view_upper_actions.xhtml">
+                        <ui:param name="contentIdToBeReRendered"
+                          value="#{nxu:joinRender(nxu:componentAbsoluteId(component, resultsPanelId), ajaxReRender)}" />
+                        <ui:param name="actionStyleClass" value="smallButton" />
+                      </ui:include>
+                      <div style="clear:both;" />
+                    </c:if>
                   </ui:insert>
                 </div>
               </c:when>
@@ -196,7 +198,7 @@
             </c:if>
           </ui:insert>
 
-          <c:if test="#{not foldable}">
+          <c:if test="#{not foldable and provider != null}">
             <ui:insert name="content_view_selector">
               <ui:include src="/incl/content_view_upper_actions.xhtml">
                 <ui:param name="contentIdToBeReRendered"
@@ -241,6 +243,10 @@
                     value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.emptySentence], contentView.emptySentence)}" />
                   <h:outputText value="#{nxu:test(empty emptySentence, defaultSentence, emptySentence)}"
                     rendered="#{documents.rowCount == 0 and not provider.hasError()}" styleClass="emptyResult emptyResultBig" />
+                  <c:set var="waitForExecutionSentence"
+                    value="#{nxu:test(contentView.translateEmptySentence, messages[contentView.waitForExecutionSentence], contentView.waitForExecutionSentence)}" />
+                  <h:outputText value="#{nxu:test(empty waitForExecutionSentence, messages['label.content.waitForExecution'], waitForExecutionSentence)}"
+                    rendered="#{contentView.waitForExecution and !contentView.executed}" styleClass="emptyResult emptyResultBig" />
                 </ui:insert>
               </ui:define>
 
