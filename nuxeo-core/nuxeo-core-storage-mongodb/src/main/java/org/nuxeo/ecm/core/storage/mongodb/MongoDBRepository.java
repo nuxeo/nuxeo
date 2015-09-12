@@ -523,9 +523,29 @@ public class MongoDBRepository extends DBSRepositoryBase {
         return findOne(query);
     }
 
+    protected void logQuery(String id, DBObject fields) {
+        logQuery(new BasicDBObject(KEY_ID, id), fields);
+    }
+
+    protected void logQuery(DBObject query, DBObject fields) {
+        if (fields == null) {
+            log.trace("MongoDB: QUERY " + query);
+        } else {
+            log.trace("MongoDB: QUERY " + query + " KEYS " + fields);
+        }
+    }
+
+    protected void logQuery(DBObject query, DBObject fields, DBObject orderBy, int limit, int offset) {
+        log.trace("MongoDB: QUERY " + query + " KEYS " + fields + (orderBy == null ? "" : " ORDER BY " + orderBy)
+                + " OFFSET " + offset + " LIMIT " + limit);
+    }
+
     @Override
     public boolean hasChild(String parentId, String name, Set<String> ignored) {
         DBObject query = getChildQuery(parentId, name, ignored);
+        if (log.isTraceEnabled()) {
+            logQuery(query, justPresenceField());
+        }
         return coll.findOne(query, justPresenceField()) != null;
     }
 
@@ -569,6 +589,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         fields.put(KEY_IS_PROXY, ONE);
         fields.put(KEY_PROXY_TARGET_ID, ONE);
         fields.put(KEY_PROXY_IDS, ONE);
+        if (log.isTraceEnabled()) {
+            logQuery(query, fields);
+        }
         DBCursor cursor = coll.find(query, fields);
         try {
             for (DBObject ob : cursor) {
@@ -594,14 +617,23 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
         DBObject query = new BasicDBObject(key, value);
         addIgnoredIds(query, ignored);
+        if (log.isTraceEnabled()) {
+            logQuery(query, justPresenceField());
+        }
         return coll.findOne(query, justPresenceField()) != null;
     }
 
     protected State findOne(DBObject query) {
+        if (log.isTraceEnabled()) {
+            logQuery(query, null);
+        }
         return bsonToState(coll.findOne(query));
     }
 
     protected List<State> findAll(DBObject query, int sizeHint) {
+        if (log.isTraceEnabled()) {
+            logQuery(query, null);
+        }
         DBCursor cursor = coll.find(query);
         Set<String> seen = new HashSet<>();
         try {
@@ -639,8 +671,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         DBObject keys = builder.getProjection();
 
         if (log.isTraceEnabled()) {
-            log.trace("MongoDB: QUERY " + query + " KEYS " + keys + (orderBy == null ? "" : " ORDER BY " + orderBy)
-                    + " OFFSET " + offset + " LIMIT " + limit);
+            logQuery(query, keys, orderBy, limit, offset);
         }
 
         List<State> list;
@@ -716,6 +747,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public void markReferencedBinaries() {
         BlobManager blobManager = Framework.getService(BlobManager.class);
         // TODO add a query to not scan all documents
+        if (log.isTraceEnabled()) {
+            logQuery(new BasicDBObject(), binaryKeys);
+        }
         DBCursor cursor = coll.find(new BasicDBObject(), binaryKeys);
         try {
             for (DBObject ob : cursor) {
@@ -771,6 +805,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public Lock getLock(String id) {
+        if (log.isTraceEnabled()) {
+            logQuery(id, LOCK_FIELDS);
+        }
         DBObject res = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
         if (res == null) {
             // doc not found
@@ -793,6 +830,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         setLock.put(KEY_LOCK_OWNER, lock.getOwner());
         setLock.put(KEY_LOCK_CREATED, serializableToBson(lock.getCreated()));
         DBObject setLockUpdate = new BasicDBObject(MONGODB_SET, setLock);
+        if (log.isTraceEnabled()) {
+            log.trace("MongoDB: FINDANDMODIFY " + query + " UPDATE " + setLockUpdate);
+        }
         DBObject res = coll.findAndModify(query, null, null, false, setLockUpdate, false, false);
         if (res != null) {
             // found a doc to lock
@@ -800,6 +840,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         } else {
             // doc not found, or lock owner already set
             // get the old lock
+            if (log.isTraceEnabled()) {
+                logQuery(id, LOCK_FIELDS);
+            }
             DBObject old = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
             if (old == null) {
                 // doc not found
@@ -841,6 +884,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         } else {
             // doc not found, or lock owner didn't match
             // get the old lock
+            if (log.isTraceEnabled()) {
+                logQuery(id, LOCK_FIELDS);
+            }
             old = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
             if (old == null) {
                 // doc not found
