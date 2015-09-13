@@ -2125,6 +2125,15 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    public void testQueryDistinctId() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+
+        dml = session.query("SELECT DISTINCT ecm:uuid FROM File");
+        assertEquals(3, dml.size());
+    }
+
+    @Test
     public void testSelectColumnsDistinct() throws Exception {
         String query;
         IterableQueryResult res;

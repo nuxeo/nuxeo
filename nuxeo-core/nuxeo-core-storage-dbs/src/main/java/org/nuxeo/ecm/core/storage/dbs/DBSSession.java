@@ -105,6 +105,7 @@ import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -1358,11 +1359,17 @@ public class DBSSession implements Session {
         // transform the query according to the transformers defined by the
         // security policies
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
-        if (sqlQuery.select.distinct) {
-            // TODO allow DISTINCT ecm:uuid
-            throw new QueryParseException("SELECT DISTINCT not supported on DBS");
-        }
         SelectClause selectClause = sqlQuery.select;
+        if (selectClause.isDistinct()) {
+            if (selectClause.isEmpty()) {
+                // ok, turned into SELECT ecm:uuid
+            } else if (selectClause.getSelectList().size() == 1
+                    && (selectClause.get(0).equals(new Reference(NXQL.ECM_UUID)))) {
+                // ok, SELECT ecm:uuid
+            } else {
+                throw new QueryParseException("SELECT DISTINCT not supported on DBS");
+            }
+        }
         for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
             sqlQuery = transformer.transform(queryFilter.getPrincipal(), sqlQuery);
         }
