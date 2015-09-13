@@ -48,6 +48,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -810,8 +811,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
         DBObject res = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
         if (res == null) {
-            // doc not found
-            throw new LockException("Cannot get lock for non-existing document: " + id);
+            // document not found
+            throw new DocumentNotFoundException(id);
         }
         String owner = (String) res.get(KEY_LOCK_OWNER);
         if (owner == null) {
@@ -845,8 +846,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
             }
             DBObject old = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
             if (old == null) {
-                // doc not found
-                throw new LockException("Cannot lock non-existing document: " + id);
+                // document not found
+                throw new DocumentNotFoundException(id);
             }
             String oldOwner = (String) old.get(KEY_LOCK_OWNER);
             Calendar oldCreated = (Calendar) scalarToSerializable(old.get(KEY_LOCK_CREATED));
@@ -889,8 +890,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
             }
             old = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
             if (old == null) {
-                // doc not found
-                throw new LockException("Cannot unlock non-existing document: " + id);
+                // document not found
+                throw new DocumentNotFoundException(id);
             }
             String oldOwner = (String) old.get(KEY_LOCK_OWNER);
             Calendar oldCreated = (Calendar) scalarToSerializable(old.get(KEY_LOCK_CREATED));

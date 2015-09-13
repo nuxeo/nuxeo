@@ -3673,4 +3673,32 @@ public class TestMemRepository extends MemRepositoryTestCase {
         }
     }
 
+    @Test
+    public void testLockingBeforeSave() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+
+        Lock lock = session.getLockInfo(docRef);
+        assertNull(lock);
+
+        lock = session.setLock(docRef);
+        assertNotNull(lock);
+        assertEquals("Administrator", lock.getOwner());
+
+        lock = session.removeLock(docRef);
+        assertNotNull(lock);
+        assertEquals("Administrator", lock.getOwner());
+
+        lock = session.setLock(docRef);
+        assertNotNull(lock);
+        assertEquals("Administrator", lock.getOwner());
+
+        session.save();
+
+        lock = session.getLockInfo(docRef);
+        assertNotNull(lock);
+        assertEquals("Administrator", lock.getOwner());
+    }
+
 }

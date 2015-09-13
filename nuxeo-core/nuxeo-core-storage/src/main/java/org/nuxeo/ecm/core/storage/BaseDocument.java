@@ -39,6 +39,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Delta;
@@ -1051,7 +1052,11 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     @Override
     public Lock getLock() {
-        return getSession().getLockManager().getLock(getUUID());
+        try {
+            return getSession().getLockManager().getLock(getUUID());
+        } catch (DocumentNotFoundException e) {
+            return getDocumentLock();
+        }
     }
 
     @Override
@@ -1059,12 +1064,47 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         if (lock == null) {
             throw new NullPointerException("Attempt to use null lock on: " + getUUID());
         }
-        return getSession().getLockManager().setLock(getUUID(), lock);
+        try {
+            return getSession().getLockManager().setLock(getUUID(), lock);
+        } catch (DocumentNotFoundException e) {
+            return setDocumentLock(lock);
+        }
     }
 
     @Override
     public Lock removeLock(String owner) {
-        return getSession().getLockManager().removeLock(getUUID(), owner);
+        try {
+            return getSession().getLockManager().removeLock(getUUID(), owner);
+        } catch (DocumentNotFoundException e) {
+            return removeDocumentLock(owner);
+        }
     }
+
+    /**
+     * Gets the lock from this recently created and unsaved document.
+     *
+     * @return the lock, or {@code null} if no lock is set
+     * @since 7.4
+     */
+    protected abstract Lock getDocumentLock();
+
+    /**
+     * Sets a lock on this recently created and unsaved document.
+     *
+     * @param lock the lock to set
+     * @return {@code null} if locking succeeded, or the existing lock if locking failed
+     * @since 7.4
+     */
+    protected abstract Lock setDocumentLock(Lock lock);
+
+    /**
+     * Removes a lock from this recently created and unsaved document.
+     *
+     * @param the owner to check, or {@code null} for no check
+     * @return {@code null} if there was no lock or if removal succeeded, or a lock if it blocks removal due to owner
+     *         mismatch
+     * @since 7.4
+     */
+    protected abstract Lock removeDocumentLock(String owner);
 
 }

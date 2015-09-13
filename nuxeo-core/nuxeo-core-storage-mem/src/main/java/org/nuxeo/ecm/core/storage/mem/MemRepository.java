@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -403,8 +404,8 @@ public class MemRepository extends DBSRepositoryBase {
     public synchronized Lock getLock(String id) {
         State state = states.get(id);
         if (state == null) {
-            // no such document, return no lock
-            return null;
+            // document not found
+            throw new DocumentNotFoundException(id);
         }
         String owner = (String) state.get(KEY_LOCK_OWNER);
         if (owner == null) {
@@ -419,8 +420,8 @@ public class MemRepository extends DBSRepositoryBase {
     public synchronized Lock setLock(String id, Lock lock) {
         State state = states.get(id);
         if (state == null) {
-            // no such document, make this an error
-            throw new LockException("Cannot lock non-existing document: " + id);
+            // document not found
+            throw new DocumentNotFoundException(id);
         }
         String owner = (String) state.get(KEY_LOCK_OWNER);
         if (owner != null) {
@@ -438,8 +439,8 @@ public class MemRepository extends DBSRepositoryBase {
     public synchronized Lock removeLock(String id, String owner) {
         State state = states.get(id);
         if (state == null) {
-            // no such document, no previous lock
-            return null;
+            // document not found
+            throw new DocumentNotFoundException(id);
         }
         String oldOwner = (String) state.get(KEY_LOCK_OWNER);
         if (oldOwner == null) {

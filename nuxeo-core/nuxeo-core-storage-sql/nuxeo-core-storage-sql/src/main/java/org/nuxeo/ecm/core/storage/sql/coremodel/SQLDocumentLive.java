@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -627,6 +628,24 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public void setTargetDocument(Document target) {
         throw new NuxeoException("Not a proxy");
+    }
+
+    @Override
+    protected Lock getDocumentLock() {
+        // lock manager can get the lock even on a recently created and unsaved document
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected Lock setDocumentLock(Lock lock) {
+        // lock manager can set the lock even on a recently created and unsaved document
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected Lock removeDocumentLock(String owner) {
+        // lock manager can remove the lock even on a recently created and unsaved document
+        throw new UnsupportedOperationException();
     }
 
 }

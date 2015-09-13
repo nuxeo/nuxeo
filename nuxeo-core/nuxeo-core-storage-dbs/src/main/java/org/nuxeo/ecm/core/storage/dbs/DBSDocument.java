@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -883,6 +885,48 @@ public class DBSDocument extends BaseDocument<State> {
         } else {
             throw new NuxeoException("Cannot set proxy target on non-proxy");
         }
+    }
+
+    @Override
+    protected Lock getDocumentLock() {
+        String owner = (String) docState.get(KEY_LOCK_OWNER);
+        if (owner == null) {
+            return null;
+        }
+        Calendar created = (Calendar) docState.get(KEY_LOCK_CREATED);
+        return new Lock(owner, created);
+    }
+
+    @Override
+    protected Lock setDocumentLock(Lock lock) {
+        String owner = (String) docState.get(KEY_LOCK_OWNER);
+        if (owner != null) {
+            // return old lock
+            Calendar created = (Calendar) docState.get(KEY_LOCK_CREATED);
+            return new Lock(owner, created);
+        }
+        docState.put(KEY_LOCK_OWNER, lock.getOwner());
+        docState.put(KEY_LOCK_CREATED, lock.getCreated());
+        return null;
+    }
+
+    @Override
+    protected Lock removeDocumentLock(String owner) {
+        String oldOwner = (String) docState.get(KEY_LOCK_OWNER);
+        if (oldOwner == null) {
+            // no previous lock
+            return null;
+        }
+        Calendar oldCreated = (Calendar) docState.get(KEY_LOCK_CREATED);
+        if (!LockManager.canLockBeRemoved(oldOwner, owner)) {
+            // existing mismatched lock, flag failure
+            return new Lock(oldOwner, oldCreated, true);
+        }
+        // remove lock
+        docState.put(KEY_LOCK_OWNER, null);
+        docState.put(KEY_LOCK_CREATED, null);
+        // return old lock
+        return new Lock(oldOwner, oldCreated);
     }
 
     @Override
