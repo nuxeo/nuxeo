@@ -117,7 +117,7 @@ author: lkemen@nuxeo.com
   padding: 6em 0 }
 
 .nxMainContainer .verticalTabsContent {
-  padding: 2em;
+  padding: 2em 2em 3em;
   width: 81%; }
 
 .tabsBar.vertical {
@@ -179,28 +179,25 @@ author: lkemen@nuxeo.com
 
 .pageNavigationControls input[type="image"],
 #pageNavigationControls input[type="image"] {
-  background-color: #fff;
+  background-color: "color.major.medium (__FLAVOR__ background)";
   border: 1px solid #ddd !important;
   border-radius: 2px;
   border-left: none !important;
   margin: 0;
   padding: .3em }
 
-.pageNavigationControls input[type="image"]:nth-child(3n+1) {
-  border-left: 1px solid #ddd !important }
 
 .pageNavigationControls input:hover,
 #pageNavigationControls input:hover {
-  background-color: "neutral.light (__FLAVOR__ background)";
-  border-color: #ddd }
+  background-color: "neutral.light (__FLAVOR__ background)"; }
 
 .pageNavigationControls input[disabled=disabled],
 #pageNavigationControls input[disabled=disabled] {
   background-color: transparent;
   border-color: transparent !important;
   cursor: default;
-  filter: alpha(opacity=20);
-  opacity: .2 }
+  filter: alpha(opacity=0);
+  opacity: 0 }
 
 .pageNavigationControls input[disabled="disabled"]:nth-child(3n+1) {
   border-color: transparent !important }

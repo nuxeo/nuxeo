@@ -88,7 +88,6 @@ input::-moz-focus-inner {
 .nx-page input.tinyButton,
 .nx-page input.smallButton {
   background-color: #fff;
-  color: "link (__FLAVOR__ color)";
   font-size: .9em;
   padding: .25em .5em;
   text-decoration: none }
@@ -160,6 +159,7 @@ input::-moz-focus-inner {
   color: "gray.dark (__FLAVOR__ color)";
   float: right;
   font-size: .9em;
+  line-height: normal;
   margin: .8em 0;
   text-align: right }
 

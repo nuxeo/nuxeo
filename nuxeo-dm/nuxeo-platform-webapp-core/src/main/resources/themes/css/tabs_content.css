@@ -11,12 +11,14 @@ author: lkemen@nuxeo.com
   background: none #fff;
   border-radius: 2px;
   border: 1px solid "neutral.lighter (__FLAVOR__ border)";
-  margin: 1em 0 0;
   padding: 2em 1.5em }
 
 .tabsContent .tabsContent {
   box-shadow: none;
   border: medium none; }
+
+.tabsBar ~ .tabsContent {
+  margin: 1em 0 0; }
 
 .mainNoTabs {
   background-color: #fff;
@@ -24,10 +26,19 @@ author: lkemen@nuxeo.com
   border: 1px solid "neutral.lighter (__FLAVOR__ border)";
   padding: 2em }
 
+.mainNoTabs h1 {
+  margin: 0;
+  padding-top: 0; }
+
 .mainNoTabs h3 {
   border-bottom: 1px solid #eee;
   margin: -0.5em -1.5rem 1.5rem;
   padding: 0 1.5em 1em }
+
+.tabsContent > h2,
+.tabsContent > h3 {
+  margin-top: 0;
+  padding-top: 0; }
 
 .contentViewTitle {
   border-bottom: 1px solid;
@@ -38,6 +49,7 @@ author: lkemen@nuxeo.com
 
 .contentViewTitle h3 {
   padding: .3em 0 .2em;
+  margin: .7em 0 .5em;
   font-size: 1.3em;
   border: none; }
 
@@ -53,8 +65,12 @@ author: lkemen@nuxeo.com
   word-wrap: break-word }
 
 .documentDownloadLink {
-  margin-left: 0.3em;
-  vertical-align: top }
+  margin-left: .3em; }
+
+.documentDownloadLink > img {
+  height: 12px;
+  vertical-align: middle;
+  width: 12px; }
 
 .description_block {
   color: "gray.dark (__FLAVOR__ color)";
