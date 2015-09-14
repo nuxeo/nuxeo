@@ -822,9 +822,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         return executed;
     }
 
-    /**
-     * @since 7.4
-     */
+    @Override
     public void setExecuted(boolean executed) {
         this.executed = executed;
     }

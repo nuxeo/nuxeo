@@ -348,7 +348,7 @@ public interface ContentView extends Serializable {
     boolean getTranslateEmptySentence();
 
     /**
-     * Returns the sentence to display when content viez is waiting for a first execution.
+     * Returns the sentence to display when content view is waiting for a first execution.
      *
      * @since 7.4
      */
@@ -366,10 +366,17 @@ public interface ContentView extends Serializable {
      * Returns true if content view has been executed.
      * <p>
      * Execution is detected when either {@link #refreshPageProvider()} or {@link #refreshAndRewindPageProvider()}
-     * methods are called.
+     * methods are called, or when {@link #setExecuted(boolean)} is called explicitely.
      *
      * @since 7.4
      */
     public boolean isExecuted();
+
+    /**
+     * Sets the content view execution status.
+     *
+     * @since 7.4
+     */
+    public void setExecuted(boolean executed);
 
 }

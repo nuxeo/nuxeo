@@ -477,7 +477,8 @@ public class SearchUIActions implements Serializable {
             ContentViewState state = new ContentViewStateImpl();
             state.setSearchDocumentModel(searchDocumentModel);
             state.setContentViewName(getCurrentContentViewName());
-            contentViewActions.restoreContentView(state);
+            ContentView ccv = contentViewActions.restoreContentView(state);
+            ccv.setExecuted(true);
         }
     }
 
