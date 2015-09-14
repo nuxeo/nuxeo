@@ -57,7 +57,7 @@
         <extendedInfo expression="${message.properties.action}" key="action" />
         <extendedInfo expression="${message.properties.nodeVariables}" key="nodeVariables" />
         <extendedInfo expression="${message.properties.workflowVariables}" key="workflowVariables" />
-        <extendedInfo expression="${message.properties.timeSinceTaskStarted}" key="timeSinceWfStarted" />
+        <extendedInfo expression="${message.properties.timeSinceTaskStarted}" key="timeSinceTaskStarted" />
         <extendedInfo expression="${message.properties.timeSinceWfStarted}" key="timeSinceWfStarted" />
       </extendedInfos>
     </event>
