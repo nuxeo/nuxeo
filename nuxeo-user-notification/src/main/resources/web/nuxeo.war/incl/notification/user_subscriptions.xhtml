@@ -4,7 +4,8 @@
   xmlns:rich="http://richfaces.org/rich"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxd="http://nuxeo.org/nxweb/document">
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  class="mainNoTabs">
 
   <h:form>
 
@@ -18,7 +19,7 @@
         <f:facet name="header">
           <h:outputText value="#{messages['label.notification']}"/>
         </f:facet>
-        <h:outputText value="#{messages[notificationManager.getNotificationByName(row.notification).getLabel()]}"/>
+        <h:outputText styleClass="label" value="#{messages[notificationManager.getNotificationByName(row.notification).getLabel()]}"/>
       </nxu:column>
 
       <!--  Principal -->
@@ -41,8 +42,9 @@
           <h:outputText value="#{nxd:titleOrId(doc)}" />
           </span>
         </nxd:restDocumentLink>
-        <br />
-        <h:outputText value="#{doc.getPathAsString()}" rendered="#{doc != null}"/>
+        <div class="detail">
+          <h:outputText value="#{doc.getPathAsString()}" rendered="#{doc != null}"/>
+        </div>
       </nxu:column>
 
       <!--  Document -->

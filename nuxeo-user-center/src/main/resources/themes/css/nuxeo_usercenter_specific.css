@@ -8,6 +8,10 @@ author: lkemen@nuxeo.com
 #nxw_homeTabs_tab_content .foldableBox .pageNavigationControls:first-of-type {
   display: none; }
 
+#usersPanel > .tabsContent {
+  margin-top: 0;
+  padding: 0; }
+
 /* =Override GWT styles*/
 body,
 table td,

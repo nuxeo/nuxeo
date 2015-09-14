@@ -37,8 +37,8 @@
 
   <c:if test="#{bean.editableEntry == null}">
     <h:form>
-      <div style="float:right">
-        <h:commandLink action="#{bean.refresh}">
+      <div class="floatR">
+        <h:commandLink action="#{bean.refresh}" styleClass="button">
           <h:outputText value="#{messages['command.refresh']}"/>
         </h:commandLink>
       </div>
