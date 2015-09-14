@@ -74,6 +74,11 @@ public class BinaryBlobProvider implements BlobProvider {
     }
 
     @Override
+    public boolean supportsWrite() {
+        return true;
+    }
+
+    @Override
     public String writeBlob(Blob blob, Document doc) throws IOException {
         // writes the blob and return its digest
         return binaryManager.getBinary(blob).getDigest();

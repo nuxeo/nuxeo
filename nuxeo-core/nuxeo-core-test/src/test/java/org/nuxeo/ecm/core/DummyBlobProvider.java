@@ -66,6 +66,11 @@ public class DummyBlobProvider implements BlobProvider {
     }
 
     @Override
+    public boolean supportsWrite() {
+        return true;
+    }
+
+    @Override
     public String writeBlob(Blob blob, Document doc) throws IOException {
         byte[] bytes;
         try (InputStream in = blob.getStream()) {

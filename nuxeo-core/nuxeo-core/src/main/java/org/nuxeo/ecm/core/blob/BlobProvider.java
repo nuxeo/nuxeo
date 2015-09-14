@@ -18,10 +18,17 @@
 package org.nuxeo.ecm.core.blob;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
+import org.nuxeo.ecm.core.blob.apps.AppLink;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -66,5 +73,112 @@ public interface BlobProvider {
      * @return the blob key
      */
     String writeBlob(Blob blob, Document doc) throws IOException;
+
+    /**
+     * Checks if write is supported
+     *
+     * @return {@code true} if write is supported
+     * @since 7.4
+     */
+    boolean supportsWrite();
+
+    /**
+     * Gets an {@link InputStream} for the data of a managed blob.
+     * <p>
+     * Like all {@link InputStream}, the result must be closed when done with it to avoid resource leaks.
+     *
+     * @param blob the managed blob
+     * @return the stream
+     * @since 7.3
+     */
+    default InputStream getStream(ManagedBlob blob) throws IOException {
+        return null;
+    }
+
+    /**
+     * Gets an {@link InputStream} for a thumbnail of a managed blob.
+     * <p>
+     * Like all {@link InputStream}, the result must be closed when done with it to avoid resource leaks.
+     *
+     * @param blob the managed blob
+     * @return the stream
+     * @since 7.3
+     */
+    default InputStream getThumbnail(ManagedBlob blob) throws IOException {
+        return null;
+    }
+
+    /**
+     * Gets an {@link URI} for the content of a managed blob.
+     *
+     * @param blob the managed blob
+     * @param hint {@link UsageHint}
+     * @return the {@link URI}, or {@code null} if none available
+     * @since 7.3
+     */
+    default URI getURI(ManagedBlob blob, UsageHint hint) throws IOException {
+        return null;
+    }
+
+    /**
+     * Gets a map of available MIME type conversions and corresponding {@link URI} for a managed blob.
+     *
+     * @param blob the managed blob
+     * @param hint {@link UsageHint}
+     * @return a map of MIME types and {@link URI}, which may be empty
+     * @since 7.3
+     */
+    default Map<String, URI> getAvailableConversions(ManagedBlob blob, UsageHint hint) throws IOException {
+        return Collections.emptyMap();
+    }
+
+    /**
+     * Gets an {@link InputStream} for a conversion to the given MIME type.
+     * <p>
+     * Like all {@link InputStream}, the result must be closed when done with it to avoid resource leaks.
+     *
+     * @param blob the managed blob
+     * @param mimeType the MIME type to convert to
+     * @param doc the document that holds the blob
+     * @return the stream, or {@code null} if no conversion is available for the given MIME type
+     * @since 7.3
+     */
+    default InputStream getConvertedStream(ManagedBlob blob, String mimeType, DocumentModel doc) throws IOException {
+        return null;
+    }
+
+    /**
+     * Returns a new managed blob pointing to a fixed version of the original blob.
+     * <p>
+     *
+     * @param blob the original managed blob
+     * @param doc the document that holds the blob
+     * @return a managed blob with fixed version, or {@code null} if no change is needed
+     * @since 7.3
+     */
+    default ManagedBlob freezeVersion(ManagedBlob blob, Document doc) throws IOException {
+        return null;
+    }
+
+    /**
+     * Returns true if version of the blob is a version.
+     * <p>
+     *
+     * @param blob the managed blob
+     * @return true if the blob is a version or a revision
+     * @since 7.3
+     */
+    default boolean isVersion(ManagedBlob blob) {
+        return false;
+    }
+
+    /**
+     * Returns a list of application links for the given blob.
+     *
+     * @since 7.3
+     */
+    default List<AppLink> getAppLinks(String user, ManagedBlob blob) throws IOException {
+        return Collections.emptyList();
+    }
 
 }

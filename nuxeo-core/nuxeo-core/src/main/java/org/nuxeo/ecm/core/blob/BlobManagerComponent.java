@@ -298,17 +298,9 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
         return getBlobProvider(managedBlob.getProviderId());
     }
 
-    protected ExtendedBlobProvider getExtendedBlobProvider(Blob blob) {
-        BlobProvider blobProvider = getBlobProvider(blob);
-        if (blobProvider != null && blobProvider instanceof ExtendedBlobProvider) {
-            return (ExtendedBlobProvider) blobProvider;
-        }
-        return null;
-    }
-
     @Override
     public InputStream getStream(Blob blob) throws IOException {
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
+        BlobProvider blobProvider = getBlobProvider(blob);
         if (blobProvider == null) {
             return null;
         }
@@ -317,7 +309,7 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
     @Override
     public InputStream getThumbnail(Blob blob) throws IOException {
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
+        BlobProvider blobProvider = getBlobProvider(blob);
         if (blobProvider == null) {
             return null;
         }
@@ -326,7 +318,7 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
     @Override
     public URI getURI(Blob blob, UsageHint hint) throws IOException {
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
+        BlobProvider blobProvider = getBlobProvider(blob);
         if (blobProvider == null) {
             return null;
         }
@@ -335,7 +327,7 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
     @Override
     public Map<String, URI> getAvailableConversions(Blob blob, UsageHint hint) throws IOException {
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
+        BlobProvider blobProvider = getBlobProvider(blob);
         if (blobProvider == null) {
             return Collections.emptyMap();
         }
@@ -344,7 +336,7 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
     @Override
     public InputStream getConvertedStream(Blob blob, String mimeType, DocumentModel doc) throws IOException {
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
+        BlobProvider blobProvider = getBlobProvider(blob);
         if (blobProvider == null) {
             return null;
         }
@@ -353,7 +345,7 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
     protected void freezeVersion(BlobAccessor accessor, Document doc) {
         Blob blob = accessor.getBlob();
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
+        BlobProvider blobProvider = getBlobProvider(blob);
         if (blobProvider == null) {
             return;
         }

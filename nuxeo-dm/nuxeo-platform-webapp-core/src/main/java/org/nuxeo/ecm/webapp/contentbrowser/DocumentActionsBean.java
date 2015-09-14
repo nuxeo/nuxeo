@@ -60,7 +60,6 @@ import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
-import org.nuxeo.ecm.core.blob.apps.LinkedAppsProvider;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -495,14 +494,11 @@ public class DocumentActionsBean extends InputController implements DocumentActi
             log.error("No registered blob provider for key: " + managedBlob.getKey());
             return null;
         }
-        if (!(blobProvider instanceof LinkedAppsProvider)) {
-            return null;
-        }
 
         String user = documentManager.getPrincipal().getName();
 
         try {
-            return ((LinkedAppsProvider) blobProvider).getAppLinks(user, managedBlob);
+            return blobProvider.getAppLinks(user, managedBlob);
         } catch (IOException e) {
             log.error("Failed to retrieve application links", e);
         }
