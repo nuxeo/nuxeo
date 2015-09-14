@@ -13,7 +13,8 @@ author: lkemen@nuxeo.com
   border: 1px solid "neutral.lighter (__FLAVOR__ border)";
   padding: 2em 1.5em }
 
-.tabsContent .tabsContent {
+.tabsContent .tabsContent,
+.mainNoTabs .tabsContent {
   box-shadow: none;
   border: medium none; }
 
