@@ -42,7 +42,6 @@ import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Handles Annotations related web actions.
@@ -88,8 +87,7 @@ public class AnnotationsActions implements Serializable {
     }
 
     protected boolean isTextAnnotationsEnabled() {
-        ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        return cs.isBooleanPropertyTrue(TEXT_ANNOTATIONS_KEY);
+        return Framework.isBooleanPropertyTrue(TEXT_ANNOTATIONS_KEY);
     }
 
 }

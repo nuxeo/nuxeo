@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
+import org.nuxeo.common.utils.DefaultProperties;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -65,7 +66,12 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     protected File workingDir;
 
-    protected CryptoProperties properties = new CryptoProperties(System.getProperties());
+    /**
+     * Default properties overridden by System properties
+     */
+    protected DefaultProperties configurationProperties = new DefaultProperties(System.getProperties());
+
+    protected CryptoProperties properties = new CryptoProperties(configurationProperties);
 
     protected ComponentManager manager;
 
@@ -310,6 +316,11 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
         msg.append(hr);
         return (warnings.isEmpty() && pendingRegistrations.isEmpty() && unstartedRegistrations.isEmpty());
+    }
+
+    @Override
+    public DefaultProperties getConfigurationProperties() {
+        return configurationProperties;
     }
 
 }

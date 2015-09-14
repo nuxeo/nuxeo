@@ -56,7 +56,6 @@ import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Component that handles actions retrieval as well as current tab(s) selection.
@@ -494,8 +493,7 @@ public class WebActionsBean implements WebActions, Serializable {
     @Override
     @Factory(value = "useAjaxTabs", scope = ScopeType.SESSION)
     public boolean useAjaxTabs() {
-        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        if (configurationService.isBooleanPropertyTrue(AJAX_TAB_PROPERTY)) {
+        if (Framework.isBooleanPropertyTrue(AJAX_TAB_PROPERTY)) {
             return canUseAjaxTabs();
         }
         return false;

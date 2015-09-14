@@ -51,7 +51,6 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Util functions.
@@ -441,9 +440,7 @@ public final class Functions {
      * @since 7.4
      */
     public static BytePrefix getDefaultBytePrefix() {
-        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        return BytePrefix.valueOf(
-                configurationService.getProperty(BYTE_PREFIX_FORMAT_PROPERTY, DEFAULT_BYTE_PREFIX_FORMAT));
+        return BytePrefix.valueOf(Framework.getProperty(BYTE_PREFIX_FORMAT_PROPERTY, DEFAULT_BYTE_PREFIX_FORMAT));
     }
 
     public static String printFileSize(String size) {

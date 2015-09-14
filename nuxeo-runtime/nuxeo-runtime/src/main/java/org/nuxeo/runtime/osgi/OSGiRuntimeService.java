@@ -382,7 +382,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                     return o1.compareToIgnoreCase(o2);
                 }
             });
-            CryptoProperties props = new CryptoProperties(System.getProperties());
+            configurationProperties.clear();
+            CryptoProperties props = new CryptoProperties(configurationProperties);
             for (String name : names) {
                 if (name.endsWith(".config") || name.endsWith(".ini") || name.endsWith(".properties")) {
                     FileInputStream in = new FileInputStream(new File(dir, name));

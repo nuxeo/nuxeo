@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Basic implementation for a {@link PageProvider}.
@@ -840,14 +839,14 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     protected long getDefaultMaxPageSize() {
         long res = DEFAULT_MAX_PAGE_SIZE;
         if (Framework.isInitialized()) {
-            ConfigurationService cs = Framework.getService(ConfigurationService.class);
-            String maxPageSize = cs.getProperty(DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP);
-            if (!StringUtils.isBlank(maxPageSize)) {
+            String defaultMaxPageSize = Framework.getProperty(DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP);
+            if (!StringUtils.isBlank(defaultMaxPageSize)) {
                 try {
-                    res = Long.parseLong(maxPageSize.trim());
+                    res = Long.parseLong(defaultMaxPageSize.trim());
                 } catch (NumberFormatException e) {
                     log.warn(String.format("Invalid max page size defined for property "
-                            + "\"%s\": %s (waiting for a long value)", DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP, maxPageSize));
+                            + "\"%s\": %s (waiting for a long value)", DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP,
+                            defaultMaxPageSize));
                 }
             }
         }

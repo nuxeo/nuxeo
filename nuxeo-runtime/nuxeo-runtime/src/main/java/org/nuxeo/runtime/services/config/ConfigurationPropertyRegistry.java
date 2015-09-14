@@ -17,12 +17,13 @@
  */
 package org.nuxeo.runtime.services.config;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
@@ -34,7 +35,7 @@ public class ConfigurationPropertyRegistry extends SimpleContributionRegistry<Co
 
     private static final Log log = LogFactory.getLog(ConfigurationPropertyRegistry.class);
 
-    protected Map<String, String> properties = new HashMap<>();
+    protected Properties properties = Framework.getRuntime().getConfigurationProperties();
 
     @Override
     public String getContributionId(ConfigurationPropertyDescriptor contrib) {
@@ -50,14 +51,14 @@ public class ConfigurationPropertyRegistry extends SimpleContributionRegistry<Co
             return;
         }
         String value = contrib.getValue();
-        properties.put(name, value);
-        log.info("Registering property with name " + name + " and value " + value);
+        properties.setProperty(name, value);
+        log.info("Registered property with name " + name + " and value " + value);
     }
 
     @Override
     public void contributionRemoved(String id, ConfigurationPropertyDescriptor origContrib) {
         properties.remove(id);
-        log.info("Unregistering property with name " + id);
+        log.info("Unregistered property with name " + id);
     }
 
     @Override
@@ -75,11 +76,4 @@ public class ConfigurationPropertyRegistry extends SimpleContributionRegistry<Co
         return true;
     }
 
-    public boolean hasProperty(String key) {
-        return properties.containsKey(key);
-    }
-
-    public String getProperty(String key) {
-        return properties.get(key);
-    }
 }

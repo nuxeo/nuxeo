@@ -24,7 +24,6 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.io.FileDeleteStrategy;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -418,37 +417,45 @@ public final class Framework {
     }
 
     /**
+     * Return the {@code key} value as {@code Boolean} if set, else return {@code null} FIXME JC: not sure this method
+     * is relevant/useful
+     *
+     * @since 7.4
+     */
+    public static Boolean getPropertyAsBoolean(String key) {
+        String value = getProperty(key);
+        if (key == null) {
+            return null;
+        }
+        return Boolean.parseBoolean(value);
+    }
+
+    /**
      * Returns true if given property is false when compared to a boolean value. Returns false if given property in
      * unset.
      * <p>
-     * Checks for the system properties if property is not found in the runtime properties.
+     * It is equivalent to {@code !Boolean.parseBoolean(getProperty(propName, "true"))}
      *
      * @since 5.8
      */
     public static boolean isBooleanPropertyFalse(String propName) {
-        String v = getProperty(propName);
-        if (v == null) {
-            v = System.getProperty(propName);
-        }
-        if (StringUtils.isBlank(v)) {
-            return false;
-        }
-        return !Boolean.parseBoolean(v);
+        Boolean propValue = getPropertyAsBoolean(propName);
+        return propValue != null && !propValue;
+        // FIXME JC: is it better than return !Boolean.parseBoolean(getProperty(propName, "true")) ?
     }
 
     /**
-     * Returns true if given property is true when compared to a boolean value.
+     * Returns true if given property is true when compared to a boolean value. Returns false if given property in
+     * unset.
      * <p>
-     * Checks for the system properties if property is not found in the runtime properties.
+     * It is equivalent to {@code Boolean.parseBoolean(getProperty(propName))}
      *
      * @since 5.6
      */
     public static boolean isBooleanPropertyTrue(String propName) {
-        String v = getProperty(propName);
-        if (v == null) {
-            v = System.getProperty(propName);
-        }
-        return Boolean.parseBoolean(v);
+        Boolean propValue = getPropertyAsBoolean(propName);
+        return propValue != null && propValue;
+        // FIXME JC: is it better than return Boolean.parseBoolean(getProperty(propName)) ?
     }
 
     /**

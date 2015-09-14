@@ -47,7 +47,6 @@ import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.ecm.platform.query.api.WhereClauseDefinition;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Helper to generate NXQL queries from XMap descriptors
@@ -486,8 +485,7 @@ public class NXQLQueryBuilder {
         // parser should be robust to any user input however this is much more
         // complicated to implement correctly than the following simple user
         // input filtering scheme.
-        ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        String ignoredChars = cs.getProperty(IGNORED_CHARS_KEY, DEFAULT_SPECIAL_CHARACTERS_REGEXP);
+        String ignoredChars = Framework.getProperty(IGNORED_CHARS_KEY, DEFAULT_SPECIAL_CHARACTERS_REGEXP);
         String res = "";
         value = value.replaceAll("[" + ignoredChars + "]", " ");
         value = value.trim();

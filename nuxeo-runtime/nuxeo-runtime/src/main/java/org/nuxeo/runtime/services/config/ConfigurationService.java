@@ -28,28 +28,8 @@ package org.nuxeo.runtime.services.config;
 public interface ConfigurationService {
 
     /**
-     * Returns the given property value if any, otherwise null.
-     *
-     * @param key the property key
+     * FIXME JC: is this one not wanted?
      */
-    String getProperty(String key);
-
-    /**
-     * Returns the given property value if any, otherwise returns the given default value.
-     *
-     * @param key the property key
-     * @param defaultValue the default value for this key
-     */
-    String getProperty(String key, String defaultValue);
-
-    /**
-     * Returns true if given property is true when compared to a boolean value.
-     */
-    boolean isBooleanPropertyTrue(String key);
-
-    /**
-     * Returns true if given property is false when compared to a boolean value.
-     */
-    boolean isBooleanPropertyFalse(String key);
+    void setProperty(String key, String value);
 
 }

@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.api.pathsegment;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Service generating a path segment from the title by simplifying it to lowercase and dash-separated words.
@@ -33,8 +32,7 @@ public class PathSegmentServiceCompat implements PathSegmentService {
 
     @Override
     public int getMaxSize() {
-        ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        return Integer.parseInt(cs.getProperty(PathSegmentService.NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
+        return Integer.parseInt(Framework.getProperty(PathSegmentService.NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
     }
 
 }

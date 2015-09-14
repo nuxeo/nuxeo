@@ -71,7 +71,6 @@ import org.nuxeo.ecm.webapp.seam.NuxeoSeamHotReloadContextKeeper;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Manages JSF views for Package Management.
@@ -268,8 +267,7 @@ public class AppCenterViewsManager implements Serializable {
      * @since 5.7.1
      */
     protected boolean shouldValidateStudioSnapshot() {
-        ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        if (cs.isBooleanPropertyTrue("studio.snapshot.disablePkgValidation")) {
+        if (Framework.isBooleanPropertyTrue("studio.snapshot.disablePkgValidation")) {
             return false;
         }
         return Boolean.TRUE.equals(getValidateStudioSnapshot());

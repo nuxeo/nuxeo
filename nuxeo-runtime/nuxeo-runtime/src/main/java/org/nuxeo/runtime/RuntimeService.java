@@ -231,4 +231,13 @@ public interface RuntimeService {
      */
     void setProperty(String name, Object value);
 
+    /**
+     * For internal use. Return a properties where to set default values.
+     *
+     * @since 7.4
+     * @see org.nuxeo.runtime.services.config.ConfigurationService
+     * @see org.nuxeo.runtime.services.config.ConfigurationPropertyRegistry
+     */
+    Properties getConfigurationProperties();
+
 }
