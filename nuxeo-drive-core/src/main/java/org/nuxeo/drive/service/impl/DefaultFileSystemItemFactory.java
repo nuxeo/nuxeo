@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
-import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -155,7 +154,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
             BlobManager blobManager = Framework.getService(BlobManager.class);
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             BlobProvider blobProvider = blobManager.getBlobProvider(bh.getBlob());
-            if (blobProvider != null && blobProvider instanceof ExtendedBlobProvider) {
+            if (blobProvider != null && !blobProvider.supportsWrite()) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
                         "Blob for Document %s is backed by an ExtendedBlobProvider, it cannot be adapted as a FileSystemItem.",
