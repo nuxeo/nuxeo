@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
-import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.cache.Cache;
@@ -62,7 +62,7 @@ import java.util.Map;
  *
  * @since 7.3
  */
-public class DropboxBlobProvider implements ExtendedBlobProvider, BatchUpdateBlobProvider {
+public class DropboxBlobProvider implements BlobProvider, BatchUpdateBlobProvider {
 
     private static final Log log = LogFactory.getLog(DropboxBlobProvider.class);
 
@@ -90,6 +90,11 @@ public class DropboxBlobProvider implements ExtendedBlobProvider, BatchUpdateBlo
     @Override
     public Blob readBlob(BlobInfo blobInfo) throws IOException {
         return new SimpleManagedBlob(blobInfo);
+    }
+
+    @Override
+    public boolean supportsWrite() {
+        return false;
     }
 
     @Override
@@ -352,11 +357,6 @@ public class DropboxBlobProvider implements ExtendedBlobProvider, BatchUpdateBlo
     @Override
     public String getBlobPrefix() {
         return PREFIX;
-    }
-
-    @Override
-    public boolean isVersion(ManagedBlob blob) {
-      return false;
     }
 
 }

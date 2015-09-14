@@ -42,11 +42,10 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
-import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
-import org.nuxeo.ecm.core.blob.apps.LinkedAppsProvider;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.model.Document;
@@ -80,9 +79,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @since 7.3
  */
-public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdateBlobProvider, LinkedAppsProvider {
+public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobProvider {
 
     private static final String GOOGLEDRIVE_DOCUMENT_TO_BE_UPDATED_PP = "googledrive_document_to_be_updated";
+
+    public static final int PREFERRED_ICON_SIZE = 16;
 
     private static final Log log = LogFactory.getLog(GoogleDriveBlobProvider.class);
 
@@ -172,6 +173,11 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
     @Override
     public Blob readBlob(BlobInfo blobInfo) {
         return new SimpleManagedBlob(blobInfo);
+    }
+
+    @Override
+    public boolean supportsWrite() {
+        return false;
     }
 
     @Override

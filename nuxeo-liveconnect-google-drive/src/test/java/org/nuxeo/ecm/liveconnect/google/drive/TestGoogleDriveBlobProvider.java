@@ -41,10 +41,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
-import org.nuxeo.ecm.core.blob.apps.LinkedAppsProvider;
 
 public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
 
@@ -130,7 +130,7 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         blobInfo.key = PREFIX + ":" + USERID + ":" + JPEG_FILEID;
         ManagedBlob blob = new SimpleManagedBlob(blobInfo);
 
-        LinkedAppsProvider provider = (LinkedAppsProvider) blobManager.getBlobProvider(GoogleDriveBlobProvider.PREFIX);
+        BlobProvider provider = blobManager.getBlobProvider(GoogleDriveBlobProvider.PREFIX);
         List<AppLink> appLinks = provider.getAppLinks(USERNAME, blob);
 
         assertEquals(2, appLinks.size());
