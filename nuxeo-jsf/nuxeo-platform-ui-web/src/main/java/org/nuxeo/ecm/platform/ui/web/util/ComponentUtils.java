@@ -219,7 +219,7 @@ public final class ComponentUtils {
         HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
         try {
             DownloadService downloadService = Framework.getService(DownloadService.class);
-            downloadService.downloadBlob(request, response, doc, xpath, blob, filename, reason);
+            downloadService.downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos);
         } catch (IOException e) {
             log.error("Error while downloading the file: " + filename, e);
         } finally {
