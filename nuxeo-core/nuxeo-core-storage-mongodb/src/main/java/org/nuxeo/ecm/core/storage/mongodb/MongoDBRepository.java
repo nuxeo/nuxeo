@@ -417,6 +417,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         // often used in user-generated queries
         coll.createIndex(new BasicDBObject(KEY_PRIMARY_TYPE, ONE));
         coll.createIndex(new BasicDBObject(KEY_LIFECYCLE_STATE, ONE));
+        // TODO configure these from somewhere else
+        coll.createIndex(new BasicDBObject("rend:renditionName", ONE));
+        coll.createIndex(new BasicDBObject("drv:subscriptions.enabled", ONE));
         if (!fulltextDisabled) {
             DBObject indexKeys = new BasicDBObject();
             indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);
