@@ -89,12 +89,6 @@
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
           </properties>
-          <widget>listing_task_comment</widget>
-        </column>
-        <column>
-          <properties mode="any">
-            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-          </properties>
           <widget>listing_task_dueDate</widget>
         </column>
         <column>
