@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
@@ -113,7 +112,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                 throw new NuxeoException(String.format("Cannot perform null query: check provider '%s'", getName()));
             }
 
-            currentPageDocuments = new ArrayList<DocumentModel>();
+            currentPageDocuments = new ArrayList<>();
 
             try {
 
@@ -228,8 +227,8 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
         } else {
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
-                throw new NuxeoException(String.format(
-                        "Cannot build query of provider '%s': " + "no search document model is set", getName()));
+                throw new NuxeoException(String.format("Cannot build query of provider '%s': "
+                        + "no search document model is set", getName()));
             }
             newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, def.getWhereClause(), getParameters(), sortArray);
         }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -62,10 +62,10 @@ public class Select2Common {
 
     public static final String OBSOLETE_FIELD_ID = "obsolete";
 
-    public static final List<String> SELECT2_USER_WIDGET_TYPE_LIST = new ArrayList<String>(Arrays.asList(
+    public static final List<String> SELECT2_USER_WIDGET_TYPE_LIST = new ArrayList<>(Arrays.asList(
             "singleUserSuggestion", "multipleUsersSuggestion"));
 
-    public static final List<String> SELECT2_DOC_WIDGET_TYPE_LIST = new ArrayList<String>(Arrays.asList(
+    public static final List<String> SELECT2_DOC_WIDGET_TYPE_LIST = new ArrayList<>(Arrays.asList(
             "singleDocumentSuggestion", "multipleDocumentsSuggestion"));
 
     public static final String USER_TYPE = "USER_TYPE";
@@ -86,11 +86,11 @@ public class Select2Common {
 
     public static final String WARN_MESSAGE_LABEL = "warn_message";
 
-    public static final List<String> SELECT2_DIR_WIDGET_TYPE_LIST = new ArrayList<String>(Arrays.asList(
+    public static final List<String> SELECT2_DIR_WIDGET_TYPE_LIST = new ArrayList<>(Arrays.asList(
             "suggestOneDirectory", "suggestManyDirectory"));
 
-    public static final List<String> SELECT2_DEFAULT_DOCUMENT_SCHEMAS = new ArrayList<String>(Arrays.asList(
-            "dublincore", "common"));
+    public static final List<String> SELECT2_DEFAULT_DOCUMENT_SCHEMAS = new ArrayList<>(Arrays.asList("dublincore",
+            "common"));
 
     public static final String DIR_DEFAULT_SUGGESTION_FORMATTER = "dirEntryDefaultFormatter";
 
@@ -230,7 +230,7 @@ public class Select2Common {
      * @since 5.8
      */
     public static String[] getSchemas(final String schemaNames) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         result.addAll(Select2Common.SELECT2_DEFAULT_DOCUMENT_SCHEMAS);
         String[] temp = null;
         if (schemaNames != null && !schemaNames.isEmpty()) {

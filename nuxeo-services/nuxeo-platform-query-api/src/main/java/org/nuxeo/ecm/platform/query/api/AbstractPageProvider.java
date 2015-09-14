@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -242,7 +242,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     @Override
     public List<Long> getPageSizeOptions() {
-        List<Long> res = new ArrayList<Long>();
+        List<Long> res = new ArrayList<>();
         if (pageSizeOptions != null) {
             res.addAll(pageSizeOptions);
         }
@@ -263,7 +263,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     @Override
     public List<SortInfo> getSortInfos() {
         // break reference
-        List<SortInfo> res = new ArrayList<SortInfo>();
+        List<SortInfo> res = new ArrayList<>();
         if (sortInfos != null) {
             res.addAll(sortInfos);
         }
@@ -314,7 +314,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     @Override
     public void setSortInfo(SortInfo sortInfo) {
-        List<SortInfo> newSortInfos = new ArrayList<SortInfo>();
+        List<SortInfo> newSortInfos = new ArrayList<>();
         if (sortInfo != null) {
             newSortInfos.add(sortInfo);
         }
@@ -331,7 +331,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                 // do nothing: sort on this column is not set
             } else if (getSortInfoIndex(sortColumn, !sortAscending) != -1) {
                 // change direction
-                List<SortInfo> newSortInfos = new ArrayList<SortInfo>();
+                List<SortInfo> newSortInfos = new ArrayList<>();
                 for (SortInfo sortInfo : getSortInfos()) {
                     if (sortColumn.equals(sortInfo.getSortColumn())) {
                         newSortInfos.add(new SortInfo(sortColumn, sortAscending));
@@ -677,15 +677,15 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     @Override
     public PageSelections<T> getCurrentSelectPage() {
         if (currentSelectPage == null) {
-            List<PageSelection<T>> entries = new ArrayList<PageSelection<T>>();
+            List<PageSelection<T>> entries = new ArrayList<>();
             List<T> currentPage = getCurrentPage();
-            currentSelectPage = new PageSelections<T>();
+            currentSelectPage = new PageSelections<>();
             currentSelectPage.setName(name);
             if (currentPage != null && !currentPage.isEmpty()) {
                 if (selectedEntries == null || selectedEntries.isEmpty()) {
                     // no selection at all
                     for (int i = 0; i < currentPage.size(); i++) {
-                        entries.add(new PageSelection<T>(currentPage.get(i), false));
+                        entries.add(new PageSelection<>(currentPage.get(i), false));
                     }
                 } else {
                     boolean allSelected = true;
@@ -695,7 +695,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                         if (!Boolean.TRUE.equals(selected)) {
                             allSelected = false;
                         }
-                        entries.add(new PageSelection<T>(entry, selected.booleanValue()));
+                        entries.add(new PageSelection<>(entry, selected.booleanValue()));
                     }
                     if (allSelected) {
                         currentSelectPage.setSelected(true);

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2007-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2007-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: Functions.java 28572 2008-01-08 14:40:44Z fguillaume $
  */
 
 package org.nuxeo.ecm.platform.ui.web.tag.fn;
@@ -185,7 +184,7 @@ public final class Functions {
         }
         StringBuffer result = new StringBuffer();
         result.append(StringUtils.join(collection, separator));
-        if (collection != null && collection.length > 0 && !StringUtils.isBlank(finalSeparator)) {
+        if (collection.length > 0 && !StringUtils.isBlank(finalSeparator)) {
             result.append(finalSeparator);
         }
         return result.toString();
@@ -315,7 +314,7 @@ public final class Functions {
     }
 
     /**
-     * @deprecated since 5.9.1, use {@link #dateFormatter()} instead.
+     * @deprecated since 5.9.1, use {@link #dateFormatter(String)} instead.
      */
     @Deprecated
     public static String dateFormater(String formatLength) {
@@ -497,7 +496,7 @@ public final class Functions {
     public static String printFormattedDuration(Object durationObj, Map<String, String> i18nLabels) {
 
         if (i18nLabels == null) {
-            i18nLabels = new HashMap<String, String>();
+            i18nLabels = new HashMap<>();
         }
         double duration = 0.0;
         if (durationObj instanceof Float) {
@@ -631,7 +630,7 @@ public final class Functions {
 
     public static String userUrl(String patternName, String username, String viewId, boolean newConversation,
             HttpServletRequest req) {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("username", username);
         DocumentView docView = new DocumentViewImpl(null, viewId, parameters);
 
@@ -659,7 +658,7 @@ public final class Functions {
     }
 
     public static List<Object> combineLists(List<? extends Object>... lists) {
-        List<Object> combined = new ArrayList<Object>();
+        List<Object> combined = new ArrayList<>();
         for (List<? extends Object> list : lists) {
             combined.addAll(list);
         }

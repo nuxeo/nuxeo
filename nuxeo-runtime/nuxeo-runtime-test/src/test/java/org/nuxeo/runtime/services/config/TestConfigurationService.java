@@ -34,6 +34,7 @@ public class TestConfigurationService extends NXRuntimeTestCase {
 
     ConfigurationService cs;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

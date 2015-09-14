@@ -96,8 +96,8 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Override
     public List<Action> getActionsList(String category, ActionContext context, boolean hideUnavailableAction) {
-        List<Action> list = new ArrayList<Action>();
-        List<String> categories = new ArrayList<String>();
+        List<Action> list = new ArrayList<>();
+        List<String> categories = new ArrayList<>();
         if (category != null) {
             String[] split = category.split(",|\\s");
             if (split != null) {
@@ -122,6 +122,7 @@ public class WebActionsBean implements WebActions, Serializable {
         return getActionsList(category, createActionContext(), Boolean.TRUE.equals(hideUnavailableAction));
     }
 
+    @Override
     public List<Action> getActionsList(String category, ActionContext context) {
         return getActionsList(category, context, true);
     }
@@ -131,18 +132,24 @@ public class WebActionsBean implements WebActions, Serializable {
         return getActionsList(category, createActionContext(document), hideUnavailableAction);
     }
 
+    @Override
     public List<Action> getActionsList(String category) {
         return getActionsList(category, createActionContext());
     }
 
+    @Deprecated
+    @Override
     public List<Action> getUnfiltredActionsList(String category, ActionContext context) {
         return getActionsList(category, context, false);
     }
 
+    @Deprecated
+    @Override
     public List<Action> getUnfiltredActionsList(String category) {
         return getUnfiltredActionsList(category, createActionContext());
     }
 
+    @Override
     public List<Action> getAllActions(String category) {
         return actionManager.getAllActions(category);
     }
@@ -245,6 +252,7 @@ public class WebActionsBean implements WebActions, Serializable {
         return null;
     }
 
+    @Override
     public boolean hasCurrentTabId(String category) {
         if (currentTabActions.getCurrentTabAction(category) == null) {
             return false;
@@ -285,6 +293,7 @@ public class WebActionsBean implements WebActions, Serializable {
 
     // tabs management specific to the DEFAULT_TABS_CATEGORY
 
+    @Override
     public void resetCurrentTab() {
         resetCurrentTabs(DEFAULT_TABS_CATEGORY);
     }
@@ -294,6 +303,7 @@ public class WebActionsBean implements WebActions, Serializable {
         subTabsActionsList = null;
     }
 
+    @Override
     @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, EventNames.LOCATION_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetTabList() {
@@ -302,6 +312,7 @@ public class WebActionsBean implements WebActions, Serializable {
         resetCurrentTab();
     }
 
+    @Override
     @Factory(value = "tabsActionsList", scope = EVENT)
     public List<Action> getTabsList() {
         if (tabsActionsList == null) {
@@ -310,6 +321,7 @@ public class WebActionsBean implements WebActions, Serializable {
         return tabsActionsList;
     }
 
+    @Override
     @Factory(value = "subTabsActionsList", scope = EVENT)
     public List<Action> getSubTabsList() {
         if (subTabsActionsList == null) {
@@ -322,15 +334,18 @@ public class WebActionsBean implements WebActions, Serializable {
         return subTabsActionsList;
     }
 
+    @Override
     @Factory(value = "currentTabAction", scope = EVENT)
     public Action getCurrentTabAction() {
         return getCurrentTabAction(DEFAULT_TABS_CATEGORY);
     }
 
+    @Override
     public void setCurrentTabAction(Action currentTabAction) {
         setCurrentTabAction(DEFAULT_TABS_CATEGORY, currentTabAction);
     }
 
+    @Override
     @Factory(value = "currentSubTabAction", scope = EVENT)
     public Action getCurrentSubTabAction() {
         Action action = getCurrentTabAction();
@@ -340,6 +355,7 @@ public class WebActionsBean implements WebActions, Serializable {
         return null;
     }
 
+    @Override
     public void setCurrentSubTabAction(Action tabAction) {
         if (tabAction != null) {
             String[] categories = tabAction.getCategories();
@@ -358,6 +374,7 @@ public class WebActionsBean implements WebActions, Serializable {
         }
     }
 
+    @Override
     public String getCurrentTabId() {
         Action currentTab = getCurrentTabAction();
         if (currentTab != null) {
@@ -366,6 +383,7 @@ public class WebActionsBean implements WebActions, Serializable {
         return null;
     }
 
+    @Override
     public void setCurrentTabId(String tabId) {
         if (tabId != null) {
             // do not reset tab when not set as this method
@@ -374,6 +392,7 @@ public class WebActionsBean implements WebActions, Serializable {
         }
     }
 
+    @Override
     public String getCurrentSubTabId() {
         Action currentSubTab = getCurrentSubTabAction();
         if (currentSubTab != null) {
@@ -382,6 +401,7 @@ public class WebActionsBean implements WebActions, Serializable {
         return null;
     }
 
+    @Override
     public void setCurrentSubTabId(String tabId) {
         if (tabId != null) {
             // do not reset tab when not set as this method
@@ -395,10 +415,12 @@ public class WebActionsBean implements WebActions, Serializable {
 
     // navigation API
 
+    @Override
     public String setCurrentTabAndNavigate(String currentTabActionId) {
         return setCurrentTabAndNavigate(navigationContext.getCurrentDocument(), currentTabActionId);
     }
 
+    @Override
     public String setCurrentTabAndNavigate(DocumentModel document, String currentTabActionId) {
         // navigate first because it will reset the tabs list
         String viewId = null;
@@ -416,11 +438,13 @@ public class WebActionsBean implements WebActions, Serializable {
 
     // deprecated API
 
+    @Override
     @Deprecated
     public List<Action> getSubViewActionsList() {
         return getActionsList("SUBVIEW_UPPER_LIST");
     }
 
+    @Override
     @Deprecated
     public void selectTabAction() {
         // if (tabAction != null) {
@@ -428,6 +452,7 @@ public class WebActionsBean implements WebActions, Serializable {
         // }
     }
 
+    @Override
     @Deprecated
     public String getCurrentLifeCycleState() {
         // only user of documentManager in this bean, look it up by hand
@@ -435,11 +460,13 @@ public class WebActionsBean implements WebActions, Serializable {
         return documentManager.getCurrentLifeCycleState(navigationContext.getCurrentDocument().getRef());
     }
 
+    @Override
     @Deprecated
     public void setTabsList(List<Action> tabsList) {
         tabsActionsList = tabsList;
     }
 
+    @Override
     @Deprecated
     public void setSubTabsList(List<Action> tabsList) {
         subTabsActionsList = tabsList;
@@ -458,11 +485,13 @@ public class WebActionsBean implements WebActions, Serializable {
         }
     }
 
+    @Override
     @Deprecated
     public void setCurrentTabAction(String currentTabActionId) {
         setCurrentTabId(currentTabActionId);
     }
 
+    @Override
     @Factory(value = "useAjaxTabs", scope = ScopeType.SESSION)
     public boolean useAjaxTabs() {
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
@@ -472,6 +501,7 @@ public class WebActionsBean implements WebActions, Serializable {
         return false;
     }
 
+    @Override
     @Factory(value = "canUseAjaxTabs", scope = ScopeType.SESSION)
     public boolean canUseAjaxTabs() {
         FacesContext context = FacesContext.getCurrentInstance();

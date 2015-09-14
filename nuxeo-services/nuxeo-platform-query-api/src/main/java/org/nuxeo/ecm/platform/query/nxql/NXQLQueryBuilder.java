@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -98,9 +98,7 @@ public class NXQLQueryBuilder {
             selectStatement = DEFAULT_SELECT_STATEMENT;
         }
         queryBuilder.append(selectStatement);
-        if (whereClause != null) {
-            queryBuilder.append(getQueryElement(model, whereClause, params));
-        }
+        queryBuilder.append(getQueryElement(model, whereClause, params));
         String sortClause = getSortClause(sortInfos);
         if (sortClause != null && sortClause.length() > 0) {
             queryBuilder.append(" ");
@@ -110,7 +108,7 @@ public class NXQLQueryBuilder {
     }
 
     public static String getQueryElement(DocumentModel model, WhereClauseDefinition whereClause, Object[] params) {
-        List<String> elements = new ArrayList<String>();
+        List<String> elements = new ArrayList<>();
         PredicateDefinition[] predicates = whereClause.getPredicates();
         if (predicates != null) {
             Escaper escaper = null;
@@ -185,7 +183,7 @@ public class NXQLQueryBuilder {
             query = query.replaceAll(REGEXP_EXCLUDE_QUOTE, StringUtils.EMPTY);
             Pattern p1 = Pattern.compile(REGEXP_NAMED_PARAMETER);
             Matcher m1 = p1.matcher(query);
-            List<String> matches = new ArrayList<String>();
+            List<String> matches = new ArrayList<>();
             while (m1.find()) {
                 matches.add(m1.group().substring(m1.group().indexOf(":") + 1));
             }
@@ -213,7 +211,7 @@ public class NXQLQueryBuilder {
                     if (quoteParameters) {
                         pattern = pattern.replaceAll(key, "'" + parameter + "'");
                     } else {
-                        pattern = pattern.replaceAll(key, parameter != null ? parameter.toString() : null);
+                        pattern = pattern.replaceAll(key, parameter.toString());
                     }
                 }
             }
@@ -267,7 +265,7 @@ public class NXQLQueryBuilder {
         if (addParentheses) {
             queryBuilder.append('(');
         }
-        List<String> result = new ArrayList<String>(listParam.size());
+        List<String> result = new ArrayList<>(listParam.size());
         for (Object param : listParam) {
             result.add(prepareStringLiteral(param.toString(), quoteParameters, escape));
         }
@@ -279,7 +277,7 @@ public class NXQLQueryBuilder {
 
     public static String replaceStringList(String pattern, List<?> listParams, boolean quoteParameters, boolean escape,
             String key) {
-        List<String> result = new ArrayList<String>(listParams.size());
+        List<String> result = new ArrayList<>(listParams.size());
         for (Object param : listParams) {
             result.add(prepareStringLiteral(param.toString(), quoteParameters, escape));
         }
@@ -471,14 +469,6 @@ public class NXQLQueryBuilder {
         }
     }
 
-    /**
-     * Prepares a statement for a fulltext field by converting FULLTEXT virtual operators to a syntax that the search
-     * syntax accepts.
-     *
-     * @param value
-     * @return the serialized statement
-     */
-
     public static final String DEFAULT_SPECIAL_CHARACTERS_REGEXP = "!#$%&'()+,./\\\\:-@{|}`^~";
 
     public static final String IGNORED_CHARS_KEY = "org.nuxeo.query.builder.ignored.chars";
@@ -518,6 +508,13 @@ public class NXQLQueryBuilder {
         return res.trim();
     }
 
+    /**
+     * Prepares a statement for a fulltext field by converting FULLTEXT virtual operators to a syntax that the search
+     * syntax accepts.
+     *
+     * @param value
+     * @return the serialized statement
+     */
     public static String serializeFullText(String value) {
         value = sanitizeFulltextInput(value);
         return "= " + NXQL.escapeString(value);
@@ -663,7 +660,7 @@ public class NXQLQueryBuilder {
         if (rawValue == null) {
             return null;
         }
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         if (rawValue instanceof ArrayList) {
             rawValue = ((ArrayList<Object>) rawValue).toArray();
         }
