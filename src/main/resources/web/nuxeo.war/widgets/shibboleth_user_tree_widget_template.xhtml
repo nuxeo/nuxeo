@@ -119,8 +119,8 @@
         <h:panelGroup> 
           <h:outputText value="#{messages['label.security.searchGroups']}" class="rightsAddLabel"/>  
           <br/>  
-          <rich:tree id="#{widget.id}_tree"> 
-            <rich:treeModelRecursiveAdaptor roots="#{shibbUserSuggestionWithGroupTree.treeRoot}" nodes="#{node.childrens}" var="node"> 
+          <rich:tree id="#{widget.id}_tree" var="node">
+            <rich:treeModelRecursiveAdaptor roots="#{shibbUserSuggestionWithGroupTree.treeRoot}" nodes="#{node.childrens}">
               <rich:treeNode iconLeaf="/icons/group.png"> 
                 <div id="docRefTarget:#{node.id}"> 
                   <span> 
