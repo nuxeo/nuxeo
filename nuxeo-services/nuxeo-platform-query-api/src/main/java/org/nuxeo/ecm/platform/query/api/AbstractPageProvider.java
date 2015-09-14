@@ -33,6 +33,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
+import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
@@ -1006,6 +1009,22 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             } catch (IOException e) {
                 log.error("Unable to Marshall SearchDocumentModel as JSON", e);
             }
+
+            ArrayList<String> searchFields = new ArrayList<String>();
+            for (DocumentPart part : searchDocumentModel.getParts()) {
+                for (Property prop : part.getChildren()) {
+                    if (prop.getValue()!=null && !"cvd".equals(prop.getSchema().getNamespace().prefix)) {
+                        if (prop.isList()) {
+                            if (((ListProperty)prop).size()>0) {
+                                searchFields.add(prop.getPath());
+                            }
+                        } else {
+                            searchFields.add(prop.getPath());
+                        }
+                    }
+                }
+            }
+            props.put("searchFields", searchFields);
         }
 
         if (entries != null) {

@@ -31,6 +31,8 @@
 					key="params" />
 				<extendedInfo expression="${message.properties.executionTimeMs}"
 					key="executionTimeMs" />
+				<extendedInfo expression="${message.properties.searchFields}"
+					key="searchFields" />										
 			</extendedInfos>
 		</event>
 	</extension>
