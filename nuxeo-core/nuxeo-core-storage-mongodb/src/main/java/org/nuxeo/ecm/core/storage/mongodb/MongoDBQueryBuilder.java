@@ -18,6 +18,10 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_GRANT;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
@@ -157,7 +161,7 @@ public class MongoDBQueryBuilder {
             for (OrderByExpr ob : orderByClause.elements) {
                 Reference ref = ob.reference;
                 boolean desc = ob.isDescending;
-                String field = walkReference(ref).field;
+                String field = walkReference(ref).queryField;
                 if (!orderBy.containsField(field)) {
                     Object value;
                     if (KEY_FULLTEXT_SCORE.equals(field)) {
@@ -199,7 +203,7 @@ public class MongoDBQueryBuilder {
             if (fieldInfo.hasWildcard) {
                 projectionHasWildcard = true;
             }
-            if (fieldInfo.prop.equals(NXQL.ECM_FULLTEXT_SCORE)) {
+            if (fieldInfo.projectionField.equals(KEY_FULLTEXT_SCORE)) {
                 projectionOnFulltextScore = true;
             }
         }
@@ -503,16 +507,16 @@ public class MongoDBQueryBuilder {
                 FieldInfoDBObject fidbo = (FieldInfoDBObject) ob;
                 FieldInfo fieldInfo = fidbo.fieldInfo;
                 if (fieldInfo.hasWildcard) {
-                    if (fieldInfo.propSuffix.contains("*")) {
+                    if (fieldInfo.fieldSuffix.contains("*")) {
                         throw new QueryParseException("Cannot use two wildcards: " + fieldInfo.prop);
                     }
                     // generate a key unique per correlation for this element match
-                    String wildcardNumber = fieldInfo.propWildcard;
+                    String wildcardNumber = fieldInfo.fieldWildcard;
                     if (wildcardNumber.isEmpty()) {
                         // negative to not collide with regular correlated wildcards
                         wildcardNumber = String.valueOf(-counter.incrementAndGet());
                     }
-                    String propBaseKey = fieldInfo.propPrefix + "/*" + wildcardNumber;
+                    String propBaseKey = fieldInfo.fieldPrefix + "/*" + wildcardNumber;
                     // store object for this key
                     List<FieldInfoDBObject> dbos = propBaseKeyToDBOs.get(propBaseKey);
                     if (dbos == null) {
@@ -520,7 +524,7 @@ public class MongoDBQueryBuilder {
                     }
                     dbos.add(fidbo);
                     // remember for which field base this is
-                    String fieldBase = fieldInfo.propPrefix.replace("/", ".");
+                    String fieldBase = fieldInfo.fieldPrefix.replace("/", ".");
                     propBaseKeyToFieldBase.put(propBaseKey, fieldBase);
                     // remove from list, will be re-added later through propBaseKeyToDBOs
                     it.remove();
@@ -539,8 +543,14 @@ public class MongoDBQueryBuilder {
                 for (FieldInfoDBObject fidbo : fidbos) {
                     // truncate field name to just the suffix
                     FieldInfo fieldInfo = fidbo.fieldInfo;
-                    Object value = fidbo.get(fieldInfo.field);
-                    String fieldSuffix = fieldInfo.propSuffix.replace("/", ".");
+                    Object value = fidbo.get(fieldInfo.queryField);
+                    String fieldSuffix = fieldInfo.fieldSuffix.replace("/", ".");
+                    if (elemMatch.containsField(fieldSuffix)) {
+                        // ecm:acl/*1/principal = 'bob' AND ecm:acl/*1/principal = 'steve'
+                        // cannot match
+                        // TODO do better
+                        value = "__NOSUCHVALUE__";
+                    }
                     elemMatch.put(fieldSuffix, value);
                 }
                 String fieldBase = propBaseKeyToFieldBase.get(propBaseKey);
@@ -830,15 +840,19 @@ public class MongoDBQueryBuilder {
         }
     }
 
-    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*)/\\*(\\d*)/(.*)");
+    /** Splits foo.*.bar into foo, *, bar and foo.*1.bar into foo, *1, bar */
+    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*)\\.\\*(\\d*)\\.(.*)");
 
     protected static class FieldInfo {
 
         /** NXQL property. */
         protected final String prop;
 
-        /** MongoDB field for query. */
-        protected final String field;
+        /** MongoDB field including wildcards (not used as-is). */
+        protected final String fullField;
+
+        /** MongoDB field for query. foo/0/bar -> foo.0.bar; foo / * / bar -> foo.bar */
+        protected final String queryField;
 
         /** MongoDB field for projection. */
         protected final String projectionField;
@@ -853,30 +867,31 @@ public class MongoDBQueryBuilder {
         protected final boolean hasWildcard;
 
         /** Prefix before the wildcard. */
-        protected final String propPrefix;
+        protected final String fieldPrefix;
 
         /** Wildcard part after * */
-        protected final String propWildcard;
+        protected final String fieldWildcard;
 
         /** Part after wildcard. */
-        protected final String propSuffix;
+        protected final String fieldSuffix;
 
-        protected FieldInfo(String prop, String field, String projectionField, boolean isBoolean,
+        protected FieldInfo(String prop, String fullField, String queryField, String projectionField, boolean isBoolean,
                 boolean isTrueOrNullBoolean) {
             this.prop = prop;
-            this.field = field;
+            this.fullField = fullField;
+            this.queryField = queryField;
             this.projectionField = projectionField;
             this.isBoolean = isBoolean;
             this.isTrueOrNullBoolean = isTrueOrNullBoolean;
-            Matcher m = WILDCARD_SPLIT.matcher(prop);
+            Matcher m = WILDCARD_SPLIT.matcher(fullField);
             if (m.matches()) {
                 hasWildcard = true;
-                propPrefix = m.group(1);
-                propWildcard = m.group(2);
-                propSuffix = m.group(3);
+                fieldPrefix = m.group(1);
+                fieldWildcard = m.group(2);
+                fieldSuffix = m.group(3);
             } else {
                 hasWildcard = false;
-                propPrefix = propWildcard = propSuffix = null;
+                fieldPrefix = fieldWildcard = fieldSuffix = null;
             }
         }
     }
@@ -888,7 +903,7 @@ public class MongoDBQueryBuilder {
         protected FieldInfo fieldInfo;
 
         public FieldInfoDBObject(FieldInfo fieldInfo, Object value) {
-            super(fieldInfo.field, value);
+            super(fieldInfo.queryField, value);
             this.fieldInfo = fieldInfo;
         }
     }
@@ -901,15 +916,47 @@ public class MongoDBQueryBuilder {
         prop = canonicalXPath(prop);
         List<String> split = new LinkedList<>(Arrays.asList(StringUtils.split(prop, '/')));
         if (prop.startsWith(NXQL.ECM_PREFIX)) {
-            String field = DBSSession.convToInternal(prop);
-            boolean isBoolean = DBSSession.isBoolean(field);
-            return new FieldInfo(prop, field, field, isBoolean, true); // TODO ACL
+            if (prop.startsWith(NXQL.ECM_ACL + "/")) {
+                if (split.size() != 3) {
+                    throw new QueryParseException("No such property: " + ref.name);
+                }
+                String wildcard = split.get(1);
+                if (NumberUtils.isDigits(wildcard)) {
+                    throw new QueryParseException("Cannot use explicit index in ACLs: " + ref.name);
+                }
+                String last = split.get(2);
+                String fullField;
+                String queryField;
+                String projectionField;
+                boolean isBoolean;
+                if (NXQL.ECM_ACL_NAME.equals(last)) {
+                    fullField = KEY_ACP + "." + KEY_ACL_NAME;
+                    queryField = KEY_ACP + "." + KEY_ACL_NAME;
+                    // TODO remember wildcard correlation
+                    isBoolean = false;
+                } else {
+                    String fieldLast = DBSSession.convToInternalAce(last);
+                    if (fieldLast == null) {
+                        throw new QueryParseException("No such property: " + ref.name);
+                    }
+                    isBoolean = KEY_ACE_GRANT.equals(fieldLast);
+                    fullField = KEY_ACP + "." + KEY_ACL + "." + wildcard + "." + fieldLast;
+                    queryField = KEY_ACP + "." + KEY_ACL + "." + fieldLast;
+                }
+                projectionField = queryField;
+                return new FieldInfo(prop, fullField, queryField, projectionField, isBoolean, false);
+            } else {
+                // simple field
+                String field = DBSSession.convToInternal(prop);
+                boolean isBoolean = DBSSession.isBoolean(field);
+                return new FieldInfo(prop, field, field, field, isBoolean, true);
+            }
         } else {
             String first = split.get(0);
             Field schemaField = schemaManager.getField(first);
             if (schemaField == null) {
                 if (first.indexOf(':') > -1) {
-                    throw new QueryParseException("No such property: " + prop);
+                    throw new QueryParseException("No such property: " + ref.name);
                 }
                 // check without prefix
                 // TODO precompute this in SchemaManagerImpl
@@ -926,7 +973,7 @@ public class MongoDBQueryBuilder {
                     }
                 }
                 if (schemaField == null) {
-                    throw new QueryParseException("No such property: " + prop);
+                    throw new QueryParseException("No such property: " + ref.name);
                 }
             }
             // canonical name
@@ -938,27 +985,29 @@ public class MongoDBQueryBuilder {
             boolean isBoolean = type instanceof BooleanType;
             // terminating wildcard for array -> just remove from query
             if (isArray && split.get(split.size() - 1).startsWith("*")) {
+                // TODO correlations?
                 split.remove(split.size() - 1);
             }
             // are there wildcards or list indexes?
-            List<String> fieldParts = new LinkedList<>(); // field for query
+            List<String> queryFieldParts = new LinkedList<>(); // field for query
             List<String> projectionFieldParts = new LinkedList<>(); // field for projection
             for (String part : split) {
                 if (!part.startsWith("*")) {
-                    fieldParts.add(part);
+                    queryFieldParts.add(part);
                     if (!NumberUtils.isDigits(part)) {
                         projectionFieldParts.add(part);
                     }
                 }
             }
-            String field = StringUtils.join(fieldParts, '.');
+            String fullField = StringUtils.join(split, '.');
+            String queryField = StringUtils.join(queryFieldParts, '.');
             String projectionField = StringUtils.join(projectionFieldParts, '.');
-            return new FieldInfo(prop, field, projectionField, isBoolean, false);
+            return new FieldInfo(prop, fullField, queryField, projectionField, isBoolean, false);
         }
     }
 
     protected boolean isMixinTypes(FieldInfo fieldInfo) {
-        return fieldInfo.field.equals(DBSDocument.KEY_MIXIN_TYPES);
+        return fieldInfo.queryField.equals(DBSDocument.KEY_MIXIN_TYPES);
     }
 
     protected Set<String> getMixinDocumentTypes(String mixin) {

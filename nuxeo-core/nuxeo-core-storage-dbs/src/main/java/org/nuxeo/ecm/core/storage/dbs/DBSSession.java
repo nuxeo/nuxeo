@@ -17,8 +17,12 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_BEGIN;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_CREATOR;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_END;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_GRANT;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_PERMISSION;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
@@ -1274,9 +1278,22 @@ public class DBSSession implements Session {
                 aceMap.put(KEY_ACE_USER, ace.getUsername());
                 aceMap.put(KEY_ACE_PERMISSION, ace.getPermission());
                 aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
-                aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
-                aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
-                aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
+                String creator = ace.getCreator();
+                if (creator != null) {
+                    aceMap.put(KEY_ACE_CREATOR, creator);
+                }
+                Calendar begin = ace.getBegin();
+                if (begin != null) {
+                    aceMap.put(KEY_ACE_BEGIN, begin);
+                }
+                Calendar end = ace.getEnd();
+                if (end != null) {
+                    aceMap.put(KEY_ACE_END, end);
+                }
+                Long status = ace.getLongStatus();
+                if (status != null) {
+                    aceMap.put(KEY_ACE_STATUS, status);
+                }
                 aceList.add(aceMap);
             }
             State aclMap = new State(2);
@@ -1305,7 +1322,12 @@ public class DBSSession implements Session {
                 String username = (String) aceMap.get(KEY_ACE_USER);
                 String permission = (String) aceMap.get(KEY_ACE_PERMISSION);
                 Boolean granted = (Boolean) aceMap.get(KEY_ACE_GRANT);
-                ACE ace = new ACE(username, permission, granted.booleanValue());
+                String creator = (String) aceMap.get(KEY_ACE_CREATOR);
+                Calendar begin = (Calendar) aceMap.get(KEY_ACE_BEGIN);
+                Calendar end = (Calendar) aceMap.get(KEY_ACE_END);
+                // status not read, ACE always computes it on read
+                ACE ace = ACE.builder(username, permission).isGranted(granted.booleanValue()).creator(creator).begin(
+                        begin).end(end).build();
                 acl.add(ace);
             }
             acp.addACL(acl);
@@ -1690,7 +1712,27 @@ public class DBSSession implements Session {
         case NXQL.ECM_TAG:
             throw new UnsupportedOperationException(name);
         }
-        throw new RuntimeException("Unknown property: " + name);
+        throw new QueryParseException("No such property: " + name);
+    }
+
+    public static String convToInternalAce(String name) {
+        switch (name) {
+        case NXQL.ECM_ACL_PRINCIPAL:
+            return KEY_ACE_USER;
+        case NXQL.ECM_ACL_PERMISSION:
+            return KEY_ACE_PERMISSION;
+        case NXQL.ECM_ACL_GRANT:
+            return KEY_ACE_GRANT;
+        case NXQL.ECM_ACL_CREATOR:
+            return KEY_ACE_CREATOR;
+        case NXQL.ECM_ACL_BEGIN:
+            return KEY_ACE_BEGIN;
+        case NXQL.ECM_ACL_END:
+            return KEY_ACE_END;
+        case NXQL.ECM_ACL_STATUS:
+            return KEY_ACE_STATUS;
+        }
+        return null;
     }
 
     public static String convToNXQL(String name) {
@@ -1751,7 +1793,7 @@ public class DBSSession implements Session {
         case KEY_FULLTEXT_JOBID:
             return null;
         }
-        throw new RuntimeException("Unknown property: " + name);
+        throw new QueryParseException("No such property: " + name);
     }
 
     public static boolean isArray(String name) {
