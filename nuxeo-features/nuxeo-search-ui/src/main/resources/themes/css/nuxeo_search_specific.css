@@ -10,6 +10,7 @@ author: lkemen@nuxeo.com
 
 .nxMainContainer .nxSearchForm {
   background-color: #fff;
+  box-shadow: 1px 0 1px 0 rgba(0, 0, 0, 0.18);
   font-size: .8em;
   padding: 4.7em 1.5em 5em;
   width: 19% }
