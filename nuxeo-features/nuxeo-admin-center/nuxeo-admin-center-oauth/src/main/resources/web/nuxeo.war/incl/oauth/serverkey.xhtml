@@ -5,23 +5,23 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core">
 
-<table class="dataOutput">
+<table class="dataTable">
   <tr>
-    <td>
-    <h:outputText value="#{messages['label.oauth.keyName']}" />
+    <td class="focusColumn">
+      <h:outputText value="#{messages['label.oauth.keyName']}" />
     </td>
     <td>
-    <h:outputText value="#{oauthServerKeyActions.keyName}" />
+      <h:outputText value="#{oauthServerKeyActions.keyName}" />
     </td>
   </tr>
   <tr>
-    <td>
-    <h:outputText value="#{messages['label.oauth.certificate']}" />
+    <td class="focusColumn">
+      <h:outputText value="#{messages['label.oauth.certificate']}" />
     </td>
     <td>
-    <div class="field"><pre>
-    <h:outputText value="#{oauthServerKeyActions.publicCertificate}" /></pre>
-    </div>
+      <div class="field"><pre>
+        <h:outputText value="#{oauthServerKeyActions.publicCertificate}" /></pre>
+      </div>
     </td>
   </tr>
 </table>

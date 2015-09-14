@@ -152,19 +152,19 @@
 
         <table class="dataTable">
           <tr>
-            <td class="labelColumn"><h:outputText
+            <td class="focusColumn"><h:outputText
                 value="#{messages['label.nuxeo.connect.contractStatus']}" /></td>
             <td id="contractStatus"><h:outputText
                 value="#{messages[connectStatus.status.contractStatusLabel]}" />
             </td>
           </tr>
           <tr>
-            <td class="labelColumn"><h:outputText
+            <td class="focusColumn"><h:outputText
                 value="#{messages['label.nuxeo.connect.contractEndDate']}" /></td>
             <td><h:outputText value="#{connectStatus.status.endDate}" styleClass="label label-warning"/></td>
           </tr>
           <tr>
-            <td class="labelColumn"><h:outputText
+            <td class="focusColumn"><h:outputText
                 value="#{messages['label.nuxeo.connect.refreshDate']}" /></td>
             <td><h:form>
                 <h:outputText value="#{connectStatus.status.refreshDate.time}">
@@ -179,17 +179,17 @@
               </h:form></td>
           </tr>
           <tr>
-            <td class="labelColumn"><h:outputText
+            <td class="focusColumn"><h:outputText
                 value="#{messages['label.nuxeo.connect.id.CLID']}" /></td>
             <td><h:outputText value="#{connectStatus.registredCLID}" /></td>
           </tr>
           <tr>
-            <td class="labelColumn"><h:outputText
+            <td class="focusColumn"><h:outputText
                 value="#{messages['label.nuxeo.connect.id.CTID']}" /></td>
             <td><h:outputText value="#{connectStatus.getCTID()}" /></td>
           </tr>
           <tr>
-            <td class="labelColumn"></td>
+            <td class="focusColumn"></td>
             <td><h:form>
                 <h:outputText
                   value="#{messages['label.nuxeo.connect.unregister']}" />

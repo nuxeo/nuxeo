@@ -85,10 +85,10 @@
 
 <h:form>
 
-<div style="float:right">
-<h:commandLink action="#{bean.refresh}">
-<h:outputText value="#{messages['command.refresh']}"/>
-</h:commandLink>
+<div class="floatR">
+  <h:commandLink action="#{bean.refresh}" styleClass="button">
+    <h:outputText value="#{messages['command.refresh']}"/>
+  </h:commandLink>
 </div>
 
 <table class="dataOutput">
