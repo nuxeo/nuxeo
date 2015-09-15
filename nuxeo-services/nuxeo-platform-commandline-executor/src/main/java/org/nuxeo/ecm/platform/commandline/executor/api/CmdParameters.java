@@ -34,13 +34,17 @@ public class CmdParameters implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected final Map<String, String> params;
+    protected final Map<String, String> params = new HashMap<>();
 
-    private final HashMap<String, CmdParameter> cmdParameters;
+    private final HashMap<String, CmdParameter> cmdParameters = new HashMap<>();
 
+    /**
+     * It is recommended to use the CmdParameters instance returned by
+     * {@link CommandLineExecutorService#getDefaultCmdParameters()} which is initialized with a few common parameters.
+     *
+     * @see CommandLineExecutorService#getDefaultCmdParameters()
+     */
     public CmdParameters() {
-        params = new HashMap<>();
-        cmdParameters = new HashMap<>();
     }
 
     public void addNamedParameter(String name, String value) {

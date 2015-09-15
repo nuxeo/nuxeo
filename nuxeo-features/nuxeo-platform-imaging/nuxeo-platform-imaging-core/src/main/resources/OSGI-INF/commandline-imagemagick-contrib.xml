@@ -8,62 +8,62 @@
 
     <command name="identify" enabled="true">
       <commandLine>identify</commandLine>
-      <parameterString>-quiet -ping -format '%m %w %h %z %[colorspace]' #{inputFilePath}[0]</parameterString>
-      <winParameterString>-quiet -ping -format "%m %w %h %z %[colorspace]" #{inputFilePath}[0]</winParameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -ping -format '%m %w %h %z %[colorspace]' #{inputFilePath}[0]</parameterString>
+      <winParameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -ping -format "%m %w %h %z %[colorspace]" #{inputFilePath}[0]</winParameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
     <command name="crop" enabled="true">
       <commandLine>stream</commandLine>
-      <parameterString>-quiet -map rgb -storage-type char -extract #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath}[0] - | convert -depth 8 -size #{tileWidth}x#{tileHeight} rgb:- #{outputFilePath}</parameterString>
-      <winParameterString>-quiet -map rgb -storage-type char -extract #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath}[0] - | convert -depth 8 -size #{tileWidth}x#{tileHeight} rgb:- #{outputFilePath}</winParameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -map rgb -storage-type char -extract #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath}[0] - | convert -depth 8 -size #{tileWidth}x#{tileHeight} rgb:- #{outputFilePath}</parameterString>
+      <winParameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -map rgb -storage-type char -extract #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath}[0] - | convert -depth 8 -size #{tileWidth}x#{tileHeight} rgb:- #{outputFilePath}</winParameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
     <command name="resizer" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-quiet -depth #{targetDepth} #{inputFilePath}[0] jpg:- | convert - -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</parameterString>
-      <winParameterString>-quiet -depth #{targetDepth} #{inputFilePath}[0] -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</winParameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -depth #{targetDepth} #{inputFilePath}[0] jpg:- | convert - -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</parameterString>
+      <winParameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -depth #{targetDepth} #{inputFilePath}[0] -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</winParameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
     <command name="gifResizer" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-quiet -depth #{targetDept h} #{inputFilePath}[0] -coalesce -resize #{targetWidth}x#{targetHeight} -deconstruct #{outputFilePath}</parameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -depth #{targetDept h} #{inputFilePath}[0] -coalesce -resize #{targetWidth}x#{targetHeight} -deconstruct #{outputFilePath}</parameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
     <command name="jpegResizer" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-quiet -background white -flatten -depth #{targetDepth} #{inputFilePath}[0] jpg:- | convert - -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</parameterString>
-      <winParameterString>-quiet -background white -flatten -depth #{targetDepth} #{inputFilePath}[0] -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</winParameterString>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -background white -flatten -depth #{targetDepth} #{inputFilePath}[0] jpg:- | convert - -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</parameterString>
+      <winParameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -background white -flatten -depth #{targetDepth} #{inputFilePath}[0] -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</winParameterString>
       <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
     <command name="rotate" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-quiet #{inputFilePath}[0] -rotate #{angle} #{outputFilePath}</parameterString>
-      <winParameterString>-quiet #{inputFilePath}[0] -rotate #{angle} #{outputFilePath}</winParameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet #{inputFilePath}[0] -rotate #{angle} #{outputFilePath}</parameterString>
+      <winParameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet #{inputFilePath}[0] -rotate #{angle} #{outputFilePath}</winParameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
     <command name="cropAndResize" enabled="true">
       <commandLine>stream</commandLine>
-      <parameterString>-quiet -map #{mapComponents} -storage-type char -extract #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath}[0] - | convert -depth 8 -size #{tileWidth}x#{tileHeight} -resize #{targetWidth}x#{targetHeight}! #{mapComponents}:- #{outputFilePath}</parameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -map #{mapComponents} -storage-type char -extract #{tileWidth}x#{tileHeight}+#{offsetX}+#{offsetY} #{inputFilePath}[0] - | convert -depth 8 -size #{tileWidth}x#{tileHeight} -resize #{targetWidth}x#{targetHeight}! #{mapComponents}:- #{outputFilePath}</parameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
     <command name="converter" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-quiet #{inputFilePath}[0] #{outputFilePath}</parameterString>
-      <winParameterString>-quiet #{inputFilePath}[0] #{outputFilePath}</winParameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet #{inputFilePath}[0] #{outputFilePath}</parameterString>
+      <winParameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet #{inputFilePath}[0] #{outputFilePath}</winParameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
     <command name="multiTiler" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-quiet #{inputFilePath}[0] -crop #{tileWidth}x#{tileHeight} +repage #{outputFilePath}</parameterString>
-      <installationDirective>You need to install ImageMagic.</installationDirective>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet #{inputFilePath}[0] -crop #{tileWidth}x#{tileHeight} +repage #{outputFilePath}</parameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
   </extension>

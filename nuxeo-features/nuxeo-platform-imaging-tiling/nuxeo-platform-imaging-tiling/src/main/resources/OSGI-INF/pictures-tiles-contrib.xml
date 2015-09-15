@@ -5,23 +5,21 @@
     Defines Env configuration for tiling service
   </documentation>
 
-  <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent"
-    point="environment">
-
-  <environment>
-    <parameters>
-      <!-- Gimp path variables -->
-      <parameter name="GimpExecutable">gimp</parameter>
-      <!-- ImageMagick path variables -->
-      <parameter name="IMConvert">convert</parameter>
-      <parameter name="IMIdentify">identify</parameter>
-      <parameter name="IMStream">stream</parameter>
-      <!-- global env variables -->
-      <parameter name="WorkingDirPath">/tmp/</parameter>
-      <!-- Max Disk cache usage in KB -->
-      <parameter name="MaxDiskSpaceUsageForCache">50000</parameter>
-      <!-- GC Interval in Minutes -->
-      <parameter name="GCInterval">10</parameter>
+  <extension target="org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent" point="environment">
+    <environment>
+      <parameters>
+        <!-- Gimp path variables -->
+        <parameter name="GimpExecutable">gimp</parameter>
+        <!-- ImageMagick path variables -->
+        <parameter name="IMConvert">convert</parameter>
+        <parameter name="IMIdentify">identify</parameter>
+        <parameter name="IMStream">stream</parameter>
+        <!-- global env variables -->
+        <parameter name="WorkingDirPath">${java.io.tmpdir}</parameter>
+        <!-- Max Disk cache usage in KB -->
+        <parameter name="MaxDiskSpaceUsageForCache">50000</parameter>
+        <!-- GC Interval in Minutes -->
+        <parameter name="GCInterval">10</parameter>
 
       <!-- Image dimensions threshold tiling activation -->
       <parameter name="WidthThreshold">1200</parameter>

@@ -30,6 +30,15 @@ public class EnvironmentDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * If {@code name} is null, then the environment is global.<br>
+     * Else the environment can be associated with a command ("command name") or with a tool ("command line").
+     *
+     * @since 7.4
+     */
+    @XNode("@name")
+    protected String name;
+
     @XNode("workingDirectory")
     protected String workingDirectory;
 
@@ -46,11 +55,28 @@ public class EnvironmentDescriptor implements Serializable {
         return workingDirectory;
     }
 
-    public void merge(EnvironmentDescriptor other) {
-        if (other.workingDirectory != null) {
-            workingDirectory = other.workingDirectory;
+    public EnvironmentDescriptor merge(EnvironmentDescriptor other) {
+        if (other != null) {
+            if (other.workingDirectory != null) {
+                workingDirectory = other.workingDirectory;
+            }
+            getParameters().putAll(other.getParameters());
         }
-        parameters.putAll(other.parameters);
+        return this;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public String getName() {
+        return name;
     }
 
 }

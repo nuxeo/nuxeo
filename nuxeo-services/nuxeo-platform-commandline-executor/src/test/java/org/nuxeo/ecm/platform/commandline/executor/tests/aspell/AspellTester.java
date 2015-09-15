@@ -24,33 +24,36 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.List;
 
-import org.junit.Before;
+import org.junit.Assume;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Test Aspell command line.
  */
-public class AspellTester extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@LocalDeploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-aspell-test-contribs.xml")
+public class AspellTester {
 
     private static final Log log = LogFactory.getLog(AspellTester.class);
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-aspell-test-contribs.xml");
-    }
 
     @Test
     public void testAspellExec() throws Exception {
@@ -58,13 +61,9 @@ public class AspellTester extends NXRuntimeTestCase {
         assertNotNull(cles);
 
         CommandAvailability ca = cles.getCommandAvailability("aspell");
+        Assume.assumeTrue("aspell is not available, skipping test", ca.isAvailable());
 
-        if (!ca.isAvailable()) {
-            log.warn("aspell is not available, skipping test");
-            return;
-        }
-
-        CmdParameters params = new CmdParameters();
+        CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("lang", "en_US");
         params.addNamedParameter("encoding", "utf-8");
 
@@ -97,7 +96,7 @@ public class AspellTester extends NXRuntimeTestCase {
 
     protected boolean checkOutput(List<String> lines) {
         for (String line : lines) {
-            if (line.contains("& teste 10 10")) {
+            if (line.contains("& teste") && line.contains("tested")) {
                 return true;
             }
         }

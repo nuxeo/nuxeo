@@ -20,6 +20,8 @@ package org.nuxeo.ecm.platform.commandline.executor.service;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.SystemUtils;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -45,7 +47,7 @@ public class CommandLineDescriptor implements Serializable {
     protected String command;
 
     @XNode("parameterString")
-    protected String parameterString;
+    protected String parameterString = "";
 
     @XNode("winParameterString")
     protected String winParameterString;
@@ -83,21 +85,11 @@ public class CommandLineDescriptor implements Serializable {
         return enabled;
     }
 
-    private static boolean isWindows() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().contains("windows");
-    }
-
     public String getCommand() {
-        if (winCommand == null) {
-            return command;
-        } else {
-            if (isWindows()) {
-                return winCommand;
-            } else {
-                return command;
-            }
+        if (SystemUtils.IS_OS_WINDOWS && winCommand != null) {
+            return winCommand;
         }
+        return command;
     }
 
     public String getInstallationDirective() {
@@ -121,7 +113,7 @@ public class CommandLineDescriptor implements Serializable {
     }
 
     public String getParametersString() {
-        if (isWindows() && winParameterString != null) {
+        if (SystemUtils.IS_OS_WINDOWS && winParameterString != null) {
             return winParameterString;
         }
         return parameterString;

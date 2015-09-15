@@ -20,11 +20,12 @@
 package org.nuxeo.ecm.platform.commandline.executor.service.executors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters.CmdParameter;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 import org.nuxeo.runtime.api.Framework;
@@ -56,8 +57,7 @@ public abstract class AbstractExecutor implements Executor {
      */
     public static String getParametersString(CommandLineDescriptor cmdDesc, CmdParameters params) {
         String paramString = cmdDesc.getParametersString();
-        Map<String, String> paramsValues = params.getParameters();
-        paramString = replaceParams(paramsValues, paramString);
+        paramString = replaceParams(params, paramString);
         return paramString;
     }
 
@@ -72,19 +72,20 @@ public abstract class AbstractExecutor implements Executor {
     public static String[] getParametersArray(CommandLineDescriptor cmdDesc, CmdParameters params) {
         List<String> res = new ArrayList<String>();
         String[] paramsArray = cmdDesc.getParametersString().split(" ");
-        Map<String, String> paramsValues = params.getParameters();
         for (String paramString : paramsArray) {
-            res.add(replaceParams(paramsValues, paramString));
+            res.add(replaceParams(params, paramString));
         }
         return res.toArray(new String[] {});
     }
 
-    private static String replaceParams(Map<String, String> paramsValues, String paramString) {
+    private static String replaceParams(CmdParameters params, String paramString) {
         CommandLineExecutorService commandLineExecutorService = Framework.getLocalService(CommandLineExecutorService.class);
+        HashMap<String, CmdParameter> paramsValues = params.getCmdParameters();
         for (String pname : paramsValues.keySet()) {
             String param = "#{" + pname + "}";
             if (paramString.contains(param)) {
-                String value = paramsValues.get(pname);
+                CmdParameters.CmdParameter cmdParameter = paramsValues.get(pname);
+                String value = cmdParameter.getValue();
                 commandLineExecutorService.checkParameter(value);
                 paramString = paramString.replace("#{" + pname + "}", String.format("\"%s\"", value));
             }

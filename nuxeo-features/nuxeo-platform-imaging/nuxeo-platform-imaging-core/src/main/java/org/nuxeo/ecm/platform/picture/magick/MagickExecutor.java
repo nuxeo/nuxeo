@@ -33,8 +33,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MagickExecutor {
 
-    private static final Log log = LogFactory.getLog(MagickExecutor.class);
-
+    /**
+     * @deprecated Since 7.4. Useless.
+     */
+    @Deprecated
     protected static ExecResult execCommand(String commandName, CmdParameters params) throws CommandNotAvailable {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         return cles.execCommand(commandName, params);

@@ -68,6 +68,7 @@ public class ExecResult implements Serializable {
         this.commandLine = commandLine;
         execTime = 0;
         output = null;
+        returnCode = 1;
         success = false;
         this.error = new CommandException(String.format("Error while running command: %s", commandLine), error);
     }

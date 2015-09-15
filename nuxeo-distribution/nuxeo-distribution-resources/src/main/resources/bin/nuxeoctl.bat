@@ -132,7 +132,8 @@ goto TMP_DIR_OK
 set NUXEO_TMP_DIR=%APPDATA%\Nuxeo\tmp
 if not exist "%NUXEO_TMP_DIR%" mkdir "%NUXEO_TMP_DIR%"
 :TMP_DIR_OK
-
+set TMP=%NUXEO_TMP_DIR%
+set TEMP=%NUXEO_TMP_DIR%
 
 REM ***** Check for JAVA_HOME environment variable *****
 if not "%JAVA_HOME%" == "" goto HAS_JAVA_HOME
