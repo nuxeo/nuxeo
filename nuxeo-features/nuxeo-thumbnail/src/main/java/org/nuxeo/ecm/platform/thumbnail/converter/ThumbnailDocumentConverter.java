@@ -71,13 +71,11 @@ public class ThumbnailDocumentConverter implements Converter {
                 inputFile = tmpFile;
             }
 
-            CmdParameters params = new CmdParameters();
+            CmdParameters params = cles.getDefaultCmdParameters();
             File outputFile = File.createTempFile("nuxeoImageTarget", "." + "png");
             String size = THUMBNAIL_DEFAULT_SIZE;
-            if (parameters != null) {
-                if (parameters.containsKey(THUMBNAIL_SIZE_PARAMETER_NAME)) {
-                    size = (String) parameters.get(THUMBNAIL_SIZE_PARAMETER_NAME);
-                }
+            if (parameters != null && parameters.containsKey(THUMBNAIL_SIZE_PARAMETER_NAME)) {
+                size = (String) parameters.get(THUMBNAIL_SIZE_PARAMETER_NAME);
             }
             params.addNamedParameter(THUMBNAIL_SIZE_PARAMETER_NAME, size);
             params.addNamedParameter("inputFilePath", inputFile);

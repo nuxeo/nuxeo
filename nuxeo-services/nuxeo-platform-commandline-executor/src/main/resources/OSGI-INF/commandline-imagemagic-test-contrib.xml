@@ -6,8 +6,8 @@
 
     <command name="identify" enabled="true">
       <commandLine>identify</commandLine>
-      <parameterString> -quiet -ping -format '%m %w %h' #{filePath}</parameterString>
-      <winParameterString> -quiet -ping -format "%m %w %h" #{filePath}</winParameterString>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -ping -format '%m %w %h' #{filePath}</parameterString>
+      <winParameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -ping -format "%m %w %h" #{filePath}</winParameterString>
       <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 

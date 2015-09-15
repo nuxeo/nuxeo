@@ -21,12 +21,15 @@ package org.nuxeo.ecm.platform.commandline.executor.tests;
 import java.io.File;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.AbstractExecutor;
@@ -66,7 +69,7 @@ public class TestCommands extends NXRuntimeTestCase {
         File textFile = File.createTempFile("testMe", "txt");
         String textFilePath = "/tmp/textMe.txt";
 
-        CmdParameters params = new CmdParameters();
+        CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("lang", "fr_FR");
         params.addNamedParameter("encoding", "utf-8");
 
@@ -81,7 +84,7 @@ public class TestCommands extends NXRuntimeTestCase {
         parsedParamString = AbstractExecutor.getParametersString(cmdDesc, params);
         // System.out.println("command:" + parsedParamString);
         assertTrue(parsedParamString.startsWith("-a --lang=\"fr_FR\" --encoding=\"utf-8\" -H --rem-sgml-check=alt < "));
-        assertTrue(parsedParamString.contains(System.getProperties().getProperty("java.io.tmpdir")));
+        assertTrue(parsedParamString.contains(System.getProperty("java.io.tmpdir")));
 
         String[] res = AbstractExecutor.getParametersArray(cmdDesc, params);
         assertEquals(7, res.length);
@@ -91,8 +94,36 @@ public class TestCommands extends NXRuntimeTestCase {
         assertEquals("-H", res[3]);
         assertEquals("--rem-sgml-check=alt", res[4]);
         assertEquals("<", res[5]);
-        assertTrue(res[6].startsWith("\"" + System.getProperties().getProperty("java.io.tmpdir")));
+        assertTrue(res[6].startsWith("\"" + System.getProperty("java.io.tmpdir")));
         assertTrue(res[6].contains("testMe"));
     }
 
+    @Test
+    public void testCmdEnvironment() throws Exception {
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        assertNotNull(cles);
+
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-env-test-contrib.xml");
+        List<String> cmds = cles.getRegistredCommands();
+        assertNotNull(cmds);
+        assertTrue(cmds.contains("env"));
+        assertTrue(cmds.contains("echo"));
+
+        ExecResult result = cles.execCommand("env", cles.getDefaultCmdParameters());
+        assertTrue(result.isSuccessful());
+        assertSame(0, result.getReturnCode());
+        boolean found = false;
+        for (String line : result.getOutput()) {
+            if (line.contains("TMP")) {
+                found = true;
+                assertTrue(line.contains(System.getProperty("java.io.tmpdir")));
+            }
+        }
+        assertTrue(found);
+
+        result = cles.execCommand("echo", cles.getDefaultCmdParameters());
+        assertTrue(result.isSuccessful());
+        assertSame(0, result.getReturnCode());
+        assertTrue(StringUtils.join(result.getOutput(), "").contains(System.getProperty("java.io.tmpdir")));
+    }
 }

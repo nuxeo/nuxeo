@@ -56,4 +56,10 @@ public interface CommandLineExecutorService {
      */
     void checkParameter(String parameter);
 
+    /**
+     * @return a new {@link CmdParameters} pre-filled with commonly used parameters such as the tmp dir.
+     * @since 7.4
+     */
+    CmdParameters getDefaultCmdParameters();
+
 }

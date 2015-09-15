@@ -55,13 +55,12 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
     protected Map<String, String> initParameters;
 
-    protected CommandLineExecutorService cls;
-
+    /**
+     * @deprecated Since 7.4. Useless.
+     */
+    @Deprecated
     protected CommandLineExecutorService getCommandLineService() {
-        if (cls == null) {
-            cls = Framework.getLocalService(CommandLineExecutorService.class);
-        }
-        return cls;
+        return Framework.getLocalService(CommandLineExecutorService.class);
     }
 
     public String getTmpDirectory(Map<String, Serializable> parameters) {
@@ -132,9 +131,9 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
     protected CmdReturn execOnBlob(String commandName, Map<String, Blob> blobParameters, Map<String, String> parameters)
             throws ConversionException {
-        CmdParameters params = new CmdParameters();
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CmdParameters params = cles.getDefaultCmdParameters();
         List<String> filesToDelete = new ArrayList<>();
-
         try {
             if (blobParameters != null) {
                 for (String blobParamName : blobParameters.keySet()) {
@@ -153,7 +152,8 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
                 }
             }
 
-            ExecResult result = getCommandLineService().execCommand(commandName, params);
+            ExecResult result = Framework.getLocalService(CommandLineExecutorService.class).execCommand(commandName,
+                    params);
             if (!result.isSuccessful()) {
                 throw result.getError();
             }
@@ -187,7 +187,8 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             return new ConverterCheckResult();
         }
 
-        CommandAvailability ca = getCommandLineService().getCommandAvailability(commandName);
+        CommandAvailability ca = Framework.getLocalService(CommandLineExecutorService.class).getCommandAvailability(
+                commandName);
 
         if (ca.isAvailable()) {
             return new ConverterCheckResult();

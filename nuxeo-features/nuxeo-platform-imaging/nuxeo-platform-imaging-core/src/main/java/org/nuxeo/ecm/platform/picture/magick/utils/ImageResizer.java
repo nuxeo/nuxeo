@@ -21,32 +21,34 @@ import java.io.File;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Unit command to extract a simplified view of a JPEG file using ImageMagick =
- * extract the needed picture information to reach the target definition level
+ * Unit command to extract a simplified view of a JPEG file using ImageMagick = extract the needed picture information
+ * to reach the target definition level
  *
  * @author tiry
  */
 public class ImageResizer extends MagickExecutor {
 
-    public static ImageInfo resize(String inputFile, String outputFile,
-            int targetWidth, int targetHeight, int targetDepth)
-            throws CommandNotAvailable, CommandException {
+    public static ImageInfo resize(String inputFile, String outputFile, int targetWidth, int targetHeight,
+            int targetDepth) throws CommandNotAvailable, CommandException {
         if (targetDepth == -1) {
             targetDepth = ImageIdentifier.getInfo(inputFile).getDepth();
         }
-        CmdParameters params = new CmdParameters();
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("targetWidth", String.valueOf(targetWidth));
         params.addNamedParameter("targetHeight", String.valueOf(targetHeight));
         params.addNamedParameter("inputFilePath", inputFile);
         params.addNamedParameter("outputFilePath", outputFile);
         params.addNamedParameter("targetDepth", String.valueOf(targetDepth));
-        ExecResult res = execCommand("resizer", params);
+        ExecResult res = cles.execCommand("resizer", params);
         if (!res.isSuccessful()) {
             throw res.getError();
         }

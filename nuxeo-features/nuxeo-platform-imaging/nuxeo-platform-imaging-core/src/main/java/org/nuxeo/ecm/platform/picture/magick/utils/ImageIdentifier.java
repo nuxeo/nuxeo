@@ -19,12 +19,15 @@ package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Unit command to extract information from a picture file.
@@ -52,11 +55,11 @@ public class ImageIdentifier extends MagickExecutor {
                 inputFilePath);
     }
 
-    public static ExecResult getIdentifyResult(String inputFilePath)
-            throws CommandNotAvailable {
-        CmdParameters params = new CmdParameters();
+    public static ExecResult getIdentifyResult(String inputFilePath) throws CommandNotAvailable {
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("inputFilePath", inputFilePath);
-        return execCommand("identify", params);
+        return cles.execCommand("identify", params);
     }
 
 }

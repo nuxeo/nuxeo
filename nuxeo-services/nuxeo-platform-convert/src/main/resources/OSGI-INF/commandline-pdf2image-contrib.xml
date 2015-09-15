@@ -7,7 +7,7 @@
 
     <command name="pdftoimage" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-quiet #{sourceFilePath} #{targetFilePath}</parameterString>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet #{sourceFilePath} #{targetFilePath}</parameterString>
       <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 

@@ -8,8 +8,8 @@
 
     <command name="toThumbnail" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-quiet -strip -thumbnail #{size} -background transparent -gravity center -format png -quality 75 #{inputFilePath}[0] #{outputFilePath}</parameterString>
-      <winParameterString>-quiet -strip -thumbnail #{size} -background transparent -gravity center -format png -quality 75 #{inputFilePath}[0] #{outputFilePath}</winParameterString>
+      <parameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -strip -thumbnail #{size} -background transparent -gravity center -format png -quality 75 #{inputFilePath}[0] #{outputFilePath}</parameterString>
+      <winParameterString>-define registry:temporary-path=#{java.io.tmpdir} -quiet -strip -thumbnail #{size} -background transparent -gravity center -format png -quality 75 #{inputFilePath}[0] #{outputFilePath}</winParameterString>
       <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 

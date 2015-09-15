@@ -17,16 +17,29 @@
 
   <extension-point name="environment">
     <documentation>
-    Extension point to contribute environment configuration.
-    Currently not used by commandLine service. Living example can be found in tilling services.
-    
-    Available options are:
-    - workingDirectory: the Folder when command should be executed. Default is the system
-    temporary folder.
+      Extension point to contribute environment configuration.
 
-    - parameters/parameter
-    
-    @author Thierry Delprat (td@nuxeo.com)
+      Available options are:
+      - name: comma-separated string attribute used as the environment parameters scope.
+      It can be empty to set environment parameters common to all commands, equal to a command name to set parameters
+      for that command only, or equal to a command line to set parameters common to all commands using that command line.
+      You can associate multiple commands using a comma as separator.
+
+      - workingDirectory: the Folder when command should be executed. Default is the system temporary folder.
+
+      - parameters/parameter
+
+      @author Thierry Delprat (td@nuxeo.com)
+
+      CommandLine contribution
+      example:
+      <code>
+        <environment name="aCommandName,aCommandLine">
+          <parameters>
+            <parameter name="SOME_VAR">some value</parameter>
+          </parameters>
+        </environment>
+      </code>
     </documentation>
     <object
       class="org.nuxeo.ecm.platform.commandline.executor.service.EnvironmentDescriptor" />

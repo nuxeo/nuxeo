@@ -20,9 +20,11 @@ package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Unit command to rotate a picture.
@@ -31,13 +33,14 @@ import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
  */
 public class ImageRotater extends MagickExecutor {
 
-    public static void rotate(String inputFile, String outputFile, int angle)
-            throws CommandNotAvailable, CommandException {
-        CmdParameters params = new CmdParameters();
+    public static void rotate(String inputFile, String outputFile, int angle) throws CommandNotAvailable,
+            CommandException {
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("angle", String.valueOf(angle));
         params.addNamedParameter("inputFilePath", inputFile);
         params.addNamedParameter("outputFilePath", outputFile);
-        ExecResult result = execCommand("rotate", params);
+        ExecResult result = cles.execCommand("rotate", params);
         if (!result.isSuccessful()) {
             throw result.getError();
         }

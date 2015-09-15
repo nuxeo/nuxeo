@@ -87,9 +87,8 @@ public class TestPDFToImage extends NXRuntimeTestCase {
         }
 
         CommandAvailability ca = cles.getCommandAvailability("pdftoimage");
-
         if (!ca.isAvailable()) {
-            log.warn("convert command is not available, skipping test");
+            log.warn("pdftoimage command is not available, skipping test");
             return;
         }
 

@@ -149,7 +149,12 @@ LOG_DIR=$(grep "^nuxeo.log.dir=" "$NUXEO_CONF" | cut -d= -f2-)
 TMP_DIR=$(grep "^nuxeo.tmp.dir=" "$NUXEO_CONF" | cut -d= -f2-)
 # Defaults
 : ${TMP_DIR:="$NUXEO_HOME"/tmp}
-
+# TMPDIR is the canonical Unix environment variable specified in various Unix and similar standards
+TMPDIR=$TMP_DIR
+TMP=$TMP_DIR
+TEMP=$TMP_DIR
+TEMPDIR=$TMP_DIR
+export TMP_DIR TMPDIR TMP TEMP TEMPDIR
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
 if [ "$cygwin" = "true" ]; then
