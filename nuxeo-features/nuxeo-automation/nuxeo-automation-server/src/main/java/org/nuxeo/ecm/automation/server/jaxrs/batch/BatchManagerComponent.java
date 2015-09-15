@@ -58,9 +58,15 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         ComplexTypeJSONDecoder.registerBlobDecoder(new JSONBatchBlobDecoder());
     }
 
+    @Override
+    public String initBatch() {
+        Batch batch = initBatchInternal(null, null);
+        return batch.getId();
+    }
+
     public String initBatch(String batchId, String contextName) {
         Batch batch = initBatchInternal(batchId, contextName);
-        return batch.id;
+        return batch.getId();
     }
 
     protected Batch initBatchInternal(String batchId, String contextName) {
