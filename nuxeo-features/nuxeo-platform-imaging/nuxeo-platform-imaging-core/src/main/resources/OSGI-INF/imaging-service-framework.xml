@@ -6,6 +6,7 @@
     @author Max Stepanov
   </documentation>
 
+  <require>org.nuxeo.ecm.core.operation.OperationServiceComponent</require>
   <implementation class="org.nuxeo.ecm.platform.picture.ImagingComponent" />
 
   <service>
