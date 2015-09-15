@@ -87,7 +87,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         }
         try {
             Blob newBlob = getTemporaryBlob(blob);
-            CmdParameters params = new CmdParameters();
+            CmdParameters params = commandLineService.getDefaultCmdParameters();
             params.addNamedParameter("inFilePath", newBlob.getFile(), true);
             params.addNamedParameter("tagList", getCommandTags(metadata), false);
             ExecResult er = commandLineService.execCommand(command, params);
@@ -119,7 +119,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         try {
             ExecResult er;
             try (CloseableFile source = getTemporaryFile(blob)) {
-                CmdParameters params = new CmdParameters();
+                CmdParameters params = commandLineService.getDefaultCmdParameters();
                 params.addNamedParameter("inFilePath", source.getFile(), true);
                 if (metadata != null) {
                     params.addNamedParameter("tagList", getCommandTags(metadata), false);
