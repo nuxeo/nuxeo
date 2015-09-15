@@ -149,7 +149,7 @@ public class ITSuggestBoxTest extends AbstractTest {
         SearchResultsSubPage searchResultsSubPage = searchPage.getSearchResultsSubPage();
         // Tests the results
         assertEquals("Administrator", quickSearchPage.textSearchElement.getAttribute("value"));
-        assertEquals("Quick search", searchResultsSubPage.searchViewTitle.getText());
+        assertEquals(SearchPage.QUICK_SEARCH, searchResultsSubPage.searchViewTitle.getText());
         List<WebElement> listResults = searchResultsSubPage.getListResults();
         assertTrue(listResults.size() > 0);
     }

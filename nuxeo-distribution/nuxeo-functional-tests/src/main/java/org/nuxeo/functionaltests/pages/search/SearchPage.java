@@ -36,7 +36,7 @@ public class SearchPage extends DocumentBasePage {
 
     public static final String NXQL_SEARCH = "NXQL Search";
 
-    public static final String QUICK_SEARCH = "Quick search";
+    public static final String QUICK_SEARCH = "Quick Search";
 
     private static final String S2_SEARCH_TYPE_ID = "s2id_nxl_gridSearchLayout:nxw_searchesSelector_form:nxw_searchesSelector";
 
