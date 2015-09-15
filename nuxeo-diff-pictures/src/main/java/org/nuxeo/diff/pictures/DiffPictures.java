@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -142,7 +141,7 @@ public class DiffPictures {
 
         commandLine = StringUtils.isBlank(inCommandLine) ? DEFAULT_COMMAND : inCommandLine;
 
-        clParameters = inParams == null ? new HashMap<String, Serializable>() : inParams;
+        clParameters = inParams == null ? new HashMap<>() : inParams;
 
         finalName = (String) clParameters.get("targetFileName");
         if (StringUtils.isBlank(finalName)) {
@@ -151,7 +150,8 @@ public class DiffPictures {
 
         CloseableFile cf1 = null, cf2 = null;
         String filePath1 = null, filePath2 = null;
-        CmdParameters params = new CmdParameters();
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
+        CmdParameters params = cles.getDefaultCmdParameters();
 
         try {
             cf1 = b1.getCloseableFile();
@@ -182,7 +182,6 @@ public class DiffPictures {
 
             params.addNamedParameter("targetFilePath", destFilePath);
 
-            CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
             ExecResult execResult = cles.execCommand(commandLine, params);
 
             // WARNING
@@ -245,8 +244,7 @@ public class DiffPictures {
         return StringUtils.isBlank(inValue) || inValue.toLowerCase().equals("default");
     }
 
-    public static String buildDiffHtml(DocumentModel leftDoc, DocumentModel rightDoc, String xpath) throws IOException,
-            URISyntaxException {
+    public static String buildDiffHtml(DocumentModel leftDoc, DocumentModel rightDoc, String xpath) throws IOException {
         String html = "";
         InputStream in = null;
         try {
