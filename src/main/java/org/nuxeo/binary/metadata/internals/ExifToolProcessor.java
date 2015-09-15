@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -43,8 +43,7 @@ import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
-import org.nuxeo.ecm.platform.commandline.executor.api
-        .CommandLineExecutorService;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
@@ -71,8 +70,8 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
     protected final CommandLineExecutorService commandLineService;
 
     public ExifToolProcessor() {
-        this.jacksonMapper = new ObjectMapper();
-        this.commandLineService = Framework.getLocalService(CommandLineExecutorService.class);
+        jacksonMapper = new ObjectMapper();
+        commandLineService = Framework.getLocalService(CommandLineExecutorService.class);
     }
 
     @Override
