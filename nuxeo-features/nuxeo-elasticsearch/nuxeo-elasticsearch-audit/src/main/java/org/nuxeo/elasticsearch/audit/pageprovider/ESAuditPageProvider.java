@@ -59,7 +59,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
 
     protected CoreSession getCoreSession() {
         Object session = getProperties().get(CORE_SESSION_PROPERTY);
-        if (session != null && CoreSession.class.isAssignableFrom(session.getClass())) {
+        if (session != null && session instanceof CoreSession) {
             return (CoreSession) session;
         }
         return null;
@@ -70,7 +70,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
 
         if (preprocess != null && "true".equalsIgnoreCase(preprocess.toString())) {
             CoreSession session = getCoreSession();
-            if (session != null ) {
+            if (session != null) {
                 CommentProcessorHelper cph = new CommentProcessorHelper(session);
                 cph.processComments(entries);
             }
@@ -107,9 +107,8 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
 
         long t0 = System.currentTimeMillis();
 
-
         CoreSession session = getCoreSession();
-        if (session!=null) {
+        if (session != null) {
             // send event for statistics !
             fireSearchEvent(session.getPrincipal(), searchBuilder.toString(), entries, System.currentTimeMillis() - t0);
         }

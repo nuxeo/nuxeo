@@ -79,7 +79,7 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
 
     protected List<Map<String, Serializable>> currentItems;
 
-    CoreSession getCoreSession() {
+    protected CoreSession getCoreSession() {
         CoreSession coreSession = null;
         Map<String, Serializable> props = getProperties();
         coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
@@ -189,12 +189,12 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
             }
         }
 
-        if (coreSession==null) {
+        if (coreSession == null) {
             coreSession = getCoreSession();
         }
 
         // send event for statistics !
-        fireSearchEvent(coreSession.getPrincipal(), query, currentItems, System.currentTimeMillis()-t0);
+        fireSearchEvent(coreSession.getPrincipal(), query, currentItems, System.currentTimeMillis() - t0);
 
         return currentItems;
     }

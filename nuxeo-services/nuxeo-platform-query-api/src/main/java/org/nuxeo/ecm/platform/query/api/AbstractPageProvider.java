@@ -63,7 +63,19 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * property used to enable globally tracking : property should contains the list of pageproviders to be tracked
+     *
+     * @since 7.4
+     */
     public static final String PAGEPROVIDER_TRACK_PROPERTY_NAME = "nuxeo.pageprovider.track";
+
+    /**
+     * lists schemas prefixes that should be skipped when extracting "search fields" (tracking) from searchDocumentModel
+     *
+     * @since 7.4
+     */
+    protected static final List<String> SKIPPED_SCHEMAS_FOR_SEARCHFIELD = Arrays.asList(new String[] { "cvd" });
 
     protected String name;
 
@@ -1011,11 +1023,14 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
             }
 
             ArrayList<String> searchFields = new ArrayList<String>();
+            // searchFields collects the non- null fields inside the SearchDocumentModel
+            // some schemas are skipped because they contains ContentView related info
             for (DocumentPart part : searchDocumentModel.getParts()) {
                 for (Property prop : part.getChildren()) {
-                    if (prop.getValue()!=null && !"cvd".equals(prop.getSchema().getNamespace().prefix)) {
+                    if (prop.getValue() != null
+                            && !SKIPPED_SCHEMAS_FOR_SEARCHFIELD.contains(prop.getSchema().getNamespace().prefix)) {
                         if (prop.isList()) {
-                            if (((ListProperty)prop).size()>0) {
+                            if (((ListProperty) prop).size() > 0) {
                                 searchFields.add(prop.getPath());
                             }
                         } else {
@@ -1047,7 +1062,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     /**
-     * Default (dummy) implementation that should be overriden by PageProvider actually dealing with Aggregates
+     * Default (dummy) implementation that should be overridden by PageProvider actually dealing with Aggregates
      *
      * @param eventProps
      * @since 7.4

@@ -94,17 +94,17 @@ public class AuditEntryJSONReader {
 
             JsonNode field = node.get(fieldName);
 
-            if (field.isObject()) {
-                info.put(fieldName, ExtendedInfoImpl.createExtendedInfo(objectMapper.writeValueAsString(field)));
-            } else if (field.isArray()) {
-                info.put(fieldName, ExtendedInfoImpl.createExtendedInfo(objectMapper.writeValueAsString(field)));
+            ExtendedInfoImpl ei = null;
+            if (field.isObject() || field.isArray()) {
+                ei = ExtendedInfoImpl.createExtendedInfo(objectMapper.writeValueAsString(field));
             } else {
                 if (field.isInt() || field.isLong()) {
-                    info.put(fieldName, ExtendedInfoImpl.createExtendedInfo(field.getLongValue()));
+                    ei = ExtendedInfoImpl.createExtendedInfo(field.getLongValue());
                 } else {
-                    info.put(fieldName, ExtendedInfoImpl.createExtendedInfo(field.getTextValue()));
+                    ei = ExtendedInfoImpl.createExtendedInfo(field.getTextValue());
                 }
             }
+            info.put(fieldName, ei);
         }
         return info;
     }

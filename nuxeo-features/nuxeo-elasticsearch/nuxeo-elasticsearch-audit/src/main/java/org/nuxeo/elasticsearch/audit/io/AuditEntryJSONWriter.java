@@ -54,15 +54,12 @@ public class AuditEntryJSONWriter {
             if (ei != null && ei.getSerializableValue() != null) {
                 Serializable value = ei.getSerializableValue();
                 if (value instanceof String) {
-                    String strValue = ((String) value).trim();
-                    if (strValue.startsWith("{") && strValue.endsWith("}")) {
-                        jg.writeFieldName(key);
-                        jg.writeRawValue(strValue);
-                    } else if (strValue.startsWith("[") && strValue.endsWith("]")) {
+                    String strValue = (String) value;
+                    if (isJsonContent(strValue)) {
                         jg.writeFieldName(key);
                         jg.writeRawValue(strValue);
                     } else {
-                        jg.writeStringField(key,strValue);
+                        jg.writeStringField(key, strValue);
                     }
                 } else {
                     try {
@@ -81,6 +78,23 @@ public class AuditEntryJSONWriter {
         jg.flush();
     }
 
+    /**
+     * Helper method used to determine if a String field is actually nested JSON
+     *
+     * @since 7.4
+     */
+    protected static boolean isJsonContent(String value) {
+        if (value != null) {
+            value = value.trim();
+            if (value.startsWith("{") && value.endsWith("}")) {
+                return true;
+            } else if (value.startsWith("[") && value.endsWith("]")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected static void writeField(JsonGenerator jg, String name, String value) throws IOException {
         if (value == null) {
             jg.writeNullField(name);
@@ -92,10 +106,11 @@ public class AuditEntryJSONWriter {
     static class MapEntrySerializer extends JsonSerializer<Map> {
 
         @Override
-        public void serialize(Map map, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+        public void serialize(Map map, JsonGenerator jgen, SerializerProvider provider) throws IOException,
+                JsonProcessingException {
             jgen.writeStartObject();
             for (Object key : map.keySet()) {
-                jgen.writeObjectField((String)key, map.get(key));
+                jgen.writeObjectField((String) key, map.get(key));
             }
             jgen.writeEndObject();
         }
