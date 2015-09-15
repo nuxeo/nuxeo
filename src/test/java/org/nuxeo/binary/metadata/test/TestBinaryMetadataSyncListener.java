@@ -43,7 +43,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core" })
+@Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.rendition.core",
+        "org.nuxeo.ecm.automation.core" })
 @LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml",
         "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
