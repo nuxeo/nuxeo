@@ -29,14 +29,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinary;
-import org.nuxeo.binary.metadata.internals.operations
-        .ReadMetadataFromBinaryToContext;
-import org.nuxeo.binary.metadata.internals.operations
-        .TriggerMetadataMappingOnDocument;
-import org.nuxeo.binary.metadata.internals.operations
-        .WriteMetadataToBinaryFromContext;
-import org.nuxeo.binary.metadata.internals.operations
-        .WriteMetadataToBinaryFromDocument;
+import org.nuxeo.binary.metadata.internals.operations.ReadMetadataFromBinaryToContext;
+import org.nuxeo.binary.metadata.internals.operations.TriggerMetadataMappingOnDocument;
+import org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromContext;
+import org.nuxeo.binary.metadata.internals.operations.WriteMetadataToBinaryFromDocument;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -140,7 +136,8 @@ public class TestBinaryMetadataOperation {
 
         operationContext.setInput(blob);
         operationContext.setCoreSession(session);
-        Blob newBlob = (Blob) automationService.run(operationContext, WriteMetadataToBinaryFromContext.ID, jpgParameters);
+        Blob newBlob = (Blob) automationService.run(operationContext, WriteMetadataToBinaryFromContext.ID,
+                jpgParameters);
 
         // Check the content
         blobProperties = binaryMetadataService.readMetadata(newBlob, false);
