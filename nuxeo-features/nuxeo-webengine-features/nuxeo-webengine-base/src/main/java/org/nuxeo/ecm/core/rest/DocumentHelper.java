@@ -45,7 +45,7 @@ public class DocumentHelper {
             FormData form = context.getForm();
             String type = form.getDocumentType();
             if (type == null) {
-                throw new WebException("Invalid argument exception. Nos doc type specified");
+                throw new WebException("Invalid argument exception. No doc type specified");
             }
             DocumentModel newDoc = session.createDocumentModel(type);
             form.fillDocument(newDoc);
