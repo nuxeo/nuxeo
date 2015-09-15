@@ -55,6 +55,7 @@ object NuxeoRest {
       .get(Constants.GAT_API_PATH + "/${url}")
       .headers(Headers.base)
       .header("Content-Type", "application/json")
+      .header("X-NXproperties", "*")
       .basicAuth("${user}", "${password}")
       .check(status.in(200))
   }
@@ -64,6 +65,7 @@ object NuxeoRest {
       .get(Constants.GAT_API_PATH + "/${parentPath}")
       .headers(Headers.base)
       .header("Content-Type", "application/json")
+      .header("X-NXproperties", "*")
       .basicAuth("${user}", "${password}")
       .check(status.in(200))
   }
