@@ -51,7 +51,10 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * Uses {@link URLConnection}.
  *
  * @author Antoine Taillefer
+ * @deprecated since 7.4
+ * @see {@link BatchUploadTest}
  */
+@Deprecated
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
 @Jetty(port = 18080)
