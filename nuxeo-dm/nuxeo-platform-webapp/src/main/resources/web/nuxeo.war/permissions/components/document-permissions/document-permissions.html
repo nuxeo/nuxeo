@@ -79,12 +79,10 @@
                 <h3>[[i18n('label.permissions.inherited', 'Permissions inherited from upper levels')]]</h3>
                 <template is="dom-if" if="{{hasInheritedAces}}">
                     <paper-button id="block" raised="true" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]</paper-button>
-                    <paper-tooltip for="block" fitToVisibleBounds="true" position="top" offset="35">[[i18n('label.permissions.blockTooltip', 'Only local permissions will then be applied. You and the administrators will be added to local permissions.')]]</paper-tooltip>
                 </template>
                 <template is="dom-if" if="{{!hasInheritedAces}}">
                     <span class="label label-warning">[[i18n('label.permissions.blocked', 'Blocked')]]</span>
                     <paper-button id="unblock" raised="true" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]</paper-button>
-                    <paper-tooltip for="unblock" fitToVisibleBounds="true" position="top" offset="35">[[i18n('label.permissions.unblockTooltip', 'Unblock tooltip')]]</paper-tooltip>
                 </template>
             </div>
             <div>
