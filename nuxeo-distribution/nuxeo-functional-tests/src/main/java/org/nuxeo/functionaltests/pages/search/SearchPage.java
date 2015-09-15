@@ -32,7 +32,7 @@ public class SearchPage extends DocumentBasePage {
 
     public static final String SEARCH_TAB = "SEARCH";
 
-    public static final String DEFAULT_SEARCH = "Default search";
+    public static final String DEFAULT_SEARCH = "Faceted Search";
 
     public static final String NXQL_SEARCH = "NXQL Search";
 
