@@ -55,7 +55,7 @@ public class ClientMarshallingTest {
         assertEquals("/default-domain", defaultDomain.getPath());
         assertEquals("", defaultDomain.getVersionLabel());
         assertEquals("Domain", defaultDomain.getType());
-        assertEquals("Default Domain", defaultDomain.getTitle());
+        assertEquals("Domain", defaultDomain.getTitle());
         assertEquals("project", defaultDomain.getState());
         assertEquals("default", defaultDomain.getRepository());
 

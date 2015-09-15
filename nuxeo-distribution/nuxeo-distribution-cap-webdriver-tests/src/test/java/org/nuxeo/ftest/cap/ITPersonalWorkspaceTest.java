@@ -53,7 +53,7 @@ public class ITPersonalWorkspaceTest extends AbstractTest {
         getTreeExplorer().findElement(By.linkText("Administrator"));
         getClipboard().findElement(By.linkText(docTitle)).click();
         // check that tree explorer does not show personal workspace anymore
-        getTreeExplorer().findElement(By.linkText("Default domain"));
+        getTreeExplorer().findElement(By.linkText("Domain"));
         checkMainTabs();
         // check we can still navigate to personal workspace
         page = page.switchToPersonalWorkspace();
@@ -79,7 +79,7 @@ public class ITPersonalWorkspaceTest extends AbstractTest {
         getTreeExplorer().findElement(By.linkText("Administrator"));
         page = page.switchToDocumentBase();
         // check tree shows document base
-        getTreeExplorer().findElement(By.linkText("Default domain"));
+        getTreeExplorer().findElement(By.linkText("Domain"));
     }
 
     protected WebElement getClipboard() {

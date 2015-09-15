@@ -23,7 +23,7 @@ public class DefaultRepositoryInit implements RepositoryInit {
     @Override
     public void populate(CoreSession session) {
         DocumentModel doc = session.createDocumentModel("/", "default-domain", "Domain");
-        doc.setProperty("dublincore", "title", "Default domain");
+        doc.setProperty("dublincore", "title", "Domain");
         doc = session.createDocument(doc);
 
         doc = session.createDocumentModel("/default-domain/", "workspaces", "WorkspaceRoot");

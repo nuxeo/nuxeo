@@ -27,7 +27,7 @@
         <ace principal="members" permission="Read" granted="true" />
       </acl>
       <template>
-        <templateItem typeName="Domain" id="default-domain" title="Default domain" />
+        <templateItem typeName="Domain" id="default-domain" title="Domain" />
       </template>
     </factoryBinding>
 

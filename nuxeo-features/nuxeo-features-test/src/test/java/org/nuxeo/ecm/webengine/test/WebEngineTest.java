@@ -57,7 +57,7 @@ public class WebEngineTest {
         assertTrue(login.isAuthenticated());
         AdminModulePage admin = home.getModulePage("Admin", AdminModulePage.class);
         // DocumentPage doc = admin.getDocumentPage("default-domain");
-        // Assert.assertEquals("Default domain", doc.getTitle());
+        // Assert.assertEquals("Domain", doc.getTitle());
     }
 
 }

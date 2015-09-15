@@ -45,7 +45,7 @@
 
     <!-- Post login and 'home' view handler -->
     <page view-id="/nxstartup.xhtml"
-      action="#{startupHelper.initDomainAndFindStartupPage('Default domain', 'view')}" />
+      action="#{startupHelper.initDomainAndFindStartupPage('Domain', 'view')}" />
 
     <!-- config for workspace management
       = give a description for each viewId

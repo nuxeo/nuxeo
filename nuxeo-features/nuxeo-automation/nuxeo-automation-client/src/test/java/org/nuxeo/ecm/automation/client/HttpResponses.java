@@ -44,7 +44,7 @@ public class HttpResponses {
     public static final String DOC_DEFAULT_DOMAIN = "{" + "  \"entity-type\":\"document\","
             + "  \"repository\":\"default\"," + "  \"uid\":\"6e4ee4b8-af3f-4fb4-ad31-1a0a88720dfb\","
             + "  \"path\":\"/default-domain\"," + "  \"type\":\"Domain\"," + "  \"state\":\"project\","
-            + "  \"versionLabel\":\"\"," + "  \"title\":\"Default Domain\","
+            + "  \"versionLabel\":\"\"," + "  \"title\":\"Domain\","
             + "  \"lastModified\":\"2013-05-16T11:35:00.56Z\"," + "  \"facets\":[\"SuperSpace\",\"Folderish\"],"
             + "  \"changeToken\":\"1368704100560\"," + "  \"contextParameters\":{}" + "}";
 
