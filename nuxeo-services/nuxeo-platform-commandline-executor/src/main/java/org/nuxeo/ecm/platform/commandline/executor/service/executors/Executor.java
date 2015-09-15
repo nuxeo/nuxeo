@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.commandline.executor.service.executors;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
+import org.nuxeo.ecm.platform.commandline.executor.service.EnvironmentDescriptor;
 
 /**
  * Interface for class that provide a way to execute a {@link CommandLineDescriptor}.
@@ -36,7 +37,21 @@ public interface Executor {
      * @param cmdDesc Command to run. Cannot be null.
      * @param params Parameters passed to the command. Cannot be null.
      * @return Result of the execution
+     * @deprecated Since 7.4. Prefer use of {@link #exec(CommandLineDescriptor, CmdParameters, EnvironmentDescriptor)}
      */
+    @Deprecated
     ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params);
+
+    /**
+     * No exception is thrown but the returned {@link ExecResult} contains everything about the command execution,
+     * including an optional exception.
+     *
+     * @param cmdDesc Command to run. Cannot be null.
+     * @param params Parameters passed to the command. Cannot be null.
+     * @param env Environment context (variable and working directory)
+     * @return Result of the execution
+     * @since 7.4
+     */
+    ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params, EnvironmentDescriptor env);
 
 }

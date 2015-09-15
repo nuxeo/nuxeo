@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.commandline.executor.service.executors;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +35,7 @@ import org.apache.commons.logging.impl.SimpleLog;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
+import org.nuxeo.ecm.platform.commandline.executor.service.EnvironmentDescriptor;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 
 /**
@@ -45,19 +47,29 @@ public class ShellExecutor extends AbstractExecutor {
 
     private static final Log log = LogFactory.getLog(ShellExecutor.class);
 
+    @Deprecated
     @Override
     public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params) {
+        return exec(cmdDesc, params, new EnvironmentDescriptor());
+    }
+
+    @Override
+    public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params, EnvironmentDescriptor env) {
         long t0 = System.currentTimeMillis();
         List<String> output = Collections.synchronizedList(new ArrayList<String>());
 
         String[] cmd;
-        if (SystemUtils.IS_OS_WINDOWS) {
-            String[] paramsArray = getParametersArray(cmdDesc, params);
-            cmd = new String[] { "cmd", "/C", cmdDesc.getCommand() };
-            cmd = (String[]) ArrayUtils.addAll(cmd, paramsArray);
-        } else {
-            String paramsString = getParametersString(cmdDesc, params);
-            cmd = new String[] { "/bin/sh", "-c", cmdDesc.getCommand() + " " + paramsString };
+        try {
+            if (SystemUtils.IS_OS_WINDOWS) {
+                String[] paramsArray = getParametersArray(cmdDesc, params);
+                cmd = new String[] { "cmd", "/C", cmdDesc.getCommand() };
+                cmd = (String[]) ArrayUtils.addAll(cmd, paramsArray);
+            } else {
+                String paramsString = getParametersString(cmdDesc, params);
+                cmd = new String[] { "/bin/sh", "-c", cmdDesc.getCommand() + " " + paramsString };
+            }
+        } catch (IllegalArgumentException e) {
+            return new ExecResult(cmdDesc.getCommand(), e);
         }
         String commandLine = StringUtils.join(cmd, " ");
 
@@ -66,7 +78,9 @@ public class ShellExecutor extends AbstractExecutor {
             if (log.isDebugEnabled()) {
                 log.debug("Running system command: " + commandLine);
             }
-            p1 = Runtime.getRuntime().exec(cmd);
+            ProcessBuilder processBuilder = new ProcessBuilder(cmd).directory(new File(env.getWorkingDirectory()));
+            processBuilder.environment().putAll(env.getParameters());
+            p1 = processBuilder.start();
         } catch (IOException e) {
             return new ExecResult(commandLine, e);
         }

@@ -21,8 +21,10 @@ package org.nuxeo.ecm.platform.commandline.executor.tests.imagemagic;
 import java.io.File;
 import java.util.List;
 
-import org.junit.Before;
+import org.junit.Assume;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.common.utils.FileUtils;
@@ -31,19 +33,20 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Test identify imagemagick commandline.
  */
-public class ImageMagickTester extends NXRuntimeTestCase {
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-imagemagic-test-contrib.xml");
-    }
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@LocalDeploy("org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-imagemagic-test-contrib.xml")
+public class ImageMagickTester {
 
     @Test
     public void testIdentifyExec() throws Exception {
@@ -51,14 +54,11 @@ public class ImageMagickTester extends NXRuntimeTestCase {
         assertNotNull(cles);
 
         CommandAvailability ca = cles.getCommandAvailability("identify");
-        if (!ca.isAvailable()) {
-            System.out.println("ImageMagick is not available, skipping test");
-            return;
-        }
+        Assume.assumeTrue("ImageMagick is not available, skipping test", ca.isAvailable());
 
         File img = FileUtils.getResourceFileFromContext("test.png");
 
-        CmdParameters params = new CmdParameters();
+        CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("filePath", img);
 
         ExecResult result = cles.execCommand("identify", params);

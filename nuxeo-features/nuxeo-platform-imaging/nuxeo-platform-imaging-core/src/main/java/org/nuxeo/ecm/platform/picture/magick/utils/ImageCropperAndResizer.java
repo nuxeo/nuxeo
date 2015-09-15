@@ -19,9 +19,11 @@ package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Unit command to crop and resize an picture.
@@ -47,7 +49,8 @@ public class ImageCropperAndResizer extends MagickExecutor {
             mapComponents = DEFAULT_MAP_COMPONENTS;
         }
 
-        CmdParameters params = new CmdParameters();
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
         params.addNamedParameter("tileHeight", String.valueOf(tileHeight));
         params.addNamedParameter("offsetX", String.valueOf(offsetX));
@@ -57,7 +60,7 @@ public class ImageCropperAndResizer extends MagickExecutor {
         params.addNamedParameter("inputFilePath", inputFilePath);
         params.addNamedParameter("outputFilePath", outputFilePath);
         params.addNamedParameter("mapComponents", mapComponents);
-        ExecResult res = execCommand("cropAndResize", params);
+        ExecResult res = cles.execCommand("cropAndResize", params);
         if (!res.isSuccessful()) {
             throw res.getError();
         }

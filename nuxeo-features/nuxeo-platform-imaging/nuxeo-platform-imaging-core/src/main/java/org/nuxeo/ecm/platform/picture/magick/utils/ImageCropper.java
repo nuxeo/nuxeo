@@ -19,9 +19,11 @@ package org.nuxeo.ecm.platform.picture.magick.utils;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.magick.MagickExecutor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Unit command to crop a picture using ImageMagick.
@@ -32,14 +34,15 @@ public class ImageCropper extends MagickExecutor {
 
     public static void crop(String inputFilePath, String outputFilePath, int tileWidth, int tileHeight, int offsetX,
             int offsetY) throws CommandNotAvailable, CommandException {
-        CmdParameters params = new CmdParameters();
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+        CmdParameters params = cles.getDefaultCmdParameters();
         params.addNamedParameter("tileWidth", String.valueOf(tileWidth));
         params.addNamedParameter("tileHeight", String.valueOf(tileHeight));
         params.addNamedParameter("offsetX", String.valueOf(offsetX));
         params.addNamedParameter("offsetY", String.valueOf(offsetY));
         params.addNamedParameter("inputFilePath", inputFilePath);
         params.addNamedParameter("outputFilePath", outputFilePath);
-        ExecResult res = execCommand("crop", params);
+        ExecResult res = cles.execCommand("crop", params);
         if (!res.isSuccessful()) {
             throw res.getError();
         }

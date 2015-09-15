@@ -28,6 +28,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTes
 import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTester;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.Executor;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.ShellExecutor;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -61,6 +63,8 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
     protected static Map<String, CommandLineDescriptor> commandDescriptors = new HashMap<>();
 
     protected static EnvironmentDescriptor env = new EnvironmentDescriptor();
+
+    protected static Map<String, EnvironmentDescriptor> envDescriptors = new HashMap<>();
 
     protected static Map<String, CommandTester> testers = new HashMap<>();
 
@@ -87,9 +91,20 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
         if (EP_ENV.equals(extensionPoint)) {
-            env.merge((EnvironmentDescriptor) contribution);
+            EnvironmentDescriptor desc = (EnvironmentDescriptor) contribution;
+            String name = desc.getName();
+            if (name == null) {
+                env.merge(desc);
+            } else {
+                for (String envName : name.split(",")) {
+                    if (envDescriptors.containsKey(envName)) {
+                        envDescriptors.get(envName).merge(desc);
+                    } else {
+                        envDescriptors.put(envName, desc);
+                    }
+                }
+            }
         } else if (EP_CMD.equals(extensionPoint)) {
             CommandLineDescriptor desc = (CommandLineDescriptor) contribution;
             String name = desc.getName();
@@ -154,7 +169,9 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
         CommandLineDescriptor cmdDesc = commandDescriptors.get(commandName);
         Executor executor = executors.get(cmdDesc.getExecutor());
-        return executor.exec(cmdDesc, params);
+        EnvironmentDescriptor environment = new EnvironmentDescriptor().merge(env).merge(
+                envDescriptors.getOrDefault(commandName, envDescriptors.get(cmdDesc.getCommand())));
+        return executor.exec(cmdDesc, params, environment);
     }
 
     @Override
@@ -221,6 +238,14 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     public static CommandLineDescriptor getCommandDescriptor(String commandName) {
         return commandDescriptors.get(commandName);
+    }
+
+    @Override
+    public CmdParameters getDefaultCmdParameters() {
+        CmdParameters params = new CmdParameters();
+        params.addNamedParameter("java.io.tmpdir", System.getProperty("java.io.tmpdir"));
+        params.addNamedParameter(Environment.NUXEO_TMP_DIR, Framework.getProperty(Environment.NUXEO_TMP_DIR));
+        return params;
     }
 
 }

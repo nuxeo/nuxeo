@@ -47,7 +47,7 @@ public class CommandLineDescriptor implements Serializable {
     protected String command;
 
     @XNode("parameterString")
-    protected String parameterString;
+    protected String parameterString = "";
 
     @XNode("winParameterString")
     protected String winParameterString;
@@ -86,15 +86,10 @@ public class CommandLineDescriptor implements Serializable {
     }
 
     public String getCommand() {
-        if (winCommand == null) {
-            return command;
-        } else {
-            if (SystemUtils.IS_OS_WINDOWS) {
-                return winCommand;
-            } else {
-                return command;
-            }
+        if (SystemUtils.IS_OS_WINDOWS && winCommand != null) {
+            return winCommand;
         }
+        return command;
     }
 
     public String getInstallationDirective() {
