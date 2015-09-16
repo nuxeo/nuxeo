@@ -9,7 +9,9 @@
 
 
  <c:if test="#{!systemInfo.isMultiRepo()}">
-  <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.repositoryinfo.2']}" />: <b> #{messages[systemInfo.listAvailableRepositories().get(0).label]}</b> </p>
+  <nxu:set var="repo" value="#{systemInfo.listAvailableRepositories().get(0)}">
+    <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.repositoryinfo.2']}" />: <b>#{messages[repo.label]} (#{repo.name})</b></p>
+  </nxu:set>
  </c:if>
 
  <a4j:outputPanel id="repoInfos" layout="block">
