@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
+import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -179,6 +180,16 @@ public interface BlobProvider {
      */
     default List<AppLink> getAppLinks(String user, ManagedBlob blob) throws IOException {
         return Collections.emptyList();
+    }
+
+    /**
+     * Gets the associated binary manager, if any.
+     *
+     * @return the binary manager, or {@code null}
+     * @since 7.4
+     */
+    default BinaryManager getBinaryManager() {
+        return null;
     }
 
 }

@@ -44,8 +44,8 @@ public class LazyBinary extends Binary {
                 throw new UnsupportedOperationException("Cannot find binary manager, no blob provider id");
             }
             BlobManager bm = Framework.getService(BlobManager.class);
-            BinaryBlobProvider bbp = (BinaryBlobProvider) bm.getBlobProvider(blobProviderId);
-            cbm = (CachingBinaryManager) bbp.getBinaryManager();
+            BlobProvider bp = bm.getBlobProvider(blobProviderId);
+            cbm = (CachingBinaryManager) bp.getBinaryManager();
         }
         return cbm;
     }

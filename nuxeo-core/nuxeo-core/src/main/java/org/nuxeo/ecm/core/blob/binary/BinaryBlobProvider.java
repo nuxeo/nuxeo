@@ -53,6 +53,7 @@ public class BinaryBlobProvider implements BlobProvider {
         binaryManager.close();
     }
 
+    @Override
     public BinaryManager getBinaryManager() {
         return binaryManager;
     }

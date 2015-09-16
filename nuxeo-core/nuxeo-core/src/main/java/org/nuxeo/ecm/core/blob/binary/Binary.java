@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -145,8 +146,8 @@ public class Binary implements Serializable {
      */
     protected File recomputeFile() {
         BlobManager bm = Framework.getService(BlobManager.class);
-        BinaryBlobProvider bbp = (BinaryBlobProvider) bm.getBlobProvider(blobProviderId);
-        return bbp.getBinaryManager().getBinary(digest).file;
+        BlobProvider bp = bm.getBlobProvider(blobProviderId);
+        return bp.getBinaryManager().getBinary(digest).file;
     }
 
 }

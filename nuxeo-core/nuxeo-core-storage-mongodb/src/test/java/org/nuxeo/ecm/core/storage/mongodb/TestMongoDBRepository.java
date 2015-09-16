@@ -81,7 +81,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
-import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
@@ -3566,7 +3565,7 @@ public class TestMongoDBRepository extends MongoDBRepositoryTestCase {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
 
         BlobProvider blobProvider = blobManager.getBlobProvider(session.getRepositoryName());
-        BinaryManager binaryManager = ((BinaryBlobProvider) blobProvider).getBinaryManager();
+        BinaryManager binaryManager = blobProvider.getBinaryManager();
         BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
         Repository repository = repositoryService.getRepository(session.getRepositoryName());
 

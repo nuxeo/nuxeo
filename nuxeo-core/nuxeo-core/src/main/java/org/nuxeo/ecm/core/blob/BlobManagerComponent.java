@@ -243,14 +243,6 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
         return getBlobProvider(providerId);
     }
 
-    protected BinaryManager getBinaryManager(String key, String repositoryName) {
-        BlobProvider blobProvider = getBlobProvider(key, repositoryName);
-        if (!(blobProvider instanceof BinaryBlobProvider)) {
-            return null;
-        }
-        return ((BinaryBlobProvider) blobProvider).getBinaryManager();
-    }
-
     /**
      * {@inheritDoc}
      * <p>
@@ -381,8 +373,8 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
         List<BinaryGarbageCollector> gcs = new LinkedList<>();
         for (String providerId : getBlobDispatcher().getBlobProviderIds()) {
             BlobProvider blobProvider = getBlobProvider(providerId);
-            if (blobProvider instanceof BinaryBlobProvider) {
-                BinaryManager binaryManager = ((BinaryBlobProvider) blobProvider).getBinaryManager();
+            BinaryManager binaryManager = blobProvider.getBinaryManager();
+            if (binaryManager != null) {
                 gcs.add(binaryManager.getGarbageCollector());
             }
         }
@@ -420,7 +412,8 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
     @Override
     public void markReferencedBinary(String key, String repositoryName) {
-        BinaryManager binaryManager = getBinaryManager(key, repositoryName);
+        BlobProvider blobProvider = getBlobProvider(key, repositoryName);
+        BinaryManager binaryManager = blobProvider.getBinaryManager();
         if (binaryManager != null) {
             int colon = key.indexOf(':');
             if (colon > 0) {
