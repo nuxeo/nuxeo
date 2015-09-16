@@ -243,6 +243,7 @@
         </pattern>
         <sort column="dc:title" ascending="true" />
       </coreQueryPageProvider>
+      <waitForExecution>true</waitForExecution>
     </contentView>
 
   </extension>

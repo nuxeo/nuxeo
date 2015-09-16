@@ -763,4 +763,27 @@ public class TestDefaultPageProviders {
         assertEquals(3, pp.getNumberOfPages());
     }
 
+    @Test
+    public void testWaitForExecutionPP() throws Exception {
+        ContentView cv = service.getContentView("NAMED_PAGE_PROVIDER");
+        assertNotNull(cv);
+        assertTrue(cv.isWaitForExecution());
+        assertFalse(cv.isExecuted());
+        PageProvider<?> pp = cv.getPageProvider();
+        assertNull(pp);
+        cv.refreshPageProvider();
+        assertTrue(cv.isWaitForExecution());
+        assertTrue(cv.isExecuted());
+        pp = cv.getPageProvider();
+        assertNotNull(pp);
+
+        List<?> p = pp.getCurrentPage();
+        assertNotNull(p);
+        assertEquals(5, p.size());
+        assertEquals(5, pp.getResultsCount());
+        assertEquals(0, pp.getPageSize());
+        assertEquals(1000, pp.getMaxPageSize());
+        assertEquals(1, pp.getNumberOfPages());
+    }
+
 }

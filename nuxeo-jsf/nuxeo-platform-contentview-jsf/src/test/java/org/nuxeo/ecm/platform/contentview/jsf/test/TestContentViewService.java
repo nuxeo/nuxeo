@@ -75,6 +75,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertEquals("/icons/document_listing_icon.png", contentView.getIconPath());
         assertEquals("CURRENT_SELECTION_LIST", contentView.getActionsCategories().get(0));
         assertEquals("simple", contentView.getPagination());
+        assertFalse(contentView.isWaitForExecution());
 
         List<ContentViewLayout> resultLayouts = contentView.getResultLayouts();
         assertNotNull(resultLayouts);
@@ -409,6 +410,8 @@ public class TestContentViewService extends NXRuntimeTestCase {
         assertNotNull(ppService.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_FETCH"));
         // NamedPP
         ContentView cv = service.getContentView("NAMED_PAGE_PROVIDER");
+        assertTrue(cv.isWaitForExecution());
+        cv.setExecuted(true);
         assertEquals("PP_NAME", cv.getPageProvider().getName());
         assertNotNull(ppService.getPageProviderDefinition("PP_NAME"));
         assertNull(ppService.getPageProviderDefinition("NAMED_PAGE_PROVIDER"));
@@ -418,6 +421,14 @@ public class TestContentViewService extends NXRuntimeTestCase {
     public void testInnerPageProviderOverride() throws Exception {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         ContentView cv = service.getContentView("NAMED_PAGE_PROVIDER");
+        assertTrue(cv.isWaitForExecution());
+        assertFalse(cv.isExecuted());
+        assertNull(cv.getPageProvider());
+        // trigger pp init
+        cv.setExecuted(true);
+        assertTrue(cv.isWaitForExecution());
+        assertTrue(cv.isExecuted());
+        assertNotNull(cv.getPageProvider());
         assertEquals("PP_NAME", cv.getPageProvider().getName());
         assertNotNull(cv.getPageProvider().getProperties());
         assertEquals(1, cv.getPageProvider().getProperties().size());
@@ -427,6 +438,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         // override page provider directly on page provider service
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-pageprovider-override-contrib.xml");
         cv = service.getContentView("NAMED_PAGE_PROVIDER");
+        cv.setExecuted(true);
         assertEquals("PP_NAME", cv.getPageProvider().getName());
         assertNotNull(cv.getPageProvider().getProperties());
         assertEquals(1, cv.getPageProvider().getProperties().size());
@@ -436,6 +448,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         // override again the complete content view definition
         deployContrib("org.nuxeo.ecm.platform.contentview.jsf.test", "test-contentview-override-contrib.xml");
         cv = service.getContentView("NAMED_PAGE_PROVIDER");
+        cv.setExecuted(true);
         assertEquals("PP_NAME_OVERRIDE", cv.getPageProvider().getName());
         assertNotNull(cv.getPageProvider().getProperties());
         assertEquals(1, cv.getPageProvider().getProperties().size());
