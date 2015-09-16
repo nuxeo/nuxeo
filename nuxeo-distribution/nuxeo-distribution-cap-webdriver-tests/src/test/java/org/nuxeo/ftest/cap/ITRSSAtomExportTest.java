@@ -44,14 +44,14 @@ public class ITRSSAtomExportTest extends AbstractTest {
 
         WebElement rssTitle = driver.findElement(By.id("feedTitleText"));
 
-        assertEquals("RSS feed for document 'Domain' and content view 'Document content'", rssTitle.getText());
+        assertEquals("RSS Feed for Document 'Domain' and Content View 'Document content'", rssTitle.getText());
 
         getWithoutErrorHandler(NUXEO_URL + "/nxpath/default/default-domain@atom?contentViewName=document_content",
                 AtomPage.class);
 
         WebElement atomTitle = driver.findElement(By.id("feedTitleText"));
 
-        assertEquals("ATOM feed for document 'Domain' and content view 'Document content'", atomTitle.getText());
+        assertEquals("ATOM Feed for Document 'Domain' and Content View 'Document content'", atomTitle.getText());
 
     }
 

@@ -45,14 +45,14 @@ public class ITUsersTest extends AbstractTest {
     @Test
     @Ignore
     public void testInviteUser() throws Exception {
-        
+
 
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         String username = TEST_USERNAME + System.currentTimeMillis();
-        
+
         usersTab.getUserCreatePage().inviteUser(username , username, "lastname1", "company1", "email1",
                 "members");
-        
+
         //Need few seconds to display the search view after
         UsersGroupsBasePage.findElementWithTimeout(By.id("usersListingView:searchForm:searchText"));
 
@@ -61,7 +61,7 @@ public class ITUsersTest extends AbstractTest {
         assertFalse(usersTab.isUserFound(username));
     }
 
-    
+
     @Test
     public void userCanChangeItsOwnPassword() throws Exception
     {
@@ -78,20 +78,20 @@ public class ITUsersTest extends AbstractTest {
             // assertEquals(page.getFeedbackMessage(), "User created");
             usersTab = page.getUsersTab(true);
         }
-        
+
         logout();
-        
+
         //Change the user password
         String newPassword = "newpwd";
         ProfilePage profilePage = login(username, TEST_PASSWORD).getUserHome().goToProfile();
-        profilePage.getChangePasswordUserTab().changePassword(newPassword);        
+        profilePage.getChangePasswordUserTab().changePassword(newPassword);
         logout();
-        
+
         login(username, newPassword).getUserHome().goToProfile();
         logout();
-        
+
     }
-    
+
     @Test
     public void testCreateViewDeleteUser() throws Exception {
         String firstname = "firstname";
@@ -117,7 +117,7 @@ public class ITUsersTest extends AbstractTest {
         // user already exists
         page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, "firstname1", "lastname1", "company1", "email1",
                 TEST_PASSWORD, "members");
-        assertEquals("User already exists", page.getErrorFeedbackMessage());
+        assertEquals("User already exists.", page.getErrorFeedbackMessage());
         // cancel
         usersTab = asPage(UserCreationFormPage.class).cancelCreation();
 

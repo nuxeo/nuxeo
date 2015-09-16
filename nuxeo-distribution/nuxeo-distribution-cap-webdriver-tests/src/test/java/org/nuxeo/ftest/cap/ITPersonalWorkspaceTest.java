@@ -61,7 +61,7 @@ public class ITPersonalWorkspaceTest extends AbstractTest {
         // check tree shows personal workspace
         getTreeExplorer().findElement(By.linkText("Administrator"));
         // clean up worklist
-        getClipboard().findElement(By.linkText("Clear list")).click();
+        getClipboard().findElement(By.linkText("Clear List")).click();
     }
 
     // second use case of NXP-9813

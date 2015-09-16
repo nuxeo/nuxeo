@@ -29,10 +29,10 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//img[@alt=\"Lock\"]")
     public WebElement lockButton;
 
-    @FindBy(xpath = "//img[@alt=\"Follow this document\"]")
+    @FindBy(xpath = "//img[@alt=\"Follow this Document\"]")
     public WebElement followButton;
 
-    @FindBy(xpath = "//img[@alt=\"Add to worklist\"]")
+    @FindBy(xpath = "//img[@alt=\"Add to Worklist\"]")
     public WebElement addToWorklistButton;
 
     @FindBy(id = "nxw_permalinkAction_form:nxw_documentActionsUpperButtons_permalinkAction_subview:nxw_documentActionsUpperButtons_permalinkAction_link")

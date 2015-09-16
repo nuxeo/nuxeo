@@ -50,7 +50,7 @@ public class ContentTabSubPage extends DocumentBasePage {
 
     private static final String DELETE_BUTTON_XPATH = "//input[@value=\"Delete\"]";
 
-    private static final String ADD_TO_WORKLIST_BUTTON_XPATH = "//input[@value=\"Add to worklist\"]";
+    private static final String ADD_TO_WORKLIST_BUTTON_XPATH = "//input[@value=\"Add to Worklist\"]";
 
     private static final String SELECT_ALL_BUTTON_XPATH = "//input[@type=\"checkbox\" and @title=\"Select all / deselect all\"]";
 

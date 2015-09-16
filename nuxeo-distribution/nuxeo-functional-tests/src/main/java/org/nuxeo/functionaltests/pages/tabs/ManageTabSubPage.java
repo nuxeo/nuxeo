@@ -27,7 +27,7 @@ import org.openqa.selenium.support.FindBys;
  */
 public class ManageTabSubPage extends DocumentBasePage {
 
-    @FindBys({ @FindBy(id = "nxw_documentSubTabs_panel"), @FindBy(linkText = "Access rights") })
+    @FindBys({ @FindBy(id = "nxw_documentSubTabs_panel"), @FindBy(linkText = "Access Rights") })
     WebElement accessRightsLink;
 
     @FindBy(linkText = "Trash")

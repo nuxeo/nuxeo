@@ -43,7 +43,7 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     @FindBy(linkText = "Edit")
     WebElement editLink;
 
-    @FindBy(linkText = "Change password")
+    @FindBy(linkText = "Change Password")
     WebElement changePasswordLink;
 
     @FindBy(xpath = "//div[@id='nxw_userCenterSubTabs_tab_content']//h1")
@@ -72,7 +72,7 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     }
 
     public UsersTabSubPage backToTheList() {
-        findElementWaitUntilEnabledAndClick(By.linkText("Back to the list"));
+        findElementWaitUntilEnabledAndClick(By.linkText("Back to the List"));
         return asPage(UsersTabSubPage.class);
     }
 

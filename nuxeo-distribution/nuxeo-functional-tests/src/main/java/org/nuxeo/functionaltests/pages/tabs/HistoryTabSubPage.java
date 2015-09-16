@@ -28,7 +28,7 @@ import org.openqa.selenium.support.FindBy;
 public class HistoryTabSubPage extends DocumentBasePage {
 
     @Required
-    @FindBy(linkText = "Archived versions")
+    @FindBy(linkText = "Archived Versions")
     WebElement archivedVersionsLink;
 
     public HistoryTabSubPage(WebDriver driver) {

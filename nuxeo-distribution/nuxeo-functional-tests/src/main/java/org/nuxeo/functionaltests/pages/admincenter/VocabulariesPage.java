@@ -34,7 +34,7 @@ import org.openqa.selenium.support.ui.Select;
 
 public class VocabulariesPage extends AdminCenterBasePage {
 
-    @FindBy(linkText = "Add a new vocabulary entry")
+    @FindBy(linkText = "Add a New Vocabulary Entry")
     @Required
     WebElement addNewEntryLink;
 

@@ -350,7 +350,7 @@ public class DocumentBasePage extends AbstractPage {
      */
     public DocumentBasePage switchToDocumentBase() {
         popupUserMenuActions();
-        driver.findElement(By.linkText("Back to document base")).click();
+        driver.findElement(By.linkText("Back to Document Base")).click();
         return asPage(DocumentBasePage.class);
     }
 

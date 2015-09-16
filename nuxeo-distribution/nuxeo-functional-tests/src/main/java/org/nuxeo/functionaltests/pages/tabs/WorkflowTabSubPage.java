@@ -50,7 +50,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
         Select2WidgetElement particpants = new Select2WidgetElement(driver,
                 driver.findElement(By.xpath("//div[contains(@id, 'nxw_participants_select2')]")), true);
         particpants.selectValue(username);
-        selectItemInDropDownMenu(reviewSelector, "Simple review");
+        selectItemInDropDownMenu(reviewSelector, "Simple Review");
     }
 
     /**
@@ -76,7 +76,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     public void showGraphView() {
-        findElementAndWaitUntilEnabled(By.linkText("Show graph view")).click();
+        findElementAndWaitUntilEnabled(By.linkText("Show Graph View")).click();
     }
 
     public void closeGraphView() {
@@ -84,7 +84,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     public void startWorkflow() {
-        findElementAndWaitUntilEnabled(By.xpath("//input[@value='Start the review']")).click();
+        findElementAndWaitUntilEnabled(By.xpath("//input[@value='Start the Review']")).click();
     }
 
     /**

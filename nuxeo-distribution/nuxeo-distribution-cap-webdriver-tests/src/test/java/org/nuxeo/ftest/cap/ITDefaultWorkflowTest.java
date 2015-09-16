@@ -108,7 +108,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         UserHomePage homePage = filePage.getUserHome();
         // check that jdoe_workflow has an open task on his tasks dashboard
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Validate the document"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Validate the Document"));
         workflowHomePage.processFirstTask();
         SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask("Test file");
         // check that the open task is displayed on the summary page
@@ -161,7 +161,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         UserHomePage homePage = filePage.getUserHome();
         // check that jdoe_workflow has an open task on his tasks dashboard
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
         workflowHomePage.processFirstTask();
         SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask("Test file");
         // check that the open task is displayed on the summary page
@@ -179,7 +179,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
         homePage = filePage.getUserHome();
         workflowHomePage = homePage.getWorkflowHomePage();
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
         workflowHomePage.processFirstTask();
         summaryTabPage = workflowHomePage.redirectToTask("Test file");
         // check that the open task is displayed on the summary page
@@ -199,7 +199,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
         homePage = filePage.getUserHome();
         workflowHomePage = homePage.getWorkflowHomePage();
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Consolidate the review"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Consolidate the Review"));
         workflowHomePage.processFirstTask();
         summaryTabPage = workflowHomePage.redirectToTask("Test file");
 
@@ -268,11 +268,11 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         UserHomePage homePage = filePage.getUserHome();
         // check that jdoe_workflow has an open task on his tasks dashboard
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
         workflowHomePage.processFirstTask();
 
         // reassign task to bree_workflow
-        workflowHomePage.reassignTask("Give your opinion", USER_BREE);
+        workflowHomePage.reassignTask("Give your Opinion", USER_BREE);
         // check that jdoe_workflow has no longer the task
         assertTrue(workflowHomePage.isTasksDashboardEmpty());
 
@@ -281,7 +281,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
         homePage = filePage.getUserHome();
         workflowHomePage = homePage.getWorkflowHomePage();
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
         workflowHomePage.processFirstTask();
 
         SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask("Test file");
@@ -299,19 +299,19 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
         homePage = filePage.getUserHome();
         workflowHomePage = homePage.getWorkflowHomePage();
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
         workflowHomePage.processFirstTask();
         // delegate his task to linnet_workflow
-        workflowHomePage.delegateTask("Give your opinion", USER_LINNET);
+        workflowHomePage.delegateTask("Give your Opinion", USER_LINNET);
         // test that jsmith_workflow can still see the task
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
 
         // login with linnet_workflow to process the task
         filePage = login(USER_LINNET, USER_LINNET);
 
         homePage = filePage.getUserHome();
         workflowHomePage = homePage.getWorkflowHomePage();
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your opinion"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
         workflowHomePage.processFirstTask();
         summaryTabPage = workflowHomePage.redirectToTask("Test file");
         // check that the open task is displayed on the summary page
@@ -331,7 +331,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
         homePage = filePage.getUserHome();
         workflowHomePage = homePage.getWorkflowHomePage();
-        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Consolidate the review"));
+        assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Consolidate the Review"));
         workflowHomePage.processFirstTask();
         summaryTabPage = workflowHomePage.redirectToTask("Test file");
 

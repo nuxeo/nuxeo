@@ -77,7 +77,7 @@ public class WorkflowHomePage extends AbstractPage {
      * @since 5.9.1
      */
     public void reassignTask(String taskDirective, String user) {
-        TaskFancyBoxFragment taskBox = showTaskFancyBox("Reassign task");
+        TaskFancyBoxFragment taskBox = showTaskFancyBox("Reassign Task");
         taskBox.waitForTextToBePresent(taskDirective);
         Select2WidgetElement particpants = new Select2WidgetElement(
                 driver,
@@ -91,7 +91,7 @@ public class WorkflowHomePage extends AbstractPage {
      * @since 5.9.1
      */
     public void delegateTask(String taskDirective, String user) {
-        TaskFancyBoxFragment taskBox = showTaskFancyBox("Delegate task");
+        TaskFancyBoxFragment taskBox = showTaskFancyBox("Delegate Task");
         taskBox.waitForTextToBePresent(taskDirective);
         Select2WidgetElement particpants = new Select2WidgetElement(
                 driver,

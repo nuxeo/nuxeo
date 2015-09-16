@@ -62,7 +62,7 @@ public class ITRichfileUploadTest extends AbstractTest {
 
     protected static final String RF_UPLOADED_FILE_ITEMS_XPATH = "//div[@class='rf-fu-lst']//a[@class='rf-fu-itm-lnk']";
 
-    protected static final String STORE_UPLOAD_FILE_INPUT_VALUE_XPATH = "//input[@value='Store uploaded files']";
+    protected static final String STORE_UPLOAD_FILE_INPUT_VALUE_XPATH = "//input[@value='Store Uploaded Files']";
 
     public final static String TEST_FILE_NAME = "test1";
 

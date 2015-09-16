@@ -65,7 +65,7 @@ public class ITFileUploadTest extends AbstractTest {
         assertNotNull(sumContent);
         String sumContentText = sumContent.getText();
         assertNotNull(sumContentText);
-        assertFalse(sumContentText.contains("Drop here"));
+        assertFalse(sumContentText.contains("Drop files here"));
         assertTrue(sumContentText.contains(uploadedFileName));
         EditTabSubPage editPage = fileDocumentBasePage.getEditTab();
         WebElement deleteChoice = Locator.findElementWithTimeout(By.id("document_edit:nxl_file:nxw_file:nxw_file_file:choicedelete"));
@@ -76,7 +76,7 @@ public class ITFileUploadTest extends AbstractTest {
         assertNotNull(sumContent);
         sumContentText = sumContent.getText();
         assertNotNull(sumContentText);
-        assertTrue(sumContentText.contains("Drop here"));
+        assertTrue(sumContentText.contains("Drop files here"));
         assertFalse(sumContentText.contains(uploadedFileName));
 
         // Clean up repository
@@ -110,7 +110,7 @@ public class ITFileUploadTest extends AbstractTest {
                 ".txt", "Webdriver test file content.");
 
         // Check validation error
-        assertEquals("Value is required", creationPageAfterError.getTitleMessage());
+        assertEquals("Value is required.", creationPageAfterError.getTitleMessage());
 
         // Check file is still there and filename is present
         assertEquals("tempKeep", creationPageAfterError.getSelectedOption());

@@ -380,7 +380,7 @@ public class ITSafeEditTest extends AbstractTest {
 
     private void triggerSafeEditResotre() {
         // Let's restore
-        WebElement confirmRestoreYes = driver.findElement(By.linkText("Use draft"));
+        WebElement confirmRestoreYes = driver.findElement(By.linkText("Use Draft"));
         // The following call randomly times out.
         // confirmRestoreYes.click();
         // We just want to trigger the js event handler attached to

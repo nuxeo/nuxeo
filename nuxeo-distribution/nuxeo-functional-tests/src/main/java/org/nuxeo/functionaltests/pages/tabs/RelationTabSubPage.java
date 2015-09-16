@@ -55,7 +55,7 @@ public class RelationTabSubPage extends DocumentBasePage {
     private static final String SELECT2_DOCUMENT_XPATH = "//*[@id='s2id_createForm:nxw_singleDocumentSuggestion_2_select2']";
 
     @Required
-    @FindBy(linkText = "Add a new relation")
+    @FindBy(linkText = "Add a New Relation")
     WebElement addANewRelationLink;
 
     @FindBy(id = "createForm")

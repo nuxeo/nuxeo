@@ -29,7 +29,7 @@ import org.openqa.selenium.support.FindBy;
 public class WorkspacesContentTabSubPage extends ContentTabSubPage {
 
     @Required
-    @FindBy(linkText = "Create a new workspace")
+    @FindBy(id = "nxw_newWorkspace_form:nxw_newWorkspace")
     WebElement createNewWorkspaceLink;
 
     public WorkspacesContentTabSubPage(WebDriver driver) {
