@@ -75,6 +75,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Proxy;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -671,18 +672,21 @@ public abstract class AbstractTest {
         Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
                 POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
 
-        return wait.until(new Function<T, T>() {
-            @Override
-            public T apply(T page) {
-                String notLoaded = anyElementNotLoaded(elements, fieldNames);
-                if (notLoaded == null) {
-                    return page;
-                } else {
-                    log.debug("not loaded:" + notLoaded);
-                    return null;
+        try {
+            return wait.until(new Function<T, T>() {
+                @Override
+                public T apply(T page) {
+                    String notLoaded = anyElementNotLoaded(elements, fieldNames);
+                    if (notLoaded == null) {
+                        return page;
+                    } else {
+                        return null;
+                    }
                 }
-            }
-        });
+            });
+        } catch (TimeoutException e) {
+            throw new TimeoutException("not loaded: " + anyElementNotLoaded(elements, fieldNames), e);
+        }
     }
 
     protected static String anyElementNotLoaded(List<WrapsElement> proxies, List<String> fieldNames) {
