@@ -148,7 +148,7 @@ public class ValidationPage {
     public void checkLayoutInvalid() {
         LayoutElement l = getLayout();
         assertEquals("", l.getWidget("nxw_title").getMessageValue());
-        assertEquals("'invalid string' is not a number. Example: 99", l.getWidget("nxw_groupCode").getMessageValue());
+        assertEquals("'invalid string' is not a number. Example: 99.", l.getWidget("nxw_groupCode").getMessageValue());
         assertEquals("This value must match the format \".*\\S.*\".",
                 l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
         assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",

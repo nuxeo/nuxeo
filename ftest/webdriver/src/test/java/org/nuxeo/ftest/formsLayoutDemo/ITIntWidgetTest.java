@@ -40,7 +40,7 @@ public class ITIntWidgetTest extends AbstractWidgetPageTest {
         getEditWidget().setInputValue("test");
         submitDemo();
         checkValueRequired(false);
-        assertEquals("'test' is not a number. Example: 99", getEditWidgetMessage());
+        assertEquals("'test' is not a number. Example: 99.", getEditWidgetMessage());
         getEditWidget().setInputValue("3");
         submitDemo();
         checkValueRequired(false);

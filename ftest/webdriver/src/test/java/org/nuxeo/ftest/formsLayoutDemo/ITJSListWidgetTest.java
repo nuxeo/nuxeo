@@ -156,7 +156,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget = page.submitComplexListWidget();
 
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
-        assertEquals("'lala' is not a number. Example: 99",
+        assertEquals("'lala' is not a number. Example: 99.",
                 listWidget.getSubWidgetMessageValue("nxw_intComplexItem", 0));
 
         listWidget.getSubWidget("nxw_intComplexItem", 0).setInputValue("3");
