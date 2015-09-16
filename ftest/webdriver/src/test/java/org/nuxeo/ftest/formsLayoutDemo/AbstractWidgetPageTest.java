@@ -26,6 +26,7 @@ import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.forms.WidgetElement;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.HomePage;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.Page;
+import org.nuxeo.functionaltests.formsLayoutDemo.page.ValidationPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -33,6 +34,8 @@ import org.openqa.selenium.WebElement;
  * @since 7.4
  */
 public abstract class AbstractWidgetPageTest extends AbstractTest {
+
+    protected final static String VALUE_REQUIRED = ValidationPage.VALUE_REQUIRED;
 
     protected String pageId;
 
@@ -81,9 +84,9 @@ public abstract class AbstractWidgetPageTest extends AbstractTest {
 
     protected void checkValueRequired(boolean present) {
         if (present) {
-            assertEquals("Value is required", getEditWidgetMessage());
+            assertEquals(VALUE_REQUIRED, getEditWidgetMessage());
         } else {
-            assertNotEquals("Value is required", getEditWidgetMessage());
+            assertNotEquals(VALUE_REQUIRED, getEditWidgetMessage());
         }
 
     }

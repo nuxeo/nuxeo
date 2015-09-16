@@ -38,7 +38,7 @@ public class ITActionsWidgetTest extends AbstractWidgetPageTest {
     public void testWidget() {
         navigateTo(pageId);
         checkNoError();
-        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
 
         String idPrefix = "actionsWidgetLayout_view_form:nxl_actionsWidgetLayout_1:";
         assertNotNull(driver.findElement(By.xpath("//a[@id='" + idPrefix + "nxw_actionsWidget_1_layoutDemoLink']/span")));
@@ -52,14 +52,14 @@ public class ITActionsWidgetTest extends AbstractWidgetPageTest {
         doSubmitDemo();
 
         assertEquals(
-                "Value is required",
+                VALUE_REQUIRED,
                 driver.findElement(
                         By.id("actionsWidgetLayout_edit_form:nxl_actionsWidgetLayout:nxw_actionTextWidget_message")).getText());
         driver.findElement(By.id("actionsWidgetLayout_edit_form:nxl_actionsWidgetLayout:nxw_actionTextWidget")).sendKeys(
                 "test");
         doSubmitDemo();
 
-        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
         assertNotNull(driver.findElement(By.xpath("//a[@id='" + idPrefix + "nxw_actionsWidget_1_layoutDemoLink']/span")));
         assertNotNull(driver.findElement(By.xpath("//div[@id='" + idPrefix + "nxw_actionsWidget_1_panel']/div/a/span")));
         assertNotNull(driver.findElement(By.xpath("//a[@id='" + idPrefix

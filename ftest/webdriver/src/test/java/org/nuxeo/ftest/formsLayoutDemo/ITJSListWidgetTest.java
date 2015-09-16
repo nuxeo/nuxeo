@@ -32,6 +32,7 @@ import org.nuxeo.functionaltests.forms.RichEditorElement;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.forms.WidgetElement;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.HomePage;
+import org.nuxeo.functionaltests.formsLayoutDemo.page.ValidationPage;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.standardWidgets.ListStandardWidgetPage;
 import org.openqa.selenium.support.ui.Select;
 
@@ -52,7 +53,7 @@ public class ITJSListWidgetTest extends AbstractTest {
 
     private final static String S2_PREFIX = "s2id_";
 
-    private final static String VALUE_REQUIRED = "Value is required";
+    private final static String VALUE_REQUIRED = ValidationPage.VALUE_REQUIRED;
 
     ListStandardWidgetPage page;
 

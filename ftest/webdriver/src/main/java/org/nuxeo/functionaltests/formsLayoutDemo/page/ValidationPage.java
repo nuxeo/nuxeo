@@ -34,6 +34,11 @@ import org.openqa.selenium.support.FindBy;
  */
 public class ValidationPage {
 
+    /**
+     * @since 7.4
+     */
+    public final static String VALUE_REQUIRED = "Value is required.";
+
     public static String PAGE_PATH = HomePage.URL + "testDocumentValidation";
 
     protected WebDriver driver;
@@ -131,9 +136,9 @@ public class ValidationPage {
     public void checkLayoutEmpty() {
         LayoutElement l = getLayout();
         assertEquals("", l.getWidget("nxw_title").getMessageValue());
-        assertEquals("Value is required", l.getWidget("nxw_groupCode").getMessageValue());
-        assertEquals("Value is required", l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
-        assertEquals("Value is required", l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
+        assertEquals(VALUE_REQUIRED, l.getWidget("nxw_groupCode").getMessageValue());
+        assertEquals(VALUE_REQUIRED, l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
+        assertEquals(VALUE_REQUIRED, l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
         JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
         JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);

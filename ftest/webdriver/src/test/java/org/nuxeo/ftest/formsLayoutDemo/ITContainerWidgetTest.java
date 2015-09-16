@@ -39,7 +39,7 @@ public class ITContainerWidgetTest extends AbstractWidgetPageTest {
     public void testWidget() {
         navigateTo(pageId);
         checkNoError();
-        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
 
         String viewIdPrefix = "containerWidgetLayout_view_form:nxl_containerWidgetLayout_1:";
         String editIdPrefix = "containerWidgetLayout_edit_form:nxl_containerWidgetLayout:";
@@ -50,8 +50,8 @@ public class ITContainerWidgetTest extends AbstractWidgetPageTest {
         assertEquals("No", driver.findElement(By.id(viewIdPrefix + "nxw_booleanWidget_1")).getText());
 
         submitDemo();
-        Locator.waitForTextPresent(driver.findElement(By.xpath("//html")), "Value is required");
-        assertEquals("Value is required", driver.findElement(By.id(editIdPrefix + "nxw_textWidget_message")).getText());
+        Locator.waitForTextPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
+        assertEquals(VALUE_REQUIRED, driver.findElement(By.id(editIdPrefix + "nxw_textWidget_message")).getText());
 
         LayoutElement edit = new LayoutElement(driver, editIdPrefix);
         edit.getWidget("nxw_textWidget").setInputValue("test");
@@ -59,14 +59,14 @@ public class ITContainerWidgetTest extends AbstractWidgetPageTest {
         edit.getWidget("nxw_intWidget").setInputValue("42");
 
         submitDemo();
-        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
         assertEquals("test", driver.findElement(By.id(viewIdPrefix + "nxw_textWidget_1")).getText());
         assertEquals("9/7/2010", driver.findElement(By.id(viewIdPrefix + "nxw_dateWidget_1")).getText());
         assertEquals("42", driver.findElement(By.id(viewIdPrefix + "nxw_intWidget_1")).getText());
         assertEquals("No", driver.findElement(By.id(viewIdPrefix + "nxw_booleanWidget_1")).getText());
 
         get(HomePage.URL + pageId, Page.class);
-        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
         assertEquals("test", driver.findElement(By.id(viewIdPrefix + "nxw_textWidget_1")).getText());
         assertEquals("9/7/2010", driver.findElement(By.id(viewIdPrefix + "nxw_dateWidget_1")).getText());
         assertEquals("42", driver.findElement(By.id(viewIdPrefix + "nxw_intWidget_1")).getText());

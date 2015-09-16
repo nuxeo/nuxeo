@@ -40,7 +40,7 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
     public void testWidget() {
         navigateTo(pageId);
         checkNoError();
-        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
 
         String viewIdPrefix = "nxl_toggleableLayout:nxw_toggleableLayoutWidget_initialForm:";
         String editIdPrefix = "nxl_toggleableLayout:nxw_toggleableLayoutWidget_toggledForm:";
@@ -74,13 +74,13 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         // check toggled form submit
         saveToggleLayout(editIdPrefix);
         checkToggleButton(false);
-        Locator.waitForTextPresent(driver.findElement(By.xpath("//html")), "Value is required");
-        assertEquals("Value is required",
+        Locator.waitForTextPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
+        assertEquals(VALUE_REQUIRED,
                 driver.findElement(By.id(editIdPrefix + "nxl_demoToggleableLayout:nxw_htmlWidget_message")).getText());
         assertEquals(
-                "Value is required",
+                VALUE_REQUIRED,
                 driver.findElement(By.id(editIdPrefix + "nxl_demoToggleableLayout:nxw_datetimeWidget_message")).getText());
-        assertEquals("Value is required",
+        assertEquals(VALUE_REQUIRED,
                 driver.findElement(By.id(editIdPrefix + "nxl_demoToggleableLayout:nxw_intWidget_message")).getText());
 
         LayoutElement edit = new LayoutElement(driver, editIdPrefix);
@@ -93,7 +93,7 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         edit.getWidget("nxl_demoToggleableLayout:nxw_intWidget").setInputValue("42");
 
         saveToggleLayout(editIdPrefix);
-        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
 
         assertEquals("My title changed", driver.findElement(By.id(viewIdPrefix + "nxl_heading:nxw_title")).getText());
         assertEquals("My description changed",

@@ -38,7 +38,7 @@ public class ITComplexWidgetTest extends AbstractWidgetPageTest {
     public void testWidget() {
         navigateTo(pageId);
         checkNoError();
-        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
 
         String tableStruct = "./table/tbody/tr/td[2]/table/tbody/";
         String viewFormId = "complexWidgetLayout_view_form";
@@ -49,7 +49,7 @@ public class ITComplexWidgetTest extends AbstractWidgetPageTest {
         assertEquals("Boolean item No", viewEl.findElement(By.xpath(tableStruct + "tr[4]")).getText());
 
         submitDemo();
-        Locator.waitForTextPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
 
         String editId = "complexWidgetLayout_edit_form:nxl_complexWidgetLayout:nxw_complexWidget";
         LayoutElement edit = new LayoutElement(driver, editId);
@@ -58,14 +58,14 @@ public class ITComplexWidgetTest extends AbstractWidgetPageTest {
         edit.getWidget("nxw_intComplexItem").setInputValue("lalala");
 
         submitDemo();
-        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
         assertEquals("'lalala' is not a number. Example: 99",
                 driver.findElement(By.id(editId + ":nxw_intComplexItem_message")).getText());
         edit = new LayoutElement(driver, editId);
         edit.getWidget("nxw_intComplexItem").setInputValue("5");
 
         submitDemo();
-        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
 
         viewEl = driver.findElement(By.id(viewFormId));
         assertEquals("test", viewEl.findElement(By.xpath(tableStruct + "tr[1]/td[2]")).getText());
