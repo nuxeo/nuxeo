@@ -50,22 +50,25 @@ object NuxeoRest {
       .check(status.in(200))
   }
 
-  def getDocument() = {
-    http("Get ${type}")
+  def getDocument(comment: String = "Get ${type}", schemas: String = "*", enrichers: String = "", parts: String = "") = {
+    http(comment)
       .get(Constants.GAT_API_PATH + "/${url}")
       .headers(Headers.base)
       .header("Content-Type", "application/json")
-      .header("X-NXproperties", "*")
+      .header("X-NXproperties", schemas)
+      .header("X-NXenrichers.document", enrichers)
+      .header("X-NXfetch.document", parts)
       .basicAuth("${user}", "${password}")
       .check(status.in(200))
   }
 
-  def getParentFolderOfCurrentDocument() = {
-    http("Get Parent Folder")
+  def getParentFolderOfCurrentDocument(comment: String = "Get Parent Folder", schemas: String = "*", enrichers: String = "", parts: String = "") = {
+    http(comment)
       .get(Constants.GAT_API_PATH + "/${parentPath}")
       .headers(Headers.base)
       .header("Content-Type", "application/json")
-      .header("X-NXproperties", "*")
+      .header("X-NXproperties", schemas)
+      .header("X-NXenrichers.document", enrichers)
       .basicAuth("${user}", "${password}")
       .check(status.in(200))
   }

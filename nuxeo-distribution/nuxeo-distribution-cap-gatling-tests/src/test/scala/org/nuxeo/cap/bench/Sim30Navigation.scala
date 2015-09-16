@@ -29,9 +29,16 @@ object ScnNavigation {
       during(duration, "counterName") {
         feed(Feeders.usersCircular).repeat(5) {
           feed(documents)
-            .exec(NuxeoRest.getDocument())
-            .pause(pause)
-            .exec(NuxeoRest.getParentFolderOfCurrentDocument())
+            .randomSwitch(
+              30.0 -> exec(NuxeoRest.getDocument("Get document")),
+              10.0 -> exec(NuxeoRest.getParentFolderOfCurrentDocument("Get document folder")),
+              10.0 -> exec(NuxeoRest.getDocument("Get document dc only", schemas = "dublincore")),
+              10.0 -> exec(NuxeoRest.getDocument("Get document with acl", enrichers = "acl")),
+              10.0 -> exec(NuxeoRest.getDocument("Get document with breadcrumb", enrichers = "breadcrumb")),
+              10.0 -> exec(NuxeoRest.getDocument("Get document with thumbnail", enrichers = "thumbnail")),
+              10.0 -> exec(NuxeoRest.getDocument("Get document with versionLabel", parts = "versionLabel")),
+              10.0 -> exec(NuxeoRest.getDocument("Get document with lock", parts = "lock"))
+            )
             .pause(pause)
         }
       }
