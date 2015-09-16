@@ -425,7 +425,7 @@ class BasePage:
     def files(self):
         ret = self.viewDocumentUid(self.getDocUid(), tab='TAB_FILES_EDIT',
                                    description="View files tab")
-        self.fl.assert_('Upload your file' in self.fl.getBody())
+        self.fl.assert_('Upload Your File' in self.fl.getBody())
         return ret
 
     def publish(self):
@@ -499,14 +499,14 @@ class BasePage:
     def comments(self):
         ret = self.viewDocumentUid(self.getDocUid(), tab='view_comments',
                                    description="View comments tab")
-        self.fl.assert_('Add a comment' in self.fl.getBody())
+        self.fl.assert_('Add a Comment' in self.fl.getBody())
         return ret
 
     def history(self):
         ret = self.viewDocumentUid(self.getDocUid(),
                                    tab='TAB_CONTENT_HISTORY',
                                    description="View history tab")
-        self.fl.assert_('Event log' in self.fl.getBody())
+        self.fl.assert_('Event Log' in self.fl.getBody())
         return ret
 
     def manage(self):
@@ -593,7 +593,7 @@ class FolderPage(BasePage):
             ['javax.faces.partial.ajax', 'true']],
             description="Click on 'New' action")
 
-        fl.assert_('Available document types' in fl.getBody())
+        fl.assert_('Available Document Types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform'],
@@ -628,7 +628,7 @@ class FolderPage(BasePage):
             ['javax.faces.behavior.event', 'action'],
             ['javax.faces.partial.ajax', 'true']],
             description="Click on 'New' action")
-        fl.assert_('Available document types' in fl.getBody())
+        fl.assert_('Available Document Types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
             ['nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform'],
@@ -718,15 +718,15 @@ class FolderPage(BasePage):
     def rights(self):
         """Go to rights tab."""
         self.viewDocumentUid(self.getDocUid(), tab="TAB_MANAGE", subtab="TAB_RIGHTS")
-        #if 'Local rights' not in self.fl.getBody():
+        #if 'Local Rights' not in self.fl.getBody():
             #print self.fl.getBody()
-        self.fl.assert_('Local rights' in self.fl.getBody())
+        self.fl.assert_('Local Rights' in self.fl.getBody())
         return self
 
     def grant(self, permission, user):
         """Grant perm to user."""
         fl = self.fl
-        fl.assert_('Local rights' in fl.getBody(),
+        fl.assert_('Local Rights' in fl.getBody(),
                    'Current page is not a rights tab.')
         server_url = fl.server_url
         state = fl.getLastJsfState()
