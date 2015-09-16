@@ -1,0 +1,57 @@
+/*
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ *     Florent Guillaume
+ */
+package org.nuxeo.ecm.core.redis;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.redis.contribs.RedisUIDSequencer;
+import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
+import org.nuxeo.ecm.core.uidgen.UIDSequencer;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+@RunWith(FeaturesRunner.class)
+@Features(RedisFeature.class)
+@LocalDeploy("org.nuxeo.ecm.core.redis.tests:test-uidsequencer-contrib.xml")
+public class TestRedisUIDSequencer {
+
+    @Inject
+    protected UIDGeneratorService service;
+
+    @Test
+    public void testRedisUIDSequencer() throws Exception {
+        UIDSequencer sequencer = service.getSequencer("redisSequencer");
+        assertNotNull(sequencer);
+        assertTrue(sequencer instanceof RedisUIDSequencer);
+        sequencer.init(); // not correctly done in tests TODO fix this
+
+        assertEquals(1, sequencer.getNext("A"));
+        assertEquals(2, sequencer.getNext("A"));
+        assertEquals(1, sequencer.getNext("B"));
+        assertEquals(3, sequencer.getNext("A"));
+        assertEquals(2, sequencer.getNext("B"));
+    }
+
+}
