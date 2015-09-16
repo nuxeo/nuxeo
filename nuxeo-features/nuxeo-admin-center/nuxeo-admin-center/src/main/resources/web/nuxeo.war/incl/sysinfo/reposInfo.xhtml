@@ -9,7 +9,7 @@
 
 
  <c:if test="#{!systemInfo.isMultiRepo()}">
-  <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.repositoryinfo.2']}" />: <b> #{systemInfo.listAvailableRepositories().get(0).label}</b> </p>
+  <p><h:outputText value="#{messages['adminsubtab.sysinfo.repostat.repositoryinfo.2']}" />: <b> #{messages[systemInfo.listAvailableRepositories().get(0).label]}</b> </p>
  </c:if>
 
  <a4j:outputPanel id="repoInfos" layout="block">
