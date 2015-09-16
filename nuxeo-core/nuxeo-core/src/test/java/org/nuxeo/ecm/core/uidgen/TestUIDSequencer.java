@@ -14,37 +14,37 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.ecm.platform.uidgen;
+package org.nuxeo.ecm.core.uidgen;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @since 7.4
  */
-@LocalDeploy("org.nuxeo.ecm.platform.uidgen.core:nxuidgenerator-seqgen-test-contrib.xml")
-public class TestUIDSequencer extends UIDGeneratorTestCase {
+public class TestUIDSequencer extends NXRuntimeTestCase {
 
-    @Test
-    public void testDefaultSequencer() {
-        UIDSequencer seq = service.getSequencer();
-        Assert.assertNotNull(seq);
-        Assert.assertTrue(seq.getClass().isAssignableFrom(DummyUIDSequencerImpl.class));
+    protected UIDGeneratorService service;
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.core");
+        deployBundle("org.nuxeo.ecm.core.schema");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/uidgenerator-seqgen-test-contrib.xml");
+        service = Framework.getService(UIDGeneratorService.class);
     }
 
     @Test
-    public void testSequencers() {
-        testSequencer("dummySequencer");
-        testSequencer("hibernateSequencer");
-    }
+    public void testSequencer() {
 
-    protected void testSequencer(String sequencer) {
-
-        UIDSequencer seq = service.getSequencer(sequencer);
+        UIDSequencer seq = service.getSequencer("dummySequencer");
 
         // Test UIDSequencer#getNext
         assertEquals(1, seq.getNext("mySequence"));

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.uidgen.UIDGeneratorService">
+
+  <alias>org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService</alias>
+
+  <documentation>
+    Component for a generator of unique ids, which can be used as metadata for documents or any other use.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.uidgen.UIDGeneratorComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.uidgen.UIDSequencer" />
+    <provide interface="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" />
+  </service>
+
+  <extension-point name="sequencers">
+    <documentation>
+      Allows to contribute a new uid sequencer.
+    </documentation>
+    <object class="org.nuxeo.ecm.core.uidgen.UIDSequencerProviderDescriptor" />
+  </extension-point>
+
+  <extension-point name="generators">
+    <documentation>
+      Allows to contribute a new uid generator.
+    </documentation>
+    <object class="org.nuxeo.ecm.core.uidgen.UIDGeneratorDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+      Listener to automatically generate uids for documents according to the registered uid generators.
+    </documentation>
+    <listener name="uidlistener" async="false" postCommit="false"
+      class="org.nuxeo.ecm.core.uidgen.DocUIDGeneratorListener" priority="10">
+      <event>documentCreated</event>
+    </listener>
+  </extension>
+
+</component>

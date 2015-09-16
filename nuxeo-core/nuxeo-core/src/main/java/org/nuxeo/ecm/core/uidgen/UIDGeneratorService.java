@@ -13,15 +13,13 @@
  *
  * Contributors:
  *     Thierry Delprat
- *
  */
-
-package org.nuxeo.ecm.platform.uidgen.service;
+package org.nuxeo.ecm.core.uidgen;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.platform.uidgen.UIDGenerator;
-import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
+import org.nuxeo.ecm.core.uidgen.UIDGenerator;
+import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 
 public interface UIDGeneratorService {
 
@@ -31,7 +29,7 @@ public interface UIDGeneratorService {
      * @return the default {@link UIDSequencer}
      * @since 7.3
      */
-    public UIDSequencer getSequencer();
+    UIDSequencer getSequencer();
 
     /**
      * Retrieves {@link UIDSequencer} by it's name
@@ -40,23 +38,23 @@ public interface UIDGeneratorService {
      * @return the {@link UIDSequencer} matching the name
      * @since 7.3
      */
-    public UIDSequencer getSequencer(String name);
+    UIDSequencer getSequencer(String name);
 
     /**
      * Returns the uid generator to use for this document.
      * <p>
      * Choice is made following the document type and the generator configuration.
      */
-    public abstract UIDGenerator getUIDGeneratorFor(DocumentModel doc);
+    UIDGenerator getUIDGeneratorFor(DocumentModel doc);
 
     /**
      * Creates a new UID for the given doc and sets the field configured in the generator component with this value.
      */
-    public abstract void setUID(DocumentModel doc) throws PropertyNotFoundException;
+    void setUID(DocumentModel doc) throws PropertyNotFoundException;
 
     /**
      * @return a new UID for the given document
      */
-    public abstract String createUID(DocumentModel doc);
+    String createUID(DocumentModel doc);
 
 }

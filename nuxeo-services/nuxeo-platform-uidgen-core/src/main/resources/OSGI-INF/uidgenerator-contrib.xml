@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.uidgen.contribs">
+
+  <extension target="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" point="sequencers">
+    <documentation>
+      Contribute the Hibernate based sequencer as the default one.
+    </documentation>
+    <sequencer name="hibernateSequencer" class="org.nuxeo.ecm.platform.uidgen.JPAUIDSequencerImpl"
+      default="true" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent" point="hibernate">
+    <hibernateConfiguration name="NXUIDSequencer">
+      <datasource>nxuidsequencer</datasource>
+      <properties>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+      </properties>
+    </hibernateConfiguration>
+  </extension>
+
+</component>

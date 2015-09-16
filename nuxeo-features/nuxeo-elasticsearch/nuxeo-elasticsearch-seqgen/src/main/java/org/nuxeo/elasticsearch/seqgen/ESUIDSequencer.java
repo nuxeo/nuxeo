@@ -19,8 +19,8 @@ package org.nuxeo.elasticsearch.seqgen;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.platform.uidgen.AbstractUIDSequencer;
-import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
+import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
+import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
 

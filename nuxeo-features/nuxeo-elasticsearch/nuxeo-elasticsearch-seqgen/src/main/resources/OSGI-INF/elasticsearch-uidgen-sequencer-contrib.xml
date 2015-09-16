@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.uidgen.sequencer.contrib">
 
-  <require>org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService</require>
+  <require>org.nuxeo.ecm.core.uidgen.UIDGeneratorService</require>
 
-  <extension target="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService" point="sequencers">
+  <extension target="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" point="sequencers">
     <sequencer name="uidgen" class="org.nuxeo.elasticsearch.seqgen.ESUIDSequencer" default="${elasticsearch.enabled:=true}" />
   </extension>
 

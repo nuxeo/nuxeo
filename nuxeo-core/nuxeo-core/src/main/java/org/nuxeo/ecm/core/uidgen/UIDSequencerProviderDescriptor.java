@@ -13,14 +13,12 @@
  *
  * Contributors:
  *     Thierry Delprat
- *
  */
-
-package org.nuxeo.ecm.platform.uidgen.service;
+package org.nuxeo.ecm.core.uidgen;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
+import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 
 /**
  * @since 7.3

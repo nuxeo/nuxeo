@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,12 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Dragos Mihalache
  */
-
-package org.nuxeo.ecm.platform.uidgen.jpa;
+package org.nuxeo.ecm.platform.uidgen;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,8 +30,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * UID entity - keeps last indexes of all generated UIDs.
- *
- * @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
  */
 @Entity
 @NamedQueries({ @NamedQuery(name = "UIDSequence.findByKey", query = "from UIDSequenceBean seq where seq.key = :key") })

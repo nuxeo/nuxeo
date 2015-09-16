@@ -15,14 +15,17 @@
  *     Thierry Delprat
  *
  */
-package org.nuxeo.ecm.platform.uidgen;
+package org.nuxeo.ecm.core.uidgen;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
+
 public class DummyUIDSequencerImpl extends AbstractUIDSequencer {
 
-    protected ConcurrentHashMap<String, AtomicInteger> counters = new ConcurrentHashMap<String, AtomicInteger>();
+    protected Map<String, AtomicInteger> counters = new ConcurrentHashMap<>();
 
     @Override
     public void init() {

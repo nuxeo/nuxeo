@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,41 +13,43 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
-
-package org.nuxeo.ecm.platform.uidgen.generators;
+package org.nuxeo.ecm.core.uidgen;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.uidgen.AbstractUIDGenerator;
+import org.nuxeo.ecm.core.uidgen.AbstractUIDGenerator;
 
-public class UIDGenerator1 extends AbstractUIDGenerator {
+/**
+ * Simulates a dummy UID generation based on a property.
+ *
+ * @since 7.4
+ */
+public class DummyCoreDocUIDGen extends AbstractUIDGenerator {
 
-    private static final String P1 = "geide:atelier_emetteur";
+    private static final String PROP = "dc:format";
 
-    private static final String P2 = "geide:application_emetteur";
+    private static final String FORMAT = "%05d";
 
-    private static final String NFORMAT = "%05d";
-
+    @Override
     public String getSequenceKey(DocumentModel doc) {
-        Calendar cal = new GregorianCalendar();
-        int year = cal.get(Calendar.YEAR);
-
-        // should assume that P2 is always defined
-
-        return (isPropValueDefined(P1, doc) ? str(P1, doc) : str(P2, doc)) + year;
+        String prefix = (String) doc.getPropertyValue(PROP);
+        if (StringUtils.isBlank(prefix)) {
+            prefix = doc.getType();
+        }
+        int year = new GregorianCalendar().get(Calendar.YEAR);
+        return prefix + year;
     }
 
+    @Override
     public String createUID(DocumentModel doc) {
+        String seqKey = getSequenceKey(doc);
         int index = getNext(doc);
-        String n = String.format(NFORMAT, index);
-
-        final String seqKey = getSequenceKey(doc);
-
+        String n = String.format(FORMAT, Integer.valueOf(index));
         return seqKey + n;
     }
+
 }

@@ -14,7 +14,7 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.ecm.platform.uidgen;
+package org.nuxeo.ecm.core.uidgen;
 
 /**
  * @since 7.4

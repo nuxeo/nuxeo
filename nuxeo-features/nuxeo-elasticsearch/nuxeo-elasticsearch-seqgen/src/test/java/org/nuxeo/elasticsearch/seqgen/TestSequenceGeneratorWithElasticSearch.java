@@ -28,8 +28,8 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
-import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
+import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
+import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;

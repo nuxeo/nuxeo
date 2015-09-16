@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.uidgen.test-contrib">
+
+  <extension target="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" point="sequencers">
+    <sequencer name="dummySequencer" class="org.nuxeo.ecm.core.uidgen.DummyUIDSequencerImpl" default="true" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" point="generators">
+    <generator name="coreDocs" class="org.nuxeo.ecm.core.uidgen.DummyCoreDocUIDGen">
+      <propertyName>uid:uid</propertyName>
+      <docType>Note</docType>
+    </generator>
+  </extension>
+
+</component>

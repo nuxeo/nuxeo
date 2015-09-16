@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,12 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- *
+ *     Dragos Mihalache
  */
-
-package org.nuxeo.ecm.platform.uidgen.service;
+package org.nuxeo.ecm.core.uidgen;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -27,8 +24,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.platform.uidgen.UIDGenerator;
-import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
+import org.nuxeo.ecm.core.uidgen.UIDGenerator;
+import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -36,12 +33,10 @@ import org.nuxeo.runtime.model.Extension;
 
 /**
  * Service that writes MetaData.
- *
- * @author : <a href="dm@nuxeo.com">Dragos Mihalache</a>
  */
 public class UIDGeneratorComponent extends DefaultComponent implements UIDGeneratorService {
 
-    public static final String ID = "org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService";
+    public static final String ID = "org.nuxeo.ecm.core.uidgen.UIDGeneratorService";
 
     public static final String UID_GENERATORS_EXTENSION_POINT = "generators";
 
@@ -106,7 +101,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
         final String extPoint = extension.getExtensionPoint();
         if (UID_GENERATORS_EXTENSION_POINT.equals(extPoint)) {
             log.info("unregister contributions for extension point: " + UID_GENERATORS_EXTENSION_POINT);
-            final Object[] contribs = extension.getContributions();
+            // final Object[] contribs = extension.getContributions();
             // unregisterGenerators(extension, contribs);
         } else if (SEQUENCERS_EXTENSION_POINT.equals(extPoint)) {
             log.info("unregister contributions for extension point: " + SEQUENCERS_EXTENSION_POINT);

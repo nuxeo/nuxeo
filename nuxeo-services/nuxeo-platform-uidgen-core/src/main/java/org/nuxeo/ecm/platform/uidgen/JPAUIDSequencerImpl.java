@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.platform.uidgen.jpa;
+package org.nuxeo.ecm.platform.uidgen;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -29,8 +29,8 @@ import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
+import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
-import org.nuxeo.ecm.platform.uidgen.AbstractUIDSequencer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -152,6 +152,7 @@ public class JPAUIDSequencerImpl extends AbstractUIDSequencer {
 
     }
 
+    @SuppressWarnings("boxing")
     protected int doGetNext(final String key) {
         return getOrCreatePersistenceProvider().run(true, new RunCallback<Integer>() {
             @Override

@@ -4,7 +4,7 @@
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,11 +12,9 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     Dragos Mihalache
  */
-package org.nuxeo.ecm.platform.uidgen;
+package org.nuxeo.ecm.core.uidgen;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,8 +28,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * The abstract class adds some useful methods.
- *
- * @author <a href="mailto:dm@nuxeo.com>Dragos Mihalache</a>
  */
 public abstract class AbstractUIDGenerator implements UIDGenerator {
 
@@ -41,6 +37,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
 
     private String[] propertyNames;
 
+    @Override
     public final void setSequencer(UIDSequencer sequencer) {
         if (null == sequencer) {
             throw new IllegalArgumentException("null sequencer");
@@ -57,6 +54,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
         return sequencer.getNext(key);
     }
 
+    @Override
     public String getPropertyName() {
         if (propertyNames.length == 0) {
             log.warn("No propertyName specified");
@@ -65,14 +63,17 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
         return propertyNames[0];
     }
 
+    @Override
     public void setPropertyName(String propertyName) {
         propertyNames = new String[] { propertyName };
     }
 
+    @Override
     public void setPropertyNames(String[] propertyNames) {
         this.propertyNames = propertyNames;
     }
 
+    @Override
     public String[] getPropertyNames() {
         return propertyNames;
     }
@@ -100,6 +101,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
         throw new NuxeoException("Doc property '" + propName + "' is not of String type.");
     }
 
+    @Override
     public void setUID(DocumentModel document) throws PropertyNotFoundException {
         String uid = createUID(document);
         for (String propertyName : propertyNames) {
