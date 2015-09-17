@@ -156,12 +156,14 @@ author: lkemen@nuxeo.com
   font-weight: bold; }
 
 .nxHeader .userActions {
+  border-top: 3px solid transparent;
   float: left;
   padding: 0 .5em;
   text-transform: none }
 
 .nxHeader .userMenuActions {
-  float: left;
+  border-top: 3px solid transparent;
+  float: right;
   font-size: 1.1em;
   padding: 0 }
 
@@ -170,9 +172,20 @@ author: lkemen@nuxeo.com
   display: block }
 
 /* Override default dropdown button styles */
-.userMenuActions .dropdown,
-.userMenuActions .dropdown:hover {
-  background: url("${basePath}/icons/user_menu.png") no-repeat scroll 1px center transparent }
+.userMenuActions .actionList .dropdown,
+.userMenuActions .actionList .dropdown:hover {
+  background: url("${basePath}/icons/user_menu.png") no-repeat scroll 4px center #fff;
+  border: none;
+  border-radius: 20px;
+  box-shadow: none;
+  display: inline-block;
+  line-height: 2em;
+  height: 2.3em;
+  padding: 0.4em 1em 0.43em 2.2em !important; }
+
+.userMenuActions .actionList .dropdown:hover {
+  background-color: #fff;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.7); }
 
 .userMenuActions .button {
   background-color: rgba(0, 0, 0, 0);
@@ -185,10 +198,6 @@ author: lkemen@nuxeo.com
 
 .userMenuActions .dropDownMenu .widget {
   font-weight: normal }
-
-.nxHeader .userMenuActions ul:hover .dropDownMenu {
-  background-color: "header.tabs.selected (__FLAVOR__ background)";
-  color: "link.header (__FLAVOR__ color)" }
 
 .nxHeader .actionList .actionSubList li a {
   color: "black (__FLAVOR__ color)" }

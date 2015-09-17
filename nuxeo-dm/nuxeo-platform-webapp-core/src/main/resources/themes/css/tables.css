@@ -5,8 +5,6 @@ author: lkemen@nuxeo.com
 
 /* Default styles for all the tables */
 table {
-  border-collapse: collapse;
-  border-spacing: 0;
   max-width: 100% }
 
 table th {
@@ -47,7 +45,7 @@ table td {
   background-color: "neutral.light (__FLAVOR__ background)";
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-width: 1px;
-  padding: .6em .4em .6em 0 }
+  padding: .7em .4em .7em 0 }
 
 .dataRowOdd:hover,
 .dataRowEven:hover,
@@ -67,7 +65,7 @@ table td {
   border-style: none solid solid none;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-width: 1px;
-  padding: .6em .4em }
+  padding: .7em .4em }
 
 .dataOutput th:first-child,
 .dataOutput td:first-child,
@@ -114,7 +112,12 @@ table td {
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-style: solid none;
   border-width: 1px;
-  padding: .5em .6em .4em 0 }
+  padding: .7em .6em .7em 0 }
+
+.dataTableLine,
+.dataList,
+.dataOutput {
+  border: 1px solid "neutral.lighter (__FLAVOR__ border)"; }
 
 .dataTableNoBorder,
 .dataTableNoBorder th,

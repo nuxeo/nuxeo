@@ -106,8 +106,6 @@ author: lkemen@nuxeo.com
 .publication_block {
   margin-top: 1.3em }
 
-.content_block,
-.metadata_block,
 .coloredWidget {
   background: none "widget (__FLAVOR__ background)";
   border-radius: 3px;
@@ -139,14 +137,8 @@ author: lkemen@nuxeo.com
   margin: 0 0 .5rem }
 
 .content_block .smallTable td {
-  padding-left: .3rem }
-
-.content_block .smallTable td.fieldColumn,
-.content_block .smallTable td.actionsColumn {
-  border-top: 1px solid "neutral.lighter (__FLAVOR__ border)"}
-
-.content_block .smallTable tr:first-child td {
-  border-top: none }
+  padding-left: .3rem;
+  border: none; }
 
 .content_block .fieldColumn,
 .tabsContent .radioColumn ~ .fieldColumn {
@@ -164,6 +156,7 @@ author: lkemen@nuxeo.com
 .note_content_block {
   border: 1px solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
+  border-radius: 3px;
   color: "black (__FLAVOR__ color)";
   display: block;
   margin: 0 0 1.4em;
@@ -171,10 +164,6 @@ author: lkemen@nuxeo.com
   padding: 1.4em 1.7em }
 
 .note_content_block {
-  background-color: "widget (__FLAVOR__ background)";
-  border-radius: 3px;
-  border: none;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.15),-1px 0 0 rgba(0,0,0,0.02),1px 0 0 rgba(0,0,0,0.02),0 1px 0 rgba(0,0,0,0.10);
   font-size: 115%;
   text-align: justify }
 
@@ -479,12 +468,13 @@ author: lkemen@nuxeo.com
   background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
   border: medium none;
   color: "link (__FLAVOR__ color)";
+  font-size: 1em;
   font-weight: normal;
-  font-size: 1em }
+  letter-spacing: inherit;
+  text-transform: none }
 
 .thumbnailOptions input:hover,
 .thumbnailOptions input[type="submit"]:hover {
-  box-shadow: none;
   color: "link.hover (__FLAVOR__ color)" }
 
 /* TinyMce override */
@@ -524,8 +514,10 @@ author: lkemen@nuxeo.com
 
 .nx-page .mce-tinymce .mce-btn button {
   border: medium none;
+  letter-spacing: unset;
   margin: 0;
-  padding: .3em }
+  padding: .3em;
+  text-transform: none; }
 
 .nx-page .mce-tinymce .mce-btn button:hover {
   background-color: "neutral.lighter (__FLAVOR__ background)" }
@@ -549,7 +541,8 @@ author: lkemen@nuxeo.com
 
 .nx-page .mce-panel,
 .nx-page .mce-edit-area {
-  border: 1px solid #c6c6c6 }
+  border: 1px solid #c6c6c6;
+  width: 100% !important; }
 
 .nx-page .mce-in .mce-panel {
   background: #f3f3f3;

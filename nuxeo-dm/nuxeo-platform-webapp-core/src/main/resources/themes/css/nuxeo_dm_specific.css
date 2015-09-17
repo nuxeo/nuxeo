@@ -52,6 +52,7 @@ author: lkemen@nuxeo.com
 
 .userClipboardContent {
   background-color: #fff;
+  border-radius: 0 0 3px 3px;
   margin: 0;
   padding: .4em 1em 1em;
   word-wrap: break-word; }
@@ -69,12 +70,13 @@ author: lkemen@nuxeo.com
 
 .userClipboardContent .rf-ulst .smallIcon {
   height: 13px;
-  padding-top: 0.3em;
+  margin-top: .3em;
   vertical-align: top;
   width: 13px; }
 
 .userClipboardContent .rf-ulst-itm a {
   display: inline-block;
+  line-height: 1.7em;
   white-space: normal;
   word-break: break-all; }
 
@@ -82,16 +84,16 @@ author: lkemen@nuxeo.com
   white-space: nowrap; }
 
 .clipboardFunctions .rf-ulst-itm:first-of-type {
-  border-width: 2px;
-  border-style: solid none none;
-  border-color:"neutral.lighter (__FLAVOR__ border)";
+  border-width: 1px;
+  border-style: dashed none none;
+  border-color:"neutral.medium (__FLAVOR__ border)";
   margin-top: .5em;
   padding-top: .9em; }
 
 .clipboardFunction a,
 .clipboardFunction a:link,
 .clipboardFunction a:visited {
-  color: "gray.medium (__FLAVOR__ color)"; }
+  color: "default (__FLAVOR__ color)"; }
 
 .column:hover .clipboardFunction a {
   color: "link (__FLAVOR__ color)"; }

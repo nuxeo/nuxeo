@@ -62,9 +62,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 .summaryTitle,
 .gridBox .summaryTitle {
-  border-width: 3px;
+  border-width: 1px;
   border-style: solid none none;
-  border-color: #f9f9f9;
+  border-color: "neutral.lighter (__FLAVOR__ border)";
   color: "title.major (__FLAVOR__ color)";
   display: block;
   font-size: 1.2em;
@@ -105,7 +105,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 
 /* Display of thumbnail in Thumbnail Listing mode */
 .bubbleListing .thumbnailContainer {
-  background-size: contain; }
+  background-color: #f8fafc;
+  background-size: contain;
+  border-bottom: 1px solid "neutral.lighter (__FLAVOR__ border)"; }
 
 /* Display of thumbnail in Content views Listing mode */
 .dataOutput td .thumbnailContainer {
@@ -208,7 +210,7 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   color: "gray.dark (__FLAVOR__ color)";
   display: inline-block;
   text-align: right;
-  padding: .4em .2em 0;
+  padding: .4em .4em 0 0;
   max-width: 30px }
 
 .compactLayout .fieldColumn {
@@ -226,12 +228,8 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   font-weight: normal }
 
 /* Compact buttons */
-.compactLayout .fieldColumn .button,
-.compactLayout .actionsWidgetPanel .containerField .button {
-  font-weight: bold;
-  margin: 0 .5em .1em 0em;
-  padding: .1em .4em .2em;
-  width: auto }
+.compactLayout .button {
+  margin: 0 .5em .1em 0em;  }
 
 .compactLayout .sticker {
   margin: .1em .2em .1em 0 }
@@ -257,23 +255,17 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
 .compactLayout .actionsWidgetPanel .button,
 .compactLayout .actionsWidgetPanel a.button,
 .compactLayout .actionsWidgetPanel input.button {
-  display: inline-block;
-  font-weight: bold;
-  margin: 0 0 .2em .2em;
-  padding: .2em .5em }
+  margin: 0 0 .2em .2em; }
 
 .compactLayout .searchFilterActions .widgetPanel .button,
 .compactLayout .searchFilterActions .widgetPanel a.button,
 .compactLayout .searchFilterActions .widgetPanel input.button,
 .compactLayout .searchFilterActions .widgetPanel input[type="submit"] {
   float: right;
-  font-weight: bold;
   margin: .5em 0 1em;
-  padding: .4em .2em .6em;
   width: 50% }
 
 .compactLayout .searchFilterActions {
-  font-size: 1.15em;
   padding: .5em 0 }
 
 /* Compact Widgets */

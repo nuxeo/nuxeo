@@ -40,15 +40,16 @@ author: lkemen@nuxeo.com
 .nx-page a.treeLink:link,
 .nx-page a.treeLink:visited {
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: 15px;
   display: inline-block;
-  padding: 0 .3em .1em;
+  padding: .1em .3em;
+  margin-left: .1em;
   font-size: .9em;
   font-weight: normal }
 
 .nx-page a.treeLink:hover,
 .nx-page .selected a.treeLink {
-  background-color: "color.major.light (__FLAVOR__ background)";
+  background-color: "neutral.medium (__FLAVOR__ background)";
   color: #000;
   text-decoration: none }
 

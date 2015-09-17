@@ -96,7 +96,8 @@ a.linkedin .footerLabel {
   padding: .1em }
 
 .unregistered {
-  background-color: #eee }
+  background-color: #585c69;
+  color: #fff; }
 
 .unregistered .bannerMessage {
   float: left;
