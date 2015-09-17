@@ -37,7 +37,6 @@ input::-moz-focus-inner {
   margin: 0 .5rem .5rem 0;
   text-align: center;
   text-decoration: none;
-  text-transform: uppercase;
   transition: all 300ms ease 0s;
   white-space: nowrap; }
 
