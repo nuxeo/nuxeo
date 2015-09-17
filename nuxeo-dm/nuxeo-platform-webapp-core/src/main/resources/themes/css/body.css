@@ -18,6 +18,7 @@ author: lkemen@nuxeo.com
 .nxMainContainer .verticalTabsColumn,
 .nxMainContainer .nxSearchForm {
   background: none "color.major.stronger (__FLAVOR__ background)";
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16);
   bottom: 0;
   font-size: .85em;
   width: 19%;
@@ -31,16 +32,12 @@ author: lkemen@nuxeo.com
   margin-bottom: 6em; }
 
 .nxMainContainer .content {
-  padding: 2em 3em 3em; }
+  padding: 2em 3.5em 3em; }
 
 .nxMainContainer .column + .content,
 .nxMainContainer .verticalTabsContent,
 .nxMainContainer .nxSearchResults {
   margin-left: 19%; }
-
-/* Main region */
-.mainFragment {
-  padding: .6em 0; }
 
 /* Description of folders - to be moved to tabs_content */
 .currentDocumentDescription {
@@ -52,3 +49,6 @@ author: lkemen@nuxeo.com
 .currentItemDescription {
   display: block;
   font-size: 13px; }
+
+.titleBlock .currentDocumentDescription {
+  margin-top: -1em; }

@@ -117,16 +117,11 @@ video {
   *zoom: 1; }
 
 /* =Links and Titles */
-a,
-a:link,
-a:visited {
+.nx-page a {
   color: "link (__FLAVOR__ color)";
-  text-decoration: none;
-  -moz-transition: all 0.1s ease 0.1s;
-  -webkit-transition: all 0.1s ease 0.1s;
-  transition: all 0.1s ease 0.1s; }
+  text-decoration: none; }
 
-a:hover {
+.nx-page a:hover {
   color: "link.hover (__FLAVOR__ color)";
   text-decoration: none; }
 
@@ -149,7 +144,8 @@ h5, h6,
 h1,
 .mainTitle {
   font-size: 1.6em;
-  padding: .5em 0 1.5em;
+  padding: .5em 0 1em;
+  margin-top: 0;
   word-wrap: break-word; }
 
 h2 {

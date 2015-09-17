@@ -23,22 +23,23 @@ input::-moz-focus-inner {
 .nx-page input[type="submit"],
 .nx-page input[type="button"] {
   background: none "button (__FLAVOR__ background)";
-  border-radius: 2px;
-  border: 1px solid;
-  border-color: "button (__FLAVOR__ border)";
-  color: "link.action (__FLAVOR__ color)";
+  border: 1px solid "button (__FLAVOR__ border)";
+  border-radius: 4px;
+  color: #555;
   cursor: pointer;
   display: inline-block;
-  font-size: .95em;
+  font-size: 11px;
   font-weight: bold;
-  line-height: 1.3em;
-  margin: 0 .5em .5em 0;
-  padding: .4em .9em;
+  height: 30px;
+  letter-spacing: 0.05rem;
+  line-height: 30px;
+  padding: 0 1.1em;
+  margin: 0 .5rem .5rem 0;
+  text-align: center;
   text-decoration: none;
-  white-space: nowrap }
-
-.nx-page a.button {
-  padding: .4em .6em }
+  text-transform: uppercase;
+  transition: all 300ms ease 0s;
+  white-space: nowrap; }
 
 .nx-page .button:hover,
 .nx-page a.button:hover,
@@ -50,7 +51,7 @@ input::-moz-focus-inner {
 .nx-page input[type="button"]:hover {
   background: none "button (__FLAVOR__ background)";
   border-color: "button.hover (__FLAVOR__ border)";
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: all 150ms ease-in-out 0s }
 
 .nx-page .button:focus,
@@ -87,9 +88,10 @@ input::-moz-focus-inner {
 .nx-page a.smallButton,
 .nx-page input.tinyButton,
 .nx-page input.smallButton {
-  background-color: #fff;
   font-size: .9em;
-  padding: .25em .5em;
+  padding: 0 .5em;
+  height: 2.5em;
+  line-height: 2.5em;
   text-decoration: none }
 
 .nx-page .tinyButton,
@@ -105,6 +107,9 @@ input::-moz-focus-inner {
 .nx-page .dropdown:hover {
   background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center;
   background-color: "button (__FLAVOR__ background)";
+  text-transform: none;
+  line-height: inherit;
+  letter-spacing: 0.05px;
   padding: .4em 1.5em .43em .8em }
 
 /* =Action Bar */
@@ -112,6 +117,10 @@ input::-moz-focus-inner {
   float: left;
   line-height: normal;
   margin: .5em .5em .8em 0 }
+
+.action_bar a img {
+  margin: 0 .5em 0 0;
+  vertical-align: text-bottom; }
 
 .action_bar_message {
   float: right;
@@ -249,35 +258,37 @@ input::-moz-focus-inner {
   border-radius: 0;
   box-shadow: none;
   display: block;
+  letter-spacing: inherit;
+  line-height: initial;
   margin: 0;
-  padding: .5em 1em;
+  padding: .7em 1em;
+  text-align: left;
   text-decoration: none;
+  text-transform: none;
   white-space: normal }
 
 .actionList .actionSubList li a:hover {
-  background-color:"neutral.light (__FLAVOR__ background)" }
+  background-color:"neutral.light (__FLAVOR__ background)";
+  box-shadow: none; }
 
 .actionSubList .smallIcon {
   margin: 0 .8em -0.2em 0 }
 
 .horizontalAction ~ .actionList li {
-  border-left: 0 none;
-  border-radius: 0 3px 3px 0;
-  line-height: 1.5em;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
   color: #555;
   font-weight: bold;
-  margin: 0 }
+  margin: 0; }
 
 .globalActions .horizontalAction .button {
-  border-radius: 0;
+  background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  height: auto;
   margin: 0;
-  padding: .5em .6em;
-  border-left: medium none;
-  line-height: normal }
-
-.globalActions .horizontalAction:first-child {
-  border-left: 1px solid "neutral.light (__FLAVOR__ border)";
-  border-radius: 2px 0 0 2px; }
+  padding: 0 1em; }
 
 /* =Kept for social collab custom actions */
 .headerTitleAndTools h1 {
@@ -303,6 +314,8 @@ input::-moz-focus-inner {
   cursor: pointer;
   display: block;
   font-weight: normal;
+  height: auto;
+  line-height: 130%;
   margin: 0 0 0 .4em;
   position: relative;
   text-decoration: none;
@@ -394,8 +407,8 @@ input::-moz-focus-inner {
   box-shadow: none;
   color: #fff;
   cursor: pointer;
-  margin: 0.5em 0 0;
-  padding: 1em;
+  height: auto;
+  margin: .5em 0 0;
   text-transform: uppercase;
   width: 100% }
 
@@ -413,10 +426,9 @@ input::-moz-focus-inner {
 .foldableBox h3 a.action,
 .foldableBox h3 a.action:visited {
   color: "black (__FLAVOR__ color)";
-  float: right !important;
+  float: right;
   font-size: .8em;
-  margin: -0.2em 0 0 1em;
-  padding: .3em .6em }
+  margin: -0.2em 0 0 1em; }
 
 .foldableBox h3 a.action:hover,
 .foldableBox h3 a.action:visited:hover {
@@ -460,26 +472,21 @@ input::-moz-focus-inner {
 /* =Labels, tags, users */
 .tag {
   background: none "neutral.medium (__FLAVOR__ background)";
-  border-radius: 3px;
-  border: 1px solid;
-  border-color: transparent #ddd #ccc transparent;
-  color: #555f6d;
+  border-radius: 16px;
+  color: #333;
   display: inline-block;
-  font-family: Arial, Tahoma, sans-serif;
-  font-size: 13px;
+  font-size: 13px !important;
   line-height: inherit;
-  margin: .1em;
-  padding: 0 .12em;
+  margin: 0 .3em .5em 0;
+  padding: 0.1em 0.8em 0.2em;
   text-decoration: none;
-  -moz-transition: none;
-  -webkit-transition: none;
   transition: none }
 
 .tag,
 a.tag,
 .tag a,
 .tagLink a {
-  color: #555f6d;
+  color: #333 !important;
   text-decoration: none }
 
 .tagLink img {
@@ -492,7 +499,7 @@ a.tag,
 a.tag:hover,
 .tag a:hover,
 .tag img:hover {
-  color: "link (__FLAVOR__ color)";
+  background-color: #f6f6f6;
   opacity: 1 }
 
 .tag.newTag {
@@ -504,20 +511,19 @@ a.tag:hover,
 .group,
 span.user,
 span.group {
-  background: url("${basePath}/icons/user.png") no-repeat scroll 2px 2px / 13px transparent;
-  border: 1px solid;
-  border-color: "neutral.light (__FLAVOR__ border)";
-  border-radius: 3px;
+  background: url("${basePath}/icons/user.png") no-repeat scroll 7px 6px / 13px #eee;
+  border-radius: 16px;
   color: "gray.dark (__FLAVOR__ color)";
   display: inline-block;
-  font-size: 0.95em;
-  padding: 0 .3em 0 1.6em;
+  font-size: .95em;
+  padding: .1em .7em .1em 2em;
   margin: 0 .2em .2em 0;
-  white-space: nowrap }
+  line-height: 1.7em;
+  white-space: nowrap; }
 
 .group,
 span.group {
-  background: url("${basePath}/icons/group.png") no-repeat scroll 2px 2px /13px transparent }
+  background: url("${basePath}/icons/group.png") no-repeat scroll 7px 6px /13px #eee }
 
 .user a:hover,
 .group a:hover {
@@ -535,17 +541,15 @@ a .group:hover {
   padding: .1em .3em .1em 2.1em }
 
 .sticker {
-  background-color: #fff;
-  border: 1px solid;
-  border-color: "neutral.light (__FLAVOR__ border)";
+  background-color: "neutral.stronger (__FLAVOR__ background)" ;
   border-radius: 3px;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
-  color: "black (__FLAVOR__ color)";
+  color: #fff;
   display: inline-block;
   font-size: .95em;
   font-weight: bold;
-  margin: .2em .5em .2em .1em;
-  padding: .1em .3em }
+  margin: .2em .5em .2em 0;
+  padding: .1em .6em;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.3); }
 
 /* =Icon size management for upload in Nuxeo Studio */
 .bigIcon {

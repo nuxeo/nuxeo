@@ -95,7 +95,7 @@ author: lkemen@nuxeo.com
 
 .foldableLightBox div.folded a,
 .foldableLightBox div.unfolded a {
-  color: "gray.dark (__FLAVOR__ color)";
+  color: "default (__FLAVOR__ color)";
   float: left;
   font-size: 1em;
   margin: 0;
@@ -104,17 +104,15 @@ author: lkemen@nuxeo.com
 
 .foldableLightBox div.folded,
 .foldableLightBox div.unfolded {
-  border-width: 1px; border-style: none none solid;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
-  color: "gray.dark (__FLAVOR__ color)";
-  font-size: .9em;
-  height: 18px }
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  display: inline-flex;
+  font-size: .9em; }
 
 .foldableLightBox .boxBody {
   background-color: #fff;
-  border: 1px solid;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
-  border-top: none;
+  border: 1px solid "neutral.lighter (__FLAVOR__ border)";
   clear: both;
   font-size: .85em;
   padding: 1em }
@@ -159,7 +157,6 @@ author: lkemen@nuxeo.com
 .bubbleBox {
   background-color: #fff;
   border: 1px solid #eee;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
   border-radius: 3px;
   display: block;
   margin: 0 1em 1em 0;
