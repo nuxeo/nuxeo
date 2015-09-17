@@ -124,6 +124,8 @@ public class NuxeoRepository {
 
     private static final String NUXEO_VH_HEADER = "nuxeo-virtual-host";
 
+    private static final String VH_PARAM = "nuxeo.virtual.host";
+
     public static final String NUXEO_READ_REMOVE = "ReadRemove";
 
     protected final String repositoryId;
@@ -438,6 +440,9 @@ public class NuxeoRepository {
         String url = null;
         // Detect Nuxeo specific header for VH
         String nuxeoVH = request.getHeader(NUXEO_VH_HEADER);
+        if (nuxeoVH == null) {
+            nuxeoVH = Framework.getProperty(VH_PARAM);
+        }
         if (nuxeoVH != null && nuxeoVH.startsWith("http")) {
             url = nuxeoVH;
         } else {
