@@ -100,21 +100,6 @@ author: lkemen@nuxeo.com
   margin: 0;
   padding: 0 0 2em;}
 
-.nxconnectBox .button {
-  background-color: #00adff;
-  border: medium none;
-  border-radius: 0;
-  box-shadow: none;
-  color: #fff;
-  font-size: 1.2em;
-  padding: 1em;}
-
-.nxconnectBox .button:hover {
-  background-color: #0079b3;
-  border: medium none;
-  border-radius: 0;
-  box-shadow: none;}
-
 .nxconnectBox .gridRow.separate {
   border-top: 1px solid #eee;}
 
