@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -123,11 +124,14 @@ public class Helper {
         file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
         file1.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
         Blob thumbnailBlob;
+        String digest;
         try {
             thumbnailBlob = Blobs.createBlob(Helper.class.getResource("/text.png").openStream(), "image/png");
+            digest = DigestUtils.md5Hex(thumbnailBlob.getStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        thumbnailBlob.setDigest(digest);
         thumbnailBlob.setFilename("test.png");
         file1.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, (Serializable) thumbnailBlob);
         file1 = createDocument(session, file1);

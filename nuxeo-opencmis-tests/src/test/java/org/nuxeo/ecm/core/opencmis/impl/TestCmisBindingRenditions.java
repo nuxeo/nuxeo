@@ -20,10 +20,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.chemistry.opencmis.commons.data.CacheHeaderContentStream;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.RenditionData;
 import org.apache.chemistry.opencmis.commons.impl.Constants;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -94,12 +96,19 @@ public class TestCmisBindingRenditions extends TestCmisBindingBase {
         ContentStream cs;
         cs = objService.getContentStream(repositoryId, ob.getId(), "nuxeo:icon", null, null, null);
         assertEquals("image/png", cs.getMimeType());
-        assertEquals("testfile1_Title.png", cs.getFileName());
+        assertEquals("test.png", cs.getFileName());
         assertEquals(THUMBNAIL_SIZE, cs.getBigLength().longValue());
+        assertTrue(cs instanceof CacheHeaderContentStream);
+        CacheHeaderContentStream chcs;
+        chcs = (CacheHeaderContentStream) cs;
+        assertEquals(DigestUtils.md5Hex(chcs.getStream()), chcs.getETag());
 
         cs = objService.getContentStream(repositoryId, ob.getId(), "nuxeo:rendition:pdf", null, null, null);
         assertEquals("application/pdf", cs.getMimeType());
-        assertEquals("testfile1_Title.pdf", cs.getFileName());
+        assertEquals("testfile.txt.pdf", cs.getFileName());
+        assertTrue(cs instanceof CacheHeaderContentStream);
+        chcs = (CacheHeaderContentStream) cs;
+        assertEquals(DigestUtils.md5Hex(chcs.getStream()), chcs.getETag());
     }
 
     @Test
@@ -145,19 +154,6 @@ public class TestCmisBindingRenditions extends TestCmisBindingBase {
         renditions = objService.getRenditions(repositoryId, ob.getId(), "application/*,cmis:thumbnail", null, null,
                 null);
         assertEquals(4, renditions.size());
-    }
-
-    @Test
-    public void testFilenameWithExt() {
-        assertEquals("a.x", NuxeoCmisService.filenameWithExt("a.", "x"));
-        assertEquals("a.x", NuxeoCmisService.filenameWithExt("a.c", "x"));
-        assertEquals("a.x", NuxeoCmisService.filenameWithExt("a.ar", "x"));
-        assertEquals("a.x", NuxeoCmisService.filenameWithExt("a.doc", "x"));
-        assertEquals("a.x", NuxeoCmisService.filenameWithExt("a.jpeg", "x"));
-        assertEquals("a.smurf.x", NuxeoCmisService.filenameWithExt("a.smurf", "x"));
-        assertEquals("a.b c.x", NuxeoCmisService.filenameWithExt("a.b c", "x"));
-        assertEquals("a.x", NuxeoCmisService.filenameWithExt("a", "x"));
-        assertEquals("file.x", NuxeoCmisService.filenameWithExt("file", "x"));
     }
 
 }

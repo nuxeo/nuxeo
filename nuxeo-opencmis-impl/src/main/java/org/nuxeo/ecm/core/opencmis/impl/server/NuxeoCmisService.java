@@ -864,47 +864,14 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         if (blob == null) {
             return null;
         }
-        InputStream stream;
-        try {
-            stream = blob.getStream();
-        } catch (IOException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
-        // find the extension from the content type
-        String ext = "bin";
-        MimetypeRegistryService mtr = (MimetypeRegistryService) Framework.getLocalService(MimetypeRegistry.class);
-        MimetypeEntry mte = mtr.getMimetypeEntryByMimeType(blob.getMimeType());
-        if (mte != null) {
-            List<String> exts = mte.getExtensions();
-            if (!exts.isEmpty()) {
-                ext = exts.get(0);
-            }
-        }
-        String filename = filenameWithExt(doc.getTitle(), ext);
+
+        Calendar modificationDate = rendition.getModificationDate();
+        GregorianCalendar lastModified = (modificationDate instanceof GregorianCalendar)
+                ? (GregorianCalendar) modificationDate : null;
         DownloadService downloadService = Framework.getService(DownloadService.class);
-        downloadService.logDownload(doc, null, filename, "cmisRendition",
+        downloadService.logDownload(doc, null, blob.getFilename(), "cmisRendition",
                 Collections.singletonMap("rendition", renditionName));
-        return new ContentStreamImpl(filename, BigInteger.valueOf(blob.getLength()), blob.getMimeType(), stream);
-    }
-
-    // min size of extension we remove
-    private static final int EXT_SIZE_MIN = 0;
-
-    // max size of extension we remove
-    private static final int EXT_SIZE_MAX = 4;
-
-    /** Change the extension of a filename. */
-    public static String filenameWithExt(String filename, String ext) {
-        int len = filename.length();
-        int p = filename.lastIndexOf('.');
-        if (p != -1 && p <= len - EXT_SIZE_MIN - 1 && p >= len - EXT_SIZE_MAX - 1) {
-            String curExt = filename.substring(p + 1);
-            if (curExt.indexOf(' ') == -1) {
-                // remove existing extension
-                filename = filename.substring(0, p);
-            }
-        }
-        return filename + '.' + ext;
+        return new NuxeoContentStream(blob, lastModified);
     }
 
     @Override
