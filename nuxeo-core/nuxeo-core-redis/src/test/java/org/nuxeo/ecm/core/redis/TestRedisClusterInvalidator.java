@@ -31,6 +31,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @since 7.4
@@ -65,15 +66,14 @@ public class TestRedisClusterInvalidator {
 
     @Test
     public void testSendReceiveInvalidations() throws Exception {
-        RedisClusterInvalidator rci1 = createRedisClusterInvalidator("node1");
         RedisClusterInvalidator rci2 = createRedisClusterInvalidator("node2");
+        RedisClusterInvalidator rci1 = createRedisClusterInvalidator("node1");
         try {
             Invalidations invals = new Invalidations();
             invals.addModified(new RowId("dublincore", "docid1"));
             invals.addModified(new RowId("dublincore", "docid2"));
             rci1.sendInvalidations(invals);
-            Thread.sleep((1000));
-            Invalidations invalsReceived = rci2.receiveInvalidations();
+            Invalidations invalsReceived = waitForInvalidation(rci2, 2000);
             assertEquals(invals.toString(), invalsReceived.toString());
         } finally {
             rci1.close();
@@ -81,10 +81,20 @@ public class TestRedisClusterInvalidator {
         }
     }
 
+    private Invalidations waitForInvalidation(RedisClusterInvalidator rci2, int countdown_ms) throws InterruptedException {
+        Invalidations ret;
+        do  {
+            Thread.sleep(50);
+            countdown_ms -= 50;
+            ret = rci2.receiveInvalidations();
+        } while (ret.isEmpty() && countdown_ms > 0);
+        return ret;
+    }
+
     @Test
     public void testSendReceiveMultiInvalidations() throws Exception {
-        RedisClusterInvalidator rci1 = createRedisClusterInvalidator("node1");
         RedisClusterInvalidator rci2 = createRedisClusterInvalidator("node2");
+        RedisClusterInvalidator rci1 = createRedisClusterInvalidator("node1");
         try {
             Invalidations invals = new Invalidations();
             invals.addModified(new RowId("dublincore", "docid1"));
@@ -92,8 +102,8 @@ public class TestRedisClusterInvalidator {
             invals = new Invalidations();
             invals.addModified(new RowId("dublincore", "docid2"));
             rci1.sendInvalidations(invals);
-            Thread.sleep((1000));
-            Invalidations invalsReceived = rci2.receiveInvalidations();
+            Invalidations invalsReceived = waitForInvalidation(rci2, 2000);
+            assertNotNull(invals.modified);
             assertEquals(2, invalsReceived.modified.size());
         } finally {
             rci1.close();

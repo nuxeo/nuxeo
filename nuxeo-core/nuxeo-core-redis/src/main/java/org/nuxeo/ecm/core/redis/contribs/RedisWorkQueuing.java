@@ -507,11 +507,17 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Void call(Jedis jedis) {
-                Pipeline pipe = jedis.pipelined();
-                pipe.hset(dataKey(), workIdBytes, workBytes);
-                pipe.hset(stateKey(), workIdBytes, STATE_SCHEDULED);
-                pipe.lpush(scheduledKey(queueId), workIdBytes);
-                pipe.sync();
+                if (redisExecutor.supportPipelined()) {
+                    Pipeline pipe = jedis.pipelined();
+                    pipe.hset(dataKey(), workIdBytes, workBytes);
+                    pipe.hset(stateKey(), workIdBytes, STATE_SCHEDULED);
+                    pipe.lpush(scheduledKey(queueId), workIdBytes);
+                    pipe.sync();
+                } else {
+                    jedis.hset(dataKey(), workIdBytes, workBytes);
+                    jedis.hset(stateKey(), workIdBytes, STATE_SCHEDULED);
+                    jedis.lpush(scheduledKey(queueId), workIdBytes);
+                }
                 return null;
             }
 
@@ -634,10 +640,15 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Void call(Jedis jedis) throws IOException {
-                Pipeline pipe = jedis.pipelined();
-                pipe.sadd(runningKey(queueId), workIdBytes);
-                pipe.hset(stateKey(), workIdBytes, STATE_RUNNING);
-                pipe.sync();
+                if (redisExecutor.supportPipelined()) {
+                    Pipeline pipe = jedis.pipelined();
+                    pipe.sadd(runningKey(queueId), workIdBytes);
+                    pipe.hset(stateKey(), workIdBytes, STATE_RUNNING);
+                    pipe.sync();
+                } else {
+                    jedis.sadd(runningKey(queueId), workIdBytes);
+                    jedis.hset(stateKey(), workIdBytes, STATE_RUNNING);
+                }
                 return null;
             }
         });
@@ -658,16 +669,23 @@ public class RedisWorkQueuing implements WorkQueuing {
             @Override
             public Void call(Jedis jedis) throws IOException {
                 byte[] completedBytes = bytes(((char) STATE_COMPLETED_B) + String.valueOf(work.getCompletionTime()));
-                Pipeline pipe = jedis.pipelined();
-                // store (updated) content in hash
-                pipe.hset(dataKey(), workIdBytes, workBytes);
-                // remove key from running set
-                pipe.srem(runningKey(queueId), workIdBytes);
-                // put key in completed set
-                pipe.sadd(completedKey(queueId), workIdBytes);
-                // set state to completed
-                pipe.hset(stateKey(), workIdBytes, completedBytes);
-                pipe.sync();
+                if (redisExecutor.supportPipelined()) {
+                    Pipeline pipe = jedis.pipelined();
+                    // store (updated) content in hash
+                    pipe.hset(dataKey(), workIdBytes, workBytes);
+                    // remove key from running set
+                    pipe.srem(runningKey(queueId), workIdBytes);
+                    // put key in completed set
+                    pipe.sadd(completedKey(queueId), workIdBytes);
+                    // set state to completed
+                    pipe.hset(stateKey(), workIdBytes, completedBytes);
+                    pipe.sync();
+                } else {
+                    jedis.hset(dataKey(), workIdBytes, workBytes);
+                    jedis.srem(runningKey(queueId), workIdBytes);
+                    jedis.sadd(completedKey(queueId), workIdBytes);
+                    jedis.hset(stateKey(), workIdBytes, completedBytes);
+                }
                 return null;
             }
         });
