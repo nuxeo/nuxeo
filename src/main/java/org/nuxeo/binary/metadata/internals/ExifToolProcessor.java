@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +57,14 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
     private static final Log log = LogFactory.getLog(ExifToolProcessor.class);
 
     private static final String META_NON_USED_SOURCE_FILE = "SourceFile";
+
+    private static final String DATE_FORMAT_PATTERN = "yyyy:MM:dd HH:mm:ss";
+
+    private static final String EXIF_IMAGE_DATE_TIME = "EXIF:DateTime";
+
+    private static final String EXIF_PHOTO_DATE_TIME_ORIGINAL = "EXIF:DateTimeOriginal";
+
+    private static final String EXIF_PHOTO_DATE_TIME_DIGITIZED = "EXIF:DateTimeDigitized";
 
     protected final ObjectMapper jacksonMapper;
 
@@ -156,7 +167,29 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         Map<String, Object> resultMap = resultList.get(0);
         // Remove the SourceFile metadata injected automatically by ExifTool.
         resultMap.remove(META_NON_USED_SOURCE_FILE);
+        parseDates(resultMap);
         return resultMap;
+    }
+
+    /**
+     * @since 7.4
+     */
+    protected void parseDates(Map<String, Object> resultMap) {
+        for (String prop : new String[] { EXIF_IMAGE_DATE_TIME, EXIF_PHOTO_DATE_TIME_ORIGINAL,
+                EXIF_PHOTO_DATE_TIME_DIGITIZED }) {
+            if (resultMap.containsKey(prop)) {
+                Object dateObject = resultMap.get(prop);
+                if (dateObject instanceof String) {
+                    SimpleDateFormat f = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+                    try {
+                        Date date = f.parse((String) dateObject);
+                        resultMap.put(prop, date);
+                    } catch (ParseException e) {
+                        log.error("Could not parse property " + prop, e);
+                    }
+                }
+            }
+        }
     }
 
     protected String getCommandTags(List<String> metadataList) {

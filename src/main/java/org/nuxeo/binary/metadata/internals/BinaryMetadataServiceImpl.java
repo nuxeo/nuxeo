@@ -16,7 +16,9 @@
  */
 package org.nuxeo.binary.metadata.internals;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -201,8 +203,12 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             }
 
             // Write doc properties from outputs.
-            for (Object metadata : blobMetadataOutput.keySet()) {
-                doc.setPropertyValue(metadataMapping.get(metadata), blobMetadataOutput.get(metadata).toString());
+            for (String metadata : blobMetadataOutput.keySet()) {
+                Object metadataValue = blobMetadataOutput.get(metadata);
+                if (!(metadataValue instanceof Date)) {
+                    metadataValue = metadataValue.toString();
+                }
+                doc.setPropertyValue(metadataMapping.get(metadata), (Serializable) metadataValue);
             }
 
             // document should exist if id != null
