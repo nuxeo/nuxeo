@@ -88,13 +88,27 @@ author: lkemen@nuxeo.com
 .nx-page .select2-container-active .select2-focused:focus {
   box-shadow: none }
 
-.nx-page .select2-container-multi .select2-choices .select2-search-choice {
-  background: none #fff;
-  padding: 3px 18px 3px 5px }
+.nx-page .select2-container-multi .select2-choices .select2-search-choice,
+.nx-page .select2-container.select2-container-disabled .select2-choice > .select2-chosen {
+  display: inline-block;
+  background: #eee none;
+  border: medium none;
+  border-radius: 16px;
+  box-shadow: none;
+  margin: .2em .3em .3em 0;
+  padding: .3em 1.7em .4em 1em; }
+
+.nx-page .select2-container.select2-container-disabled .select2-choice > .select2-chosen {
+  padding: .1em 1.7em .1em 1em; }
 
 .nx-page .select2-container-multi .select2-search-choice-close {
   left: auto;
-  right: 3px }
+  right: 6px;
+  top: 8px; }
+
+.nx-page .s2newTag {
+  display: inline-block;
+  padding: .2em 0; }
 
 .nx-page .select2-drop,
 .nx-page .select2-results .select2-highlighted {
@@ -110,7 +124,7 @@ author: lkemen@nuxeo.com
   padding: .3em .5em }
 
 .nx-page .select2-results .select2-result-label {
-  padding: .2em 0.5em .3em }
+  padding: .2em .5em .3em }
 
 /* make select2 appears in front of fancybox */
 .nx-page .select2-drop {
@@ -148,7 +162,7 @@ author: lkemen@nuxeo.com
 .nx-page .select2-container.select2-container-active .select2-choice,
 .nx-page .select2-container-multi.select2-container-active .select2-choices {
   border-color: #2e9cff;
-  box-shadow: 0 0 3px #b5dcff;
+  box-shadow: 0 2px 0 #00adff, 0 0 3px #b5dcff;
   color: "black (__FLAVOR__ color)" }
 
 /* Tags */
