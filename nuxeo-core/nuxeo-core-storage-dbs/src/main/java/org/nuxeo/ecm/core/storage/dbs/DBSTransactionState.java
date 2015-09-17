@@ -650,7 +650,7 @@ public class DBSTransactionState {
             throw new ConcurrentUpdateException("Proxy " + proxyId + " concurrently deleted");
         }
         // clear all proxy data
-        for (String key : proxy.getState().keySet().toArray(new String[0])) {
+        for (String key : proxy.getState().keyArray()) {
             if (!isProxySpecific(key)) {
                 proxy.put(key, null);
             }

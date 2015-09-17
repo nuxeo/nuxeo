@@ -17,10 +17,13 @@
 package org.nuxeo.ecm.core.storage;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +33,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.core.api.model.Delta;
 
+import com.google.common.collect.ImmutableSet;
+
 /**
  * Abstraction for a Map<String, Serializable> that is Serializable.
+ * <p>
+ * Internal storage is optimized to avoid a full {@link HashMap} when there is a small number of keys.
  *
  * @since 5.9.5
  */
@@ -43,11 +50,16 @@ public class State implements StateAccessor, Serializable {
 
     private static final float HASHMAP_DEFAULT_LOAD_FACTOR = 0.75f;
 
+    // maximum size to use an array after which we switch to a full HashMap
+    public static final int ARRAY_MAX = 5;
+
     private static final int DEBUG_MAX_STRING = 100;
 
     private static final int DEBUG_MAX_ARRAY = 10;
 
     public static final State EMPTY = new State(Collections.<String, Serializable> emptyMap());
+
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     /** Initial key order for the {@link #toString} method. */
     private static final Set<String> TO_STRING_KEY_ORDER = new LinkedHashSet<>(Arrays.asList(new String[] { "ecm:id",
@@ -72,7 +84,7 @@ public class State implements StateAccessor, Serializable {
         public void put(String key, Serializable value) {
             // for a StateDiff, we don't have concurrency problems
             // and we want to store nulls explicitly
-            map.put(key, value);
+            putEvenIfNull(key, value);
         }
     }
 
@@ -131,7 +143,14 @@ public class State implements StateAccessor, Serializable {
         }
     }
 
-    protected final Map<String, Serializable> map;
+
+    // if map != null then use it
+    protected Map<String, Serializable> map;
+
+    // else use keys / values
+    protected List<String> keys;
+
+    protected List<Serializable> values;
 
     /**
      * Private constructor with explicit map.
@@ -169,34 +188,54 @@ public class State implements StateAccessor, Serializable {
      * @param threadSafe if {@code true}, then a {@link ConcurrentHashMap} is used
      */
     public State(int size, boolean threadSafe) {
-        int initialCapacity = Math.max((int) (size / HASHMAP_DEFAULT_LOAD_FACTOR) + 1, HASHMAP_DEFAULT_INITIAL_CAPACITY);
-        float loadFactor = HASHMAP_DEFAULT_LOAD_FACTOR;
         if (threadSafe) {
-            map = new ConcurrentHashMap<String, Serializable>(initialCapacity, loadFactor);
+            map = new ConcurrentHashMap<String, Serializable>(initialCapacity(size));
         } else {
-            map = new HashMap<>(initialCapacity, loadFactor);
+            if (size > ARRAY_MAX) {
+                map = new HashMap<>(initialCapacity(size));
+            } else {
+                keys = new ArrayList<String>(size);
+                values = new ArrayList<Serializable>(size);
+            }
         }
+    }
+
+    protected static int initialCapacity(int size) {
+        return Math.max((int) (size / HASHMAP_DEFAULT_LOAD_FACTOR) + 1, HASHMAP_DEFAULT_INITIAL_CAPACITY);
     }
 
     /**
      * Gets the number of elements.
      */
     public int size() {
-        return map.size();
+        if (map != null) {
+            return map.size();
+        } else {
+            return keys.size();
+        }
     }
 
     /**
      * Checks if the state is empty.
      */
     public boolean isEmpty() {
-        return map.isEmpty();
+        if (map != null) {
+            return map.isEmpty();
+        } else {
+            return keys.isEmpty();
+        }
     }
 
     /**
      * Gets a value for a key, or {@code null} if the key is not present.
      */
     public Serializable get(Object key) {
-        return map.get(key);
+        if (map != null) {
+            return map.get(key);
+        } else {
+            int i = keys.indexOf(key);
+            return i >= 0 ? values.get(i) : null;
+        }
     }
 
     /**
@@ -207,9 +246,45 @@ public class State implements StateAccessor, Serializable {
             // if we're using a ConcurrentHashMap
             // then null values are forbidden
             // this is ok given our semantics of null vs absent key
-            map.remove(key);
+            if (map != null) {
+                map.remove(key);
+            } else {
+                int i = keys.indexOf(key);
+                if (i >= 0) {
+                    // cost is not trivial but we don't use this often, if at all
+                    keys.remove(i);
+                    values.remove(i);
+                }
+            }
         } else {
+            putEvenIfNull(key, value);
+        }
+    }
+
+    protected void putEvenIfNull(String key, Serializable value) {
+        if (map != null) {
             map.put(key, value);
+        } else {
+            int i = keys.indexOf(key);
+            if (i >= 0) {
+                // existing key
+                values.set(i, value);
+            } else {
+                // new key
+                if (keys.size() < ARRAY_MAX) {
+                    keys.add(key);
+                    values.add(value);
+                } else {
+                    // upgrade to a full HashMap
+                    map = new HashMap<>(initialCapacity(keys.size() + 1));
+                    for (int j = 0; j < keys.size(); j++) {
+                        map.put(keys.get(j), values.get(j));
+                    }
+                    map.put(key, value);
+                    keys = null;
+                    values = null;
+                }
+            }
         }
     }
 
@@ -217,7 +292,7 @@ public class State implements StateAccessor, Serializable {
      * Sets a key/value, dealing with deltas.
      */
     public void put(String key, Serializable value) {
-        Serializable oldValue = map.get(key);
+        Serializable oldValue = get(key);
         if (oldValue instanceof Delta) {
             Delta oldDelta = (Delta) oldValue;
             if (value instanceof Delta) {
@@ -240,28 +315,169 @@ public class State implements StateAccessor, Serializable {
      * @return the previous value associated with the key, or {@code null} if there was no mapping for the key
      */
     public Serializable remove(Object key) {
-        return map.remove(key);
+        if (map != null) {
+            return map.remove(key);
+        } else {
+            int i = keys.indexOf(key);
+            if (i >= 0) {
+                keys.remove(i);
+                return values.remove(i);
+            } else {
+                return null;
+            }
+        }
     }
 
     /**
      * Gets the key set. IT MUST NOT BE MODIFIED.
      */
     public Set<String> keySet() {
-        return map.keySet();
+        if (map != null) {
+            return map.keySet();
+        } else {
+            return ImmutableSet.copyOf(keys);
+        }
+    }
+
+    /**
+     * Gets an array of keys.
+     */
+    public String[] keyArray() {
+        if (map != null) {
+            return map.keySet().toArray(EMPTY_STRING_ARRAY);
+        } else {
+            return keys.toArray(EMPTY_STRING_ARRAY);
+        }
     }
 
     /**
      * Checks if there is a mapping for the given key.
      */
     public boolean containsKey(Object key) {
-        return map.containsKey(key);
+        if (map != null) {
+            return map.containsKey(key);
+        } else {
+            return keys.contains(key);
+        }
     }
 
     /**
      * Gets the entry set. IT MUST NOT BE MODIFIED.
      */
     public Set<Entry<String, Serializable>> entrySet() {
-        return map.entrySet();
+        if (map != null) {
+            return map.entrySet();
+        } else {
+            return new ArraysEntrySet();
+        }
+    }
+
+    /** EntrySet optimized to just return a simple Iterator on the entries. */
+    protected class ArraysEntrySet implements Set<Entry<String, Serializable>> {
+
+        @Override
+        public int size() {
+            return keys.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return keys.isEmpty();
+        }
+
+        @Override
+        public Iterator<Entry<String, Serializable>> iterator() {
+            return new ArraysEntryIterator();
+        }
+
+        @Override
+        public boolean contains(Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Object[] toArray() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public <T> T[] toArray(T[] a) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean add(Entry<String, Serializable> e) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean remove(Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends Entry<String, Serializable>> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void clear() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public class ArraysEntryIterator implements Iterator<Entry<String, Serializable>> {
+
+        private int index;
+
+        @Override
+        public boolean hasNext() {
+            return index < keys.size();
+        }
+
+        @Override
+        public Entry<String, Serializable> next() {
+            return new ArraysEntry(index++);
+        }
+    }
+
+    public class ArraysEntry implements Entry<String, Serializable> {
+
+        private final int index;
+
+        public ArraysEntry(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public String getKey() {
+            return keys.get(index);
+        }
+
+        @Override
+        public Serializable getValue() {
+            return values.get(index);
+        }
+
+        @Override
+        public Serializable setValue(Serializable value) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
@@ -290,7 +506,7 @@ public class State implements StateAccessor, Serializable {
             }
         }
         // sort keys
-        String[] keys = keySet().toArray(new String[0]);
+        String[] keys = keyArray();
         Arrays.sort(keys);
         for (String key : keys) {
             if (TO_STRING_KEY_ORDER.contains(key)) {
