@@ -13,6 +13,10 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.State.NOP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
@@ -426,6 +430,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(new BasicDBObject(KEY_PRIMARY_TYPE, ONE));
         coll.createIndex(new BasicDBObject(KEY_LIFECYCLE_STATE, ONE));
         coll.createIndex(new BasicDBObject(KEY_FULLTEXT_JOBID, ONE));
+        coll.createIndex(new BasicDBObject(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER, ONE));
+        coll.createIndex(new BasicDBObject(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_STATUS, ONE));
         // TODO configure these from somewhere else
         coll.createIndex(new BasicDBObject("rend:renditionName", ONE));
         coll.createIndex(new BasicDBObject("drv:subscriptions.enabled", ONE));
