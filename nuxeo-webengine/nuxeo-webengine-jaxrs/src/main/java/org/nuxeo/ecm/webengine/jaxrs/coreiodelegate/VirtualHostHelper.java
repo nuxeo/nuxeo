@@ -48,6 +48,8 @@ public class VirtualHostHelper {
 
     private static final String VH_HEADER = "nuxeo-virtual-host";
 
+    private static final String VH_PARAM = "nuxeo.virtual.host";
+
     // Utility class.
     private VirtualHostHelper() {
     }
@@ -98,6 +100,9 @@ public class VirtualHostHelper {
         if (httpRequest != null) {
             // Detect Nuxeo specific header for VH
             String nuxeoVH = httpRequest.getHeader(VH_HEADER);
+            if (nuxeoVH == null) {
+                nuxeoVH = Framework.getProperty(VH_PARAM);
+            }
             if (!local && nuxeoVH != null && nuxeoVH.contains("http")) {
                 baseURL = nuxeoVH;
             } else {

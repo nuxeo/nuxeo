@@ -65,6 +65,8 @@ public final class ComponentUtils {
 
     private static final String VH_HEADER = "nuxeo-virtual-host";
 
+    private static final String VH_PARAM = "nuxeo.virtual.host";
+
     public static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
 
     // Utility class.
@@ -268,6 +270,9 @@ public final class ComponentUtils {
         boolean secure = request.isSecure();
         if (!secure) {
             String nvh = request.getHeader(VH_HEADER);
+            if (nvh == null) {
+                nvh = Framework.getProperty(VH_PARAM);
+            }
             if (nvh != null) {
                 secure = nvh.startsWith("https");
             }

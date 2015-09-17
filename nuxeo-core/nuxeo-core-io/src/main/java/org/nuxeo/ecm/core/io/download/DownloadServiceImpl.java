@@ -66,6 +66,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     private static final String NUXEO_VIRTUAL_HOST = "nuxeo-virtual-host";
 
+    private static final String VH_PARAM = "nuxeo.virtual.host";
+
     private static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
 
     @Override
@@ -248,6 +250,9 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         boolean secure = request.isSecure();
         if (!secure) {
             String nvh = request.getHeader(NUXEO_VIRTUAL_HOST);
+            if (nvh == null) {
+                nvh = Framework.getProperty(VH_PARAM);
+            }
             if (nvh != null) {
                 secure = nvh.startsWith("https");
             }
