@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.rendition.extension;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -29,7 +31,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -112,6 +116,10 @@ public class AutomationRenderer {
             }
 
             Blob blob = (Blob) as.run(oc, definition.getOperationChain());
+            if (blob != null && StringUtils.isBlank(blob.getFilename())) {
+                String filename = getFilenameWithExtension(doc.getTitle(), blob.getMimeType(), "bin");
+                blob.setFilename(filename);
+            }
             List<Blob> blobs = new ArrayList<Blob>();
             blobs.add(blob);
             return blobs;
@@ -120,6 +128,20 @@ public class AutomationRenderer {
             throw new NuxeoException("Exception while running the operation chain: "
                     + definition.getOperationChain(), e);
         }
+    }
+
+    public static String getFilenameWithExtension(String filename, String mimeType, String defaultExtension) {
+        String baseName = FilenameUtils.getBaseName(filename);
+        MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
+        MimetypeEntry mimeTypeEntry = mimetypeRegistry.getMimetypeEntryByMimeType(mimeType);
+        List<String> extensions = mimeTypeEntry.getExtensions();
+        String extension;
+        if (!extensions.isEmpty()) {
+            extension = extensions.get(0);
+        } else {
+            extension = defaultExtension;
+        }
+        return (extension == null) ? filename : baseName + "." + extension;
     }
 
 }
