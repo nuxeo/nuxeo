@@ -341,18 +341,30 @@
       </processors>
     </resource>
     <!-- Header and Footer -->
-    <resource name="header.css">
+    <!--resource name="header.css">
       <path>themes/css/header.css</path>
       <processors>
         <processor>flavor</processor>
       </processors>
-    </resource>
+    </resource-->
     <resource name="footer.css">
       <path>themes/css/footer.css</path>
       <processors>
         <processor>flavor</processor>
       </processors>
     </resource>
+    <resource name="header.scss" type="css">
+      <path>themes/sass/header.scss</path>
+      <processors>
+        <processor>sassCss</processor>
+      </processors>
+    </resource>
+    <!--resource name="footer.scss" type="css">
+      <path>themes/sass/footer.scss</path>
+      <processors>
+        <processor>sassCss</processor>
+      </processors>
+    </resource-->
     <!-- Specific to pages -->
     <resource name="nuxeo_dm_specific.css">
       <path>themes/css/nuxeo_dm_specific.css</path>
@@ -429,6 +441,14 @@
       </resources>
     </bundle>
 
+    <!-- Sass styles  -->
+    <bundle name="nuxeo_sassCss">
+      <resources>
+        <resource>header.scss</resource>
+        <!--resource>footer.scss</resource-->
+      </resources>
+    </bundle>
+
     <!-- styling common to all basic pages -->
     <bundle name="nuxeo_base">
       <resources>
@@ -449,7 +469,7 @@
         <resource>breadcrumb.css</resource>
         <resource>drag_and_drop.css</resource>
         <resource>screen.css</resource>
-        <resource>header.css</resource>
+        <!--resource>header.css</resource-->
         <resource>footer.css</resource>
         <resource>polymer.css</resource>
       </resources>
@@ -475,6 +495,7 @@
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_sassCss</bundle>
         <resource>print_generic.css</resource>
       </resources>
     </page>
@@ -488,6 +509,7 @@
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_sassCss</bundle>
         <bundle>nuxeo_dm</bundle>
         <resource>popups.css</resource>
       </resources>
@@ -502,6 +524,7 @@
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_sassCss</bundle>
         <bundle>nuxeo_dm</bundle>
       </resources>
     </page>
@@ -544,6 +567,9 @@
           <color>#e6f1ff</color>
         </colors>
       </palettePreview>
+      <sass>
+        <import src="themes/palettes/default_variables.scss" />
+      </sass>
     </flavor>
 
     <flavor name="rainbow">
@@ -579,6 +605,9 @@
           <color>#feffe6</color>
         </colors>
       </palettePreview>
+      <sass>
+        <import src="themes/palettes/alternative_variables.scss" />
+      </sass>
     </flavor>
 
   </extension>
