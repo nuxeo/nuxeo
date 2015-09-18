@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 
 /**
  * Service interface to collect inputs (Blobs) for an operation or operation chain.
@@ -34,10 +35,26 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public interface BatchManager {
 
     /**
-     * Add an inputStream in a batch Will create a new {@link Batch} if needed Streams are persisted as temporary files
+     * Returns the {@link TransientStore} backing the batches.
      *
+     * @since 7.4
+     */
+    TransientStore getTransientStore();
+
+    /**
+     * Adds an inputStream as a blob in a batch. Will create a new {@link Batch} if needed.
+     * <p>
+     * Streams are persisted as temporary files.
      */
     void addStream(String batchId, String idx, InputStream is, String name, String mime) throws IOException;
+
+    /**
+     * Adds an inputStream as a chunk in a batch. Will create a new {@link Batch} if needed.
+     *
+     * @since 7.4
+     */
+    void addStream(String batchId, String idx, InputStream is, int chunkCount, int chunkIdx, String name, String mime,
+            long fileSize) throws IOException;
 
     /**
      * Returns true if there is a batch for the given {@code batchId}, false otherwise.

@@ -18,77 +18,41 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.transientstore.AbstractStorageEntry;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Batch Object to encapsulate all data related to a batch, especially the temporary files used for Blobs
+ * Batch Object to encapsulate all data related to a batch, especially the temporary files used for Blobs.
+ * <p>
+ * Since 7.4 a batch is backed by the {@link TransientStore}.
  *
  * @since 5.4.2
  */
-public class Batch {
+public class Batch extends AbstractStorageEntry {
 
-    protected Map<String, Blob> uploadedBlob = new ConcurrentHashMap<String, Blob>();
-
-    protected final String id;
-
-    protected final String baseDir;
+    private static final long serialVersionUID = 1L;
 
     protected final AtomicInteger uploadInProgress = new AtomicInteger(0);
 
     public Batch(String id) {
-        this.id = id;
-        baseDir = new Path(System.getProperty("java.io.tmpdir")).append(id).toString();
-        new File(baseDir).mkdirs();
+        super(id);
     }
 
     /**
-     * @since 7.4
+     * Returns the uploaded blobs in the order the user chose to upload them.
      */
-    public String getId() {
-        return id;
-    }
-
-    public void addBlob(String idx, Blob blob) {
-        uploadedBlob.put(idx, blob);
-    }
-
-    public void addStream(String idx, InputStream is, String name, String mime) throws IOException {
-
-        uploadInProgress.incrementAndGet();
-        try {
-            File tmp = new File(new Path(baseDir).append(name).toString());
-            FileUtils.copyToFile(is, tmp);
-            Blob blob = Blobs.createBlob(tmp);
-            if (mime != null) {
-                blob.setMimeType(mime);
-            } else {
-                blob.setMimeType("application/octet-stream");
-            }
-            blob.setFilename(name);
-            addBlob(idx, blob);
-        } finally {
-            uploadInProgress.decrementAndGet();
-        }
-    }
-
-    /**
-     * Return the uploaded blobs in the order the user choose to upload them
-     *
-     * @return
-     */
+    @Override
     public List<Blob> getBlobs() {
         return getBlobs(0);
 
@@ -98,7 +62,6 @@ public class Batch {
      * @since 5.7
      */
     public List<Blob> getBlobs(int timeoutS) {
-
         List<Blob> blobs = new ArrayList<Blob>();
 
         if (uploadInProgress.get() > 0 && timeoutS > 0) {
@@ -113,43 +76,147 @@ public class Batch {
                 }
             }
         }
-        List<String> sortedIdx = new ArrayList<String>(uploadedBlob.keySet());
+        List<String> sortedIdx = new ArrayList<String>(getParameters().keySet());
         Collections.sort(sortedIdx);
 
-        for (String k : sortedIdx) {
-            blobs.add(uploadedBlob.get(k));
+        for (String idx : sortedIdx) {
+            Blob blob = retrieveBlob(idx);
+            if (blob != null) {
+                blobs.add(blob);
+            }
         }
         return blobs;
     }
 
-    public Blob getBlob(String fileId) {
-        return getBlob(fileId, 0);
+    public Blob getBlob(String idx) {
+        return getBlob(idx, 0);
     }
 
     /**
+     * @since 5.7
      */
-    public Blob getBlob(String fileId, int timeoutS) {
-
-        Blob result = uploadedBlob.get(fileId);
-        if (result == null && timeoutS > 0 && uploadInProgress.get() > 0) {
+    public Blob getBlob(String idx, int timeoutS) {
+        String fileIdx = "file_" + idx;
+        Blob blob = retrieveBlob(fileIdx);
+        if (blob == null && timeoutS > 0 && uploadInProgress.get() > 0) {
             for (int i = 0; i < timeoutS * 5; i++) {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                result = uploadedBlob.get(fileId);
-                if (result != null) {
+                blob = retrieveBlob(fileIdx);
+                if (blob != null) {
                     break;
                 }
             }
         }
-        return result;
+        return blob;
     }
 
-    public void clear() {
-        uploadedBlob.clear();
-        FileUtils.deleteTree(new File(baseDir));
+    protected Blob retrieveBlob(String idx) {
+        Blob blob = null;
+        String fileEntryId = (String) get(idx);
+        if (fileEntryId != null) {
+            BatchManager bm = Framework.getService(BatchManager.class);
+            BatchFileEntry fileEntry = (BatchFileEntry) bm.getTransientStore().get(fileEntryId);
+            if (fileEntry != null) {
+                blob = fileEntry.getBlob();
+            }
+        }
+        return blob;
+    }
+
+    public void addStream(String idx, InputStream is, String name, String mime) throws IOException {
+        uploadInProgress.incrementAndGet();
+        try {
+            String mimeType = mime;
+            if (mimeType == null) {
+                mimeType = "application/octet-stream";
+            }
+            Blob blob = Blobs.createBlob(is, mime);
+            blob.setFilename(name);
+            addFile(idx, blob);
+        } finally {
+            uploadInProgress.decrementAndGet();
+        }
+    }
+
+    protected BatchFileEntry addFile(String idx, Blob blob) {
+        String fileEntryId = getId() + "_" + idx;
+        BatchFileEntry fileEntry = new BatchFileEntry(fileEntryId, blob);
+
+        BatchManager bm = Framework.getService(BatchManager.class);
+        bm.getTransientStore().put(fileEntry);
+        put("file_" + idx, fileEntryId);
+
+        return fileEntry;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void addChunkStream(String idx, InputStream is, int chunkCount, int chunkIdx, String name, String mime,
+            long fileSize) throws IOException {
+        uploadInProgress.incrementAndGet();
+        try {
+            addChunk(idx, Blobs.createBlob(is), chunkCount, chunkIdx, name, mime, fileSize);
+        } finally {
+            uploadInProgress.decrementAndGet();
+        }
+    }
+
+    protected BatchFileEntry addChunk(String idx, Blob blob, int chunkCount, int chunkIdx, String name, String mime,
+            long fileSize) {
+
+        BatchFileEntry fileEntry = null;
+        String fileEntryId = (String) get("file_" + idx);
+        if (fileEntryId != null) {
+            BatchManager bm = Framework.getService(BatchManager.class);
+            fileEntry = (BatchFileEntry) bm.getTransientStore().get(fileEntryId);
+        }
+        if (fileEntry == null) {
+            if (fileEntryId == null) {
+                fileEntryId = getId() + "_" + idx;
+            }
+            fileEntry = new BatchFileEntry(fileEntryId, chunkCount, name, mime, fileSize);
+            put("file_" + idx, fileEntryId);
+        }
+        fileEntry.addChunk(chunkIdx, blob);
+
+        BatchManager bm = Framework.getService(BatchManager.class);
+        bm.getTransientStore().put(fileEntry);
+
+        return fileEntry;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void clean() {
+        // Remove batch and all related storage entries from transient store, GC will clean up the files
+        BatchManager bm = Framework.getService(BatchManager.class);
+        TransientStore ts = bm.getTransientStore();
+        for (Serializable v : getParameters().values()) {
+            String fileEntryId = (String) v;
+            // Check for chunk entries to remove
+            BatchFileEntry fileEntry = (BatchFileEntry) ts.get(fileEntryId);
+            if (fileEntry.isChunked()) {
+                for (String chunkEntryId : fileEntry.getChunkEntryIds()) {
+                    // Remove chunk entry
+                    ts.remove(chunkEntryId);
+                }
+            }
+            // Remove file entry
+            ts.remove(fileEntryId);
+        }
+        // Remove batch entry
+        ts.remove(getId());
+    }
+
+    @Override
+    public void beforeRemove() {
+        // Nothing to do here
     }
 
 }
