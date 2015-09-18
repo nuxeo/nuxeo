@@ -101,11 +101,6 @@ author: lkemen@nuxeo.com
   font-weight: bold;
   padding-right: 2.5em }
 
-.rank_block,
-.attachments,
-.publication_block {
-  margin-top: 1.3em }
-
 .coloredWidget {
   background: none "widget (__FLAVOR__ background)";
   border-radius: 3px;
@@ -153,13 +148,13 @@ author: lkemen@nuxeo.com
   white-space: nowrap }
 
 .textBlock,
-.note_content_block {
-  border: 1px solid;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
+.note_content_block,
+.content_block,
+.metadata_block {
+  border: 1px solid "neutral.lighter (__FLAVOR__ border)";
   border-radius: 3px;
   color: "black (__FLAVOR__ color)";
   display: block;
-  margin: 0 0 1.4em;
   overflow: hidden;
   padding: 1.4em 1.7em }
 
