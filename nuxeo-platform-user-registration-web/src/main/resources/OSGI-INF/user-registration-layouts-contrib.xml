@@ -246,7 +246,6 @@
         <field>data.userinfo.login</field>
       </fields>
       <properties widgetMode="edit">
-        <property name="required">true</property>
         <property name="styleClass">dataInputText</property>
       </properties>
     </widget>

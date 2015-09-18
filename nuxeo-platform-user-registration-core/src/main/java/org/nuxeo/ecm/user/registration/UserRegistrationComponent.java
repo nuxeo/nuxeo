@@ -96,6 +96,9 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
         @Override
         public void run() {
 
+            //Check if login is defined - if not define it with email
+            userInfo.setLogin(userInfo.getLogin() == null ? userInfo.getEmail() : userInfo.getLogin());
+
             String title = "registration request for " + userInfo.getLogin() + " (" + userInfo.getEmail() + " "
                     + userInfo.getCompany() + ") ";
             String name = IdUtils.generateId(title + "-" + System.currentTimeMillis(), "-", true, 24);
