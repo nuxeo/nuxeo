@@ -123,11 +123,11 @@
 }
 
 .column:hover .clipboardFunction a {
-  color: $links-color;
+  color: $link;
 }
 
 .column:hover .clipboardFunction a:hover {
-  color: $links-hover-color;
+  color: $link-hover;
 }
 
 .clipboardRemoveItem {

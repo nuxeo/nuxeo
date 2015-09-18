@@ -267,7 +267,7 @@ h3.documentTypes {
 .documentType a:visited,
 .documentType a:hover {
   font-weight: bold;
-  color: $links-color;
+  color: $link;
   text-decoration: none;
 }
 
@@ -276,7 +276,7 @@ h3.documentTypes {
 }
 
 a.documentTypeLink {
-  color: $links-color;
+  color: $link;
   font-weight: bold;
   text-decoration: none;
 }
@@ -365,7 +365,7 @@ a.documentTypeLink {
 }
 
 .nx-page .rf-cal-c {
-  color: $links-color;
+  color: $link;
 }
 
 .nx-page .rf-cal-tool-btn {

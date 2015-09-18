@@ -535,7 +535,7 @@
 .thumbnailOptions input[type="submit"] {
   background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
   border: medium none;
-  color: $links-color;
+  color: $link;
   font-size: 1em;
   font-weight: normal;
   letter-spacing: inherit;
@@ -544,7 +544,7 @@
 
 .thumbnailOptions input:hover,
 .thumbnailOptions input[type="submit"]:hover {
-  color: $links-hover-color;
+  color: $link-hover;
 }
 
 // TinyMce override
@@ -608,7 +608,7 @@
 }
 
 .nx-page .mce-toolbar .mce-btn:hover i {
-  color: $links-hover-color;
+  color: $link-hover;
 }
 
 .nx-page .mce-toolbar .mce-btn,

@@ -30,7 +30,7 @@ body,
   vertical-align: baseline;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: all 250ms ease 0s;
+  transition: color 250ms ease 0s, background 250ms ease 0s, border 250ms ease 0s;
 }
 
 ul {
@@ -134,12 +134,12 @@ video {
 
 // =Links and Titles
 .nx-page a {
-  color: $links-color;
+  color: $link;
   text-decoration: none;
 }
 
 .nx-page a:hover {
-  color: $links-hover-color;
+  color: $link-hover;
   text-decoration: none;
 }
 
