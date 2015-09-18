@@ -101,7 +101,8 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         String contentType = request.getHeader("Content-Type");
         String uploadType = request.getHeader("X-Upload-Type");
         String contentLength = request.getHeader("Content-Length");
-        String uploadChunk = request.getHeader("X-Upload-Chunk");
+        String uploadChunk = request.getHeader("X-Upload-Chunk-Idx");
+        String chunkCount = request.getHeader("X-Upload-Chunk-Count");
         String fileName = request.getHeader("X-File-Name");
         String fileSize = request.getHeader("X-File-Size");
         String mimeType = request.getHeader("X-File-Type");
@@ -122,16 +123,20 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             is = request.getInputStream();
         }
 
-        // TODO Handle chunked mode
+        // TODO https://jira.nuxeo.com/browse/NXP-16951
+        // Handle chunked mode
         log.debug(String.format("Uploading %s (%sb)", fileName, fileSize));
         bm.addStream(batchId, fileIdx, is, fileName, mimeType);
 
         Map<String, String> result = new HashMap<String, String>();
         result.put("batchId", batchId);
         result.put("fileIdx", fileIdx);
-        // TODO Use effective uploaded size returned by bm
+        result.put("uploadType", uploadType);
+        // TODO https://jira.nuxeo.com/browse/NXP-16951
+        // Use effective uploaded size returned by bm
         result.put("uploadedSize", fileSize);
-        // TODO If chunked send 308 Resume Incomplete status (or 201 if last chunk) and put chunkCompletion in result
+        // TODO https://jira.nuxeo.com/browse/NXP-16951
+        // If chunked send 308 Resume Incomplete status (or 201 if last chunk) and put chunkCompletion in result
         return buildResponse(Status.CREATED, result, isMultipart);
     }
 
@@ -147,6 +152,8 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             return buildEmptyResponse(Status.NO_CONTENT);
         }
         List<Map<String, Object>> result = new ArrayList<>();
+        // TODO https://jira.nuxeo.com/browse/NXP-16951
+        // Send chunking info
         for (Blob blob : blobs) {
             Map<String, Object> map = new HashMap<>();
             map.put("name", blob.getFilename());
@@ -169,9 +176,11 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             return buildEmptyResponse(Status.NOT_FOUND);
         }
         Map<String, String> result = new HashMap<String, String>();
+        result.put("uploadType", "normal");
         result.put("uploadedSize", String.valueOf(blob.getLength()));
-        // TODO If chunked send 308 Resume Incomplete status (or 200 if all chunks uploaded) and put chunkCompletion in
-        // result instead of uploadedSize
+        // TODO https://jira.nuxeo.com/browse/NXP-16951
+        // If chunked send 308 Resume Incomplete status (or 200 if all chunks uploaded) and put "chunked"
+        // uploadType + chunkCompletion in result instead of uploadedSize
         return buildResponse(Status.OK, result);
     }
 
