@@ -20,6 +20,19 @@ author: lkemen@nuxeo.com
   margin-top: 0;
   padding: 1.2em 0.5em 1.5em; }
 
+/* Custom styles for summary */
+.summary .gridRow .gridBox:nth-child(2) .widgetPanel {
+  padding-right: 0; }
+
+.summary .gridBox.gridStyle4 {
+    background-color: #fafafa;
+    box-shadow: 2px 0 2px -2px rgba(0, 0, 0, 0.3) inset;
+    padding: 2em 1em;
+    margin: -2em 0; }
+
+.summary {
+    margin-right: -1.5em; }
+
 /* =List of available servers  */
 .serverChoice {
   float: left; }

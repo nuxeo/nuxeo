@@ -7,7 +7,7 @@ author: lkemen@nuxeo.com
 .breadcrumb {
   color: "gray.light (__FLAVOR__ color)";
   font-size: .85em;
-  margin: 0 0 2em }
+  margin: -1em 0 2em }
 
 .breadcrumb .action_bar {
   margin: 0 }
