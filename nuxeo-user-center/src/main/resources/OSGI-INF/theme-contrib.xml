@@ -12,7 +12,8 @@
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
-        <resource>nuxeo_usercenter_specific.css</resource>
+        <bundle>nuxeo_sassCss</bundle>
+        <resource>nuxeo_usercenter_specific.scss</resource>
       </resources>
     </themePage>
 
@@ -20,10 +21,10 @@
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
-    <resource name="nuxeo_usercenter_specific.css">
-      <path>themes/css/nuxeo_usercenter_specific.css</path>
+    <resource name="nuxeo_usercenter_specific.scss" type="css">
+      <path>themes/sass/nuxeo_usercenter_specific.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
 
