@@ -100,7 +100,8 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
     public String getUserID(HttpServletRequest httpRequest) {
         String idpUrl = httpRequest.getHeader(config.getIdpHeader());
         String uidHeader = config.getUidHeaders().get(idpUrl);
-        if (uidHeader == null) {
+        if (uidHeader == null || readHeader(httpRequest, uidHeader) == null
+                || readHeader(httpRequest, uidHeader).isEmpty()) {
             uidHeader = config.getDefaultUidHeader();
         }
         return readHeader(httpRequest, uidHeader);
