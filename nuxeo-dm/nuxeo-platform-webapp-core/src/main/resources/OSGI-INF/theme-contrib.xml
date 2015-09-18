@@ -236,121 +236,107 @@
     </resource>
     <!-- end of "static" resources declaration -->
 
-    <!-- Style resources (contain indirect references to flavor names, i.e. "__FLAVOR__") -->
-    <!-- Global styles -->
-    <resource name="normalize.css">
-      <path>themes/css/normalize.css</path>
+    <!-- Sass styles -->
+    <resource name="normalize.scss" type="css">
+      <path>themes/sass/normalize.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="breadcrumb.css">
-      <path>themes/css/breadcrumb.css</path>
+    <resource name="breadcrumb.scss" type="css">
+      <path>themes/sass/breadcrumb.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="buttons_and_actions.css">
-      <path>themes/css/buttons_and_actions.css</path>
+    <resource name="buttons_and_actions.scss" type="css">
+      <path>themes/sass/buttons_and_actions.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="basics.css">
-      <path>themes/css/basics.css</path>
+    <resource name="basics.scss" type="css">
+      <path>themes/sass/basics.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="body.css">
-      <path>themes/css/body.css</path>
+    <resource name="body.scss" type="css">
+      <path>themes/sass/body.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="drag_and_drop.css">
-      <path>themes/css/drag_and_drop.css</path>
+    <resource name="drag_and_drop.scss" type="css">
+      <path>themes/sass/drag_and_drop.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="foldable_boxes.css">
-      <path>themes/css/foldable_boxes.css</path>
+    <resource name="foldable_boxes.scss" type="css">
+      <path>themes/sass/foldable_boxes.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="forms.css">
-      <path>themes/css/forms.css</path>
+    <resource name="forms.scss" type="css">
+      <path>themes/sass/forms.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="grids_and_widgets.css">
-      <path>themes/css/grids_and_widgets.css</path>
+    <resource name="grids_and_widgets.scss" type="css">
+      <path>themes/sass/grids_and_widgets.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="messages_and_tooltips.css">
-      <path>themes/css/messages_and_tooltips.css</path>
+    <resource name="messages_and_tooltips.scss" type="css">
+      <path>themes/sass/messages_and_tooltips.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="navigation.css">
-      <path>themes/css/navigation.css</path>
+    <resource name="navigation.scss" type="css">
+      <path>themes/sass/navigation.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="popups.css">
-      <path>themes/css/popups.css</path>
+    <resource name="popups.scss" type="css">
+      <path>themes/sass/popups.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="richfaces_components.css">
-      <path>themes/css/richfaces_components.css</path>
+    <resource name="richfaces_components.scss" type="css">
+      <path>themes/sass/richfaces_components.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="tables.css">
-      <path>themes/css/tables.css</path>
+    <resource name="tables.scss" type="css">
+      <path>themes/sass/tables.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="tabs_content.css">
-      <path>themes/css/tabs_content.css</path>
+    <resource name="tabs_content.scss" type="css">
+      <path>themes/sass/tabs_content.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="helpers.css">
-      <path>themes/css/helpers.css</path>
+    <resource name="helpers.scss" type="css">
+      <path>themes/sass/helpers.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="polymer.css">
-      <path>themes/css/polymer.css</path>
+    <resource name="polymer.scss" type="css">
+      <path>themes/sass/polymer.scss</path>
       <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <!-- Header and Footer -->
-    <!--resource name="header.css">
-      <path>themes/css/header.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource-->
-    <resource name="footer.css">
-      <path>themes/css/footer.css</path>
-      <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
     <resource name="header.scss" type="css">
@@ -359,26 +345,25 @@
         <processor>sassCss</processor>
       </processors>
     </resource>
-    <!--resource name="footer.scss" type="css">
+    <resource name="footer.scss" type="css">
       <path>themes/sass/footer.scss</path>
       <processors>
         <processor>sassCss</processor>
       </processors>
-    </resource-->
-    <!-- Specific to pages -->
-    <resource name="nuxeo_dm_specific.css">
-      <path>themes/css/nuxeo_dm_specific.css</path>
+    </resource>
+    <resource name="nuxeo_dm_specific.scss" type="css">
+      <path>themes/sass/nuxeo_dm_specific.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <resource name="print_generic.css">
-      <path>themes/css/print_generic.css</path>
+    <resource name="print_generic.scss" type="css">
+      <path>themes/sass/print_generic.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
-    <!-- end of flavor resources declaration -->
+    <!-- end of resources declaration -->
 
   </extension>
 
@@ -444,40 +429,37 @@
     <!-- Sass styles  -->
     <bundle name="nuxeo_sassCss">
       <resources>
+        <resource>normalize.scss</resource>
+        <resource>basics.scss</resource>
+        <resource>buttons_and_actions.scss</resource>
+        <resource>body.scss</resource>
+        <resource>grids_and_widgets.scss</resource>
+        <resource>navigation.scss</resource>
+        <resource>forms.scss</resource>
+        <resource>messages_and_tooltips.scss</resource>
+        <resource>foldable_boxes.scss</resource>
+        <resource>tabs_content.scss</resource>
+        <resource>helpers.scss</resource>
+        <resource>tables.scss</resource>
+        <resource>richfaces_components.scss</resource>
+        <resource>popups.scss</resource>
+        <resource>breadcrumb.scss</resource>
+        <resource>drag_and_drop.scss</resource>
         <resource>header.scss</resource>
-        <!--resource>footer.scss</resource-->
+        <resource>footer.scss</resource>
+        <resource>polymer.scss</resource>
       </resources>
     </bundle>
 
-    <!-- styling common to all basic pages -->
     <bundle name="nuxeo_base">
       <resources>
-        <resource>normalize.css</resource>
-        <resource>basics.css</resource>
-        <resource>buttons_and_actions.css</resource>
-        <resource>body.css</resource>
-        <resource>grids_and_widgets.css</resource>
-        <resource>navigation.css</resource>
-        <resource>forms.css</resource>
-        <resource>messages_and_tooltips.css</resource>
-        <resource>foldable_boxes.css</resource>
-        <resource>tabs_content.css</resource>
-        <resource>helpers.css</resource>
-        <resource>tables.css</resource>
-        <resource>richfaces_components.css</resource>
-        <resource>popups.css</resource>
-        <resource>breadcrumb.css</resource>
-        <resource>drag_and_drop.css</resource>
         <resource>screen.css</resource>
-        <!--resource>header.css</resource-->
-        <resource>footer.css</resource>
-        <resource>polymer.css</resource>
       </resources>
     </bundle>
 
     <bundle name="nuxeo_dm">
       <resources>
-        <resource>nuxeo_dm_specific.css</resource>
+        <resource>nuxeo_dm_specific.scss</resource>
       </resources>
     </bundle>
 
@@ -496,7 +478,7 @@
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
         <bundle>nuxeo_sassCss</bundle>
-        <resource>print_generic.css</resource>
+        <resource>print_generic.scss</resource>
       </resources>
     </page>
 
@@ -511,7 +493,6 @@
         <bundle>nuxeo_base</bundle>
         <bundle>nuxeo_sassCss</bundle>
         <bundle>nuxeo_dm</bundle>
-        <resource>popups.css</resource>
       </resources>
     </page>
 
@@ -568,6 +549,7 @@
         </colors>
       </palettePreview>
       <sass>
+        <import src="themes/palettes/common_variables.scss" />
         <import src="themes/palettes/default_variables.scss" />
       </sass>
     </flavor>
@@ -606,6 +588,7 @@
         </colors>
       </palettePreview>
       <sass>
+        <import src="themes/palettes/common_variables.scss" />
         <import src="themes/palettes/alternative_variables.scss" />
       </sass>
     </flavor>
