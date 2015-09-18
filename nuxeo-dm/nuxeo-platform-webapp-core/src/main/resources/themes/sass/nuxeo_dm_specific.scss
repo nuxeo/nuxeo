@@ -69,7 +69,7 @@
   background-color: #fff;
   border-radius: 0 0 3px 3px;
   margin: 0;
-  padding: .4em 1em 1em;
+  padding: 1em .7em;
   word-wrap: break-word;
 }
 
@@ -107,7 +107,7 @@
 .clipboardFunctions .rf-ulst-itm:first-of-type {
   border-width: 1px;
   border-style: dashed none none;
-  border-color: $shade-medium-20;
+  border-color: $shade-medium-10;
   margin-top: .5em;
   padding-top: .9em;
 }
@@ -116,6 +116,10 @@
 .clipboardFunction a:link,
 .clipboardFunction a:visited {
   color: $font-color;
+}
+
+#clipboardCopy li {
+  margin-bottom: .35em;
 }
 
 .column:hover .clipboardFunction a {

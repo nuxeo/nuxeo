@@ -23,7 +23,7 @@ table td {
 .dataList,
 .dataInput {
   background-color: #fff;
-  border-color: $shade-medium-10;
+  border-color: $shade-light-50;
   clear: both;
   line-height: 1.3em;
   margin: 0 0 .8em;
@@ -44,8 +44,8 @@ table td {
 .dataTableLine th,
 .dataOutput th,
 .dataList th {
-  background-color: $shade-light-50;
-  border-color: $shade-light-30;
+  background-color: $shade-light-10;
+  border-color: $shade-light-50;
   border-width: 1px;
   padding: .7em .4em .7em 0;
 }
@@ -361,7 +361,7 @@ table.palettePreviewColors {
 }
 
 table.palettePreviewColors td {
-  border: 1px solid #777;
+  border: 1px solid $shade-strong-20;
 }
 
 table.palettePreviewColors td div {
@@ -418,7 +418,7 @@ table.palettePreviewColors td div {
 }
 
 .vocabularyEntryContent .notEditable {
-  background-color: #fff;
+  background-color: $shade-light-0;
 }
 
 .vocabularyEntryContent .dataInput {
