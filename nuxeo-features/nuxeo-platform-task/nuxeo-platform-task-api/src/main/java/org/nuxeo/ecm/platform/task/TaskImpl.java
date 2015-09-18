@@ -43,172 +43,13 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public DocumentModel getDocument() {
-        return doc;
-    }
-
-    @Override
-    public String getId() {
-        return doc.getId();
-    }
-
-    @Override
-    public String getTargetDocumentId() {
-        String targetDocumentId = getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME);
-        if (targetDocumentId == null) {
-            List<String> targetDocIds = getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME);
-            targetDocumentId = targetDocIds != null && targetDocIds.size() > 0 ? targetDocIds.get(0) : null;
+    public void addComment(String author, String text) {
+        List<Map<String, Serializable>> existingTasks = getPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
+        if (existingTasks == null) {
+            existingTasks = new ArrayList<Map<String, Serializable>>();
         }
-        return targetDocumentId;
-    }
-
-    @Override
-    public List<String> getActors() {
-        return getPropertyValue(TaskConstants.TASK_USERS_PROPERTY_NAME);
-    }
-
-    @Override
-    public String getInitiator() {
-        return getPropertyValue(TaskConstants.TASK_INITIATOR_PROPERTY_NAME);
-    }
-
-    @Override
-    public String getDescription() {
-        return getPropertyValue(TaskConstants.TASK_DESCRIPTION_PROPERTY_NAME);
-    }
-
-    @Override
-    public String getDirective() {
-        return getPropertyValue(TaskConstants.TASK_DIRECTIVE_PROPERTY_NAME);
-
-    }
-
-    @Override
-    public List<TaskComment> getComments() {
-        List<Map<String, Serializable>> taskCommentsProperty = getPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
-        List<TaskComment> taskComments = new ArrayList<TaskComment>(taskCommentsProperty.size());
-        for (Map<String, Serializable> taskCommentMap : taskCommentsProperty) {
-            taskComments.add(new TaskComment(taskCommentMap));
-        }
-        return taskComments;
-    }
-
-    @Override
-    public String getName() {
-        return getPropertyValue(TaskConstants.TASK_NAME_PROPERTY_NAME);
-    }
-
-    @Override
-    public String getType() {
-        return getPropertyValue(TaskConstants.TASK_TYPE_PROPERTY_NAME);
-    }
-
-    @Override
-    public String getProcessId() {
-        return getPropertyValue(TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME);
-    }
-
-    @Override
-    public Date getCreated() {
-        return getDatePropertyValue(TaskConstants.TASK_CREATED_PROPERTY_NAME);
-    }
-
-    @Override
-    public Boolean isCancelled() {
-        return TaskConstants.TASK_CANCELLED_LIFE_CYCLE_STATE.equals(doc.getCurrentLifeCycleState());
-    }
-
-    @Override
-    public Boolean hasEnded() {
-        return TaskConstants.TASK_ENDED_LIFE_CYCLE_STATE.equals(doc.getCurrentLifeCycleState());
-    }
-
-    @Override
-    public Boolean isOpened() {
-        return TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE.equals(doc.getCurrentLifeCycleState());
-    }
-
-    @Override
-    public Boolean isAccepted() {
-        Boolean isAccepted = getPropertyValue(TaskConstants.TASK_ACCEPTED_PROPERTY_NAME);
-        return isAccepted == null ? false : isAccepted;
-    }
-
-    @Override
-    public String getVariable(String key) {
-        Map<String, String> variables = getVariables();
-        return variables.get(key);
-    }
-
-    @Override
-    public Date getDueDate() {
-        return getDatePropertyValue(TaskConstants.TASK_DUE_DATE_PROPERTY_NAME);
-
-    }
-
-    @Override
-    public Map<String, String> getVariables() {
-        List<Map<String, String>> variables = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
-        Map<String, String> variableMap = new HashMap<String, String>(variables.size());
-        for (Map<String, String> map : variables) {
-            variableMap.put(map.get("key"), map.get("value"));
-        }
-        return variableMap;
-    }
-
-    @Override
-    public void setActors(List<String> users) {
-        setPropertyValue(TaskConstants.TASK_USERS_PROPERTY_NAME, users);
-    }
-
-    @Override
-    public void setTargetDocumentId(String targetDocId) {
-        List<String> ids = new ArrayList<String>();
-        ids.add(targetDocId);
-        // handle compatibility before @5.8
-        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME, ids);
-        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME, targetDocId);
-    }
-
-    @Override
-    public void setDescription(String description) {
-        setPropertyValue(TaskConstants.TASK_DESCRIPTION_PROPERTY_NAME, description);
-    }
-
-    @Override
-    public void setDirective(String directive) {
-        setPropertyValue(TaskConstants.TASK_DIRECTIVE_PROPERTY_NAME, directive);
-    }
-
-    @Override
-    public void setName(String name) {
-        setPropertyValue(TaskConstants.TASK_NAME_PROPERTY_NAME, name);
-    }
-
-    @Override
-    public void setProcessId(String processId) {
-        setPropertyValue(TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME, processId);
-    }
-
-    @Override
-    public void setType(String type) {
-        setPropertyValue(TaskConstants.TASK_TYPE_PROPERTY_NAME, type);
-    }
-
-    @Override
-    public void setInitiator(String initiator) {
-        setPropertyValue(TaskConstants.TASK_INITIATOR_PROPERTY_NAME, initiator);
-    }
-
-    @Override
-    public void setDueDate(Date dueDate) {
-        setPropertyValue(TaskConstants.TASK_DUE_DATE_PROPERTY_NAME, dueDate);
-
-    }
-
-    @Override
-    public void setCreated(Date created) {
-        setPropertyValue(TaskConstants.TASK_CREATED_PROPERTY_NAME, created);
+        existingTasks.add(new TaskComment(author, text));
+        setPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME, existingTasks);
     }
 
     @Override
@@ -232,27 +73,231 @@ public class TaskImpl implements Task {
     }
 
     @Override
+    public List<String> getActors() {
+        return getPropertyValue(TaskConstants.TASK_USERS_PROPERTY_NAME);
+    }
+
+    @Override
+    public List<TaskComment> getComments() {
+        List<Map<String, Serializable>> taskCommentsProperty = getPropertyValue(
+                TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
+        List<TaskComment> taskComments = new ArrayList<TaskComment>(taskCommentsProperty.size());
+        for (Map<String, Serializable> taskCommentMap : taskCommentsProperty) {
+            taskComments.add(new TaskComment(taskCommentMap));
+        }
+        return taskComments;
+    }
+
+    @Override
+    public Date getCreated() {
+        return getDatePropertyValue(TaskConstants.TASK_CREATED_PROPERTY_NAME);
+    }
+
+    protected Date getDatePropertyValue(String propertyName) {
+        Calendar cal = (Calendar) doc.getPropertyValue(propertyName);
+        if (cal != null) {
+            return cal.getTime();
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getDelegatedActors() {
+        return getPropertyValue(TaskConstants.TASK_DELEGATED_ACTORS_PROPERTY_NAME);
+    }
+
+    @Override
+    public String getDescription() {
+        return getPropertyValue(TaskConstants.TASK_DESCRIPTION_PROPERTY_NAME);
+    }
+
+    @Override
+    public String getDirective() {
+        return getPropertyValue(TaskConstants.TASK_DIRECTIVE_PROPERTY_NAME);
+
+    }
+
+    @Override
+    public DocumentModel getDocument() {
+        return doc;
+    }
+
+    @Override
+    public Date getDueDate() {
+        return getDatePropertyValue(TaskConstants.TASK_DUE_DATE_PROPERTY_NAME);
+
+    }
+
+    @Override
+    public String getId() {
+        return doc.getId();
+    }
+
+    @Override
+    public String getInitiator() {
+        return getPropertyValue(TaskConstants.TASK_INITIATOR_PROPERTY_NAME);
+    }
+
+    @Override
+    public String getName() {
+        return getPropertyValue(TaskConstants.TASK_NAME_PROPERTY_NAME);
+    }
+
+    @Override
+    public String getProcessId() {
+        return getPropertyValue(TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> T getPropertyValue(String propertyName) {
+        Serializable value = doc.getPropertyValue(propertyName);
+        if (value instanceof Object[]) {
+            value = new ArrayList<Object>(Arrays.asList((Object[]) value));
+        }
+        return (T) value;
+    }
+
+    @Override
+    public String getTargetDocumentId() {
+        String targetDocumentId = getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME);
+        if (targetDocumentId == null) {
+            List<String> targetDocIds = getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME);
+            targetDocumentId = targetDocIds != null && targetDocIds.size() > 0 ? targetDocIds.get(0) : null;
+        }
+        return targetDocumentId;
+    }
+
+    @Override
+    public List<String> getTargetDocumentsIds() {
+        return getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME);
+    }
+
+    @Override
+    public String getType() {
+        return getPropertyValue(TaskConstants.TASK_TYPE_PROPERTY_NAME);
+    }
+
+    @Override
+    public String getVariable(String key) {
+        Map<String, String> variables = getVariables();
+        return variables.get(key);
+    }
+
+    @Override
+    public Map<String, String> getVariables() {
+        List<Map<String, String>> variables = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
+        Map<String, String> variableMap = new HashMap<String, String>(variables.size());
+        for (Map<String, String> map : variables) {
+            variableMap.put(map.get("key"), map.get("value"));
+        }
+        return variableMap;
+    }
+
+    @Override
+    public Boolean hasEnded() {
+        return TaskConstants.TASK_ENDED_LIFE_CYCLE_STATE.equals(doc.getCurrentLifeCycleState());
+    }
+
+    @Override
+    public Boolean isAccepted() {
+        Boolean isAccepted = getPropertyValue(TaskConstants.TASK_ACCEPTED_PROPERTY_NAME);
+        return isAccepted == null ? false : isAccepted;
+    }
+
+    @Override
+    public Boolean isCancelled() {
+        return TaskConstants.TASK_CANCELLED_LIFE_CYCLE_STATE.equals(doc.getCurrentLifeCycleState());
+    }
+
+    @Override
+    public Boolean isOpened() {
+        return TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE.equals(doc.getCurrentLifeCycleState());
+    }
+
+    @Override
     public void setAccepted(Boolean accepted) {
         setPropertyValue(TaskConstants.TASK_ACCEPTED_PROPERTY_NAME, accepted);
     }
 
     @Override
-    public void setVariables(Map<String, String> variables) {
-        List<Map<String, Serializable>> variablesProperty = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
-        if (variablesProperty == null) {
-            variablesProperty = new ArrayList<Map<String, Serializable>>();
-        }
-        Map<String, Serializable> variable;
-        for (String key : variables.keySet()) {
-            Object value = variables.get(key);
-            if (value instanceof String) {
-                variable = new HashMap<String, Serializable>(1);
-                variable.put("key", key);
-                variable.put("value", (Serializable) value);
-                variablesProperty.add(variable);
+    public void setActors(List<String> users) {
+        setPropertyValue(TaskConstants.TASK_USERS_PROPERTY_NAME, users);
+    }
+
+    @Override
+    public void setCreated(Date created) {
+        setPropertyValue(TaskConstants.TASK_CREATED_PROPERTY_NAME, created);
+    }
+
+    @Override
+    public void setDelegatedActors(List<String> delegatedActors) {
+        setPropertyValue(TaskConstants.TASK_DELEGATED_ACTORS_PROPERTY_NAME, delegatedActors);
+    }
+
+    @Override
+    public void setDescription(String description) {
+        setPropertyValue(TaskConstants.TASK_DESCRIPTION_PROPERTY_NAME, description);
+    }
+
+    @Override
+    public void setDirective(String directive) {
+        setPropertyValue(TaskConstants.TASK_DIRECTIVE_PROPERTY_NAME, directive);
+    }
+
+    @Override
+    public void setDueDate(Date dueDate) {
+        setPropertyValue(TaskConstants.TASK_DUE_DATE_PROPERTY_NAME, dueDate);
+
+    }
+
+    @Override
+    public void setInitiator(String initiator) {
+        setPropertyValue(TaskConstants.TASK_INITIATOR_PROPERTY_NAME, initiator);
+    }
+
+    @Override
+    public void setName(String name) {
+        setPropertyValue(TaskConstants.TASK_NAME_PROPERTY_NAME, name);
+    }
+
+    @Override
+    public void setProcessId(String processId) {
+        setPropertyValue(TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME, processId);
+    }
+
+    protected void setPropertyValue(String propertyName, Object value) {
+        if (value != null) {
+            if (value instanceof Date) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime((Date) value);
+                doc.setPropertyValue(propertyName, cal);
+            } else {
+                doc.setPropertyValue(propertyName, (Serializable) value);
             }
         }
-        setPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME, variablesProperty);
+    }
+
+    @Override
+    public void setTargetDocumentId(String targetDocId) {
+        List<String> ids = new ArrayList<String>();
+        ids.add(targetDocId);
+        // handle compatibility before @5.8
+        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME, ids);
+        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME, targetDocId);
+    }
+
+    @Override
+    public void setTargetDocumentsIds(List<String> ids) {
+        // handle compatibility before @5.8
+        if (ids != null && ids.size() > 0) {
+            setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME, ids.get(0));
+        }
+        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME, ids);
+    }
+
+    @Override
+    public void setType(String type) {
+        setPropertyValue(TaskConstants.TASK_TYPE_PROPERTY_NAME, type);
     }
 
     @Override
@@ -269,65 +314,22 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public void addComment(String author, String text) {
-        List<Map<String, Serializable>> existingTasks = getPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
-        if (existingTasks == null) {
-            existingTasks = new ArrayList<Map<String, Serializable>>();
+    public void setVariables(Map<String, String> variables) {
+        List<Map<String, Serializable>> variablesProperty = getPropertyValue(
+                TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
+        if (variablesProperty == null) {
+            variablesProperty = new ArrayList<Map<String, Serializable>>();
         }
-        existingTasks.add(new TaskComment(author, text));
-        setPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME, existingTasks);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected <T> T getPropertyValue(String propertyName) {
-        Serializable value = doc.getPropertyValue(propertyName);
-        if (value instanceof Object[]) {
-            value = new ArrayList<Object>(Arrays.asList((Object[]) value));
-        }
-        return (T) value;
-    }
-
-    protected Date getDatePropertyValue(String propertyName) {
-        Calendar cal = (Calendar) doc.getPropertyValue(propertyName);
-        if (cal != null) {
-            return cal.getTime();
-        }
-        return null;
-    }
-
-    protected void setPropertyValue(String propertyName, Object value) {
-        if (value != null) {
-            if (value instanceof Date) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime((Date) value);
-                doc.setPropertyValue(propertyName, cal);
-            } else {
-                doc.setPropertyValue(propertyName, (Serializable) value);
+        Map<String, Serializable> variable;
+        for (String key : variables.keySet()) {
+            Object value = variables.get(key);
+            if (value instanceof String) {
+                variable = new HashMap<String, Serializable>(1);
+                variable.put("key", key);
+                variable.put("value", (Serializable) value);
+                variablesProperty.add(variable);
             }
         }
-    }
-
-    @Override
-    public List<String> getDelegatedActors() {
-        return getPropertyValue(TaskConstants.TASK_DELEGATED_ACTORS_PROPERTY_NAME);
-    }
-
-    @Override
-    public void setDelegatedActors(List<String> delegatedActors) {
-        setPropertyValue(TaskConstants.TASK_DELEGATED_ACTORS_PROPERTY_NAME, delegatedActors);
-    }
-
-    @Override
-    public List<String> getTargetDocumentsIds() {
-        return getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME);
-    }
-
-    @Override
-    public void setTargetDocumentsIds(List<String> ids) {
-        // handle compatibility before @5.8
-        if (ids != null && ids.size() > 0) {
-            setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME, ids.get(0));
-        }
-        setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME, ids);
+        setPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME, variablesProperty);
     }
 }
