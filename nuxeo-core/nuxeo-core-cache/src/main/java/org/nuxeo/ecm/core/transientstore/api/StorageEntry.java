@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.Blob;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
-@Experimental(comment="https://jira.nuxeo.com/browse/NXP-16577")
+@Experimental(comment = "https://jira.nuxeo.com/browse/NXP-16577")
 public interface StorageEntry extends Serializable {
 
     /**
@@ -126,8 +126,8 @@ public interface StorageEntry extends Serializable {
 
     /**
      * flag to indicate if result is ready
-     * @since 7.3
      *
+     * @since 7.3
      * @return
      */
     boolean isCompleted();

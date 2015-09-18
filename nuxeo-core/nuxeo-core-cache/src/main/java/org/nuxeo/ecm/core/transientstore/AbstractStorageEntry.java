@@ -116,8 +116,7 @@ public abstract class AbstractStorageEntry implements StorageEntry {
             cachedBlobs = new ArrayList<Map<String, String>>();
             for (Blob blob : blobs) {
                 Map<String, String> cached = new HashMap<String, String>();
-                File cachedFile = new File(directory,
-                        UUID.randomUUID().toString());
+                File cachedFile = new File(directory, UUID.randomUUID().toString());
                 blob.transferTo(cachedFile);
                 cachedFile.deleteOnExit();
                 cached.put("file", cachedFile.getAbsolutePath());
