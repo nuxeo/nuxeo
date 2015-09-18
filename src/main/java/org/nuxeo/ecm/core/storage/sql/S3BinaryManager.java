@@ -23,6 +23,9 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -35,19 +38,31 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.RFC2231;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.blob.binary.CachingBinaryManager;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
+import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
@@ -58,6 +73,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
 import com.amazonaws.services.s3.model.EncryptedPutObjectRequest;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -77,7 +93,7 @@ import com.google.common.base.Objects;
  * Because the BLOB length can be accessed independently of the binary stream, it is also cached in a simple text file
  * if accessed before the stream.
  */
-public class S3BinaryManager extends CachingBinaryManager {
+public class S3BinaryManager extends CachingBinaryManager implements BlobProvider {
 
     private static final String MD5 = "MD5"; // must be MD5 for Etag
 
@@ -130,6 +146,14 @@ public class S3BinaryManager extends CachingBinaryManager {
 
     public static final String ENDPOINT_KEY = "nuxeo.s3storage.endpoint";
 
+    public static final String DIRECTDOWNLOAD_KEY = "nuxeo.s3storage.downloadfroms3";
+
+    public static final String DEFAULT_DIRECTDOWNLOAD = "false";
+
+    public static final String DIRECTDOWNLOAD_EXPIRE_KEY = "nuxeo.s3storage.downloadfroms3.expire";
+
+    public static final int DEFAULT_DIRECTDOWNLOAD_EXPIRE = 60 * 60; // 1h
+
     private static final Pattern MD5_RE = Pattern.compile("(.*/)?[0-9a-f]{32}");
 
     protected String bucketName;
@@ -149,6 +173,10 @@ public class S3BinaryManager extends CachingBinaryManager {
     protected AmazonS3 amazonS3;
 
     protected TransferManager transferManager;
+
+    protected boolean directDownload;
+
+    protected int directDownloadExpire;
 
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
@@ -303,6 +331,12 @@ public class S3BinaryManager extends CachingBinaryManager {
             }
         } catch (AmazonClientException e) {
             throw new IOException(e);
+        }
+
+        directDownload = Boolean.parseBoolean(Framework.getProperty(DIRECTDOWNLOAD_KEY, DEFAULT_DIRECTDOWNLOAD));
+        directDownloadExpire = getIntProperty(DIRECTDOWNLOAD_EXPIRE_KEY);
+        if (directDownloadExpire < 0) {
+            directDownloadExpire = DEFAULT_DIRECTDOWNLOAD_EXPIRE;
         }
 
         // Create file cache
@@ -602,6 +636,76 @@ public class S3BinaryManager extends CachingBinaryManager {
 
             status.gcDuration = System.currentTimeMillis() - startTime;
             startTime = 0;
+        }
+    }
+
+    // ******************** BlobProvider ********************
+
+    @Override
+    public Blob readBlob(BlobInfo blobInfo) throws IOException {
+        // just delegate to avoid copy/pasting code
+        return new BinaryBlobProvider(this).readBlob(blobInfo);
+    }
+
+    @Override
+    public String writeBlob(Blob blob, Document doc) throws IOException {
+        // just delegate to avoid copy/pasting code
+        return new BinaryBlobProvider(this).writeBlob(blob, doc);
+    }
+
+    @Override
+    public boolean supportsWrite() {
+        return true;
+    }
+
+    @Override
+    public URI getURI(ManagedBlob blob, UsageHint hint, HttpServletRequest servletRequest) throws IOException {
+        if (hint != UsageHint.DOWNLOAD || !directDownload) {
+            return null;
+        }
+        String digest = blob.getKey();
+        // strip prefix
+        int colon = digest.indexOf(':');
+        if (colon >= 0) {
+            digest = digest.substring(colon + 1);
+        }
+        return getS3URI(digest, blob, servletRequest);
+    }
+
+    protected URI getS3URI(String digest, Blob blob, HttpServletRequest servletRequest) throws IOException {
+        String key = bucketNamePrefix + digest;
+        Date expiration = new Date();
+        expiration.setTime(expiration.getTime() + directDownloadExpire * 1000);
+        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucketName, key, HttpMethod.GET);
+        request.addRequestParameter("response-content-type", getContentTypeHeader(blob));
+        request.addRequestParameter("response-content-disposition", getContentDispositionHeader(blob, servletRequest));
+        request.setExpiration(expiration);
+        URL url = amazonS3.generatePresignedUrl(request);
+        try {
+            return url.toURI();
+        } catch (URISyntaxException e) {
+            throw new IOException(e);
+        }
+    }
+
+    protected String getContentTypeHeader(Blob blob) {
+        String contentType = blob.getMimeType();
+        String encoding = blob.getEncoding();
+        if (contentType != null && !StringUtils.isBlank(encoding)) {
+            int i = contentType.indexOf(';');
+            if (i >= 0) {
+                contentType = contentType.substring(0, i);
+            }
+            contentType += "; charset=" + encoding;
+        }
+        return contentType;
+    }
+
+    protected String getContentDispositionHeader(Blob blob, HttpServletRequest servletRequest) {
+        if (servletRequest == null) {
+            return RFC2231.encodeContentDisposition(blob.getFilename(), false, null);
+        } else {
+            return DownloadHelper.getRFC2231ContentDisposition(servletRequest, blob.getFilename());
         }
     }
 
