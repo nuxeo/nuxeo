@@ -13,7 +13,8 @@
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
-        <resource>nuxeo_admincenter_specific.css</resource>
+        <bundle>nuxeo_sassCss</bundle>
+        <resource>nuxeo_admincenter_specific.scss</resource>
       </resources>
     </page>
 
@@ -21,10 +22,10 @@
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
-    <resource name="nuxeo_admincenter_specific.css">
-      <path>themes/css/nuxeo_admincenter_specific.css</path>
+    <resource name="nuxeo_admincenter_specific.scss" type="css">
+      <path>themes/sass/nuxeo_admincenter_specific.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
 
