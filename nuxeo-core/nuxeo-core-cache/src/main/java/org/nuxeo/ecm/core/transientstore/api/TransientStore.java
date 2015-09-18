@@ -22,13 +22,12 @@ import java.io.IOException;
 import org.nuxeo.common.annotation.Experimental;
 
 /**
- *
  * Service Interface for managing a transient store.
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
-@Experimental(comment="https://jira.nuxeo.com/browse/NXP-16577")
+@Experimental(comment = "https://jira.nuxeo.com/browse/NXP-16577")
 public interface TransientStore {
 
     /**
@@ -76,9 +75,8 @@ public interface TransientStore {
     TransientStoreConfig getConfig() throws IOException;
 
     /**
-     * Runs the Garbage Collecting to delete the Filesystem resources that may correspond
-     * to cache entries that were removed
-     *
+     * Runs the Garbage Collecting to delete the Filesystem resources that may correspond to cache entries that were
+     * removed
      */
     void doGC();
 
@@ -89,7 +87,6 @@ public interface TransientStore {
      */
     int getStorageSizeMB();
 
-
     void shutdown();
 
     /**
@@ -98,6 +95,5 @@ public interface TransientStore {
      * @param config
      */
     void init(TransientStoreConfig config);
-
 
 }

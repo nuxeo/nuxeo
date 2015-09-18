@@ -76,7 +76,7 @@ public class CacheAttributesChecker extends AbstractCache {
 
     @Override
     public boolean hasEntry(String key) throws IOException {
-        if (key==null) {
+        if (key == null) {
             return false;
         }
         return cache.hasEntry(key);

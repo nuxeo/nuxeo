@@ -89,7 +89,7 @@ public class TransientStorageComplianceFixture {
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
 
-        long size = ((AbstractTransientStore)ts).getStorageSize();
+        long size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(0, size);
 
         ts.put(createEntry("1"));
@@ -109,7 +109,7 @@ public class TransientStorageComplianceFixture {
         assertEquals("text/plain", se.getBlobs().get(0).getMimeType());
         assertEquals("FakeContent", IOUtils.toString(se.getBlobs().get(0).getStream()));
 
-        size = ((AbstractTransientStore)ts).getStorageSize();
+        size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(11, size);
 
         // update the entry
@@ -124,7 +124,7 @@ public class TransientStorageComplianceFixture {
         assertNotNull(se);
         assertEquals("fake.txt", se.getBlobs().get(0).getFilename());
         assertEquals("fake2.txt", se.getBlobs().get(1).getFilename());
-        size = ((AbstractTransientStore)ts).getStorageSize();
+        size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(23, size);
 
         // move to deletable entries
@@ -138,10 +138,9 @@ public class TransientStorageComplianceFixture {
         se = ts.get("1");
         assertNull(se);
 
-        size = ((AbstractTransientStore)ts).getStorageSize();
+        size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(0, size);
     }
-
 
     @Test(expected = MaximumTransientSpaceExceeded.class)
     public void verifyMaxSizeException() throws Exception {
@@ -250,7 +249,6 @@ public class TransientStorageComplianceFixture {
         assertFalse(cacheDir.exists());
     }
 
-
     @Test
     public void verifyDeleteAfterUseGC() throws Exception {
 
@@ -261,14 +259,14 @@ public class TransientStorageComplianceFixture {
         // check that entry is stored
         StorageEntry se = ts.get("XXX");
         assertNotNull(se);
-        assertNotNull(((AbstractTransientStore)ts).getL1Cache().get("XXX"));
+        assertNotNull(((AbstractTransientStore) ts).getL1Cache().get("XXX"));
 
         // move to deletable entries
         // check that still here
         ts.canDelete("XXX");
 
-        assertNull(((AbstractTransientStore)ts).getL1Cache().get("XXX"));
-        assertNotNull(((AbstractTransientStore)ts).getL2Cache().get("XXX"));
+        assertNull(((AbstractTransientStore) ts).getL1Cache().get("XXX"));
+        assertNotNull(((AbstractTransientStore) ts).getL2Cache().get("XXX"));
 
         // do GC
         ts.doGC();
@@ -277,9 +275,8 @@ public class TransientStorageComplianceFixture {
         se = ts.get("XXX");
         assertNotNull(se);
 
-
         // empty the L2 cache
-        ((AbstractTransientStore)ts).getL2Cache().invalidate("XXX");
+        ((AbstractTransientStore) ts).getL2Cache().invalidate("XXX");
 
         // do GC
         ts.doGC();

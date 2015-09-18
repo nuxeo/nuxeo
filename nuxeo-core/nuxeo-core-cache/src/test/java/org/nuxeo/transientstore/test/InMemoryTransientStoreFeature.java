@@ -20,14 +20,11 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-
 /**
- *
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
-@Features({TransientStoreFeature.class})
+@Features({ TransientStoreFeature.class })
 @LocalDeploy({ "org.nuxeo.ecm.core.cache.test:transientstore-contrib.xml" })
 public class InMemoryTransientStoreFeature extends SimpleFeature {
 

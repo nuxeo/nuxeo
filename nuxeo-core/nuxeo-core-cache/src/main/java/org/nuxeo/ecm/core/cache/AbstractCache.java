@@ -43,7 +43,7 @@ public abstract class AbstractCache implements Cache {
     @Override
     public boolean hasEntry(String key) throws IOException {
         // dummy implementation to avoid breaking compatibility
-        return get(key)!=null;
+        return get(key) != null;
     }
 
 }

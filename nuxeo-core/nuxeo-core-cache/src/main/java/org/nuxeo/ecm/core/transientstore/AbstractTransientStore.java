@@ -86,10 +86,10 @@ public abstract class AbstractTransientStore implements TransientStore {
         if (cs == null) {
             throw new UnsupportedOperationException("Cache service is required");
         }
-        if (l1cd!=null) {
+        if (l1cd != null) {
             ((CacheServiceImpl) cs).unregisterCache(l1cd);
         }
-        if (l2cd!=null) {
+        if (l2cd != null) {
             ((CacheServiceImpl) cs).unregisterCache(l2cd);
         }
     }
@@ -122,7 +122,7 @@ public abstract class AbstractTransientStore implements TransientStore {
     public void put(StorageEntry entry) throws IOException {
         if (config.getAbsoluteMaxSizeMB() < 0 || getStorageSize() < config.getAbsoluteMaxSizeMB() * (1024 * 1024)) {
             StorageEntry old = get(entry.getId());
-            if (old!=null) {
+            if (old != null) {
                 decrementStorageSize(old.getLastStorageSize());
             }
             incrementStorageSize(entry);
@@ -195,13 +195,13 @@ public abstract class AbstractTransientStore implements TransientStore {
 
     protected String getCachingDirName(String key) {
         String dirName = Base64.encodeBase64String(key.getBytes());
-        dirName =  dirName.replaceAll("/", "_");
+        dirName = dirName.replaceAll("/", "_");
         return dirName;
     }
 
     protected String getKeyCachingDirName(String dir) {
         String key = dir.replaceAll("_", "/");
-        return new String (Base64.decodeBase64(key));
+        return new String(Base64.decodeBase64(key));
     }
 
     public File getCachingDirectory(String key) {
@@ -237,11 +237,11 @@ public abstract class AbstractTransientStore implements TransientStore {
                     String key = getKeyCachingDirName(entry.getFileName().toString());
                     try {
                         if (getL1Cache().hasEntry(key)) {
-                            newSize+= getSize(entry);
+                            newSize += getSize(entry);
                             continue;
                         }
                         if (getL2Cache().hasEntry(key)) {
-                            newSize+= getSize(entry);
+                            newSize += getSize(entry);
                             continue;
                         }
                         FileUtils.deleteDirectory(entry.toFile());
@@ -259,7 +259,7 @@ public abstract class AbstractTransientStore implements TransientStore {
     protected long getSize(Path entry) {
         long size = 0;
         for (File file : entry.toFile().listFiles()) {
-            size+=file.length();
+            size += file.length();
         }
         return size;
     }

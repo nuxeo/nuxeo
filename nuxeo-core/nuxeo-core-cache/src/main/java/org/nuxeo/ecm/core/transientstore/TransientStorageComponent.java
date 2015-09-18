@@ -96,7 +96,6 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
         super.deactivate(context);
     }
 
-
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (EP_STORE.equals(extensionPoint)) {
@@ -106,7 +105,5 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
             super.unregisterContribution(contribution, extensionPoint, contributor);
         }
     }
-
-
 
 }

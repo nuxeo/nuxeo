@@ -93,12 +93,11 @@ public class TransientStoreConfig {
     }
 
     public TransientStore getStore() throws Exception {
-        if (store==null) {
+        if (store == null) {
             store = implClass.newInstance();
             store.init(this);
         }
         return store;
     }
-
 
 }

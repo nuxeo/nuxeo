@@ -27,14 +27,13 @@ import org.nuxeo.common.annotation.Experimental;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
-@Experimental(comment="https://jira.nuxeo.com/browse/NXP-16577")
+@Experimental(comment = "https://jira.nuxeo.com/browse/NXP-16577")
 public interface TransientStoreService {
 
     /**
      * Retrieve a {@link TransientStore} by it's name
      *
      * @param name the name of the target {@link TransientStore}
-     *
      * @return the target {@link TransientStore} or null if not found
      */
     TransientStore getStore(String name);
@@ -44,7 +43,6 @@ public interface TransientStoreService {
      *
      * @param name the name of the target {@link TransientStore}
      * @return the {@link TransientStoreConfig} of the target store or null if not found
-     *
      * @throws IOException
      */
     TransientStoreConfig getStoreConfig(String name) throws IOException;
@@ -59,7 +57,6 @@ public interface TransientStoreService {
 
     /**
      * Triggers Garbage collecting of all {@link TransientStore}
-     *
      */
     void doGC();
 }
