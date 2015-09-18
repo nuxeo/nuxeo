@@ -1,9 +1,4 @@
-// Footer styles.
-// =Footer -> brand footer
-// =Connect Banner -> Only visible if your instance is not registered to Nuxeo Online Services
-// author: lkemen@nuxeo.com
-
-// =Footer
+// ----- Footer styles.
 .nxFooter {
   background: none $footer-background;
   font-size: .8em;
@@ -32,7 +27,6 @@
 .copyrights {
   color: $footer-links;
   float: right;
-  filter:alpha(opacity=65);
   opacity: .65;
   padding: .2em 2em 0 0;
 }

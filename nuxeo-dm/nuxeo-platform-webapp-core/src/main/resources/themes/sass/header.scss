@@ -1,13 +1,4 @@
-// Header styles.
-// =Header -> define links colors, backgrounds, logo position, alignments
-// =Search -> search and advanced search links styles
-// =UserServices -> link and menu relative to the user
-// =MainTabs -> navigation links between applications pages
-// =Studio header link -> Small button for Administrators to access Nuxeo Studio
-// author: lkemen@nuxeo.com
-
-
-// =Header
+// ----- Header styles
 .nxHeader {
   background-color: $header-background;
   box-shadow: 0 1px 1px 0 rgba(0,0,0,0.18);
