@@ -114,11 +114,14 @@ public abstract class AbstractStorageEntry implements StorageEntry {
                 Map<String, String> cached = new HashMap<String, String>();
                 File cachedFile = new File(directory, UUID.randomUUID().toString());
                 try {
-                    blob.transferTo(cachedFile);
+                    if (blob instanceof FileBlob && ((FileBlob) blob).isTemporary()) {
+                        ((FileBlob) blob).moveTo(cachedFile);
+                    } else {
+                        blob.transferTo(cachedFile);
+                    }
                 } catch (IOException e) {
                     throw new NuxeoException(e);
                 }
-
                 cachedFile.deleteOnExit();
                 cached.put("file", cachedFile.getAbsolutePath());
                 cached.put("filename", blob.getFilename());
