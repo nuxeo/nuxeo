@@ -22,6 +22,8 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
@@ -130,9 +132,10 @@ public interface BlobManager {
      *
      * @param blob the blob
      * @param hint {@link UsageHint}
+     * @param servletRequest the servlet request, or {@code null}
      * @return the {@link URI}, or {@code null} if none available
      */
-    URI getURI(Blob blob, UsageHint hint) throws IOException;
+    URI getURI(Blob blob, UsageHint hint, HttpServletRequest servletRequest) throws IOException;
 
     /**
      * Gets a map of available MIME type conversions and corresponding {@link URI} for a blob.

@@ -116,9 +116,15 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
         // check Blob Manager download link
         BlobManager blobManager = Framework.getService(BlobManager.class);
-        URI uri = blobManager == null ? null : blobManager.getURI(blob, UsageHint.DOWNLOAD);
+        URI uri = blobManager == null ? null : blobManager.getURI(blob, UsageHint.DOWNLOAD, request);
         if (uri != null) {
             try {
+                Map<String,Serializable> ei = new HashMap<>();
+                if (extendedInfos != null) {
+                    ei.putAll(extendedInfos);
+                }
+                ei.put("redirect", uri.toString());
+                logDownload(doc, xpath, filename, reason, ei);
                 response.sendRedirect(uri.toString());
             } catch (IOException ioe) {
                 DownloadHelper.handleClientDisconnect(ioe);

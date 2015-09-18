@@ -138,7 +138,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         Blob blobToPreview = getBlobToPreview(xpath);
         BlobManager blobManager = Framework.getService(BlobManager.class);
         try {
-            URI uri = blobManager.getURI(blobToPreview, UsageHint.EMBED);
+            URI uri = blobManager.getURI(blobToPreview, UsageHint.EMBED, null);
             if (uri != null) {
                 res.redirectSeeOther(uri.toString());
                 return;

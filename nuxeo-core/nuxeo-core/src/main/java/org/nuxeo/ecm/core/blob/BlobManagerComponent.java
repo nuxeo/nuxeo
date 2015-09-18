@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -309,12 +311,12 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     }
 
     @Override
-    public URI getURI(Blob blob, UsageHint hint) throws IOException {
+    public URI getURI(Blob blob, UsageHint hint, HttpServletRequest servletRequest) throws IOException {
         BlobProvider blobProvider = getBlobProvider(blob);
         if (blobProvider == null) {
             return null;
         }
-        return blobProvider.getURI((ManagedBlob) blob, hint);
+        return blobProvider.getURI((ManagedBlob) blob, hint, servletRequest);
     }
 
     @Override

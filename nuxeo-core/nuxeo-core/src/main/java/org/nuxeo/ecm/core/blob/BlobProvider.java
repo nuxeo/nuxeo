@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
@@ -114,10 +116,11 @@ public interface BlobProvider {
      *
      * @param blob the managed blob
      * @param hint {@link UsageHint}
+     * @param servletRequest the servlet request, or {@code null}
      * @return the {@link URI}, or {@code null} if none available
-     * @since 7.3
+     * @since 7.4
      */
-    default URI getURI(ManagedBlob blob, UsageHint hint) throws IOException {
+    default URI getURI(ManagedBlob blob, UsageHint hint, HttpServletRequest servletRequest) throws IOException {
         return null;
     }
 

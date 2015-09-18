@@ -250,7 +250,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
         BlobManager blobManager = Framework.getService(BlobManager.class);
         try {
-            URI uri = blobManager.getURI(blob, UsageHint.DOWNLOAD);
+            URI uri = blobManager.getURI(blob, UsageHint.DOWNLOAD, request);
             if (uri != null) {
                 response.sendRedirect(uri.toString());
                 return;
