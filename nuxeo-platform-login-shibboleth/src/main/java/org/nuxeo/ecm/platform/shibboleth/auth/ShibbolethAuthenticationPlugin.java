@@ -108,6 +108,13 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
         String userId = getService().getUserID(httpRequest);
         if (userId == null || "".equals(userId)) {
             return null;
+        } else {
+            UserMapperService ums = Framework.getService(UserMapperService.class);
+            if (ums != null) {
+                if (ums.getAvailableMappings().contains(DEFAULT_EXTERNAL_MAPPER)) {
+                    externalMapper = ums.getMapper(DEFAULT_EXTERNAL_MAPPER);
+                }
+            }
         }
         UserManager userManager = Framework.getService(UserManager.class);
         Map<String, Object> fieldMap = getService().getUserMetadata(userManager.getUserIdField(), httpRequest);
@@ -135,26 +142,12 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
     }
 
     @Override
-    public void initPlugin(Map<String, String> parameters) {
-
-        String mapperName = DEFAULT_EXTERNAL_MAPPER;
-        if (parameters.containsKey(EXTERNAL_MAPPER_PARAM)) {
-            mapperName = parameters.get(EXTERNAL_MAPPER_PARAM);
-        }
-
-        if (!StringUtils.isEmpty(mapperName)) {
-            UserMapperService ums = Framework.getService(UserMapperService.class);
-            if (ums != null) {
-                if (ums.getAvailableMappings().contains(mapperName)) {
-                    externalMapper = ums.getMapper(mapperName);
-                }
-            }
-        }
+    public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
+        return true;
     }
 
     @Override
-    public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
-        return true;
+    public void initPlugin(Map<String, String> parameters) {
     }
 
 }
