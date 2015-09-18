@@ -45,7 +45,7 @@ class Sim30UpdateDocuments extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val documents = Feeders.createRandomDocFeeder()
-  val scn = ScnUpdateDocuments.get(documents, Parameters.getDuration(), Parameters.getPause())
+  val scn = ScnUpdateDocuments.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
 }
