@@ -20,10 +20,11 @@ package org.nuxeo.ecm.core.transientstore.api;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.transientstore.SimpleTransientStore;
 
 /**
- * {@link XMap} decriptor for representing the Configuration of a {@link TransientStore}
+ * {@link XMap} descriptor for representing the Configuration of a {@link TransientStore}
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
@@ -55,6 +56,13 @@ public class TransientStoreConfig {
     protected Class<? extends TransientStore> implClass = SimpleTransientStore.class;
 
     protected TransientStore store;
+
+    public TransientStoreConfig() {
+    }
+
+    public TransientStoreConfig(String name) {
+        this.name = name;
+    }
 
     public String getName() {
         return name;
@@ -92,10 +100,14 @@ public class TransientStoreConfig {
         this.secondLevelTTL = secondLevelTTL;
     }
 
-    public TransientStore getStore() throws Exception {
+    public TransientStore getStore() {
         if (store == null) {
-            store = implClass.newInstance();
-            store.init(this);
+            try {
+                store = implClass.newInstance();
+                store.init(this);
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new NuxeoException(e);
+            }
         }
         return store;
     }
