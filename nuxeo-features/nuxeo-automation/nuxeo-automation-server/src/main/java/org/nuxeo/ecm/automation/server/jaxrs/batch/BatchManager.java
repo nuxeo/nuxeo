@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Thierry Delprat <tdelprat@nuxeo.com>
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
@@ -27,10 +27,8 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
- * Service interface to collect inputs (Blobs) for an operation or operation chain
+ * Service interface to collect inputs (Blobs) for an operation or operation chain.
  *
- * @author Tiry (tdelprat@nuxeo.com)
- * @author Antoine Taillefer
  * @since 5.4.2
  */
 public interface BatchManager {
@@ -38,12 +36,6 @@ public interface BatchManager {
     /**
      * Add an inputStream in a batch Will create a new {@link Batch} if needed Streams are persisted as temporary files
      *
-     * @param batchId
-     * @param idx
-     * @param is
-     * @param name
-     * @param mime
-     * @throws IOException
      */
     void addStream(String batchId, String idx, InputStream is, String name, String mime) throws IOException;
 
