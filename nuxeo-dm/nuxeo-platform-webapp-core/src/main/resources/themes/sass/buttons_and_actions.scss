@@ -260,7 +260,7 @@
 
 .actionList .actionSubList li {
   background: none;
-  border: none;
+  border: 0;
   float: none;
   height: auto;
   margin: 0;
@@ -271,7 +271,7 @@
 
 .actionList .actionSubList li a {
   background: none;
-  border: none;
+  border: 0;
   border-radius: 0;
   box-shadow: none;
   display: block;
@@ -373,7 +373,7 @@
 
 .globalActionBar .actionList .actionSubList li {
   background: none;
-  border: none;
+  border: 0;
   float: none;
   height: auto;
   margin: 0;
@@ -384,7 +384,7 @@
 
 .globalActionBar .actionList .actionSubList li a {
   background: none;
-  border: none;
+  border: 0;
   display: block;
   margin: 0;
   padding: .5em 1em;
@@ -394,7 +394,7 @@
 
 .globalActionBar .actionList .actionSubList li a:hover {
   background-color: $shade-light-20;
-  border: none;
+  border: 0;
   border-radius: none;
   box-shadow: none;
 }
@@ -444,7 +444,7 @@
 .nx-page .column .importButton {
   background: url('${basePath}/icons/import.png') no-repeat scroll 29% center / 25px 25px;
   background-color: $button-import;
-  border: none;
+  border: 0;
   border-radius: 2px;
   box-shadow: none;
   color: #fff;
@@ -458,7 +458,7 @@
 .nx-page .column .importButton:hover {
   background: url('${basePath}/icons/import.png') no-repeat scroll 29% center / 25px 25px;
   background-color: $button-import;
-  border: none;
+  border: 0;
   box-shadow: 0 -30px 20px rgba(255, 255, 255, 0.2) inset;
 }
 

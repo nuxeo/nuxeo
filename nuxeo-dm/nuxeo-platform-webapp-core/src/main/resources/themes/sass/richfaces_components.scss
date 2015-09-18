@@ -146,7 +146,7 @@
 }
 
 .nx-page .treeNodeSelectedClass {
-  border: none;
+  border: 0;
 }
 
 .nx-page .fieldColumn .rf-trn img {
@@ -381,7 +381,7 @@ a.documentTypeLink {
 .nx-page .rf-cal-edtr-btn-over,
 .nx-page .rf-cal-btn-press,
 .nx-page .rf-cal-editor-tool-over {
-  border: none;
+  border: 0;
 }
 
 .nx-page .rf-cal-edtr-btn-over {
@@ -437,7 +437,7 @@ a.documentTypeLink {
 
 .nx-page .rf-cal-timepicker-cnt,
 .nx-page .rf-cal-monthpicker-cnt {
-  border: none;
+  border: 0;
   height: 232px;
   width: 228px;
 }
@@ -448,7 +448,7 @@ a.documentTypeLink {
 
 .nx-page .rf-cal-edtr-btn:hover,
 .nx-page .rf-cal-edtr-btn-sel {
-  border: none;
+  border: 0;
   background-color: #0084c3;
   color: #fff;
 }

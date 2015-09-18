@@ -193,7 +193,7 @@
 .userMenuActions .actionList .dropdown,
 .userMenuActions .actionList .dropdown:hover {
   background: url("${basePath}/icons/user_menu.png") no-repeat scroll 4px center #fff;
-  border: none;
+  border: 0;
   border-radius: 20px;
   box-shadow: none;
   display: inline-block;

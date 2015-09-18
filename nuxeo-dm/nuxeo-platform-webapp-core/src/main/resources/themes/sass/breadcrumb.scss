@@ -10,7 +10,7 @@
 }
 
 .breadcrumb .action_bar a {
-  border: none;
+  border: 0;
   padding: .3em 0;
 }
 
@@ -22,7 +22,7 @@
 .breadcrumbs a,
 .breadcrumbs a:link,
 .breadcrumbs a:visited {
-  background-color: rgba(255,255,255,0);
+  background-color: rgba(255, 255, 255, 0);
   color: $shade-strong-20;
   display: inline-block;
   font-weight: normal;
@@ -94,7 +94,7 @@
 }
 
 .breadcrumbs .dropDownMenu.dropdown:hover {
-  border: none;
+  border: 0;
 }
 
 .breadcrumbs .dropdown:hover:after {
@@ -143,8 +143,8 @@
 
 .breadcrumbs .actionSubList a:before,
 .breadcrumbs .actionSubList a:after {
+  border: 0;
   position: relative;
-  border: none;
 }
 
 .breadcrumbs .actionSubList a {

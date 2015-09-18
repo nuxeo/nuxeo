@@ -52,7 +52,7 @@
   padding: .3em 0 .2em;
   margin: .7em 0 .5em;
   font-size: 1.3em;
-  border: none;
+  border: 0;
 }
 
 .documentTitle {
@@ -149,7 +149,7 @@
 
 .content_block .smallTable td {
   padding-left: .3rem;
-  border: none;
+  border: 0;
 }
 
 .content_block .fieldColumn,
@@ -353,7 +353,7 @@
 
 .textBlock pre code,
 .note_content_block pre code {
-  border: none;
+  border: 0;
   font-size: 100%;
 }
 
@@ -407,7 +407,7 @@
 }
 
 .comments_block .commentBlock {
-  border: none;
+  border: 0;
 }
 
 .comments_block .commentQuote {

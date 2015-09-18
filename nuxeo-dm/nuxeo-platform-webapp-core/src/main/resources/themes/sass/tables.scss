@@ -139,7 +139,7 @@ table td {
 .dataInput th,
 .dataInput td {
   background-color: none;
-  border: none 0;
+  border: 0 0;
   padding: .5em .6em .6em 0;
 }
 
@@ -153,7 +153,7 @@ table td {
 .dataTableLine td td,
 .dataOutput td td,
 .dataList td td {
-  border: none 0;
+  border: 0 0;
 }
 
 .dataTable td th,
@@ -422,7 +422,7 @@ table.palettePreviewColors td div {
 }
 
 .vocabularyEntryContent .dataInput {
-  border: none;
+  border: 0;
   margin-bottom: 1.4em;
 }
 
