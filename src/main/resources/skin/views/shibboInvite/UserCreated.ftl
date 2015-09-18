@@ -6,7 +6,7 @@
 
 <@block name="content">
 <script>
-	setTimeout(function(){window.location.replace("${logout}")},5000);
+	setTimeout(function(){window.location.replace("${redirectUrl}")},5000);
 </script>
   
 <div class="info">

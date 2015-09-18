@@ -89,12 +89,10 @@ public class ShibboInviteObject extends ModuleRoot {
         Map<String, Serializable> registrationData;
         try {
             Map<String, Serializable> additionalInfo = buildAdditionalInfos();
-
             // Add the entered password to the document model
             additionalInfo.put(DefaultInvitationUserFactory.PASSWORD_KEY, password);
             // Validate the creation of the user
             registrationData = usr.validateRegistration(requestId, additionalInfo);
-
         } catch (AlreadyProcessedRegistrationException ape) {
             log.info("Try to validate an already processed registration");
             return getView("ValidationErrorTemplate").arg("exceptionMsg",
@@ -106,16 +104,15 @@ public class ShibboInviteObject extends ModuleRoot {
         }
         // User redirected to the logout page after validating the password
         String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
-        String logoutUrl = "/" + webappName + "/logout";
+        String redirectUrl = "/" + webappName + "/logout";
         if (isShibbo) {
-            // The redirect url is 'logout' variable: when Shibboleth auth is activated, redirect to the url configured
-            // in authentication-contrib 
             return getView("UserCreated").arg("data", registrationData)
-                                         .arg("logout", 
-                                                 "/nuxeo/site/shibboleth?requestedUrl=")
+                                         .arg("redirectUrl", "/nuxeo/site/shibboleth?requestedUrl=")
                                          .arg("isShibbo", isShibbo);
         }
-        return getView("UserCreated").arg("data", registrationData).arg("logout", logoutUrl).arg("isShibbo", isShibbo);
+        return getView("UserCreated").arg("redirectUrl", redirectUrl)
+                                     .arg("data", registrationData)
+                                     .arg("isShibbo", isShibbo);
     }
 
     protected UserInvitationService fetchService() {
