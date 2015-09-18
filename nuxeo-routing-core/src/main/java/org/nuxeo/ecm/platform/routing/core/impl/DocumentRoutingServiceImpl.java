@@ -290,7 +290,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         eventProperties.put("modelId", route.getModelId());
         eventProperties.put("modelName", route.getModelName());
         if (route instanceof GraphRoute) {
-            eventProperties.put("variables", (Serializable) ((GraphRoute) route).getVariables());
+            eventProperties.put(RoutingAuditHelper.WORKFLOW_VARIABLES, (Serializable) ((GraphRoute) route).getVariables());
         }
         fireEvent(DocumentRoutingConstants.Events.afterWorkflowStarted.name(), eventProperties,
                 route, session);

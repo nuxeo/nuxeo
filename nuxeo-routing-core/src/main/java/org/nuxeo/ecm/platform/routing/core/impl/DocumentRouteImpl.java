@@ -62,7 +62,7 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
 
         // Add common info about workflow
         if (this instanceof GraphRoute) {
-            eventProperties.put("variables", (Serializable) ((GraphRoute) this).getVariables());
+            eventProperties.put(RoutingAuditHelper.WORKFLOW_VARIABLES, (Serializable) ((GraphRoute) this).getVariables());
         }
         eventProperties.put("modelId", getModelId());
         eventProperties.put("modelName", getModelName());

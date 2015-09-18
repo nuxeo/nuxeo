@@ -182,7 +182,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         if (graph != null) {
             eventProperties.put("modelId", graph.getModelId());
             eventProperties.put("modelName", graph.getModelName());
-            eventProperties.put("variables", (Serializable) graph.getVariables());
+            eventProperties.put(RoutingAuditHelper.WORKFLOW_VARIABLES, (Serializable) graph.getVariables());
             eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, graph.getInitiator());
             // Get the list of pending node
             List<String> pendingNodeNames = new ArrayList<String>();

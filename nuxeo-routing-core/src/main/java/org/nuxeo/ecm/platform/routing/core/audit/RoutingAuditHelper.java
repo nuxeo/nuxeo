@@ -46,6 +46,8 @@ public final class RoutingAuditHelper {
 
     public static final String WORKFLOW_INITATIOR = "workflowInitiator";
 
+    public static final String WORKFLOW_VARIABLES = "workflowVariables";
+
     /**
      * Query the audit for an entry of the Routing category matching the given event and returns the time elapsed  since it is recorded.
      *
