@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -63,6 +64,10 @@ public class Batch extends AbstractStorageEntry {
      */
     public List<Blob> getBlobs(int timeoutS) {
         List<Blob> blobs = new ArrayList<Blob>();
+        Map<String, Serializable> params = getParameters();
+        if (params == null) {
+            return blobs;
+        }
 
         if (uploadInProgress.get() > 0 && timeoutS > 0) {
             for (int i = 0; i < timeoutS * 5; i++) {
@@ -76,9 +81,9 @@ public class Batch extends AbstractStorageEntry {
                 }
             }
         }
-        List<String> sortedIdx = new ArrayList<String>(getParameters().keySet());
-        Collections.sort(sortedIdx);
 
+        List<String> sortedIdx = new ArrayList<String>(params.keySet());
+        Collections.sort(sortedIdx);
         for (String idx : sortedIdx) {
             Blob blob = retrieveBlob(idx);
             if (blob != null) {
@@ -197,18 +202,21 @@ public class Batch extends AbstractStorageEntry {
         // Remove batch and all related storage entries from transient store, GC will clean up the files
         BatchManager bm = Framework.getService(BatchManager.class);
         TransientStore ts = bm.getTransientStore();
-        for (Serializable v : getParameters().values()) {
-            String fileEntryId = (String) v;
-            // Check for chunk entries to remove
-            BatchFileEntry fileEntry = (BatchFileEntry) ts.get(fileEntryId);
-            if (fileEntry.isChunked()) {
-                for (String chunkEntryId : fileEntry.getChunkEntryIds()) {
-                    // Remove chunk entry
-                    ts.remove(chunkEntryId);
+        Map<String, Serializable> params = getParameters();
+        if (params != null) {
+            for (Serializable v : params.values()) {
+                String fileEntryId = (String) v;
+                // Check for chunk entries to remove
+                BatchFileEntry fileEntry = (BatchFileEntry) ts.get(fileEntryId);
+                if (fileEntry.isChunked()) {
+                    for (String chunkEntryId : fileEntry.getChunkEntryIds()) {
+                        // Remove chunk entry
+                        ts.remove(chunkEntryId);
+                    }
                 }
+                // Remove file entry
+                ts.remove(fileEntryId);
             }
-            // Remove file entry
-            ts.remove(fileEntryId);
         }
         // Remove batch entry
         ts.remove(getId());
