@@ -51,7 +51,7 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 @Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.convert",
         "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.template.manager.api",
         "org.nuxeo.template.manager", "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.manager.xdocreport",
-        "org.nuxeo.template.manager.jxls", "org.nuxeo.template.manager.samples" })
+        "org.nuxeo.template.manager.jxls", "org.nuxeo.template.manager.samples", "studio.extensions.template-module-demo" })
 public class TestImportedModelRendering {
 
     DocumentModel rootDocument;
