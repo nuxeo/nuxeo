@@ -523,18 +523,14 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     @Override
     public NuxeoPrincipal getPrincipal(String username) {
         NuxeoPrincipal principal = null;
-        try {
-            if (useCache()) {
-                principal = (NuxeoPrincipal) principalCache.get(username);
+        if (useCache()) {
+            principal = (NuxeoPrincipal) principalCache.get(username);
+        }
+        if (principal == null) {
+            principal = getPrincipal(username, null);
+            if (useCache() && principal != null) {
+                principalCache.put(username, principal);
             }
-            if (principal == null) {
-                principal = getPrincipal(username, null);
-                if (useCache() && principal != null) {
-                    principalCache.put(username, principal);
-                }
-            }
-        } catch (IOException e) {
-            throw new NuxeoException(e);
         }
         return principal;
     }
@@ -729,11 +725,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     protected void invalidatePrincipal(String userName) {
         if (useCache()) {
-            try {
-                principalCache.invalidate(userName);
-            } catch (IOException e) {
-                throw new NuxeoException(e);
-            }
+            principalCache.invalidate(userName);
         }
     }
 
@@ -747,11 +739,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     protected void invalidateAllPrincipals() {
         if (useCache()) {
-            try {
-                principalCache.invalidateAll();
-            } catch (IOException e) {
-                throw new NuxeoException(e);
-            }
+            principalCache.invalidateAll();
         }
     }
 

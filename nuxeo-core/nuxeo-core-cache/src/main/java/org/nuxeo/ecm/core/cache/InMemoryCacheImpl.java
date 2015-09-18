@@ -94,7 +94,7 @@ public class InMemoryCacheImpl extends AbstractCache {
     }
 
     @Override
-    public boolean hasEntry(String key) throws IOException {
+    public boolean hasEntry(String key) {
         return cache.asMap().containsKey(key);
     }
 

@@ -102,56 +102,41 @@ public class RedisLockManager implements LockManager {
 
     @Override
     public Lock getLock(final String id) {
-        try {
-            return redisExecutor.execute(new RedisCallable<Lock>() {
-
-                @Override
-                public Lock call(Jedis jedis) {
-                    String lockString = jedis.get(redisNamespace + id);
-                    return lockFromString(lockString);
-                }
-            });
-        } catch (IOException cause) {
-            throw new RuntimeException("Lock read error on " + id, cause);
-        }
+        return redisExecutor.execute(new RedisCallable<Lock>() {
+            @Override
+            public Lock call(Jedis jedis) {
+                String lockString = jedis.get(redisNamespace + id);
+                return lockFromString(lockString);
+            }
+        });
     }
 
     @Override
     public Lock setLock(final String id, final Lock lock) {
-        try {
-            return redisExecutor.execute(new RedisCallable<Lock>() {
-
-                @Override
-                public Lock call(Jedis jedis) {
-                    String lockString = (String) jedis.evalsha(scriptSetSha, Arrays.asList(redisNamespace + id),
-                            Arrays.asList(stringFromLock(lock)));
-                    return lockFromString(lockString); // existing lock
-                }
-            });
-        } catch (IOException cause) {
-            throw new RuntimeException("Lock write error on " + id, cause);
-        }
+        return redisExecutor.execute(new RedisCallable<Lock>() {
+            @Override
+            public Lock call(Jedis jedis) {
+                String lockString = (String) jedis.evalsha(scriptSetSha, Arrays.asList(redisNamespace + id),
+                        Arrays.asList(stringFromLock(lock)));
+                return lockFromString(lockString); // existing lock
+            }
+        });
     }
 
     @Override
     public Lock removeLock(final String id, final String owner) {
-        try {
-            return redisExecutor.execute(new RedisCallable<Lock>() {
-
-                @Override
-                public Lock call(Jedis jedis) {
-                    String lockString = (String) jedis.evalsha(scriptRemoveSha, Arrays.asList(redisNamespace + id),
-                            Arrays.asList(owner == null ? "" : owner));
-                    Lock lock = lockFromString(lockString);
-                    if (lock != null && owner != null && !owner.equals(lock.getOwner())) {
-                        lock = new Lock(lock, true); // failed removal
-                    }
-                    return lock;
+        return redisExecutor.execute(new RedisCallable<Lock>() {
+            @Override
+            public Lock call(Jedis jedis) {
+                String lockString = (String) jedis.evalsha(scriptRemoveSha, Arrays.asList(redisNamespace + id),
+                        Arrays.asList(owner == null ? "" : owner));
+                Lock lock = lockFromString(lockString);
+                if (lock != null && owner != null && !owner.equals(lock.getOwner())) {
+                    lock = new Lock(lock, true); // failed removal
                 }
-            });
-        } catch (IOException cause) {
-            throw new RuntimeException("Lock write error on " + id, cause);
-        }
+                return lock;
+            }
+        });
     }
 
     @Override

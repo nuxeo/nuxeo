@@ -27,6 +27,7 @@ import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.cache.AbstractCache;
 import org.nuxeo.ecm.core.cache.CacheDescriptor;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
@@ -65,12 +66,13 @@ public class RedisCache extends AbstractCache {
         if (workBytes == null) {
             return null;
         }
+
         InputStream bain = new ByteArrayInputStream(workBytes);
         ObjectInputStream in = new ObjectInputStream(bain);
         try {
             return (Serializable) in.readObject();
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -79,17 +81,21 @@ public class RedisCache extends AbstractCache {
             return string.getBytes(UTF_8);
         } catch (IOException e) {
             // cannot happen for UTF-8
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
     @Override
-    public Serializable get(final String key) throws IOException {
+    public Serializable get(final String key) {
         return executor.execute(new RedisCallable<Serializable>() {
-
             @Override
-            public Serializable call(Jedis jedis) throws IOException {
-                return deserializeValue(jedis.get(bytes(formatKey(key))));
+            public Serializable call(Jedis jedis) {
+                try {
+                    return deserializeValue(jedis.get(bytes(formatKey(key))));
+                } catch (IOException e) {
+                    log.error(e);
+                    return null;
+                }
             }
         });
 
@@ -105,9 +111,8 @@ public class RedisCache extends AbstractCache {
     }
 
     @Override
-    public void invalidate(final String key) throws IOException {
+    public void invalidate(final String key) {
         executor.execute(new RedisCallable<Void>() {
-
             @Override
             public Void call(Jedis jedis) {
                 jedis.del(new String[] { formatKey(key) });
@@ -117,31 +122,34 @@ public class RedisCache extends AbstractCache {
     }
 
     @Override
-    public void invalidateAll() throws IOException {
+    public void invalidateAll() {
         Framework.getService(RedisAdmin.class).clear(formatKey("*"));
     }
 
     @Override
-    public void put(final String key, final Serializable value) throws IOException {
+    public void put(final String key, final Serializable value) {
         executor.execute(new RedisCallable<Void>() {
-
             @Override
-            public Void call(Jedis jedis) throws IOException {
-                byte[] bkey = bytes(formatKey(key));
-                jedis.set(bkey, serializeValue(value));
-                // Redis set in second ttl but descriptor set as mn
-                int ttlKey = ttl * 60;
-                jedis.expire(bkey, ttlKey);
-                return null;
+            public Void call(Jedis jedis) {
+                try {
+                    byte[] bkey = bytes(formatKey(key));
+                    jedis.set(bkey, serializeValue(value));
+                    // Redis set in second ttl but descriptor set as mn
+                    int ttlKey = ttl * 60;
+                    jedis.expire(bkey, ttlKey);
+                    return null;
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
+                }
             }
         });
     }
 
     @Override
-    public boolean hasEntry(final String key) throws IOException {
+    public boolean hasEntry(final String key) {
         return (Boolean) executor.execute(new RedisCallable<Serializable>() {
             @Override
-            public Serializable call(Jedis jedis) throws IOException {
+            public Serializable call(Jedis jedis) {
                 return jedis.exists(bytes(formatKey(key)));
             }
         });

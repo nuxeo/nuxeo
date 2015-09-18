@@ -17,6 +17,7 @@ package org.nuxeo.ecm.core.redis.contribs;/*
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
@@ -91,28 +92,24 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
 
     protected void subscribeToInvalidationChannel() {
         log.info("Subscribe to channel: " + getChannelName());
-        try {
-            redisExecutor.execute(jedis -> {
-                jedis.subscribe(new JedisPubSub() {
-                    @Override
-                    public void onMessage(String channel, String message) {
-                        try {
-                            RedisInvalidations rInvals = new RedisInvalidations(nodeId, message);
+        redisExecutor.execute(jedis -> {
+            jedis.subscribe(new JedisPubSub() {
+                @Override
+                public void onMessage(String channel, String message) {
+                    try {
+                        RedisInvalidations rInvals = new RedisInvalidations(nodeId, message);
 
-                            if (log.isTraceEnabled()) {
-                                log.trace("Receive invalidations: " + rInvals);
-                            }
-                            receivedInvals.add(rInvals.getInvalidations());
-                        } catch (IllegalArgumentException e) {
-                            log.error("Fail to read message: " + message, e);
+                        if (log.isTraceEnabled()) {
+                            log.trace("Receive invalidations: " + rInvals);
                         }
+                        receivedInvals.add(rInvals.getInvalidations());
+                    } catch (IllegalArgumentException e) {
+                        log.error("Fail to read message: " + message, e);
                     }
-                }, getChannelName());
-                return null;
-            });
-        } catch (IOException e) {
-            throw new RuntimeException("Fail to subscribe to invalidation channel", e);
-        }
+                }
+            }, getChannelName());
+            return null;
+        });
     }
 
     protected String getChannelName() {
@@ -122,20 +119,15 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
     protected void registerNode() {
         startedDateTime = getCurrentDateTime();
         log.info("Registering node: " + nodeId);
-        try {
-            redisExecutor.execute(jedis -> {
-                String key = getNodeKey();
-                Pipeline pipe = jedis.pipelined();
-                pipe.hset(key, "started", startedDateTime);
-                // Use an expiration so we can access info after a shutdown
-                pipe.expire(key, TIMEOUT_REGISTER_SECOND);
-                pipe.sync();
-                return null;
-            });
-        } catch (IOException e) {
-            throw new RuntimeException("Fail to register node: " + nodeId, e);
-        }
-
+        redisExecutor.execute(jedis -> {
+            String key = getNodeKey();
+            Pipeline pipe = jedis.pipelined();
+            pipe.hset(key, "started", startedDateTime);
+            // Use an expiration so we can access info after a shutdown
+            pipe.expire(key, TIMEOUT_REGISTER_SECOND);
+            pipe.sync();
+            return null;
+        });
     }
 
     protected String getNodeKey() {
@@ -164,13 +156,14 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
 
     @Override
     public void sendInvalidations(Invalidations invals) {
-        try {
-            redisExecutor.execute(jedis -> {
-                RedisInvalidations rInvals = new RedisInvalidations(nodeId, invals);
-                if (log.isTraceEnabled()) {
-                    log.trace("Sending invalidations: " + rInvals);
-                }
-                String key = getNodeKey();
+        redisExecutor.execute(jedis -> {
+            RedisInvalidations rInvals = new RedisInvalidations(nodeId, invals);
+            if (log.isTraceEnabled()) {
+                log.trace("Sending invalidations: " + rInvals);
+            }
+            String key = getNodeKey();
+
+            try {
                 Pipeline pipe = jedis.pipelined();
                 pipe.publish(getChannelName(), rInvals.serialize());
                 pipe.hset(key, STARTED_KEY, startedDateTime);
@@ -178,10 +171,10 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
                 pipe.expire(key, TIMEOUT_REGISTER_SECOND);
                 pipe.sync();
                 return null;
-            });
-        } catch (IOException e) {
-            log.error("Fail to send invalidation: " + e.getMessage(), e);
-        }
+            } catch (IOException e) {
+                throw new NuxeoException(e);
+            }
+        });
     }
 
     protected String getCurrentDateTime() {

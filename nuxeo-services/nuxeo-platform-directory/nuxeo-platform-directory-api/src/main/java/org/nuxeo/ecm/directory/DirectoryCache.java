@@ -99,66 +99,59 @@ public class DirectoryCache {
 
             return source.getEntryFromSource(entryId, fetchReferences);
         }
-        try {
-            DocumentModel dm = null;
-            if (fetchReferences) {
-                dm = (DocumentModel) getEntryCache().get(entryId);
-                if (dm == null) {
-                    // fetch the entry from the backend and cache it for later
-                    // reuse
-                    dm = source.getEntryFromSource(entryId, fetchReferences);
-                    if (dm != null) {
-                        getEntryCache().put(entryId, dm);
-                        sizeCounter.inc();
-                    }
-                } else {
-                    hitsCounter.inc();
+
+        DocumentModel dm = null;
+        if (fetchReferences) {
+            dm = (DocumentModel) getEntryCache().get(entryId);
+            if (dm == null) {
+                // fetch the entry from the backend and cache it for later
+                // reuse
+                dm = source.getEntryFromSource(entryId, fetchReferences);
+                if (dm != null) {
+                    getEntryCache().put(entryId, dm);
+                    sizeCounter.inc();
                 }
             } else {
-                dm = (DocumentModel) getEntryCacheWithoutReferences().get(entryId);
-                if (dm == null) {
-                    // fetch the entry from the backend and cache it for later
-                    // reuse
-                    dm = source.getEntryFromSource(entryId, fetchReferences);
-                    if (dm != null) {
-                        getEntryCacheWithoutReferences().put(entryId, dm);
-                    }
-                } else {
-                    hitsCounter.inc();
-                }
+                hitsCounter.inc();
             }
-            try {
-                if (dm == null) {
-                    return null;
+        } else {
+            dm = (DocumentModel) getEntryCacheWithoutReferences().get(entryId);
+            if (dm == null) {
+                // fetch the entry from the backend and cache it for later
+                // reuse
+                dm = source.getEntryFromSource(entryId, fetchReferences);
+                if (dm != null) {
+                    getEntryCacheWithoutReferences().put(entryId, dm);
                 }
-                DocumentModel clone = dm.clone();
-                // DocumentModelImpl#clone does not copy context data, hence
-                // propagate the read-only flag manually
-                if (BaseSession.isReadOnlyEntry(dm)) {
-                    BaseSession.setReadOnlyEntry(clone);
-                }
-                return clone;
-            } catch (CloneNotSupportedException e) {
-                // will never happen as long a DocumentModelImpl is used
-                return dm;
+            } else {
+                hitsCounter.inc();
             }
-        } catch (IOException e) {
-            throw new DirectoryException(e);
+        }
+        try {
+            if (dm == null) {
+                return null;
+            }
+            DocumentModel clone = dm.clone();
+            // DocumentModelImpl#clone does not copy context data, hence
+            // propagate the read-only flag manually
+            if (BaseSession.isReadOnlyEntry(dm)) {
+                BaseSession.setReadOnlyEntry(clone);
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            // will never happen as long a DocumentModelImpl is used
+            return dm;
         }
     }
 
     public void invalidate(List<String> entryIds) {
         if (isCacheEnabled()) {
             synchronized (this) {
-                try {
-                    for (String entryId : entryIds) {
-                        getEntryCache().invalidate(entryId);
-                        getEntryCacheWithoutReferences().invalidate(entryId);
-                        sizeCounter.dec();
-                        invalidationsCounter.inc();
-                    }
-                } catch (IOException e) {
-                    throw new DirectoryException(e);
+                for (String entryId : entryIds) {
+                    getEntryCache().invalidate(entryId);
+                    getEntryCacheWithoutReferences().invalidate(entryId);
+                    sizeCounter.dec();
+                    invalidationsCounter.inc();
                 }
             }
         }
@@ -171,15 +164,11 @@ public class DirectoryCache {
     public void invalidateAll() {
         if (isCacheEnabled()) {
             synchronized (this) {
-                try {
-                    long count = sizeCounter.getCount();
-                    sizeCounter.dec(count);
-                    invalidationsCounter.inc(count);
-                    getEntryCache().invalidateAll();
-                    getEntryCacheWithoutReferences().invalidateAll();
-                } catch (IOException e) {
-                    throw new DirectoryException(e);
-                }
+                long count = sizeCounter.getCount();
+                sizeCounter.dec(count);
+                invalidationsCounter.inc(count);
+                getEntryCache().invalidateAll();
+                getEntryCacheWithoutReferences().invalidateAll();
             }
         }
     }

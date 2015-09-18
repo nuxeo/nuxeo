@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.core.transientstore.api;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -45,18 +44,8 @@ public interface StorageEntry extends Serializable {
 
     /**
      * Set the Blobs that must be associated with the entry
-     *
-     * @param blobs
      */
     void setBlobs(List<Blob> blobs);
-
-    /**
-     * Adds a {@link Blob} to the list of persisted Blobs
-     *
-     * @param blob
-     * @return
-     */
-    List<Blob> addBlob(Blob blob);
 
     /**
      * @return the Blobs that are associated to the entry
@@ -72,19 +61,14 @@ public interface StorageEntry extends Serializable {
     void put(String key, Serializable value);
 
     /**
-     * Put multiple named parameters
-     *
-     * @param params
-     */
-    void put(Map<String, Serializable> params);
-
-    /**
-     * Reads the value of named parameters
-     *
-     * @param key
-     * @return
+     * Reads the value of named parameters.
      */
     Serializable get(String key);
+
+    /**
+     * Put multiple named parameters.
+     */
+    void putAll(Map<String, Serializable> params);
 
     /**
      * Returns the named parameters.
@@ -94,53 +78,41 @@ public interface StorageEntry extends Serializable {
     Map<String, Serializable> getParameters();
 
     /**
-     * Callback to do some cleanup before entry is removed from the {@link TransientStore}
+     * Callback to do some cleanup before entry is removed from the {@link TransientStore}.
      */
     void beforeRemove();
 
     /**
      * Called by {@link TransientStore} to persist the Blobs to disk and then be sure that the entry can be Serialized
-     * without loosing any data
-     *
-     * @param directory
-     * @throws IOException
+     * without loosing any data.
      */
-    void persist(File directory) throws IOException;
+    void persist(File directory);
 
     /**
-     * Called by {@link TransientStore} to load Blobs from disk
-     *
-     * @param directory
-     * @throws IOException
+     * Called by {@link TransientStore} to load Blobs from disk.
      */
-    void load(File directory) throws IOException;
+    void load(File directory);
 
     /**
      * Returns the size of the persisted Blobs
-     *
-     * @return
      */
     long getSize();
 
     /**
-     * Returns the size last time the entry was stored
-     *
-     * @return
+     * Returns the size of the persisted Blobs. long getSize(); /** Returns the size last time the entry was stored.
      */
     long getLastStorageSize();
 
     /**
-     * flag to indicate if result is ready
+     * flag to indicate if result is ready.
      *
      * @since 7.3
-     * @return
      */
     boolean isCompleted();
 
     /**
-     * Mark the storage entry as ready
+     * Mark the storage entry as ready.
      *
-     * @param completed
      * @since 7.3
      */
     void setCompleted(boolean completed);

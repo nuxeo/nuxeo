@@ -30,7 +30,7 @@ public class RedisEmbeddedTraceExecutor implements RedisExecutor {
     }
 
     @Override
-    public <T> T execute(RedisCallable<T> call) throws IOException, JedisException {
+    public <T> T execute(RedisCallable<T> call) throws JedisException {
         log.trace("Executing " + call, new Throwable("redis call stack trace"));
         return delegate.execute(call);
     }

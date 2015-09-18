@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -79,7 +81,7 @@ public class TransientStorageComplianceFixture {
         Blob blob = new StringBlob("FakeContent");
         blob.setFilename("fake.txt");
         blob.setMimeType("text/plain");
-        entry.addBlob(blob);
+        entry.setBlobs(Collections.singletonList(blob));
         return entry;
     }
 
@@ -116,7 +118,9 @@ public class TransientStorageComplianceFixture {
         Blob blob = new StringBlob("FakeContent2");
         blob.setFilename("fake2.txt");
         blob.setMimeType("text/plain");
-        se.addBlob(blob);
+        List<Blob> blobs = se.getBlobs();
+        blobs.add(blob);
+        se.setBlobs(blobs);
         ts.put(se);
 
         // check update
@@ -129,7 +133,7 @@ public class TransientStorageComplianceFixture {
 
         // move to deletable entries
         // check that still here
-        ts.canDelete("1");
+        ts.release("1");
         se = ts.get("1");
         assertNotNull(se);
 
@@ -167,7 +171,7 @@ public class TransientStorageComplianceFixture {
 
         // move to deletable entries
         // check that still here
-        ts.canDelete("1");
+        ts.release("1");
 
         se = ts.get("1");
         assertNull(se);
@@ -263,7 +267,7 @@ public class TransientStorageComplianceFixture {
 
         // move to deletable entries
         // check that still here
-        ts.canDelete("XXX");
+        ts.release("XXX");
 
         assertNull(((AbstractTransientStore) ts).getL1Cache().get("XXX"));
         assertNotNull(((AbstractTransientStore) ts).getL2Cache().get("XXX"));

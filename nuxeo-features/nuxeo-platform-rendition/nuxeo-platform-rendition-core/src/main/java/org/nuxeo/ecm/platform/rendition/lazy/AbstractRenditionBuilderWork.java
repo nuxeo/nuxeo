@@ -89,17 +89,13 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(getTransientStoreName());
 
-        try {
-            StorageEntry entry = ts.get(key);
-            if (entry == null) {
-                throw new NuxeoException("Rendition TransientStore entry can not be null");
-            }
-            entry.setBlobs(blobs);
-            entry.put(AbstractLazyCachableRenditionProvider.COMPLETED_KEY, true);
-            ts.put(entry);
-        } catch (IOException e) {
-            log.error("Unable to access Trannsient Store", e);
+        StorageEntry entry = ts.get(key);
+        if (entry == null) {
+            throw new NuxeoException("Rendition TransientStore entry can not be null");
         }
+        entry.setBlobs(blobs);
+        entry.put(AbstractLazyCachableRenditionProvider.COMPLETED_KEY, true);
+        ts.put(entry);
     }
 
     /**

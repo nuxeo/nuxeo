@@ -42,7 +42,7 @@ public interface Cache {
      * @return the {@link Serializable} value, return null if the key does not exist or if the key is null
      * @since 6.0
      */
-    public Serializable get(String key) throws IOException;
+    public Serializable get(String key);
 
     /**
      * Invalidate the given key
@@ -50,15 +50,14 @@ public interface Cache {
      * @param key, the key to remove from the cache, if null will do nothing
      * @since 6.0
      */
-    public void invalidate(String key) throws IOException;
+    public void invalidate(String key);
 
     /**
      * Invalidate all key-value stored in the cache
      *
-     * @throws IOException
      * @since 6.0
      */
-    public void invalidateAll() throws IOException;
+    public void invalidateAll();
 
     /**
      * Put method to store a {@link Serializable} value
@@ -67,7 +66,7 @@ public interface Cache {
      * @param value the value to store, if null, the value will not be stored
      * @since 6.0
      */
-    public void put(String key, Serializable value) throws IOException;
+    public void put(String key, Serializable value);
 
     /**
      * Check if a given key is present inside the cache. Compared to the get() method, this method must not update
@@ -75,9 +74,8 @@ public interface Cache {
      *
      * @param key the string key
      * @return true if a corresponding entry exists, false otherwise
-     * @throws IOException
      * @since 7.2
      */
-    public boolean hasEntry(String key) throws IOException;
+    public boolean hasEntry(String key);
 
 }

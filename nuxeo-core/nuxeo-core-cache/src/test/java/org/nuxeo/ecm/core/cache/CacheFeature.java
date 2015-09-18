@@ -64,7 +64,6 @@ public class CacheFeature extends SimpleFeature {
 
     protected void bindCache(Binder binder, final String name) {
         binder.bind(Cache.class).annotatedWith(Names.named(name)).toProvider(new Provider<Cache>() {
-
             @Override
             public Cache get() {
                 return Framework.getService(CacheService.class).getCache(name);
@@ -80,19 +79,11 @@ public class CacheFeature extends SimpleFeature {
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws IOException {
-        IOException errors = new IOException("Check suppressed errors for cache cleanup");
-        clearCache(errors, DEFAULT_TEST_CACHE_NAME);
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
+        clearCache(DEFAULT_TEST_CACHE_NAME);
     }
 
-    protected void clearCache(IOException errors, String name) {
-        try {
-            Framework.getService(CacheService.class).getCache(name).invalidateAll();
-        } catch (IOException cause) {
-            errors.addSuppressed(cause);
-        }
+    protected void clearCache(String name) {
+        Framework.getService(CacheService.class).getCache(name).invalidateAll();
     }
 
     public static <T extends Cache> T unwrapImpl(Class<T> type, Cache cache) {

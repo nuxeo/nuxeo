@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.core.cache;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -43,7 +42,7 @@ public class CacheAttributesChecker extends AbstractCache {
     }
 
     @Override
-    public Serializable get(String key) throws IOException {
+    public Serializable get(String key) {
         if (key == null) {
             return null;
         }
@@ -51,7 +50,7 @@ public class CacheAttributesChecker extends AbstractCache {
     }
 
     @Override
-    public void invalidate(String key) throws IOException {
+    public void invalidate(String key) {
         if (key == null) {
             throw new IllegalArgumentException(String.format("Can't invalidate a null key for the cache '%s'!", name));
         }
@@ -59,12 +58,12 @@ public class CacheAttributesChecker extends AbstractCache {
     }
 
     @Override
-    public void invalidateAll() throws IOException {
+    public void invalidateAll() {
         cache.invalidateAll();
     }
 
     @Override
-    public void put(String key, Serializable value) throws IOException {
+    public void put(String key, Serializable value) {
         if (key == null) {
             throw new IllegalArgumentException(String.format("Can't put a null key for the cache '%s'!", name));
         }
@@ -75,7 +74,7 @@ public class CacheAttributesChecker extends AbstractCache {
     }
 
     @Override
-    public boolean hasEntry(String key) throws IOException {
+    public boolean hasEntry(String key) {
         if (key == null) {
             return false;
         }

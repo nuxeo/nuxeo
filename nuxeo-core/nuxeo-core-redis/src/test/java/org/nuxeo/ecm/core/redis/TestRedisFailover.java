@@ -33,9 +33,8 @@ public class TestRedisFailover {
     @Test(expected = JedisConnectionException.class)
     public void cannotRetry() throws JedisException, IOException {
         executor.execute(new RedisCallable<Void>() {
-
             @Override
-            public Void call(Jedis jedis) throws IOException {
+            public Void call(Jedis jedis) {
                 jedis.get("pfouh");
                 return null;
             }

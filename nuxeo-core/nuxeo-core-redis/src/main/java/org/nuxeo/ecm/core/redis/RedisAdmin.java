@@ -17,7 +17,6 @@ public interface RedisAdmin {
     /**
      * Load script in redis
      *
-     * @throws IOException
      * @since 6.0
      */
     String load(String bundle, String name) throws IOException;
@@ -25,9 +24,8 @@ public interface RedisAdmin {
     /**
      * Clear keys in redis
      *
-     * @throws IOException
      * @since 6.0
      */
-    public Long clear(String prefix) throws IOException;
+    public Long clear(String prefix);
 
 }

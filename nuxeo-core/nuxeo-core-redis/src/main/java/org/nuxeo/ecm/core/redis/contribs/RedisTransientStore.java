@@ -51,51 +51,42 @@ public class RedisTransientStore extends AbstractTransientStore {
     public RedisTransientStore() {
         redisExecutor = Framework.getService(RedisExecutor.class);
         redisAdmin = Framework.getService(RedisAdmin.class);
-        namespace = redisAdmin.namespace("transientCache", getConfig().getName(), "size");
+        namespace = redisAdmin.namespace("transientCache", config.getName(), "size");
     }
 
     @Override
     protected void incrementStorageSize(final long size) {
         try {
-            redisExecutor.execute(new RedisCallable<Void>() {
-                @Override
-                public Void call(Jedis jedis) throws IOException {
-                    jedis.incrBy(namespace, size);
-                    return null;
-                }
+            redisExecutor.execute((RedisCallable<Void>) jedis -> {
+                jedis.incrBy(namespace, size);
+                return null;
             });
         } catch (Exception e) {
-            log.error("Error while accesing Redis", e);
+            log.error("Error while accessing Redis", e);
         }
     }
 
     @Override
     protected void decrementStorageSize(final long size) {
         try {
-            redisExecutor.execute(new RedisCallable<Void>() {
-                @Override
-                public Void call(Jedis jedis) throws IOException {
-                    jedis.decrBy(namespace, size);
-                    return null;
-                }
+            redisExecutor.execute((RedisCallable<Void>) jedis -> {
+                jedis.decrBy(namespace, size);
+                return null;
             });
         } catch (Exception e) {
-            log.error("Error while accesing Redis", e);
+            log.error("Error while accessing Redis", e);
         }
     }
 
     @Override
     public long getStorageSize() {
         try {
-            return redisExecutor.execute(new RedisCallable<Long>() {
-                @Override
-                public Long call(Jedis jedis) throws IOException {
-                    String value = jedis.get(namespace);
-                    return Long.parseLong(value);
-                }
+            return redisExecutor.execute(jedis -> {
+                String value = jedis.get(namespace);
+                return Long.parseLong(value);
             });
         } catch (Exception e) {
-            log.error("Error while accesing Redis", e);
+            log.error("Error while accessing Redis", e);
             return 0;
         }
     }
@@ -103,12 +94,9 @@ public class RedisTransientStore extends AbstractTransientStore {
     @Override
     protected void setStorageSize(final long newSize) {
         try {
-            redisExecutor.execute(new RedisCallable<Void>() {
-                @Override
-                public Void call(Jedis jedis) throws IOException {
-                    jedis.set(namespace, ""+newSize);
-                    return null;
-                }
+            redisExecutor.execute((RedisCallable<Void>) jedis -> {
+                jedis.set(namespace, ""+newSize);
+                return null;
             });
         } catch (Exception e) {
             log.error("Error while accesing Redis", e);

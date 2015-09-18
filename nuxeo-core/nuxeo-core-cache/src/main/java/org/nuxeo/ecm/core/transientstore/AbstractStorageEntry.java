@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 
@@ -70,16 +71,6 @@ public abstract class AbstractStorageEntry implements StorageEntry {
     }
 
     @Override
-    public List<Blob> addBlob(Blob blob) {
-        if (blobs == null) {
-            blobs = new ArrayList<Blob>();
-        }
-        blobs.add(blob);
-        hasBlobs = true;
-        return blobs;
-    }
-
-    @Override
     public List<Blob> getBlobs() {
         return blobs;
     }
@@ -93,7 +84,7 @@ public abstract class AbstractStorageEntry implements StorageEntry {
     }
 
     @Override
-    public void put(Map<String, Serializable> p) {
+    public void putAll(Map<String, Serializable> p) {
         if (params == null) {
             params = new HashMap<String, Serializable>();
         }
@@ -115,14 +106,19 @@ public abstract class AbstractStorageEntry implements StorageEntry {
     }
 
     @Override
-    public void persist(File directory) throws IOException {
+    public void persist(File directory) {
         lastStorageSize = getSize();
         if (hasBlobs) {
             cachedBlobs = new ArrayList<Map<String, String>>();
             for (Blob blob : blobs) {
                 Map<String, String> cached = new HashMap<String, String>();
                 File cachedFile = new File(directory, UUID.randomUUID().toString());
-                blob.transferTo(cachedFile);
+                try {
+                    blob.transferTo(cachedFile);
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
+                }
+
                 cachedFile.deleteOnExit();
                 cached.put("file", cachedFile.getAbsolutePath());
                 cached.put("filename", blob.getFilename());

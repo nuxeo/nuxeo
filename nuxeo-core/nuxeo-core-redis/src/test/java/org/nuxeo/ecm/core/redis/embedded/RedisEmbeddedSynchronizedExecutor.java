@@ -30,7 +30,7 @@ public class RedisEmbeddedSynchronizedExecutor implements RedisExecutor {
     }
 
     @Override
-    public <T> T execute(RedisCallable<T> call) throws IOException, JedisException {
+    public <T> T execute(RedisCallable<T> call) throws JedisException {
         synchronized (this) {
             return delegate.execute(call);
         }

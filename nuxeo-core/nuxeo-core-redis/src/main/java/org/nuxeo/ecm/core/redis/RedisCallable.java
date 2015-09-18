@@ -8,12 +8,11 @@
  ******************************************************************************/
 package org.nuxeo.ecm.core.redis;
 
-import java.io.IOException;
-
 import redis.clients.jedis.Jedis;
 
+@FunctionalInterface
 public interface RedisCallable<T> {
 
-    T call(Jedis jedis) throws IOException;
+    T call(Jedis jedis);
 
 }

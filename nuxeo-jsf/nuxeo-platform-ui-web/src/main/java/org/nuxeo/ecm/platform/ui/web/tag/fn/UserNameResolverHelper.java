@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.tag.fn;
 
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -58,21 +56,13 @@ public class UserNameResolverHelper implements EventListener {
 
         Cache cache = getCache();
         if (cache != null) {
-            try {
-                displayName = (String) cache.get(login);
-            } catch (IOException e) {
-                log.error("Unable to access cache " + USERNAMECACHE + " for entry " + login, e);
-            }
+            displayName = (String) cache.get(login);
         }
 
         if (displayName == null) {
             displayName = computeUserFullName(login);
             if (cache != null) {
-                try {
-                    cache.put(login, displayName);
-                } catch (IOException e) {
-                    log.error("Unable to access cache " + USERNAMECACHE + " for entry " + login, e);
-                }
+                cache.put(login, displayName);
             }
         }
 
@@ -129,29 +119,13 @@ public class UserNameResolverHelper implements EventListener {
         String first = (String) model.getData(UserConfig.DEFAULT.firstNameKey);
         String last = (String) model.getData(UserConfig.DEFAULT.lastNameKey);
         String username = (String) model.getData(UserConfig.DEFAULT.nameKey);
-        return userDisplayName(username, first, last);
+        return Functions.userDisplayName(username, first, last);
     }
 
     protected String computeUserFullName(NuxeoPrincipal principal) {
         String first = principal.getFirstName();
         String last = principal.getLastName();
-        return userDisplayName(principal.getName(), first, last);
-    }
-
-    protected String userDisplayName(String id, String first, String last) {
-        if (first == null || first.length() == 0) {
-            if (last == null || last.length() == 0) {
-                return id;
-            } else {
-                return last;
-            }
-        } else {
-            if (last == null || last.length() == 0) {
-                return first;
-            } else {
-                return first + ' ' + last;
-            }
-        }
+        return Functions.userDisplayName(principal.getName(), first, last);
     }
 
     @Override
@@ -165,11 +139,7 @@ public class UserNameResolverHelper implements EventListener {
             String userName = (String) event.getData();
             Cache cache = getCache();
             if (cache != null) {
-                try {
-                    cache.invalidate(userName);
-                } catch (IOException e) {
-                    log.error("Unable to invalidate entry", e);
-                }
+                cache.invalidate(userName);
             }
         }
     }

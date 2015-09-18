@@ -62,7 +62,7 @@ public class RedisUIDSequencer extends AbstractUIDSequencer {
                     return jedis.incr(namespace + key);
                 }
             }).intValue();
-        } catch (IOException | JedisException e) {
+        } catch (JedisException e) {
             throw new NuxeoException(e);
         }
     }

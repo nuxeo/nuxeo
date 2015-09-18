@@ -154,9 +154,8 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     }
 
     @Override
-    public Long clear(final String pattern) throws IOException {
+    public Long clear(final String pattern) {
         return executor.execute(new RedisCallable<Long>() {
-
             @Override
             public Long call(Jedis jedis) {
                 List<String> keys = Arrays.asList(pattern);
@@ -176,7 +175,6 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
             builder.appendln(line);
         }
         return executor.execute(new RedisCallable<String>() {
-
             @Override
             public String call(Jedis jedis) {
                 return jedis.scriptLoad(builder.toString());

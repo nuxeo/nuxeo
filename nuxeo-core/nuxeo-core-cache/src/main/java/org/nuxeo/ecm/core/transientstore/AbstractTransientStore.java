@@ -119,7 +119,7 @@ public abstract class AbstractTransientStore implements TransientStore {
     }
 
     @Override
-    public void put(StorageEntry entry) throws IOException {
+    public void put(StorageEntry entry) {
         if (config.getAbsoluteMaxSizeMB() < 0 || getStorageSize() < config.getAbsoluteMaxSizeMB() * (1024 * 1024)) {
             StorageEntry old = get(entry.getId());
             if (old != null) {
@@ -133,13 +133,13 @@ public abstract class AbstractTransientStore implements TransientStore {
         }
     }
 
-    protected StorageEntry persistEntry(StorageEntry entry) throws IOException {
+    protected StorageEntry persistEntry(StorageEntry entry) {
         entry.persist(getCachingDirectory(entry.getId()));
         return entry;
     }
 
     @Override
-    public StorageEntry get(String key) throws IOException {
+    public StorageEntry get(String key) {
         StorageEntry entry = (StorageEntry) getL1Cache().get(key);
         if (entry == null) {
             entry = (StorageEntry) getL2Cache().get(key);
@@ -151,7 +151,7 @@ public abstract class AbstractTransientStore implements TransientStore {
     }
 
     @Override
-    public void remove(String key) throws IOException {
+    public void remove(String key) {
         StorageEntry entry = (StorageEntry) getL1Cache().get(key);
         if (entry == null) {
             entry = (StorageEntry) getL2Cache().get(key);
@@ -166,7 +166,7 @@ public abstract class AbstractTransientStore implements TransientStore {
     }
 
     @Override
-    public void canDelete(String key) throws IOException {
+    public void release(String key) {
         StorageEntry entry = (StorageEntry) getL1Cache().get(key);
         if (entry != null) {
             getL1Cache().invalidate(key);
@@ -174,18 +174,6 @@ public abstract class AbstractTransientStore implements TransientStore {
                 getL2Cache().put(key, entry);
             }
         }
-    }
-
-    @Override
-    public void removeAll() throws IOException {
-        getL1Cache().invalidateAll();
-        getL2Cache().invalidateAll();
-        doGC();
-    }
-
-    @Override
-    public TransientStoreConfig getConfig() {
-        return config;
     }
 
     @Override

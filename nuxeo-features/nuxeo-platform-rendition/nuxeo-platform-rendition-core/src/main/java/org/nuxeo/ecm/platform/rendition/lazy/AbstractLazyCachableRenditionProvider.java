@@ -80,31 +80,18 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             throw new NuxeoException("Unable to find Transient Store  " + CACHE_NAME);
         }
 
-        StorageEntry entry = null;
-        try {
-            entry = ts.get(key);
-        } catch (IOException e) {
-            throw new NuxeoException("Unable to read from cache", e);
-        }
+        StorageEntry entry = ts.get(key);
 
         if (entry == null) {
             Work work = getRenditionWork(key, doc, def);
             WorkManager wm = Framework.getService(WorkManager.class);
             entry = new StorageEntryImpl(key);
             entry.put(WORKERID_KEY, work.getId());
-            try {
-                ts.put(entry);
-            } catch (IOException e) {
-                throw new NuxeoException("Unable to write to TransientStore", e);
-            }
+            ts.put(entry);
             wm.schedule(work);
         } else {
             if ((Boolean.TRUE).equals(entry.get(COMPLETED_KEY))) {
-                try {
-                    ts.canDelete(key);
-                } catch (IOException e) {
-                    throw new NuxeoException("Unable to release entry in TransientStore", e);
-                }
+                ts.release(key);
                 return entry.getBlobs();
             }
         }

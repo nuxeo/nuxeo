@@ -16,13 +16,13 @@
  */
 package org.nuxeo.ecm.core.transientstore.api;
 
-import java.io.IOException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
-public class MaximumTransientSpaceExceeded extends IOException {
+public class MaximumTransientSpaceExceeded extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

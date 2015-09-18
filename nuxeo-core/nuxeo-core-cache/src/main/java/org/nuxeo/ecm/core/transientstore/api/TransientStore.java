@@ -31,48 +31,24 @@ import org.nuxeo.common.annotation.Experimental;
 public interface TransientStore {
 
     /**
-     * Add a new entry in the Store
-     *
-     * @param entry
+     * Adds a new {@link StorageEntry}.
      */
-    void put(StorageEntry entry) throws IOException;
+    void put(StorageEntry entry);
 
     /**
-     * Retrieve a new entry inside the Store
-     *
-     * @param key
-     * @return the corresponding {@link StorageEntry} or null
+     * Returns a {@link StorageEntry} given its {@code key}, or null if not found.
      */
-    StorageEntry get(String key) throws IOException;
+    StorageEntry get(String key);
 
     /**
-     * Remove an entry from the Store
-     *
-     * @param key
+     * Removes a {@link StorageEntry} given its {@code key}.
      */
-    void remove(String key) throws IOException;
+    void remove(String key);
 
     /**
-     * Informs the Store that the entry can be deleted if TTL or GC parameters requires to do some cleanup
-     *
-     * @param key
+     * Informs the Store that the entry can be released if TTL or GC parameters requires to do some cleanup.
      */
-    void canDelete(String key) throws IOException;
-
-    /**
-     * Deletes all entries inside the Store
-     *
-     * @throws IOException *
-     */
-    void removeAll() throws IOException;
-
-    /**
-     * Returns the Store configuration
-     *
-     * @return the {@link TransientStoreConfig}
-     * @throws IOException
-     */
-    TransientStoreConfig getConfig() throws IOException;
+    void release(String key);
 
     /**
      * Runs the Garbage Collecting to delete the Filesystem resources that may correspond to cache entries that were
@@ -81,18 +57,17 @@ public interface TransientStore {
     void doGC();
 
     /**
-     * Return the size of the disk storage used
-     *
-     * @return the size of the disk storage used in MB
+     * Returns the size of the disk storage used in MB
      */
     int getStorageSizeMB();
 
+    /**
+     * Shutdown the store.
+     */
     void shutdown();
 
     /**
      * Initialize the store from the configuration
-     *
-     * @param config
      */
     void init(TransientStoreConfig config);
 
