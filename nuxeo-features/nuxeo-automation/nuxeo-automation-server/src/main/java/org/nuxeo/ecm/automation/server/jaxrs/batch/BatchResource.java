@@ -159,6 +159,8 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
 
         log.debug("uploaded " + fileName + " (" + fileSize + "b)");
         BatchManager bm = Framework.getLocalService(BatchManager.class);
+        // TODO https://jira.nuxeo.com/browse/NXP-16953
+        // Use flag to allow or not providing a client-side generated batch id
         bm.addStream(batchId, idx, is, fileName, mimeType);
 
         Map<String, String> result = new HashMap<String, String>();
