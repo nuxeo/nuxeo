@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.server.jaxrs.BatchUploadObject;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
@@ -64,6 +65,7 @@ import com.sun.jersey.multipart.file.StreamDataBodyPart;
 @Features({ RestServerFeature.class })
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
+@Deploy("org.nuxeo.ecm.core.cache")
 @LocalDeploy("org.nuxeo.ecm.platform.restapi.test:multiblob-doctype.xml")
 public class BatchUploadTest extends BaseTest {
 
