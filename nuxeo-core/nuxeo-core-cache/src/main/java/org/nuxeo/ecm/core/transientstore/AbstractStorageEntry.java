@@ -78,7 +78,7 @@ public abstract class AbstractStorageEntry implements StorageEntry {
     @Override
     public void put(String key, Serializable value) {
         if (params == null) {
-            params = new HashMap<String, Serializable>();
+            params = new HashMap<>();
         }
         params.put(key, value);
     }
@@ -86,7 +86,7 @@ public abstract class AbstractStorageEntry implements StorageEntry {
     @Override
     public void putAll(Map<String, Serializable> p) {
         if (params == null) {
-            params = new HashMap<String, Serializable>();
+            params = new HashMap<>();
         }
         params.putAll(p);
 
@@ -109,9 +109,9 @@ public abstract class AbstractStorageEntry implements StorageEntry {
     public void persist(File directory) {
         lastStorageSize = getSize();
         if (hasBlobs) {
-            cachedBlobs = new ArrayList<Map<String, String>>();
+            cachedBlobs = new ArrayList<>();
             for (Blob blob : blobs) {
-                Map<String, String> cached = new HashMap<String, String>();
+                Map<String, String> cached = new HashMap<>();
                 File cachedFile = new File(directory, UUID.randomUUID().toString());
                 try {
                     if (blob instanceof FileBlob && ((FileBlob) blob).isTemporary()) {
@@ -138,7 +138,7 @@ public abstract class AbstractStorageEntry implements StorageEntry {
         if (!hasBlobs || blobs != null) {
             return;
         }
-        blobs = new ArrayList<Blob>();
+        blobs = new ArrayList<>();
         for (Map<String, String> info : cachedBlobs) {
             File cachedFile = new File(info.get("file"));
             Blob blob = new FileBlob(cachedFile);
