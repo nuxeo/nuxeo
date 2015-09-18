@@ -16,15 +16,13 @@
  */
 package org.nuxeo.ecm.platform.query.api;
 
-import java.io.File;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -72,20 +70,14 @@ public class TestTextSearchCleaner extends NXRuntimeTestCase {
 
     @Test
     public void testCustomCleaner() throws Exception {
-        File config = Environment.getDefault().getConfig();
-        config.mkdirs();
-        File myProps = new File(config, "extra.properties");
-        FileUtils.copyToFile(getClass().getResourceAsStream("/extra.properties"), myProps);
-        Framework.getRuntime().reloadProperties();
-        String s = Framework.getProperty(NXQLQueryBuilder.IGNORED_CHARS_KEY);
+        deployContrib("org.nuxeo.ecm.platform.query.api.test", "configuration-test-contrib.xml");
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        String s = cs.getProperty(NXQLQueryBuilder.IGNORED_CHARS_KEY);
         assertEquals("&/{}()", s);
         assertNotNull(s);
         assertEquals("= 'a $ b'", NXQLQueryBuilder.serializeFullText("a $ b"));
-
         assertEquals("= '10.3'", NXQLQueryBuilder.serializeFullText("10.3"));
-        myProps.delete();
-        Framework.getRuntime().reloadProperties();
-
+        undeployContrib("org.nuxeo.ecm.platform.query.api.test", "configuration-test-contrib.xml");
     }
 
 }

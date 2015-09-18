@@ -1,0 +1,9 @@
+<component name="org.nuxeo.runtime.pp.conf.test">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <property name="org.nuxeo.query.builder.ignored.chars">&amp;/{}()</property>
+
+  </extension>
+
+</component>
