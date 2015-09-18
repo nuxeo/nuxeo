@@ -46,6 +46,13 @@ public class AutomationRenderer {
 
     protected static final Log log = LogFactory.getLog(AutomationRenderer.class);
 
+    /**
+     * Test if the Rendition is available on the given DocumentModel
+     *
+     * @param doc the target {@link DocumentModel}
+     * @param def the {@link RenditionDefinition} to use
+     * @return The test result
+     */
     public static boolean isRenditionAvailable(DocumentModel doc, RenditionDefinition def) {
         String chain = def.getOperationChain();
         if (chain == null) {
@@ -82,6 +89,15 @@ public class AutomationRenderer {
         return true;
     }
 
+    /**
+     * Generate the rendition Blobs for a given {@link RenditionDefinition}. Return is a List of Blob for bigger
+     * flexibility (typically HTML rendition with resources)
+     *
+     * @param doc the target {@link DocumentModel}
+     * @param definition the {@link RenditionDefinition} to use
+     * @param session the {@link CoreSession} to use
+     * @return The list of Blobs
+     */
     public static List<Blob> render(DocumentModel doc, RenditionDefinition definition, CoreSession session) {
 
         String chain = definition.getOperationChain();
@@ -130,6 +146,16 @@ public class AutomationRenderer {
         }
     }
 
+    /**
+     * Generate a revised filename whose extension is either based on the supplied mimeType if applicable or the
+     * supplied default extension.
+     *
+     * @param filename  the filename to use
+     * @param mimeType  the mimeType from which the assigned extension is derived
+     * @param defaultExtension  the default extension to be assigned if the mimeType has no corresponding extension
+     * @return the filename with the revised extension
+     * @since 7.4
+     */
     public static String getFilenameWithExtension(String filename, String mimeType, String defaultExtension) {
         String baseName = FilenameUtils.getBaseName(filename);
         MimetypeRegistry mimetypeRegistry = Framework.getLocalService(MimetypeRegistry.class);
