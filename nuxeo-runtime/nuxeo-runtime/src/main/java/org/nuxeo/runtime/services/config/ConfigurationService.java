@@ -19,9 +19,6 @@ package org.nuxeo.runtime.services.config;
 
 /**
  * Service holding runtime configuration properties.
- * <p>
- * If a property is defined in the nuxeo.conf file, it will take precedence over properties defined via the runtime
- * extension point.
  *
  * @since 7.4
  */

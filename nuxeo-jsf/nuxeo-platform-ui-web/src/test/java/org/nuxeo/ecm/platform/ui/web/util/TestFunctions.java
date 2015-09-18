@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -75,10 +74,6 @@ public class TestFunctions {
                 ctx.undeploy(url);
             }
         }
-
-        // override via framework properties
-        Framework.getProperties().setProperty("nuxeo.jsf.defaultBytePrefixFormat", "JEDEC");
-        assertEquals("120 KB", Functions.printFileSize("123456"));
     }
 
     @Test

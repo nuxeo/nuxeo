@@ -42,9 +42,6 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     @Override
     public String getProperty(String key, String defaultValue) {
-        if (Framework.getProperties().containsKey(key)) {
-            return Framework.getProperty(key, defaultValue);
-        }
         if (registry.hasProperty(key)) {
             return registry.getProperty(key);
         }
@@ -53,18 +50,12 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
 
     @Override
     public boolean isBooleanPropertyTrue(String key) {
-        if (Framework.getProperties().containsKey(key)) {
-            return Framework.isBooleanPropertyTrue(key);
-        }
         String value = getProperty(key);
         return Boolean.parseBoolean(value);
     }
 
     @Override
     public boolean isBooleanPropertyFalse(String key) {
-        if (Framework.getProperties().containsKey(key)) {
-            return Framework.isBooleanPropertyFalse(key);
-        }
         String value = getProperty(key);
         if (StringUtils.isBlank(value)) {
             return false;

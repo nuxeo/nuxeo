@@ -23,6 +23,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
@@ -49,15 +51,21 @@ public class ConfigurationPropertyRegistry extends SimpleContributionRegistry<Co
             log.error("Cannot register configuration property with an empty name");
             return;
         }
+        if (Framework.getProperties().containsKey(key)) {
+            String message = String.format("Property '" + key + "' should now be contributed to extension "
+                    + "point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'");
+            DeprecationLogger.log(message, "7.4");
+            Framework.getRuntime().getWarnings().add(message);
+        }
         String value = contrib.getValue();
         properties.put(name, value);
-        log.info("Registering property with name " + name + " and value " + value);
+        log.info("Registered property with name " + name + " and value " + value);
     }
 
     @Override
     public void contributionRemoved(String id, ConfigurationPropertyDescriptor origContrib) {
         properties.remove(id);
-        log.info("Unregistering property with name " + id);
+        log.info("Unregistered property with name " + id);
     }
 
     @Override

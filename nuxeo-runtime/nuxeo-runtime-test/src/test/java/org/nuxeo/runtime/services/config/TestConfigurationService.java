@@ -65,20 +65,20 @@ public class TestConfigurationService extends NXRuntimeTestCase {
 
     @Test
     public void testOverride() throws Exception {
-        // Override default value
-        Framework.getProperties().setProperty("nuxeo.test.dummyStringProperty", "anotherDummyValue");
         // Deploy contribution with properties
         deployContrib("org.nuxeo.runtime.test.tests", "configuration-test-contrib.xml");
         // Assert property has overridden value
-        assertEquals("anotherDummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
+        assertEquals("dummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
         // Assert property don't exist
         assertNull(cs.getProperty("nuxeo.test.overrideContribDummyProperty"));
         // Deploy another contrib with a new property and override existing properties
         deployContrib("org.nuxeo.runtime.test.tests", "configuration-override-contrib.xml");
         // Assert new property was added
         assertEquals("overrideContrib", cs.getProperty("nuxeo.test.overrideContribDummyProperty"));
-        // Assert framework property still takes precedence
-        assertEquals("anotherDummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
+        // Assert framework property does not takes precedence
+        assertEquals("dummyStringValueOverridden", cs.getProperty("nuxeo.test.dummyStringProperty"));
+        Framework.getProperties().setProperty("nuxeo.test.dummyStringProperty", "anotherDummyValue");
+        assertEquals("dummyStringValueOverridden", cs.getProperty("nuxeo.test.dummyStringProperty"));
         Framework.getProperties().remove("nuxeo.test.dummyStringProperty");
         // Assert old properties have overridden values
         assertEquals("dummyStringValueOverridden", cs.getProperty("nuxeo.test.dummyStringProperty"));
@@ -92,4 +92,19 @@ public class TestConfigurationService extends NXRuntimeTestCase {
         assertEquals("dummyValue", cs.getProperty("nuxeo.test.dummyStringProperty"));
         assertTrue(cs.isBooleanPropertyTrue("nuxeo.test.dummyBooleanProperty"));
     }
+
+    @Test
+    public void testCompatWarn() throws Exception {
+        Framework.getProperties().setProperty("nuxeo.test.dummyStringProperty", "anotherDummyValue");
+        assertEquals(0, Framework.getRuntime().getWarnings().size());
+        // Deploy contribution with properties
+        deployContrib("org.nuxeo.runtime.test.tests", "configuration-test-contrib.xml");
+        assertEquals(1, Framework.getRuntime().getWarnings().size());
+        assertEquals(
+                "Property 'nuxeo.test.dummyStringProperty' should now be contributed to "
+                        + "extension point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'",
+                Framework.getRuntime().getWarnings().get(0));
+        Framework.getProperties().remove("nuxeo.test.dummyStringProperty");
+    }
+
 }
