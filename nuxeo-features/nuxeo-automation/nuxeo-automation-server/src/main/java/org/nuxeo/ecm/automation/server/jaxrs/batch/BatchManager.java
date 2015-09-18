@@ -83,6 +83,13 @@ public interface BatchManager {
     void clean(String batchId);
 
     /**
+     * Initialize a batch by with an automatically generated id.
+     *
+     * @since 7.4
+     */
+    String initBatch();
+
+    /**
      * Initialize a batch with a given batchId and Context Name If batchId is not provided, it will be automatically
      * generated
      *

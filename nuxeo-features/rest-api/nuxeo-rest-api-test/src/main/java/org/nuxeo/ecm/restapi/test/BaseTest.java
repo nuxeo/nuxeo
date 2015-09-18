@@ -138,10 +138,12 @@ public class BaseTest {
             builder = wr.type(MediaType.MULTIPART_FORM_DATA_TYPE);
         }
 
-        if (requestType == RequestType.POSTREQUEST) {
-            builder.header("Content-type", "application/json+nxrequest");
-        } else {
-            builder.header("Content-type", "application/json+nxentity");
+        if (headers == null || !(headers.containsKey("Content-Type"))) {
+            if (requestType == RequestType.POSTREQUEST) {
+                builder.header("Content-Type", "application/json+nxrequest");
+            } else {
+                builder.header("Content-Type", "application/json+nxentity");
+            }
         }
 
         // Adding some headers if needed

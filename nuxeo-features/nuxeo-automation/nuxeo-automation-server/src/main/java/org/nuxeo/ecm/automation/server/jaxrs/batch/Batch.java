@@ -54,6 +54,13 @@ public class Batch {
         new File(baseDir).mkdirs();
     }
 
+    /**
+     * @since 7.4
+     */
+    public String getId() {
+        return id;
+    }
+
     public void addBlob(String idx, Blob blob) {
         uploadedBlob.put(idx, blob);
     }

@@ -113,6 +113,10 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
         return Integer.parseInt(t);
     }
 
+    /**
+     * @deprecated since 7.4, use {@link BatchUploadObject#upload(HttpServletRequest, String, String)} instead.
+     */
+    @Deprecated
     @POST
     @Path("/upload")
     public Object doPost(@Context HttpServletRequest request) throws IOException {
@@ -207,6 +211,10 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
         }
     }
 
+    /**
+     * @deprecated since 7.4, use {@link BatchUploadObject#getBatchInfo(String)} instead.
+     */
+    @Deprecated
     @GET
     @Path("/files/{batchId}")
     public Object getFilesBatch(@PathParam(REQUEST_BATCH_ID) String batchId) throws IOException {
@@ -227,6 +235,10 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
         return buildFromString(out.toString("UTF-8"));
     }
 
+    /**
+     * @deprecated since 7.4, use {@link BatchUploadObject#dropBatch(String)} instead.
+     */
+    @Deprecated
     @GET
     @Path("/drop/{batchId}")
     public Object dropBatch(@PathParam(REQUEST_BATCH_ID) String batchId) throws IOException {

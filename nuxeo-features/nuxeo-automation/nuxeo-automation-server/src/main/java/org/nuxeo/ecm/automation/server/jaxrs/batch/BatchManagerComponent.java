@@ -58,9 +58,16 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         ComplexTypeJSONDecoder.registerBlobDecoder(new JSONBatchBlobDecoder());
     }
 
+    @Override
+    public String initBatch() {
+        Batch batch = initBatchInternal(null, null);
+        return batch.getId();
+    }
+
+    @Override
     public String initBatch(String batchId, String contextName) {
         Batch batch = initBatchInternal(batchId, contextName);
-        return batch.id;
+        return batch.getId();
     }
 
     protected Batch initBatchInternal(String batchId, String contextName) {
@@ -81,6 +88,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         }
     }
 
+    @Override
     public void addStream(String batchId, String idx, InputStream is, String name, String mime) throws IOException {
         Batch batch = batches.get(batchId);
         if (batch == null) {
@@ -94,10 +102,12 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         return batches.containsKey(batchId);
     }
 
+    @Override
     public List<Blob> getBlobs(String batchId) {
         return getBlobs(batchId, 0);
     }
 
+    @Override
     public List<Blob> getBlobs(String batchId, int timeoutS) {
         Batch batch = batches.get(batchId);
         if (batch == null) {
@@ -107,10 +117,12 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         return batch.getBlobs(timeoutS);
     }
 
+    @Override
     public Blob getBlob(String batchId, String fileId) {
         return getBlob(batchId, fileId, 0);
     }
 
+    @Override
     public Blob getBlob(String batchId, String fileId, int timeoutS) {
         Batch batch = batches.get(batchId);
         if (batch == null) {
@@ -120,6 +132,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         return batch.getBlob(fileId, timeoutS);
     }
 
+    @Override
     public void clean(String batchId) {
         Batch batch = batches.get(batchId);
         if (batch != null) {
