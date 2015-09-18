@@ -57,6 +57,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Provider for blobs getting information from Dropbox.
  *
@@ -103,7 +105,7 @@ public class DropboxBlobProvider implements BlobProvider, BatchUpdateBlobProvide
     }
 
     @Override
-    public URI getURI(ManagedBlob blob, UsageHint usage) throws IOException {
+    public URI getURI(ManagedBlob blob, UsageHint usage, HttpServletRequest servletRequest) throws IOException {
         String url = null;
         String fileInfo = getFileInfo(blob.getKey());
         String user = getUser(fileInfo);
@@ -157,7 +159,7 @@ public class DropboxBlobProvider implements BlobProvider, BatchUpdateBlobProvide
 
     @Override
     public InputStream getStream(ManagedBlob blob) throws IOException {
-        URI uri = getURI(blob, UsageHint.STREAM);
+        URI uri = getURI(blob, UsageHint.STREAM, null);
         return uri == null ? null : getStream(uri);
     }
 

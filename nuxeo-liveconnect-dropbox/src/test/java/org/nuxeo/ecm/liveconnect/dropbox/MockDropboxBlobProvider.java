@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 
 /**
@@ -62,7 +64,7 @@ public class MockDropboxBlobProvider extends DropboxBlobProvider {
     }
 
     @Override
-    public URI getURI(ManagedBlob blob, UsageHint usage) throws IOException {
+    public URI getURI(ManagedBlob blob, UsageHint usage, HttpServletRequest servletRequest) throws IOException {
         String url = null;
         switch (usage) {
         case STREAM:

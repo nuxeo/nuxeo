@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpStatusCodes;
 import org.apache.commons.lang.StringUtils;
@@ -186,7 +188,7 @@ public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobPro
     }
 
     @Override
-    public URI getURI(ManagedBlob blob, UsageHint usage) throws IOException {
+    public URI getURI(ManagedBlob blob, UsageHint usage, HttpServletRequest servletRequest) throws IOException {
         String url = null;
         switch (usage) {
         case STREAM:
@@ -322,7 +324,7 @@ public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobPro
 
     @Override
     public InputStream getStream(ManagedBlob blob) throws IOException {
-        URI uri = getURI(blob, UsageHint.STREAM);
+        URI uri = getURI(blob, UsageHint.STREAM, null);
         return uri == null ? null : getStream(blob, uri);
     }
 
