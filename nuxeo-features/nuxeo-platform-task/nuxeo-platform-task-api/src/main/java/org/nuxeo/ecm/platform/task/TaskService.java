@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
 /**
@@ -145,9 +144,45 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param parentPath /task-root if null
      * @param eventInfo
      * @since 5.6
+     *
+     * @deprecated since 7.4 use
+     *             {@link #org.nuxeo.ecm.platform.task.core.service.TaskServiceImpl.createTaskWithProcessName(CoreSession,
+     *             NuxeoPrincipal, List<DocumentModel>, String, String, String, String, String, List<String>, boolean,
+     *             String, String, Date, Map<String, String>, String, Map<String, Serializable>)
+     *             createTaskWithProcessName} instead
      */
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
             String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo);
+
+    /**
+     * Creates a task of the given documents type and starts it. Notifies events with names
+     * {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED} and {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED}, passing the task
+     * in the event properties using key {@link #TASK_INSTANCE_EVENT_PROPERTIES_KEY} Also the map eventInfo is passed in
+     * the event properties. The process name can also be specified if any.
+     *
+     * @param coreSession the session to use when notifying
+     * @param principal the principal marked as initiator of the task and used when notifying.
+     * @param documents the documents to attach to the task.
+     * @param the task document type
+     * @param taskName the task name.
+     * @param taskType the task type.
+     * @param processId the process ID linked to this task if any.
+     * @param processName the process Name linked to this task if any.
+     * @param prefixedActorIds the list of actor ids, prefixed with 'user:' or 'group:'.
+     * @param createOneTaskPerActor if true, one task will be created per actor, else a single task will be assigned to
+     *            all actors.
+     * @param directive the directive, put in the task variables.
+     * @param comment string added to the task comments and used as a notification comment
+     * @param dueDate the due date, set on the task instance
+     * @param taskVariables additional task variables
+     * @param parentPath /task-root if null
+     * @param eventInfo
+     * @since 7.4
+     */
+    List<Task> createTaskForProcess(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
+            String taskDocumentType, String taskName, String taskType, String processId, String processName, List<String> actorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo);
 

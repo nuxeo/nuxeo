@@ -148,6 +148,14 @@ public class TaskImpl implements Task {
         return getPropertyValue(TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME);
     }
 
+    /**
+     * @since 7.4
+     */
+    @Override
+    public String getProcessName() {
+        return getPropertyValue(TaskConstants.TASK_PROCESS_NAME_PROPERTY_NAME);
+    }
+
     @SuppressWarnings("unchecked")
     protected <T> T getPropertyValue(String propertyName) {
         Serializable value = doc.getPropertyValue(propertyName);
@@ -265,6 +273,14 @@ public class TaskImpl implements Task {
         setPropertyValue(TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME, processId);
     }
 
+    /**
+     * @since 7.4
+     */
+    @Override
+    public void setProcessName(String processName) {
+        setPropertyValue(TaskConstants.TASK_PROCESS_NAME_PROPERTY_NAME, processName);
+    }
+
     protected void setPropertyValue(String propertyName, Object value) {
         if (value != null) {
             if (value instanceof Date) {
@@ -332,4 +348,5 @@ public class TaskImpl implements Task {
         }
         setPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME, variablesProperty);
     }
+
 }

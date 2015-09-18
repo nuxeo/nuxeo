@@ -62,6 +62,11 @@ public interface Task extends Serializable {
      */
     String getProcessId();
 
+    /**
+     * @since 7.4
+     */
+    String getProcessName();
+
     String getDescription();
 
     String getDirective();
@@ -105,6 +110,11 @@ public interface Task extends Serializable {
      * @since 5.6
      */
     void setProcessId(String processId);
+
+    /**
+     * @since 7.4
+     */
+    void setProcessName(String processName);
 
     void setDescription(String description);
 

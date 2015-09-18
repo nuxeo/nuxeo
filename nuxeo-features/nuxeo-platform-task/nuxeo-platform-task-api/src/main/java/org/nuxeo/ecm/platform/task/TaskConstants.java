@@ -58,6 +58,11 @@ public class TaskConstants {
      */
     public static final String TASK_PROCESS_ID_PROPERTY_NAME = "nt:processId";
 
+    /**
+     * @since 7.4
+     */
+    public static final String TASK_PROCESS_NAME_PROPERTY_NAME = "nt:processName";
+
     public static final String TASK_ACCEPTED_PROPERTY_NAME = "nt:accepted";
 
     public static final String TASK_CANCELLED_LIFE_CYCLE_STATE = "cancelled";

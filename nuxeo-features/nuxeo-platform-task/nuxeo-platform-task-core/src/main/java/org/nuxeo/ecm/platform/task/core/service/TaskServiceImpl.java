@@ -652,10 +652,29 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     /**
      * @since 5.8
+     * @deprecated since 7.4 use
+     *             {@link #org.nuxeo.ecm.platform.task.core.service.TaskServiceImpl.createTaskWithProcessName(CoreSession,
+     *             NuxeoPrincipal, List<DocumentModel>, String, String, String, String, String, List<String>, boolean,
+     *             String, String, Date, Map<String, String>, String, Map<String, Serializable>)
+     *             createTaskWithProcessName} instead
      */
     @Override
+    @Deprecated
     public List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
             String taskDocumentType, String taskName, String taskType, String processId, List<String> actorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo) {
+        return createTaskForProcess(coreSession, principal, documents, taskDocumentType, taskName, taskType, processId,
+                null, actorIds, createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath,
+                eventInfo);
+    }
+
+    /**
+     * @since 7.4
+     */
+    @Override
+    public List<Task> createTaskForProcess(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
+            String taskDocumentType, String taskName, String taskType, String processId, String processName, List<String> actorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
             {
@@ -663,8 +682,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             parentPath = getTaskRootParentPath(coreSession);
         }
         CreateTaskUnrestricted runner = new CreateTaskUnrestricted(coreSession, principal, documents, taskDocumentType,
-                taskName, taskType, processId, actorIds, createOneTaskPerActor, directive, comment, dueDate,
-                taskVariables, parentPath);
+                taskName, taskType, processId, processName, actorIds, createOneTaskPerActor, directive, comment,
+                dueDate, taskVariables, parentPath);
         runner.runUnrestricted();
 
         List<Task> tasks = runner.getTasks();

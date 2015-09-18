@@ -16,6 +16,7 @@
   <xs:element name="name" type="xs:string" />
   <xs:element name="type" type="xs:string" /> <!-- since 5.6 -->
   <xs:element name="processId" type="xs:string" /> <!-- since 5.6 -->
+  <xs:element name="processName" type="xs:string" /> <!-- since 7.4 -->
   <xs:element name="accepted" type="xs:boolean" />
   <xs:element name="dueDate" type="xs:date" />
   <xs:element name="task_variables" type="nxt:task_variables" />
