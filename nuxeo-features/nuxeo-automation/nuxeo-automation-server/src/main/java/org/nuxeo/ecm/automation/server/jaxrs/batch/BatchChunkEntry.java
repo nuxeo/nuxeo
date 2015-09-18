@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -36,7 +37,7 @@ public class BatchChunkEntry extends AbstractStorageEntry {
 
     public BatchChunkEntry(String id, Blob blob) {
         super(id);
-        addBlob(blob);
+        setBlobs(Collections.singletonList(blob));
     }
 
     public Blob getBlob() {

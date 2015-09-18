@@ -58,7 +58,7 @@ public class BatchFileEntry extends AbstractStorageEntry {
     public BatchFileEntry(String id, Blob blob) {
         super(id);
         put("chunked", false);
-        addBlob(blob);
+        setBlobs(Collections.singletonList(blob));
     }
 
     /**
