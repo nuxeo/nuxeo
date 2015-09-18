@@ -18,13 +18,14 @@
 
 package org.nuxeo.theme.styling.wro;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CharSequenceReader;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -86,11 +87,12 @@ public class SassCssFlavorProcessor extends AbstractFlavorProcessor {
                     byte[] initalBytes = IOUtils.toByteArray(reader);
                     reader.close();
                     byte[] finalBytes = ArrayUtils.addAll(varBytes, initalBytes);
-                    finalReader = new CharSequenceReader(new String(finalBytes));
+                    finalReader = new InputStreamReader(new ByteArrayInputStream(finalBytes));
                 } else {
                     finalReader = reader;
                 }
                 source = new InputSource(finalReader);
+                source.setEncoding(getEncoding());
                 SCSSDocumentHandlerImpl scssDocumentHandlerImpl = new SCSSDocumentHandlerImpl();
                 ScssStylesheet stylesheet = scssDocumentHandlerImpl.getStyleSheet();
 
