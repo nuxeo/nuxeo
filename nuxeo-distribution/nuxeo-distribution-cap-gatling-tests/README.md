@@ -38,10 +38,10 @@ This data will be download and injected automatically when using the default mav
 
 You can also run the script by hand, this will download the file (12MB, 90k docs) and inject the content into redis:
 
-    python ./scripts/inject-arbre.py | redis-cli -n 7 --pipe
+    python ./scripts/inject-arbres.py -d | redis-cli -n 7 --pipe
 
 By default we use the redis database 7.
-See `python inject-arbre.py --help` for more information.
+See `python inject-arbres.py --help` for more information.
 
 
 ### library dataset
@@ -50,7 +50,7 @@ The dataset is taken from the "Mairie de Paris" and contains the [list of books 
 
 To download the file (276MB, 746k docs) and inject the content into redis:
 
-    python scripts/inject-biblio.py | redis-cli -n 7 --pipe
+    python scripts/inject-biblio.py -d | redis-cli -n 7 --pipe
 
 Note that the file can be processed much faster using GNU parallel:
 
