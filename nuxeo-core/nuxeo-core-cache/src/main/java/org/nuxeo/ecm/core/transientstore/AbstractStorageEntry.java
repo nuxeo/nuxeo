@@ -110,6 +110,11 @@ public abstract class AbstractStorageEntry implements StorageEntry {
     }
 
     @Override
+    public Map<String, Serializable> getParameters() {
+        return params;
+    }
+
+    @Override
     public void persist(File directory) throws IOException {
         lastStorageSize = getSize();
         if (hasBlobs) {

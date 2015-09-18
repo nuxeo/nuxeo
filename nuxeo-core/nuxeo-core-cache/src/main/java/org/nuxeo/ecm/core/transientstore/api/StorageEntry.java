@@ -71,7 +71,6 @@ public interface StorageEntry extends Serializable {
      */
     void put(String key, Serializable value);
 
-
     /**
      * Put multiple named parameters
      *
@@ -86,6 +85,13 @@ public interface StorageEntry extends Serializable {
      * @return
      */
     Serializable get(String key);
+
+    /**
+     * Returns the named parameters.
+     *
+     * @since 7.4
+     */
+    Map<String, Serializable> getParameters();
 
     /**
      * Callback to do some cleanup before entry is removed from the {@link TransientStore}
@@ -115,7 +121,6 @@ public interface StorageEntry extends Serializable {
      * @return
      */
     long getSize();
-
 
     /**
      * Returns the size last time the entry was stored
