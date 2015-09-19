@@ -81,16 +81,14 @@ public abstract class AbstractTransientStore implements TransientStore {
     }
 
     public void shutdown() {
-
         CacheService cs = Framework.getService(CacheService.class);
-        if (cs == null) {
-            throw new UnsupportedOperationException("Cache service is required");
-        }
-        if (l1cd != null) {
-            ((CacheServiceImpl) cs).unregisterCache(l1cd);
-        }
-        if (l2cd != null) {
-            ((CacheServiceImpl) cs).unregisterCache(l2cd);
+        if (cs != null) {
+            if (l1cd != null) {
+                ((CacheServiceImpl) cs).unregisterCache(l1cd);
+            }
+            if (l2cd != null) {
+                ((CacheServiceImpl) cs).unregisterCache(l2cd);
+            }
         }
     }
 
