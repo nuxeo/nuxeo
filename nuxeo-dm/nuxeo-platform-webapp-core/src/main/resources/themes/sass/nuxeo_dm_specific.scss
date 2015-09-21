@@ -22,8 +22,8 @@
 .summary .gridBox.gridStyle4 {
   background-color: #fafafa;
   box-shadow: 2px 0 2px -2px rgba(0, 0, 0, .3) inset;
-  padding: 2em 1em;
   margin: -2em 0;
+  padding: 2em 1em;
 }
 
 .summary {
@@ -57,8 +57,8 @@
 
 // =Clipboard & Worklist
 .userClipboard {
-  margin: 0 0 1.5em;
   line-height: initial;
+  margin: 0 0 1.5em;
 }
 
 .dropzone .userClipboard {
@@ -105,9 +105,9 @@
 }
 
 .clipboardFunctions .rf-ulst-itm:first-of-type {
-  border-width: 1px;
-  border-style: dashed none none;
   border-color: $shade-medium-10;
+  border-style: dashed none none;
+  border-width: 1px;
   margin-top: .5em;
   padding-top: .9em;
 }
@@ -137,8 +137,8 @@
 }
 
 .userClipboard .tabsBar img {
-  opacity: .6;
   height: 14px;
+  opacity: .6;
   width: 14px;
 }
 
