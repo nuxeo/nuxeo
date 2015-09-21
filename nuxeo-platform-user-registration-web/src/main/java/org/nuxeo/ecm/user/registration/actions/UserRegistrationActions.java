@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.mail.internet.AddressException;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
@@ -65,6 +67,8 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 public class UserRegistrationActions implements Serializable {
 
     private static final long serialVersionUID = 53468164827894L;
+
+    public static final String WIDGET_COMPONENT_EMAIL_ID = "nxw_user_request_email";
 
     private static Log log = LogFactory.getLog(UserRegistrationActions.class);
 
@@ -104,6 +108,9 @@ public class UserRegistrationActions implements Serializable {
 
     @In(create = true)
     protected transient UserRegistrationService userRegistrationService;
+
+    @In(create = true)
+    protected transient UserManager userManager;
 
     public UserRegistrationInfo getUserinfo() {
         return userinfo;
@@ -392,5 +399,19 @@ public class UserRegistrationActions implements Serializable {
     public void refreshContentViewCache() {
         contentViewActions.refreshOnSeamEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
         contentViewActions.resetPageProviderOnSeamEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
+    }
+
+    public void validateUsernameEmail(FacesContext context, UIComponent component, Object value) {
+        String email = (String) ((UIInput) component.findComponent(WIDGET_COMPONENT_EMAIL_ID)).getLocalValue();
+        NuxeoPrincipal principal = userManager.getPrincipal((String) value);
+        if (principal == null || email == null) {
+            return;
+        }
+        if (!email.equals(principal.getEmail())) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "label.unicity.usernamepwd"), null);
+            context.addMessage(null, message);
+            throw new ValidatorException(message);
+        }
     }
 }
