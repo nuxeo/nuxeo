@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -81,17 +82,10 @@ public class BlobHolderWrapper {
             return null;
         }
 
-        StringBuffer sb = new StringBuffer(getContextPathProperty());
-        sb.append("/nxbigfile/");
-        sb.append(doc.getRepositoryName());
-        sb.append("/");
-        sb.append(doc.getId());
-        sb.append("/blobholder:");
-        sb.append(index);
-        sb.append("/");
-        sb.append(blobs.get(index).getFilename());
-        sb.append("?inline=true");
-        return sb.toString();
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        String xpath = DownloadService.BLOBHOLDER_PREFIX + index;
+        String filename = blobs.get(index).getFilename();
+        return getContextPathProperty() + "/" + downloadService.getDownloadUrl(doc, xpath, filename) + "?inline=true";
     }
 
     public String getBlobUrl(String name) {

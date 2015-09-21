@@ -46,77 +46,78 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.content.template", //
-        "org.nuxeo.template.manager.api", //
-        "org.nuxeo.template.manager", //
-        "org.nuxeo.template.manager.jaxrs", //
-        "org.nuxeo.template.manager.samples", //
-        "studio.extensions.template-module-demo", //
+    "org.nuxeo.template.manager.api", //
+    "org.nuxeo.template.manager", //
+    "org.nuxeo.template.manager.jaxrs", //
+    "org.nuxeo.template.manager.samples", //
+    "org.nuxeo.ecm.core.io", //
+    "studio.extensions.template-module-demo", //
 })
 public class TestImportModelViaContentTemplate {
 
-    @Inject
-    protected CoreSession session;
+  @Inject
+  protected CoreSession session;
 
-    DocumentModel rootDocument;
+  DocumentModel rootDocument;
 
-    DocumentModel workspace;
+  DocumentModel workspace;
 
-    DocumentModel docToExport;
+  DocumentModel docToExport;
 
-    @Test
-    public void testImportContentTemplateArchive() throws Exception {
+  @Test
+  public void testImportContentTemplateArchive() throws Exception {
 
-        // check result
+    // check result
 
-        StringBuffer sb = new StringBuffer();
-        DocumentModelList docs = session.query("select * from Document where ecm:mixinType in ('Template','TemplateBased') order by ecm:path");
-        for (DocumentModel doc : docs) {
-            sb.append("path: " + doc.getPathAsString() + " type: " + doc.getType() + " title:" + doc.getTitle()
-                    + " name:" + doc.getName() + " uuid:" + doc.getId());
-            TemplateBasedDocument templateDoc = doc.getAdapter(TemplateBasedDocument.class);
-            if (templateDoc != null) {
-                for (String tName : templateDoc.getTemplateNames()) {
-                    sb.append(" target: " + tName + "-" + templateDoc.getSourceTemplateDocRef(tName));
-                    assertTrue(session.exists(templateDoc.getSourceTemplateDocRef(tName)));
-                }
-            } else {
-                TemplateSourceDocument source = doc.getAdapter(TemplateSourceDocument.class);
-                assertNotNull(source);
-            }
-            sb.append("\n");
+    StringBuffer sb = new StringBuffer();
+    DocumentModelList docs = session.query(
+        "select * from Document where ecm:mixinType in ('Template','TemplateBased') order by ecm:path");
+    for (DocumentModel doc : docs) {
+      sb.append("path: " + doc.getPathAsString() + " type: " + doc.getType() + " title:" + doc.getTitle() + " name:"
+          + doc.getName() + " uuid:" + doc.getId());
+      TemplateBasedDocument templateDoc = doc.getAdapter(TemplateBasedDocument.class);
+      if (templateDoc != null) {
+        for (String tName : templateDoc.getTemplateNames()) {
+          sb.append(" target: " + tName + "-" + templateDoc.getSourceTemplateDocRef(tName));
+          assertTrue(session.exists(templateDoc.getSourceTemplateDocRef(tName)));
         }
-
-        // String dump = sb.toString();
-        // System.out.println("Import completed : " + docs.size() + " docs");
-        // System.out.println(dump);
-
-    }
-
-    @Test
-    public void testWebTemplateRendering() throws Exception {
-
-        PathRef ref = new PathRef("/default-domain/templates/WebTemplate");
-        assertTrue(session.exists(ref));
-
-        DocumentModel webTemplate = session.getDocument(ref);
-        TemplateSourceDocument source = webTemplate.getAdapter(TemplateSourceDocument.class);
+      } else {
+        TemplateSourceDocument source = doc.getAdapter(TemplateSourceDocument.class);
         assertNotNull(source);
-
-        List<TemplateBasedDocument> using = source.getTemplateBasedDocuments();
-        assertNotNull(using);
-        assertEquals(1, using.size());
-
-        TemplateBasedDocument note = using.get(0);
-
-        Blob blob = note.renderWithTemplate(source.getName());
-        assertNotNull(blob);
-
-        String html = blob.getString();
-        assertNotNull(html);
-
-        String targetUrl = "templates/doc/" + note.getAdaptedDoc().getId() + "/resource/" + source.getName()
-                + "/style.css";
-        assertTrue(html.contains(targetUrl));
-
+      }
+      sb.append("\n");
     }
+
+    // String dump = sb.toString();
+    // System.out.println("Import completed : " + docs.size() + " docs");
+    // System.out.println(dump);
+
+  }
+
+  @Test
+  public void testWebTemplateRendering() throws Exception {
+
+    PathRef ref = new PathRef("/default-domain/templates/WebTemplate");
+    assertTrue(session.exists(ref));
+
+    DocumentModel webTemplate = session.getDocument(ref);
+    TemplateSourceDocument source = webTemplate.getAdapter(TemplateSourceDocument.class);
+    assertNotNull(source);
+
+    List<TemplateBasedDocument> using = source.getTemplateBasedDocuments();
+    assertNotNull(using);
+    assertEquals(1, using.size());
+
+    TemplateBasedDocument note = using.get(0);
+
+    Blob blob = note.renderWithTemplate(source.getName());
+    assertNotNull(blob);
+
+    String html = blob.getString();
+    assertNotNull(html);
+
+    String targetUrl = "templates/doc/" + note.getAdaptedDoc().getId() + "/resource/" + source.getName() + "/style.css";
+    assertTrue(html.contains(targetUrl));
+
+  }
 }
