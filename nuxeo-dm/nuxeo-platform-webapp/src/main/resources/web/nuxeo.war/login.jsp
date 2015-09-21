@@ -113,8 +113,6 @@ body {
 
 /* Header */
 .topBar {
-  background: #fff none;
-  box-shadow: 1px 0 4px rgba(0, 0, 0, 0.4);
   width: 100%;
   height: 40px;
   border: 0;
@@ -124,36 +122,6 @@ body {
 .topBar img {
   margin-left: 50px
 }
-
-.labelCorp {
-  margin: 0;
-  width: 400px;
-  padding-top: 0
-}
-
-.labelCorp ul {
-  margin: 0;
-  padding: 0 42px 0 0
-}
-
-.labelCorp li {
-  margin: 0;
-  padding: 0 8px;
-  list-style: none;
-  float: right
-}
-
-.labelCorp a {
-  text-decoration: none;
-  color: #213f7d;
-  font-size: small;
-  padding-top: 0
-}
-
-.labelCorp a:hover {
-  text-decoration: underline
-}
-
 /* Login block */
 .login {
   background: <%=loginBoxBackgroundStyle%>;
@@ -296,7 +264,8 @@ body {
 
 /* News Container Block */
 .news_container {
-  text-align: left
+  text-align: left;
+  width: 400px;
 }
 
 .block_container {
@@ -318,33 +287,8 @@ body {
 <table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%" class="container">
   <tbody>
     <tr class="topBar">
-      <td align="left">
+      <td colspan="2">
         <img width="<%=logoWidth%>" height="<%=logoHeight%>" alt="<%=logoAlt%>" src="<%=logoUrl%>" />
-      </td>
-      <td align="right" class="leftColumn">
-        <div class="labelCorp">
-          <ul>
-            <li>
-              <a onclick="window.open(this.href); return false;"
-                href="//www.nuxeo.com/en/subscription/connect?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
-                <fmt:message bundle="${messages}" key="label.login.getSupport" />
-              </a>
-            </li>
-            <li>
-              <a onclick="window.open(this.href); return false;"
-                href="//answers.nuxeo.com/?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
-                <fmt:message bundle="${messages}" key="label.footer.answers" />
-              </a>
-            </li>
-            <li>
-              <a onclick="window.open(this.href); return false;"
-                href="//doc.nuxeo.com/display/MAIN/Nuxeo+Documentation+Center+Home?utm_source=dm&amp;utm_medium=login-page-top&amp;utm_campaign=products">
-                <fmt:message bundle="${messages}" key="label.login.documentation" />
-              </a>
-            </li>
-          </ul>
-          <div style="clear:both;" />
-        </div>
       </td>
     </tr>
     <tr>
