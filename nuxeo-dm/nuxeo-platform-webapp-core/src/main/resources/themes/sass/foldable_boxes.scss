@@ -135,7 +135,7 @@
 .grayBox,
 .simpleBox {
   box-sizing: border-box;
-  border-width: 1px solid $shade-light-50;
+  border: 1px solid $shade-light-50;
   color: $font-color;
   margin: 0 .5em .5em 0;
   padding: .5em;
