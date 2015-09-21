@@ -12,7 +12,8 @@
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
-        <resource>style_guide.css</resource>
+        <bundle>nuxeo_sassCss</bundle>
+        <resource>style_guide.scss</resource>
       </resources>
     </themePage>
 
@@ -20,10 +21,10 @@
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
-    <resource name="style_guide.css">
-      <path>themes/css/style_guide.css</path>
+    <resource name="style_guide.scss" type="css">
+      <path>themes/sass/style_guide.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
 

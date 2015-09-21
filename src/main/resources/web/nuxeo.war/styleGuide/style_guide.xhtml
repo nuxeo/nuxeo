@@ -15,9 +15,9 @@
 
     <header class="nxHeader">
       <div style="width:20%; float:left;">
-        <div class="nuxeoLogo">
+        <div class="logo">
           <a href="#{baseURL}styleGuide/">
-            <img width="118" height="20"
+            <img width="114" height="20"
               src="#{baseURL}img/nuxeo_logo.png"
               title="Style Guide"
               alt="Style Guide" />
@@ -33,22 +33,22 @@
     </header>
 
     <section class="nxMainContainer">
-      <div class="gridRow demoGrid">
+      <div class="gridContainer">
+        <div class="gridRow demoGrid">
 
-        <div class="gridBox gridStyle2">
-          <ui:include src="./incl/sections.xhtml" />
-        </div>
-
-        <div class="gridBox gridStyle10">
-          <div class="mainWrapper">
-            <c:if test="#{styleGuideActions.currentPage != null}">
-              <ui:include src="#{styleGuideActions.currentPage.link}" />
-            </c:if>
+          <div class="gridBox verticalTabsColumn gridStyle2">
+            <ui:include src="./incl/sections.xhtml" />
           </div>
+
+          <div class="gridBox verticalTabsContent gridStyle10">
+            <div class="mainWrapper">
+              <c:if test="#{styleGuideActions.currentPage != null}">
+                <ui:include src="#{styleGuideActions.currentPage.link}" />
+              </c:if>
+            </div>
+          </div>
+
         </div>
-
-        <div class="clear" />
-
       </div>
     </section>
 
