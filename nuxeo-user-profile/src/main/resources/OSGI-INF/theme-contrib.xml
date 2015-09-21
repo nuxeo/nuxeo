@@ -8,12 +8,12 @@
 
     <themePage name="userCenter/default">
       <resources append="true">
-        <resource>user_profile.css</resource>
+        <resource>user_profile.scss</resource>
       </resources>
     </themePage>
     <themePage name="admin/default">
       <resources append="true">
-        <resource>user_profile.css</resource>
+        <resource>user_profile.scss</resource>
       </resources>
     </themePage>
 
@@ -21,8 +21,11 @@
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
-    <resource name="user_profile.css">
-      <path>themes/css/user_profile.css</path>
+    <resource name="user_profile.scss" type="css">
+      <path>themes/sass/user_profile.scss</path>
+      <processors>
+        <processor>sassCss</processor>
+      </processors>
     </resource>
 
   </extension>
