@@ -13,42 +13,20 @@
   padding: 2% 10% 8%;
 }
 
-.verticalTabs {
-  font-weight: bold;
-  margin: 0;
-  padding: 2em 0;
-}
-
-.verticalTabs li {
-  margin: 0 0 .2em;
-  padding: 0;
-}
-
-.verticalTabs li img {
-  margin: 0 0 -3px;
-  opacity: .4;
-}
-
-.verticalTabs li:hover img,
-.verticalTabs li.selected img {
-  opacity: 1;
-}
-
-.verticalTabs li:hover {
-  background-color: $tabs-horizontal-color;
-}
-
-.verticalTabs li.selected a {
-  color: #fff;
+.vertical .smallIcon {
+    height: 12px;
+    margin-bottom: -0.1em;
+    margin-right: 0.3em;
+    width: 12px;
 }
 
 .widgetPanel .column {
-  /* keep inheritance of the other values of .column */
+  // keep inheritance of the other values of .column
   border: none;
   width: auto;
 }
 
-/* Grids Layout section: explain the grid layout model */
+// Grids Layout section: explain the grid layout model
 .gridVisible {
   background-color: #fef6ff;
   border: 1px solid #f5b3ff;
@@ -76,7 +54,7 @@
   margin: 0 0 .5em;
 }
 
-/* Messages section: remove the behavior of ambiance messages */
+// Messages section: remove the behavior of ambiance messages
 .gridBox .ambiance {
   float: none;
 }
@@ -96,7 +74,7 @@
   top: -2px;
 }
 
-/* Dialogs section: show popups  */
+// Dialogs section: show popups
 .genericPopUp {
   display: block;
   left: auto;
@@ -108,7 +86,7 @@
   height: 180px;
 }
 
-/* space in tabs */
+// space in tabs
 .mainWrapper .tabsBar {
   margin: 0;
 }
@@ -117,12 +95,12 @@
   margin-right: -.3em;
 }
 
-/* action link on right */
+// action link on right
 .gridBox .foldableBox h3 {
   display: block;
 }
 
-/* Reduce icons in icons tab */
+// Reduce icons in icons tab
 .bubbleBox.displayIB.textAlignC > img {
   max-height: 14px;
 }
@@ -137,6 +115,14 @@ h2 {
 .gridBox h3,
 .gridBox h4 {
   margin-top: 1.7em;
+}
+
+.bubbleBox h3 {
+  margin: .5em 0 1em;
+}
+
+a.bubbleBox {
+  color: $font-color;
 }
 
 .code {
