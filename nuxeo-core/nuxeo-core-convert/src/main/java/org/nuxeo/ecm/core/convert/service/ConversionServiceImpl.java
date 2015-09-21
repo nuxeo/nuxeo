@@ -24,8 +24,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.api.ConversionStatus;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.api.ConverterNotAvailable;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
@@ -37,6 +39,9 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.core.convert.extension.GlobalConfigDescriptor;
+import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
+import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
@@ -243,8 +248,8 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         String srcMt = blobHolder.getBlob().getMimeType();
         String converterName = translationHelper.getConverterName(srcMt, destinationMimeType);
         if (converterName == null) {
-            throw new ConversionException(
-                    "Cannot find converter from type " + srcMt + " to type " + destinationMimeType);
+            throw new ConversionException("Cannot find converter from type " + srcMt + " to type "
+                    + destinationMimeType);
         }
         return convert(converterName, blobHolder, parameters);
     }
@@ -316,6 +321,44 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     @Override
     public boolean isSourceMimeTypeSupported(String converterName, String sourceMimeType) {
         return getConverterDescriptor(converterName).getSourceMimeTypes().contains(sourceMimeType);
+    }
+
+    @Override
+    public String scheduleConversion(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters) {
+        WorkManager workManager = Framework.getService(WorkManager.class);
+        ConversionWork work = new ConversionWork(converterName, blobHolder, parameters);
+        workManager.schedule(work);
+        return work.getId();
+    }
+
+    @Override
+    public ConversionStatus getConversionStatus(String id) {
+        WorkManager workManager = Framework.getService(WorkManager.class);
+        Work.State workState = workManager.getWorkState(id);
+        if (workState == null) {
+            return null;
+        }
+
+        return new ConversionStatus(id, ConversionStatus.Status.valueOf(workState.name()));
+    }
+
+    @Override
+    public BlobHolder getConversionResult(String id, boolean cleanTransientStoreEntry) {
+        WorkManager workManager = Framework.getService(WorkManager.class);
+        String result = workManager.findResult(id);
+        if (result == null) {
+            return null;
+        }
+
+        StorageEntry storageEntry = ConversionWork.getStorageEntry(result);
+        if (storageEntry == null) {
+            return null;
+        }
+
+        if (cleanTransientStoreEntry) {
+            ConversionWork.removeStorageEntry(result);
+        }
+        return new SimpleBlobHolderWithProperties(storageEntry.getBlobs(), storageEntry.getParameters());
     }
 
     @Override

@@ -83,4 +83,26 @@ public interface ConversionService {
      */
     boolean isSourceMimeTypeSupported(String converterName, String sourceMimeType);
 
+    /**
+     * Schedules a conversion.
+     * <p>
+     * Returns a conversion id to be used by {@link #getConversionResult(String, boolean)}.
+     *
+     * @since 7.4
+     */
+    String scheduleConversion(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters);
+
+    /**
+     * Returns the status of a scheduled conversion given its {@code id}, or {@code null} if no conversion scheduled.
+     *
+     * @since 7.4
+     */
+    ConversionStatus getConversionStatus(String id);
+
+    /**
+     * Returns the conversion result for the given {@code id} if any, {@code null} otherwise.
+     *
+     * @since 7.4
+     */
+    BlobHolder getConversionResult(String id, boolean cleanTransientStoreEntry);
 }
