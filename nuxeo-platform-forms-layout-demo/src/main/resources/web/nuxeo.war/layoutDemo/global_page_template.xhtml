@@ -15,26 +15,16 @@
 
     <div>
       <header class="nxHeader">
-        <div class="content">
-          <ui:include src="/layoutDemo/header.xhtml" />
-        </div>
+        <ui:include src="/layoutDemo/header.xhtml" />
       </header>
       <section class="nxMainContainer">
+        <div class="column">
+          <ui:insert name="menu">
+            <ui:include src="menu.xhtml" />
+          </ui:insert>
+        </div>
         <div class="content">
-          <table class="layoutDemoPage">
-            <tbody>
-              <tr>
-                <ui:insert name="menu">
-                  <td width="20%" valign="top">
-                    <ui:include src="menu.xhtml" />
-                  </td>
-                </ui:insert>
-                <td valign="top">
-                  <ui:insert name="content" />
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <ui:insert name="content" />
         </div>
       </section>
       <footer class="nxFooter">

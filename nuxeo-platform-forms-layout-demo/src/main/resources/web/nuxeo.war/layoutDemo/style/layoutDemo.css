@@ -2,29 +2,12 @@
   Layout demo specific CSS
 **/
 
-.layoutDemoPage {
-  border-spacing: 0;
-  border-collapse: collapse;
-  width: 100%;
-  overflow: hidden;
-}
-
-.layoutDemoPage td {
-  padding: 0px;
-}
-
 /* HEADER */
-.header div.nuxeoLogo {
-  padding: .3em 0 .2em 1.5em }
-
-.nxHeader .nuxeoLogo>a:link {
-  opacity: 1;
-}
-
-div.nuxeoLogo span {
+span.subtitle {
   color: #213f7d;
-  font: 18px/1.25em Arial, sans-serif;
-  padding: 0 30px;
+  display: inline-block;
+  font: bold 18px/1.25em Arial,sans-serif;
+  padding: .8em 1em 0 2.5em;
   text-transform: none;
   vertical-align: top;
 }
@@ -53,60 +36,20 @@ div.customButtons a:hover {
 }
 
 /* MENU */
-div.layoutDemoLeftMenu {
-  padding: 10px;
-}
-
-ul.layoutDemoMenu {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-ul.layoutDemoMenu li {
-  margin-left: 5px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-ul.layoutDemoMenu a,ul.layoutDemoMenu a:hover,ul.layoutDemoMenu a:visited
-  {
-  text-decoration: none;
-  font-weight: normal;
+ul.layoutDemoMenu a,ul.layoutDemoMenu a:hover,ul.layoutDemoMenu a:visited {
   display: block;
   padding: 3px 7px;
 }
 
-ul.layoutDemoMenu li.selected a,ul.layoutDemoMenu li.selected a:hover,ul.layoutDemoMenu li.selected a:visited
-  {
-  text-decoration: none;
-  font-weight: normal;
+ul.layoutDemoMenu li.selected a,ul.layoutDemoMenu li.selected a:hover,ul.layoutDemoMenu li.selected a:visited {
   display: block;
-  padding: 3px 7px;
   background: #d9eaff;
   border-radius: 3px;
 }
 
 /* MAIN CONTENT */
-.nxMainContainer .content {
-  background-color: #f1f4f8;
-  padding: 1em;
-}
 
-.layoutDemoPage td:nth-child(2) {
-  padding: 0 2em;
-}
-
-.layoutDemoPage td:nth-child(2) td {
-  padding: .5em .6em .5em 0;
-}
-
-div.mainContent {
-  padding: 1em 0;
-}
-
-.layoutDemoPage h3 {
+.nxMainContainer h3 {
   color: #46a7de;
   font-size: 1.4em;
 }

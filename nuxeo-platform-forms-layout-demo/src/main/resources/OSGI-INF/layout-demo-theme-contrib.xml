@@ -43,6 +43,7 @@
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_sassCss</bundle>
         <bundle>layoutDemo</bundle>
       </resources>
     </page>
@@ -52,6 +53,7 @@
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_sassCss</bundle>
       </resources>
     </themePage>
 
