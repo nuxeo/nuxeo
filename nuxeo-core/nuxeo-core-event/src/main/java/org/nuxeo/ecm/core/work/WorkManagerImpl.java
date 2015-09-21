@@ -399,7 +399,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
 
         @Override
-        public void beforeCompletion() {;
+        public void beforeCompletion() {
         }
 
         @Override
@@ -853,7 +853,15 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         return queuing.find(workId, state);
     }
 
-    /** @param state SCHEDULED, RUNNING or null for both */
+    @Override
+    public String findResult(String workId) {
+        Work work = find(workId, State.COMPLETED);
+        return work != null ? work.getWorkInstanceResult() : null;
+    }
+
+    /**
+     * @param state SCHEDULED, RUNNING or null for both
+     */
     protected boolean hasWorkInState(String workId, State state) {
         return queuing.isWorkInState(workId, state);
     }

@@ -183,10 +183,19 @@ public interface WorkManager {
      * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
      *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
      * @return the found work instance, or {@code null} if not found
-     *
      * @since 7.3
      */
     Work find(String workId, State state);
+
+    /**
+     * Finds a work result.
+     *
+     * @param workId the id of the work to find the result
+     * @return the found work result, or {@code null} if there is no result or if work is not {@link State#COMPLETED
+     *         COMPLETED}
+     * @since 7.4
+     */
+    String findResult(String workId);
 
     /**
      * Gets the state in which a work instance is.

@@ -408,4 +408,11 @@ public interface Work extends Serializable {
      * @since 5.8
      */
     void setSchedulePath(WorkSchedulePath path);
+
+    /**
+     * CALLED BY THE WORK MANAGER (not user code) to get this work instance's result.
+     *
+     * @since 7.4
+     */
+    String getWorkInstanceResult();
 }
