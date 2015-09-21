@@ -62,6 +62,8 @@ public class BaseTest {
 
     protected ObjectMapper mapper;
 
+    protected Client client;
+
     protected WebResource service;
 
     @Before
@@ -81,7 +83,7 @@ public class BaseTest {
     protected WebResource getServiceFor(String user, String password) {
         ClientConfig config = new DefaultClientConfig();
         config.getClasses().add(MultiPartWriter.class);
-        Client client = Client.create(config);
+        client = Client.create(config);
         client.setConnectTimeout(TIMEOUT);
         client.setReadTimeout(TIMEOUT);
         client.addFilter(new HTTPBasicAuthFilter(user, password));

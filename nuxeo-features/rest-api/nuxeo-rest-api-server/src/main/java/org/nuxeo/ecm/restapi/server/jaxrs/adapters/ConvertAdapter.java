@@ -17,22 +17,30 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.restapi.jaxrs.io.conversion.ConversionScheduled;
 import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobObject;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
@@ -47,6 +55,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 7.3
  */
 @WebAdapter(name = ConvertAdapter.NAME, type = "convertAdapter")
+@Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
 public class ConvertAdapter extends DefaultAdapter {
 
     public static final String NAME = "convert";
@@ -54,28 +63,7 @@ public class ConvertAdapter extends DefaultAdapter {
     @GET
     public Blob convert(@QueryParam("converter") String converter, @QueryParam("type") String type,
             @QueryParam("format") String format, @Context UriInfo uriInfo) {
-        Blob blob = getTarget().getAdapter(Blob.class);
-        BlobHolder bh = null;
-        if (blob == null) {
-            DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
-            if (doc != null) {
-                bh = doc.getAdapter(BlobHolder.class);
-                if (bh != null) {
-                    blob = bh.getBlob();
-                }
-            }
-        }
-        if (blob == null) {
-            throw new IllegalParameterException("No Blob found");
-        }
-
-        if (getTarget().isInstanceOf("blob")) {
-            bh = ((BlobObject) getTarget()).getBlobHolder();
-        }
-
-        if (bh == null) {
-            bh = new SimpleBlobHolder(blob);
-        }
+        BlobHolder bh = getBlobHolderToConvert();
 
         boolean txWasActive = false;
         try {
@@ -98,6 +86,32 @@ public class ConvertAdapter extends DefaultAdapter {
                 TransactionHelper.startTransaction();
             }
         }
+    }
+
+    protected BlobHolder getBlobHolderToConvert() {
+        Blob blob = getTarget().getAdapter(Blob.class);
+        BlobHolder bh = null;
+        if (blob == null) {
+            DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
+            if (doc != null) {
+                bh = doc.getAdapter(BlobHolder.class);
+                if (bh != null) {
+                    blob = bh.getBlob();
+                }
+            }
+        }
+        if (blob == null) {
+            throw new IllegalParameterException("No Blob found");
+        }
+
+        if (getTarget().isInstanceOf("blob")) {
+            bh = ((BlobObject) getTarget()).getBlobHolder();
+        }
+
+        if (bh == null) {
+            bh = new SimpleBlobHolder(blob);
+        }
+        return bh;
     }
 
     protected Blob convertWithConverter(BlobHolder bh, String converter, UriInfo uriInfo) {
@@ -138,5 +152,32 @@ public class ConvertAdapter extends DefaultAdapter {
         MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         String mimeType = mimetypeRegistry.getMimetypeFromExtension(format);
         return convertWithMimeType(bh, mimeType, uriInfo);
+    }
+
+    @POST
+    public Object convert(@QueryParam("converter") String converter, @QueryParam("async") boolean async,
+            @Context UriInfo uriInfo) {
+        BlobHolder bh = getBlobHolderToConvert();
+        if (!async) {
+            return convertWithConverter(bh, converter, uriInfo);
+        }
+
+        Map<String, Serializable> parameters = computeConversionParameters(uriInfo);
+        ConversionService conversionService = Framework.getService(ConversionService.class);
+        String id = conversionService.scheduleConversion(converter, bh, parameters);
+        String serverURL = ctx.getServerURL().toString();
+        if (serverURL.endsWith("/")) {
+            serverURL = serverURL.substring(0, serverURL.length() - 1);
+        }
+        String pollingURL = String.format("%s%s/conversions/%s/poll", serverURL, ctx.getModulePath(), id);
+        ConversionScheduled conversionScheduled = new ConversionScheduled(id, pollingURL);
+        try {
+            return Response.status(Response.Status.ACCEPTED)
+                           .location(new URI(pollingURL))
+                           .entity(conversionScheduled)
+                           .build();
+        } catch (URISyntaxException e) {
+            throw new NuxeoException(e);
+        }
     }
 }

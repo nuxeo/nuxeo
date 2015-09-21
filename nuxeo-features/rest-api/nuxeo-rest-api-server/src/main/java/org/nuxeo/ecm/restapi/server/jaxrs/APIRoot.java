@@ -90,6 +90,11 @@ public class APIRoot extends ModuleRoot {
         return newObject("config");
     }
 
+    @Path("/conversion")
+    public Object doGetConversion() {
+        return newObject("conversions");
+    }
+
     @Override
     public Object handleError(final WebApplicationException cause) {
         Throwable unWrapException = ExceptionHelper.unwrapException(cause);

@@ -23,6 +23,9 @@ import org.nuxeo.ecm.automation.jaxrs.io.documents.BusinessAdapterListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartFormRequestReader;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartRequestReader;
+import org.nuxeo.ecm.restapi.jaxrs.io.conversion.ConversionScheduled;
+import org.nuxeo.ecm.restapi.jaxrs.io.conversion.ConversionScheduledWriter;
+import org.nuxeo.ecm.restapi.jaxrs.io.conversion.ConversionStatusWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.types.DocumentTypeWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.types.DocumentTypesWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.types.FacetWriter;
@@ -60,6 +63,9 @@ public class APIModule extends WebEngineModule {
         result.add(new DocumentTypesWriter());
         result.add(new FacetWriter());
         result.add(new FacetsWriter());
+        result.add(new FacetsWriter());
+        result.add(new ConversionScheduledWriter());
+        result.add(new ConversionStatusWriter());
 
         // nuxeo-core-io MarshallerRegistry service reading and writing
         result.add(new JsonCoreIODelegate());
