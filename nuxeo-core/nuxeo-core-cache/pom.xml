@@ -49,16 +49,8 @@
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core</artifactId>
+      <artifactId>nuxeo-core-event</artifactId>
     </dependency>
-
-    <!-- test scope -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
   <build>

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,17 +12,24 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *     Thomas Roger
  */
-package org.nuxeo.transientstore.test;
 
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.runtime.test.runner.SimpleFeature;
+package org.nuxeo.transientstore.test.work;
 
-@Features(RuntimeFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.cache" })
-public class TransientStoreFeature extends SimpleFeature {
+import org.nuxeo.ecm.core.work.AbstractWork;
 
+/**
+ * @since 7.4
+ */
+public class DummyWork extends AbstractWork {
+    @Override
+    public void work() {
+
+    }
+
+    @Override
+    public String getTitle() {
+        return "Dummy work";
+    }
 }

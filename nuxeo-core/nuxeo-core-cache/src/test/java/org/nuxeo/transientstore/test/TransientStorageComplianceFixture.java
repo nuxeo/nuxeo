@@ -31,7 +31,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -44,17 +43,14 @@ import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import com.google.inject.Inject;
-
 @RunWith(FeaturesRunner.class)
 @Features({ TransientStoreFeature.class })
+@Deploy("org.nuxeo.ecm.core.event")
 public class TransientStorageComplianceFixture {
-
-    @Inject
-    CoreSession coreSession;
 
     @Test
     public void verifyServiceDeclared() throws Exception {
@@ -239,7 +235,7 @@ public class TransientStorageComplianceFixture {
         // now remove the entry
         ts.remove("X");
 
-        EventContext evtCtx = new EventContextImpl(coreSession);
+        EventContext evtCtx = new EventContextImpl();
         Framework.getService(EventService.class).fireEvent(TransientStorageGCTrigger.EVENT, evtCtx);
 
         Thread.sleep(100);
