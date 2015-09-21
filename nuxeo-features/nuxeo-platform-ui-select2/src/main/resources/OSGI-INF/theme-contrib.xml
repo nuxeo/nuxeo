@@ -3,25 +3,25 @@
 
   <require>org.nuxeo.theme.nuxeo.webapp</require>
 
-  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
-    <bundle name="nuxeo_includes">
-      <resources append="true">
-        <resource>select2.css</resource>
-        <resource>nuxeo-select2.css</resource>
-      </resources>
-    </bundle>
-  </extension>
-
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
     <resource name="select2.css">
       <uri>/css/select2.css</uri>
     </resource>
-    <resource name="nuxeo-select2.css">
-      <path>themes/css/nuxeo-select2.css</path>
+    <resource name="nuxeo-select2.scss" type="css">
+      <path>themes/sass/nuxeo-select2.scss</path>
       <processors>
-        <processor>flavor</processor>
+        <processor>sassCss</processor>
       </processors>
     </resource>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+    <bundle name="nuxeo_includes">
+      <resources append="true">
+        <resource>select2.css</resource>
+        <resource>nuxeo-select2.scss</resource>
+      </resources>
+    </bundle>
   </extension>
 
 </component>
