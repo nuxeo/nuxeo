@@ -48,13 +48,8 @@ input[type="tel"],
 input[type="color"] {
   background-color: #ffffff;
   border: 1px solid #cccccc;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
-     -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
-       -o-transition: border linear 0.2s, box-shadow linear 0.2s;
-          transition: border linear 0.2s, box-shadow linear 0.2s;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+  transition: border-color .15s ease-in-out 0s, box-shadow .15s ease-in-out 0s;
 }
 
 textarea:focus,
@@ -72,20 +67,18 @@ input[type="url"]:focus,
 input[type="search"]:focus,
 input[type="tel"]:focus,
 input[type="color"]:focus {
-  border-color: rgba(82, 168, 236, 0.8);
+  border-color: rgba(82, 168, 236, .8);
   outline: 0;
   outline: thin dotted \9;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 2px 0 #00adff, 0 0 3px #b5dcff;
-     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 2px 0 #00adff, 0 0 3px #b5dcff;
-          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 2px 0 #00adff, 0 0 3px #b5dcff;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 2px 0 #00adff, 0 0 3px #b5dcff;
 }
 
 input[type="radio"],
 input[type="checkbox"] {
+  line-height: normal;
   margin: 4px 0 0;
   margin-top: 1px \9;
   *margin-top: 0;
-  line-height: normal;
 }
 
 input[type="file"],
@@ -141,12 +134,12 @@ input[type="checkbox"]:focus {
 
 // =Forms elements
 .required {
-  background: transparent url("${basePath}/icons/required.gif") top right no-repeat;
+  background: transparent url('${basePath}/icons/required.gif') top right no-repeat;
   padding: 0 1em 0 0;
 }
 
 .widgetHelpLabel .widgetLabel.required {
-  background: url("${basePath}/icons/required.gif") no-repeat scroll right top, url("${basePath}/icons/help.png") no-repeat scroll right 15px top transparent;
+  background: url('${basePath}/icons/required.gif') no-repeat scroll right top, url('${basePath}/icons/help.png') no-repeat scroll right 15px top transparent;
   padding-right: 2.3em;
 }
 
@@ -171,7 +164,7 @@ option {
   border: 1px solid;
   border-color: $shade-medium-10;
   border-radius: 2px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.07) inset;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .07) inset;
   display: inline-block;
   font-size: 1em;
   margin-bottom: .5em;
@@ -300,7 +293,7 @@ textarea::-webkit-input-placeholder {
 .nx-page input.button.primary:hover {
   background-color: $button-primary;
   border: 1px solid #0096dd;
-  box-shadow: 0 -30px 20px rgba(255, 255, 255, 0.2) inset, 0 1px 3px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 -30px 20px rgba(255, 255, 255, .2) inset, 0 1px 3px rgba(0, 0, 0, .25);
   transition: all 150ms ease-in-out 0s;
 }
 
@@ -320,19 +313,19 @@ textarea::-webkit-input-placeholder {
 }
 
 .nx-page .chainSelect input[type="image"] {
-  margin: -0.1em 0 0 0.2em;
+  float: right;
+  margin: -.1em 0 0 .2em;
   padding: 0;
   vertical-align: top;
-  float: right;
 }
 
 .nx-page input.tagInput {
-  background: url("${basePath}/icons/tag.png") no-repeat scroll 2px center / 12px auto transparent;
+  background: url('${basePath}/icons/tag.png') no-repeat scroll 2px center / 12px auto transparent;
   border-color: $shade-light-50;
   font-size: .95em;
-  padding: .1em .5em .2em 1.8em;
   max-width: 12em;
   min-width: 10em;
+  padding: .1em .5em .2em 1.8em;
 }
 
 .nx-page .dataInput textarea,
