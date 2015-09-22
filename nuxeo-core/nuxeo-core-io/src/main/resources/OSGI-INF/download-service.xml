@@ -19,6 +19,24 @@
         <permission name="myperm">
           <script language="JavaScript">
             function run() {
+              if (CurrentUser.getName() != "bob") {
+                return false;
+              }
+              if (!CurrentUser.getGroups().contains("members")) {
+                return false;
+              }
+              if (Document.getPropertyValue("dc:format") != "pdf") {
+                return false;
+              }
+              if (Reason != "rendition") {
+                return false;
+              }
+              if (Rendition != "myrendition") {
+                return false;
+              }
+              if (Blob.getFilename() != "myfile.txt") {
+                return false;
+              }
               if (XPath == "file:content" || XPath == "blobholder:0") {
                 return false;
               }

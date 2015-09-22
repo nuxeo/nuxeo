@@ -18,7 +18,6 @@ package org.nuxeo.ecm.core.io.download;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;

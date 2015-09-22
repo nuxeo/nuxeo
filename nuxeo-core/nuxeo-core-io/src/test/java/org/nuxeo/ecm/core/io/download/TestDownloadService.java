@@ -28,6 +28,9 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
@@ -39,7 +42,10 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -154,7 +160,7 @@ public class TestDownloadService {
         // blob to download
         String blobValue = "Hello World";
         Blob blob = Blobs.createBlob(blobValue);
-        blob.setFilename("myFile.txt");
+        blob.setFilename("myfile.txt");
         blob.setDigest("12345");
 
         // mock request
@@ -175,17 +181,32 @@ public class TestDownloadService {
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
 
-        // mock document (not used)
+        // mock document
         DocumentModel doc = mock(DocumentModel.class);
+        when(doc.getPropertyValue("dc:format")).thenReturn("pdf");
 
-        // send download request for file:content, should be denied
-        downloadService.downloadBlob(request, response, doc, "file:content", blob, null, null);
-        assertEquals("", out.toString());
-        verify(response, atLeastOnce()).sendError(403, "Permission denied");
+        // extended infos with rendition
+        String reason = "rendition";
+        Map<String, Serializable> extendedInfos = Collections.singletonMap("rendition", "myrendition");
 
-        // but another xpath is allowed, per the javascript rule
-        downloadService.downloadBlob(request, response, doc, "other:blob", blob, null, null);
-        assertEquals(blobValue, out.toString());
+        // principal
+        NuxeoPrincipal principal = new UserPrincipal("bob", Collections.singletonList("members"), false, false);
+
+        // do tests while logged in
+        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
+        loginStack.push(principal, null, null);
+        try {
+            // send download request for file:content, should be denied
+            downloadService.downloadBlob(request, response, doc, "file:content", blob, null, reason, extendedInfos);
+            assertEquals("", out.toString());
+            verify(response, atLeastOnce()).sendError(403, "Permission denied");
+
+            // but another xpath is allowed, per the javascript rule
+            downloadService.downloadBlob(request, response, doc, "other:blob", blob, null, reason, extendedInfos);
+            assertEquals(blobValue, out.toString());
+        } finally {
+            loginStack.pop();
+        }
     }
 
 }
