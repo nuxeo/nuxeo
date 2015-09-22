@@ -87,7 +87,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     /**
      * @since 7.4 : used to know if the LockManager was provided by this repository or externally
      */
-    boolean selfRegistredLockManager = false;
+    protected boolean selfRegisteredLockManager = false;
 
     public DBSRepositoryBase(String repositoryName, boolean fulltextDisabled) {
         this.repositoryName = repositoryName;
@@ -99,8 +99,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     @Override
     public void shutdown() {
-        if (selfRegistredLockManager) {
-            Framework.getService(LockManagerService.class).unregisterLockManager(getLockManagerName());
+        if (selfRegisteredLockManager) {
+            LockManagerService lms = Framework.getService(LockManagerService.class);
+            if (lms != null) {
+                lms.unregisterLockManager(getLockManagerName());
+            }
         }
     }
 
@@ -123,8 +126,9 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             lockManager = this;
             log.info("Repository " + repositoryName + " using own lock manager");
             lockManagerService.registerLockManager(lockManagerName, lockManager);
-            selfRegistredLockManager = true;
+            selfRegisteredLockManager = true;
         } else {
+            selfRegisteredLockManager = false;
             log.info("Repository " + repositoryName + " using lock manager " + lockManager);
         }
     }
@@ -429,6 +433,5 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             }
         }
     }
-
 
 }

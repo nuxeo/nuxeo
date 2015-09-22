@@ -75,7 +75,7 @@ public class RepositoryImpl implements Repository {
     /**
      * @since 7.4 : used to know if the LockManager was provided by this repository or externally
      */
-    boolean selfRegistredLockManager = false;
+    protected boolean selfRegisteredLockManager = false;
 
     /** Propagator of invalidations to all mappers' caches. */
     protected final InvalidationsPropagator invalidationsPropagator;
@@ -299,7 +299,9 @@ public class RepositoryImpl implements Repository {
             // default to a VCSLockManager
             lockManager = new VCSLockManager(lockManagerName);
             lockManagerService.registerLockManager(lockManagerName, lockManager);
-            selfRegistredLockManager = true;
+            selfRegisteredLockManager = true;
+        } else {
+            selfRegisteredLockManager = false;
         }
         log.info("Repository " + getName() + " using lock manager " + lockManager);
     }
@@ -395,8 +397,11 @@ public class RepositoryImpl implements Repository {
         registry.remove(MetricRegistry.name(PersistenceContext.class, getName(), "cache-size"));
         registry.remove(MetricRegistry.name(SelectionContext.class, getName(), "cache-size"));
 
-        if (selfRegistredLockManager) {
-            Framework.getService(LockManagerService.class).unregisterLockManager(getLockManagerName());
+        if (selfRegisteredLockManager) {
+            LockManagerService lms = Framework.getService(LockManagerService.class);
+            if (lms != null) {
+                lms.unregisterLockManager(getLockManagerName());
+            }
         }
     }
 
