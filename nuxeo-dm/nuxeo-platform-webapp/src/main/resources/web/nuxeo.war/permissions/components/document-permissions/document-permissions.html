@@ -12,7 +12,31 @@
 
 <dom-module id="document-permissions">
     <template>
-        <nx-doc-resource id="doc" auto="true" doc-id="{{docId}}" doc-path="{{docPath}}" response="{{doc}}"
+        <style>
+        .acl-table {
+          display: table;
+          border-collapse: collapse;
+          width: 100%;
+          line-height: 1.3em;
+        }
+        .acl-table-row {
+          display: table-row;
+        }
+        .acl-table-headers {
+          display: table-row;
+        }
+        .acl-table-row > div {
+          display: table-cell;
+          border: 1px solid #e7e7e7;
+          padding: .6em .4em;
+          color: #000;
+        }
+        .acl-table-headers > div {
+          background-color: #f8f9fb;
+          font-weight: bold;
+        }
+        </style>
+        <nx-doc-resource id="doc" auto doc-id="{{docId}}" doc-path="{{docPath}}" response="{{doc}}"
             enrichers="extendedAcls, permissions, userVisiblePermissions"></nx-doc-resource>
 
         <div class="bubbleBox">
@@ -25,21 +49,21 @@
             </div>
             <template is="dom-if" if="{{hasLocalAces}}">
                 <div>
-                    <table class="dataTable tmp-tab">
-                        <tr class="tmp-tab">
-                            <th class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</th>
-                            <th class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</th>
-                            <th class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</th>
-                            <th class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</th>
-                            <th class="tmp-tab">[[i18n('label.permissions.actions', 'Actions')]]</th>
-                        </tr>
+                    <div class="acl-table">
+                        <div class="acl-table-row acl-table-headers">
+                            <div class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</div>
+                            <div class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</div>
+                            <div class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
+                            <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
+                            <div class="tmp-tab">[[i18n('label.permissions.actions', 'Actions')]]</div>
+                        </div>
                         <template is="dom-repeat" items="{{localAces}}" as="ace">
-                            <tr>
-                                <td><span>{{ace.username}}</span></td>
-                                <td><span>{{ace.permission}}</span></td>
-                                <td><span>{{formatTimeFrame(ace)}}</span></td>
-                                <td><span>{{ace.creator}}</span></td>
-                                <td>
+                            <div class="acl-table-row">
+                                <div><span>{{ace.username}}</span></div>
+                                <div><span>{{ace.permission}}</span></div>
+                                <div><span>{{formatTimeFrame(ace)}}</span></div>
+                                <div><span>{{ace.creator}}</span></div>
+                                <div>
                                     <template is="dom-if" if="{{hasEverythingRight}}">
                                         <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                                             on-aceupdated="refresh"></popup-permission>
@@ -47,26 +71,26 @@
                                         <popup-confirm id="confirmation">
                                             <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be deleted')]]</h2>
 
-                                            <table class="dataTable tmp-tab">
-                                                <tr class="tmp-tab">
-                                                    <th class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</th>
-                                                    <th class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</th>
-                                                    <th class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</th>
-                                                    <th class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</th>
-                                                </tr>
-                                                <tr>
-                                                    <td><span>{{ace.username}}</span></td>
-                                                    <td><span>{{ace.permission}}</span></td>
-                                                    <td><span>{{formatTimeFrame(ace)}}</span></td>
-                                                    <td><span>{{ace.creator}}</span></td>
-                                                </tr>
-                                            </table>
+                                            <div class="acl-table">
+                                                <div class="acl-table-row acl-table-headers">
+                                                    <div class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</div>
+                                                    <div class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</div>
+                                                    <div class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
+                                                    <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
+                                                </div>
+                                                <div class="acl-table-row">
+                                                    <div><span>{{ace.username}}</span></div>
+                                                    <div><span>{{ace.permission}}</span></div>
+                                                    <div><span>{{formatTimeFrame(ace)}}</span></div>
+                                                    <div><span>{{ace.creator}}</span></div>
+                                                </div>
+                                            </div>
                                         </popup-confirm>
                                     </template>
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
                         </template>
-                    </table>
+                    </div>
                 </div>
             </template>
             <template is="dom-if" if="{{!hasLocalAces}}">
@@ -79,30 +103,32 @@
                 <h3>[[i18n('label.permissions.inherited', 'Permissions inherited from upper levels')]]</h3>
                 <template is="dom-if" if="{{hasInheritedAces}}">
                     <paper-button id="block" raised="true" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]</paper-button>
+                    <paper-tooltip for="block" fitToVisibleBounds="true" position="top" offset="35">[[i18n('label.permissions.blockTooltip', 'Only local permissions will then be applied. You and the administrators will be added to local permissions.')]]</paper-tooltip>
                 </template>
                 <template is="dom-if" if="{{!hasInheritedAces}}">
                     <span class="label label-warning">[[i18n('label.permissions.blocked', 'Blocked')]]</span>
                     <paper-button id="unblock" raised="true" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]</paper-button>
+                    <paper-tooltip for="unblock" fitToVisibleBounds="true" position="top" offset="35">[[i18n('label.permissions.unblockTooltip', 'Unblock tooltip')]]</paper-tooltip>
                 </template>
             </div>
             <div>
                 <template is="dom-if" if="{{hasInheritedAces}}">
-                    <table class="dataTable tmp-tab">
-                        <tr class="tmp-tab">
-                            <th class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</th>
-                            <th class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</th>
-                            <th class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</th>
-                            <th class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</th>
-                        </tr>
+                    <div class="acl-table">
+                        <div class="acl-table-row acl-table-headers">
+                            <div class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</div>
+                            <div class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</div>
+                            <div class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
+                            <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
+                        </div>
                         <template is="dom-repeat" items="{{inheritedAces}}" as="ace">
-                            <tr>
-                                <td><span>{{ace.username}}</span></td>
-                                <td><span>{{ace.permission}}</span></td>
-                                <td><span>{{formatTimeFrame(ace)}}</span></td>
-                                <td><span>{{ace.creator}}</span></td>
-                            </tr>
+                            <div class="acl-table-row">
+                                <div><span>{{ace.username}}</span></div>
+                                <div><span>{{ace.permission}}</span></div>
+                                <div><span>{{formatTimeFrame(ace)}}</span></div>
+                                <div><span>{{ace.creator}}</span></div>
+                            </div>
                         </template>
-                    </table>
+                    </div>
                 </template>
                 <template is="dom-if" if="{{!hasInheritedAces}}">
                     <p class="emptyResult">[[i18n('label.permissions.noInheritedText', 'Only local permissions are applied. Unblock to restore the permissions inheritance from upper levels.')]]</p>
@@ -163,7 +189,7 @@
         },
 
         refresh: function() {
-            document.querySelector('#doc').get();
+            this.$.doc.get();
         },
 
         formatTimeFrame: function(ace) {
@@ -181,12 +207,19 @@
                 return (now.isAfter(begin) ? sinceStr : fromStr) + moment(begin).format(format);
             } else if (begin === null && end !== null) {
                 return untilStr + moment(end).format(format);
-            } else if (begin !== null && end != null) {
+            } else if (begin !== null && end !== null) {
                 return (now.isAfter(begin) ? sinceStr : fromStr) + moment(begin).format(format) + untilMiddleStr + moment(end).format(format);
             } else {
                 return this.i18n('label.permissions.permanent', 'Permanent');
             }
-            console.log(this);
+        },
+
+        get permissions() {
+            return this.doc && this.doc.contextParameters && this.doc.contextParameters.permissions;
+        },
+
+        get acls() {
+            return this.doc && this.doc.contextParameters && this.doc.contextParameters.acls;
         },
 
         localRightsDel: function(e, i) {
@@ -202,17 +235,16 @@
         },
 
         computeEverythingRight: function(doc) {
-            if (doc) {
-                return doc.contextParameters.permissions.indexOf('Everything') !== -1;
+            if (this.permissions) {
+                return this.permissions.indexOf('Everything') !== -1;
             }
             return false;
         },
 
         computeHasLocalAces: function(doc) {
-            if (doc) {
-                var acls = doc.contextParameters.acls;
-                for (var i = 0; i < acls.length; i++) {
-                    if (acls[i].name !== 'inherited' && acls.length >= 1) {
+            if (this.acls) {
+                for (var i = 0; i < this.acls.length; i++) {
+                    if (this.acls[i].name !== 'inherited' && this.acls.length >= 1) {
                         return true;
                     }
                 }
@@ -221,10 +253,9 @@
         },
 
         computeHasInheritedAces: function(doc) {
-            if (doc) {
-                var acls = doc.contextParameters.acls;
-                for (var i = 0; i < acls.length; i++) {
-                    if (acls[i].name === 'inherited') {
+            if (this.acls) {
+                for (var i = 0; i < this.acls.length; i++) {
+                    if (this.acls[i].name === 'inherited') {
                         return true;
                     }
                 }
@@ -234,10 +265,9 @@
 
         computeLocalAces: function(doc) {
             var localAces = [];
-            if (doc) {
-                var acls = doc.contextParameters.acls;
-                for (var i = 0; i < acls.length; i++) {
-                    var acl = acls[i];
+            if (this.acls) {
+                for (var i = 0; i < this.acls.length; i++) {
+                    var acl = this.acls[i];
                     if (acl.name !== 'inherited') {
                         for (var j = 0; j < acl.ace.length; j++) {
                             var ace = acl.ace[j];
@@ -255,11 +285,11 @@
 
         computeInheritedAces: function(doc) {
             var inheritedAces = [];
-            if (doc) {
+            if (this.acls) {
                 var acls = doc.contextParameters.acls;
-                for (var i = 0; i < acls.length; i++) {
-                    if (acls[i].name === 'inherited') {
-                        var acl = acls[i];
+                for (var i = 0; i < this.acls.length; i++) {
+                    if (this.acls[i].name === 'inherited') {
+                        var acl = this.acls[i];
                         for (var j = 0; j < acl.ace.length; j++) {
                             var ace = acl.ace[j];
                             if (ace.granted && (ace.status === 'pending' || ace.status === 'effective')) {
