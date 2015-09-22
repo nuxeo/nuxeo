@@ -19,6 +19,7 @@ package org.nuxeo.template.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.List;
 
@@ -59,9 +60,9 @@ public class TestDeckJSPDFConverter {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
         CommandAvailability commandAvailability = cles.getCommandAvailability(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME);
-        if (!commandAvailability.isAvailable()) {
-            return;
-        }
+        assumeTrue(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME + " not available",
+                commandAvailability.isAvailable());
+
         PathRef ref = new PathRef("default-domain/workspaces/templatesamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
