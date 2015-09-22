@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.transientstore.AbstractTransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
 import org.nuxeo.runtime.api.Framework;
 
 import redis.clients.jedis.Jedis;
@@ -51,6 +52,11 @@ public class RedisTransientStore extends AbstractTransientStore {
     public RedisTransientStore() {
         redisExecutor = Framework.getService(RedisExecutor.class);
         redisAdmin = Framework.getService(RedisAdmin.class);
+    }
+
+    @Override
+    public void init(TransientStoreConfig config) {
+        super.init(config);
         namespace = redisAdmin.namespace("transientCache", config.getName(), "size");
     }
 
