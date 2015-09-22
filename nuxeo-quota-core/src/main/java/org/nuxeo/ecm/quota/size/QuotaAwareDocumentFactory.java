@@ -19,12 +19,8 @@
 package org.nuxeo.ecm.quota.size;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
-import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
-import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
-import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
+import org.nuxeo.ecm.quota.QuotaUtils;
 
 /**
  * Simple factory for {@link QuotaAwareDocument} document model adapter
@@ -38,13 +34,14 @@ public class QuotaAwareDocumentFactory implements DocumentAdapterFactory {
         if (!doc.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
             doc.addFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
             if (save) {
-                doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-                doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
-                doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
-                doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-                // force no versioning after quota modifications
-                doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
+                DocumentModel origDoc = doc;
+                // set flags to disable listeners
+                QuotaUtils.disableListeners(doc);
                 doc = doc.getCoreSession().saveDocument(doc);
+                // remove flags as they could be kept in the document for a long time otherwise
+                QuotaUtils.clearContextData(doc);
+                // also remove flags from original doc, which the caller still references
+                QuotaUtils.clearContextData(origDoc);
             }
         }
         return (QuotaAwareDocument) doc.getAdapter(QuotaAware.class);

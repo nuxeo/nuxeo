@@ -49,19 +49,15 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
-import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
-import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
-import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
+import org.nuxeo.ecm.quota.QuotaUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -122,13 +118,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 log.debug(target.getPathAsString() + " reset to " + quotaDoc.getQuotaInfo());
             }
             target.removeFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
-            target.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-            target.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
-            target.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
-            target.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-            // force no versioning after quota modifications
-            target.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
+            DocumentModel origTarget = target;
+            QuotaUtils.disableListeners(target);
             target = unrestrictedSession.saveDocument(target);
+            QuotaUtils.clearContextData(target);
+            QuotaUtils.clearContextData(origTarget);
         }
     }
 
@@ -363,9 +357,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             return false;
         }
 
-        Boolean block = (Boolean) targetDoc.getContextData().getScopedValue(ScopeType.REQUEST,
-                DISABLE_QUOTA_CHECK_LISTENER);
-        if (block != null && block) {
+        Boolean block = (Boolean) targetDoc.getContextData(DISABLE_QUOTA_CHECK_LISTENER);
+        if (Boolean.TRUE.equals(block)) {
             log.debug("Escape from listener to avoid reentrancy");
             // ignore the event - we are blocked by the caller
             // used to avoid reentrancy when the async event handler

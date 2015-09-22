@@ -28,13 +28,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
-import org.nuxeo.ecm.core.versioning.VersioningService;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.quota.QuotaStatsService;
+import org.nuxeo.ecm.quota.QuotaUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -180,21 +178,17 @@ public class QuotaAwareDocument implements QuotaAware {
 
     @Override
     public void save() {
-        doc.getContextData().putScopedValue(ScopeType.REQUEST, QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER,
-                true);
-        doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
-        doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
-        // force no versioning after quota modifications
-        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
+        doc.putContextData(QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER, Boolean.TRUE);
+        QuotaUtils.disableListeners(doc);
+        DocumentModel origDoc = doc;
         doc = doc.getCoreSession().saveDocument(doc);
+        QuotaUtils.clearContextData(doc);
+        QuotaUtils.clearContextData(origDoc);
     }
 
     @Override
     public void save(boolean disableNotifications) {
-        if (disableNotifications) {
-            doc.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
-            doc.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
-        }
+        // disableNotifications ignored
         save();
     }
 
