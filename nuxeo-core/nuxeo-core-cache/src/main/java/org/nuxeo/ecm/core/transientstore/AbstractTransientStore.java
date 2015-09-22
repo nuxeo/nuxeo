@@ -61,6 +61,7 @@ public abstract class AbstractTransientStore implements TransientStore {
 
     protected CacheDescriptor l2cd;
 
+    @Override
     public void init(TransientStoreConfig config) {
         this.config = config;
         CacheService cs = Framework.getService(CacheService.class);
@@ -78,8 +79,15 @@ public abstract class AbstractTransientStore implements TransientStore {
         // get caches
         l1Cache = cs.getCache(l1cd.name);
         l2Cache = cs.getCache(l2cd.name);
+
+        // initialize caching directory
+        File transienStoreHome = new File(Environment.getDefault().getData(), "transientstores");
+        File data = new File(transienStoreHome, config.getName());
+        data.mkdirs();
+        cacheDir = data.getAbsoluteFile();
     }
 
+    @Override
     public void shutdown() {
         CacheService cs = Framework.getService(CacheService.class);
         if (cs != null) {
@@ -191,32 +199,17 @@ public abstract class AbstractTransientStore implements TransientStore {
     }
 
     public File getCachingDirectory(String key) {
-        File cachingDir = new File(getCachingDirectory(), getCachingDirName(key));
+        File cachingDir = new File(cacheDir, getCachingDirName(key));
         if (!cachingDir.exists()) {
             cachingDir.mkdir();
         }
         return cachingDir;
     }
 
-    protected File getCachingDirectory() {
-        if (cacheDir == null) {
-            File data = new File(Environment.getDefault().getData(), config.getName());
-            if (data.exists()) {
-                try {
-                    FileUtils.deleteDirectory(data);
-                } catch (IOException cause) {
-                    throw new RuntimeException("Cannot create cache dir " + data, cause);
-                }
-            }
-            data.mkdirs();
-            return cacheDir = data.getAbsoluteFile();
-        }
-        return cacheDir;
-    }
-
+    @Override
     public void doGC() {
         log.debug(String.format("Performing GC for TransientStore %s", config.getName()));
-        File dir = getCachingDirectory();
+        File dir = cacheDir;
         long newSize = 0;
         try {
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dir.getAbsolutePath()))) {
