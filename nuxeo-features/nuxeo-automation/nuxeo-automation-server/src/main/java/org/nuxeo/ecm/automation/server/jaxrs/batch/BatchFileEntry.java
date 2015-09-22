@@ -212,6 +212,12 @@ public class BatchFileEntry extends AbstractStorageEntry {
         return chunkEntry;
     }
 
+    @Override
+    public List<Blob> getBlobs() {
+        if (isChunked()) {
+            return Collections.singletonList(getBlob());
+        } else {
+            return super.getBlobs();
         }
     }
 
