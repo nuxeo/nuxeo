@@ -819,7 +819,7 @@
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>
-        <control name="gridStyleClass">gridStyle7</control>
+        <control name="gridStyleClass">gridStyle8</control>
       </controls>
     </widget>
 
@@ -833,7 +833,7 @@
       </properties>
       <controls mode="any">
         <control name="handleLabels">true</control>
-        <control name="gridStyleClass">gridStyle5</control>
+        <control name="gridStyleClass">gridStyle4</control>
       </controls>
     </widget>
 
