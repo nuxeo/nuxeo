@@ -31,8 +31,10 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -98,10 +100,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-towebm");
-        if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping test");
-            return;
-        }
+        Assume.assumeTrue("ffmpeg-towebm is not available, skipping test", ca.isAvailable());
 
         BlobHolder result = applyConverter(Constants.TO_WEBM_CONVERTER, DELTA_MP4, "video/x-msvideo", 480);
         List<Blob> blobs = result.getBlobs();
@@ -117,10 +116,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-toogg");
-        if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping test");
-            return;
-        }
+        Assume.assumeTrue("ffmpeg-toogg is not available, skipping test", ca.isAvailable());
 
         BlobHolder result = applyConverter(Constants.TO_OGG_CONVERTER, DELTA_MP4, "video/x-msvideo", 480);
         List<Blob> blobs = result.getBlobs();
@@ -136,10 +132,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-toogg");
-        if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping test");
-            return;
-        }
+        Assume.assumeTrue("ffmpeg-toogg is not available, skipping test", ca.isAvailable());
 
         BlobHolder result = applyConverter(Constants.TO_MP4_CONVERTER, DELTA_OGV, "video/ogg", 480);
         List<Blob> blobs = result.getBlobs();

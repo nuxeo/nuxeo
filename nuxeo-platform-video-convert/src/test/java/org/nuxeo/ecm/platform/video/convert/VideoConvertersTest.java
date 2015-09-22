@@ -29,8 +29,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -88,10 +90,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot-resize");
-        if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping test");
-            return;
-        }
+        Assume.assumeTrue("ffmpeg-screenshot-resize is not available, skipping test", ca.isAvailable());
         BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER, ELEPHANTS_DREAM, null, 653.53);
         List<Blob> blobs = result.getBlobs();
         assertEquals(9, blobs.size());
@@ -105,10 +104,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
-        if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping test");
-            return;
-        }
+        Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
         BlobHolder result = applyConverter(Constants.SCREENSHOT_CONVERTER, ELEPHANTS_DREAM, null, null);
         List<Blob> blobs = result.getBlobs();
         assertEquals(1, blobs.size());

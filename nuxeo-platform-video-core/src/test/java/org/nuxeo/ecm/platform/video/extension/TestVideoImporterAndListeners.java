@@ -34,10 +34,11 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.AssumptionViolatedException;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -199,10 +200,7 @@ public class TestVideoImporterAndListeners {
         assertEquals("sample.mpg", docModel.getPropertyValue("file:filename"));
 
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
-        if (!ca.isAvailable()) {
-            log.warn("ffmpeg-screenshot is not avalaible, skipping the end of the test");
-            throw new AssumptionViolatedException("ffmpeg-screenshot is not avalaible");
-        }
+        Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
 
         waitForAsyncCompletion();
 
@@ -220,10 +218,7 @@ public class TestVideoImporterAndListeners {
     @Test
     public void testImportBigVideo() throws Exception {
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
-        if (!ca.isAvailable()) {
-            log.warn("ffmpeg-screenshot is not avalaible, skipping the end of the test");
-            throw new AssumptionViolatedException("ffmpeg-screenshot is not avalaible");
-        }
+        Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
         DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
         assertNotNull(docModel);
         docModel.setPropertyValue("file:content", (Serializable) getBlobFromPath(ELEPHANTS_DREAM).getBlob());
@@ -339,10 +334,7 @@ public class TestVideoImporterAndListeners {
     @Test
     public void testConfiguration() throws Exception {
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
-        if (!ca.isAvailable()) {
-            log.warn("ffmpeg-screenshot is not avalaible, skipping the end of the test");
-            throw new AssumptionViolatedException("ffmpeg-screenshot is not avalaible");
-        }
+        Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
 
         runtimeHarness.deployContrib("org.nuxeo.ecm.platform.video.core", "video-configuration-override.xml");
 

@@ -234,16 +234,15 @@ public class VideoHelper {
         if (video == null) {
             return null;
         }
-
         try {
             ExecResult result;
             try (CloseableFile cf = video.getCloseableFile("." + FilenameUtils.getExtension(video.getFilename()))) {
-                CmdParameters params = new CmdParameters();
+                CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+                CmdParameters params = cles.getDefaultCmdParameters();
                 params.addNamedParameter("inFilePath", cf.getFile().getAbsolutePath());
 
                 // read the duration with a first command to adjust the best rate:
-                CommandLineExecutorService cleService = Framework.getService(CommandLineExecutorService.class);
-                result = cleService.execCommand(FFMPEG_INFO_COMMAND_LINE, params);
+                result = cles.execCommand(FFMPEG_INFO_COMMAND_LINE, params);
             }
             if (!result.isSuccessful()) {
                 throw result.getError();

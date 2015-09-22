@@ -58,12 +58,15 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-
         Blob blob = blobHolder.getBlob();
+        if (blob == null) {
+            throw new ConversionException("conversion failed (null blob)");
+        }
         try (CloseableFile source = blob.getCloseableFile("." + FilenameUtils.getExtension(blob.getFilename()))) {
             Blob outBlob = Blobs.createBlobWithExtension(".jpeg");
 
-            CmdParameters params = new CmdParameters();
+            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CmdParameters params = cles.getDefaultCmdParameters();
             params.addNamedParameter("inFilePath", source.getFile().getAbsolutePath());
             params.addNamedParameter("outFilePath", outBlob.getFile().getAbsolutePath());
             Double position = 0.0;
@@ -75,8 +78,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
             }
             long positionParam = Math.round(position);
             params.addNamedParameter(POSITION_PARAMETER, String.valueOf(positionParam));
-            CommandLineExecutorService cleService = Framework.getService(CommandLineExecutorService.class);
-            ExecResult res = cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
+            ExecResult res = cles.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
             if (!res.isSuccessful()) {
                 throw res.getError();
             }
@@ -85,13 +87,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
             outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg", positionParam));
             return new SimpleCachableBlobHolder(outBlob);
         } catch (CommandNotAvailable | IOException | CommandException e) {
-            String msg;
-            if (blob != null) {
-                msg = "error extracting screenshot from '" + blob.getFilename() + "'";
-            } else {
-                msg = "conversion failed";
-            }
-            throw new ConversionException(msg, e);
+            throw new ConversionException("error extracting screenshot from '" + blob.getFilename() + "'", e);
         }
     }
 
