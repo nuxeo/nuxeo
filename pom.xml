@@ -61,6 +61,7 @@
     <nuxeo.spreadsheet.version>7.4-SNAPSHOT</nuxeo.spreadsheet.version>
     <nuxeo.theme.compat.version>7.4-SNAPSHOT</nuxeo.theme.compat.version>
     <nuxeo.datadog.reporter.version>7.4-SNAPSHOT</nuxeo.datadog.reporter.version>
+    <nuxeo.review.workflows.dashboards.version>7.4-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
 
     <!-- optional addons -->
     <nuxeo.jbpm.version>7.4-SNAPSHOT</nuxeo.jbpm.version>
@@ -130,6 +131,7 @@
     <module>nuxeo-media-publishing</module>
     <module>nuxeo-theme-compat</module>
     <module>nuxeo-datadog-reporter</module>
+    <module>nuxeo-review-workflows-dashboards</module>
   </modules>
 
   <dependencyManagement>
@@ -1043,6 +1045,13 @@
         <groupId>org.nuxeo.datadog</groupId>
         <artifactId>nuxeo-datadog-reporter</artifactId>
         <version>${nuxeo.datadog.reporter.version}</version>
+      </dependency>
+
+      <!-- Review Workflows Dashboards -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.review.workflows.dashboards</groupId>
+        <artifactId>nuxeo-review-workflows-dashboards</artifactId>
+        <version>${nuxeo.review.workflows.dashboards.version}</version>
       </dependency>
 
     </dependencies>
