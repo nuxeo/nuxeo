@@ -93,24 +93,24 @@
   line-height: normal;
   padding: .4em 2em .3em .6em;
   margin: 0 .6em 0 0;
-  transition: all 0.2s ease 0.1s;
+  transition: all .2s ease .1s;
 }
 
 .userSearchBlock input.button {
   background: transparent;
-  border:none;
+  border: 0;
   box-shadow: none;
-  cursor:pointer;
+  cursor: pointer;
   height: 25px;
-  padding: 0;
   margin: 0 0 0 -23px;
+  padding: 0;
   text-indent: -9999px;
   vertical-align: top;
   width: 20px;
 }
 
 .userSearchBlock input.button:hover {
-  cursor:pointer;
+  cursor: pointer;
 }
 
 // select2 search input
@@ -119,9 +119,9 @@
 }
 
 .userSearchBlock .select2-container-multi .select2-choices {
-  background: #eee url('${basePath}/icons/search.png') no-repeat 98% center;
+  background: #fafafa url('${basePath}/icons/search.png') no-repeat 98% center;
+  border-color: $shade-light-30;
   box-shadow: none;
-  border-color: transparent;
 }
 
 .userSearchBlock .select2-container-multi .select2-choices .select2-search-field input {
@@ -185,8 +185,8 @@
 }
 
 .nxHeader .userMenuActions a {
-  font-size: 1.1em;
   display: block;
+  font-size: 1.1em;
 }
 
 // Override default dropdown button styles
@@ -197,14 +197,14 @@
   border-radius: 20px;
   box-shadow: none;
   display: inline-block;
-  line-height: 2em;
   height: 2.3em;
-  padding: 0.4em 1em 0.43em 2.2em !important;
+  line-height: 2em;
+  padding: .4em 1em .43em 2.2em !important;
 }
 
 .userMenuActions .actionList .dropdown:hover {
   background-color: #fff;
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 1px rgba(0, 0, 0, .7);
 }
 
 .userMenuActions .button {
