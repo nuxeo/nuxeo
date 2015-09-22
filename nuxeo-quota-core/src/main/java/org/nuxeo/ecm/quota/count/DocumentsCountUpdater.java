@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
+import org.nuxeo.ecm.quota.QuotaUtils;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -151,8 +152,11 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
             }
             Number descendantsCount = DeltaLong.deltaOrLong(previous, count);
             ancestor.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY, descendantsCount);
-            setSystemContextData(ancestor);
+            // do not send notifications
+            QuotaUtils.disableListeners(ancestor);
+            DocumentModel origAncestor = ancestor;
             session.saveDocument(ancestor);
+            QuotaUtils.clearContextData(origAncestor);
         }
 
         session.save();
@@ -169,8 +173,11 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         }
         Number childrenCount = DeltaLong.deltaOrLong(previous, count);
         parent.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY, childrenCount);
-        setSystemContextData(parent);
+        // do not send notifications
+        QuotaUtils.disableListeners(parent);
+        DocumentModel origParent = parent;
         session.saveDocument(parent);
+        QuotaUtils.clearContextData(origParent);
     }
 
     protected long getCount(DocumentModel doc) throws ClientException {
@@ -297,8 +304,11 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         folder.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY, Long.valueOf(count.childrenCount));
         folder.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY,
                 Long.valueOf(count.descendantsCount));
-        setSystemContextData(folder);
+        // do not send notifications
+        QuotaUtils.disableListeners(folder);
+        DocumentModel origFolder = folder;
         session.saveDocument(folder);
+        QuotaUtils.clearContextData(origFolder);
     }
 
     /**
