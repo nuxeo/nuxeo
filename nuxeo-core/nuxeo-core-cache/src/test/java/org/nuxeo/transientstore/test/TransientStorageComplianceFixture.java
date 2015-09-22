@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,9 +75,11 @@ public class TransientStorageComplianceFixture {
         StorageEntry entry = new StorageEntryImpl(id);
         entry.put("A", 1);
         entry.put("B", "b");
-        Blob blob = new StringBlob("FakeContent");
+        String content = "FakeContent";
+        Blob blob = new StringBlob(content);
         blob.setFilename("fake.txt");
         blob.setMimeType("text/plain");
+        blob.setDigest(DigestUtils.md5Hex(content));
         entry.setBlobs(Collections.singletonList(blob));
         return entry;
     }
@@ -105,6 +108,7 @@ public class TransientStorageComplianceFixture {
         assertEquals("b", se.get("B"));
         assertEquals("fake.txt", se.getBlobs().get(0).getFilename());
         assertEquals("text/plain", se.getBlobs().get(0).getMimeType());
+        assertEquals(DigestUtils.md5Hex("FakeContent"), se.getBlobs().get(0).getDigest());
         assertEquals("FakeContent", IOUtils.toString(se.getBlobs().get(0).getStream()));
 
         size = ((AbstractTransientStore) ts).getStorageSize();
