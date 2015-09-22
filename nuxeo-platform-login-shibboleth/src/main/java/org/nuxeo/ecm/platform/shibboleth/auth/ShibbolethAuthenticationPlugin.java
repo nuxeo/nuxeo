@@ -106,7 +106,7 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
         }
 
         String userId = getService().getUserID(httpRequest);
-        if (userId == null || "".equals(userId)) {
+        if (userId == null || StringUtils.EMPTY.equals(userId)) {
             return null;
         } else {
             UserMapperService ums = Framework.getService(UserMapperService.class);
