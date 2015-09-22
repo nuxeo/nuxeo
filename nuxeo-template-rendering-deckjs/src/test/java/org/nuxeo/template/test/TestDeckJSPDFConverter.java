@@ -59,7 +59,8 @@ public class TestDeckJSPDFConverter {
     @Test
     public void testSampleDocument() throws Exception {
         CommandAvailability commandAvailability = cles.getCommandAvailability(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME);
-        assumeTrue("phantomjs not available", commandAvailability.isAvailable());
+        assumeTrue(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME + " not available",
+                commandAvailability.isAvailable());
 
         PathRef ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -58,7 +58,7 @@ public class DeckJSPDFConverter implements Converter {
             }
             Blob pdfOutput = Blobs.createBlobWithExtension(".pdf");
             pdfOutput.setMimeType("application/pdf");
-            CmdParameters params = new CmdParameters();
+            CmdParameters params = cles.getDefaultCmdParameters();
             params.addNamedParameter("jsFilePath", jsFile);
             params.addNamedParameter("inFilePath", inputFile.getFile());
             params.addNamedParameter("outFilePath", pdfOutput.getFile());
