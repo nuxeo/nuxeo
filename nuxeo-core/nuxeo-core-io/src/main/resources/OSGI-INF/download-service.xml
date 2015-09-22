@@ -1,7 +1,46 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.io.download.DownloadService">
+
+  <documentation>
+    Manages repositories.
+  </documentation>
+
   <implementation class="org.nuxeo.ecm.core.io.download.DownloadServiceImpl" />
+
   <service>
     <provide interface="org.nuxeo.ecm.core.io.download.DownloadService" />
   </service>
+
+  <extension-point name="permissions">
+
+    <documentation>
+      Defines the permissions associated to blob download. Contributions are of the form:
+      <code>
+        <permission name="myperm">
+          <script language="JavaScript">
+            function run() {
+              if (XPath == "file:content" || XPath == "blobholder:0") {
+                return false;
+              }
+              return true;
+          </script>
+        </permission>
+      </code>
+      The language can be any JVM scripting language, the default is "JavaScript".
+
+      The script must define a "run()" function that returns a boolean:
+      - true means that downloading the blob is not disallowed by this permission.
+      - false means that downloading the blob is forbidden.
+      The method will get called with the following global context (some values may be null):
+      Document (DocumentModel), XPath (String), Blob (Blob), CurrentUser (NuxeoPrincipal),
+      Reason (String), Rendition (String), Infos (Map).
+
+      If there are several permissions defined, a single one returning false is sufficient
+      to forbid the blob download.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.io.download.DownloadPermissionDescriptor"/>
+
+  </extension-point>
+
 </component>

@@ -20,6 +20,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,7 +38,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -45,11 +48,43 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
-@LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/download-service.xml")
+@Deploy("org.nuxeo.ecm.core.io")
+@LocalDeploy("org.nuxeo.ecm.core.io.test:OSGI-INF/test-download-service.xml")
 public class TestDownloadService {
 
     @Inject
     protected DownloadService downloadService;
+
+    @Test
+    public void testBasicDownload() throws Exception {
+        // blob to download
+        String blobValue = "Hello World";
+        Blob blob = Blobs.createBlob(blobValue);
+        blob.setFilename("myFile.txt");
+        blob.setDigest("12345");
+
+        // prepare mocks
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new ServletOutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                out.write(b);
+            }
+        };
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(response.getOutputStream()).thenReturn(sos);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        // send download request
+        downloadService.downloadBlob(request, response, null, null, blob, null, null);
+
+        // check that the blob gets returned
+        assertEquals(blobValue, out.toString());
+    }
 
     @Test
     public void testETagHeaderNone() throws Exception {
@@ -95,6 +130,7 @@ public class TestDownloadService {
                 out.write(b);
             }
         };
+        @SuppressWarnings("resource")
         PrintWriter printWriter = new PrintWriter(sos);
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
@@ -111,6 +147,45 @@ public class TestDownloadService {
             assertEquals(blobValue, out.toString());
             verify(resp).setHeader("ETag", '"' + blob.getDigest() + '"');
         }
+    }
+
+    @Test
+    public void testDownloadPermission() throws Exception {
+        // blob to download
+        String blobValue = "Hello World";
+        Blob blob = Blobs.createBlob(blobValue);
+        blob.setFilename("myFile.txt");
+        blob.setDigest("12345");
+
+        // mock request
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+
+        // mock response
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new ServletOutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                out.write(b);
+            }
+        };
+        @SuppressWarnings("resource")
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(response.getOutputStream()).thenReturn(sos);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        // mock document (not used)
+        DocumentModel doc = mock(DocumentModel.class);
+
+        // send download request for file:content, should be denied
+        downloadService.downloadBlob(request, response, doc, "file:content", blob, null, null);
+        assertEquals("", out.toString());
+        verify(response, atLeastOnce()).sendError(403, "Permission denied");
+
+        // but another xpath is allowed, per the javascript rule
+        downloadService.downloadBlob(request, response, doc, "other:blob", blob, null, null);
+        assertEquals(blobValue, out.toString());
     }
 
 }

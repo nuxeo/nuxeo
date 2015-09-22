@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.io.download.DownloadService.test">
+
+  <extension target="org.nuxeo.ecm.core.io.download.DownloadService" point="permissions">
+    <permission name="myperm">
+      <script>
+        function run() {
+          if (XPath == "file:content" || XPath == "blobholder:0") {
+            return false;
+          }
+          return true;
+        }
+      </script>
+    </permission>
+  </extension>
+
+</component>

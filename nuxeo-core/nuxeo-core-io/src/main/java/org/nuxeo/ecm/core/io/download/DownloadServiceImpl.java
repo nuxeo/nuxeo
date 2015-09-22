@@ -22,9 +22,18 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.script.Invocable;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,7 +60,9 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * This service allows the download of blobs to a HTTP response.
@@ -69,6 +80,67 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     private static final String VH_PARAM = "nuxeo.virtual.host";
 
     private static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
+
+    private static final String XP = "permissions";
+
+    private static final String RUN_FUNCTION = "run";
+
+    private DownloadPermissionRegistry registry = new DownloadPermissionRegistry();
+
+    private ScriptEngineManager scriptEngineManager;
+
+    public static class DownloadPermissionRegistry extends SimpleContributionRegistry<DownloadPermissionDescriptor> {
+
+        @Override
+        public String getContributionId(DownloadPermissionDescriptor contrib) {
+            return contrib.getName();
+        }
+
+        @Override
+        public boolean isSupportingMerge() {
+            return true;
+        }
+
+        @Override
+        public DownloadPermissionDescriptor clone(DownloadPermissionDescriptor orig) {
+            return new DownloadPermissionDescriptor(orig);
+        }
+
+        @Override
+        public void merge(DownloadPermissionDescriptor src, DownloadPermissionDescriptor dst) {
+            dst.merge(src);
+        }
+
+        public DownloadPermissionDescriptor getDownloadPermissionDescriptor(String id) {
+            return getCurrentContribution(id);
+        }
+
+        /** Returns descriptors sorted by name. */
+        public List<DownloadPermissionDescriptor> getDownloadPermissionDescriptors() {
+            List<DownloadPermissionDescriptor> descriptors = new ArrayList<>(currentContribs.values());
+            Collections.sort(descriptors);
+            return descriptors;
+        }
+    }
+
+    public DownloadServiceImpl() {
+        scriptEngineManager = new ScriptEngineManager();
+    }
+
+    @Override
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (!XP.equals(extensionPoint)) {
+            throw new UnsupportedOperationException(extensionPoint);
+        }
+        DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
+        registry.addContribution(descriptor);
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        DownloadPermissionDescriptor descriptor = (DownloadPermissionDescriptor) contribution;
+        registry.removeContribution(descriptor);
+    }
 
     @Override
     public String getDownloadUrl(DocumentModel doc, String xpath, String filename) {
@@ -105,13 +177,19 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos) throws IOException {
         if (blob == null) {
             if (doc == null || xpath == null) {
-                throw new IllegalArgumentException("No blob or doc xpath");
+                throw new NuxeoException("No blob or doc xpath");
             }
             blob = resolveBlob(doc, xpath);
             if (blob == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "No blob found");
                 return;
             }
+        }
+
+        // check blob permissions
+        if (doc != null && xpath != null && !checkPermission(doc, xpath, blob, reason, extendedInfos)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Permission denied");
+            return;
         }
 
         // check Blob Manager download link
@@ -212,27 +290,47 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
     }
 
+    protected String fixXPath(String xpath) {
+        // Hack for Flash Url wich doesn't support ':' char
+        return xpath.replace(';', ':');
+    }
+
     @Override
     public Blob resolveBlob(DocumentModel doc, String xpath) {
-        // Hack for Flash Url wich doesn't support ':' char
-        xpath = xpath.replace(';', ':');
+        xpath = fixXPath(xpath);
         Blob blob;
         if (xpath.startsWith(BLOBHOLDER_PREFIX)) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh == null) {
+                log.debug("Not a BlobHolder");
                 return null;
             }
-            String index = xpath.substring(BLOBHOLDER_PREFIX.length());
-            if ("".equals(index) || "0".equals(index)) {
+            String suffix = xpath.substring(BLOBHOLDER_PREFIX.length());
+            int index;
+            try {
+                index = Integer.parseInt(suffix);
+            } catch (NumberFormatException e) {
+                log.debug(e.getMessage());
+                return null;
+            }
+            if (!suffix.equals(Integer.toString(index))) {
+                // attempt to use a non-canonical integer, could be used to bypass
+                // a permission function checking just "blobholder:1" and receiving "blobholder:01"
+                log.debug("Non-canonical index: " + suffix);
+                return null;
+            }
+            if (index == 0) {
                 blob = bh.getBlob();
             } else {
-                try {
-                    blob = bh.getBlobs().get(Integer.parseInt(index));
-                } catch (NumberFormatException e) {
-                    return null;
-                }
+                blob = bh.getBlobs().get(index);
             }
         } else {
+            if (!xpath.contains(":")) {
+                // attempt to use a xpath not prefix-qualified, could be used to bypass
+                // a permission function checking just "file:content" and receiving "content"
+                log.debug("Non-canonical xpath: " + xpath);
+                return null;
+            }
             try {
                 blob = (Blob) doc.getPropertyValue(xpath);
             } catch (PropertyNotFoundException e) {
@@ -241,6 +339,62 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             }
         }
         return blob;
+    }
+
+    /**
+     * Checks if the download is allowed based on the permissions configured.
+     */
+    protected boolean checkPermission(DocumentModel doc, String xpath, Blob blob, String reason,
+            Map<String, Serializable> extendedInfos) {
+        List<DownloadPermissionDescriptor> descriptors = registry.getDownloadPermissionDescriptors();
+        if (descriptors.isEmpty()) {
+            return true;
+        }
+        xpath = fixXPath(xpath);
+        Map<String, Object> context = new HashMap<>();
+        Map<String, Serializable> ei = extendedInfos == null ? Collections.emptyMap() : extendedInfos;
+        NuxeoPrincipal currentUser = ClientLoginModule.getCurrentPrincipal();
+        context.put("Document", doc);
+        context.put("XPath", xpath);
+        context.put("Blob", blob);
+        context.put("Reason", reason);
+        context.put("Infos", ei);
+        context.put("Rendition", ei.get("rendition"));
+        context.put("CurrentUser", currentUser);
+        for (DownloadPermissionDescriptor descriptor : descriptors) {
+            ScriptEngine engine = scriptEngineManager.getEngineByName(descriptor.getScriptLanguage());
+            if (engine == null) {
+                throw new NuxeoException("Engine not found for language: " + descriptor.getScriptLanguage()
+                        + " in permission: " + descriptor.getName());
+            }
+            if (!(engine instanceof Invocable)) {
+                throw new NuxeoException("Engine " + engine.getClass().getName() + " not Invocable for language: "
+                        + descriptor.getScriptLanguage() + " in permission: " + descriptor.getName());
+            }
+            Object result;
+            try {
+                engine.eval(descriptor.getScript());
+                engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(context);
+                result = ((Invocable) engine).invokeFunction(RUN_FUNCTION);
+            } catch (NoSuchMethodException e) {
+                throw new NuxeoException(
+                        "Script does not contain function: " + RUN_FUNCTION + "() in permission: " + descriptor.getName(),
+                        e);
+            } catch (ScriptException e) {
+                log.error("Failed to evaluate script: " + descriptor.getName(), e);
+                continue;
+            }
+            if (!(result instanceof Boolean)) {
+                log.error(
+                        "Failed to get boolean result from permission: " + descriptor.getName() + " (" + result + ")");
+                continue;
+            }
+            boolean allow = ((Boolean) result).booleanValue();
+            if (!allow) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
