@@ -16,7 +16,11 @@
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -48,6 +54,8 @@ public class BatchFileEntry extends AbstractStorageEntry {
 
     protected static final Log log = LogFactory.getLog(BatchFileEntry.class);
 
+    // Temporary blob made from concatenated chunks
+    protected Blob tmpChunkedBlob;
 
     /**
      * Returns a file entry that holds the given blob, not chunked.
@@ -148,11 +156,11 @@ public class BatchFileEntry extends AbstractStorageEntry {
     @SuppressWarnings("unchecked")
     public Blob getBlob() {
         if (isChunked()) {
+            // First check if blob chunks have already been read and concatenated
+            if (tmpChunkedBlob != null) {
+                return tmpChunkedBlob;
+            }
             try {
-                // TODO https://jira.nuxeo.com/browse/NXP-17885
-                // Find a way to delete tmp file once used
-                Blob blob = Blobs.createBlobWithExtension(null);
-                BatchManager bm = Framework.getService(BatchManager.class);
                 Map<Integer, String> chunks = (Map<Integer, String>) get("chunks");
                 int uploadedChunkCount = chunks.keySet().size();
                 int chunkCount = getChunkCount();
@@ -162,16 +170,23 @@ public class BatchFileEntry extends AbstractStorageEntry {
                             getId(), uploadedChunkCount, chunkCount));
                     return null;
                 }
+                tmpChunkedBlob = Blobs.createBlobWithExtension(null);
+                BatchManager bm = Framework.getService(BatchManager.class);
                 // Sort chunk ids and concatenate them to build the entire blob
                 List<Integer> sortedChunks = getOrderedChunkIds();
                 for (int idx : sortedChunks) {
                     BatchChunkEntry chunkEntry = (BatchChunkEntry) bm.getTransientStore().get(chunks.get(idx));
-                    chunkEntry.getBlob().transferTo(blob.getFile());
+                    Blob chunkBlob = chunkEntry.getBlob();
+                    if (chunkBlob != null) {
+                        transferTo(chunkBlob, tmpChunkedBlob.getFile());
+                    }
                 }
-                blob.setMimeType((String) get("mimeType"));
-                blob.setFilename((String) get("fileName"));
-                return blob;
+                tmpChunkedBlob.setMimeType(getMimeType());
+                tmpChunkedBlob.setFilename(getFileName());
+                return tmpChunkedBlob;
             } catch (IOException ioe) {
+                beforeRemove();
+                tmpChunkedBlob = null;
                 throw new NuxeoException(ioe);
             }
         } else {
@@ -180,6 +195,17 @@ public class BatchFileEntry extends AbstractStorageEntry {
                 return null;
             }
             return blobs.get(0);
+        }
+    }
+
+    /**
+     * Appends the given blob to the given file.
+     */
+    protected void transferTo(Blob blob, File file) throws IOException {
+        try (OutputStream out = new FileOutputStream(file, true)) {
+            try (InputStream in = blob.getStream()) {
+                IOUtils.copy(in, out);
+            }
         }
     }
 
@@ -223,6 +249,9 @@ public class BatchFileEntry extends AbstractStorageEntry {
 
     @Override
     public void beforeRemove() {
-        // Nothing to do here
+        // Delete temporary chunked blob if exists
+        if (tmpChunkedBlob != null) {
+            FileUtils.deleteQuietly(tmpChunkedBlob.getFile());
+        }
     }
 }
