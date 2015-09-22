@@ -149,4 +149,11 @@ public class LockManagerService extends DefaultComponent {
         lockManagers.put(name, lockManager);
     }
 
+    /**
+     * @since 7.4
+     */
+    public void unregisterLockManager(String name) {
+        lockManagers.remove(name);
+    }
+
 }

@@ -72,6 +72,11 @@ public class RepositoryImpl implements Repository {
 
     private LockManager lockManager;
 
+    /**
+     * @since 7.4 : used to know if the LockManager was provided by this repository or externally
+     */
+    boolean selfRegistredLockManager = false;
+
     /** Propagator of invalidations to all mappers' caches. */
     protected final InvalidationsPropagator invalidationsPropagator;
 
@@ -119,7 +124,6 @@ public class RepositoryImpl implements Repository {
             public Long getValue() {
                 return getCacheSize();
             }
-
         });
         gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "pristines");
         registry.remove(gaugeName);
@@ -129,7 +133,7 @@ public class RepositoryImpl implements Repository {
                 return getCachePristineSize();
             }
         });
-        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "selections");;
+        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "selections");
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -137,7 +141,7 @@ public class RepositoryImpl implements Repository {
                 return getCacheSelectionSize();
             }
         });
-        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "mappers");;
+        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "mappers");
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -281,14 +285,21 @@ public class RepositoryImpl implements Repository {
         }
     }
 
+    protected String getLockManagerName() {
+        // TODO configure in repo descriptor
+        return getName();
+    }
+
     protected void initLockManager() {
-        String lockManagerName = getName(); // TODO configure in repo descriptor
+        String lockManagerName = getLockManagerName();
         LockManagerService lockManagerService = Framework.getService(LockManagerService.class);
         lockManager = lockManagerService.getLockManager(lockManagerName);
         if (lockManager == null) {
             // no descriptor
             // default to a VCSLockManager
             lockManager = new VCSLockManager(lockManagerName);
+            lockManagerService.registerLockManager(lockManagerName, lockManager);
+            selfRegistredLockManager = true;
         }
         log.info("Repository " + getName() + " using lock manager " + lockManager);
     }
@@ -298,9 +309,8 @@ public class RepositoryImpl implements Repository {
         if (StringUtils.isBlank(nodeId)) {
             // need a smallish int because of SQL Server legacy node ids
             nodeId = String.valueOf(RANDOM.nextInt(32768));
-            log.warn(
-                    "Missing cluster node id configuration, please define it explicitly (usually through repository.clustering.id). "
-                            + "Using random cluster node id instead: " + nodeId);
+            log.warn("Missing cluster node id configuration, please define it explicitly (usually through repository.clustering.id). "
+                    + "Using random cluster node id instead: " + nodeId);
         } else {
             nodeId = nodeId.trim();
         }
@@ -384,6 +394,10 @@ public class RepositoryImpl implements Repository {
         registry.remove(MetricRegistry.name(RepositoryImpl.class, getName(), "cache-size"));
         registry.remove(MetricRegistry.name(PersistenceContext.class, getName(), "cache-size"));
         registry.remove(MetricRegistry.name(SelectionContext.class, getName(), "cache-size"));
+
+        if (selfRegistredLockManager) {
+            Framework.getService(LockManagerService.class).unregisterLockManager(getLockManagerName());
+        }
     }
 
     protected synchronized void closeAllSessions() {

@@ -55,7 +55,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.model.Delta;
@@ -923,6 +922,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void closeLockManager() {
+
     }
 
     @Override

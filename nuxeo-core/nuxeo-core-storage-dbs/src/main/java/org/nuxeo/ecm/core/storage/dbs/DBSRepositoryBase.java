@@ -84,6 +84,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     protected LockManager lockManager;
 
+    /**
+     * @since 7.4 : used to know if the LockManager was provided by this repository or externally
+     */
+    boolean selfRegistredLockManager = false;
+
     public DBSRepositoryBase(String repositoryName, boolean fulltextDisabled) {
         this.repositoryName = repositoryName;
         this.fulltextDisabled = fulltextDisabled;
@@ -94,6 +99,9 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     @Override
     public void shutdown() {
+        if (selfRegistredLockManager) {
+            Framework.getService(LockManagerService.class).unregisterLockManager(getLockManagerName());
+        }
     }
 
     @Override
@@ -101,14 +109,21 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         return repositoryName;
     }
 
+    protected String getLockManagerName() {
+        // TODO configure in repo descriptor
+        return getName();
+    }
+
     protected void initLockManager() {
-        String lockManagerName = repositoryName; // TODO configure in repo descriptor
+        String lockManagerName = getLockManagerName();
         LockManagerService lockManagerService = Framework.getService(LockManagerService.class);
         lockManager = lockManagerService.getLockManager(lockManagerName);
         if (lockManager == null) {
             // no descriptor, use DBS repository intrinsic lock manager
             lockManager = this;
             log.info("Repository " + repositoryName + " using own lock manager");
+            lockManagerService.registerLockManager(lockManagerName, lockManager);
+            selfRegistredLockManager = true;
         } else {
             log.info("Repository " + repositoryName + " using lock manager " + lockManager);
         }
@@ -385,7 +400,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         }
 
         protected Integer doHashCode() {
-            return Integer.valueOf(this.hashCode());
+            return Integer.valueOf(hashCode());
         }
 
         protected Boolean doEquals(Object[] args) {
@@ -397,7 +412,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
                 return FALSE;
             }
             InvocationHandler otherInvoker = Proxy.getInvocationHandler(other);
-            return Boolean.valueOf(this.equals(otherInvoker));
+            return Boolean.valueOf(equals(otherInvoker));
         }
 
         protected Object doClose(Object proxy) {
@@ -414,5 +429,6 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             }
         }
     }
+
 
 }
