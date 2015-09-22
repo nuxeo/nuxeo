@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -83,7 +84,12 @@ public class Batch extends AbstractStorageEntry {
         }
 
         List<String> sortedIdx = new ArrayList<String>(params.keySet());
-        Collections.sort(sortedIdx);
+        Collections.sort(sortedIdx, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return Integer.valueOf(o1).compareTo(Integer.valueOf(o2));
+            }
+        });
         for (String idx : sortedIdx) {
             Blob blob = retrieveBlob(idx);
             if (blob != null) {
@@ -101,8 +107,7 @@ public class Batch extends AbstractStorageEntry {
      * @since 5.7
      */
     public Blob getBlob(String idx, int timeoutS) {
-        String fileIdx = "file_" + idx;
-        Blob blob = retrieveBlob(fileIdx);
+        Blob blob = retrieveBlob(idx);
         if (blob == null && timeoutS > 0 && uploadInProgress.get() > 0) {
             for (int i = 0; i < timeoutS * 5; i++) {
                 try {
@@ -110,7 +115,7 @@ public class Batch extends AbstractStorageEntry {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                blob = retrieveBlob(fileIdx);
+                blob = retrieveBlob(idx);
                 if (blob != null) {
                     break;
                 }
@@ -153,7 +158,7 @@ public class Batch extends AbstractStorageEntry {
 
         BatchManager bm = Framework.getService(BatchManager.class);
         bm.getTransientStore().put(fileEntry);
-        put("file_" + idx, fileEntryId);
+        put(idx, fileEntryId);
 
         return fileEntry;
     }
@@ -175,7 +180,7 @@ public class Batch extends AbstractStorageEntry {
             long fileSize) {
 
         BatchFileEntry fileEntry = null;
-        String fileEntryId = (String) get("file_" + idx);
+        String fileEntryId = (String) get(idx);
         if (fileEntryId != null) {
             BatchManager bm = Framework.getService(BatchManager.class);
             fileEntry = (BatchFileEntry) bm.getTransientStore().get(fileEntryId);
@@ -185,7 +190,7 @@ public class Batch extends AbstractStorageEntry {
                 fileEntryId = getId() + "_" + idx;
             }
             fileEntry = new BatchFileEntry(fileEntryId, chunkCount, name, mime, fileSize);
-            put("file_" + idx, fileEntryId);
+            put(idx, fileEntryId);
         }
         fileEntry.addChunk(chunkIdx, blob);
 
