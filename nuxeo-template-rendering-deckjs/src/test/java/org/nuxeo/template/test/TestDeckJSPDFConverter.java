@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.internal.AssumptionViolatedException;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -42,12 +43,9 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.content.template",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.event",
-        "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert",
-        "org.nuxeo.ecm.core.convert.plugins",
-        "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.template.manager.api", "org.nuxeo.template.manager",
+@Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.event",
+        "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
+        "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.template.manager.api", "org.nuxeo.template.manager",
         "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.deckjs" })
 public class TestDeckJSPDFConverter {
 
@@ -60,8 +58,9 @@ public class TestDeckJSPDFConverter {
         assertNotNull(cles);
         CommandAvailability commandAvailability = cles.getCommandAvailability(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME);
         if (!commandAvailability.isAvailable()) {
-            return;
+            throw new AssumptionViolatedException(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME + " not available");
         }
+
         PathRef ref = new PathRef("default-domain/workspaces/templatesamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
