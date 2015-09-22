@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -56,6 +56,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
 
     public static final String DELTA_OGV = "DELTA.ogv";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -81,8 +82,8 @@ public class VideoConversionTest extends NXRuntimeTestCase {
         ConversionService cs = Framework.getService(ConversionService.class);
         assertNotNull(cs.getRegistredConverters().contains(converter));
         BlobHolder in = getBlobFromPath(fileName, mimeType);
-        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-        Map<String, Serializable> videoInfo = new HashMap<String, Serializable>();
+        Map<String, Serializable> parameters = new HashMap<>();
+        Map<String, Serializable> videoInfo = new HashMap<>();
         videoInfo.put(VideoInfo.WIDTH, 768L);
         videoInfo.put(VideoInfo.HEIGHT, 480L);
         parameters.put("videoInfo", VideoInfo.fromMap(videoInfo));

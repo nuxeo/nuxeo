@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 package org.nuxeo.ecm.platform.video.convert;
 
@@ -69,7 +68,7 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
 
     public static final String THUMBNAIL_NUMBER_PARAM = "thumbnail_number";
 
-    protected Map<String, String> commonParams = new HashMap<String, String>();
+    protected Map<String, String> commonParams = new HashMap<>();
 
     @Override
     public void init(ConverterDescriptor descriptor) {
@@ -84,12 +83,11 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-
         // Build the empty output structure
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        List<Blob> blobs = new ArrayList<Blob>();
-        List<Double> timecodes = new ArrayList<Double>();
-        List<String> comments = new ArrayList<String>();
+        Map<String, Serializable> properties = new HashMap<>();
+        List<Blob> blobs = new ArrayList<>();
+        List<Double> timecodes = new ArrayList<>();
+        List<String> comments = new ArrayList<>();
         properties.put("timecodes", (Serializable) timecodes);
         properties.put("comments", (Serializable) comments);
         SimpleBlobHolderWithProperties bh = new SimpleBlobHolderWithProperties(blobs, properties);
@@ -107,8 +105,7 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
                 return bh;
             }
 
-            // add the command line parameters for the storyboard extraction and
-            // run it
+            // add the command line parameters for the storyboard extraction and run it
             int numberOfThumbnails = getNumberOfThumbnails(parameters);
             for (int i = 0; i < numberOfThumbnails; i++) {
                 double timecode = BigDecimal.valueOf(i * duration / numberOfThumbnails)

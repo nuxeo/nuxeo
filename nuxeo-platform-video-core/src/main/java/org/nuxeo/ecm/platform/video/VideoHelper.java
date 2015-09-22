@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -77,20 +77,20 @@ public class VideoHelper {
      */
     public static final int DEFAULT_NUMBER_OF_THUMBNAILS = 9;
 
-    // TODO: make this configurable somehow though an extension point. The
-    // imaging package need a similar refactoring, try to make both consistent
-    public static final ArrayList<Map<String, Object>> THUMBNAILS_VIEWS = new ArrayList<Map<String, Object>>();
+    // TODO NXP-4792 OG: make this configurable somehow though an extension point. The imaging package need a similar
+    // refactoring, try to make both consistent
+    public static final ArrayList<Map<String, Object>> THUMBNAILS_VIEWS = new ArrayList<>();
 
     // Utility class.
     private VideoHelper() {
     }
 
     static {
-        Map<String, Object> thumbnailView = new LinkedHashMap<String, Object>();
+        Map<String, Object> thumbnailView = new LinkedHashMap<>();
         thumbnailView.put("title", "Small");
         thumbnailView.put("maxsize", Long.valueOf(AbstractPictureAdapter.SMALL_SIZE));
         THUMBNAILS_VIEWS.add(thumbnailView);
-        Map<String, Object> staticPlayerView = new HashMap<String, Object>();
+        Map<String, Object> staticPlayerView = new HashMap<>();
         staticPlayerView.put("title", "StaticPlayerView");
         staticPlayerView.put("maxsize", Long.valueOf(AbstractPictureAdapter.MEDIUM_SIZE));
         THUMBNAILS_VIEWS.add(staticPlayerView);
@@ -120,7 +120,7 @@ public class VideoHelper {
         BlobHolder result = null;
         if (storyboardMinDuration >= 0 && duration >= storyboardMinDuration) {
             try {
-                Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+                Map<String, Serializable> parameters = new HashMap<>();
                 parameters.put("duration", duration);
                 int numberOfThumbnails = DEFAULT_NUMBER_OF_THUMBNAILS;
                 if (configuration != null) {
@@ -144,9 +144,9 @@ public class VideoHelper {
             List<Blob> blobs = result.getBlobs();
             List<String> comments = (List<String>) result.getProperty("comments");
             List<Double> timecodes = (List<Double>) result.getProperty("timecodes");
-            List<Map<String, Serializable>> storyboard = new ArrayList<Map<String, Serializable>>();
+            List<Map<String, Serializable>> storyboard = new ArrayList<>();
             for (int i = 0; i < blobs.size(); i++) {
-                Map<String, Serializable> item = new HashMap<String, Serializable>();
+                Map<String, Serializable> item = new HashMap<>();
                 item.put("comment", comments.get(i));
                 item.put("timecode", timecodes.get(i));
                 item.put("content", (Serializable) blobs.get(i));
@@ -162,13 +162,11 @@ public class VideoHelper {
      */
     public static void updatePreviews(DocumentModel docModel, Blob video, Double position,
             List<Map<String, Object>> templates) throws IOException {
-
         if (video == null) {
             docModel.setPropertyValue("picture:views", null);
             return;
         }
-
-        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        Map<String, Serializable> parameters = new HashMap<>();
         parameters.put(Constants.POSITION_PARAMETER, position);
         BlobHolder result;
         try {
@@ -188,7 +186,7 @@ public class VideoHelper {
             PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
             try {
                 picture.fillPictureViews(result.getBlob(), result.getBlob().getFilename(), docModel.getTitle(),
-                        new ArrayList<Map<String, Object>>(templates));
+                        new ArrayList<>(templates));
             } catch (IOException e) {
                 log.warn("failed to video compute previews for " + docModel.getTitle() + ": " + e.getMessage());
             }
@@ -200,8 +198,7 @@ public class VideoHelper {
                 Blob blob = Blobs.createBlob(is, "image/jpeg");
                 blob.setFilename(MISSING_PREVIEW_PICTURE.replace('/', '-'));
                 PictureResourceAdapter picture = docModel.getAdapter(PictureResourceAdapter.class);
-                picture.fillPictureViews(blob, blob.getFilename(), docModel.getTitle(),
-                        new ArrayList<Map<String, Object>>(templates));
+                picture.fillPictureViews(blob, blob.getFilename(), docModel.getTitle(), new ArrayList<>(templates));
             }
         }
     }
