@@ -263,10 +263,7 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Returns the Home of NuxeoRuntime (same as
-     * Framework.getRuntime().getHome().getAbsolutePath())
-     *
-     * @return
+     * Returns the Home of NuxeoRuntime (same as Framework.getRuntime().getHome().getAbsolutePath())
      */
     protected abstract File getRuntimeHome();
 
@@ -384,23 +381,11 @@ public abstract class ServerConfigurator {
             }
         }
 
-        // NXP-8014
         File oldPackagesPath = new File(getDataDir(), getDefaultPackagesDir());
-        if (oldPackagesPath.exists()
-                && !oldPackagesPath.equals(getPackagesDir())) {
-            log.warn(String.format("Moving %s content to %s...",
+        if (oldPackagesPath.exists() && !oldPackagesPath.equals(getPackagesDir())) {
+            log.warn(String.format(
+                    "NXP-8014 Packages cache location changed. You can safely delete %s or move its content to %s",
                     oldPackagesPath, getPackagesDir()));
-            try {
-                for (File file : oldPackagesPath.listFiles()) {
-                    FileUtils.moveToDirectory(file, getPackagesDir(), true);
-                    log.info(String.format("Moved %s to %s.", file,
-                            getPackagesDir()));
-                }
-                oldPackagesPath.delete();
-            } catch (IOException e) {
-                throw new ConfigurationException("NXP-8014 move failed: "
-                        + e.getMessage(), e);
-            }
         }
 
     }
