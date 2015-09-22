@@ -68,8 +68,9 @@
 
 .nx-page .rf-trn-ico {
   height: 12px;
+  margin-right: .3em;
   margin-top: .1em;
-  vertical-align: top;
+  vertical-align: sub;
   width: 12px;
 }
 
@@ -85,7 +86,7 @@
   background: #fff url("${basePath}/icons/arrow_unfolded.gif") no-repeat scroll center center;
   display: inline-block;
   height: 16px;
-  vertical-align: top;
+  vertical-align: sub;
   width: 16px;
 }
 
@@ -109,6 +110,7 @@
 .nx-page .rf-trn a.treeLink {
   // standard word-break rule
   word-break: keep-all;
+  margin-left: -.3em;
 }
 
 .nx-page .rf-tr-nd-exp .rf-trn {
@@ -151,6 +153,20 @@
 
 .nx-page .fieldColumn .rf-trn img {
   margin: 0;
+}
+
+#publishTreeForm > dl {
+  border: 1px solid $shade-light-30;
+  border-radius: 3px;
+  display: block;
+  margin: 0 0 2em 12em;
+  padding: 1em;
+}
+
+#publishTreeForm .rf-trn-lbl img {
+  height: 12px;
+  margin: 0 .3em 0 1em;
+  width: 12px;
 }
 
 // waiter
