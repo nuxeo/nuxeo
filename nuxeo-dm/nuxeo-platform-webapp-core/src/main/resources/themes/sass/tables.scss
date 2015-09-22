@@ -73,11 +73,15 @@ table td {
   padding: .7em .4em;
 }
 
+.dataTable th:first-child,
+.dataTable td:first-child,
+.dataList th:first-child,
+.dataList td:first-child,
 .dataOutput th:first-child,
 .dataOutput td:first-child,
 .dataTableLine th:first-child,
 .dataTableLine td:first-child {
-  padding-left: .4em;
+  padding-left: .5em;
 }
 
 .dataTableLine th,
@@ -181,6 +185,12 @@ table.smallTable td {
 .dataTableNoBorder.smallTable th,
 .dataTableNoBorder.smallTable td {
   padding: .2em;
+}
+
+.dataList td .button,
+.dataTable td .button,
+.dataTableLine td .button {
+  margin-bottom: .1em;
 }
 
 th:first-child input[type="checkbox"] {
