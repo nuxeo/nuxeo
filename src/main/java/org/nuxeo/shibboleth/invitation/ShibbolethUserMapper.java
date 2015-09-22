@@ -24,6 +24,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -106,11 +107,29 @@ public class ShibbolethUserMapper implements UserMapper {
             userDoc = findUser(userInfo.getUserName());
         }
 
+        if (userDoc == null) {
+               userDoc = createUser(userInfo);
+        }
         // Update user with related infos
         userDoc = updateUser(userDoc, userInfo);
 
         String userId = (String) userDoc.getPropertyValue(userManager.getUserIdField());
         return userManager.getPrincipal(userId);
+    }
+
+    protected DocumentModel createUser(ShibbolethUserInfo userInfo) {
+        DocumentModel userDoc;
+        try {
+            userDoc = userManager.getBareUserModel();
+            userDoc.setPropertyValue(userManager.getUserIdField(), userInfo.getUserName());
+            userDoc.setPropertyValue(userManager.getUserEmailField(), userInfo.getUserName());
+            userManager.createUser(userDoc);
+        } catch (NuxeoException e) {
+            String message = "Error while creating user [" + userInfo.getUserName() + "] in UserManager";
+            log.error(message, e);
+            throw new RuntimeException(message);
+        }
+        return userDoc;
     }
 
     protected DocumentModelList getTargetDocuments(String userId) {
