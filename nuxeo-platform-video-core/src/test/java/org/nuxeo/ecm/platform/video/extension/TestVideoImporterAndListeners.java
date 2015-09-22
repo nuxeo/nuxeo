@@ -33,10 +33,9 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.AssumptionViolatedException;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -188,10 +187,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
         CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
                 "ffmpeg-screenshot");
-        if (!ca.isAvailable()) {
-            log.warn("ffmpeg-screenshot is not avalaible, skipping the end of the test");
-            throw new AssumptionViolatedException("ffmpeg-screenshot is not avalaible");
-        }
+        Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
 
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
@@ -210,10 +206,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
     public void testImportBigVideo() throws Exception {
         CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
                 "ffmpeg-screenshot");
-        if (!ca.isAvailable()) {
-            log.warn("ffmpeg-screenshot is not avalaible, skipping the end of the test");
-            throw new AssumptionViolatedException("ffmpeg-screenshot is not avalaible");
-        }
+        Assume.assumeTrue("ffmpeg-screenshot is not available, skipping test", ca.isAvailable());
         DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
         assertNotNull(docModel);
         docModel.setPropertyValue("file:content", (Serializable) getBlobFromPath(ELEPHANTS_DREAM).getBlob());

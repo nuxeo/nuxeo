@@ -70,10 +70,14 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
         InputFile inputFile = null;
         try {
             blob = blobHolder.getBlob();
+            if (blob == null) {
+                throw new ConversionException("conversion failed (null blob)");
+            }
             inputFile = new InputFile(blob);
             outFile = File.createTempFile("ScreenshotConverter-out-", ".tmp.jpeg");
 
-            CmdParameters params = new CmdParameters();
+            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CmdParameters params = cles.getDefaultCmdParameters();
             params.addNamedParameter("inFilePath", inputFile.file.getAbsolutePath());
             params.addNamedParameter("outFilePath", outFile.getAbsolutePath());
             Double position = 0.0;
@@ -85,7 +89,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
             }
             long positionParam = Math.round(position);
             params.addNamedParameter(POSITION_PARAMETER, String.valueOf(positionParam));
-            ExecResult res = cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
+            ExecResult res = cles.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
             if (!res.isSuccessful()) {
                 throw res.getError();
             }
@@ -94,13 +98,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
             outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg", positionParam));
             return new SimpleCachableBlobHolder(outBlob);
         } catch (CommandNotAvailable | IOException | ClientException | CommandException e) {
-            String msg;
-            if (blob != null) {
-                msg = "error extracting screenshot from '" + blob.getFilename() + "'";
-            } else {
-                msg = "conversion failed";
-            }
-            throw new ConversionException(msg, e);
+            throw new ConversionException("error extracting screenshot from '" + blob.getFilename() + "'", e);
         } finally {
             FileUtils.deleteQuietly(outFile);
             if (inputFile != null && inputFile.isTempFile) {

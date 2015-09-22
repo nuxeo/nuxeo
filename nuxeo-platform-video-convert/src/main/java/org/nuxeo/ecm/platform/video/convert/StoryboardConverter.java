@@ -119,7 +119,8 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
             outFolder.delete();
             outFolder.mkdir();
 
-            CmdParameters params = new CmdParameters();
+            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CmdParameters params = cles.getDefaultCmdParameters();
             params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, inputFile.file.getAbsolutePath());
 
             Double duration = (Double) parameters.get("duration");
@@ -143,8 +144,7 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
                 params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
                 params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
                 params.addNamedParameter(HEIGHT_PARAM, commonParams.get(HEIGHT_PARAM));
-                ExecResult result = cleService.execCommand(FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
-
+                ExecResult result = cles.execCommand(FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
                 if (!result.isSuccessful()) {
                     throw result.getError();
                 }
