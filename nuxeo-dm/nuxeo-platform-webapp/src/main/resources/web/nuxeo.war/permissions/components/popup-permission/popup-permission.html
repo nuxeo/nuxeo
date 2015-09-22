@@ -12,6 +12,7 @@
 <link rel="import" href="../../../bower_components/iron-icons/editor-icons.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 <link rel="import" href="../../../bower_components/nuxeo-elements/nx-operation.html">
+<link rel="import" href="../../../bower_components/nuxeo-elements/widgets/nx-user-suggestion.html">
 
 <dom-module id="popup-permission">
     <template>
@@ -35,16 +36,14 @@
 
             <!-- Give acces to row -->
             <paper-dialog-scrollable>
-                <div>
-                    <div>[[i18n('label.permissions.userGroup', 'User / Group')]]</div>
+                <template is="dom-if" if="{{!updatingACE}}">
                     <div>
-                        <paper-input
-                            id="user"
-                            placeholder="user / group"
-                            value="{{params.username}}">
-                        </paper-input>
+                        <div>[[i18n('label.permissions.userGroup', 'User / Group')]]</div>
+                        <div>
+                            <nx-user-suggestion value="{{params.username}}"></nx-user-suggestion>
+                        </div>
                     </div>
-                </div>
+                </template>
                 <!-- Right row -->
                 <div layout horizontal>
                     <div>Right</div>
