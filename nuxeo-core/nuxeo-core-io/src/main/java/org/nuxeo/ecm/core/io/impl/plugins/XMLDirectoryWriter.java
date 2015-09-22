@@ -41,10 +41,16 @@ import org.nuxeo.ecm.core.io.impl.AbstractDocumentWriter;
  *
  * @author btatar
  */
-// XXX AT: is this stil useful?
 public class XMLDirectoryWriter extends AbstractDocumentWriter {
 
     private File destination;
+
+    /**
+     * Allow to skip the blob from export : useful in case of a Nuxeo 2 Nuxeo migration
+     *
+     * @since 7.4
+     */
+    protected boolean skipBlobs = false;
 
     public XMLDirectoryWriter(String destinationPath) {
         this(new File(destinationPath));
@@ -52,6 +58,20 @@ public class XMLDirectoryWriter extends AbstractDocumentWriter {
 
     public XMLDirectoryWriter(File destination) {
         this.destination = destination;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public boolean skipBlobs() {
+        return skipBlobs;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setSkipBlobs(boolean skipBlobs) {
+        this.skipBlobs = skipBlobs;
     }
 
     /**
@@ -91,10 +111,13 @@ public class XMLDirectoryWriter extends AbstractDocumentWriter {
                 writer.close();
             }
         }
-        Map<String, Blob> blobs = doc.getBlobs();
-        for (Map.Entry<String, Blob> entry : blobs.entrySet()) {
-            String blobPath = file.getAbsolutePath() + File.separator + entry.getKey();
-            entry.getValue().transferTo(new File(blobPath));
+
+        if (!skipBlobs) {
+            Map<String, Blob> blobs = doc.getBlobs();
+            for (Map.Entry<String, Blob> entry : blobs.entrySet()) {
+                String blobPath = file.getAbsolutePath() + File.separator + entry.getKey();
+                entry.getValue().transferTo(new File(blobPath));
+            }
         }
 
         // write external documents

@@ -91,13 +91,16 @@ public class DocumentTranslationMapImpl implements DocumentTranslationMap {
         }
         // take first one as reference
         DocumentTranslationMap ref = maps.get(0);
-        String oldRepo = ref.getOldServerName();
-        String newRepo = ref.getNewServerName();
-        DocumentTranslationMap finalMap = new DocumentTranslationMapImpl(oldRepo, newRepo);
-        for (DocumentTranslationMap item : maps) {
-            finalMap.putAll(item.getDocRefMap());
+        if (ref!=null) {
+            String oldRepo = ref.getOldServerName();
+            String newRepo = ref.getNewServerName();
+            DocumentTranslationMap finalMap = new DocumentTranslationMapImpl(oldRepo, newRepo);
+            for (DocumentTranslationMap item : maps) {
+                finalMap.putAll(item.getDocRefMap());
+            }
+            return finalMap;
         }
-        return finalMap;
+        return null;
     }
 
 }

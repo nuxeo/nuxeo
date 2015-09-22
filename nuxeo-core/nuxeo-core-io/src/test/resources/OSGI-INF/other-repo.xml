@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="test-other-repository-config">
+
+  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
+    point="repositories">
+    <repository name="import" label="Other Repository" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="import">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+    </blobprovider>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
+    point="repository">
+    <repository name="import"
+      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+      <repository>
+        <indexing>
+          <fulltext disabled="true" />
+        </indexing>
+      </repository>
+    </repository>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/repository_import" driverClassName="org.h2.Driver">
+      <property name="url">jdbc:h2:mem:other;DB_CLOSE_DELAY=-1</property>
+    </datasource>
+  </extension>
+
+
+</component>
