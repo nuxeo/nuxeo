@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.transientstore.AbstractStorageEntry;
@@ -44,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
 public class Batch extends AbstractStorageEntry {
 
     private static final long serialVersionUID = 1L;
+
+    protected static final Log log = LogFactory.getLog(Batch.class);
 
     protected final AtomicInteger uploadInProgress = new AtomicInteger(0);
 
@@ -90,6 +94,7 @@ public class Batch extends AbstractStorageEntry {
                 return Integer.valueOf(o1).compareTo(Integer.valueOf(o2));
             }
         });
+        log.debug(String.format("Retrieving blobs for batch %s: %s", getId(), sortedIdx));
         for (String idx : sortedIdx) {
             Blob blob = retrieveBlob(idx);
             if (blob != null) {
@@ -107,6 +112,7 @@ public class Batch extends AbstractStorageEntry {
      * @since 5.7
      */
     public Blob getBlob(String idx, int timeoutS) {
+        log.debug(String.format("Retrieving blob %s for batch %s", idx, getId()));
         Blob blob = retrieveBlob(idx);
         if (blob == null && timeoutS > 0 && uploadInProgress.get() > 0) {
             for (int i = 0; i < timeoutS * 5; i++) {

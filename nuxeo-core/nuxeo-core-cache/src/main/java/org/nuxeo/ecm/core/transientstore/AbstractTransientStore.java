@@ -215,6 +215,7 @@ public abstract class AbstractTransientStore implements TransientStore {
     }
 
     public void doGC() {
+        log.debug(String.format("Performing GC for TransientStore %s", config.getName()));
         File dir = getCachingDirectory();
         long newSize = 0;
         try {
