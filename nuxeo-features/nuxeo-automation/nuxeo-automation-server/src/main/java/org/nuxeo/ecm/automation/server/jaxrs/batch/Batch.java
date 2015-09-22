@@ -69,8 +69,7 @@ public class Batch extends AbstractStorageEntry {
      */
     public List<Blob> getBlobs(int timeoutS) {
         List<Blob> blobs = new ArrayList<Blob>();
-        Map<String, Serializable> params = getParameters();
-        if (params == null) {
+        if (getParameters() == null) {
             return blobs;
         }
 
@@ -87,7 +86,7 @@ public class Batch extends AbstractStorageEntry {
             }
         }
 
-        List<String> sortedIdx = new ArrayList<String>(params.keySet());
+        List<String> sortedIdx = new ArrayList<String>(getParameters().keySet());
         Collections.sort(sortedIdx, new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
@@ -165,6 +164,7 @@ public class Batch extends AbstractStorageEntry {
         BatchManager bm = Framework.getService(BatchManager.class);
         bm.getTransientStore().put(fileEntry);
         put(idx, fileEntryId);
+        log.debug(String.format("Added file %s [%s] to batch %s", idx, blob.getFilename(), getId()));
 
         return fileEntry;
     }
@@ -202,6 +202,7 @@ public class Batch extends AbstractStorageEntry {
 
         BatchManager bm = Framework.getService(BatchManager.class);
         bm.getTransientStore().put(fileEntry);
+        log.debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIdx, idx, name, getId()));
 
         return fileEntry;
     }
