@@ -132,6 +132,7 @@
     <module>nuxeo-theme-compat</module>
     <module>nuxeo-datadog-reporter</module>
     <module>nuxeo-review-workflows-dashboards</module>
+    <module>nuxeo-shibboleth-invitation</module>
   </modules>
 
   <dependencyManagement>
