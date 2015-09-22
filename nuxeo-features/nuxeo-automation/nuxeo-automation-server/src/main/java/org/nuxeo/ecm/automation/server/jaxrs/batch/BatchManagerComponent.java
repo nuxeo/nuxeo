@@ -53,6 +53,8 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     protected static final Log log = LogFactory.getLog(BatchManagerComponent.class);
 
+    protected static final String TRANSIENT_STORE_NAME = "BatchManagerCache";
+
     static {
         ComplexTypeJSONDecoder.registerBlobDecoder(new JSONBatchBlobDecoder());
     }
@@ -60,7 +62,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     @Override
     public TransientStore getTransientStore() {
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
-        return tss.getStore(null);
+        return tss.getStore(TRANSIENT_STORE_NAME);
     }
 
     @Override
