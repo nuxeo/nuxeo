@@ -16,10 +16,10 @@
   font-size: 11px;
   font-weight: bold;
   height: 30px;
-  letter-spacing: 0.05rem;
+  letter-spacing: .05rem;
   line-height: 30px;
-  padding: 0 1.1em;
   margin: 0 .5rem .5rem 0;
+  padding: 0 1.1em;
   text-align: center;
   text-decoration: none;
   transition: all 300ms ease 0s;
@@ -36,7 +36,7 @@
 .nx-page input[type="button"]:hover {
   background: none $shade-light-0;
   border-color: $shade-strong-20;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .2);
   transition: all 150ms ease-in-out 0s;
 }
 
@@ -96,12 +96,12 @@
 
 .nx-page .dropdown,
 .nx-page .dropdown:hover {
-  background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center;
+  background: url('${basePath}/icons/dropdown.png') no-repeat scroll right center;
   background-color: $shade-light-0;
-  text-transform: none;
+  letter-spacing: .05px;
   line-height: inherit;
-  letter-spacing: 0.05px;
   padding: .4em 1.5em .43em .8em;
+  text-transform: none;
 }
 
 // =Action Bar
@@ -150,7 +150,7 @@
 
 .nx-page.action_bar a img {
   float: left;
-  margin: -0.2em .3em -0.3em -0.4em;
+  margin: -.2em .3em -.3em -.4em;
 }
 
 .nx-page .action_bar input[type="text"] {
@@ -181,8 +181,8 @@
 }
 
 .contentViewUpperAction img {
-  max-width: 16px;
   max-height: 16px;
+  max-width: 16px;
 }
 
 .contentViewUpperAction {
@@ -210,8 +210,8 @@
 .contentViewUpperAction .langSelect {
   font-size: .8em;
   margin: 0;
-  padding: 0;
   min-width: unset;
+  padding: 0;
 }
 
 .contentViewUpperAction .contentViewPageSelector {
@@ -235,7 +235,7 @@
   margin: 0 0 0 .4em;
   position: relative;
   text-decoration: none;
-  z-index:1040;
+  z-index: 1040;
 }
 
 .actionList li a {
@@ -244,11 +244,11 @@
 }
 
 .actionList .actionSubList {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border: 1px solid;
   border-color: $shade-medium-10;
   border-radius: 1px;
-  display:none;
+  display: none;
   list-style: none;
   padding: 0;
   position: absolute;
@@ -256,17 +256,6 @@
   top: 28px;
   width: 250px;
   z-index: 1001;
-}
-
-.actionList .actionSubList li {
-  background: none;
-  border: 0;
-  float: none;
-  height: auto;
-  margin: 0;
-  padding: 0;
-  text-align: left;
-  max-width: 300px;
 }
 
 .actionList .actionSubList li a {
@@ -291,7 +280,7 @@
 }
 
 .actionSubList .smallIcon {
-  margin: 0 .8em -0.2em 0;
+  margin: 0 .8em -.2em 0;
 }
 
 .horizontalAction ~ .actionList li {
@@ -346,7 +335,7 @@
   margin: 0 0 0 .4em;
   position: relative;
   text-decoration: none;
-  z-index:1040;
+  z-index: 1040;
 }
 
 .globalActionBar .actionList li a {
@@ -355,12 +344,12 @@
 }
 
 .globalActionBar .actionList .actionSubList {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border: 1px solid;
   border-color: $shade-medium-10;
   border-radius: 1px;
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-  display:none;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, .2);
+  display: none;
   list-style: none;
   margin-top: .5em;
   padding: 0;
@@ -371,15 +360,16 @@
   z-index: 1001;
 }
 
+.actionList .actionSubList li,
 .globalActionBar .actionList .actionSubList li {
   background: none;
   border: 0;
   float: none;
   height: auto;
   margin: 0;
+  max-width: 300px;
   padding: 0;
   text-align: left;
-  max-width: 300px;
 }
 
 .globalActionBar .actionList .actionSubList li a {
@@ -400,7 +390,7 @@
 }
 
 .globalActionBar .actionSubList .smallIcon {
-  margin: 0 .8em -0.2em 0;
+  margin: 0 .8em -.2em 0;
 }
 
 .separator {
@@ -426,12 +416,12 @@
 }
 
 .contextActions div img {
-  padding: -0.3em 0 0;
+  padding: -.3em 0 0;
 }
 
 // Actions in left column
 .column .action_bar {
-  float:none;
+  float: none;
   margin: 0 0 1.5em;
 }
 
@@ -447,7 +437,7 @@
   border: 0;
   border-radius: 2px;
   box-shadow: none;
-  color: #fff;
+  color: $shade-light-0;
   cursor: pointer;
   height: auto;
   margin: .5em 0 0;
@@ -459,7 +449,7 @@
   background: url('${basePath}/icons/import.png') no-repeat scroll 29% center / 25px 25px;
   background-color: $button-import;
   border: 0;
-  box-shadow: 0 -30px 20px rgba(255, 255, 255, 0.2) inset;
+  box-shadow: 0 -30px 20px rgba(255, 255, 255, .2) inset;
 }
 
 // Link on forms
@@ -473,7 +463,7 @@
   color: $font-color;
   float: right;
   font-size: .8em;
-  margin: -0.2em 0 0 1em;
+  margin: -.2em 0 0 1em;
 }
 
 .foldableBox h3 a.action:hover,
@@ -483,32 +473,31 @@
 
 // =RightClick menu
 #contextMenu {
-  position: absolute;
-  visibility: hidden;
-  top: 0;
   left: 0;
+  position: absolute;
+  top: 0;
+  visibility: hidden;
 }
 
 .ctxMenuStyle {
-  border: 1px solid;
-  border-color: $shade-medium-10;
-  min-width: 120px;
+  border: 1px solid $shade-medium-10;
   font-size: .7em;
+  min-width: 120px;
 }
 
 .ctxMenuItemStyle,
 .ctxMenuItemHoverStyle {
-  margin: 0;
-  display: block;
+  background-color: $shade-light-0;
   cursor: default;
-  padding: .4em .5em;
-  background-color:#fff;
+  display: block;
   font-weight: bold;
+  margin: 0;
+  padding: .4em .5em;
 }
 
 .ctxMenuItemHoverStyle {
-  cursor: pointer;
   background-color: $shade-light-20;
+  cursor: pointer;
 }
 
 .ctxMenuItemStyle a,
@@ -518,8 +507,8 @@
 }
 
 .ctxMenuImg {
-  vertical-align: middle;
   padding: 0 .4em .2em 0;
+  vertical-align: middle;
 }
 
 // =Labels, tags, users
@@ -531,7 +520,7 @@
   font-size: 13px !important;
   line-height: inherit;
   margin: 0 .3em .5em 0;
-  padding: 0.1em 0.8em 0.2em;
+  padding: .1em .8em .2em;
   text-decoration: none;
   transition: none;
 }
@@ -547,7 +536,7 @@ a.tag,
 .tagLink img {
   display: inline;
   height: 12px;
-  margin: 0 0 -0.1em;
+  margin: 0 0 -.1em;
   opacity: .7;
   width: 12px;
 }
