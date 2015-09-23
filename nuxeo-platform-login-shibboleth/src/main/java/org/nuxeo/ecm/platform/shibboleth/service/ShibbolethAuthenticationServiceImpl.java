@@ -35,8 +35,6 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
 
     public static final String CONFIG_EP = "config";
 
-    public static final String HEADER_MAIL = "mail";
-
     protected ShibbolethAuthenticationConfig config;
 
     @Override
@@ -118,8 +116,6 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
         // Force userIdField to shibb userId value in case of the IdP do
         // not use the same mapping as the default's one.
         fieldMap.put(userIdField, getUserID(httpRequest));
-        // Retrieve the mail if exists
-        fieldMap.put(HEADER_MAIL, httpRequest.getHeader(HEADER_MAIL));
         return fieldMap;
     }
 
