@@ -2,17 +2,15 @@
 <!-- Nuxeo Enterprise Platform -->
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
-<%@ page import="org.nuxeo.runtime.api.Framework"%>
-<%@ page import="org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper"%>
+<%@ page import="java.util.List"%>
+<%@ page import="org.joda.time.DateTime"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
-<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig"%>
-<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLink"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter"%>
-<%@ page import="java.lang.Boolean"%>
-<%@ page import="java.util.List"%>
-<%@ page import="java.util.Locale"%>
-<%@ page import="org.joda.time.DateTime"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLink"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig"%>
+<%@ page import="org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper"%>
+<%@ page import="org.nuxeo.runtime.api.Framework"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -56,9 +54,10 @@ boolean useExternalProviders = providers!=null && providers.size()>0;
 boolean showNews = screenConfig.getDisplayNews();
 String iframeUrl = screenConfig.getNewsIframeUrl();
 
-String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + context + "/img/login_bg.jpg') no-repeat center center fixed #333");
-String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "");
-String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0 #fff");
+String backgroundPath = context + "/img/login_bg.jpg";
+String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + backgroundPath + "') no-repeat center center fixed #333");
+String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "background-color: rgba(255,255,255,0.7);");
+String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
 boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
 
@@ -120,51 +119,43 @@ body {
 }
 
 .topBar img {
-  margin-left: 50px
+  margin-left: 20px;
 }
 /* Login block */
 .login {
   background: <%=loginBoxBackgroundStyle%>;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  border-radius: 3px;
   padding: 1.5em 1em 1em;
-  width: 300px }
-
-.login_label {
-  color: #454545;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 0 .5em 0 0
+  width: 300px;
 }
 
 .login_input {
   border: 1px solid #aaa;
   border-radius: 2px;
   box-shadow: 1px 1px 2px #e0e0e0 inset;
-  padding: .3em;
+  padding: .7em;
   margin: 0 0 .4em;
-  width: 160px
+  font-size:115%;
 }
 
 .login_button {
-  background-color: #e7e7e7;
-  border: 1px solid #c9C9c9;
-  border-radius: 3px;
-  box-shadow: 0 10px 8px #fff inset;
-  color: #000;
+  border:0;
+  border-bottom:4px solid transparent;
+  background-color: #ff452a ;
+  color: white;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 115%;
+  font-weight: normal;
   margin: 0 .9em .9em 0;
-  padding: .2em .6em;
+  padding: 0.7em 1.2em;
   text-decoration: none;
-  text-shadow: 1px 1px 0 #fff
 }
 
 .login_button:hover {
-  border: 1px solid #92999e;
-  color: #000
+  border-bottom: 4px solid #b72020;
+}
+
+.login_input, .login_button {
+  width: 220px;
 }
 
 /* Other ids */
@@ -220,11 +211,14 @@ body {
 
 .feedbackMessage {
   border-bottom: 1px dotted #ccc;
-  color: #a0a0a0;
-  font-size: .7em;
-  margin-bottom: 1em;
-  padding: 0 0 .5em;
-  text-align: center }
+  color: #a0a0a0 ;
+  font-size: 100%;
+  margin: 0.5em 0;
+  padding: 0.5em 0;
+  width: 220px;
+  text-align: center;
+  border-top: 1px dotted #ccc;
+}
 
 .errorMessage {
   color: #f40000 }
@@ -273,7 +267,7 @@ body {
   height: 500px;
   width: 365px;
   overflow: auto;
-  background-color: #fff;
+  background-color: rgba(255,255,255,0.7);
   opacity: .8;
   filter: alpha(opacity = 80)
 }
@@ -319,7 +313,7 @@ body {
             <%} %>
             <table>
              <tr>
-               <td colspan="2">
+               <td>
                  <c:if test="${param.nxtimeout}">
                    <div class="feedbackMessage">
                      <fmt:message bundle="${messages}" key="label.login.timeout" />
@@ -347,28 +341,17 @@ body {
                  </c:if>
                </td>
              </tr>
-             <tr>
-                <td class="login_label">
-                  <label for="username">
-                    <fmt:message bundle="${messages}" key="label.login.username" />
-                  </label>
-                </td>
+              <tr>
                 <td>
-                  <input class="login_input" type="text" name="user_name" id="username">
+                  <input class="login_input" type="text" name="user_name" id="username" placeholder="<fmt:message bundle="${messages}" key="label.login.username" />"/>
                 </td>
               </tr>
               <tr>
-                <td class="login_label">
-                  <label for="password">
-                    <fmt:message bundle="${messages}" key="label.login.password" />
-                  </label>
-                </td>
                 <td>
-                  <input class="login_input" type="password" name="user_password" id="password">
+                  <input class="login_input" type="password" name="user_password" id="password" placeholder="<fmt:message bundle="${messages}" key="label.login.password" />">
                 </td>
               </tr>
               <tr>
-                <td></td>
                 <td align="left">
                   <% // label.login.logIn %>
                   <% if (selectedLanguage != null) { %>
