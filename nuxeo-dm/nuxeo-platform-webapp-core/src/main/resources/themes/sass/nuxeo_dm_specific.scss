@@ -19,13 +19,13 @@
   padding-right: 0;
 }
 
-.summary .gridBox.gridStyle4 {
+.summary .gridBox:nth-child(2) {
   background-color: #fafafa;
   padding: 2em 1em;
   position: relative;
 }
 
-.summary .gridBox.gridStyle4::before {
+.summary .gridBox:nth-child(2)::before {
   border-color: #f8f8f8 #fff;
   border-style: solid;
   border-width: 0 12px 12px 0;
