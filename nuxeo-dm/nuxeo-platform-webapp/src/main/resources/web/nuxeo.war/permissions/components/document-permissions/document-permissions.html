@@ -3,6 +3,7 @@
 <link rel="import" href="../../../bower_components/nuxeo-elements/nx-resource.html"></link>
 <link rel="import" href="../../../bower_components/nuxeo-elements/nx-doc-resource.html"></link>
 <link rel="import" href="../../../bower_components/nuxeo-elements/popup-confirm.html"></link>
+<link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html"></link>
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html"></link>
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html"></link>
@@ -69,6 +70,7 @@
                                             on-aceupdated="refresh"></popup-permission>
                                         <paper-icon-button icon="delete" on-click="localRightsDel" raised="true"></paper-icon-button>
                                         <popup-confirm id="confirmation">
+                                          <paper-dialog-scrollable>
                                             <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be deleted')]]</h2>
 
                                             <div class="acl-table">
@@ -85,6 +87,7 @@
                                                     <div><span>{{ace.creator}}</span></div>
                                                 </div>
                                             </div>
+                                          </paper-dialog-scrollable>
                                         </popup-confirm>
                                     </template>
                                 </div>
