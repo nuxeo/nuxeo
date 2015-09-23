@@ -42,14 +42,16 @@ public interface BatchManager {
     TransientStore getTransientStore();
 
     /**
-     * Adds an inputStream as a blob in a batch. Will create a new {@link Batch} if needed.
+     * Adds an inputStream as a blob to a batch. Will create a new {@link Batch} if needed.
      * <p>
      * Streams are persisted as temporary files.
      */
     void addStream(String batchId, String idx, InputStream is, String name, String mime) throws IOException;
 
     /**
-     * Adds an inputStream as a chunk in a batch. Will create a new {@link Batch} if needed.
+     * Adds an inputStream as a chunk to a batch. Will create a new {@link Batch} if needed.
+     * <p>
+     * Streams are persisted as temporary files.
      *
      * @since 7.4
      */
