@@ -50,16 +50,16 @@ public class ElasticSearchLocalConfig implements Serializable {
     @XNode("@httpEnabled")
     protected boolean httpEnabled = false;
 
+    public String getClusterName() {
+        return clusterName;
+    }
+
     public String getDataPath() {
         if (dataPath == null) {
             File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch");
             dataPath = dir.getPath();
         }
         return dataPath;
-    }
-
-    public void setDataPath(String dataPath) {
-        this.dataPath = dataPath;
     }
 
     public String getIndexStorageType() {
@@ -73,40 +73,40 @@ public class ElasticSearchLocalConfig implements Serializable {
         return indexStoreType;
     }
 
-    public void setIndexStorageType(String indexStorageType) {
-        this.indexStoreType = indexStorageType;
+    public String getNodeName() {
+        return nodeName;
     }
 
     public boolean httpEnabled() {
         return httpEnabled;
     }
 
-    public void setHttpEnabled(boolean httpEnabled) {
-        this.httpEnabled = httpEnabled;
-    }
-
-    public String getClusterName() {
-        return clusterName;
+    public boolean isEnabled() {
+        return isEnabled;
     }
 
     public void setClusterName(String clusterName) {
         this.clusterName = clusterName;
     }
 
-    public String getNodeName() {
-        return nodeName;
-    }
-
-    public void setNodeName(String nodeName) {
-        this.nodeName = nodeName;
-    }
-
-    public boolean isEnabled() {
-        return isEnabled;
+    public void setDataPath(String dataPath) {
+        this.dataPath = dataPath;
     }
 
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+    public void setHttpEnabled(boolean httpEnabled) {
+        this.httpEnabled = httpEnabled;
+    }
+
+    public void setIndexStorageType(String indexStorageType) {
+        this.indexStoreType = indexStorageType;
+    }
+
+    public void setNodeName(String nodeName) {
+        this.nodeName = nodeName;
     }
 
     @Override
