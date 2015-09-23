@@ -68,6 +68,8 @@ elasticsearch.indexNumberOfShards=5
 elasticsearch.nodeName=nuxeoNode
 # Does the local node accept HTTP request on port 9200
 elasticsearch.httpEnabled=false
+# Network binding. Policy is to accept request from local machine only.
+elasticsearch.networkHost=127.0.0.1
 # Load document model from Elasticsearch result (experimental)
 # if false load from document from VCS
 elasticsearch.fetchDocFromEs=false

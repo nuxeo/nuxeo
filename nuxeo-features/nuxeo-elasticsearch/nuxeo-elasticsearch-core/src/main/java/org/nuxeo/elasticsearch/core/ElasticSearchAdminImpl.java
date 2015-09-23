@@ -142,10 +142,11 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                     + " purpose. You need to create a dedicated Elasticsearch" + " cluster for production.");
         }
         Builder sBuilder = ImmutableSettings.settingsBuilder();
-        sBuilder.put("http.enabled", conf.httpEnabled()).put("path.data", conf.getDataPath()).put(
-                "index.number_of_shards", 1).put("index.number_of_replicas", 0).put("cluster.name",
-                conf.getClusterName()).put("node.name", conf.getNodeName()).put("http.netty.worker_count", 4).put(
-                "http.cors.enabled", true).put("cluster.routing.allocation.disk.threshold_enabled", false);
+        sBuilder.put("http.enabled", conf.httpEnabled()).put("network.host", conf.getNetworkHost()).put("path.data",
+                conf.getDataPath()).put("index.number_of_shards", 1).put("index.number_of_replicas", 0).put(
+                        "cluster.name", conf.getClusterName()).put("node.name", conf.getNodeName()).put(
+                                "http.netty.worker_count", 4).put("http.cors.enabled", true).put(
+                                        "cluster.routing.allocation.disk.threshold_enabled", false);
         if (conf.getIndexStorageType() != null) {
             sBuilder.put("index.store.type", conf.getIndexStorageType());
             if (conf.getIndexStorageType().equals("memory")) {

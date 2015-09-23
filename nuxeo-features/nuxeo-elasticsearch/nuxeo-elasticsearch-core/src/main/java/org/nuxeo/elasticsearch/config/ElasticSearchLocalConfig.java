@@ -50,6 +50,9 @@ public class ElasticSearchLocalConfig implements Serializable {
     @XNode("@httpEnabled")
     protected boolean httpEnabled = false;
 
+    @XNode("@networkHost")
+    protected String networkHost = "127.0.0.1";
+
     public String getClusterName() {
         return clusterName;
     }
@@ -71,6 +74,13 @@ public class ElasticSearchLocalConfig implements Serializable {
             }
         }
         return indexStoreType;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public String getNetworkHost() {
+        return networkHost;
     }
 
     public String getNodeName() {
@@ -103,6 +113,13 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     public void setIndexStorageType(String indexStorageType) {
         this.indexStoreType = indexStorageType;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setNetworkHost(String networkHost) {
+        this.networkHost = networkHost;
     }
 
     public void setNodeName(String nodeName) {
