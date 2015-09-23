@@ -199,15 +199,26 @@
         },
 
         computeParams: function(ace) {
+            var params = {
+                username: null,
+                permission: 'Read',
+                begin: '',
+                end: '',
+                notify: true,
+                disableTimeFrame: true,
+                selectedTimeFrame: 'permanent',
+                comment: ''
+            };
+
             if (ace !== null) {
                 this.$.allowedRights.value = ace.permission;
                 var dateBased = false;
                 if (ace.begin !== null) {
-                    ace.begin = ace.begin.substring(0, ace.begin.indexOf('T'));
+                    params.begin = moment(new Date(ace.begin)).format('YYYY-MM-DD');
                     dateBased = true;
                 }
                 if (ace.end !== null) {
-                    ace.end = ace.end.substring(0, ace.end.indexOf('T'));
+                    params.end = moment(new Date(ace.end)).format('YYYY-MM-DD');
                     dateBased = true;
                 }
 
@@ -218,20 +229,8 @@
                         jQuery(ele).removeClass('disabled');
                     });
                 }
-
-                return ace;
-            } else {
-                return {
-                    username: null,
-                    permission: 'Read',
-                    begin: '',
-                    end: '',
-                    notify: true,
-                    disableTimeFrame: true,
-                    selectedTimeFrame: 'permanent',
-                    comment: ''
-                };
             }
+            return params;
         },
 
         isUpdatingACE: function(ace) {
