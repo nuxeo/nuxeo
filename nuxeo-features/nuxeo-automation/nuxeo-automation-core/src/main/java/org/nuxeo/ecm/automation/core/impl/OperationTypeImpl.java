@@ -87,6 +87,15 @@ public class OperationTypeImpl implements OperationType {
      */
     protected List<Field> injectableFields;
 
+    /**
+     * The input type of a chain/operation. If set, the following input types {"document", "documents", "blob", "blobs"}
+     * for all 'run method(s)' will handled. Other values will be adapted as java.lang.Object. If not set, Automation
+     * will set the input type(s) as the 'run methods(s)' parameter types (by introspection).
+     *
+     * @since 7.4
+     */
+    protected String inputType;
+
     protected String contributingComponent;
 
     protected List<WidgetDefinition> widgetDefinitionList;
@@ -167,6 +176,11 @@ public class OperationTypeImpl implements OperationType {
     @Override
     public Class<?> getType() {
         return type;
+    }
+
+    @Override
+    public String getInputType() {
+        return inputType;
     }
 
     protected void initMethods() {

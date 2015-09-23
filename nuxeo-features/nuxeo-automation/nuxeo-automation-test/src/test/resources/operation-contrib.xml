@@ -30,4 +30,39 @@
 
     </chain>
   </extension>
+
+  <extension
+          target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent"
+          point="operation">
+
+    <scriptedOperation id="javascript.RemoteScriptWithDoc">
+      <inputType>document</inputType>
+      <outputType>document</outputType>
+      <category>Scripting</category>
+      <param name="lang" type="string"/>
+      <script>
+        function run(input, params) {
+
+          print(input["dc:title"]);
+
+          return input;
+        }
+      </script>
+    </scriptedOperation>
+
+    <scriptedOperation id="javascript.RemoteScriptWithDocs">
+      <inputType>documents</inputType>
+      <outputType>documents</outputType>
+      <category>Scripting</category>
+      <param name="lang" type="string"/>
+      <script>
+        function run(input, params) {
+
+          print(input[0]["dc:title"]);
+
+          return input;
+        }
+      </script>
+    </scriptedOperation>
+  </extension>
 </component>

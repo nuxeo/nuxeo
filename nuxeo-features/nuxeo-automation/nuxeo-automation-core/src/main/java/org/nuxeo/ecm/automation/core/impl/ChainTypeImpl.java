@@ -103,6 +103,15 @@ public class ChainTypeImpl implements OperationType {
      */
     protected InvokableMethod method;
 
+    /**
+     * The input type of a chain/operation. If set, the following input types {"document", "documents", "blob", "blobs"}
+     * for all 'run method(s)' will handled. Other values will be adapted as java.lang.Object. If not set, Automation
+     * will set the input type(s) as the 'run methods(s)' parameter types (by introspection).
+     *
+     * @since 7.4
+     */
+    protected String inputType;
+
     public ChainTypeImpl(AutomationService service, OperationChain chain) {
         this.service = service;
         operations = chain.getOperations().toArray(new OperationParameters[chain.getOperations().size()]);
@@ -158,6 +167,11 @@ public class ChainTypeImpl implements OperationType {
     @Override
     public Class<?> getType() {
         return CompiledChainImpl.class;
+    }
+
+    @Override
+    public String getInputType() {
+        return inputType;
     }
 
     @Override

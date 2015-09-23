@@ -22,6 +22,10 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -82,7 +86,28 @@ public class InvokableMethod implements Comparable<InvokableMethod> {
         if (priority > 0) {
             priority += USER_PRIORITY;
         }
-        consume = p.length == 0 ? Void.TYPE : p[0];
+        String inputType = this.op.getInputType();
+        if (inputType != null) {
+            switch (inputType) {
+            case "document":
+                consume = DocumentModel.class;
+                break;
+            case "documents":
+                consume = DocumentModelList.class;
+                break;
+            case "blob":
+                consume = Blob.class;
+                break;
+            case "blobs":
+                consume = Blobs.class;
+                break;
+            default:
+                consume = Object.class;
+                break;
+            }
+        } else {
+            consume = p.length == 0 ? Void.TYPE : p[0];
+        }
     }
 
     public boolean isIterable() {

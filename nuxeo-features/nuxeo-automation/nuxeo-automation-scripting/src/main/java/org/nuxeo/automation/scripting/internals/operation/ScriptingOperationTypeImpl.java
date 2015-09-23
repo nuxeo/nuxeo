@@ -48,13 +48,16 @@ public class ScriptingOperationTypeImpl extends OperationTypeImpl {
 
     protected final ScriptingOperationDescriptor desc;
 
+    protected final InvokableMethod[] methods;
+
     public ScriptingOperationTypeImpl(AutomationService service,
             ScriptingOperationDescriptor desc) {
         this.service = service;
         this.desc = desc;
+        this.inputType = desc.getInputType();
+        this.methods = new InvokableMethod[] { runMethod() };
     }
 
-    protected InvokableMethod[] methods = new InvokableMethod[] { runMethod() };
 
     @Override
     public String getContributingComponent() {

@@ -34,6 +34,15 @@ public interface OperationType {
 
     Class<?> getType();
 
+    /**
+     * The input type of a chain/operation. If set, the following input types {"document", "documents", "blob", "blobs"}
+     * for all 'run method(s)' will handled. Other values will be adapted as java.lang.Object. If not set, Automation
+     * will set the input type(s) as the 'run methods(s)' parameter types (by introspection).
+     *
+     * @since 7.4
+     */
+    String getInputType();
+
     Object newInstance(OperationContext ctx, Map<String, Object> args) throws OperationException;
 
     /**
