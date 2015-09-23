@@ -107,6 +107,11 @@
       <searchLayout name="permissions_search_filter" filterDisplayType="default" filterUnfolded="true" />
       <showFilterForm>true</showFilterForm>
 
+      <waitForExecution>true</waitForExecution>
+      <waitForExecutionSentence>
+        label.search.waitForExecution
+      </waitForExecutionSentence>
+
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
       <refresh>
