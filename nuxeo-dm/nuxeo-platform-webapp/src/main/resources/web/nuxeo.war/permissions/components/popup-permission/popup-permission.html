@@ -185,10 +185,9 @@
         },
 
         toggleTimeFrame: function(event) {
-            var checked = event.element().checked;
             var name = event.element().name;
             this.set('selectedTimeFrame', name);
-            var disabled = (checked && name === 'datebased') ? false : true;
+            var disabled = name === 'datebased' ? false : true;
             this.set('disableTimeFrame', disabled);
             jQuery(this).find('.timeFrameLabel').each(function(i, ele) {
                 if (disabled) {
