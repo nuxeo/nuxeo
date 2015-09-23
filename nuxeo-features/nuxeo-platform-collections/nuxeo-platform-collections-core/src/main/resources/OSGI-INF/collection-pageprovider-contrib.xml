@@ -19,8 +19,8 @@
 
     <coreQueryPageProvider name="default_collection_candidate">
       <property name="maxResults">PAGE_SIZE</property>
-      <pattern>
-        SELECT * FROM Document where dc:title ILIKE ? AND ecm:isProxy = 0
+      <pattern quoteParameters="false" escapeParameters="true">
+        SELECT * FROM Document where dc:title ILIKE '?%' AND ecm:isProxy = 0
         AND ecm:mixinType != 'SystemDocument' AND ecm:mixinType !=
         'NotCollectionMember' AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
