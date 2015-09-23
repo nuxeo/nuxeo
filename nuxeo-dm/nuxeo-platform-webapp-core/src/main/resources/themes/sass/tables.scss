@@ -50,11 +50,16 @@ table td {
   padding: .7em .4em .7em 0;
 }
 
+.dataTable tr,
+.dataTableLine tr {
+  transition: all .15s ease 0s;
+}
+
 .dataRowOdd:hover,
 .dataRowEven:hover,
 .dataTable tr:hover,
 .dataTableLine tr:hover {
-  background-color: $shade-light-20;
+  background-color: $shade-light-10;
 }
 
 .dataTable,

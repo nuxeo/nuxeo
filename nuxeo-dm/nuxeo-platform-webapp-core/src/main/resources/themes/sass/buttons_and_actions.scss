@@ -99,7 +99,7 @@
   background: url('${basePath}/icons/dropdown.png') no-repeat scroll right center;
   background-color: $shade-light-0;
   letter-spacing: .05px;
-  line-height: inherit;
+  line-height: 130%;
   padding: .4em 1.5em .43em .8em;
   text-transform: none;
 }
@@ -245,9 +245,8 @@
 
 .actionList .actionSubList {
   background-color: $shade-light-0;
-  border: 1px solid;
-  border-color: $shade-medium-10;
-  border-radius: 1px;
+  border-radius: 3px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
   display: none;
   list-style: none;
   padding: 0;
@@ -264,18 +263,20 @@
   border-radius: 0;
   box-shadow: none;
   display: block;
+  font-weight: normal;
   letter-spacing: inherit;
   line-height: initial;
   margin: 0;
-  padding: .7em 1em;
+  padding: .8em 1em;
   text-align: left;
   text-decoration: none;
   text-transform: none;
   white-space: normal;
+  transition: all .15s ease 0s;
 }
 
 .actionList .actionSubList li a:hover {
-  background-color: $shade-light-20;
+  background-color: $shade-light-10;
   box-shadow: none;
 }
 
@@ -345,10 +346,8 @@
 
 .globalActionBar .actionList .actionSubList {
   background-color: $shade-light-0;
-  border: 1px solid;
-  border-color: $shade-medium-10;
-  border-radius: 1px;
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, .2);
+  border-radius: 3px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
   display: none;
   list-style: none;
   margin-top: .5em;
@@ -377,13 +376,14 @@
   border: 0;
   display: block;
   margin: 0;
-  padding: .5em 1em;
+  padding: .8em 1em;
   text-decoration: none;
   white-space: normal;
+  transition: all .15s ease 0s;
 }
 
 .globalActionBar .actionList .actionSubList li a:hover {
-  background-color: $shade-light-20;
+  background-color: $shade-light-10;
   border: 0;
   border-radius: none;
   box-shadow: none;
@@ -473,6 +473,7 @@
 
 // =RightClick menu
 #contextMenu {
+  border-radius: 3px;
   left: 0;
   position: absolute;
   top: 0;
@@ -480,7 +481,7 @@
 }
 
 .ctxMenuStyle {
-  border: 1px solid $shade-medium-10;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
   font-size: .7em;
   min-width: 120px;
 }
@@ -493,10 +494,11 @@
   font-weight: bold;
   margin: 0;
   padding: .4em .5em;
+  transition: all .15s ease 0s;
 }
 
 .ctxMenuItemHoverStyle {
-  background-color: $shade-light-20;
+  background-color: $shade-light-10;
   cursor: pointer;
 }
 
