@@ -43,6 +43,10 @@ iron-overlay-backdrop {
   padding: 0 24px;
 }
 
+paper-dialog-scrollable .scrollable {
+  min-height: 25em;
+}
+
 .nx-elements paper-dialog span {
   margin: 0;
   padding: 0;
