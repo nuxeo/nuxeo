@@ -1737,6 +1737,9 @@
         <fields>
           <field>rs:ace_username</field>
         </fields>
+        <properties mode="edit">
+          <property name="required">true</property>
+        </properties>
       </widget>
       <widget name="path" type="select_path_tree">
         <labels>
