@@ -37,7 +37,9 @@ import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.automation.features.PlatformFunctions;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.event.Event;
@@ -69,13 +71,8 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
 
     @Override
     public void handleEvent(EventBundle events) {
-        if (events.containsEventName(PERMISSION_NOTIFICATION_EVENT)) {
-            for (Event event : events) {
-                String eventName = event.getName();
-                if (PERMISSION_NOTIFICATION_EVENT.equals(eventName)) {
-                    handleEvent(event);
-                }
-            }
+        for (Event event : events) {
+            handleEvent(event);
         }
     }
 
@@ -95,11 +92,22 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
 
         UserManager userManager = Framework.getService(UserManager.class);
         NuxeoPrincipal principal = userManager.getPrincipal(ace.getUsername());
-        if (principal == null) {
+        StringList to = null;
+        if (principal != null) {
+            to = new StringList(Collections.singletonList(principal.getEmail()));
+        } else {
+            NuxeoGroup group = userManager.getGroup(ace.getUsername());
+            if (group != null) {
+                PlatformFunctions platformFunctions = new PlatformFunctions();
+                to = platformFunctions.getEmailsFromGroup(group.getName());
+            }
+        }
+
+        if (to == null) {
+            // no recipient
             return;
         }
 
-        StringList to = new StringList(Collections.singletonList(principal.getEmail()));
         Expression from = Scripting.newExpression("Env[\"mail.from\"]");
         NotificationService notificationService = NotificationServiceHelper.getNotificationService();
         String subject = String.format(SUBJECT_FORMAT, notificationService.getEMailSubjectPrefix(), "New permission on",
@@ -121,7 +129,7 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
                 NuxeoPrincipal creator = userManager.getPrincipal(aceCreator);
                 if (creator != null) {
                     ctx.put("aceCreator",
-                            String.format("%s (%s)", Functions.principalFullName(principal), principal.getName()));
+                            String.format("%s (%s)", Functions.principalFullName(creator), creator.getName()));
                 }
             }
 

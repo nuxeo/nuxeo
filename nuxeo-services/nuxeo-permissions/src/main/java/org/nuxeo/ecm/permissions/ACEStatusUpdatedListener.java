@@ -59,13 +59,8 @@ public class ACEStatusUpdatedListener implements PostCommitFilteringEventListene
 
     @Override
     public void handleEvent(EventBundle events) {
-        if (events.containsEventName(ACE_STATUS_UPDATED)) {
-            for (Event event : events) {
-                String eventName = event.getName();
-                if (ACE_STATUS_UPDATED.equals(eventName)) {
-                    handleEvent(event);
-                }
-            }
+        for (Event event : events) {
+            handleEvent(event);
         }
     }
 
