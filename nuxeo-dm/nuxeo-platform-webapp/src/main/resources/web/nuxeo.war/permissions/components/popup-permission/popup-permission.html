@@ -9,6 +9,7 @@
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/paper-radio-group/paper-radio-group.html">
 <link rel="import" href="../../../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../../bower_components/iron-icons/editor-icons.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 <link rel="import" href="../../../bower_components/nuxeo-elements/nx-operation.html">
@@ -47,11 +48,13 @@
                 <!-- Right row -->
                 <div layout horizontal>
                     <div>Right</div>
-                    <select id="allowedRights" flex two value="{{params.permission::change}}">
-                        <template is="dom-repeat" items="{{userVisiblePermissions}}">
-                            <option value="{{item}}">{{item}}</option>
-                        </template>
-                    </select>
+                    <paper-dropdown-menu>
+                        <paper-menu class="dropdown-content" selected="{{params.permission}}" attr-for-selected="permission">
+                            <template is="dom-repeat" items="[[userVisiblePermissions]]" as="permission">
+                                <paper-item permission="[[permission]]">[[permission]]</paper-item>
+                            </template>
+                        </paper-menu>
+                    </paper-dropdown-menu>
                 </div>
                 <div>
                     <div>[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
@@ -153,7 +156,6 @@
                 this.params.end = null;
             }
 
-            this.params.permission = this.$.allowedRights.value;
             if (this.updatingACE) {
                 this.$.updateOp.execute();
             } else {
@@ -211,7 +213,10 @@
             };
 
             if (ace !== null) {
-                this.$.allowedRights.value = ace.permission;
+                params.id = ace.id;
+                params.permission = ace.permission;
+                params.notify = ace.notify;
+                params.comment = ace.comment;
                 var dateBased = false;
                 if (ace.begin !== null) {
                     params.begin = moment(new Date(ace.begin)).format('YYYY-MM-DD');
