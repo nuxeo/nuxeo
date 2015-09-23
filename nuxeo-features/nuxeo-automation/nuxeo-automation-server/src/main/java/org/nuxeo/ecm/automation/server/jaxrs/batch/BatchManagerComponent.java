@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,6 +56,8 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     protected static final String TRANSIENT_STORE_NAME = "BatchManagerCache";
 
+    protected final AtomicInteger uploadInProgress = new AtomicInteger(0);
+
     static {
         ComplexTypeJSONDecoder.registerBlobDecoder(new JSONBatchBlobDecoder());
     }
@@ -73,7 +76,6 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     @Override
     public String initBatch(String batchId, String contextName) {
         Batch batch = initBatchInternal(batchId, contextName);
-        getTransientStore().put(batch);
         return batch.getId();
     }
 
@@ -93,28 +95,53 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         }
 
         Batch newBatch = new Batch(batchId);
+        getTransientStore().put(newBatch);
         return newBatch;
     }
 
     @Override
     public void addStream(String batchId, String idx, InputStream is, String name, String mime) throws IOException {
-        Batch batch = (Batch) getTransientStore().get(batchId);
-        if (batch == null) {
-            batch = initBatchInternal(batchId, null);
+        uploadInProgress.incrementAndGet();
+        try {
+            Batch batch = (Batch) getTransientStore().get(batchId);
+            if (batch == null) {
+                batch = initBatchInternal(batchId, null);
+            }
+            String fileEntryId = batch.addFile(idx, is, name, mime);
+
+            // Need to synchronize manipulation of the batch TransientStore entry params
+            synchronized (this) {
+                batch = (Batch) getTransientStore().get(batchId);
+                batch.put(idx, fileEntryId);
+                getTransientStore().put(batch);
+            }
+            log.debug(String.format("Added file %s [%s] to batch %s", idx, name, batchId));
+        } finally {
+            uploadInProgress.decrementAndGet();
         }
-        batch.addStream(idx, is, name, mime);
-        getTransientStore().put(batch);
     }
 
     @Override
     public void addStream(String batchId, String idx, InputStream is, int chunkCount, int chunkIdx, String name,
             String mime, long fileSize) throws IOException {
-        Batch batch = (Batch) getTransientStore().get(batchId);
-        if (batch == null) {
-            batch = initBatchInternal(batchId, null);
+        uploadInProgress.incrementAndGet();
+        try {
+            Batch batch = (Batch) getTransientStore().get(batchId);
+            if (batch == null) {
+                batch = initBatchInternal(batchId, null);
+            }
+            String fileEntryId = batch.addChunk(idx, is, chunkCount, chunkIdx, name, mime, fileSize);
+
+            // Need to synchronize manipulation of the batch TransientStore entry params
+            synchronized (this) {
+                batch = (Batch) getTransientStore().get(batchId);
+                batch.put(idx, fileEntryId);
+                getTransientStore().put(batch);
+            }
+            log.debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIdx, idx, name, batchId));
+        } finally {
+            uploadInProgress.decrementAndGet();
         }
-        batch.addChunkStream(idx, is, chunkCount, chunkIdx, name, mime, fileSize);
-        getTransientStore().put(batch);
     }
 
     @Override
@@ -129,12 +156,24 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     @Override
     public List<Blob> getBlobs(String batchId, int timeoutS) {
+        if (uploadInProgress.get() > 0 && timeoutS > 0) {
+            for (int i = 0; i < timeoutS * 5; i++) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                if (uploadInProgress.get() == 0) {
+                    break;
+                }
+            }
+        }
         Batch batch = (Batch) getTransientStore().get(batchId);
         if (batch == null) {
             log.error("Unable to find batch with id " + batchId);
             return Collections.emptyList();
         }
-        return batch.getBlobs(timeoutS);
+        return batch.getBlobs();
     }
 
     @Override
@@ -144,12 +183,34 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     @Override
     public Blob getBlob(String batchId, String fileId, int timeoutS) {
-        Batch batch = (Batch) getTransientStore().get(batchId);
-        if (batch == null) {
+        Blob blob = getBatchBlob(batchId, fileId);
+        if (blob == null && timeoutS > 0 && uploadInProgress.get() > 0) {
+            for (int i = 0; i < timeoutS * 5; i++) {
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                blob = getBatchBlob(batchId, fileId);
+                if (blob != null) {
+                    break;
+                }
+            }
+        }
+        if (!hasBatch(batchId)) {
             log.error("Unable to find batch with id " + batchId);
             return null;
         }
-        return batch.getBlob(fileId, timeoutS);
+        return blob;
+    }
+
+    protected Blob getBatchBlob(String batchId, String fileId) {
+        Blob blob = null;
+        Batch batch = (Batch) getTransientStore().get(batchId);
+        if (batch != null) {
+            blob = batch.getBlob(fileId);
+        }
+        return blob;
     }
 
     @Override

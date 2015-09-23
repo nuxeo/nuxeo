@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,8 +48,6 @@ public class Batch extends AbstractStorageEntry {
 
     protected static final Log log = LogFactory.getLog(Batch.class);
 
-    protected final AtomicInteger uploadInProgress = new AtomicInteger(0);
-
     public Batch(String id) {
         super(id);
     }
@@ -60,32 +57,10 @@ public class Batch extends AbstractStorageEntry {
      */
     @Override
     public List<Blob> getBlobs() {
-        return getBlobs(0);
-
-    }
-
-    /**
-     * @since 5.7
-     */
-    public List<Blob> getBlobs(int timeoutS) {
         List<Blob> blobs = new ArrayList<Blob>();
         if (getParameters() == null) {
             return blobs;
         }
-
-        if (uploadInProgress.get() > 0 && timeoutS > 0) {
-            for (int i = 0; i < timeoutS * 5; i++) {
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                if (uploadInProgress.get() == 0) {
-                    break;
-                }
-            }
-        }
-
         List<String> sortedIdx = new ArrayList<String>(getParameters().keySet());
         Collections.sort(sortedIdx, new Comparator<String>() {
             @Override
@@ -104,29 +79,8 @@ public class Batch extends AbstractStorageEntry {
     }
 
     public Blob getBlob(String idx) {
-        return getBlob(idx, 0);
-    }
-
-    /**
-     * @since 5.7
-     */
-    public Blob getBlob(String idx, int timeoutS) {
         log.debug(String.format("Retrieving blob %s for batch %s", idx, getId()));
-        Blob blob = retrieveBlob(idx);
-        if (blob == null && timeoutS > 0 && uploadInProgress.get() > 0) {
-            for (int i = 0; i < timeoutS * 5; i++) {
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                blob = retrieveBlob(idx);
-                if (blob != null) {
-                    break;
-                }
-            }
-        }
-        return blob;
+        return retrieveBlob(idx);
     }
 
     protected Blob retrieveBlob(String idx) {
@@ -142,53 +96,42 @@ public class Batch extends AbstractStorageEntry {
         return blob;
     }
 
-    public void addStream(String idx, InputStream is, String name, String mime) throws IOException {
-        uploadInProgress.incrementAndGet();
-        try {
-            String mimeType = mime;
-            if (mimeType == null) {
-                mimeType = "application/octet-stream";
-            }
-            Blob blob = Blobs.createBlob(is, mime);
-            blob.setFilename(name);
-            addFile(idx, blob);
-        } finally {
-            uploadInProgress.decrementAndGet();
+    /**
+     * Adds a file with the given {@code idx} to the batch.
+     *
+     * @return The id of the new {@link BatchFileEntry}.
+     */
+    public String addFile(String idx, InputStream is, String name, String mime) throws IOException {
+        String mimeType = mime;
+        if (mimeType == null) {
+            mimeType = "application/octet-stream";
         }
-    }
+        Blob blob = Blobs.createBlob(is, mime);
+        blob.setFilename(name);
 
-    protected BatchFileEntry addFile(String idx, Blob blob) {
         String fileEntryId = getId() + "_" + idx;
         BatchFileEntry fileEntry = new BatchFileEntry(fileEntryId, blob);
 
         BatchManager bm = Framework.getService(BatchManager.class);
         bm.getTransientStore().put(fileEntry);
-        put(idx, fileEntryId);
-        log.debug(String.format("Added file %s [%s] to batch %s", idx, blob.getFilename(), getId()));
 
-        return fileEntry;
+        return fileEntryId;
     }
 
     /**
+     * Adds a chunk with the given {@code chunkIdx} to the batch file with the given {@code idx}.
+     *
+     * @return The id of the {@link BatchFileEntry}.
      * @since 7.4
      */
-    public void addChunkStream(String idx, InputStream is, int chunkCount, int chunkIdx, String name, String mime,
+    public String addChunk(String idx, InputStream is, int chunkCount, int chunkIdx, String name, String mime,
             long fileSize) throws IOException {
-        uploadInProgress.incrementAndGet();
-        try {
-            addChunk(idx, Blobs.createBlob(is), chunkCount, chunkIdx, name, mime, fileSize);
-        } finally {
-            uploadInProgress.decrementAndGet();
-        }
-    }
-
-    protected BatchFileEntry addChunk(String idx, Blob blob, int chunkCount, int chunkIdx, String name, String mime,
-            long fileSize) {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        Blob blob = Blobs.createBlob(is);
 
         BatchFileEntry fileEntry = null;
         String fileEntryId = (String) get(idx);
         if (fileEntryId != null) {
-            BatchManager bm = Framework.getService(BatchManager.class);
             fileEntry = (BatchFileEntry) bm.getTransientStore().get(fileEntryId);
         }
         if (fileEntry == null) {
@@ -196,15 +139,18 @@ public class Batch extends AbstractStorageEntry {
                 fileEntryId = getId() + "_" + idx;
             }
             fileEntry = new BatchFileEntry(fileEntryId, chunkCount, name, mime, fileSize);
-            put(idx, fileEntryId);
+            bm.getTransientStore().put(fileEntry);
         }
-        fileEntry.addChunk(chunkIdx, blob);
+        String chunkEntryId = fileEntry.addChunk(chunkIdx, blob);
 
-        BatchManager bm = Framework.getService(BatchManager.class);
-        bm.getTransientStore().put(fileEntry);
-        log.debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIdx, idx, name, getId()));
-
-        return fileEntry;
+        // Need to synchronize manipulation of the file TransientStore entry params
+        synchronized (this) {
+            fileEntry = (BatchFileEntry) bm.getTransientStore().get(fileEntryId);
+            fileEntry.getChunks().put(chunkIdx, chunkEntryId);
+            put(idx, fileEntryId);
+            bm.getTransientStore().put(fileEntry);
+        }
+        return fileEntryId;
     }
 
     /**
