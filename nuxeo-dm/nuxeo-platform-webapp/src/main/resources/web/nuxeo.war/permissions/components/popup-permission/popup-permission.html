@@ -47,8 +47,7 @@
                 </template>
                 <!-- Right row -->
                 <div layout horizontal>
-                    <div>Right</div>
-                    <paper-dropdown-menu>
+                    <paper-dropdown-menu label="[[i18n('label.permissions.right', 'Right')]]">
                         <paper-menu class="dropdown-content" selected="{{params.permission}}" attr-for-selected="permission">
                             <template is="dom-repeat" items="[[userVisiblePermissions]]" as="permission">
                                 <paper-item permission="[[permission]]">[[permission]]</paper-item>
