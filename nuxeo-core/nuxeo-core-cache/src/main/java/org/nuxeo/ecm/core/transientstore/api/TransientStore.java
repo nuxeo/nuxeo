@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.core.transientstore.api;
 
-import java.io.IOException;
-
 import org.nuxeo.common.annotation.Experimental;
 
 /**
