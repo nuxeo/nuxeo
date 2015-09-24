@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document repository="default" id="61ccf205-986a-4e9f-865c-54e88dc0d433">
+<document repository="default" id="660ef0eb-cfdc-4003-8a71-ab3dd8770896">
   <system>
     <type>TemplateSource</type>
-    <path>default-domain/workspaces/templatesamples/rawsamples/XL MetaData render</path>
+    <path>default-domain/templates/ProjectFrontPage</path>
     <lifecycle-state>project</lifecycle-state>
     <lifecycle-policy>default</lifecycle-policy>
     <facet>Downloadable</facet>
@@ -24,20 +24,20 @@
       <item><![CDATA[Administrator]]></item>
     </dc:contributors>
     <dc:nature />
-    <dc:created><![CDATA[2012-05-22T16:25:46.74Z]]></dc:created>
-    <dc:description><![CDATA[]]></dc:description>
+    <dc:created><![CDATA[2015-06-21T16:04:39.71Z]]></dc:created>
+    <dc:description><![CDATA[Used to generate a portfolio's front page.]]></dc:description>
     <dc:rights/>
     <dc:subjects/>
     <dc:publisher/>
     <dc:valid/>
     <dc:format/>
     <dc:issued/>
-    <dc:modified><![CDATA[2012-05-24T21:44:10.00Z]]></dc:modified>
+    <dc:modified><![CDATA[2015-06-21T16:30:55.00Z]]></dc:modified>
     <dc:language/>
     <dc:coverage/>
     <dc:expired/>
     <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
-    <dc:title><![CDATA[XL MetaData render]]></dc:title>
+    <dc:title><![CDATA[ProjectFrontPage]]></dc:title>
   </schema>
   <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
     <uid:uid/>
@@ -45,32 +45,33 @@
     <uid:major_version><![CDATA[0]]></uid:major_version>
   </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
-    <common:icon><![CDATA[/icons/xls.png]]></common:icon>
+    <common:icon><![CDATA[/icons/odt.png]]></common:icon>
     <common:icon-expanded/>
-    <common:size><![CDATA[9728]]></common:size>
+    <common:size><![CDATA[38735]]></common:size>
   </schema>
   <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file">
     <file:content>
       <encoding></encoding>
-      <mime-type>application/vnd.ms-excel</mime-type>
-      <filename>MetaData.xls</filename>
-      <data>MetaData.xls</data>
+      <mime-type>application/vnd.oasis.opendocument.text</mime-type>
+      <filename>ProjectFrontPage.odt</filename>
+      <data>bf065d4e.blob</data>
+      <digest>7e69d4f54e9b3784a1a51602fb4328a1</digest>
     </file:content>
-    <file:filename><![CDATA[MetaData.xls]]></file:filename>
+    <file:filename><![CDATA[ProjectFrontPage.odt]]></file:filename>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>
-      <item><![CDATA[none]]></item>
+      <item><![CDATA[nxtrPortfolio]]></item>
     </tmpl:forcedTypes>
-    <tmpl:templateData><![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"/>]]></tmpl:templateData>
+    <tmpl:templateData/>
     <tmpl:allowOverride><![CDATA[false]]></tmpl:allowOverride>
-    <tmpl:templateType><![CDATA[JXLSProcessor]]></tmpl:templateType>
+    <tmpl:templateType><![CDATA[XDocReportProcessor]]></tmpl:templateType>
     <tmpl:useAsMainContent><![CDATA[false]]></tmpl:useAsMainContent>
-    <tmpl:templateName>XL MetaData render</tmpl:templateName>
+    <tmpl:templateName><![CDATA[ProjectFrontPage]]></tmpl:templateName>
     <tmpl:applicableTypes>
-      <item><![CDATA[all]]></item>
+      <item><![CDATA[nxtrPortfolio]]></item>
     </tmpl:applicableTypes>
-    <tmpl:outputFormat/>
+    <tmpl:outputFormat><![CDATA[pdf]]></tmpl:outputFormat>
     <tmpl:targetRenditionName><![CDATA[none]]></tmpl:targetRenditionName>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">

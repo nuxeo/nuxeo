@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="studio.extensions.template-module-demo" version="1.0.0">
+<component name="studio.extensions.template-module-rawsamples" version="1.0.0">
   <require>org.nuxeo.runtime.started</require>
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="customer_reference" prefix="cr" src="data/schemas/customer_reference.xsd"/>
@@ -1611,7 +1611,7 @@
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <table>studio_vocabulary_Industry</table>
-      <dataFile>data/vocabularies/Industry.csv</dataFile>
+      <dataFile>data/vocabularies/nxtrIndustry.csv</dataFile>
     </directory>
   </extension>
   <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories">

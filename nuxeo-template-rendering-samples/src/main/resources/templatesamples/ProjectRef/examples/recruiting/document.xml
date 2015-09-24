@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="7f2c210d-43a3-4cb3-b561-e9f87d90c97a">
+  <system>
+    <type>nxtrProject</type>
+    <path>default-domain/workspaces/templatesamples/Recruiting the Best Cand</path>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
+    <facet>Versionable</facet>
+    <facet>Publishable</facet>
+    <facet>Commentable</facet>
+    <facet>TemplateBased</facet>
+    <facet>HasRelatedText</facet>
+    <facet>Downloadable</facet>
+    <access-control>
+      <acl name="inherited">
+        <entry principal="Administrator" permission="Everything" grant="true"/>
+        <entry principal="members" permission="Read" grant="true"/>
+      </acl>
+    </access-control>
+  </system>
+  <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
+    <uid:major_version><![CDATA[0]]></uid:major_version>
+    <uid:minor_version><![CDATA[0]]></uid:minor_version>
+  </schema>
+  <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file"></schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon><![CDATA[/img/project-16.png]]></common:icon>
+  </schema>
+  <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/" name="files">
+    <files:files/>
+  </schema>
+  <schema xmlns:nxtrproject="http://www.nuxeo.org/ecm/project/schemas/template-module-demo/nxtrproject" name="nxtrproject">
+    <nxtrproject:project_duration><![CDATA[3 weeks]]></nxtrproject:project_duration>
+    <nxtrproject:project_name><![CDATA[Ninja Profiler]]></nxtrproject:project_name>
+    <nxtrproject:customer_logo>
+      <encoding></encoding>
+      <mime-type>image/svg+xml</mime-type>
+      <filename>ninja_profiler.svg</filename>
+      <data>269dda04.blob</data>
+      <digest>e3e47a28040c4ef4a21456a69216bbf2</digest>
+    </nxtrproject:customer_logo>
+    <nxtrproject:customer_cost><![CDATA[55000.0]]></nxtrproject:customer_cost>
+    <nxtrproject:involved_people>
+      <item>
+        <number><![CDATA[3]]></number>
+        <role><![CDATA[Senior Developers]]></role>
+        <number_of_days><![CDATA[15]]></number_of_days>
+        <price_per_day><![CDATA[700.0]]></price_per_day>
+      </item>
+      <item>
+        <number><![CDATA[1]]></number>
+        <role><![CDATA[Project Manager]]></role>
+        <number_of_days><![CDATA[15]]></number_of_days>
+        <price_per_day><![CDATA[500.0]]></price_per_day>
+      </item>
+    </nxtrproject:involved_people>
+    <nxtrproject:abstract><![CDATA[Finding and recruiting highly specialized profiles is a difficult task. It is not so much about having candidates, but more about finding the perfect match. 
+We are a big company that needs to recruit thousands of jobs a year. Each job opening means we'll receive hundreds, sometimes thousands, of appliance requests. But the main matter is we need to get them sorted extremely fast. Best candidates never stay on the market for long.
+Ninja Profiler has been built with this specificity in mind. As soon as they apply, candidates are stored as highly detailed objects, containing all criterias we need to be aware of. Their resume and any other interesting element is attached as well, so that we have the information instantly, all in one place.
+We also are able to do powerful queries, and are even alerted when a top profile pops in. This drastically changed our recruitment campaigns: they are shorter, and more efficient.]]></nxtrproject:abstract>
+    <nxtrproject:industry><![CDATA[Bank]]></nxtrproject:industry>
+    <nxtrproject:date_of_delivery><![CDATA[2018-11-12T23:00:00.00Z]]></nxtrproject:date_of_delivery>
+    <nxtrproject:quote><![CDATA[Since this tool came in three months ago, no interesting candidate has been recruited by a competitor before we could arrange for a first meeting. Candidates are amazed to see how fast we get back to them.]]></nxtrproject:quote>
+  </schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:description/>
+    <dc:creator><![CDATA[Administrator]]></dc:creator>
+    <dc:modified><![CDATA[2015-07-23T08:50:54.13Z]]></dc:modified>
+    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
+    <dc:created><![CDATA[2015-07-17T15:20:52.13Z]]></dc:created>
+    <dc:title><![CDATA[Recruiting the Best Candidates]]></dc:title>
+    <dc:subjects/>
+    <dc:contributors>
+      <item><![CDATA[Administrator]]></item>
+    </dc:contributors>
+  </schema>
+  <schema xmlns:nxts="http://www.nuxeo.org/ecm/schemas/nxts/" name="templatesupport">
+    <nxts:bindings/>
+  </schema>
+  <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
+    <relatedtext:relatedtextresources/>
+  </schema>
+</document>

@@ -2,7 +2,7 @@
 <document repository="default" id="3a951bb3-8965-4667-a859-fae8e78cdc7d">
   <system>
     <type>Note</type>
-    <path>default-domain/workspaces/templateSamples/webnote</path>
+    <path>default-domain/workspaces/templatesamples/rawsamples/webnote</path>
     <lifecycle-state>project</lifecycle-state>
     <lifecycle-policy>default</lifecycle-policy>
     <facet>TemplateBased</facet>
