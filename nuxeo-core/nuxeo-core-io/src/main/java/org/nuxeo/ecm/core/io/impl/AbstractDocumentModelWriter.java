@@ -16,6 +16,9 @@ package org.nuxeo.ecm.core.io.impl;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +54,7 @@ import org.nuxeo.ecm.core.schema.types.JavaTypes;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -222,7 +226,27 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                         String username = el.attributeValue(ExportConstants.PRINCIPAL_ATTR);
                         String permission = el.attributeValue(ExportConstants.PERMISSION_ATTR);
                         String grant = el.attributeValue(ExportConstants.GRANT_ATTR);
-                        ACE ace = new ACE(username, permission, Boolean.parseBoolean(grant));
+                        String creator = el.attributeValue(ExportConstants.CREATOR_ATTR);
+                        String beginStr = el.attributeValue(ExportConstants.BEGIN_ATTR);
+                        Calendar begin = null;
+                        if (beginStr != null) {
+                            Date date = DateParser.parseW3CDateTime(beginStr);
+                            begin = new GregorianCalendar();
+                            begin.setTimeInMillis(date.getTime());
+                        }
+                        String endStr = el.attributeValue(ExportConstants.END_ATTR);
+                        Calendar end = null;
+                        if (endStr != null) {
+                            Date date = DateParser.parseW3CDateTime(endStr);
+                            end = new GregorianCalendar();
+                            end.setTimeInMillis(date.getTime());
+                        }
+                        ACE ace = ACE.builder(username, permission)
+                                     .isGranted(Boolean.parseBoolean(grant))
+                                     .creator(creator)
+                                     .begin(begin)
+                                     .end(end)
+                                     .build();
                         acl.add(ace);
                     }
                     acp.addACL(acl);

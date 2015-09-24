@@ -63,6 +63,12 @@ public final class ExportConstants {
 
     public static final String GRANT_ATTR = "grant";
 
+    public static final String CREATOR_ATTR = "creator";
+
+    public static final String BEGIN_ATTR = "begin";
+
+    public static final String END_ATTR = "end";
+
     public static final String BLOB_DATA = "data";
 
     public static final String EXTERNAL_BLOB_URI = "uri";

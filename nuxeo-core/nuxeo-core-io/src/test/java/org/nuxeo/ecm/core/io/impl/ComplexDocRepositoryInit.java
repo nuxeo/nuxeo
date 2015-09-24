@@ -19,6 +19,8 @@ package org.nuxeo.ecm.core.io.impl;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 
 public class ComplexDocRepositoryInit extends DefaultRepositoryInit {
@@ -86,7 +91,17 @@ public class ComplexDocRepositoryInit extends DefaultRepositoryInit {
 
         doc.setPropertyValue("cs:segmentVariable", (Serializable) segment);
 
-        return session.createDocument(doc);
+        doc = session.createDocument(doc);
+
+        // set ACP
+        ACP acp = doc.getACP();
+        acp.addACE(ACL.LOCAL_ACL, new ACE("leela", "Read"));
+        Calendar begin = new GregorianCalendar(2000, 10, 10);
+        Calendar end = new GregorianCalendar(2010, 10, 10);
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("fry", "Write").creator("leela").begin(begin).end(end).build());
+        doc.setACP(acp, true);
+
+        return doc;
     }
 
 }

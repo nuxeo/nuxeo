@@ -18,6 +18,8 @@ package org.nuxeo.ecm.core.io.impl;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +32,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
@@ -43,6 +48,10 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
@@ -61,7 +70,7 @@ public class TestImportExportWithComplexXSD {
     @Test
     public void checkComplexTypeExportImport() throws Exception {
         DocumentModel doc = session.getDocument(new PathRef("/testDoc"));
-        Assert.assertNotNull(doc);
+        assertNotNull(doc);
 
         verifyProperties(doc);
         File out = File.createTempFile("model-io", ".zip");
@@ -126,6 +135,29 @@ public class TestImportExportWithComplexXSD {
         Assert.assertTrue(roles.contains("Score"));
         Assert.assertTrue(roles.contains("ComparisonScore"));
         Assert.assertTrue(roles.contains("Decision"));
+
+        ACP acp = doc.getACP();
+        assertNotNull(acp);
+        ACL acl = acp.getACL(ACL.LOCAL_ACL);
+        assertEquals(2, acl.size());
+        ACE ace = acl.get(0);
+        assertEquals("leela", ace.getUsername());
+        assertEquals("Read", ace.getPermission());
+        assertNull(ace.getCreator());
+        assertNull(ace.getBegin());
+        assertNull(ace.getEnd());
+        ace = acl.get(1);
+        assertEquals("fry", ace.getUsername());
+        assertEquals("Write", ace.getPermission());
+        assertEquals("leela", ace.getCreator());
+        Calendar begin = ace.getBegin();
+        assertNotNull(begin);
+        Calendar expectedBegin = new GregorianCalendar(2000, 10, 10);
+        assertEquals(expectedBegin, begin);
+        Calendar end = ace.getEnd();
+        assertNotNull(end);
+        Calendar expectedEnd = new GregorianCalendar(2010, 10, 10);
+        assertEquals(expectedEnd, end);
     }
 
 }

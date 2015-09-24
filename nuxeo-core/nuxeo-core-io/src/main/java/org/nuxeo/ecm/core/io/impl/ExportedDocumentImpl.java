@@ -15,6 +15,7 @@
 package org.nuxeo.ecm.core.io.impl;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -349,6 +351,15 @@ public class ExportedDocumentImpl implements ExportedDocument {
                 aceElement.addAttribute(ExportConstants.PRINCIPAL_ATTR, ace.getUsername());
                 aceElement.addAttribute(ExportConstants.PERMISSION_ATTR, ace.getPermission());
                 aceElement.addAttribute(ExportConstants.GRANT_ATTR, String.valueOf(ace.isGranted()));
+                aceElement.addAttribute(ExportConstants.CREATOR_ATTR, ace.getCreator());
+                Calendar begin = ace.getBegin();
+                if (begin != null) {
+                    aceElement.addAttribute(ExportConstants.BEGIN_ATTR, DateParser.formatW3CDateTime((begin).getTime()));
+                }
+                Calendar end = ace.getEnd();
+                if (end != null) {
+                    aceElement.addAttribute(ExportConstants.END_ATTR, DateParser.formatW3CDateTime((end).getTime()));
+                }
             }
         }
     }
