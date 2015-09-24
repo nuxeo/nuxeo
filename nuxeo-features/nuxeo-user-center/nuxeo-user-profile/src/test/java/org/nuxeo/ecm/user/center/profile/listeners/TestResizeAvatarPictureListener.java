@@ -50,13 +50,10 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class)
-@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types",
-        "org.nuxeo.ecm.platform.userworkspace.api",
-        "org.nuxeo.ecm.platform.userworkspace.core",
-        "org.nuxeo.ecm.platform.picture.api",
-        "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.user.center.profile" })
+@Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
+        "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.picture.api",
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.user.center.profile" })
 public class TestResizeAvatarPictureListener {
 
     @Inject
