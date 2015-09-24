@@ -27,7 +27,7 @@
             <paper-icon-button raised="true" on-click="togglePopup" icon="editor:mode-edit"></paper-icon-button>
         </template>
 
-        <paper-dialog id="popupRight" modal>
+        <paper-dialog id="popupRight">
             <template is="dom-if" if="{{!updatingACE}}">
                 <h2>[[i18n('label.permissions.addPermission', 'Add a Permission')]]</h2>
             </template>
