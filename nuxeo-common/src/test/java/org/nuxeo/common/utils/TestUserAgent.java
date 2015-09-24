@@ -47,6 +47,8 @@ public class TestUserAgent {
 
     public static final String FF_30 = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:30.0) Gecko/20100101 Firefox/30.0";
 
+    public static final String MS_EDGE_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.<OS build number>";
+
     @Test
     public void testSupportedBrowsers() throws Exception {
 
@@ -88,6 +90,11 @@ public class TestUserAgent {
         assertTrue(UserAgentMatcher.isHistoryPushStateSupported(MSIE10_COMPAT));
         assertTrue(UserAgentMatcher.isHistoryPushStateSupported(MSIE11));
         assertTrue(UserAgentMatcher.isHistoryPushStateSupported(MSIE11_COMPAT));
+    }
+
+    @Test
+    public void testMSEdge() {
+        assertTrue(UserAgentMatcher.isMSEdge(MS_EDGE_UA));
     }
 
 }

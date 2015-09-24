@@ -21,6 +21,7 @@ package org.nuxeo.ecm.webapp.security;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -31,9 +32,12 @@ import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
@@ -42,6 +46,7 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
+import org.nuxeo.common.utils.UserAgentMatcher;
 import org.nuxeo.common.utils.i18n.Labeler;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -616,7 +621,8 @@ public class SecurityActionsBean extends InputController implements SecurityActi
             }
             acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
 
-            final boolean access = acp.getAccess(principals.toArray(new String[0]), getPermissionsToCheck()).toBoolean();
+            final boolean access = acp.getAccess(principals.toArray(new String[0]), getPermissionsToCheck())
+                                      .toBoolean();
             if (!access) {
                 rebuildSecurityData();
             }
@@ -658,5 +664,18 @@ public class SecurityActionsBean extends InputController implements SecurityActi
     @Override
     public void setSelectedEntries(List<String> selectedEntries) {
         this.selectedEntries = selectedEntries;
+    }
+
+    @Factory(value = "isMSIEorEdge", scope = ScopeType.SESSION)
+    public boolean isMSIEorEdge() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context != null) {
+            HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+            String ua = request.getHeader("User-Agent");
+            return UserAgentMatcher.isMSIE6or7(ua) || UserAgentMatcher.isMSIE10OrMore(ua)
+                    || UserAgentMatcher.isMSEdge(ua);
+        } else {
+            return false;
+        }
     }
 }

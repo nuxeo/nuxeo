@@ -116,6 +116,7 @@
     <action id="TAB_PERMISSIONS" link="/permissions/document_permissions.xhtml"
       order="50" label="action.view.permissions" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
+      <filter-id>disablePermissionsTab</filter-id>
       <properties>
         <property name="ajaxSupport">true</property>
       </properties>
@@ -896,6 +897,18 @@
       <rule grant="true">
         <permission>WriteSecurity</permission>
         <facet>Folderish</facet>
+        <condition>#{isMSIEorEdge}</condition>
+      </rule>
+      <rule grant="true">
+        <permission>WriteSecurity</permission>
+        <facet>Folderish</facet>
+        <condition>#{frameworkPropertyActions.getFrameworkProperty("org.nuxeo.ecm.tester.name") == 'Nuxeo-Selenium-Tester'}</condition>
+      </rule>
+    </filter>
+
+    <filter id="disablePermissionsTab">
+      <rule grant="false">
+        <condition>#{isMSIEorEdge}</condition>
       </rule>
     </filter>
 

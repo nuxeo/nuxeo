@@ -39,6 +39,8 @@ public class UserAgentMatcher {
 
     private static final Pattern UA_MSIE_FROM_10 = Pattern.compile("^Mozilla.*[Tt]rident/[6-9]\\..*");
 
+    private static final Pattern UA_MSEDGE = Pattern.compile("^Mozilla.*Edge/.*");
+
     private UserAgentMatcher() {
         // Helper class
     }
@@ -72,6 +74,13 @@ public class UserAgentMatcher {
      */
     public static boolean isMSIE10OrMore(String UA) {
         return UA_MSIE_FROM_10.matcher(UA).matches();
+    }
+
+    /**
+     * @since 7.4
+     */
+    public static boolean isMSEdge(String UA) {
+        return UA_MSEDGE.matcher(UA).matches();
     }
 
     public static boolean isHistoryPushStateSupported(String UA) {
