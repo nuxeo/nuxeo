@@ -16,17 +16,15 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.search.DefaultSearchSubPage;
-import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test main tabs management.
@@ -46,10 +44,6 @@ public class ITMainTabsTest extends AbstractTest {
         documentBasePage.goToSearchPage();
         assertFalse(documentBasePage.isMainTabSelected(documentBasePage.documentManagementLink));
         assertTrue(documentBasePage.isMainTabSelected(documentBasePage.searchPageLink));
-        // submit search
-        SearchPage searchPage = asPage(SearchPage.class);
-        DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
-        searchLayoutSubPage.filter();
         // click on first search result, at least user workspace should be there
         WebElement wsLink = Locator.findElement(By.cssSelector("span[class='documentTitle']"));
         wsLink.click();

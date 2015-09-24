@@ -122,12 +122,9 @@ public class ITSearchTabTest extends AbstractTest {
         DocumentBasePage documentBasePage = loginAsTestUser();
         SearchPage searchPage = documentBasePage.goToSearchPage();
         SearchResultsSubPage resultPanelSubPage = searchPage.getSearchResultsSubPage();
-        // launch search once
-        DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
-        searchLayoutSubPage.filter();
         final int nbCurrentDoc = resultPanelSubPage.getNumberOfDocumentInCurrentPage();
         assertTrue(nbCurrentDoc > 1);
-        searchLayoutSubPage = searchPage.getDefaultSearch();
+        DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
 
         // Test aggregates
         Map<String, Integer> coverageAgg = searchLayoutSubPage.getAvailableCoverageAggregate();
@@ -177,9 +174,6 @@ public class ITSearchTabTest extends AbstractTest {
         documentBasePage = login();
         searchPage = documentBasePage.goToSearchPage();
         searchLayoutSubPage = searchPage.getDefaultSearch();
-        // launch search once again
-        searchLayoutSubPage.filter();
-
         Map<String, Integer> authorAggs = searchLayoutSubPage.getAvailableAuthorAggregate();
         boolean testUserFound = false;
         for (Entry<String, Integer> e : authorAggs.entrySet()) {
