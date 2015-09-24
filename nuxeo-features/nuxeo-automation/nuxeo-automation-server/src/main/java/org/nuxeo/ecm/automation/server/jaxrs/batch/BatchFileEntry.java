@@ -158,6 +158,10 @@ public class BatchFileEntry extends AbstractStorageEntry {
         return getChunks().values();
     }
 
+    public boolean isChunksCompleted() {
+        return getChunks().size() == getChunkCount();
+    }
+
     public Blob getBlob() {
         if (isChunked()) {
             // First check if blob chunks have already been read and concatenated
@@ -238,7 +242,6 @@ public class BatchFileEntry extends AbstractStorageEntry {
 
         return chunkEntryId;
     }
-
 
     @Override
     public List<Blob> getBlobs() {

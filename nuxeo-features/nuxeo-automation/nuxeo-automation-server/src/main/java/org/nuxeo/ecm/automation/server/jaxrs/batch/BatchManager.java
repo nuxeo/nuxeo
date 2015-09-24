@@ -87,6 +87,16 @@ public interface BatchManager {
     Blob getBlob(String batchId, String fileId, int timeoutS);
 
     /**
+     * @since 7.4
+     */
+    List<BatchFileEntry> getFileEntries(String batchId);
+
+    /**
+     * @since 7.4
+     */
+    BatchFileEntry getFileEntry(String batchId, String fileId);
+
+    /**
      * Cleanup the temporary storage associated to the batch
      *
      * @param batchId

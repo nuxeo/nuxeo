@@ -214,6 +214,24 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     }
 
     @Override
+    public List<BatchFileEntry> getFileEntries(String batchId) {
+        Batch batch = (Batch) getTransientStore().get(batchId);
+        if (batch == null) {
+            return null;
+        }
+        return batch.getFileEntries();
+    }
+
+    @Override
+    public BatchFileEntry getFileEntry(String batchId, String fileId) {
+        Batch batch = (Batch) getTransientStore().get(batchId);
+        if (batch == null) {
+            return null;
+        }
+        return batch.getFileEntry(fileId);
+    }
+
+    @Override
     public void clean(String batchId) {
         Batch batch = (Batch) getTransientStore().get(batchId);
         if (batch != null) {

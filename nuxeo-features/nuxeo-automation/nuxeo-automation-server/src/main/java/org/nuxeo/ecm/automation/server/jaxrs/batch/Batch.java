@@ -58,18 +58,9 @@ public class Batch extends AbstractStorageEntry {
     @Override
     public List<Blob> getBlobs() {
         List<Blob> blobs = new ArrayList<Blob>();
-        if (getParameters() == null) {
-            return blobs;
-        }
-        List<String> sortedIdx = new ArrayList<String>(getParameters().keySet());
-        Collections.sort(sortedIdx, new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return Integer.valueOf(o1).compareTo(Integer.valueOf(o2));
-            }
-        });
-        log.debug(String.format("Retrieving blobs for batch %s: %s", getId(), sortedIdx));
-        for (String idx : sortedIdx) {
+        List<String> sortedFileIndexes = getOrderedFileIndexes();
+        log.debug(String.format("Retrieving blobs for batch %s: %s", getId(), sortedFileIndexes));
+        for (String idx : sortedFileIndexes) {
             Blob blob = retrieveBlob(idx);
             if (blob != null) {
                 blobs.add(blob);
@@ -83,17 +74,48 @@ public class Batch extends AbstractStorageEntry {
         return retrieveBlob(idx);
     }
 
+    protected List<String> getOrderedFileIndexes() {
+        List<String> sortedFileIndexes = new ArrayList<String>();
+        if (getParameters() != null) {
+            sortedFileIndexes = new ArrayList<String>(getParameters().keySet());
+            Collections.sort(sortedFileIndexes, new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    return Integer.valueOf(o1).compareTo(Integer.valueOf(o2));
+                }
+            });
+        }
+        return sortedFileIndexes;
+    }
+
     protected Blob retrieveBlob(String idx) {
         Blob blob = null;
-        String fileEntryId = (String) get(idx);
-        if (fileEntryId != null) {
-            BatchManager bm = Framework.getService(BatchManager.class);
-            BatchFileEntry fileEntry = (BatchFileEntry) bm.getTransientStore().get(fileEntryId);
-            if (fileEntry != null) {
-                blob = fileEntry.getBlob();
-            }
+        BatchFileEntry fileEntry = getFileEntry(idx);
+        if (fileEntry != null) {
+            blob = fileEntry.getBlob();
         }
         return blob;
+    }
+
+    public List<BatchFileEntry> getFileEntries() {
+        List<BatchFileEntry> fileEntries = new ArrayList<BatchFileEntry>();
+        List<String> sortedFileIndexes = getOrderedFileIndexes();
+        for (String idx : sortedFileIndexes) {
+            BatchFileEntry fileEntry = getFileEntry(idx);
+            if (fileEntry != null) {
+                fileEntries.add(fileEntry);
+            }
+        }
+        return fileEntries;
+    }
+
+    public BatchFileEntry getFileEntry(String idx) {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        String fileEntryId = (String) get(idx);
+        if (fileEntryId == null) {
+            return null;
+        }
+        return (BatchFileEntry) bm.getTransientStore().get(fileEntryId);
     }
 
     /**
