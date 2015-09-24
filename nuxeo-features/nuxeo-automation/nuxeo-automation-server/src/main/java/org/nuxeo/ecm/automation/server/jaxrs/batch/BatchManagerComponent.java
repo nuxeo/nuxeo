@@ -111,11 +111,11 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
             // Need to synchronize manipulation of the batch TransientStore entry params
             synchronized (this) {
-                batch = (Batch) getTransientStore().get(batchId);
+                batch = (Batch) getTransientStore().get(batch.getId());
                 batch.put(idx, fileEntryId);
                 getTransientStore().put(batch);
             }
-            log.debug(String.format("Added file %s [%s] to batch %s", idx, name, batchId));
+            log.debug(String.format("Added file %s [%s] to batch %s", idx, name, batch.getId()));
         } finally {
             uploadInProgress.decrementAndGet();
         }
@@ -134,11 +134,11 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
             // Need to synchronize manipulation of the batch TransientStore entry params
             synchronized (this) {
-                batch = (Batch) getTransientStore().get(batchId);
+                batch = (Batch) getTransientStore().get(batch.getId());
                 batch.put(idx, fileEntryId);
                 getTransientStore().put(batch);
             }
-            log.debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIdx, idx, name, batchId));
+            log.debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIdx, idx, name, batch.getId()));
         } finally {
             uploadInProgress.decrementAndGet();
         }
