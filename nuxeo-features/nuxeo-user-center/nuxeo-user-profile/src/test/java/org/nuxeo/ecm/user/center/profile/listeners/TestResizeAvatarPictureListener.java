@@ -57,8 +57,9 @@ import com.google.inject.Inject;
         "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.user.center.profile" })
+        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.user.center.profile", "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.webapp.core",
+        "org.nuxeo.ecm.platform.ui", "org.nuxeo.ecm.user.center", "org.nuxeo.admin.center" })
 public class TestResizeAvatarPictureListener {
 
     @Inject
