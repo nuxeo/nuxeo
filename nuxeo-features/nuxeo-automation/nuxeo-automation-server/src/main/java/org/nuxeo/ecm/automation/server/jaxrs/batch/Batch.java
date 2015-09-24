@@ -180,6 +180,7 @@ public class Batch extends AbstractStorageEntry {
      */
     public void clean() {
         // Remove batch and all related storage entries from transient store, GC will clean up the files
+        log.debug(String.format("Cleaning batch %s", getId()));
         BatchManager bm = Framework.getService(BatchManager.class);
         TransientStore ts = bm.getTransientStore();
         Map<String, Serializable> params = getParameters();
@@ -188,14 +189,16 @@ public class Batch extends AbstractStorageEntry {
                 String fileEntryId = (String) v;
                 // Check for chunk entries to remove
                 BatchFileEntry fileEntry = (BatchFileEntry) ts.get(fileEntryId);
-                if (fileEntry.isChunked()) {
-                    for (String chunkEntryId : fileEntry.getChunkEntryIds()) {
-                        // Remove chunk entry
-                        ts.remove(chunkEntryId);
+                if (fileEntry != null) {
+                    if (fileEntry.isChunked()) {
+                        for (String chunkEntryId : fileEntry.getChunkEntryIds()) {
+                            // Remove chunk entry
+                            ts.remove(chunkEntryId);
+                        }
                     }
+                    // Remove file entry
+                    ts.remove(fileEntryId);
                 }
-                // Remove file entry
-                ts.remove(fileEntryId);
             }
         }
         // Remove batch entry
