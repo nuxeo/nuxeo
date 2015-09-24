@@ -17,14 +17,18 @@
 package org.nuxeo.ecm.core.redis.contribs;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.work.NuxeoBlockingQueue;
 import org.nuxeo.ecm.core.work.WorkHolder;
 import org.nuxeo.ecm.core.work.api.Work;
+
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
  * Redis-based {@link BlockingQueue}.
@@ -36,6 +40,13 @@ import org.nuxeo.ecm.core.work.api.Work;
 public class RedisBlockingQueue extends NuxeoBlockingQueue {
 
     private static final Log log = LogFactory.getLog(RedisBlockingQueue.class);
+
+    // this is so that we don't spam the logs with too many errors
+    private static final long LOG_INTERVAL = 1000 * 10; // 10s
+
+    private static AtomicLong LAST_IO_EXCEPTION = new AtomicLong(0);
+
+    private static AtomicLong LAST_CONNECTION_EXCEPTION = new AtomicLong(0);
 
     protected final String queueId;
 
@@ -102,9 +113,37 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
             }
             return work == null ? null : new WorkHolder(work);
         } catch (IOException e) {
-            log.error("Failed to remove Work from queue: " + queueId, e);
-            throw new RuntimeException(e);
+            if (delayExpired(LAST_IO_EXCEPTION)) {
+                // log full stacktrace
+                log.error(e.getMessage(), e);
+            }
+            // for io errors make poll return no result
+            return null;
+        } catch (JedisConnectionException e) {
+            if (delayExpired(LAST_CONNECTION_EXCEPTION)) {
+                Throwable cause = e.getCause();
+                if (cause != null && cause.getMessage().contains(ConnectException.class.getName())) {
+                    log.error(e.getMessage() + ": " + cause.getMessage());
+                    log.debug(e.getMessage(), e);
+                } else {
+                    // log full stacktrace
+                    log.error(e.getMessage(), e);
+                }
+            }
+            // for connection errors make poll return no result
+            return null;
         }
+    }
+
+    protected static boolean delayExpired(AtomicLong atomic) {
+        long now = System.currentTimeMillis();
+        long last = atomic.get();
+        if (now > last + LOG_INTERVAL) {
+            if (atomic.compareAndSet(last, now)) {
+                return true;
+            } // else some other thread beat us to it
+        }
+        return false;
     }
 
 }
