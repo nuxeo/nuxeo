@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.io.marshallers.json.document;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -27,8 +29,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
 
 @LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class DocumentModelListJsonWriterTest extends

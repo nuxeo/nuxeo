@@ -30,7 +30,8 @@ public class MaxDepthReachedException extends Exception {
         super();
     }
 
-    public MaxDepthReachedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public MaxDepthReachedException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 

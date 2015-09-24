@@ -51,6 +51,7 @@ import org.nuxeo.runtime.api.Framework;
  *   }
  * }
  * </pre>
+ *
  * </p>
  *
  * @since 7.4
@@ -67,8 +68,7 @@ public class UserVisiblePermissionsJsonEnricher extends AbstractJsonEnricher<Doc
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
-        List<UserVisiblePermission> userVisiblePermissions = permissionProvider.getUserVisiblePermissionDescriptors(
-                document.getType());
+        List<UserVisiblePermission> userVisiblePermissions = permissionProvider.getUserVisiblePermissionDescriptors(document.getType());
 
         jg.writeArrayFieldStart(NAME);
         for (UserVisiblePermission permission : userVisiblePermissions) {

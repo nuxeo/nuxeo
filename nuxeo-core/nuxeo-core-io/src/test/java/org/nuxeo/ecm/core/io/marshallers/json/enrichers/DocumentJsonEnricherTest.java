@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.io.marshallers.json.enrichers;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -30,8 +32,6 @@ import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
 
 @LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class DocumentJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
@@ -57,7 +57,9 @@ public class DocumentJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
         params.put("param1", "value1");
         params.put("param2", "value2");
         RenderingContext ctx = CtxBuilder.enrichDoc("contextualParameters", "acls", "children", "breadcrumb",
-                "permissions").param("contextualParameters", params).get();
+                "permissions")
+                                         .param("contextualParameters", params)
+                                         .get();
         JsonAssert json = jsonAssert(root, ctx);
         json = json.has("contextParameters");
         json.properties(6);

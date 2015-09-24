@@ -61,7 +61,8 @@ public class TestReaderMarshalledType {
 
     @Test
     public void canGetStereotypedMarshaller() throws Exception {
-        Type listIntegerMap = TestReaderMarshalledType.class.getDeclaredField("listIntegerMapProperty").getGenericType();
+        Type listIntegerMap = TestReaderMarshalledType.class.getDeclaredField("listIntegerMapProperty")
+                                                            .getGenericType();
         Type map = TestReaderMarshalledType.class.getDeclaredField("mapProperty").getGenericType();
         MarshallerInspector inspector = new MarshallerInspector(ListIntegerMapReader.class);
         assertNotNull(inspector.getGenericType());

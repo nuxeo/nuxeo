@@ -41,8 +41,7 @@ public class DocumentsListReader extends DocumentModelReader {
         iterator = docsList.iterator();
     }
 
-    public static DocumentsListReader createDocumentsListReader(CoreSession session, Collection<DocumentRef> docRefsList)
-            {
+    public static DocumentsListReader createDocumentsListReader(CoreSession session, Collection<DocumentRef> docRefsList) {
 
         List<DocumentModel> list = new ArrayList<DocumentModel>();
 

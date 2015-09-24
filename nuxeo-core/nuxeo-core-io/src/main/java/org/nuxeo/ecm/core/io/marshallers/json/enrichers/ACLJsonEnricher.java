@@ -66,6 +66,7 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
  *   }
  * }
  * </pre>
+ *
  * </p>
  *
  * @since 7.2
@@ -97,8 +98,8 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
                 DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
                 jg.writeStringField("begin",
                         ace.getBegin() != null ? dateTimeFormatter.print(new DateTime(ace.getBegin())) : null);
-                jg.writeStringField("end",
-                        ace.getEnd() != null ? dateTimeFormatter.print(new DateTime(ace.getEnd())) : null);
+                jg.writeStringField("end", ace.getEnd() != null ? dateTimeFormatter.print(new DateTime(ace.getEnd()))
+                        : null);
                 jg.writeStringField("status", ace.getStatus().toString());
                 jg.writeEndObject();
             }

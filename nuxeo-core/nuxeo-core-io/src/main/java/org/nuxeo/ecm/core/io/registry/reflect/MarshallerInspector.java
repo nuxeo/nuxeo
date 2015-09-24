@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
@@ -44,8 +45,6 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl;
 import org.nuxeo.ecm.core.io.registry.context.ThreadSafeRenderingContext;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.inject.Inject;
 
 /**
  * Utility class used to instanciate marshallers. This class checks if a marshaller has annotation {@link Setup} and

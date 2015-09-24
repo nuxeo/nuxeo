@@ -283,7 +283,10 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         jsonRoot.hasNot("properties");
         jsonRoot.hasNot("contextParameters");
         // children: expect properties and enrichers loaded for root and children but not for grant children
-        RenderingContext ctxChildren = CtxBuilder.properties("*").enrichDoc("children").depth(DepthValues.children).get();
+        RenderingContext ctxChildren = CtxBuilder.properties("*")
+                                                 .enrichDoc("children")
+                                                 .depth(DepthValues.children)
+                                                 .get();
         JsonAssert jsonChildren = jsonAssert(root, ctxChildren);
         jsonChildren.has("properties");
         jsonChildren.has("contextParameters");

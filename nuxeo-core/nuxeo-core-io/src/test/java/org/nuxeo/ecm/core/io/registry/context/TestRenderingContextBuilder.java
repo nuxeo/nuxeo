@@ -55,7 +55,11 @@ public class TestRenderingContextBuilder {
 
     @Test
     public void simpleContext() throws Exception {
-        RenderingContext ctx = CtxBuilder.base("url").locale(Locale.FRANCE).param(PARAM, VALUE1).param(PARAM, VALUE2).get();
+        RenderingContext ctx = CtxBuilder.base("url")
+                                         .locale(Locale.FRANCE)
+                                         .param(PARAM, VALUE1)
+                                         .param(PARAM, VALUE2)
+                                         .get();
         assertEquals("url", ctx.getBaseUrl());
         assertEquals(Locale.FRANCE, ctx.getLocale());
         Map<String, List<Object>> allParameters = ctx.getAllParameters();
@@ -70,8 +74,10 @@ public class TestRenderingContextBuilder {
     @Test
     @SuppressWarnings("deprecation")
     public void testDocProperties() throws Exception {
-        RenderingContext ctx = CtxBuilder.properties("one,two, three").properties("four").param(
-                DOCUMENT_PROPERTIES_HEADER, " five , six").get();
+        RenderingContext ctx = CtxBuilder.properties("one,two, three")
+                                         .properties("four")
+                                         .param(DOCUMENT_PROPERTIES_HEADER, " five , six")
+                                         .get();
         Set<String> properties = ctx.getProperties();
         assertEquals(6, properties.size());
         assertTrue(properties.contains("one"));
@@ -85,8 +91,10 @@ public class TestRenderingContextBuilder {
     @Test
     @SuppressWarnings("deprecation")
     public void testEnrichment() throws Exception {
-        RenderingContext ctx = CtxBuilder.enrich(ENTITY_TYPE, "one,two, three").enrichDoc("four").param(
-                NXCONTENT_CATEGORY_HEADER, " five , six").get();
+        RenderingContext ctx = CtxBuilder.enrich(ENTITY_TYPE, "one,two, three")
+                                         .enrichDoc("four")
+                                         .param(NXCONTENT_CATEGORY_HEADER, " five , six")
+                                         .get();
         Set<String> properties = ctx.getEnrichers(ENTITY_TYPE);
         assertEquals(6, properties.size());
         assertTrue(properties.contains("one"));
@@ -99,8 +107,10 @@ public class TestRenderingContextBuilder {
 
     @Test
     public void testFetchedProperties() throws Exception {
-        RenderingContext ctx = CtxBuilder.fetchInDoc("one,two, three").fetch(ENTITY_TYPE, "four").param(
-                "fetch.document", " five , six").get();
+        RenderingContext ctx = CtxBuilder.fetchInDoc("one,two, three")
+                                         .fetch(ENTITY_TYPE, "four")
+                                         .param("fetch.document", " five , six")
+                                         .get();
         Set<String> properties = ctx.getFetched(ENTITY_TYPE);
         assertEquals(6, properties.size());
         assertTrue(properties.contains("one"));

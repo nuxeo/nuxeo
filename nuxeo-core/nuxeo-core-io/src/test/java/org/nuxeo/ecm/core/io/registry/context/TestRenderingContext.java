@@ -76,7 +76,9 @@ public class TestRenderingContext {
 
     @Test
     public void getMultipleNxParam() throws Exception {
-        RenderingContext ctx = RenderingContext.CtxBuilder.param(EMBED_PROPERTIES, VALUE1).param(EMBED_PROPERTIES, VALUE2).get();
+        RenderingContext ctx = RenderingContext.CtxBuilder.param(EMBED_PROPERTIES, VALUE1)
+                                                          .param(EMBED_PROPERTIES, VALUE2)
+                                                          .get();
         Set<String> embeds = ctx.getProperties();
         assertNotNull(embeds);
         assertEquals(2, embeds.size());
@@ -86,8 +88,9 @@ public class TestRenderingContext {
 
     @Test
     public void getPrefixedNxParam() throws Exception {
-        RenderingContext ctx = RenderingContext.CtxBuilder.param(HEADER_PREFIX + EMBED_PROPERTIES, VALUE1).param(
-                HEADER_PREFIX + EMBED_PROPERTIES, VALUE2).get();
+        RenderingContext ctx = RenderingContext.CtxBuilder.param(HEADER_PREFIX + EMBED_PROPERTIES, VALUE1)
+                                                          .param(HEADER_PREFIX + EMBED_PROPERTIES, VALUE2)
+                                                          .get();
         Set<String> embeds = ctx.getProperties();
         assertNotNull(embeds);
         assertEquals(2, embeds.size());
@@ -97,8 +100,9 @@ public class TestRenderingContext {
 
     @Test
     public void getMixedNxParam() throws Exception {
-        RenderingContext ctx = RenderingContext.CtxBuilder.param(EMBED_PROPERTIES, VALUE1 + "," + VALUE2).param(
-                HEADER_PREFIX + EMBED_PROPERTIES, VALUE3).get();
+        RenderingContext ctx = RenderingContext.CtxBuilder.param(EMBED_PROPERTIES, VALUE1 + "," + VALUE2)
+                                                          .param(HEADER_PREFIX + EMBED_PROPERTIES, VALUE3)
+                                                          .get();
         Set<String> embeds = ctx.getProperties();
         assertNotNull(embeds);
         assertEquals(3, embeds.size());
@@ -110,7 +114,8 @@ public class TestRenderingContext {
     @Test
     public void nxParamBackwardCompatPropertiesHeader() throws Exception {
         @SuppressWarnings("deprecation")
-        RenderingContext ctx = RenderingContext.CtxBuilder.param(DOCUMENT_PROPERTIES_HEADER, VALUE1 + "," + VALUE2).get();
+        RenderingContext ctx = RenderingContext.CtxBuilder.param(DOCUMENT_PROPERTIES_HEADER, VALUE1 + "," + VALUE2)
+                                                          .get();
         Set<String> embeds = ctx.getProperties();
         assertNotNull(embeds);
         assertEquals(2, embeds.size());
@@ -121,7 +126,8 @@ public class TestRenderingContext {
     @Test
     public void nxParamBackwardCompatEnricherHeader() throws Exception {
         @SuppressWarnings("deprecation")
-        RenderingContext ctx = RenderingContext.CtxBuilder.param(NXCONTENT_CATEGORY_HEADER, VALUE1 + "," + VALUE2).get();
+        RenderingContext ctx = RenderingContext.CtxBuilder.param(NXCONTENT_CATEGORY_HEADER, VALUE1 + "," + VALUE2)
+                                                          .get();
         Set<String> embeds = ctx.getEnrichers(ENTITY_TYPE);
         assertNotNull(embeds);
         assertEquals(2, embeds.size());

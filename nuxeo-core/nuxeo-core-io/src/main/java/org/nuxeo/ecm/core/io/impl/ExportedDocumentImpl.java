@@ -250,8 +250,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         }
     }
 
-    protected void readDocumentSchemas(Element element, DocumentModel doc, boolean inlineBlobs) throws
-            IOException {
+    protected void readDocumentSchemas(Element element, DocumentModel doc, boolean inlineBlobs) throws IOException {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         String[] schemaNames = doc.getSchemas();
         for (String schemaName : schemaNames) {
@@ -308,7 +307,8 @@ public class ExportedDocumentImpl implements ExportedDocument {
             throws IOException {
         String blobPath = Integer.toHexString(random.nextInt()) + ".blob";
         element.addElement(ExportConstants.BLOB_ENCODING).addText(blob.getEncoding() != null ? blob.getEncoding() : "");
-        element.addElement(ExportConstants.BLOB_MIME_TYPE).addText(blob.getMimeType() != null ? blob.getMimeType() : "");
+        element.addElement(ExportConstants.BLOB_MIME_TYPE)
+               .addText(blob.getMimeType() != null ? blob.getMimeType() : "");
         element.addElement(ExportConstants.BLOB_FILENAME).addText(blob.getFilename() != null ? blob.getFilename() : "");
         Element data = element.addElement(ExportConstants.BLOB_DATA);
         if (inlineBlobs) {

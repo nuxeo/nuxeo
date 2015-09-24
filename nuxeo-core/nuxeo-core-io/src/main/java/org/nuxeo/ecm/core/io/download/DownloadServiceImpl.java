@@ -196,7 +196,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         URI uri = blobManager == null ? null : blobManager.getURI(blob, UsageHint.DOWNLOAD, request);
         if (uri != null) {
             try {
-                Map<String,Serializable> ei = new HashMap<>();
+                Map<String, Serializable> ei = new HashMap<>();
                 if (extendedInfos != null) {
                     ei.putAll(extendedInfos);
                 }
@@ -277,8 +277,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             if (byteRange == null) {
                 IOUtils.copy(in, out);
             } else {
-                response.setHeader("Content-Range",
-                        "bytes " + byteRange.getStart() + "-" + byteRange.getEnd() + "/" + length);
+                response.setHeader("Content-Range", "bytes " + byteRange.getStart() + "-" + byteRange.getEnd() + "/"
+                        + length);
                 response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                 IOUtils.copyLarge(in, out, byteRange.getStart(), byteRange.getLength());
             }
@@ -376,16 +376,14 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 engine.getBindings(ScriptContext.ENGINE_SCOPE).putAll(context);
                 result = ((Invocable) engine).invokeFunction(RUN_FUNCTION);
             } catch (NoSuchMethodException e) {
-                throw new NuxeoException(
-                        "Script does not contain function: " + RUN_FUNCTION + "() in permission: " + descriptor.getName(),
-                        e);
+                throw new NuxeoException("Script does not contain function: " + RUN_FUNCTION + "() in permission: "
+                        + descriptor.getName(), e);
             } catch (ScriptException e) {
                 log.error("Failed to evaluate script: " + descriptor.getName(), e);
                 continue;
             }
             if (!(result instanceof Boolean)) {
-                log.error(
-                        "Failed to get boolean result from permission: " + descriptor.getName() + " (" + result + ")");
+                log.error("Failed to get boolean result from permission: " + descriptor.getName() + " (" + result + ")");
                 continue;
             }
             boolean allow = ((Boolean) result).booleanValue();

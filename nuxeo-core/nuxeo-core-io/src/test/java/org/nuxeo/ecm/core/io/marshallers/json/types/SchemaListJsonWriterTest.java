@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core.io.marshallers.json.types;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
@@ -27,8 +29,6 @@ import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
 
 @LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class SchemaListJsonWriterTest extends AbstractJsonWriterTest.Local<SchemaListJsonWriter, List<Schema>> {

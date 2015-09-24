@@ -17,13 +17,13 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.types;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
-
-import javax.inject.Inject;
 
 public class FacetJsonWriterTest extends AbstractJsonWriterTest.Local<FacetJsonWriter, CompositeType> {
 

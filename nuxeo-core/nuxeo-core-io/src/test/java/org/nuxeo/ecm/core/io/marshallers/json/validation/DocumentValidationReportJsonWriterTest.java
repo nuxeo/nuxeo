@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation.PathNode;
@@ -32,8 +34,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.PatternConstraint;
-
-import javax.inject.Inject;
 
 public class DocumentValidationReportJsonWriterTest extends
         AbstractJsonWriterTest.Local<DocumentValidationReportJsonWriter, DocumentValidationReport> {

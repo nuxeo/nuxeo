@@ -65,6 +65,7 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
  *             <-- additional property provided by extend() method
  * }
  * </pre>
+ *
  * </p>
  *
  * @since 7.2
@@ -94,8 +95,8 @@ public class ACPJsonWriter extends ExtensibleEntityJsonWriter<ACP> {
                 jg.writeStringField("creator", ace.getCreator());
                 jg.writeStringField("begin",
                         ace.getBegin() != null ? DateParser.formatW3CDateTime(ace.getBegin().getTime()) : null);
-                jg.writeStringField("end",
-                        ace.getEnd() != null ? DateParser.formatW3CDateTime(ace.getEnd().getTime()) : null);
+                jg.writeStringField("end", ace.getEnd() != null ? DateParser.formatW3CDateTime(ace.getEnd().getTime())
+                        : null);
                 jg.writeStringField("status", ace.getStatus().toString().toLowerCase());
                 jg.writeEndObject();
             }

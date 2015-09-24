@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.io;
 
 import java.util.Map;
 
-
 /**
  * Interface for a factory that will provide a custom DocumentReader implementation. The params are used by specific
  * factories to properly instantiate the custom DocumentReader.
