@@ -50,7 +50,7 @@
                     <paper-dropdown-menu label="[[i18n('label.permissions.right', 'Right')]]">
                         <paper-menu class="dropdown-content" selected="{{params.permission}}" attr-for-selected="permission">
                             <template is="dom-repeat" items="[[userVisiblePermissions]]" as="permission">
-                                <paper-item permission="[[permission]]">[[permission]]</paper-item>
+                                <paper-item permission="[[permission]]">[[i18n(permission)]]</paper-item>
                             </template>
                         </paper-menu>
                     </paper-dropdown-menu>
@@ -64,12 +64,12 @@
                     <div class="timeFrameLabel disabled">[[i18n('label.permissions.from', 'From')]]</div>
                     <div>
                         <paper-input id="begin" type="date" value="{{params.begin}}"
-                            disabled="{{disableTimeFrame}}"/>
+                          disabled="{{disableTimeFrame}}"/>
                     </div>
                     <div class="timeFrameLabel disabled">[[i18n('label.permissions.to', 'To')]]</div>
                     <div>
                         <paper-input id="end" type="date" value="{{params.end}}"
-                            disabled="{{disableTimeFrame}}"/>
+                          disabled="{{disableTimeFrame}}"/>
                     </div>
                 </div>
                 <div id="notification">

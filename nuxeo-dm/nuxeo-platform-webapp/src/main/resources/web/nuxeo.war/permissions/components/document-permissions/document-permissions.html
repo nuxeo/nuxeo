@@ -66,7 +66,7 @@
             <template is="dom-repeat" items="{{localAces}}" as="ace">
               <div class="acl-table-row">
                 <div><span>{{ace.username}}</span></div>
-                <div><span>{{ace.permission}}</span></div>
+                <div><span>[[i18n(ace.permission)]]</span></div>
                 <div><span>{{formatTimeFrame(ace)}}</span></div>
                 <div><span>{{ace.creator}}</span></div>
                 <div>
@@ -88,7 +88,7 @@
                           </div>
                           <div class="acl-table-row">
                             <div><span>{{ace.username}}</span></div>
-                            <div><span>{{ace.permission}}</span></div>
+                            <div><span>[[i18n(ace.permission)]]</span></div>
                             <div><span>{{formatTimeFrame(ace)}}</span></div>
                             <div><span>{{ace.creator}}</span></div>
                           </div>
@@ -136,7 +136,7 @@
             <template is="dom-repeat" items="{{inheritedAces}}" as="ace">
               <div class="acl-table-row">
                 <div><span>{{ace.username}}</span></div>
-                <div><span>{{ace.permission}}</span></div>
+                <div><span>[[i18n(ace.permission)]]</span></div>
                 <div><span>{{formatTimeFrame(ace)}}</span></div>
                 <div><span>{{ace.creator}}</span></div>
               </div>
