@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 import org.nuxeo.template.importer.ModelImporter;
@@ -46,9 +45,10 @@ import org.nuxeo.template.importer.ModelImporter;
 @Deploy({ "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.template.manager.api", //
         "org.nuxeo.template.manager", //
-        "org.nuxeo.template.manager.jaxrs", //
+        "org.nuxeo.template.manager.jaxrs",
+        "studio.extensions.template-module-demo",//
+        "org.nuxeo.template.manager.samples"
 })
-@LocalDeploy("org.nuxeo.template.manager.samples:OSGI-INF/extensions.xml")
 public class TestImportModel {
 
     @Inject
