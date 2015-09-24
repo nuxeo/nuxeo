@@ -25,6 +25,10 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <querySizeLimit>50</querySizeLimit>
 
+      <!-- comment <cache* /> tags to disable the cache -->
+      <cacheEntryName>sql-user-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>sql-user-entry-cache-without-references</cacheEntryWithoutReferencesName>
+
       <references>
         <inverseReference field="groups" directory="groupDirectory"
           dualReferenceField="members" />
@@ -42,9 +46,9 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
       <autoincrementIdField>false</autoincrementIdField>
 
-      <!-- Add 10 min cache to avoid refetching the groups during login --> 
-      <cacheTimeout>360</cacheTimeout>
-      <cacheMaxSize>1000</cacheMaxSize>
+      <!-- comment <cache* /> tags to disable the cache -->
+      <cacheEntryName>sql-group-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>sql-group-entry-cache-without-references</cacheEntryWithoutReferencesName>
 
       <references>
         <tableReference field="members" directory="userDirectory"
