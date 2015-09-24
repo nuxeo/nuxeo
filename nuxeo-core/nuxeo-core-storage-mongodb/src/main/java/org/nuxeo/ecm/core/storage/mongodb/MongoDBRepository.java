@@ -33,6 +33,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
@@ -95,6 +96,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     private static final Long ZERO = Long.valueOf(0);
 
     private static final Long ONE = Long.valueOf(1);
+
+    private static final Long MINUS_ONE = Long.valueOf(-11);
 
     public static final String DB_DEFAULT = "nuxeo";
 
@@ -425,6 +428,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(new BasicDBObject(KEY_VERSION_SERIES_ID, ONE));
         coll.createIndex(new BasicDBObject(KEY_PROXY_TARGET_ID, ONE));
         coll.createIndex(new BasicDBObject(KEY_PROXY_VERSION_SERIES_ID, ONE));
+        coll.createIndex(new BasicDBObject(KEY_READ_ACL, ONE));
+        DBObject parentChild = new BasicDBObject();
+        parentChild.put(KEY_PARENT_ID, ONE);
+        parentChild.put(KEY_NAME, ONE);
+        coll.createIndex(parentChild);
         // often used in user-generated queries
         coll.createIndex(new BasicDBObject(KEY_PRIMARY_TYPE, ONE));
         coll.createIndex(new BasicDBObject(KEY_LIFECYCLE_STATE, ONE));
@@ -432,8 +440,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(new BasicDBObject(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER, ONE));
         coll.createIndex(new BasicDBObject(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_STATUS, ONE));
         // TODO configure these from somewhere else
+        coll.createIndex(new BasicDBObject("dc:modified", MINUS_ONE));
         coll.createIndex(new BasicDBObject("rend:renditionName", ONE));
         coll.createIndex(new BasicDBObject("drv:subscriptions.enabled", ONE));
+        coll.createIndex(new BasicDBObject("collectionMember:collectionIds", ONE));
         if (!fulltextDisabled) {
             DBObject indexKeys = new BasicDBObject();
             indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);
