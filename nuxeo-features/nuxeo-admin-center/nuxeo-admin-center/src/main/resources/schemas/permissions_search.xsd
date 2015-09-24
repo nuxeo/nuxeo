@@ -11,6 +11,6 @@
   <xs:element name="ace_acl_name" type="xs:string" />
   <xs:element name="ace_begin" type="xs:date" />
   <xs:element name="ace_end" type="xs:date" />
-  <xs:element name="ecm_path" type="nxs:stringList"/>
+  <xs:element name="ecm_ancestorIds" type="nxs:stringList"/>
 
 </xs:schema>

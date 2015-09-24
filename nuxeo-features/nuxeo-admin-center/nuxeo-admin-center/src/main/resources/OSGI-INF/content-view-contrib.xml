@@ -92,8 +92,8 @@
           <predicate parameter="ecm:acl/*1/name" operator="=">
             <field schema="permissions_search" name="ace_acl_name" />
           </predicate>
-          <predicate parameter="ecm:path" operator="STARTSWITH">
-            <field schema="permissions_search" name="ecm_path" />
+          <predicate parameter="ecm:ancestorId" operator="IN">
+            <field schema="permissions_search" name="ecm_ancestorIds" />
           </predicate>
         </whereClause>
         <pageSize>20</pageSize>

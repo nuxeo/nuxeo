@@ -1632,7 +1632,7 @@
           <widget>creator</widget>
         </row>
         <row>
-          <widget>path</widget>
+          <widget>location</widget>
         </row>
         <row>
           <widget>permission</widget>
@@ -1665,16 +1665,18 @@
           <property name="userSuggestionSearchType">USER_TYPE</property>
         </properties>
       </widget>
-      <widget name="path" type="select_path_tree">
+      <widget name="location" type="multipleDocumentsSuggestion">
         <labels>
-          <label mode="any">label.permissions.search.path</label>
+          <label mode="any">label.search.locationSearch</label>
         </labels>
-        <translated>true</translated>
         <fields>
-          <field>rs:ecm_path</field>
+          <field>rs:ecm_ancestorIds</field>
         </fields>
-        <properties widgetMode="any">
-          <property name="showAllDomains">true</property>
+        <translated>true</translated>
+        <properties mode="any">
+          <property name="documentSuggestion_pageProviderName">
+            permissions_search_folders
+          </property>
         </properties>
       </widget>
       <widget name="permission" type="selectManyListbox">
@@ -1726,7 +1728,7 @@
           <widget>username</widget>
         </row>
         <row>
-          <widget>path</widget>
+          <widget>location</widget>
         </row>
       </rows>
       <widget name="username" type="multipleUsersSuggestion">
@@ -1741,16 +1743,18 @@
           <property name="required">true</property>
         </properties>
       </widget>
-      <widget name="path" type="select_path_tree">
+      <widget name="location" type="multipleDocumentsSuggestion">
         <labels>
-          <label mode="any">label.permissions.search.path</label>
+          <label mode="any">label.search.locationSearch</label>
         </labels>
-        <translated>true</translated>
         <fields>
-          <field>rs:ecm_path</field>
+          <field>rs:ecm_ancestorIds</field>
         </fields>
-        <properties widgetMode="any">
-          <property name="showAllDomains">true</property>
+        <translated>true</translated>
+        <properties mode="any">
+          <property name="documentSuggestion_pageProviderName">
+            permissions_search_folders
+          </property>
         </properties>
       </widget>
     </layout>

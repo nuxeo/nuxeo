@@ -15,13 +15,22 @@
         <predicate parameter="ecm:acl/*1/principal" operator="IN">
           <field schema="permissions_search" name="ace_username" />
         </predicate>
-        <predicate parameter="ecm:path" operator="STARTSWITH">
-          <field schema="permissions_search" name="ecm_path" />
+        <predicate parameter="ecm:ancestorId" operator="IN">
+          <field schema="permissions_search" name="ecm_ancestorIds" />
         </predicate>
       </whereClause>
       <pageSize>20</pageSize>
       <sort column="dc:title" ascending="true" />
     </genericPageProvider>
+
+    <coreQueryPageProvider name="permissions_search_folders">
+      <pattern quoteParameters="false" escapeParameters="true">
+        SELECT * FROM Document WHERE dc:title LIKE '?%' AND ecm:mixinType = 'Folderish'
+        AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <pageSize>10</pageSize>
+    </coreQueryPageProvider>
 
   </extension>
 
