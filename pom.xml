@@ -62,6 +62,7 @@
     <nuxeo.theme.compat.version>7.4-SNAPSHOT</nuxeo.theme.compat.version>
     <nuxeo.datadog.reporter.version>7.4-SNAPSHOT</nuxeo.datadog.reporter.version>
     <nuxeo.review.workflows.dashboards.version>7.4-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
+    <nuxeo.salesforce.version>7.4-SNAPSHOT</nuxeo.salesforce.version>
 
     <!-- optional addons -->
     <nuxeo.jbpm.version>7.4-SNAPSHOT</nuxeo.jbpm.version>
@@ -133,6 +134,7 @@
     <module>nuxeo-datadog-reporter</module>
     <module>nuxeo-review-workflows-dashboards</module>
     <module>nuxeo-shibboleth-invitation</module>
+    <module>nuxeo-salesforce</module>
   </modules>
 
   <dependencyManagement>
@@ -1053,6 +1055,13 @@
         <groupId>org.nuxeo.ecm.review.workflows.dashboards</groupId>
         <artifactId>nuxeo-review-workflows-dashboards</artifactId>
         <version>${nuxeo.review.workflows.dashboards.version}</version>
+      </dependency>
+
+      <!-- Salesforce -->
+      <dependency>
+        <groupId>org.nuxeo.salesforce</groupId>
+        <artifactId>nuxeo-salesforce</artifactId>
+        <version>${nuxeo.salesforce.version}</version>
       </dependency>
 
     </dependencies>
