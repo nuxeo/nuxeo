@@ -203,7 +203,8 @@ public class ImportActions implements Serializable {
 
     public String generateBatchId() {
         if (currentBatchId == null) {
-            currentBatchId = "batch-" + new Date().getTime() + "-" + random.nextInt(1000);
+            BatchManager batchManager = Framework.getService(BatchManager.class);
+            currentBatchId = batchManager.initBatch();
         }
         return currentBatchId;
     }

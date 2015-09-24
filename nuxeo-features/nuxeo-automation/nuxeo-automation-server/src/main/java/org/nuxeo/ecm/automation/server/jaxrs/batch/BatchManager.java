@@ -96,6 +96,7 @@ public interface BatchManager {
     /**
      * Initialize a batch by with an automatically generated id.
      *
+     * @return the batch id
      * @since 7.4
      */
     String initBatch();
