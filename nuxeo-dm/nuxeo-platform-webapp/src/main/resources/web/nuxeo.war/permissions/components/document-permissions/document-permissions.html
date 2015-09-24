@@ -109,11 +109,11 @@
 
     <div class="bubbleBox">
       <div class="bubbleHeader">
-        <template is="dom-if" if="{{hasInheritedAces}}">
+        <template is="dom-if" if="{{canBlockInheritance}}">
           <paper-button id="block" raised="true" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]
           </paper-button>
         </template>
-        <template is="dom-if" if="{{!hasInheritedAces}}">
+        <template is="dom-if" if="{{canUnblockInheritance}}">
           <paper-button id="unblock" raised="true" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]
           </paper-button>
         </template>
@@ -199,6 +199,16 @@
         type: Array,
         value: [],
         computed: 'computeInheritedAces(doc)'
+      },
+      canBlockInheritance: {
+        type: Boolean,
+        value: false,
+        computed: 'computeCanBlockInheritance(hasEverythingRight, hasInheritedAces)'
+      },
+      canUnblockInheritance: {
+        type: Boolean,
+        value: false,
+        computed: 'computeCanUnblockInheritance(hasEverythingRight, hasInheritedAces)'
       }
     },
 
@@ -327,6 +337,14 @@
         var bBegin = moment(b.begin);
         return aBegin.isBefore(bBegin) ? -1 : 1;
       }
+    },
+
+    computeCanBlockInheritance: function(hasEverythingRight, hasInheritedAces) {
+      return hasEverythingRight && hasInheritedAces;
+    },
+
+    computeCanUnblockInheritance: function(hasEverythingRight, hasInheritedAces) {
+      return hasEverythingRight && !hasInheritedAces;
     },
 
     blockInheritance: function () {
