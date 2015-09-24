@@ -118,7 +118,7 @@
       </coreQueryPageProvider>
 
       <searchLayout name="default_search_layout" />
-      <waitForExecution>true</waitForExecution>
+      <waitForExecution>false</waitForExecution>
       <waitForExecutionSentence>
         label.search.waitForExecution
       </waitForExecutionSentence>
