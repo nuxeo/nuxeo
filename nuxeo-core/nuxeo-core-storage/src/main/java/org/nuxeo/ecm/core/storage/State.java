@@ -267,7 +267,7 @@ public class State implements StateAccessor, Serializable {
 
     protected void putEvenIfNull(String key, Serializable value) {
         if (map != null) {
-            map.put(key, value);
+            map.put(key.intern(), value);
         } else {
             int i = keys.indexOf(key);
             if (i >= 0) {
@@ -276,7 +276,7 @@ public class State implements StateAccessor, Serializable {
             } else {
                 // new key
                 if (keys.size() < ARRAY_MAX) {
-                    keys.add(key);
+                    keys.add(key.intern());
                     values.add(value);
                 } else {
                     // upgrade to a full HashMap
@@ -284,7 +284,7 @@ public class State implements StateAccessor, Serializable {
                     for (int j = 0; j < keys.size(); j++) {
                         map.put(keys.get(j), values.get(j));
                     }
-                    map.put(key, value);
+                    map.put(key.intern(), value);
                     keys = null;
                     values = null;
                 }

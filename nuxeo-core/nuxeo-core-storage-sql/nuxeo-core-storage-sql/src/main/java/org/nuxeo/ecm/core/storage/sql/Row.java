@@ -160,7 +160,7 @@ public final class Row extends RowId implements Serializable, Cloneable {
             }
         }
         ensureCapacity(size + 1);
-        keys[size] = key;
+        keys[size] = key == null ? null: key.intern();
         values[size++] = value;
     }
 
@@ -176,7 +176,7 @@ public final class Row extends RowId implements Serializable, Cloneable {
             return;
         }
         ensureCapacity(size + 1);
-        keys[size] = key;
+        keys[size] = key == null ? null : key.intern();
         values[size++] = value;
     }
 

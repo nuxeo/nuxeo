@@ -32,7 +32,7 @@ public class RowId implements Serializable {
     }
 
     public RowId(String tableName, Serializable id) {
-        this.tableName = tableName;
+        this.tableName = tableName == null ? null : tableName.intern();
         this.id = id;
     }
 
