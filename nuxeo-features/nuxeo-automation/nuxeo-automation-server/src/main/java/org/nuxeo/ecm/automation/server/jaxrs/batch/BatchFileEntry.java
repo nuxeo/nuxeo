@@ -93,7 +93,7 @@ public class BatchFileEntry extends AbstractStorageEntry {
             if (blob == null) {
                 return null;
             } else {
-                return getBlob().getFilename();
+                return blob.getFilename();
             }
         }
     }
@@ -106,7 +106,7 @@ public class BatchFileEntry extends AbstractStorageEntry {
             if (blob == null) {
                 return null;
             } else {
-                return getBlob().getMimeType();
+                return blob.getMimeType();
             }
         }
     }
@@ -119,7 +119,7 @@ public class BatchFileEntry extends AbstractStorageEntry {
             if (blob == null) {
                 return -1;
             } else {
-                return getBlob().getLength();
+                return blob.getLength();
             }
         }
     }
@@ -130,6 +130,14 @@ public class BatchFileEntry extends AbstractStorageEntry {
                     getId()));
         }
         return (int) get("chunkCount");
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<Integer, String> getChunks() {
+        if (!isChunked()) {
+            throw new NuxeoException(String.format("Cannot get chunks of file entry %s as it is not chunked", getId()));
+        }
+        return (Map<Integer, String>) get("chunks");
     }
 
     public List<Integer> getOrderedChunkIds() {
@@ -158,7 +166,7 @@ public class BatchFileEntry extends AbstractStorageEntry {
             }
             try {
                 Map<Integer, String> chunks = getChunks();
-                int uploadedChunkCount = chunks.keySet().size();
+                int uploadedChunkCount = chunks.size();
                 int chunkCount = getChunkCount();
                 if (uploadedChunkCount != chunkCount) {
                     log.warn(String.format(
@@ -231,13 +239,6 @@ public class BatchFileEntry extends AbstractStorageEntry {
         return chunkEntryId;
     }
 
-    @SuppressWarnings("unchecked")
-    public Map<Integer, String> getChunks() {
-        if (!isChunked()) {
-            throw new NuxeoException(String.format("Cannot get chunks of file entry %s as it is not chunked", getId()));
-        }
-        return (Map<Integer, String>) get("chunks");
-    }
 
     @Override
     public List<Blob> getBlobs() {
