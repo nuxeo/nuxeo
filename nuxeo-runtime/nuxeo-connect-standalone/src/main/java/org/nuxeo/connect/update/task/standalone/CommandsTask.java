@@ -111,6 +111,7 @@ public abstract class CommandsTask extends AbstractTask {
     /**
      * User parameters are not handled by default. You need to implement your own task to do this.
      */
+    @Override
     protected void doRun(Map<String, String> params) throws PackageException {
         for (Command cmd : commands) {
             Command rollbackCmd = cmd.run(this, params);
@@ -132,12 +133,14 @@ public abstract class CommandsTask extends AbstractTask {
      */
     protected abstract void flush() throws PackageException;
 
+    @Override
     protected void doRollback() throws PackageException {
         while (!commandLog.isEmpty()) {
             commandLog.removeFirst().run(this, null);
         }
     }
 
+    @Override
     public void doValidate(ValidationStatus status) throws PackageException {
         // the target platform is not checked at install
         // check that commands can be run
@@ -155,12 +158,11 @@ public abstract class CommandsTask extends AbstractTask {
         }
         writer.end("uninstall");
         try {
-            // replace all occurrences of the installation path with the
-            // corresponding variable otherwise the uninstall will not work
-            // after renaming the installation directory
+            // replace all occurrences of the installation path with the corresponding variable otherwise the uninstall
+            // will not work after renaming the installation directory
             String content = parametrizePaths(writer.toString());
-            content = content.replace(File.separator.concat(File.separator), File.separator); // replace '//' by '/' is
-                                                                                              // any
+            // replace '//' by '/' if any
+            content = content.replace(File.separator.concat(File.separator), File.separator);
             FileUtils.writeFile(file, content);
         } catch (IOException e) {
             throw new PackageException("Failed to write commands", e);
