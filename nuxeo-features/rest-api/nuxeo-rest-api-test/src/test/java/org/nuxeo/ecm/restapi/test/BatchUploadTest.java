@@ -222,10 +222,12 @@ public class BatchUploadTest extends BaseTest {
         Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
         assertNotNull(blob);
         assertEquals("Fichier accentué 1.txt", blob.getFilename());
+        assertEquals("text/plain", blob.getMimeType());
         assertEquals(data1, blob.getString());
         blob = (Blob) doc.getPropertyValue("mb:blobs/1/content");
         assertNotNull(blob);
         assertEquals("Fichier accentué 2.txt", blob.getFilename());
+        assertEquals("application/octet-stream", blob.getMimeType());
         assertEquals(data2, blob.getString());
     }
 
@@ -275,6 +277,7 @@ public class BatchUploadTest extends BaseTest {
         Blob blob = (Blob) doc.getPropertyValue("file:content");
         assertNotNull(blob);
         assertEquals("Fichier accentué.txt", blob.getFilename());
+        assertEquals("text/plain", blob.getMimeType());
         assertEquals(data, blob.getString());
     }
 
@@ -305,6 +308,7 @@ public class BatchUploadTest extends BaseTest {
         String chunk3 = "3 chunks";
         String chunkLength3 = String.valueOf(chunk3.getBytes().length);
 
+        // Chunk 1
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/octet-stream");
         headers.put("X-Upload-Type", "chunked");
@@ -315,7 +319,6 @@ public class BatchUploadTest extends BaseTest {
         headers.put("X-File-Size", fileSize);
         headers.put("X-File-Type", mimeType);
 
-        // Chunk 1
         response = getResponse(RequestType.POST, "upload/" + batchId + "/0", chunk1, headers);
         assertEquals(308, response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
