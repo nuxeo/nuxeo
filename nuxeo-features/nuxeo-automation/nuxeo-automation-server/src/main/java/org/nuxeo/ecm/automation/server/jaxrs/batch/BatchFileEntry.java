@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,8 +53,10 @@ public class BatchFileEntry extends AbstractStorageEntry {
 
     protected static final Log log = LogFactory.getLog(BatchFileEntry.class);
 
-    // Temporary blob made from concatenated chunks
-    protected Blob tmpChunkedBlob;
+    protected Blob chunkedBlob;
+
+    // Temporary file made from concatenated chunks
+    protected File tmpChunkedFile;
 
     /**
      * Returns a file entry that holds the given blob, not chunked.
@@ -165,8 +166,8 @@ public class BatchFileEntry extends AbstractStorageEntry {
     public Blob getBlob() {
         if (isChunked()) {
             // First check if blob chunks have already been read and concatenated
-            if (tmpChunkedBlob != null) {
-                return tmpChunkedBlob;
+            if (chunkedBlob != null) {
+                return chunkedBlob;
             }
             try {
                 Map<Integer, String> chunks = getChunks();
@@ -178,7 +179,8 @@ public class BatchFileEntry extends AbstractStorageEntry {
                             getId(), uploadedChunkCount, chunkCount));
                     return null;
                 }
-                tmpChunkedBlob = Blobs.createBlobWithExtension(null);
+                chunkedBlob = Blobs.createBlobWithExtension(null);
+                tmpChunkedFile = chunkedBlob.getFile();
                 BatchManager bm = Framework.getService(BatchManager.class);
                 // Sort chunk ids and concatenate them to build the entire blob
                 List<Integer> sortedChunks = getOrderedChunkIds();
@@ -186,15 +188,15 @@ public class BatchFileEntry extends AbstractStorageEntry {
                     BatchChunkEntry chunkEntry = (BatchChunkEntry) bm.getTransientStore().get(chunks.get(idx));
                     Blob chunkBlob = chunkEntry.getBlob();
                     if (chunkBlob != null) {
-                        transferTo(chunkBlob, tmpChunkedBlob.getFile());
+                        transferTo(chunkBlob, tmpChunkedFile);
                     }
                 }
-                tmpChunkedBlob.setMimeType(getMimeType());
-                tmpChunkedBlob.setFilename(getFileName());
-                return tmpChunkedBlob;
+                chunkedBlob.setMimeType(getMimeType());
+                chunkedBlob.setFilename(getFileName());
+                return chunkedBlob;
             } catch (IOException ioe) {
                 beforeRemove();
-                tmpChunkedBlob = null;
+                chunkedBlob = null;
                 throw new NuxeoException(ioe);
             }
         } else {
@@ -254,9 +256,9 @@ public class BatchFileEntry extends AbstractStorageEntry {
 
     @Override
     public void beforeRemove() {
-        // Delete temporary chunked blob if exists
-        if (tmpChunkedBlob != null) {
-            FileUtils.deleteQuietly(tmpChunkedBlob.getFile());
+        if (tmpChunkedFile != null && tmpChunkedFile.exists()) {
+            log.debug(String.format("Deleting temporary chunked file %s", tmpChunkedFile.getAbsolutePath()));
+            tmpChunkedFile.delete();
         }
     }
 }

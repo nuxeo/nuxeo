@@ -421,6 +421,8 @@ public class BatchUploadTest extends BaseTest {
         assertEquals("text/plain", blob.getMimeType());
         assertEquals(Long.parseLong(fileSize), blob.getLength());
         assertEquals("Contenu accentué composé de 3 chunks", blob.getString());
+
+        bm.clean(batchId);
     }
 
     /**
