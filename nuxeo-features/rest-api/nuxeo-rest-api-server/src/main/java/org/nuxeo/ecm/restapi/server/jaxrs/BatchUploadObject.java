@@ -127,7 +127,9 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             Blob blob = formData.getFirstBlob();
             if (blob != null) {
                 is = blob.getStream();
-                fileName = blob.getFilename();
+                if (!UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
+                    fileName = blob.getFilename();
+                }
                 mimeType = blob.getMimeType();
                 uploadedSize = String.valueOf(blob.getLength());
             }
