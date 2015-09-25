@@ -6,5 +6,3 @@ Bundle-Name: org.nuxeo.usermapper
 Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/usermapper-service.xml
 Bundle-SymbolicName: org.nuxeo.usermapper
-
-

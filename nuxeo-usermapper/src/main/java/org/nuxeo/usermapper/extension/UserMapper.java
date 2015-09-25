@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,7 +36,6 @@ public interface UserMapper {
      * Should retrieve (create if needed) and update the NuxeoPrincipal according to the given userObject
      *
      * @param userObject the object representing the user in the external system
-     * @return
      */
     NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject);
 
@@ -46,7 +45,6 @@ public interface UserMapper {
      * @param userObject the object representing the user in the external system
      * @param createIfNeeded flag to allow creation (default is true)
      * @param update flag to run update (default is true)
-     * @return
      */
 
     NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject, boolean createIfNeeded, boolean update,
@@ -57,7 +55,6 @@ public interface UserMapper {
      *
      * @param principal the NuxeoPrincipal
      * @param nativePrincipal the native object to represent the principal in the target system
-     * @return
      */
     Object wrapNuxeoPrincipal(NuxeoPrincipal principal, Object nativePrincipal, Map<String, Serializable> params);
 

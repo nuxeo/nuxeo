@@ -14,14 +14,14 @@ This can typically be :
      - SAML
      - OpenId
      - Jboss Keycloak
- - a provisioning API like [SCIM|http://www.simplecloud.info/]
+ - a provisioning API like [SCIM](http://www.simplecloud.info/)
 
 The goal of this module is double :
 
  - avoid duplicated code in several modules
  - make the mapping pluggable
 
-###. UserMapper Service
+### UserMapper Service
 
 #### Configurable mapping
 
@@ -67,27 +67,27 @@ Using Groovy Scriptlet :
 
     <mapper name="scim" type="groovy">
       <mapperScript>
-	    <![CDATA[
+      <![CDATA[
           import org.nuxeo.ecm.platform.usermanager.UserManager;
-          import org.nuxeo.runtime.api.Framework;		
-          	
+          import org.nuxeo.runtime.api.Framework;
+
           UserManager um = Framework.getLocalService(UserManager.class);
-                  
+
           String userId = userObject.getId();
           if (userId == null || userId.isEmpty()) {
             userId = userObject.getUserName();
           }
-          ...		        
+          ...
         ]]>
       </mapperScript>
 
       <wrapperScript>
-        <![CDATA[   
+        <![CDATA[
           import org.nuxeo.ecm.core.api.DocumentModel;
           import org.nuxeo.ecm.core.api.NuxeoException;
           import org.nuxeo.ecm.platform.usermanager.UserManager;
           import org.nuxeo.runtime.api.Framework;
-           
+
           UserManager um = Framework.getLocalService(UserManager.class);
           DocumentModel userModel = nuxeoPrincipal.getModel();
           ...
@@ -104,28 +104,28 @@ Using JavaScript :
           userAttributes.put("lastName", userObject.name.lastName);
           profileAttributes.put("userprofile:phonenumber", "555.666.7777");
        </mapperScript>
-     </mapper> 
+     </mapper>
 
 **mapperScript**
 
 In the script context for mapping userObject to NuxeoPrincipal (i.e. `mapperScript` tag corresponding to the `getOrCreateAndUpdateNuxeoPrincipal`)
 
  - userObject : represent the object passed to the
- - searchAttributes : is the Map&lt;String,String&gt; that will be used to search the NuxeoPrincipal
- - userAttributes : is the Map&lt;String,String&gt; that will be used to create/updaate the NuxeoPrincipal
- - profileAttribute : is the Map&lt;String,String&gt; that will be used to update the user's profile
+ - searchAttributes : is the Map&lt;String, String&gt; that will be used to search the NuxeoPrincipal
+ - userAttributes : is the Map&lt;String, String&gt; that will be used to create/update the NuxeoPrincipal
+ - profileAttribute : is the Map&lt;String, String&gt; that will be used to update the user's profile
 
 **wrapperScript**
 
 In the script context for wrapping a NuxeoPrincipal into a userObject (i.e. `wrapperScript` tag corresponding to the `wrapNuxeoPrincipal` method) :
 
- - userObject : represent the userObject as initialized by the caller code 
+ - userObject : represent the userObject as initialized by the caller code
  - nuxeoPrincipal : is the principal to wrap
- - params : is the Map&lt;String,Serializable&gt; passed by the caller	
+ - params : is the Map&lt;String, Serializable&gt; passed by the caller
 
 ## Building / Install
 
-Build : 
+Build :
 
     mvn clean install
 

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,7 +63,6 @@ public interface UserMapperService {
      * @param mappingName the name of the contributed mapping to use
      * @param principal the {@link NuxeoPrincipal} to wrap
      * @param nativePrincipal the principal Object in the target system (can be null)
-     * @return
      * @throws NuxeoException
      */
     Object wrapNuxeoPrincipal(String mappingName, NuxeoPrincipal principal, Object nativePrincipal,
@@ -71,8 +70,6 @@ public interface UserMapperService {
 
     /**
      * Gives access to the contributed Mapping names
-     *
-     * @return
      */
     Set<String> getAvailableMappings();
 
@@ -80,7 +77,6 @@ public interface UserMapperService {
      * returns the named mapper is any
      *
      * @param mappingName
-     * @return
      */
     UserMapper getMapper(String mappingName) throws NuxeoException;
 }

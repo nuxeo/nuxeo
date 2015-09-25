@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-   <parent>
-       <groupId>org.nuxeo.ecm.platform</groupId>
-       <artifactId>nuxeo-platform-login-parent</artifactId>
-       <version>7.4-SNAPSHOT</version>
-   </parent>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-login-parent</artifactId>
+    <version>7.4-SNAPSHOT</version>
+  </parent>
 
   <artifactId>nuxeo-usermapper</artifactId>
   <name>nuxeo-usermapper</name>
@@ -90,34 +90,10 @@
       <artifactId>nuxeo-platform-userworkspace-types</artifactId>
       <scope>test</scope>
     </dependency>
-    
   </dependencies>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce-plugin-versions</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireReleaseDeps>
-                  <message>No Snapshots Allowed!</message>
-                  <onlyWhenRelease>true</onlyWhenRelease>
-                  <excludes>
-                    <exclude>com.googlecode.gmail4j:gmail4j:*</exclude>
-                  </excludes>
-                </requireReleaseDeps>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>

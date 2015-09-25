@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,8 +27,6 @@ import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.automation.scripting.internals.ScriptingCache;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
@@ -40,8 +38,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  */
 
 public class NashornUserMapper extends AbstractUserMapper {
-
-    protected static final Log log = LogFactory.getLog(NashornUserMapper.class);
 
     protected ScriptEngine engine;
 

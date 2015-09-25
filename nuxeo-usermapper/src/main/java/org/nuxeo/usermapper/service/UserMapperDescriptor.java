@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -65,27 +65,26 @@ public class UserMapperDescriptor implements Serializable {
 
     public UserMapper getInstance() throws Exception {
         UserMapper mapper = null;
-
-        if (getType().equals(Type.none)) {
-            throw new NuxeoException("Mapper has an unknown type");
-        }
-
-        if (getType().equals(Type.java)) {
-            if (mapperClass==null) {
+        switch (getType()) {
+        case java:
+            if (mapperClass == null) {
                 throw new NuxeoException("Java Mapper must provide an implementation class ");
             }
             mapper = mapperClass.newInstance();
-        }
-        else if (getType().equals(Type.groovy)) {
+            break;
+        case groovy:
             mapper = new GroovyUserMapper(mapperScript, wrapperScript);
-        }
-        else if (getType().equals(Type.javascript)) {
+            break;
+        case javascript:
             mapper = new NashornUserMapper(mapperScript, wrapperScript);
+            break;
+        case none:
+            // fall-through
+        default:
+            throw new NuxeoException("Mapper has an unknown type");
         }
-
         // run init
         mapper.init(params);
-
         return mapper;
     }
 
@@ -107,7 +106,6 @@ public class UserMapperDescriptor implements Serializable {
         if ("js".equalsIgnoreCase(type)) {
             return Type.javascript;
         }
-
         return Type.none;
     }
 }
