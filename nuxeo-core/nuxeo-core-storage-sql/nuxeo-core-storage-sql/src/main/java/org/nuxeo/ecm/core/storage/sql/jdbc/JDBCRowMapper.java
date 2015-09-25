@@ -42,8 +42,10 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -1299,6 +1301,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     protected List<NodeInfo> getDescendantsInfo(Serializable rootId) {
+        if (!dialect.supportsFastDescendants()) {
+            return getDescendantsInfoIterative(rootId);
+        }
         List<NodeInfo> descendants = new LinkedList<NodeInfo>();
         String sql = sqlInfo.getSelectDescendantsInfoSql();
         if (logger.isLogEnabled()) {
@@ -1361,6 +1366,97 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } finally {
             try {
                 closeStatement(ps);
+            } catch (SQLException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+    }
+
+    protected List<NodeInfo> getDescendantsInfoIterative(Serializable rootId) {
+        Set<Serializable> done = new HashSet<>();
+        List<Serializable> todo = new ArrayList<>(Collections.singleton(rootId));
+        List<NodeInfo> descendants = new ArrayList<NodeInfo>();
+        while (!todo.isEmpty()) {
+            List<NodeInfo> infos = getChildrenNodeInfos(todo);
+            todo = new ArrayList<>();
+            for (NodeInfo info : infos) {
+                Serializable id = info.id;
+                if (!done.add(id)) {
+                    continue;
+                }
+                todo.add(id);
+                descendants.add(info);
+            }
+        }
+        return descendants;
+    }
+
+    /**
+     * Gets the children of a node as a list of NodeInfo.
+     */
+    protected List<NodeInfo> getChildrenNodeInfos(Collection<Serializable> ids) {
+        List<NodeInfo> children = new LinkedList<NodeInfo>();
+        SQLInfoSelect select = sqlInfo.getSelectChildrenNodeInfos(ids.size());
+        if (logger.isLogEnabled()) {
+            logger.logSQL(select.sql, ids);
+        }
+        Column where = select.whereColumns.get(0);
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(select.sql);
+            List<String> debugValues = null;
+            if (logger.isLogEnabled()) {
+                debugValues = new LinkedList<String>();
+            }
+            int ii = 1;
+            for (Serializable id : ids) {
+                where.setToPreparedStatement(ps, ii++, id);
+            }
+            rs = ps.executeQuery();
+            countExecute();
+            while (rs.next()) {
+                Serializable id = null;
+                Serializable parentId = null;
+                String primaryType = null;
+                Boolean isProperty = Boolean.FALSE;
+                Serializable targetId = null;
+                Serializable versionableId = null;
+                int i = 1;
+                for (Column column : select.whatColumns) {
+                    String key = column.getKey();
+                    Serializable value = column.getFromResultSet(rs, i++);
+                    if (key.equals(model.MAIN_KEY)) {
+                        id = value;
+                    } else if (key.equals(model.HIER_PARENT_KEY)) {
+                        parentId = value;
+                    } else if (key.equals(model.MAIN_PRIMARY_TYPE_KEY)) {
+                        primaryType = (String) value;
+                    } else if (key.equals(model.PROXY_TARGET_KEY)) {
+                        targetId = value;
+                    } else if (key.equals(model.PROXY_VERSIONABLE_KEY)) {
+                        versionableId = value;
+                    }
+                }
+                children.add(new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId));
+                if (debugValues != null) {
+                    if (debugValues.size() < DEBUG_MAX_TREE) {
+                        debugValues.add(id + "/" + primaryType);
+                    }
+                }
+            }
+            if (debugValues != null) {
+                if (debugValues.size() >= DEBUG_MAX_TREE) {
+                    debugValues.add("... (" + children.size() + ") results");
+                }
+                logger.log("  -> " + debugValues);
+            }
+            return children;
+        } catch (SQLException e) {
+            throw new NuxeoException("Failed to get descendants", e);
+        } finally {
+            try {
+                closeStatement(ps, rs);
             } catch (SQLException e) {
                 logger.error(e.getMessage(), e);
             }

@@ -313,6 +313,38 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
+    // wider depth of tree
+    @Test
+    public void testRecursiveRemoval3() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node base = session.addChildNode(root, "base", null, "TestDoc", false);
+        int depth = 3;
+        int width = 3;
+        List<Node> todo = Collections.singletonList(base);
+        List<Serializable> ids = new ArrayList<>();
+        for (int i = 0; i < depth; i++) {
+            List<Node> newTodo = new ArrayList<>();
+            for (Node node : todo) {
+                for (int j = 0; j < width; j++) {
+                    String name = node.getName() + "-" + j;
+                    Node child = session.addChildNode(node, name, null, "TestDoc", false);
+                    ids.add(child.getId());
+                    newTodo.add(child);
+                }
+            }
+            todo = newTodo;
+        }
+        session.save();
+        // delete base
+        session.removeNode(base);
+        session.save();
+        // check all children were really deleted recursively
+        for (Serializable id : ids) {
+            assertNull(id.toString(), session.getNodeById(id));
+        }
+    }
+
     @Test
     public void testBasics() throws Exception {
         Session session = repository.getConnection();
