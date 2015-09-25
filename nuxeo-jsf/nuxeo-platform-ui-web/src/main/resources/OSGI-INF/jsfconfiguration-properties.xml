@@ -1,50 +1,28 @@
 <component name="org.nuxeo.ecm.platform.ui.web.configuration.default">
 
-  <extension target="org.nuxeo.ecm.platform.ui.web.configuration"
-    point="configuration">
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
 
     <documentation>
-      This contribution is the default contribution for JSF
-      configurations.
-
-      If a property with the same name is defined in the nuxeo.conf file, it will
-      take precedence over properties defined on this extension point.
+      This contribution is the default contribution for JSF configurations.
 
       Here are more details about some of them:
       <ul>
         <li>
-          <strong>nuxeo.jsf.enableDoubleClickShield</strong>
-          : enables a shield on forms to prevent users from
-          submitting twice the
-          same form (accidental double-click).
+          <strong>nuxeo.jsf.enableDoubleClickShield</strong>: enables a shield on forms to prevent users from
+          submitting twice the same form (accidental double-click).
         </li>
         <li>
-          <strong>nuxeo.jsf.useAjaxTabs</strong>
-          : enables ajaxified tabs on document views.
-          Activation also relies on
-          the user's browser because this feature
-          requires manipulating the
-          browser's session history in JavaScript to
-          preserve bookmarkable URLs
-          (see compatibility table at
-          <a href="http://caniuse.com/#search=pushstate" target="_blank">
-            http://caniuse.com/#search=pushstate
-          </a>
-          , for
+          <strong>nuxeo.jsf.useAjaxTabs</strong>: enables ajaxified tabs on document views. Activation also relies on
+          the user's browser because this feature requires manipulating the browser's session history in JavaScript to
+          preserve bookmarkable URLs (see compatibility table at
+          <a href="http://caniuse.com/#search=pushstate" target="_blank">http://caniuse.com/#search=pushstate</a>, for
           instance).
         </li>
         <li>
-          <strong>nuxeo.jsf.defaultBytePrefixFormat</strong>
-          : defines the default byte prefix format used by the printFileSize
-          JSF
-          function, that displays a pretty print of the size of a file,
-          Available formats are "SI", "IEC" or
-          "JEDEC". See
-          <a href="http://en.wikipedia.org/wiki/Byte" target="_blank">
-            the Wikipedia
-            article on Byte
-          </a>
-          for more information on those formats.
+          <strong>nuxeo.jsf.defaultBytePrefixFormat</strong>: defines the default byte prefix format used by the
+          printFileSize JSF function, that displays a pretty print of the size of a file. Available formats are "SI",
+          "IEC" or "JEDEC". See <a href="http://en.wikipedia.org/wiki/Byte" target="_blank">the Wikipedia article on
+          Byte</a> for more information on those formats.
         </li>
       </ul>
 
