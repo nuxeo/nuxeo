@@ -1,0 +1,59 @@
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
+
+
+<dom-module id="popup-confirm">
+  <template>
+    <paper-dialog id="dialog">
+      <content></content>
+      <div class="buttons">
+        <paper-button dialog-dismissive raised="true" on-tap="_onCancel">{{cancel}}</paper-button>
+        <paper-button dialog-affirmative raised="true" on-tap="_onConfirm">{{confirm}}</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+
+
+<script>
+  Polymer({
+    is: 'popup-confirm',
+
+    properties: {
+      onCancel: Function,
+      onConfirm: Function,
+      confirm: {
+        type: String,
+        value: 'Ok'
+      },
+      cancel: {
+        type: String,
+        value: 'Cancel'
+      }
+    },
+
+    toggle: function(func) {
+      if(typeof func === 'function') {
+        this.onConfirm = func;
+      }
+
+      this.$.dialog.toggle();
+    },
+
+    _onCancel: function() {
+      if(this.onCancel) {
+        this.onCancel();
+      }
+
+      this.toggle();
+    },
+
+    _onConfirm: function() {
+      if(this.onConfirm) {
+        this.onConfirm();
+      }
+
+      this.toggle();
+    }
+  });
+</script>
