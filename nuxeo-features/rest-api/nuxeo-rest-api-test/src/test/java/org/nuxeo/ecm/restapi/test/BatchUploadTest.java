@@ -115,7 +115,7 @@ public class BatchUploadTest extends BaseTest {
         DocumentModel doc = session.getDocument(new PathRef("/testBatchUploadDoc"));
         Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
         assertNotNull(blob);
-        assertEquals(data, new String(blob.getByteArray()));
+        assertEquals(data, blob.getString());
     }
 
     /**
@@ -222,11 +222,11 @@ public class BatchUploadTest extends BaseTest {
         Blob blob = (Blob) doc.getPropertyValue("mb:blobs/0/content");
         assertNotNull(blob);
         assertEquals("Fichier accentué 1.txt", blob.getFilename());
-        assertEquals(data1, new String(blob.getByteArray()));
+        assertEquals(data1, blob.getString());
         blob = (Blob) doc.getPropertyValue("mb:blobs/1/content");
         assertNotNull(blob);
         assertEquals("Fichier accentué 2.txt", blob.getFilename());
-        assertEquals(data2, new String(blob.getByteArray()));
+        assertEquals(data2, blob.getString());
     }
 
     /**
@@ -275,7 +275,7 @@ public class BatchUploadTest extends BaseTest {
         Blob blob = (Blob) doc.getPropertyValue("file:content");
         assertNotNull(blob);
         assertEquals("Fichier accentué.txt", blob.getFilename());
-        assertEquals(data, new String(blob.getByteArray()));
+        assertEquals(data, blob.getString());
     }
 
     /**
