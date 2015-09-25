@@ -122,7 +122,6 @@ public abstract class AbstractStorageEntry implements StorageEntry {
                 } catch (IOException e) {
                     throw new NuxeoException(e);
                 }
-                cachedFile.deleteOnExit();
                 cached.put("file", cachedFile.getAbsolutePath());
                 cached.put("filename", blob.getFilename());
                 cached.put("encoding", blob.getEncoding());
