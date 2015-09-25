@@ -498,6 +498,11 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
+    public boolean supportsFastDescendants() {
+        return pathOptimizationsEnabled;
+    }
+
+    @Override
     public String getInTreeSql(String idColumnName, String id) {
         String idParam;
         switch (idType) {

@@ -433,6 +433,56 @@ public class SQLInfo {
                 Collections.singletonList(whereColumn), null);
     }
 
+    /**
+     * Selects all children (not complex) for several parent ids.
+     */
+    public SQLInfoSelect getSelectChildrenNodeInfos(int nids) {
+        Table hierTable = database.getTable(model.HIER_TABLE_NAME);
+        Column mainColumn = hierTable.getColumn(model.MAIN_KEY);
+        List<Column> whatColumns = new ArrayList<>();
+        whatColumns.add(mainColumn);
+        whatColumns.add(hierTable.getColumn(model.HIER_PARENT_KEY));
+        whatColumns.add(hierTable.getColumn(model.MAIN_PRIMARY_TYPE_KEY));
+        Table proxyTable = null;
+        if (proxiesEnabled) {
+            proxyTable = database.getTable(model.PROXY_TABLE_NAME);
+            whatColumns.add(proxyTable.getColumn(model.PROXY_TARGET_KEY));
+            whatColumns.add(proxyTable.getColumn(model.PROXY_VERSIONABLE_KEY));
+        }
+        List<String> selectWhats = new ArrayList<>(whatColumns.size());
+        for (Column col : whatColumns) {
+            selectWhats.add(col.getFullQuotedName());
+        }
+        Select select = new Select(null);
+        select.setWhat(StringUtils.join(selectWhats, ", "));
+        String from = hierTable.getQuotedName();
+        if (proxiesEnabled) {
+            from += " LEFT JOIN " + proxyTable.getQuotedName() + " ON " + mainColumn.getFullQuotedName() + " = "
+                    + proxyTable.getColumn(model.MAIN_KEY).getFullQuotedName();
+        }
+        select.setFrom(from);
+        Column whereColumn = hierTable.getColumn(model.HIER_PARENT_KEY);
+        StringBuilder wherebuf = new StringBuilder(whereColumn.getFullQuotedName());
+        if (nids == 1) {
+            wherebuf.append(" = ?");
+        } else {
+            wherebuf.append(" IN (");
+            for (int i = 0; i < nids; i++) {
+                if (i != 0) {
+                    wherebuf.append(", ");
+                }
+                wherebuf.append('?');
+            }
+            wherebuf.append(')');
+        }
+        wherebuf.append(" AND ");
+        wherebuf.append(hierTable.getColumn(model.HIER_CHILD_ISPROPERTY_KEY).getFullQuotedName());
+        wherebuf.append(" = " + dialect.toBooleanValueString(false)); // not complex
+        wherebuf.append(getSoftDeleteClause(model.HIER_TABLE_NAME));
+        select.setWhere(wherebuf.toString());
+        return new SQLInfoSelect(select.getStatement(), whatColumns, Collections.singletonList(whereColumn), null);
+    }
+
     // ----- delete -----
 
     /**

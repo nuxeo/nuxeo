@@ -856,6 +856,15 @@ public abstract class Dialect {
     }
 
     /**
+     * Checks whether {@link #getInTreeSQL} is optimized for fast results (using an ancestors or descendants table).
+     *
+     * @since 7.10, 6.0-HF21
+     */
+    public boolean supportsFastDescendants() {
+        return false;
+    }
+
+    /**
      * Gets the expression to use to check tree membership.
      *
      * @param idColumnName the quoted name of the id column to use
