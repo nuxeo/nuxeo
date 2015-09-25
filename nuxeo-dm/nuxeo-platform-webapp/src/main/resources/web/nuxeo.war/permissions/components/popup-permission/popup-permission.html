@@ -27,7 +27,7 @@
             <paper-icon-button raised="true" on-click="togglePopup" icon="editor:mode-edit"></paper-icon-button>
         </template>
 
-        <paper-dialog id="popupRight">
+        <paper-dialog id="popupRight" modal _bound-on-focus="ignoreBoundOnFocus">
             <template is="dom-if" if="{{!updatingACE}}">
                 <h2>[[i18n('label.permissions.addPermission', 'Add a Permission')]]</h2>
             </template>
@@ -51,7 +51,7 @@
                     <paper-dropdown-menu>
                         <paper-menu class="dropdown-content" selected="{{params.permission}}" attr-for-selected="permission">
                             <template is="dom-repeat" items="[[userVisiblePermissions]]" as="permission">
-                                <paper-item permission="[[permission]]">[[i18n('label.security.permission.' + permissions, permission)]]</paper-item>
+                                <paper-item permission="[[permission]]">[[i18n(permission, permission)]]</paper-item>
                             </template>
                         </paper-menu>
                     </paper-dropdown-menu>
@@ -88,9 +88,12 @@
             <div class="buttons">
                 <paper-button dialog-dismiss>[[i18n('label.permissions.cancel', 'Cancel')]]</paper-button>
                 <template is="dom-if" if="{{!updatingACE}}">
-                    <paper-button on-tap="doSend">[[i18n('label.permissions.createAndAdd', 'Create and add another')]]</paper-button>
+                    <paper-button on-tap="doCreateAndAdd">[[i18n('label.permissions.createAndAdd', 'Create and add another')]]</paper-button>
+                    <paper-button class="colorful" on-tap="doCreate">[[i18n('label.permissions.create', 'Create')]]</paper-button>
                 </template>
-                <paper-button class="colorful" on-tap="doSend"><template is="dom-if" if="{{!updatingACE}}">[[i18n('label.permissions.create', 'Create')]]</template><template is="dom-if" if="{{updatingACE}}">[[i18n('label.permissions.update', 'Update')]]</template></paper-button>
+                <template is="dom-if" if="{{updatingACE}}">
+                    <paper-button class="colorful" on-tap="doUpdate">[[i18n('label.permissions.update', 'Update')]]</paper-button>
+                </template>
             </div>
         </paper-dialog>
     </template>
@@ -143,7 +146,19 @@
             this.$.popupRight.toggle();
         },
 
-        doSend: function() {
+        doCreate: function() {
+            this._doSend(true);
+        },
+
+        doCreateAndAdd: function() {
+            this._doSend(false);
+        },
+
+        doUpdate: function() {
+            this._doSend(true);
+        },
+
+        _doSend: function(togglePopup) {
             if (!this.params.username || !this.params.permission) {
                 // do nothing
                 return;
@@ -166,7 +181,10 @@
             } else {
                 this.$.createOp.execute();
             }
-            this.togglePopup();
+
+            if (togglePopup) {
+                this.togglePopup();
+            }
         },
 
         handleResponse: function() {
@@ -220,6 +238,7 @@
 
             if (ace !== null) {
                 params.id = ace.id;
+                params.username = ace.username;
                 params.permission = ace.permission;
                 params.notify = ace.notify;
                 params.comment = ace.comment;
