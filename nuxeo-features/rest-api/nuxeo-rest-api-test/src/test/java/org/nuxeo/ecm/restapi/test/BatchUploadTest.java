@@ -424,6 +424,85 @@ public class BatchUploadTest extends BaseTest {
     }
 
     /**
+     * Tests the use of /upload using file chunks + /batch/execute.
+     *
+     * @since 7.4
+     */
+    @Test
+    public void testBatchExecuteWithChunkedUpload() throws IOException {
+        // Get batch id, used as a session id
+        ClientResponse response = getResponse(RequestType.POST, "upload");
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        String batchId = node.get("batchId").getValueAsText();
+
+        // Upload chunks in desorder
+        String fileName = URLEncoder.encode("Fichier accentué.txt", "UTF-8");
+        String mimeType = "text/plain";
+        String fileContent = "Contenu accentué composé de 2 chunks";
+        String fileSize = String.valueOf(fileContent.getBytes().length);
+        String chunk1 = "Contenu accentué compo";
+        String chunkLength1 = String.valueOf(chunk1.getBytes().length);
+        String chunk2 = "sé de 2 chunks";
+        String chunkLength2 = String.valueOf(chunk2.getBytes().length);
+
+        // Chunk 2
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/octet-stream");
+        headers.put("X-Upload-Type", "chunked");
+        headers.put("Content-Length", chunkLength2);
+        headers.put("X-Upload-Chunk-Index", "1");
+        headers.put("X-Upload-Chunk-Count", "2");
+        headers.put("X-File-Name", fileName);
+        headers.put("X-File-Size", fileSize);
+        headers.put("X-File-Type", mimeType);
+
+        response = getResponse(RequestType.POST, "upload/" + batchId + "/0", chunk2, headers);
+        assertEquals(308, response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(batchId, node.get("batchId").getValueAsText());
+        assertEquals("0", node.get("fileIdx").getValueAsText());
+        assertEquals("chunked", node.get("uploadType").getValueAsText());
+        assertEquals(chunkLength2, node.get("uploadedSize").getValueAsText());
+        assertEquals("1", node.get("uploadedChunkId").getValueAsText());
+        assertEquals("2", node.get("chunkCount").getValueAsText());
+
+        // Chunk 1
+        headers.put("Content-Length", chunkLength1);
+        headers.put("X-Upload-Chunk-Index", "0");
+        response = getResponse(RequestType.POST, "upload/" + batchId + "/0", chunk1, headers);
+        assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(batchId, node.get("batchId").getValueAsText());
+        assertEquals("0", node.get("fileIdx").getValueAsText());
+        assertEquals("chunked", node.get("uploadType").getValueAsText());
+        assertEquals(chunkLength1, node.get("uploadedSize").getValueAsText());
+        assertEquals("0", node.get("uploadedChunkId").getValueAsText());
+        assertEquals("2", node.get("chunkCount").getValueAsText());
+
+        // Create a doc and attach the uploaded blob to it using the /batch/execute endpoint
+        DocumentModel file = session.createDocumentModel("/", "testBatchExecuteDoc", "File");
+        file = session.createDocument(file);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        String json = "{\"params\":{";
+        json += "\"operationId\":\"Blob.Attach\",";
+        json += "\"batchId\":\"" + batchId + "\",";
+        json += "\"fileIdx\":\"0\",";
+        json += "\"document\":\"" + file.getPathAsString() + "\"";
+        json += "}}";
+        response = getResponse(RequestType.POSTREQUEST, "batch/execute", json);
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+
+        DocumentModel doc = session.getDocument(new PathRef("/testBatchExecuteDoc"));
+        Blob blob = (Blob) doc.getPropertyValue("file:content");
+        assertNotNull(blob);
+        assertEquals("Fichier accentué.txt", blob.getFilename());
+        assertEquals("text/plain", blob.getMimeType());
+        assertEquals("Contenu accentué composé de 2 chunks", blob.getString());
+    }
+
+    /**
      * @since 7.4
      */
     @Test
