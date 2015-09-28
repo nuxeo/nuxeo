@@ -27,7 +27,7 @@
             <paper-icon-button raised="true" on-click="togglePopup" icon="editor:mode-edit"></paper-icon-button>
         </template>
 
-        <paper-dialog id="popupRight" modal _bound-on-focus="{{ignoreBoundOnFocus}}">
+        <paper-dialog id="popupRight" modal _bound-on-focus="{{_ignoreBoundOnFocus}}">
             <template is="dom-if" if="{{!updatingACE}}">
                 <h2>[[i18n('label.permissions.addPermission', 'Add a Permission')]]</h2>
             </template>
@@ -136,6 +136,13 @@
             selectedTimeFrame: {
                 type: String,
                 value: 'permanent'
+            },
+
+            _ignoreBoundOnFocus: {
+                type: Function,
+                value: function() {
+                    return this._onFocus.bind(this);
+                }
             }
         },
 
@@ -271,6 +278,10 @@
             if (ace !== null) {
                 return ace.begin !== null;
             }
+        },
+
+        _onFocus: function() {
+
         }
     });
 </script>
