@@ -106,7 +106,7 @@
     <module>nuxeo-core-binarymanager-s3</module>
     <module>nuxeo-core-binarymanager-jclouds</module>
     <module>nuxeo-diff</module>
-    <module>nuxeo-template-rendering</module>
+    <!-- <module>nuxeo-template-rendering</module> -->
     <module>nuxeo-web-mobile</module>
     <module>nuxeo-csv</module>
     <module>nuxeo-tree-snapshot</module>
