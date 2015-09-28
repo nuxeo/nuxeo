@@ -1,8 +1,16 @@
-#Nuxeo Shibboleth Invitation
+
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-shibboleth-invitation-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-shibboleth-invitation-master/)
+
+## About Nuxeo Shibboleth Invitation
 
 The **Nuxeo** addon _nuxeo-shibboleth-invitation_ provides the ability to invite external user to access Nuxeo platform through basic or Shibboleth authentication.
 
-# Getting Started
+
+## Building
+
+    mvn clean install
+
+## Getting Started
 
 - [Download a Nuxeo server](http://www.nuxeo.com/en/downloads) (the zip version)
 
@@ -33,16 +41,12 @@ The **Nuxeo** addon _nuxeo-shibboleth-invitation_ provides the ability to invite
 
 Note: Your machine needs internet access. If you have a proxy setting, skip the mp-init and mp-install steps at first, just do nuxeoctl start and run the wizzard where you will be asked your proxy settings.
 
-## Building
-
-    mvn clean install
-
-## Deploying
+### Deploying
 
 Install [the Nuxeo Shibboleth Invitation Marketplace Package](https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-shibboleth-invitation).
 Or manually copy the built artifacts into `$NUXEO_HOME/templates/custom/bundles/` and activate the "custom" template.
 
-## Configuring
+### Configuring
 
 Create in `$NUXEO_HOME/nxserver/config` the following shibboleth-config.xml file:
 
@@ -70,10 +74,6 @@ Create in `$NUXEO_HOME/nxserver/config` the following shibboleth-config.xml file
   </extension>
 </component>
 ````
-
-## QA results
-
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-shibboleth-invitation-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-shibboleth-invitation-master/)
 
 ##Report & Contribute
 
