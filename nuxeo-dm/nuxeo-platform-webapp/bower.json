@@ -2,7 +2,7 @@
   "name": "nuxeo-platform-webapp",
   "version": "0.0.0",
   "dependencies": {
-    "nuxeo": "~0.4.2",
+    "nuxeo": "0.6.0",
     "polymer": "Polymer/polymer#^1.0.0",
     "nuxeo-elements": "nuxeo/nuxeo-elements#master",
     "iron-autogrow-textarea": "PolymerElements/iron-autogrow-textarea#^1.0.0",
