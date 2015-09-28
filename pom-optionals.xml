@@ -24,6 +24,7 @@ included in the default full build). Thus they are not deprecated.</description>
     <module>nuxeo-fsexporter</module>
     <module>nuxeo-platform-smart-search</module>
     <module>nuxeo-platform-classification</module>
+    <module>nuxeo-multi-tenant</module>
   </modules>
 
   <!-- dependencyManagement of optional addons must be defined in pom.xml -->
