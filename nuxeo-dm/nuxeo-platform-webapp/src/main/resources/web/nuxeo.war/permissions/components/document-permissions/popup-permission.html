@@ -27,7 +27,7 @@
             <paper-icon-button raised="true" on-click="togglePopup" icon="editor:mode-edit"></paper-icon-button>
         </template>
 
-        <paper-dialog id="popupRight" modal _bound-on-focus="ignoreBoundOnFocus">
+        <paper-dialog id="popupRight" modal _bound-on-focus="{{ignoreBoundOnFocus}}">
             <template is="dom-if" if="{{!updatingACE}}">
                 <h2>[[i18n('label.permissions.addPermission', 'Add a Permission')]]</h2>
             </template>
@@ -65,12 +65,12 @@
                     <div class="timeFrameLabel disabled">[[i18n('label.permissions.from', 'From')]]</div>
                     <div>
                         <paper-input id="begin" type="date" value="{{params.begin}}"
-                          disabled="{{disableTimeFrame}}"/>
+                          disabled="{{disableTimeFrame}}" placeholder="mm/dd/yyyy" />
                     </div>
                     <div class="timeFrameLabel disabled">[[i18n('label.permissions.to', 'To')]]</div>
                     <div>
                         <paper-input id="end" type="date" value="{{params.end}}"
-                          disabled="{{disableTimeFrame}}"/>
+                          disabled="{{disableTimeFrame}}" placeholder="mm/dd/yyyy" />
                     </div>
                 </div>
                 <div id="notification">
@@ -203,7 +203,7 @@
         },
 
         toggleCommentText: function(event) {
-            var checked = event.element().checked;
+            var checked = event.target.checked;
             this.$.notification.querySelector('#commentText').readonly = !checked;
             if (!checked) {
                 this.set('params.comment', '');
@@ -211,7 +211,7 @@
         },
 
         toggleTimeFrame: function(event) {
-            var name = event.element().name;
+            var name = event.target.name;
             this.set('selectedTimeFrame', name);
             var disabled = name === 'datebased' ? false : true;
             this.set('disableTimeFrame', disabled);
