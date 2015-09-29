@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.core.redis.contribs;
 
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.cache.Cache;
@@ -29,8 +27,6 @@ import org.nuxeo.ecm.core.transientstore.AbstractTransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
 import org.nuxeo.runtime.api.Framework;
-
-import redis.clients.jedis.Jedis;
 
 /**
  * Redis implementation (i.e. Cluster Aware) implementation of the {@link TransientStore}
@@ -101,7 +97,7 @@ public class RedisTransientStore extends AbstractTransientStore {
     protected void setStorageSize(final long newSize) {
         try {
             redisExecutor.execute((RedisCallable<Void>) jedis -> {
-                jedis.set(namespace, ""+newSize);
+                jedis.set(namespace, "" + newSize);
                 return null;
             });
         } catch (Exception e) {

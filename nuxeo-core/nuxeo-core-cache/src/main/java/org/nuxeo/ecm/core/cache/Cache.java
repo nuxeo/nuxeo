@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.core.cache;
 
-import java.io.IOException;
 import java.io.Serializable;
 
 /**

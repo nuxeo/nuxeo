@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;

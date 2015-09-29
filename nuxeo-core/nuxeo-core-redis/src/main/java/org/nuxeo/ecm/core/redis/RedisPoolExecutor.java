@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.nuxeo.ecm.core.redis;
 
-import java.io.IOException;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;

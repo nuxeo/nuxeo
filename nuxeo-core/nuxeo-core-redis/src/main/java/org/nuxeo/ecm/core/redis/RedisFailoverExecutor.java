@@ -8,8 +8,6 @@
  ******************************************************************************/
 package org.nuxeo.ecm.core.redis;
 
-import java.io.IOException;
-
 import org.nuxeo.ecm.core.redis.retry.ExponentialBackofDelay;
 import org.nuxeo.ecm.core.redis.retry.Retry;
 import org.nuxeo.ecm.core.redis.retry.Retry.ContinueException;

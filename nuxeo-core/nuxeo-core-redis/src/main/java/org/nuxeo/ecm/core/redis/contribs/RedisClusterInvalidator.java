@@ -15,6 +15,9 @@ package org.nuxeo.ecm.core.redis.contribs;/*
  *     Benoit Delbosc
  */
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -24,11 +27,9 @@ import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.runtime.api.Framework;
+
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.Pipeline;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
 
 /**
  * Redis implementation of {@link ClusterInvalidator}.

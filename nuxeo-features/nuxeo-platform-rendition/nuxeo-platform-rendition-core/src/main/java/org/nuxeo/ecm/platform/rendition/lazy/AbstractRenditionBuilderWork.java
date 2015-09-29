@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.rendition.lazy;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
