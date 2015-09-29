@@ -63,6 +63,7 @@
     <nuxeo.datadog.reporter.version>7.4-SNAPSHOT</nuxeo.datadog.reporter.version>
     <nuxeo.review.workflows.dashboards.version>7.4-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
     <nuxeo.salesforce.version>7.4-SNAPSHOT</nuxeo.salesforce.version>
+    <nuxeo.playground.version>7.4-SNAPSHOT</nuxeo.playground.version>
 
     <!-- optional addons -->
     <nuxeo.jbpm.version>7.4-SNAPSHOT</nuxeo.jbpm.version>
@@ -1064,6 +1065,12 @@
         <version>${nuxeo.salesforce.version}</version>
       </dependency>
 
+      <!-- Nuxeo API Playground -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-api-playground</artifactId>
+        <version>${nuxeo.playground.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
