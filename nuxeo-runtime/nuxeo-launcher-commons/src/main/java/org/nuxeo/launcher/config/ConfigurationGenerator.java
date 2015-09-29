@@ -88,9 +88,11 @@ public class ConfigurationGenerator {
     public static final String TEMPLATE_SEPARATOR = ",";
 
     /**
+     * Accurate but not used internally. NXP-18023: Java 8 update 40+ required
+     *
      * @since 5.7
      */
-    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.7", "1.8" };
+    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.8.0_40" };
 
     /**
      * @since 5.6
@@ -578,7 +580,7 @@ public class ConfigurationGenerator {
      * Old way of detecting if seam debug is set, by checking for the presence of a file.
      * <p>
      * On 5.6, using the config generator to get the info from the nuxeo.conf file makes it possible to get the property
-     * value this early, so adding an empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer needed.
+     * value this early, so adding an empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG_FILE} is no longer needed.
      *
      * @deprecated since 5.6
      */
@@ -1234,30 +1236,27 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Check that the process is executed with a supported Java version
+     * Check that the process is executed with a supported Java version. See <a
+     * href="http://www.oracle.com/technetwork/java/javase/versioning-naming-139433.html">J2SE SDK/JRE Version String
+     * Naming Convention</a>
      *
      * @throws ConfigurationException
      * @since 5.6
      */
     public void checkJavaVersion() throws ConfigurationException {
+        String[] requiredVersion = COMPLIANT_JAVA_VERSIONS[0].split("_");
         String version = System.getProperty("java.version");
-        boolean isCompliant = false;
-        boolean isGreater = false;
-        for (String compliantJava : COMPLIANT_JAVA_VERSIONS) {
-            if (version.startsWith(compliantJava)) {
-                isCompliant = true;
-                break;
-            } else if (version.compareTo(compliantJava) > 0) {
-                isGreater = true;
-            }
-        }
+        String[] versionSplit = version.split("_");
+        boolean isCompliant = requiredVersion[0].equals(versionSplit[0])
+                && requiredVersion[1].compareTo(versionSplit[1]) <= 0;
+        boolean isGreater = requiredVersion[0].compareTo(versionSplit[0]) < 0;
         if (!isCompliant) {
-            String message = String.format("Nuxeo requires Java %s (detected %s).",
-                    ArrayUtils.toString(COMPLIANT_JAVA_VERSIONS), version);
+            String message = String.format("Nuxeo requires Java %s+ (detected %s).", COMPLIANT_JAVA_VERSIONS[0],
+                    version);
             if (isGreater || "nofail".equalsIgnoreCase(System.getProperty("jvmcheck", "fail"))) {
                 log.warn(message);
             } else {
-                throw new ConfigurationException(message);
+                throw new ConfigurationException(message + " See 'jvmcheck' option to bypass version check.");
             }
         }
     }
