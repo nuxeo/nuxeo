@@ -30,7 +30,7 @@
       cache="true">
       <ui:include src="/incl/select2_js.xhtml" />
 
-      <a4j:region>
+      <a4j:region rendered="#{not empty field_0 || widget.mode == 'edit'}">
         <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
           required="#{widgetProperty_required}" var="currentValue">
           <nxu:validateDocumentConstraint />
