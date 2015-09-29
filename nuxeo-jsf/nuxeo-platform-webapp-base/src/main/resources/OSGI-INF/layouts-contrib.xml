@@ -5655,7 +5655,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="user">login</field>
+          <field schema="user">username</field>
         </fields>
         <widgetModes>
           <mode value="create">hidden</mode>
