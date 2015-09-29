@@ -104,6 +104,9 @@ public class MetaValueExpression extends ValueExpression implements Serializable
     }
 
     private ELContext getLocalContext(ELContext context) {
+        if (fnMapper == null && varMapper == null) {
+            return context;
+        }
         return new org.nuxeo.ecm.platform.ui.web.binding.EvaluationContext(context, fnMapper, varMapper);
     }
 
