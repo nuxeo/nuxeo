@@ -476,6 +476,9 @@
         <layout name="toggleableLayout"
           src="sources/OSGI-INF/demo/layout-demo-toggleable-layout-widget.xml"
           addForm="false" hideEditMode="true" />
+        <layout name="toggleableLayoutStudio"
+          src="sources/OSGI-INF/demo/layout-demo-toggleable-layout-studio-widget.xml"
+          addForm="false" hideEditMode="true" />
       </layouts>
       <!-- XXX: maybe enable when toggle actually works inside the frame -->
       <preview enabled="false" hideEditMode="true">

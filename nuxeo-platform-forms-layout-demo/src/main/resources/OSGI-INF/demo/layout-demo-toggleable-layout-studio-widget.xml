@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.forms.layoutDemo.toggleableLayoutWidget.studio.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="toggleableLayoutStudio">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>toggleableLayoutStudioWidget</widget>
+        </row>
+      </rows>
+      <widget name="toggleableLayoutStudioWidget" type="toggleableLayoutWithForms">
+        <labels>
+          <label mode="any">Toggleable layout widget with expression in
+            initialLayoutName</label>
+        </labels>
+        <translated>false</translated>
+        <handlingLabels>true</handlingLabels>
+        <properties widgetMode="any">
+          <property name="initialLayoutName">#{layoutWidgetMode ==
+            'edit'?'demoToggleableLayout@edit':'demoToggleableLayout@view'}
+          </property>
+          <property name="useAjaxForm">true</property>
+          <property name="displayToggleActionInHeader">true</property>
+          <!-- hook up specific actions for demo -->
+          <property name="canToggleMode">true</property>
+          <property name="hideDefaultActions">true</property>
+          <property name="additionalActionsCategory">TOGGLEABLE_LAYOUT_DEMO</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="demoToggleableLayout@view">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>l10ncoverage</widget>
+        </row>
+        <row>
+          <widget>datetimeWidget</widget>
+        </row>
+        <row>
+          <widget>intWidget</widget>
+          <widget>checkboxWidget</widget>
+        </row>
+      </rows>
+      <widget name="l10ncoverage" type="suggestOneDirectory">
+        <labels>
+          <label mode="any">Suggest widget:</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>lds:select_coverage_field</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="directoryName">l10ncoverage</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+        </properties>
+      </widget>
+      <widget name="datetimeWidget" type="datetime">
+        <labels>
+          <label mode="any">Datetime widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:dateField</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="intWidget" type="int">
+        <labels>
+          <label mode="any">Int widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:intField</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="checkboxWidget" type="checkbox">
+        <labels>
+          <label mode="any">Checkbox widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:booleanField</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
+      </widget>
+    </layout>
+
+    <layout name="demoToggleableLayout@edit">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>l10ncoverage</widget>
+        </row>
+        <row>
+          <widget>datetimeWidget</widget>
+        </row>
+        <row>
+          <widget>intWidget</widget>
+          <widget>checkboxWidget</widget>
+        </row>
+      </rows>
+      <widget name="l10ncoverage" type="suggestOneDirectory">
+        <labels>
+          <label mode="any">Suggest widget:</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>lds:select_coverage_field</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="width">300</property>
+          <property name="labelFieldName">label_{lang}</property>
+          <property name="dbl10n">true</property>
+          <property name="minChars">0</property>
+          <property name="hideHelpLabel">true</property>
+          <property name="directoryName">l10ncoverage</property>
+          <property name="keySeparator">/</property>
+          <property name="placeholder">Choose a country</property>
+          <property name="documentSchemas">dublincore,layout_demo_schema</property>
+          <property name="repository">default</property>
+        </properties>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
+      </widget>
+      <widget name="datetimeWidget" type="datetime">
+        <labels>
+          <label mode="any">Datetime widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:dateField</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="intWidget" type="int">
+        <labels>
+          <label mode="any">Int widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:intField</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+      </widget>
+      <widget name="checkboxWidget" type="checkbox">
+        <labels>
+          <label mode="any">Checkbox widget</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>lds:booleanField</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+        <controls mode="any">
+          <!-- enable ajax submit on change/click/select on demo application -->
+          <control name="supportInsideInputWidgetEffects">true</control>
+        </controls>
+      </widget>
+    </layout>
+
+  </extension>
+
+
+
+</component>
