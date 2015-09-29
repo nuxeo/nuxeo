@@ -75,6 +75,14 @@ public class SetTagHandler extends AliasTagHandler {
      */
     protected final TagAttribute blockMerge;
 
+    /**
+     * Determines in which context expression will be evaluated when expression is not cached and resolved twice (build
+     * time by default, render time if local).
+     *
+     * @since 7.10
+     */
+    protected final TagAttribute local;
+
     public SetTagHandler(ComponentConfig config) {
         super(config, null);
         var = getRequiredAttribute("var");
@@ -82,11 +90,12 @@ public class SetTagHandler extends AliasTagHandler {
         resolveTwice = getAttribute("resolveTwice");
         blockPatterns = getAttribute("blockPatterns");
         blockMerge = getAttribute("blockMerge");
+        local = getAttribute("local");
     }
 
     @Override
-    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
-            ELException {
+    public void apply(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
         // make sure our parent is not null
         if (parent == null) {
             throw new TagException(tag, "Parent UIComponent was null");
@@ -158,7 +167,15 @@ public class SetTagHandler extends AliasTagHandler {
         } else {
             ve = value.getValueExpression(ctx, Object.class);
             if (resolveTwiceBool) {
-                ve = new MetaValueExpression(ve, ctx.getFunctionMapper(), ctx.getVariableMapper());
+                boolean localBool = false;
+                if (local != null) {
+                    localBool = local.getBoolean(ctx);
+                }
+                if (localBool) {
+                    ve = new MetaValueExpression(ve);
+                } else {
+                    ve = new MetaValueExpression(ve, ctx.getFunctionMapper(), ctx.getVariableMapper());
+                }
             }
         }
 
