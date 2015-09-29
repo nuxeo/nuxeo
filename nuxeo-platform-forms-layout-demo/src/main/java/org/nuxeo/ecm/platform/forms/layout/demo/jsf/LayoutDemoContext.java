@@ -147,6 +147,7 @@ public class LayoutDemoContext implements Serializable {
             bareDemoDocument = generateBareDemoDocument();
             bareDemoDocument.setPropertyValue("dc:title", "My title");
             bareDemoDocument.setPropertyValue("dc:description", "My description");
+            bareDemoDocument.setPropertyValue("lds:select_coverage_field", "europe/France");
         }
         return bareDemoDocument;
     }

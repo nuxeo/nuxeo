@@ -24,6 +24,7 @@ import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.DateWidgetElement;
 import org.nuxeo.functionaltests.forms.LayoutElement;
 import org.nuxeo.functionaltests.forms.RichEditorElement;
+import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -31,6 +32,8 @@ import org.openqa.selenium.WebElement;
  * @since 7.4
  */
 public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
+
+    private final static String VALUE_REQUIRED = "Value is required";
 
     public ITToggleableLayoutWidgetTest() {
         super("toggleableLayoutWidget");
@@ -103,6 +106,57 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         assertEquals("My title", driver.findElement(By.id(viewIdPrefix + "nxl_heading:nxw_title")).getText());
         assertEquals("My description",
                 driver.findElement(By.id(viewIdPrefix + "nxl_heading:nxw_description")).getText());
+    }
+
+    /**
+     * Non regression test for toggleable layout as defined on Studio (holding an expression as initial layout name).
+     *
+     * @since 7.10
+     */
+    @Test
+    public void testStudioWidget() {
+        navigateTo(pageId);
+        checkNoError();
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
+
+        Select2WidgetElement viewSuggest = new Select2WidgetElement(driver,
+                "s2id_nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_initialForm:nxl_demoToggleableLayout_view:nxw_l10ncoverage_select2");
+        assertEquals("Europe/France", viewSuggest.getText());
+
+        String toggleButtonId = "nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_headerForm:nxw_toggleableLayoutStudioWidget_header_toggleAction";
+        WebElement toggleAction = driver.findElement(By.id(toggleButtonId));
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.watchAjaxRequests();
+        toggleAction.click();
+        arm.waitForAjaxRequests();
+
+        // check toggled form submit
+        String editIdPrefix = "nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_toggledForm:";
+        LayoutElement edit = new LayoutElement(driver, editIdPrefix);
+        Select2WidgetElement suggest = new Select2WidgetElement(driver,
+                "s2id_nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_toggledForm:nxl_demoToggleableLayout_edit:nxw_l10ncoverage_1_select2");
+        suggest.selectValue("Germany", true);
+        edit.getWidget("nxl_demoToggleableLayout_edit:nxw_datetimeWidget_2", DateWidgetElement.class).setInputValue(
+                "09/7/2010 03:14 PM");
+        edit.getWidget("nxl_demoToggleableLayout_edit:nxw_intWidget_2").setInputValue("42");
+
+        String saveButtonId = editIdPrefix + "nxw_toggleableLayoutStudioWidget_saveDemoToggleableLayout";
+        WebElement saveAction = driver.findElement(By.id(saveButtonId));
+        assertEquals("Save", saveAction.getAttribute("value"));
+        arm = new AjaxRequestManager(driver);
+        arm.watchAjaxRequests();
+        saveAction.click();
+        arm.waitForAjaxRequests();
+        Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), VALUE_REQUIRED);
+
+        viewSuggest = new Select2WidgetElement(driver,
+                "s2id_nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_initialForm:nxl_demoToggleableLayout_view:nxw_l10ncoverage_select2");
+        assertEquals("Europe/Germany", viewSuggest.getText());
+
+        navigateTo(pageId);
+        viewSuggest = new Select2WidgetElement(driver,
+                "s2id_nxl_toggleableLayoutStudio:nxw_toggleableLayoutStudioWidget_initialForm:nxl_demoToggleableLayout_view:nxw_l10ncoverage_select2");
+        assertEquals("Europe/France", viewSuggest.getText());
     }
 
     protected WebElement checkToggleButton(boolean isEdit) {
