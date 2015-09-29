@@ -5536,7 +5536,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="userinfo">login</field>
+          <field schema="user">username</field>
         </fields>
         <widgetModes>
           <mode value="create">edit</mode>
@@ -5557,7 +5557,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="userinfo">firstName</field>
+          <field schema="user">firstName</field>
         </fields>
         <widgetModes>
           <mode value="editPassword">hidden</mode>
@@ -5572,7 +5572,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="userinfo">lastName</field>
+          <field schema="user">lastName</field>
         </fields>
         <widgetModes>
           <mode value="editPassword">hidden</mode>
@@ -5587,7 +5587,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="userinfo">company</field>
+          <field schema="user">company</field>
         </fields>
         <widgetModes>
           <mode value="editPassword">hidden</mode>
@@ -5602,7 +5602,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="userinfo">email</field>
+          <field schema="user">email</field>
         </fields>
         <widgetModes>
           <mode value="editPassword">hidden</mode>
@@ -5618,7 +5618,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="userinfo">groups</field>
+          <field schema="user">groups</field>
         </fields>
         <widgetModes>
           <mode value="edit">
@@ -5655,7 +5655,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field schema="userinfo">login</field>
+          <field schema="user">login</field>
         </fields>
         <widgetModes>
           <mode value="create">hidden</mode>

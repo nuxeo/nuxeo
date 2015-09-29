@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
+import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.runtime.api.Framework;
@@ -88,7 +89,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     protected DocumentModel newUser;
 
     protected boolean immediateCreation = false;
-    
+
     protected String defaultRepositoryName = null;
 
     @Override
@@ -146,19 +147,30 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
     public DocumentModel getNewUser() throws ClientException {
         if (newUser == null) {
-
-            if (immediateCreation) {
-                newUser = userManager.getBareUserModel();
-            } else {
-                UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
-                newUser = userRegistrationService.getUserRegistrationModel(null);
-            }
+            newUser = userManager.getBareUserModel();
         }
         return newUser;
     }
 
     public boolean getAllowEditUser() throws ClientException {
         return selectedUser != null && getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
+    }
+
+    protected static DocumentModel wrapToUserRegistration(DocumentModel doc) {
+        UserAdapter userAdapter = doc.getAdapter(UserAdapter.class);
+
+        UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
+        DocumentModel newUserRegistration = userRegistrationService.getUserRegistrationModel(null);
+
+        // Map the values from the object filled in the form
+        newUserRegistration.setPropertyValue("login", userAdapter.getName());
+        newUserRegistration.setPropertyValue("firstName", userAdapter.getFirstName());
+        newUserRegistration.setPropertyValue("lastName", userAdapter.getLastName());
+        newUserRegistration.setPropertyValue("email", userAdapter.getEmail());
+        newUserRegistration.setPropertyValue("groups", userAdapter.getGroups().toArray());
+        newUserRegistration.setPropertyValue("company", userAdapter.getCompany());
+
+        return newUserRegistration;
     }
 
     protected boolean getCanEditUsers(boolean allowCurrentUser) throws ClientException {
@@ -237,7 +249,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
                     resourcesAccessor.getMessages().get("error.userManager.userAlreadyExists"));
         }
     }
-    
+
     private String getDefaultRepositoryName() {
         if (defaultRepositoryName == null) {
             try {
@@ -254,18 +266,18 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         try {
         	UpdateUserUnrestricted runner = new UpdateUserUnrestricted(getDefaultRepositoryName(), selectedUser);
             runner.runUnrestricted();
-             
+
             detailsMode = DETAILS_VIEW_MODE;
             fireSeamEvent(USERS_LISTING_CHANGED);
         } catch (Exception t) {
             throw ClientException.wrap(t);
         }
     }
-    
+
     public String changePassword() throws ClientException {
         updateUser();
         detailsMode = DETAILS_VIEW_MODE;
-        
+
         String message = resourcesAccessor.getMessages().get("label.userManager.password.changed");
         facesMessages.add(FacesMessage.SEVERITY_INFO, message);
         fireSeamEvent(USERS_LISTING_CHANGED);
@@ -412,7 +424,10 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         try {
             Map<String, Serializable> additionnalInfo = new HashMap<String, Serializable>();
             UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
-            userRegistrationService.submitRegistrationRequest(newUser, additionnalInfo, EMAIL, true);
+
+
+            DocumentModel userReg = wrapToUserRegistration(newUser);
+            userRegistrationService.submitRegistrationRequest(userReg, additionnalInfo, EMAIL, true);
             newUser = null;
             // Set the default value for the creation
             immediateCreation = false;
@@ -545,12 +560,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     public void changeTypeUserModel(ValueChangeEvent event) throws ClientException {
         Object newValue = event.getNewValue();
         if (newValue instanceof Boolean) {
-            if ((Boolean) newValue) {
-                newUser = userManager.getBareUserModel();
-            } else {
-                UserInvitationService userRegistrationService = Framework.getLocalService(UserInvitationService.class);
-                newUser = userRegistrationService.getUserRegistrationModel(null);
-            }
+            userManager.getBareUserModel();
         }
     }
 }
