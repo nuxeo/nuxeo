@@ -1061,7 +1061,12 @@
       <!-- Salesforce -->
       <dependency>
         <groupId>org.nuxeo.salesforce</groupId>
-        <artifactId>nuxeo-salesforce</artifactId>
+        <artifactId>nuxeo-salesforce-core</artifactId>
+        <version>${nuxeo.salesforce.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.salesforce</groupId>
+        <artifactId>nuxeo-salesforce-web</artifactId>
         <version>${nuxeo.salesforce.version}</version>
       </dependency>
 
