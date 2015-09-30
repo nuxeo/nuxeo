@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 
@@ -113,6 +115,8 @@ public class DamSearchActions implements Serializable {
     public static final String PAGE_SIZE_PARAMETER = "pageSize";
 
     public static final String CONTENT_VIEW_STATE_PARAMETER = "state";
+
+    public static final String ASSET_VIEW_ID = "/dam/asset.xhtml";
 
     @In(create = true)
     protected DamActions damActions;
@@ -242,6 +246,19 @@ public class DamSearchActions implements Serializable {
     public void updateCurrentDocument(PageProvider<DocumentModel> pageProvider) throws ClientException {
         if (pageProvider == null) {
             return;
+        }
+
+        if (FacesContext.getCurrentInstance() == null) {
+            return;
+        }
+
+        UIViewRoot viewRoot = FacesContext.getCurrentInstance().getViewRoot();
+        if (viewRoot != null) {
+            String viewId = viewRoot.getViewId();
+            // if we are on the single asset view, do not update the selected document
+            if (ASSET_VIEW_ID.equals(viewId)) {
+                return;
+            }
         }
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
