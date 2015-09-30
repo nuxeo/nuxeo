@@ -91,7 +91,7 @@ FOR /F "usebackq eol=# tokens=1,* delims==" %%A in ("%NUXEO_CONF%") do (
 )
 ( ENDLOCAL
   REM ***** Save local variables to global/system variables *****
-  set "JAVA_HOME=%LOCAL_JAVA_HOME%"
+  if NOT "%LOCAL_JAVA_HOME%" == "" set "JAVA_HOME=%LOCAL_JAVA_HOME%"
   set "JAVA_OPTS=%LOCAL_JAVA_OPTS%"
   set "NUXEO_LOG_DIR=%LOCAL_NUXEO_LOG_DIR%"
   set "NUXEO_TMP_DIR=%LOCAL_NUXEO_TMP_DIR%"
@@ -176,6 +176,7 @@ goto END
 
 :HAS_JAVA_HOME
 echo Found JAVA_HOME = %JAVA_HOME%
+set PATH=%JAVA_HOME%\bin;%PATH%
 set JAVA=%JAVA_HOME%\bin\java.exe
 if exist "%JAVA%" goto HAS_JAVA
 echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure Java is properly installed.
@@ -185,7 +186,7 @@ goto END
 echo Using JAVA = %JAVA%
 REM ***** Check Java version
 set REQUIRED_JAVA_VERSION=1.8
-for /f "tokens=3" %%g in ('%JAVA% -version 2^>^&1 ^| findstr /i "version"') do (
+for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (
     set JAVA_VERSION=%%g
 )
 set JAVA_VERSION=%JAVA_VERSION:"=%
