@@ -33,20 +33,18 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Custom page provider configuring a post filter to have only folders with
- * WRITE permission and where assets can be created.
+ * Custom page provider configuring a post filter to have only folders with WRITE permission and where assets can be
+ * created.
  *
  * @since 5.7.2
  */
 public class ImportFolderPageProvider extends CoreQueryDocumentPageProvider {
 
-    public static final Filter WRITE_PERMISSION_FILTER = new PermissionFilter(
-            WRITE, true);
+    public static final Filter WRITE_PERMISSION_FILTER = new PermissionFilter(WRITE, true);
 
     public static final Filter ASSET_SUB_TYPE_FILTER = new AssetSubTypeFilter();
 
-    public static final Filter COMPOUND_FILTER = new CompoundFilter(
-            WRITE_PERMISSION_FILTER, ASSET_SUB_TYPE_FILTER);
+    public static final Filter COMPOUND_FILTER = new CompoundFilter(WRITE_PERMISSION_FILTER, ASSET_SUB_TYPE_FILTER);
 
     @Override
     protected Filter getFilter() {
@@ -63,8 +61,7 @@ public class ImportFolderPageProvider extends CoreQueryDocumentPageProvider {
             TypeManager typeManager = Framework.getLocalService(TypeManager.class);
             DamService damService = Framework.getLocalService(DamService.class);
             List<Type> allowedAssetTypes = damService.getAllowedAssetTypes();
-            Collection<Type> allowedSubTypes = typeManager.getAllowedSubTypes(
-                    doc.getType(), doc);
+            Collection<Type> allowedSubTypes = typeManager.getAllowedSubTypes(doc.getType(), doc);
             for (Type type : allowedAssetTypes) {
                 if (allowedSubTypes.contains(type)) {
                     return true;

@@ -23,8 +23,7 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
- * Object holding information about the Asset Library document where the assets
- * will be stored after importing.
+ * Object holding information about the Asset Library document where the assets will be stored after importing.
  *
  * @since 5.7
  */

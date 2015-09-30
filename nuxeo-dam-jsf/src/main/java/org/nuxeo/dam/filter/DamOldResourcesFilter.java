@@ -28,8 +28,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Filter to redirect "/dam/icons/*" resources to "/icons/" for backward
- * compatibility.
+ * Filter to redirect "/dam/icons/*" resources to "/icons/" for backward compatibility.
  *
  * @since 5.7
  */
@@ -40,16 +39,15 @@ public class DamOldResourcesFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
             String contextPath = httpServletRequest.getContextPath();
             String requestURI = httpServletRequest.getRequestURI();
             requestURI = requestURI.replaceFirst(contextPath, "");
             requestURI = requestURI.replace("/dam/icons", "/icons");
-            httpServletRequest.getRequestDispatcher(requestURI).forward(
-                    request, response);
+            httpServletRequest.getRequestDispatcher(requestURI).forward(request, response);
         }
     }
 

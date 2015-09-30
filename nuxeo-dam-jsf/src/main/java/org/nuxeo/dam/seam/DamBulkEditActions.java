@@ -50,10 +50,9 @@ public class DamBulkEditActions implements Serializable {
 
     @Observer(BulkEditActions.SELECTION_EDITED)
     @SuppressWarnings("unchecked")
-    public void addTagsOnSelection(List<DocumentModel> selectedDocuments,
-            DocumentModel bulkEditDoc) throws ClientException {
-        List<String> tags = (List<String>) bulkEditDoc.getContextData(
-                ScopeType.REQUEST, "dam_bulk_edit_tags");
+    public void addTagsOnSelection(List<DocumentModel> selectedDocuments, DocumentModel bulkEditDoc)
+            throws ClientException {
+        List<String> tags = (List<String>) bulkEditDoc.getContextData(ScopeType.REQUEST, "dam_bulk_edit_tags");
         if (tags != null && !tags.isEmpty()) {
             TagService tagService = Framework.getLocalService(TagService.class);
             String username = documentManager.getPrincipal().getName();

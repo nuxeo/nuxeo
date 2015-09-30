@@ -129,11 +129,9 @@ public class DamImportActions implements Serializable {
 
     public String getSelectedImportOptionId() {
         if (selectedImportOption == null) {
-            selectedImportOption = importOptions != null
-                    && importOptions.size() > 0 ? importOptions.get(0) : null;
+            selectedImportOption = importOptions != null && importOptions.size() > 0 ? importOptions.get(0) : null;
         }
-        return selectedImportOption != null ? selectedImportOption.getId()
-                : null;
+        return selectedImportOption != null ? selectedImportOption.getId() : null;
     }
 
     public void setSelectedImportOptionId(String id) {
@@ -147,8 +145,7 @@ public class DamImportActions implements Serializable {
 
     public Action getSelectedImportOption() {
         if (selectedImportOption == null) {
-            selectedImportOption = importOptions != null
-                    && importOptions.size() > 0 ? importOptions.get(0) : null;
+            selectedImportOption = importOptions != null && importOptions.size() > 0 ? importOptions.get(0) : null;
         }
         return selectedImportOption;
     }
@@ -167,8 +164,7 @@ public class DamImportActions implements Serializable {
             DamService damService = Framework.getLocalService(DamService.class);
             AssetLibrary assetLibrary = damService.getAssetLibrary();
             if (assetLibrary != null) {
-                PathRef ref = new PathRef(
-                        damService.getAssetLibrary().getPath());
+                PathRef ref = new PathRef(damService.getAssetLibrary().getPath());
                 if (documentManager.exists(ref)) {
                     DocumentModel doc = documentManager.getDocument(ref);
                     if (ImportFolderPageProvider.COMPOUND_FILTER.accept(doc)) {
@@ -199,13 +195,11 @@ public class DamImportActions implements Serializable {
             return Collections.emptyList();
         }
 
-        DocumentModel doc = documentManager.getDocument(new IdRef(
-                selectedImportFolderId));
+        DocumentModel doc = documentManager.getDocument(new IdRef(selectedImportFolderId));
         TypeManager typeManager = Framework.getLocalService(TypeManager.class);
         DamService damService = Framework.getLocalService(DamService.class);
         List<Type> allowedAssetTypes = damService.getAllowedAssetTypes();
-        Collection<Type> allowedSubTypes = typeManager.getAllowedSubTypes(
-                doc.getType(), doc);
+        Collection<Type> allowedSubTypes = typeManager.getAllowedSubTypes(doc.getType(), doc);
         List<Type> types = new ArrayList<>();
         for (Type type : allowedAssetTypes) {
             if (allowedSubTypes.contains(type)) {
@@ -221,8 +215,7 @@ public class DamImportActions implements Serializable {
 
     public String generateBatchId() {
         if (currentBatchId == null) {
-            currentBatchId = "batch-" + new Date().getTime() + "-"
-                    + random.nextInt(1000);
+            currentBatchId = "batch-" + new Date().getTime() + "-" + random.nextInt(1000);
         }
         return currentBatchId;
     }
@@ -259,11 +252,9 @@ public class DamImportActions implements Serializable {
 
         try {
             if (dndConfigHelper.useHtml5DragAndDrop()) {
-                importAssetsThroughBatchManager(chainOrOperationId,
-                        contextParams);
+                importAssetsThroughBatchManager(chainOrOperationId, contextParams);
             } else {
-                importAssetsThroughUploadItems(chainOrOperationId,
-                        contextParams);
+                importAssetsThroughUploadItems(chainOrOperationId, contextParams);
             }
         } finally {
             // reset batch state
@@ -273,15 +264,14 @@ public class DamImportActions implements Serializable {
         return null;
     }
 
-    protected void importAssetsThroughBatchManager(String chainOrOperationId,
-            Map<String, Object> contextParams) throws ClientException {
+    protected void importAssetsThroughBatchManager(String chainOrOperationId, Map<String, Object> contextParams)
+            throws ClientException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
-        bm.executeAndClean(currentBatchId, chainOrOperationId, documentManager,
-                contextParams, null);
+        bm.executeAndClean(currentBatchId, chainOrOperationId, documentManager, contextParams, null);
     }
 
-    protected void importAssetsThroughUploadItems(String chainOrOperationId,
-            Map<String, Object> contextParams) throws ClientException {
+    protected void importAssetsThroughUploadItems(String chainOrOperationId, Map<String, Object> contextParams)
+            throws ClientException {
         if (uploadedFiles == null) {
             return;
         }
@@ -289,8 +279,7 @@ public class DamImportActions implements Serializable {
             List<Blob> blobs = new ArrayList<>();
             for (UploadItem uploadItem : uploadedFiles) {
                 String filename = FileUtils.getCleanFileName(uploadItem.getFileName());
-                Blob blob = FileUtils.createTemporaryFileBlob(
-                        uploadItem.getFile(), filename,
+                Blob blob = FileUtils.createTemporaryFileBlob(uploadItem.getFile(), filename,
                         uploadItem.getContentType());
                 blobs.add(blob);
             }
@@ -304,8 +293,7 @@ public class DamImportActions implements Serializable {
                 as.run(ctx, chainOrOperationId.substring(6));
             } else {
                 OperationChain chain = new OperationChain("operation");
-                OperationParameters params = new OperationParameters(
-                        chainOrOperationId, new HashMap<String, Object>());
+                OperationParameters params = new OperationParameters(chainOrOperationId, new HashMap<String, Object>());
                 chain.add(params);
                 as.run(ctx, chain);
             }
@@ -352,8 +340,8 @@ public class DamImportActions implements Serializable {
     /**
      * Gets the selected new asset type.
      * <p>
-     * If selected type is null, initialize it to the first one, and initialize
-     * the changeable document with this document type.
+     * If selected type is null, initialize it to the first one, and initialize the changeable document with this
+     * document type.
      */
     public String getSelectedNewAssetType() throws ClientException {
         if (selectedNewAssetType == null) {
@@ -379,22 +367,18 @@ public class DamImportActions implements Serializable {
             return;
         }
         Map<String, Object> context = new HashMap<String, Object>();
-        DocumentModel changeableDocument = documentManager.createDocumentModel(
-                selectedType, context);
+        DocumentModel changeableDocument = documentManager.createDocumentModel(selectedType, context);
         navigationContext.setChangeableDocument(changeableDocument);
     }
 
     public void saveNewAsset() throws ClientException {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
-        if (StringUtils.isBlank(selectedImportFolderId)
-                || changeableDocument.getId() != null) {
+        if (StringUtils.isBlank(selectedImportFolderId) || changeableDocument.getId() != null) {
             return;
         }
         PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
-        DocumentModel doc = documentManager.getDocument(new IdRef(
-                selectedImportFolderId));
-        changeableDocument.setPathInfo(doc.getPathAsString(),
-                pss.generatePathSegment(changeableDocument));
+        DocumentModel doc = documentManager.getDocument(new IdRef(selectedImportFolderId));
+        changeableDocument.setPathInfo(doc.getPathAsString(), pss.generatePathSegment(changeableDocument));
 
         changeableDocument = documentManager.createDocument(changeableDocument);
         documentManager.save();
@@ -405,8 +389,7 @@ public class DamImportActions implements Serializable {
         // refresh the current dam search
         Events.instance().raiseEvent(REFRESH_DAM_SEARCH);
 
-        facesMessages.add(StatusMessage.Severity.INFO,
-                messages.get("document_saved"),
+        facesMessages.add(StatusMessage.Severity.INFO, messages.get("document_saved"),
                 messages.get(changeableDocument.getType()));
     }
 

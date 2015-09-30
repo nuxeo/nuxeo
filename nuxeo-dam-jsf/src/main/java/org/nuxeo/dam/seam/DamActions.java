@@ -84,10 +84,8 @@ public class DamActions implements Serializable {
         return currentDocument != null ? currentDocument.getId() : null;
     }
 
-    public void setSelectedDocumentId(String selectedDocumentId)
-            throws ClientException {
-        DocumentModel selectedDocument = documentManager.getDocument(new IdRef(
-                selectedDocumentId));
+    public void setSelectedDocumentId(String selectedDocumentId) throws ClientException {
+        DocumentModel selectedDocument = documentManager.getDocument(new IdRef(selectedDocumentId));
         selectDocument(selectedDocument);
     }
 
@@ -101,8 +99,7 @@ public class DamActions implements Serializable {
     }
 
     public void setDamMainTab(String tabs) {
-        webActions.setCurrentTabIds(!StringUtils.isBlank(tabs) ? tabs
-                : MAIN_TABS_DAM);
+        webActions.setCurrentTabIds(!StringUtils.isBlank(tabs) ? tabs : MAIN_TABS_DAM);
     }
 
     public String viewInDM() throws ClientException {
@@ -124,8 +121,7 @@ public class DamActions implements Serializable {
     public boolean getCanCreateInAssetLibrary() throws ClientException {
         AssetLibrary assetLibrary = getAssetLibrary();
         DocumentRef assetLibraryRef = new PathRef(assetLibrary.getPath());
-        return documentManager.hasPermission(assetLibraryRef,
-                SecurityConstants.ADD_CHILDREN);
+        return documentManager.hasPermission(assetLibraryRef, SecurityConstants.ADD_CHILDREN);
     }
 
     public AssetLibrary getAssetLibrary() {

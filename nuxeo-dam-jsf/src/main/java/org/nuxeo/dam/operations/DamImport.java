@@ -37,8 +37,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 
 /**
- * Operation creating asset(s) from file(s) inside the configured Asset Library
- * or the current document.
+ * Operation creating asset(s) from file(s) inside the configured Asset Library or the current document.
  *
  * @since 5.7
  */
@@ -90,14 +89,12 @@ public class DamImport {
         }
 
         try {
-            DocumentModel doc = fileManager.createDocumentFromBlob(session,
-                    blob, path, overwrite, blob.getFilename());
+            DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, path, overwrite, blob.getFilename());
             ctx.put(AddMessage.MESSAGE_PARAMS_KEY, new Object[] { 1 });
             return doc;
         } catch (ClientException e) {
             String[] params = { blob.getFilename(), title };
-            throw new RecoverableClientException("Cannot import asset",
-                    "label.dam.import.asset.error", params, e);
+            throw new RecoverableClientException("Cannot import asset", "label.dam.import.asset.error", params, e);
         }
     }
 

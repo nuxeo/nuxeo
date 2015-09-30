@@ -25,13 +25,11 @@ import java.util.Map;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
- * Registry for activity verbs, handling merge of registered
- * {@link AllowedAssetTypeDescriptor} elements.
+ * Registry for activity verbs, handling merge of registered {@link AllowedAssetTypeDescriptor} elements.
  *
  * @since 5.7
  */
-public class AllowedAssetTypeRegistry extends
-        ContributionFragmentRegistry<AllowedAssetTypeDescriptor> {
+public class AllowedAssetTypeRegistry extends ContributionFragmentRegistry<AllowedAssetTypeDescriptor> {
 
     protected Map<String, AllowedAssetTypeDescriptor> allowedAssetTypes = new LinkedHashMap<>();
 
@@ -49,8 +47,7 @@ public class AllowedAssetTypeRegistry extends
     }
 
     @Override
-    public void contributionUpdated(String id,
-            AllowedAssetTypeDescriptor contrib,
+    public void contributionUpdated(String id, AllowedAssetTypeDescriptor contrib,
             AllowedAssetTypeDescriptor newOrigContrib) {
         if (contrib.isEnabled()) {
             allowedAssetTypes.put(id, contrib);
@@ -60,8 +57,7 @@ public class AllowedAssetTypeRegistry extends
     }
 
     @Override
-    public void contributionRemoved(String id,
-            AllowedAssetTypeDescriptor origContrib) {
+    public void contributionRemoved(String id, AllowedAssetTypeDescriptor origContrib) {
         allowedAssetTypes.remove(id);
     }
 
@@ -71,8 +67,7 @@ public class AllowedAssetTypeRegistry extends
     }
 
     @Override
-    public void merge(AllowedAssetTypeDescriptor src,
-            AllowedAssetTypeDescriptor dst) {
+    public void merge(AllowedAssetTypeDescriptor src, AllowedAssetTypeDescriptor dst) {
         boolean enabled = src.isEnabled();
         if (enabled != dst.isEnabled()) {
             dst.setEnabled(enabled);

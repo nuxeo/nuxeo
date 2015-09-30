@@ -70,8 +70,7 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (ASSET_LIBRARY_EP.equals(extensionPoint)) {
             assetLibrary = (AssetLibrary) contribution;
@@ -81,8 +80,7 @@ public class DamServiceImpl extends DefaultComponent implements DamService {
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (ASSET_LIBRARY_EP.equals(extensionPoint)) {
             assetLibrary = null;
