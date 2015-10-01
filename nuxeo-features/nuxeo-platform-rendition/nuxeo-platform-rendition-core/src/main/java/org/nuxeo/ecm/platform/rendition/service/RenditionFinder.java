@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.rendition.service;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_NAME_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -47,26 +48,40 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
     @Override
     public void run() {
 
-        String query = "select * from Document where ecm:isProxy = 0 AND  ecm:isCheckedInVersion = 1 AND ";
+        String query = "select * from Document where ecm:isProxy = 0 AND ";
         query = query + RENDITION_NAME_PROPERTY + "='" + definitionName + "' AND ";
-        String versionUUUID = source.getId();
-        if (!source.isVersion() && !source.isCheckedOut()) {
-            DocumentModel lastVersion = session.getLastDocumentVersion(source.getRef());
-            if (lastVersion != null) {
-                versionUUUID = lastVersion.getId();
-            } else {
-                // no version at all
-                return;
+        boolean isVersionable = source.isVersionable();
+        String renditionSourceId = source.getId();
+        if (isVersionable) {
+            if (!source.isVersion() && !source.isCheckedOut()) {
+                DocumentModel lastVersion = session.getLastDocumentVersion(source.getRef());
+                if (lastVersion != null) {
+                    renditionSourceId = lastVersion.getId();
+                } else {
+                    // no version at all
+                    return;
+                }
             }
+            query = query + "ecm:isCheckedInVersion = 1 AND ";
         }
-        query = query + RENDITION_SOURCE_ID_PROPERTY + "='" + versionUUUID + "' ";
-
-        query = query + " order by dc:modified desc ";
+        query = query + RENDITION_SOURCE_ID_PROPERTY + "='" + renditionSourceId + "' ";
+        query = query + "order by dc:modified desc ";
 
         List<DocumentModel> docs = session.query(query);
         if (docs.size() > 0) {
             storedRendition = docs.get(0);
-            storedRendition.detach(true);
+            if (!isVersionable) {
+                Calendar renditionLastModified = (Calendar) storedRendition.getPropertyValue("dc:modified");
+                Calendar sourceLastModified = (Calendar) source.getPropertyValue("dc:modified");
+                if (renditionLastModified == null || sourceLastModified == null
+                        || sourceLastModified.after(renditionLastModified)) {
+                    storedRendition = null;
+                } else {
+                    storedRendition.detach(true);
+                }
+            } else {
+                storedRendition.detach(true);
+            }
         }
     }
 
