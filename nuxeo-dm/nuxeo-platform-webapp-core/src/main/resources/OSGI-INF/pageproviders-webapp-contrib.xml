@@ -27,7 +27,7 @@
     <genericPageProvider name="importFolders"
       class="org.nuxeo.ecm.webapp.provider.ImportFolderPageProvider">
       <pattern quoteParameters="false" escapeParameters="true">
-        SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?' AND ecm:mixinType !=
+        SELECT * FROM Document WHERE ecm:fulltext.dc:title LIKE '?%' AND ecm:mixinType !=
         'HiddenInNavigation' AND ecm:mixinType = 'Folderish'
         AND ecm:currentLifeCycleState != 'deleted'
         AND SORTED_COLUMN IS NOT NULL
