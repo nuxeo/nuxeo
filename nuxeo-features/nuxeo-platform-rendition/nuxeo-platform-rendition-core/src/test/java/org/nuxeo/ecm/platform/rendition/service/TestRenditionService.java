@@ -18,7 +18,9 @@ package org.nuxeo.ecm.platform.rendition.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
@@ -45,13 +47,16 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -63,7 +68,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
-@LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml")
+@LocalDeploy({
+        "org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml",
+        "org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml" })
 public class TestRenditionService {
 
     public static final String RENDITION_CORE = "org.nuxeo.ecm.platform.rendition.core";
@@ -73,6 +80,8 @@ public class TestRenditionService {
     private static final String RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION = "test-rendition-definition-providers-contrib.xml";
 
     public static final String PDF_RENDITION_DEFINITION = "pdf";
+
+    public static final String ZIP_TREE_EXPORT_RENDITION_DEFINITION = "zipTreeExport";
 
     @Inject
     protected RuntimeHarness runtimeHarness;
@@ -98,7 +107,7 @@ public class TestRenditionService {
     public void testDeclaredRenditionDefinitions() {
         List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
         assertFalse(renditionDefinitions.isEmpty());
-        assertEquals(6, renditionDefinitions.size());
+        assertEquals(8, renditionDefinitions.size());
 
         RenditionDefinition rd = renditionDefinitions.stream().filter(
                 renditionDefinition -> PDF_RENDITION_DEFINITION.equals(renditionDefinition.getName())).findFirst().get();
@@ -122,7 +131,7 @@ public class TestRenditionService {
         file = session.createDocument(file);
 
         List<RenditionDefinition> renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
-        assertEquals(4, renditionDefinitions.size());
+        assertEquals(6, renditionDefinitions.size());
 
         // add a blob
         Blob blob = Blobs.createBlob("I am a Blob");
@@ -131,7 +140,7 @@ public class TestRenditionService {
 
         // rendition should be available now
         renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
-        assertEquals(5, renditionDefinitions.size());
+        assertEquals(7, renditionDefinitions.size());
 
     }
 
@@ -243,15 +252,91 @@ public class TestRenditionService {
 
     }
 
+    @Test
+    public void doZipTreeExportRendition() throws Exception {
+        doZipTreeExportRendition(false);
+    }
+
+    @Test
+    public void doZipTreeExportLazyRendition() throws Exception {
+        doZipTreeExportRendition(true);
+    }
+
+    protected void doZipTreeExportRendition(boolean isLazy) throws Exception {
+
+        DocumentModel folder = createFolderWithChildren();
+        String renditionName = ZIP_TREE_EXPORT_RENDITION_DEFINITION;
+        if (isLazy) {
+            renditionName += "Lazily";
+        }
+        Rendition rendition = getRendition(folder, renditionName, true, isLazy);
+
+        DocumentModel renditionDocument = session.getDocument(rendition.getHostDocument().getRef());
+
+        assertTrue(renditionDocument.hasFacet(RENDITION_FACET));
+        assertNull(renditionDocument.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY));
+        assertEquals(folder.getId(), renditionDocument.getPropertyValue(RENDITION_SOURCE_ID_PROPERTY));
+
+        BlobHolder bh = renditionDocument.getAdapter(BlobHolder.class);
+        Blob renditionBlob = bh.getBlob();
+        assertNotNull(renditionBlob);
+        assertEquals("application/zip", renditionBlob.getMimeType());
+        assertEquals("export.zip", renditionBlob.getFilename());
+
+        // now refetch the rendition
+        rendition = renditionService.getRendition(folder, renditionName);
+        assertNotNull(rendition);
+        assertTrue(rendition.isStored());
+        assertEquals(renditionDocument.getRef(), rendition.getHostDocument().getRef());
+        assertEquals("/icons/zip.png", renditionDocument.getPropertyValue("common:icon"));
+        assertEquals(renditionBlob.getLength(), renditionDocument.getPropertyValue("common:size"));
+
+        // now get a different rendition as a different user
+        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
+            folder = userSession.getDocument(folder.getRef());
+            Rendition totoRendition = getRendition(folder, renditionName, true, isLazy);
+            assertTrue(totoRendition.isStored());
+            assertNotEquals(renditionDocument.getRef(), totoRendition.getHostDocument().getRef());
+        }
+
+        // now "update" the folder
+        folder = session.getDocument(folder.getRef());
+        folder.setPropertyValue("dc:description", "I have been updated");
+        folder = session.saveDocument(folder);
+        rendition = getRendition(folder, renditionName, false, isLazy);
+        assertFalse(rendition.isStored());
+    }
+
+    protected Rendition getRendition(DocumentModel doc, String renditionName, boolean store, boolean isLazy) {
+        Rendition rendition = renditionService.getRendition(doc, renditionName, store);
+        assertNotNull(rendition);
+        if (isLazy) {
+            assertFalse(rendition.isStored());
+            Blob blob = rendition.getBlob();
+            assertEquals(0, blob.getLength());
+            assertTrue(blob.getMimeType().contains("empty=true"));
+            assertTrue(blob.getFilename().equals("inprogress"));
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("interrupted", e);
+            }
+            eventService.waitForAsyncCompletion(5000);
+            rendition = renditionService.getRendition(doc, renditionName, store);
+        }
+        return rendition;
+    }
+
     protected DocumentModel createBlobFile() {
         Blob blob = createTextBlob("Dummy text", "dummy.txt");
-        DocumentModel file = createFileWithBlob(blob, "dummy-file");
+        DocumentModel file = createFileWithBlob("/", blob, "dummy-file");
         assertNotNull(file);
         return file;
     }
 
-    protected DocumentModel createFileWithBlob(Blob blob, String name) {
-        DocumentModel file = session.createDocumentModel("/", name, "File");
+    protected DocumentModel createFileWithBlob(String parentPath, Blob blob, String name) {
+        DocumentModel file = session.createDocumentModel(parentPath, name, "File");
         BlobHolder bh = file.getAdapter(BlobHolder.class);
         bh.setBlob(blob);
         file = session.createDocument(file);
@@ -263,6 +348,25 @@ public class TestRenditionService {
         blob.setFilename(filename);
         return blob;
     }
+
+    protected DocumentModel createFolderWithChildren() {
+        DocumentModel folder = session.createDocumentModel("/", "dummy", "Folder");
+        folder = session.createDocument(folder);
+        ACP acp = new ACPImpl();
+        ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+        acl.add(new ACE("toto", SecurityConstants.READ, true));
+        acp.addACL(acl);
+        session.setACP(folder.getRef(), acp, true);
+
+        DocumentModel file1 = createFileWithBlob("/dummy", createTextBlob("Dummy1 text", "dummy1.txt"), "dummy1-file");
+        DocumentModel file2 = createFileWithBlob("/dummy", createTextBlob("Dummy2 text", "dummy2.txt"), "dummy2-file");
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+        folder = session.getDocument(folder.getRef());
+        return folder;
+    }
+
 
     @Test
     public void testRenderAProxyDocument() {
@@ -393,17 +497,17 @@ public class TestRenditionService {
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         doc = session.createDocument(doc);
         List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(5, availableRenditionDefinitions.size());
+        assertEquals(7, availableRenditionDefinitions.size());
 
         doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(5, availableRenditionDefinitions.size());
+        assertEquals(7, availableRenditionDefinitions.size());
 
         doc.setPropertyValue("dc:rights", "Unauthorized");
         session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(4, availableRenditionDefinitions.size());
+        assertEquals(6, availableRenditionDefinitions.size());
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_FILTERS_COMPONENT_LOCATION);
     }
@@ -415,17 +519,17 @@ public class TestRenditionService {
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         doc = session.createDocument(doc);
         List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(6, availableRenditionDefinitions.size());
+        assertEquals(8, availableRenditionDefinitions.size());
 
         doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(6, availableRenditionDefinitions.size());
+        assertEquals(8, availableRenditionDefinitions.size());
 
         doc.setPropertyValue("dc:rights", "Unauthorized");
         session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(4, availableRenditionDefinitions.size());
+        assertEquals(6, availableRenditionDefinitions.size());
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION);
     }

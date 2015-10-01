@@ -30,7 +30,8 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  */
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.actions", "org.nuxeo.ecm.platform.rendition.api",
-        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core" })
+        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.io.core",
+        "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.core.cache" })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 public class RenditionFeature extends SimpleFeature {
 }

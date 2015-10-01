@@ -5,14 +5,25 @@
 
   <extension target="org.nuxeo.ecm.platform.rendition.service.RenditionService" point="renditionDefinitions">
 
-    <renditionDefinition name="iamlazy" enabled="true" class="org.nuxeo.ecm.platform.rendition.service.lazy.LazyRenditionProviderSample">
+    <renditionDefinition name="iamlazy" enabled="true"
+        class="org.nuxeo.ecm.platform.rendition.service.lazy.LazyRenditionProviderSample">
+    </renditionDefinition>
+
+    <renditionDefinition name="zipTreeExportLazily" enabled="true"
+        class="org.nuxeo.ecm.platform.rendition.lazy.AutomationLazyPerUserRenditionProvider">
+      <label>label.exportview.zipTreeExport</label>
+      <icon>/icons/zip_tree_export.png</icon>
+      <contentType>application/zip</contentType>
+      <allowEmptyBlob>true</allowEmptyBlob>
+      <operationChain>zipTreeExportRendition</operationChain>
+      <filters>
+        <filter-id>folder</filter-id>
+      </filters>
     </renditionDefinition>
 
   </extension>
 
-  <extension
-    target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent"
-    point="store">
+  <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
 
     <store name="LazyRenditionCache">
     </store>
