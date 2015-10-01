@@ -437,7 +437,7 @@ if (!log) {
     var upload = xhr.upload;
     log("readyStateChange event on file upload " + upload.fileIndex + " (state : " + xhr.readyState + ")");
     if (xhr.readyState == 4) {
-      if (xhr.status == 200) {
+      if (xhr.status == 201) {
         load(upload, opts);
       } else {
         log("Upload failed, status: " + xhr.status);
