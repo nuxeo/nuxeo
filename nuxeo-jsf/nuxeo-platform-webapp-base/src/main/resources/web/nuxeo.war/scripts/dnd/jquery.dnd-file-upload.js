@@ -62,7 +62,7 @@ if (!log) {
       if (targetUrl.indexOf("/", targetUrl.length - 1) == -1) {
         targetUrl = targetUrl + "/";
       }
-      targetUrl = targetUrl + "batch/files/" + opts.handler.batchStarted();
+      targetUrl = targetUrl + "upload/" + opts.handler.batchStarted();
       jQuery.ajax({
         type: 'GET',
         contentType: 'application/json+nxrequest',
@@ -94,9 +94,13 @@ if (!log) {
     uploadTimeout: 30000,
     execTimeout: 30000,
     handler: {
+      // invoked to generate a batchId server-side
+      initBatch: function(callback) {
+        callback(null);
+      },
       // invoked when new files are dropped
       batchStarted: function () {
-        return "X"
+        return "X";
       },
       // invoked when the upload for given file has been started
       uploadStarted: function (fileIndex, file) {
@@ -340,89 +344,93 @@ if (!log) {
       return;
     }
 
-    var batchId = opts.handler.batchStarted();
-    sendingRequestsInProgress = true;
+    opts.handler.initBatch(function(err) {
+      if (err) {
+        throw new Error(err);
+      }
 
-    while (uploadStack.length > 0) {
-      var file = uploadStack.shift();
-      // create a new xhr object
-      var xhr = new XMLHttpRequest();
-      var upload = xhr.upload;
-      upload.fileIndex = uploadIdx + 0;
-      upload.fileObj = file;
-      upload.downloadStartTime = new Date().getTime();
-      upload.currentStart = upload.downloadStartTime;
-      upload.currentProgress = 0;
-      upload.startData = 0;
-      upload.batchId = batchId;
+      var batchId = opts.handler.batchStarted();
 
-      // add listeners
-      upload.addEventListener("progress", function (event) {
-        progress(event, opts)
-      }, false);
+      sendingRequestsInProgress = true;
+      while (uploadStack.length > 0) {
+        var file = uploadStack.shift();
+        // create a new xhr object
+        var xhr = new XMLHttpRequest();
+        var upload = xhr.upload;
+        upload.fileIndex = uploadIdx + 0;
+        upload.fileObj = file;
+        upload.downloadStartTime = new Date().getTime();
+        upload.currentStart = upload.downloadStartTime;
+        upload.currentProgress = 0;
+        upload.startData = 0;
+        upload.batchId = batchId;
 
-      // The "load" event doesn't work correctly on WebKit (Chrome, Safari),
-      // it fires too early, before the server has returned its response.
-      // still it is required for Firefox
-      if (navigator.userAgent.indexOf('Firefox') > -1) {
-        upload.addEventListener("load", function (event) {
-          log("trigger load");
-          log(event);
-          load(event.target, opts)
+        // add listeners
+        upload.addEventListener("progress", function (event) {
+          progress(event, opts)
         }, false);
-      }
 
-      // on ready state change is not fired in all cases on webkit
-      // - on webkit we rely on progress lister to detected upload end
-      // - but on Firefox the event we need it
-      xhr.onreadystatechange = (function (xhr, opts) {
-        return function () {
-          readyStateChange(xhr, opts)
+        // The "load" event doesn't work correctly on WebKit (Chrome, Safari),
+        // it fires too early, before the server has returned its response.
+        // still it is required for Firefox
+        if (navigator.userAgent.indexOf('Firefox') > -1) {
+          upload.addEventListener("load", function (event) {
+            log("trigger load");
+            log(event);
+            load(event.target, opts)
+          }, false);
         }
-      })(xhr, opts);
 
-      // propagate callback
-      upload.uploadFiles = uploadFiles;
+        // on ready state change is not fired in all cases on webkit
+        // - on webkit we rely on progress lister to detected upload end
+        // - but on Firefox the event we need it
+        xhr.onreadystatechange = (function (xhr, opts) {
+          return function () {
+            readyStateChange(xhr, opts)
+          }
+        })(xhr, opts);
 
-      // compute timeout in seconds and integer
-      uploadTimeoutS = 5 + (opts.uploadTimeout / 1000) | 0;
+        // propagate callback
+        upload.uploadFiles = uploadFiles;
 
-      var targetUrl = opts.url;
-      if (targetUrl.indexOf("/", targetUrl.length - 1) == -1) {
-        targetUrl = targetUrl + "/";
+        // compute timeout in seconds and integer
+        uploadTimeoutS = 5 + (opts.uploadTimeout / 1000) | 0;
+
+        var targetUrl = opts.url;
+        if (targetUrl.indexOf("/", targetUrl.length - 1) == -1) {
+          targetUrl = targetUrl + "/";
+        }
+        targetUrl = targetUrl + "upload/" + batchId + "/" + uploadIdx;
+
+        log("starting upload for file " + uploadIdx);
+        xhr.open(opts.method, targetUrl);
+        xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.name));
+        xhr.setRequestHeader("X-File-Size", file.size);
+        xhr.setRequestHeader("X-File-Type", file.type);
+
+        xhr.setRequestHeader('Nuxeo-Transaction-Timeout', uploadTimeoutS);
+        nbUploadInprogress++;
+
+        opts.handler.uploadStarted(uploadIdx, file);
+        uploadIdx++;
+
+        // resize the overlay
+        jQuery(".dropzoneTarget").each(function () {
+          resizeOverlay(this);
+        });
+
+        xhr.send(file);
+
+        if (nbUploadInprogress >= opts.numConcurrentUploads) {
+          sendingRequestsInProgress = false;
+          log("delaying upload for next file(s) " + uploadIdx + "+ since there are already " + nbUploadInprogress + " active uploads");
+          return;
+        }
       }
-      targetUrl = targetUrl + "batch/upload";
-
-      log("starting upload for file " + uploadIdx);
-      xhr.open(opts.method, targetUrl);
-      xhr.setRequestHeader("Cache-Control", "no-cache");
-      xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-      xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.name));
-      xhr.setRequestHeader("X-File-Size", file.size);
-      xhr.setRequestHeader("X-File-Type", file.type);
-      xhr.setRequestHeader("X-Batch-Id", batchId);
-      xhr.setRequestHeader("X-File-Idx", uploadIdx);
-
-      xhr.setRequestHeader('Nuxeo-Transaction-Timeout', uploadTimeoutS);
-      nbUploadInprogress++;
-
-      opts.handler.uploadStarted(uploadIdx, file);
-      uploadIdx++;
-
-      // resize the overlay
-      jQuery(".dropzoneTarget").each(function () {
-        resizeOverlay(this);
-      });
-
-      xhr.send(file);
-
-      if (nbUploadInprogress >= opts.numConcurrentUploads) {
-        sendingRequestsInProgress = false;
-        log("delaying upload for next file(s) " + uploadIdx + "+ since there are already " + nbUploadInprogress + " active uploads");
-        return;
-      }
-    }
-    sendingRequestsInProgress = false;
+      sendingRequestsInProgress = false;
+    });
   }
 
   function readyStateChange(xhr, opts) {

@@ -16,6 +16,9 @@ nuxeo.documentsImport = (function(m) {
       this.cancelCB = cancelCB;
     };
     handler.prototype = {
+      initBatch: function(callback) {
+        callback(null);
+      },
       batchStarted: function() {
         jQuery("#" + this.dropZoneId).html();
         // deactivate import button
