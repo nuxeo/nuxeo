@@ -223,8 +223,8 @@ final class StampState implements Externalizable {
                 if (!child.isTransient()) {
                     wasAllTransient = false;
                     childStateArray[i] = saveStampState(context, child);
-                    i++;
                 }
+                i++;
             }
 
             // If all we found were transient components, just use
@@ -300,8 +300,8 @@ final class StampState implements Externalizable {
         for (UIComponent child : stamp.getChildren()) {
             if (!child.isTransient() && i < childArrayCount) {
                 restoreStampState(context, child, childStateArray[i]);
-                i++;
             }
+            i++;
         }
     }
 
