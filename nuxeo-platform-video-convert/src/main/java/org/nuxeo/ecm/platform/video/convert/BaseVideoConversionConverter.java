@@ -106,10 +106,10 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
 
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParameters) throws ConversionException {
-        String outputPath = cmdParameters.getParameters().get(OUTPUT_FILE_PATH_PARAMETER);
+        String outputPath = cmdParameters.getParameter(OUTPUT_FILE_PATH_PARAMETER);
         File outputFile = new File(outputPath);
         List<Blob> blobs = new ArrayList<Blob>();
-        String outFileName = cmdParameters.getParameters().get(OUTPUT_FILE_NAME_PARAMETER);
+        String outFileName = cmdParameters.getParameter(OUTPUT_FILE_NAME_PARAMETER);
         if (outFileName == null) {
             outFileName = outputFile.getName();
         } else {
