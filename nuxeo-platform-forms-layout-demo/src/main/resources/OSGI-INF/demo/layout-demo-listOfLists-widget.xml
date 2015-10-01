@@ -105,6 +105,7 @@
               </property>
             </properties>
             <properties widgetMode="any">
+              <property name="display">table</property>
               <property name="hideSubLabels">true</property>
               <property name="orderable">true</property>
             </properties>
