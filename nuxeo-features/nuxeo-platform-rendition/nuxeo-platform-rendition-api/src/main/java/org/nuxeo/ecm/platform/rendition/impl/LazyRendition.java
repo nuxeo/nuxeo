@@ -51,6 +51,16 @@ public abstract class LazyRendition extends AbstractRendition implements Renditi
         return blobs;
     }
 
+    public boolean isCompleted() {
+        return isBlobComputationCompleted(getBlob());
+    }
+
+    public static boolean isBlobComputationCompleted(Blob blob) {
+        String mimeType = blob.getMimeType();
+        //Lazy rendition w/build in-progress has blob w/mimeType containing "empty=true".
+        return (mimeType == null || !mimeType.contains("empty=true"));
+    }
+
     protected abstract List<Blob> computeRenditionBlobs();
 
 }

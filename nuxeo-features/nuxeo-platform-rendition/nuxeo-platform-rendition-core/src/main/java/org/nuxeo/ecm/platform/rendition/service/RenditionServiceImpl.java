@@ -24,11 +24,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
+import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.impl.LiveRendition;
 import org.nuxeo.ecm.platform.rendition.impl.StoredRendition;
 import org.nuxeo.runtime.api.Framework;
@@ -144,32 +145,41 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
         Rendition rendition = getRendition(source, renditionDefinitionName, true);
 
-        return rendition.getHostDocument().getRef();
+        return (rendition == null) ? null : rendition.getHostDocument().getRef();
     }
 
     protected DocumentModel storeRendition(DocumentModel sourceDocument, List<Blob> renderedBlobs, String name) {
+        Blob renderedBlob = renderedBlobs.get(0);
+        if (!LazyRendition.isBlobComputationCompleted(renderedBlob)) {
+            return null;
+        }
         CoreSession session = sourceDocument.getCoreSession();
-        DocumentRef versionRef = createVersionIfNeeded(sourceDocument, session);
-
-        DocumentModel version = session.getDocument(versionRef);
-        RenditionCreator rc = new RenditionCreator(session, sourceDocument, version, renderedBlobs.get(0), name);
+        DocumentModel version = null;
+        boolean isVersionable = sourceDocument.isVersionable();
+        if (isVersionable) {
+            DocumentRef versionRef = createVersionIfNeeded(sourceDocument, session);
+            version = session.getDocument(versionRef);
+        }
+        RenditionCreator rc = new RenditionCreator(session, sourceDocument, version, renderedBlob, name);
         rc.runUnrestricted();
 
-        DocumentModel detachedRendition = rc.getDetachedDendition();
+        DocumentModel detachedRendition = rc.getDetachedRendition();
 
         detachedRendition.attach(sourceDocument.getSessionId());
         return detachedRendition;
     }
 
     protected DocumentRef createVersionIfNeeded(DocumentModel source, CoreSession session) {
-        DocumentRef versionRef;
-        if (source.isVersion()) {
-            versionRef = source.getRef();
-        } else if (source.isCheckedOut()) {
-            versionRef = session.checkIn(source.getRef(), VersioningOption.MINOR, null);
-            source.refresh(DocumentModel.REFRESH_STATE, null);
-        } else {
-            versionRef = session.getLastDocumentVersionRef(source.getRef());
+        DocumentRef versionRef = null;
+        if (source.isVersionable()) {
+            if (source.isVersion()) {
+                versionRef = source.getRef();
+            } else if (source.isCheckedOut()) {
+                versionRef = session.checkIn(source.getRef(), VersioningOption.MINOR, null);
+                source.refresh(DocumentModel.REFRESH_STATE, null);
+            } else {
+                versionRef = session.getLastDocumentVersionRef(source.getRef());
+            }
         }
         return versionRef;
     }
@@ -294,11 +304,16 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         }
 
         DocumentModel stored = null;
-        if (!doc.isCheckedOut()) {
-            // since stored renditions are done against a version
-            // checkedout Documents can not have a stored rendition
+        boolean isVersionable = doc.isVersionable();
+        if (!isVersionable || !doc.isCheckedOut()) {
+            // stored renditions are only done against a non-versionable doc
+            // or a versionable doc that is not checkedout
             RenditionFinder finder = new RenditionFinder(doc, renditionName);
-            finder.runUnrestricted();
+            if (isVersionable) {
+                finder.runUnrestricted();
+            } else {
+                finder.run();
+            }
             // retrieve the Detached stored rendition doc
             stored = finder.getStoredRendition();
             // re-attach the detached doc
@@ -315,8 +330,11 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
         if (store) {
             DocumentModel storedRenditionDoc = storeRendition(doc, rendition.getBlobs(), renditionDefinition.getName());
-            return new StoredRendition(storedRenditionDoc, renditionDefinition);
-
+            if (storedRenditionDoc != null) {
+                return new StoredRendition(storedRenditionDoc, renditionDefinition);
+            } else {
+                return rendition;
+            }
         } else {
             return rendition;
         }
