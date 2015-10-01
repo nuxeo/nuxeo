@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -38,7 +38,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
@@ -424,7 +423,6 @@ public abstract class AbstractTest {
      * Introspects the classpath and returns the list of files in it. FIXME: should use
      * HarnessRuntime#getClassLoaderFiles that returns the same thing
      *
-     * @return
      * @throws Exception
      */
     protected static List<String> getClassLoaderFiles() throws Exception {
@@ -459,7 +457,9 @@ public abstract class AbstractTest {
         if (surefirebooterJar != null) {
             try {
                 try {
-                    String cp = surefirebooterJar.getManifest().getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
+                    String cp = surefirebooterJar.getManifest()
+                                                 .getMainAttributes()
+                                                 .getValue(Attributes.Name.CLASS_PATH);
                     if (cp != null) {
                         String[] cpe = cp.split(" ");
                         URL[] newUrls = new URL[cpe.length];
@@ -562,13 +562,7 @@ public abstract class AbstractTest {
     @Before
     public void setUpAbstract() {
         if (driver != null) {
-            ScreenshotTaker taker = new ScreenshotTaker();
-            long start = new Date().getTime();
             driver.get(NUXEO_URL + "/wro/api/v1/resource/bundle/nuxeo_includes.js");
-            long stop = new Date().getTime();
-            String path = taker.dumpPageSource(driver, "NXP-17647-includes-js-before-" + getClass().getSimpleName()).getAbsolutePath();
-            log.warn("NXP-17647: nuxeo_includes.js dumped in : " + path);
-            log.warn("NXP-17647: nuxeo_includes.js took  : " + (stop - start) + " ms");
         }
     }
 
@@ -671,7 +665,6 @@ public abstract class AbstractTest {
 
         Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
                 POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
-
         try {
             return wait.until(new Function<T, T>() {
                 @Override
@@ -808,7 +801,6 @@ public abstract class AbstractTest {
      * @throws Exception if initializing repository fails
      */
     protected DocumentBasePage initRepository(DocumentBasePage currentPage) throws Exception {
-
         return createWorkspace(currentPage, "Test Workspace", "Test Workspace for my dear WebDriver.");
     }
 
@@ -819,7 +811,6 @@ public abstract class AbstractTest {
      * @throws Exception if cleaning repository fails
      */
     protected void cleanRepository(DocumentBasePage currentPage) throws Exception {
-
         deleteWorkspace(currentPage, "Test Workspace");
     }
 
@@ -833,13 +824,10 @@ public abstract class AbstractTest {
      */
     protected DocumentBasePage createWorkspace(DocumentBasePage currentPage, String workspaceTitle,
             String workspaceDescription) {
-
         // Go to Workspaces
         DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument("Workspaces");
-
         // Get Workspace creation form page
         WorkspaceFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab().getWorkspaceCreatePage();
-
         // Create Workspace
         DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(workspaceTitle,
                 workspaceDescription);
@@ -853,10 +841,8 @@ public abstract class AbstractTest {
      * @param workspaceTitle the workspace title
      */
     protected void deleteWorkspace(DocumentBasePage currentPage, String workspaceTitle) {
-
         // Go to Workspaces
         DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument("Workspaces");
-
         // Delete the Workspace
         workspacesPage.getContentTab().removeDocument(workspaceTitle);
     }
@@ -876,11 +862,9 @@ public abstract class AbstractTest {
      */
     protected FileDocumentBasePage createFile(DocumentBasePage currentPage, String fileTitle, String fileDescription,
             boolean uploadBlob, String filePrefix, String fileSuffix, String fileContent) throws IOException {
-
         // Get File creation form page
         FileCreationFormPage fileCreationFormPage = currentPage.getContentTab().getDocumentCreatePage("File",
                 FileCreationFormPage.class);
-
         // Create File
         FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(fileTitle, fileDescription, uploadBlob,
                 filePrefix, fileSuffix, fileDescription);
@@ -898,9 +882,10 @@ public abstract class AbstractTest {
      */
     protected DocumentBasePage createCollections(DocumentBasePage currentPage, String collectionsTitle,
             String fileDescription) {
-        DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = currentPage.getContentTab().getDocumentCreatePage(
-                "Collections", DublinCoreCreationDocumentFormPage.class);
-
+        DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = currentPage.getContentTab()
+                                                                                   .getDocumentCreatePage(
+                                                                                           "Collections",
+                                                                                           DublinCoreCreationDocumentFormPage.class);
         // Create File
         DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle, fileDescription);
         return documentBasePage;
@@ -910,17 +895,14 @@ public abstract class AbstractTest {
      * Creates a Collection form the {@code currentPage}.
      *
      * @param currentPage the current page
-     * @param collectionTitle the Collections container title
-     * @param collectionDescription the collection description
+     * @param collectionsTitle the Collections container title
+     * @param fileDescription the collection description
      * @return the created Collections page
-     * @throws IOException if temporary file creation fails
      */
     protected CollectionContentTabSubPage createCollection(DocumentBasePage currentPage, String collectionsTitle,
             String fileDescription) {
-
         CollectionCreationFormPage collectionCreationFormPage = currentPage.getContentTab().getDocumentCreatePage(
                 "Collection", CollectionCreationFormPage.class);
-
         // Create File
         CollectionContentTabSubPage documentBasePage = collectionCreationFormPage.createDocument(collectionsTitle,
                 fileDescription);
@@ -930,7 +912,7 @@ public abstract class AbstractTest {
     /**
      * Creates a temporary file and returns its absolute path.
      *
-     * @param tmpFilePrefix the file prefix
+     * @param filePrefix the file prefix
      * @param fileSuffix the file suffix
      * @param fileContent the file content
      * @return the temporary file to upload path
@@ -939,7 +921,6 @@ public abstract class AbstractTest {
      */
     public static String getTmpFileToUploadPath(String filePrefix, String fileSuffix, String fileContent)
             throws IOException {
-
         // Create tmp file, deleted on exit
         File tmpFile = File.createTempFile(filePrefix, fileSuffix);
         tmpFile.deleteOnExit();
@@ -977,15 +958,12 @@ public abstract class AbstractTest {
      */
     protected NoteDocumentBasePage createNote(DocumentBasePage currentPage, String noteTitle, String noteDescription,
             boolean defineNote, String noteContent) throws IOException {
-
         // Get the Note creation form
         NoteCreationFormPage noteCreationPage = currentPage.getContentTab().getDocumentCreatePage("Note",
                 NoteCreationFormPage.class);
-
         // Create a Note
         NoteDocumentBasePage notePage = noteCreationPage.createNoteDocument(noteTitle, noteDescription, defineNote,
                 noteContent);
-
         return notePage;
     }
 
