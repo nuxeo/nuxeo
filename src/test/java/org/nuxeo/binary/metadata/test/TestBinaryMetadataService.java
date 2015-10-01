@@ -80,11 +80,11 @@ public class TestBinaryMetadataService {
         }
     };
 
-    private static final Map<String, Object> inputPSDMetadata;
+    private static final Map<String, String> inputPSDMetadata;
 
     static {
         inputPSDMetadata = new HashMap<>();
-        inputPSDMetadata.put("EXIF:ImageHeight", 200);
+        inputPSDMetadata.put("EXIF:ImageHeight", "200");
         inputPSDMetadata.put("EXIF:Software", "Nuxeo");
     }
 
@@ -167,7 +167,7 @@ public class TestBinaryMetadataService {
         assertEquals("Twist", blobProperties.get("Title").toString());
 
         // Write Non ASCII Character
-        Map<String, Object> metadata = new HashMap<>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put("SourceURL", "l'adresse idéale");
         try {
             binaryMetadataService.writeMetadata(musicBlobHolder.getBlob(), metadata, true);

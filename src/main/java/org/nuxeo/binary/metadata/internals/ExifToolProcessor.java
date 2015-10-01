@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -75,7 +76,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
     }
 
     @Override
-    public Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
+    public Blob writeMetadata(Blob blob, Map<String, String> metadata, boolean ignorePrefix) {
         String command = ignorePrefix ? BinaryMetadataConstants.EXIFTOOL_WRITE_NOPREFIX
                 : BinaryMetadataConstants.EXIFTOOL_WRITE;
         CommandAvailability ca = commandLineService.getCommandAvailability(command);
@@ -88,8 +89,8 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         try {
             Blob newBlob = getTemporaryBlob(blob);
             CmdParameters params = commandLineService.getDefaultCmdParameters();
-            params.addNamedParameter("inFilePath", newBlob.getFile(), true);
-            params.addNamedParameter("tagList", getCommandTags(metadata), false);
+            params.addNamedParameter("inFilePath", newBlob.getFile());
+            params.addNamedParameter("tagList", getCommandTags(metadata));
             ExecResult er = commandLineService.execCommand(command, params);
             boolean success = er.isSuccessful();
             if (!success) {
@@ -120,9 +121,9 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
             ExecResult er;
             try (CloseableFile source = getTemporaryFile(blob)) {
                 CmdParameters params = commandLineService.getDefaultCmdParameters();
-                params.addNamedParameter("inFilePath", source.getFile(), true);
+                params.addNamedParameter("inFilePath", source.getFile());
                 if (metadata != null) {
-                    params.addNamedParameter("tagList", getCommandTags(metadata), false);
+                    params.addNamedParameter("tagList", getCommandTags(metadata));
                 }
                 er = commandLineService.execCommand(command, params);
             }
@@ -191,26 +192,14 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         }
     }
 
-    protected String getCommandTags(List<String> metadataList) {
-        StringBuilder sb = new StringBuilder();
-        for (String metadata : metadataList) {
-            sb.append("-" + metadata + " ");
-        }
-        return sb.toString();
+    protected List<String> getCommandTags(List<String> metadataList) {
+        return metadataList.stream().map(tag -> "-" + tag).collect(Collectors.toList());
     }
 
-    protected String getCommandTags(Map<String, Object> metadataMap) {
-        StringBuilder sb = new StringBuilder();
-        for (String metadata : metadataMap.keySet()) {
-            Object metadataValue = metadataMap.get(metadata);
-            if (metadataValue == null) {
-                metadataValue = StringUtils.EMPTY;
-            }
-            metadataValue = metadataValue.toString().replace(" ", "\\ ");
-            metadataValue = metadataValue.toString().replaceAll("'", "");
-            sb.append("-" + metadata + "=" + metadataValue + " ");
-        }
-        return sb.toString();
+    protected List<String> getCommandTags(Map<String, String> metadataMap) {
+        return metadataMap.entrySet().stream().map(
+                es -> "-" + es.getKey() + "=" + StringUtils.defaultString(es.getValue()) //
+        ).collect(Collectors.toList());
     }
 
     protected Pattern VALID_EXT = Pattern.compile("[a-zA-Z0-9]*");
