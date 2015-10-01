@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 
 /**
- * Retrives stored Rendition associated to a DocumentModel.
+ * Retrieves stored Rendition associated to a DocumentModel.
  * <p>
  * Can run Unrestricted or not.
  *
@@ -37,19 +37,22 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
 
     protected DocumentModel storedRendition;
 
-    protected final String definitionName;
+    protected final String renditionName;
 
-    protected RenditionFinder(DocumentModel source, String definitionName) {
+    protected RenditionFinder(DocumentModel source, String renditionName) {
         super(source.getCoreSession());
         this.source = source;
-        this.definitionName = definitionName;
+        this.renditionName = renditionName;
     }
 
     @Override
     public void run() {
-
-        String query = "select * from Document where ecm:isProxy = 0 AND ";
-        query = query + RENDITION_NAME_PROPERTY + "='" + definitionName + "' AND ";
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ");
+        query.append(RENDITION_NAME_PROPERTY);
+        query.append(" = '");
+        query.append(renditionName);
+        query.append("' AND ");
         boolean isVersionable = source.isVersionable();
         String renditionSourceId = source.getId();
         if (isVersionable) {
@@ -62,12 +65,14 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
                     return;
                 }
             }
-            query = query + "ecm:isCheckedInVersion = 1 AND ";
+            query.append("ecm:isCheckedInVersion = 1 AND ");
         }
-        query = query + RENDITION_SOURCE_ID_PROPERTY + "='" + renditionSourceId + "' ";
-        query = query + "order by dc:modified desc ";
+        query.append(RENDITION_SOURCE_ID_PROPERTY);
+        query.append(" = '");
+        query.append(renditionSourceId);
+        query.append("' ORDER BY dc:modified DESC");
 
-        List<DocumentModel> docs = session.query(query);
+        List<DocumentModel> docs = session.query(query.toString());
         if (docs.size() > 0) {
             storedRendition = docs.get(0);
             if (!isVersionable) {

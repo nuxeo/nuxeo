@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
+import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.runtime.api.Framework;
 
@@ -99,7 +100,7 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
         List<Blob> blobs = new ArrayList<Blob>();
         StringBlob emptyBlob = new StringBlob("");
         emptyBlob.setFilename("inprogress");
-        emptyBlob.setMimeType("text/plain;empty=true");
+        emptyBlob.setMimeType("text/plain;" + LazyRendition.EMPTY_MARKER);
         blobs.add(emptyBlob);
         return blobs;
     }

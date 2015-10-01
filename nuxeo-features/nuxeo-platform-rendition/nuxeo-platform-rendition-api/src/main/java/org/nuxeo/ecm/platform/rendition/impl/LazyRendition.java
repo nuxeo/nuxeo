@@ -29,12 +29,15 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
  */
 public abstract class LazyRendition extends AbstractRendition implements Rendition {
 
+    public static final String EMPTY_MARKER = "empty=true";
+
     protected List<Blob> blobs = null;
 
     public LazyRendition(RenditionDefinition definition) {
         super(definition);
     }
 
+    @Override
     public Blob getBlob() {
         List<Blob> blobs = getBlobs();
         if (blobs != null && blobs.size() > 0) {
@@ -51,14 +54,15 @@ public abstract class LazyRendition extends AbstractRendition implements Renditi
         return blobs;
     }
 
+    @Override
     public boolean isCompleted() {
-        return isBlobComputationCompleted(getBlob());
-    }
-
-    public static boolean isBlobComputationCompleted(Blob blob) {
+        Blob blob = getBlob();
+        if (blob == null) {
+            return true;
+        }
         String mimeType = blob.getMimeType();
-        //Lazy rendition w/build in-progress has blob w/mimeType containing "empty=true".
-        return (mimeType == null || !mimeType.contains("empty=true"));
+        // lazy rendition with build in-progress has blob mimeType containing "empty=true"
+        return mimeType == null || !mimeType.contains(EMPTY_MARKER);
     }
 
     protected abstract List<Blob> computeRenditionBlobs();

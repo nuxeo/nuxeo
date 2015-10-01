@@ -60,13 +60,11 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
 
     public static final String FILE = "File";
 
-    protected DocumentRef renditionRef;
-
     protected DocumentModel detachedRendition;
 
-    protected DocumentRef liveDocumentRef;
+    protected String liveDocumentId;
 
-    protected DocumentRef versionDocumentRef;
+    protected String versionDocumentId;
 
     protected Blob renditionBlob;
 
@@ -75,20 +73,19 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     public RenditionCreator(CoreSession session, DocumentModel liveDocument, DocumentModel versionDocument,
             Blob renditionBlob, String renditionName) {
         super(session);
-        liveDocumentRef = liveDocument.getRef();
-        versionDocumentRef = (versionDocument == null) ? null : versionDocument.getRef();
+        liveDocumentId = liveDocument.getId();
+        versionDocumentId = versionDocument == null ? null : versionDocument.getId();
         this.renditionBlob = renditionBlob;
         this.renditionName = renditionName;
-    }
-
-    public DocumentRef getRenditionDocumentRef() {
-        return renditionRef;
     }
 
     public DocumentModel getDetachedRendition() {
         return detachedRendition;
     }
 
+    /**
+     * @deprecated since 7.10, misspelled, use {@link #getDetachedRendition} instead.
+     */
     @Deprecated
     public DocumentModel getDetachedDendition() {
         return detachedRendition;
@@ -96,9 +93,9 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
 
     @Override
     public void run() {
-        DocumentModel liveDocument = session.getDocument(liveDocumentRef);
-        DocumentModel sourceDocument = (liveDocument.isVersionable())
-                ? session.getDocument(versionDocumentRef) : liveDocument;
+        DocumentModel liveDocument = session.getDocument(new IdRef(liveDocumentId));
+        DocumentModel sourceDocument = liveDocument.isVersionable() ? session.getDocument(new IdRef(versionDocumentId))
+                : liveDocument;
         DocumentModel rendition = createRenditionDocument(sourceDocument);
         removeBlobs(rendition);
         updateMainBlob(rendition);
@@ -120,8 +117,8 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         rendition = session.saveDocument(rendition);
 
         if (sourceDocument.isVersionable()) {
-            // rendition is checkout : make it checkin
-            renditionRef = rendition.checkIn(VersioningOption.NONE, null);
+            // rendition is checked out: check it in
+            DocumentRef renditionRef = rendition.checkIn(VersioningOption.NONE, null);
             rendition = session.getDocument(renditionRef);
         }
         session.save();
@@ -133,33 +130,36 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     protected DocumentModel createRenditionDocument(DocumentModel sourceDocument) {
         String doctype = sourceDocument.getType();
         String renditionMimeType = renditionBlob.getMimeType();
-        boolean isSourceFolder = sourceDocument.isFolder();
-        if (isSourceFolder
-                || (sourceDocument.getAdapter(BlobHolder.class) instanceof DocumentStringBlobHolder
-                        && !(renditionMimeType.startsWith("text/")
-                                || renditionMimeType.startsWith("application/xhtml")))) {
-            // We have a Folder or
+        BlobHolder blobHolder = sourceDocument.getAdapter(BlobHolder.class);
+        if (blobHolder == null || (blobHolder instanceof DocumentStringBlobHolder
+                && !(renditionMimeType.startsWith("text/") || renditionMimeType.startsWith("application/xhtml")))) {
+            // We have a document type unable to hold blobs, or
             // We have a Note or other blob holder that can only hold strings, but the rendition is not a string-related
             // MIME type.
             // In either case, we'll have to create a File to hold it.
             doctype = FILE;
         }
 
-        DocumentModel rendition = null;
-        String renditionSourcePropertyName = (isSourceFolder)
-                ? RENDITION_SOURCE_ID_PROPERTY : RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
-        String liveDocumentId = session.getDocument(liveDocumentRef).getId();
+        boolean isVersionable = sourceDocument.isVersionable();
+        String liveDocProp = isVersionable ? RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY : RENDITION_SOURCE_ID_PROPERTY;
         DocumentModelList existingRenditions;
         try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(),
                 getOriginatingUsername())) {
-            existingRenditions = userSession.query("select * from  " + doctype
-                    + " where ecm:isProxy = 0 AND ecm:mixinType ='" + RENDITION_FACET + "' AND "
-                    + renditionSourcePropertyName + "='" + liveDocumentId + "' AND "
-                    + RENDITION_NAME_PROPERTY + "='" + renditionName + "'");
+            StringBuilder query = new StringBuilder();
+            query.append("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ");
+            query.append(RENDITION_NAME_PROPERTY);
+            query.append(" = '");
+            query.append(renditionName);
+            query.append("' AND ");
+            query.append(liveDocProp);
+            query.append(" = '");
+            query.append(liveDocumentId);
+            query.append("'");
+            existingRenditions = userSession.query(query.toString());
         }
+        DocumentModel rendition;
         if (existingRenditions.size() > 0) {
-            rendition = existingRenditions.get(0);
-            rendition = session.getDocument(rendition.getRef());
+            rendition = session.getDocument(existingRenditions.get(0).getRef());
             if (rendition.isVersion()) {
                 String sid = rendition.getVersionSeriesId();
                 rendition = session.getDocument(new IdRef(sid));
@@ -174,7 +174,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
 
         rendition.addFacet(RENDITION_FACET);
         rendition.setPropertyValue(RENDITION_SOURCE_ID_PROPERTY, sourceDocument.getId());
-        if (sourceDocument.isVersionable()) {
+        if (isVersionable) {
             rendition.setPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY, liveDocumentId);
         }
         rendition.setPropertyValue(RENDITION_NAME_PROPERTY, renditionName);
@@ -221,8 +221,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     }
 
     protected void setCorrectVersion(DocumentModel rendition, DocumentModel versionDocument) {
-        Long minorVersion = (Long) versionDocument.getPropertyValue("uid:minor_version"); // -
-                                                                                          // 1L;
+        Long minorVersion = (Long) versionDocument.getPropertyValue("uid:minor_version");
         rendition.setPropertyValue("uid:minor_version", minorVersion);
         rendition.setPropertyValue("uid:major_version", versionDocument.getPropertyValue("uid:major_version"));
     }

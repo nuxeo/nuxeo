@@ -24,7 +24,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
-import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.impl.LiveRendition;
 import org.nuxeo.ecm.platform.rendition.impl.StoredRendition;
 import org.nuxeo.runtime.api.Framework;
@@ -142,17 +140,16 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public DocumentRef storeRendition(DocumentModel source, String renditionDefinitionName) {
-
         Rendition rendition = getRendition(source, renditionDefinitionName, true);
-
-        return (rendition == null) ? null : rendition.getHostDocument().getRef();
+        return rendition == null ? null : rendition.getHostDocument().getRef();
     }
 
-    protected DocumentModel storeRendition(DocumentModel sourceDocument, List<Blob> renderedBlobs, String name) {
-        Blob renderedBlob = renderedBlobs.get(0);
-        if (!LazyRendition.isBlobComputationCompleted(renderedBlob)) {
+    protected DocumentModel storeRendition(DocumentModel sourceDocument, Rendition rendition, String name) {
+        if (!rendition.isCompleted()) {
             return null;
         }
+        List<Blob> renderedBlobs = rendition.getBlobs();
+        Blob renderedBlob = renderedBlobs.get(0);
         CoreSession session = sourceDocument.getCoreSession();
         DocumentModel version = null;
         boolean isVersionable = sourceDocument.isVersionable();
@@ -170,18 +167,18 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     }
 
     protected DocumentRef createVersionIfNeeded(DocumentModel source, CoreSession session) {
-        DocumentRef versionRef = null;
         if (source.isVersionable()) {
             if (source.isVersion()) {
-                versionRef = source.getRef();
+                return source.getRef();
             } else if (source.isCheckedOut()) {
-                versionRef = session.checkIn(source.getRef(), VersioningOption.MINOR, null);
+                DocumentRef versionRef = session.checkIn(source.getRef(), VersioningOption.MINOR, null);
                 source.refresh(DocumentModel.REFRESH_STATE, null);
+                return versionRef;
             } else {
-                versionRef = session.getLastDocumentVersionRef(source.getRef());
+                return session.getLastDocumentVersionRef(source.getRef());
             }
         }
-        return versionRef;
+        return null;
     }
 
     /**
@@ -329,7 +326,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         LiveRendition rendition = new LiveRendition(doc, renditionDefinition);
 
         if (store) {
-            DocumentModel storedRenditionDoc = storeRendition(doc, rendition.getBlobs(), renditionDefinition.getName());
+            DocumentModel storedRenditionDoc = storeRendition(doc, rendition, renditionDefinition.getName());
             if (storedRenditionDoc != null) {
                 return new StoredRendition(storedRenditionDoc, renditionDefinition);
             } else {

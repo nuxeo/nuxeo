@@ -44,6 +44,11 @@ public class StoredRendition extends AbstractRendition implements Rendition {
     }
 
     @Override
+    public boolean isCompleted() {
+        return true;
+    }
+
+    @Override
     public Blob getBlob() {
         return stored.getAdapter(BlobHolder.class).getBlob();
     }

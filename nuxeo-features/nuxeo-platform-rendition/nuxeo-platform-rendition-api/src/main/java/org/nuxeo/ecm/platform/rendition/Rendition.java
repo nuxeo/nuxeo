@@ -93,7 +93,13 @@ public interface Rendition {
      * <p>
      * Returns current time for live renditions.
      */
-
     Calendar getModificationDate();
+
+    /**
+     * Checks if this rendition's computation has completed.
+     *
+     * @since 7.10
+     */
+    boolean isCompleted();
 
 }

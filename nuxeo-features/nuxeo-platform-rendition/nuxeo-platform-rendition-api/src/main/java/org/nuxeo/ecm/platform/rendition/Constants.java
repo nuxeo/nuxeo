@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.rendition;
 
 /**
  * Constants used by the {@link org.nuxeo.ecm.platform.rendition.service.RenditionService}.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
@@ -36,8 +36,10 @@ public class Constants {
 
     public static final String RENDITION_SCHEMA = "rendition";
 
+    // version from which the rendition was derived (or live doc if not versionable)
     public static final String RENDITION_SOURCE_ID_PROPERTY = "rend:sourceId";
 
+    // live doc if the rendition was derived from a versionable doc, otherwise null
     public static final String RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY = "rend:sourceVersionableId";
 
     public static final String RENDITION_NAME_PROPERTY = "rend:renditionName";
