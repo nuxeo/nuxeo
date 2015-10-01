@@ -44,7 +44,7 @@ public class PDF2HtmlConverter extends CommandLineBasedConverter {
 
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) {
-        String outputPath = cmdParams.getParameters().get("outDirPath");
+        String outputPath = cmdParams.getParameter("outDirPath");
         File outputDir = new File(outputPath);
         File[] files = outputDir.listFiles();
         List<Blob> blobs = new ArrayList<Blob>();

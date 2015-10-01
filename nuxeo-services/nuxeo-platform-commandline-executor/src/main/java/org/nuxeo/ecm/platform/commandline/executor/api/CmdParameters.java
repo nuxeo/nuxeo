@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,33 +12,28 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
- *
+ *     Thierry Delprat
+ *     Vincent Dutat
+ *     Vladimir Pasquier
+ *     Julien Carsique
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.commandline.executor.api;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Wraps command parameters (String or File). Quoted by default. Use {@link #addNamedParameter(String, String, boolean)}
- * to avoid quotes.
- *
- * @author tiry
- * @author Vincent Dutat
+ * Wraps command parameters (String or File path, or a list of values that will be expanded as separate parameters).
  */
 public class CmdParameters implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected final Map<String, String> params = new HashMap<>();
-
-    private final HashMap<String, CmdParameter> cmdParameters = new HashMap<>();
+    private final Map<String, ParameterValue> params = new HashMap<>();
 
     /**
      * It is recommended to use the CmdParameters instance returned by
@@ -50,63 +45,75 @@ public class CmdParameters implements Serializable {
     }
 
     public void addNamedParameter(String name, String value) {
-        params.put(name, value);
-        // Quote by default
-        CmdParameter cmdParameter = new CmdParameter(value, true);
-        cmdParameters.put(name, cmdParameter);
+        params.put(name, new ParameterValue(value));
     }
 
     public void addNamedParameter(String name, File file) {
         addNamedParameter(name, file.getAbsolutePath());
     }
 
-    public Map<String, String> getParameters() {
+    /**
+     * @since 7.10
+     */
+    public void addNamedParameter(String name, List<String> values) {
+        params.put(name, new ParameterValue(values));
+    }
+
+    /**
+     * @since 7.10
+     */
+    public String getParameter(String name) {
+        ParameterValue param = params.get(name);
+        return param == null ? null : param.getValue();
+    }
+
+    /**
+     * @since 7.1
+     */
+    public Map<String, ParameterValue> getParameters() {
         return params;
     }
 
     /**
-     * @since 7.1
+     * A parameter value holding either a single String or a list of Strings.
+     *
+     * @since 7.10
      */
-    public void addNamedParameter(String name, String value, boolean quote) {
-        params.put(name, value);
-        CmdParameter cmdParameter = new CmdParameter(value, quote);
-        cmdParameters.put(name, cmdParameter);
-    }
-
-    /**
-     * @since 7.1
-     */
-    public void addNamedParameter(String name, File file, boolean quote) {
-        addNamedParameter(name, file.getAbsolutePath(), quote);
-    }
-
-    /**
-     * @since 7.1
-     */
-    public HashMap<String, CmdParameter> getCmdParameters() {
-        return cmdParameters;
-    }
-
-    /**
-     * @since 7.1
-     */
-    public class CmdParameter {
+    public static class ParameterValue {
 
         private final String value;
 
-        private final boolean quote;
+        private final List<String> values;
 
-        public CmdParameter(String value, boolean quote) {
+        public ParameterValue(String value) {
             this.value = value;
-            this.quote = quote;
+            values = null;
+        }
+
+        /**
+         * @since 7.10
+         */
+        public ParameterValue(List<String> values) {
+            this.values = values;
+            value = null;
         }
 
         public String getValue() {
             return value;
         }
 
-        public boolean isQuote() {
-            return quote;
+        public List<String> getValues() {
+            return values;
+        }
+
+        /**
+         * Checks whether this is multi-valued.
+         *
+         * @since 7.10
+         */
+        public boolean isMulti() {
+            return values != null;
         }
     }
+
 }

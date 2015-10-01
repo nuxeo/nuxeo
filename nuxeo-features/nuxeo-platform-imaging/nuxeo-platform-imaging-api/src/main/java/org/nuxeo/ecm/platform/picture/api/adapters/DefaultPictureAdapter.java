@@ -32,14 +32,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants;
 import org.nuxeo.ecm.platform.picture.api.ImagingService;
@@ -72,24 +70,14 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         }
 
         File file = blob.getFile();
-        CommandLineExecutorService commandLineExecutorService = Framework.getLocalService(CommandLineExecutorService.class);
-        boolean validFilename = file != null && commandLineExecutorService.isValidParameter(file.getName());
-        if (file == null || !validFilename) {
-            String extension;
-            if (file != null) {
-                extension = "." + FileUtils.getFileExtension(file.getName());
-            } else {
-                extension = ".jpg";
-            }
-            file = File.createTempFile("nuxeoImage", extension);
+        if (file == null) {
+            file = File.createTempFile("nuxeoImage", ".jpg");
             Framework.trackFile(file, this);
             blob.transferTo(file);
             // use a persistent blob with our file
-            if (!validFilename) {
-                String digest = blob.getDigest();
-                blob = Blobs.createBlob(file, blob.getMimeType(), blob.getEncoding(), blob.getFilename());
-                blob.setDigest(digest);
-            }
+            String digest = blob.getDigest();
+            blob = Blobs.createBlob(file, blob.getMimeType(), blob.getEncoding(), blob.getFilename());
+            blob.setDigest(digest);
         }
 
         fileContent = blob;

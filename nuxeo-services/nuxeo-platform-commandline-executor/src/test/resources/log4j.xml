@@ -22,7 +22,7 @@
   </appender>
 
   <category name="org.nuxeo.ecm.platform.commandline">
-    <priority value="TRACE" />
+    <priority value="WARN" />
   </category>
 
   <root>

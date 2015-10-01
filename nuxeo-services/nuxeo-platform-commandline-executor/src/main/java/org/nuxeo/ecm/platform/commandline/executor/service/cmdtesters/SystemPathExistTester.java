@@ -32,12 +32,14 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
  */
 public class SystemPathExistTester implements CommandTester {
 
+    @Override
     public CommandTestResult test(CommandLineDescriptor cmdDescriptor) {
         String cmd = cmdDescriptor.getCommand();
         try {
-            Runtime.getRuntime().exec(cmd);
+            Runtime.getRuntime().exec(new String[] { cmd });
         } catch (IOException e) {
-            return new CommandTestResult("command " + cmd + " not found in system path");
+            return new CommandTestResult(
+                    "command " + cmd + " not found in system path (descriptor " + cmdDescriptor + ")");
         }
 
         return new CommandTestResult();

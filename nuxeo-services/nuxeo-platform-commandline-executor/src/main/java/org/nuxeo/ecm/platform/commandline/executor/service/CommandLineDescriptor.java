@@ -20,6 +20,8 @@ package org.nuxeo.ecm.platform.commandline.executor.service;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.commons.lang3.SystemUtils;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -121,6 +123,11 @@ public class CommandLineDescriptor implements Serializable {
 
     public String getExecutor() {
         return CommandLineExecutorComponent.DEFAULT_EXECUTOR;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
 }

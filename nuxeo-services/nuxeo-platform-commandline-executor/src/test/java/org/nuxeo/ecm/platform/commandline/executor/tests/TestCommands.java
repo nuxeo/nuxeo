@@ -18,20 +18,22 @@
 
 package org.nuxeo.ecm.platform.commandline.executor.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
-import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
-import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent;
-import org.nuxeo.ecm.platform.commandline.executor.service.executors.AbstractExecutor;
+import org.nuxeo.ecm.platform.commandline.executor.service.executors.ShellExecutor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -51,47 +53,34 @@ public class TestCommands extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testCmdParamatersParsing() throws Exception {
+    public void testReplaceParams() throws Exception {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-        assertNotNull(cles);
-
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-aspell-test-contribs.xml");
-        List<String> cmds = cles.getRegistredCommands();
-        assertNotNull(cmds);
-        assertEquals(1, cmds.size());
-        assertTrue(cmds.contains("aspell"));
-
-        CommandLineDescriptor cmdDesc = CommandLineExecutorComponent.getCommandDescriptor("aspell");
-
-        File textFile = File.createTempFile("testMe", "txt");
-        String textFilePath = "/tmp/textMe.txt";
-
         CmdParameters params = cles.getDefaultCmdParameters();
-        params.addNamedParameter("lang", "fr_FR");
-        params.addNamedParameter("encoding", "utf-8");
 
-        // test String params
-        params.addNamedParameter("textFile", textFilePath);
-        String parsedParamString = AbstractExecutor.getParametersString(cmdDesc, params);
-        assertEquals("-a --lang=\"fr_FR\" --encoding=\"utf-8\" -H --rem-sgml-check=alt < \"/tmp/textMe.txt\"",
-                parsedParamString);
+        // test default param
+        List<String> res = ShellExecutor.replaceParams("-tmp=#{java.io.tmpdir}", params);
+        assertEquals(Arrays.asList("-tmp=" + System.getProperty("java.io.tmpdir")), res);
 
-        // test with File param
-        params.addNamedParameter("textFile", textFile);
-        parsedParamString = AbstractExecutor.getParametersString(cmdDesc, params);
-        assertTrue(parsedParamString.startsWith("-a --lang=\"fr_FR\" --encoding=\"utf-8\" -H --rem-sgml-check=alt < "));
-        assertTrue(parsedParamString.contains(System.getProperty("java.io.tmpdir")));
+        // test String param
+        params.addNamedParameter("foo", "/some/path");
+        res = ShellExecutor.replaceParams("foo=#{foo}", params);
+        assertEquals(Arrays.asList("foo=/some/path"), res);
+        params.addNamedParameter("width", "320");
+        params.addNamedParameter("height", "200");
+        res = ShellExecutor.replaceParams("#{width}x#{height}", params);
+        assertEquals(Arrays.asList("320x200"), res);
 
-        String[] res = AbstractExecutor.getParametersArray(cmdDesc, params);
-        assertEquals(7, res.length);
-        assertEquals("-a", res[0]);
-        assertEquals("--lang=\"fr_FR\"", res[1]);
-        assertEquals("--encoding=\"utf-8\"", res[2]);
-        assertEquals("-H", res[3]);
-        assertEquals("--rem-sgml-check=alt", res[4]);
-        assertEquals("<", res[5]);
-        assertTrue(res[6].startsWith("\"" + System.getProperty("java.io.tmpdir")));
-        assertTrue(res[6].contains("testMe"));
+        // test File param
+        File tmp = File.createTempFile("testCommands", "txt");
+        tmp.delete();
+        params.addNamedParameter("foo", tmp);
+        res = ShellExecutor.replaceParams("-file=#{foo}[0]", params);
+        assertEquals(Arrays.asList("-file=" + tmp.getAbsolutePath() + "[0]"), res);
+
+        // test List param
+        params.addNamedParameter("tags", Arrays.asList("-foo", "-bar", "-baz"));
+        res = ShellExecutor.replaceParams("#{tags}", params);
+        assertEquals(Arrays.asList("-foo", "-bar", "-baz"), res);
     }
 
     @Test
@@ -102,24 +91,27 @@ public class TestCommands extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-env-test-contrib.xml");
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
-        assertTrue(cmds.contains("env"));
         assertTrue(cmds.contains("echo"));
 
-        ExecResult result = cles.execCommand("env", cles.getDefaultCmdParameters());
-        assertTrue(result.isSuccessful());
-        assertSame(0, result.getReturnCode());
-        boolean found = false;
-        for (String line : result.getOutput()) {
-            if (line.contains("TMP")) {
-                found = true;
-                assertTrue(line.contains(System.getProperty("java.io.tmpdir")));
-            }
-        }
-        assertTrue(found);
-
-        result = cles.execCommand("echo", cles.getDefaultCmdParameters());
+        ExecResult result = cles.execCommand("echo", cles.getDefaultCmdParameters());
         assertTrue(result.isSuccessful());
         assertSame(0, result.getReturnCode());
         assertTrue(String.join("", result.getOutput()).contains(System.getProperty("java.io.tmpdir")));
     }
+
+    @Test
+    public void testCmdPipe() throws Exception {
+        CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-env-test-contrib.xml");
+
+        ExecResult result = cles.execCommand("pipe", cles.getDefaultCmdParameters());
+        assertTrue(result.isSuccessful());
+        assertEquals(0, result.getReturnCode());
+        String line = String.join("", result.getOutput());
+        // window's echo displays things exactly as is including quotes
+        String expected = SystemUtils.IS_OS_WINDOWS ? "\"a   b\" \"c   d\" e" : "a   b c   d e";
+        assertEquals(expected, line);
+    }
+
 }

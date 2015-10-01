@@ -119,7 +119,7 @@ public class CommandLineConverter extends CommandLineBasedConverter {
 
     @Override
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParams) throws ConversionException {
-        String outputPath = cmdParams.getParameters().get(OUT_DIR_PATH_KEY);
+        String outputPath = cmdParams.getParameter(OUT_DIR_PATH_KEY);
         List<Blob> blobs = new ArrayList<>();
         File outputDir = new File(outputPath);
         if (outputDir.exists() && outputDir.isDirectory()) {
