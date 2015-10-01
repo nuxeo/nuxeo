@@ -192,10 +192,18 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
         WebElement suggestInput = getSuggestInput();
 
+        int nbSuggested = Integer.MAX_VALUE;
         char c;
         for (int i = 0; i < value.length(); i++) {
             c = value.charAt(i);
             suggestInput.sendKeys(c + "");
+            waitSelect2();
+            if (i >= 2) {
+                if (getSuggestedEntries().size() > nbSuggested) {
+                    throw new IllegalArgumentException("More suggestions than expected for " + element.getAttribute("id"));
+                }
+                nbSuggested = getSuggestedEntries().size();
+            }
         }
 
         waitSelect2();
