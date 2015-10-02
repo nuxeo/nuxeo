@@ -1,15 +1,15 @@
 // ----- Tabs content styles
 .tabsContent {
-  background: none #fff;
-  border-radius: 2px;
+  background: none $shade-light-0;
   border: 1px solid $shade-light-50;
+  border-radius: 2px;
   padding: 2em 1.5em;
 }
 
 .tabsContent .tabsContent,
 .mainNoTabs .tabsContent {
-  box-shadow: none;
   border: medium none;
+  box-shadow: none;
 }
 
 .tabsBar ~ .tabsContent {
@@ -18,8 +18,8 @@
 
 .mainNoTabs {
   background-color: #fff;
-  border-radius: 3px;
   border: 1px solid $shade-light-50;
+  border-radius: 3px;
   padding: 2em;
 }
 
@@ -29,8 +29,8 @@
 }
 
 .mainNoTabs h3 {
-  border-bottom: 1px solid #eee;
-  margin: -0.5em -1.5rem 1.5rem;
+  border-bottom: 1px solid $shade-light-30;
+  margin: -.5em -1.5rem 1.5rem;
   padding: 0 1.5em 1em;
 }
 
@@ -45,18 +45,19 @@
   border-color: $shade-light-50;
   clear: both;
   line-height: normal;
-  margin: 1em 0 .5em 0;
+  margin: 1em 0 .5em;
 }
 
 .contentViewTitle h3 {
-  padding: .3em 0 .2em;
-  margin: .7em 0 .5em;
-  font-size: 1.3em;
   border: 0;
+  font-size: 1.3em;
+  margin: .7em 0 .5em;
+  padding: .3em 0 .2em;
 }
 
 .documentTitle {
   display: inline-block;
+  font-weight: bold;
 }
 
 .infoViewRight .documentTitle,
@@ -89,13 +90,13 @@
 }
 
 .description_block span.documentDescription {
-  color: #444;
+  color: $font-color;
   font-size: 1.1em;
   font-weight: bold;
 }
 
 .description_block .createdBy {
-  color: #111;
+  color: $font-color;
   font-weight: bold;
   padding: 0;
 }
@@ -117,7 +118,7 @@
 .coloredWidget {
   background: none $widget;
   border-radius: 3px;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.15),-1px 0 0 rgba(0,0,0,0.02),1px 0 0 rgba(0,0,0,0.02),0 1px 0 rgba(0,0,0,0.10);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .15), -1px 0 0 rgba(0, 0, 0, .02), 1px 0 0 rgba(0, 0, 0, .02), 0 1px 0 rgba(0, 0, 0, .10);
   display: block;
   margin-bottom: 1em;
   padding: 1rem !important;
@@ -148,8 +149,8 @@
 }
 
 .content_block .smallTable td {
-  padding-left: .3rem;
   border: 0;
+  padding-left: .3rem;
 }
 
 .content_block .fieldColumn,
@@ -280,8 +281,8 @@
 .textBlock ol,
 .note_content_block ul,
 .note_content_block ol {
-  padding: 0 0 0 2.7em ;
   margin: 0 0 .4em;
+  padding: 0 0 0 2.7em;
 }
 
 .textBlock li,
@@ -333,15 +334,15 @@
 .textBlock code,
 .note_content_block pre,
 .note_content_block code {
-  background-color: #F7F7F7;
+  background-color: $shade-light-10;
   border: 1px solid $shade-light-50;
   border-radius: 3px;
   font-family: "Lucida Console","Monaco","Courier", monospace;
   font-size: 90%;
   line-height: normal;
+  max-width: 60em;
   overflow: auto;
   padding: 0 .2em;
-  max-width: 60em;
 }
 
 .textBlock pre,
@@ -360,13 +361,13 @@
 .textBlock table,
 .note_content_block table {
   border-collapse: unset;
-  border-color: #bbb;
+  border-color: $shade-medium-10;
   border-spacing: initial;
 }
 
 .textBlock table td,
 .note_content_block table td {
-  border-color: #bbb;
+  border-color: $shade-medium-10;
   padding: .2em .5em;
   vertical-align: inherit;
 }
@@ -385,6 +386,7 @@
   color: $warning-label;
   font-weight: bold;
 }
+
 .summary_unlocked {
   color: $info-label;
   font-weight: bold;
@@ -421,7 +423,7 @@
 }
 
 .dimensionSeparator:after {
-  content: "x";
+  content: 'x';
   display: inline-block;
   padding: 0 .4em;
 }
@@ -431,12 +433,12 @@
 }
 
 .summary .labelColumn {
-  font-weight: normal;
   color: $shade-strong-20;
+  font-weight: normal;
 }
 
 .summary .fieldColumn {
-  color: #000;
+  color: $shade-strong-100;
 }
 
 //  =Manage tab
@@ -446,7 +448,8 @@
 }
 
 .rightsAddSelect {
-  margin-top: 0}
+  margin-top: 0;
+}
 
 .userAndGroupSearch {
   margin: 0;
@@ -486,7 +489,7 @@
 }
 
 .commentAuthor {
-  background: transparent url("${basePath}/icons/comment.png") no-repeat 4px 4px;
+  background: transparent url('${basePath}/icons/comment.png') no-repeat 4px 4px;
   color: $shade-strong-20;
   font-weight: bold;
   padding: .4em .3em .3em 2.1em;
@@ -494,23 +497,25 @@
 
 // BubbleBox Listing
 .bubbleBox.bubbleListing {
+  border: 0;
+  box-shadow: 0 0 2px rgba(0, 0, 0, .15);
   display: inline-block;
   margin: 0 .4em 1.2em 0;
-  transition: box-shadow 0.2s ease 0.01s;
+  transition: box-shadow 450ms cubic-bezier(.3, 1, .4, .9) 0s;
   vertical-align: top;
   width: 17em;
 }
 
 .bubbleBox.bubbleListing:hover {
-  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, .3);
   cursor: pointer;
 }
 
 .bubbleBox.bubbleListing .documentTitle {
-  padding-bottom: .3em;
   max-width: none;
-  word-wrap: normal;
+  padding-bottom: .3em;
   width: 15em;
+  word-wrap: normal;
 }
 
 .bubbleBox.bubbleListing span:not(.documentTitle) {
@@ -549,12 +554,12 @@
 
 // TinyMce override
 .nx-page [class*='mce-'] {
-  border-radius: 2px!important;
+  border-radius: 2px !important;
 }
 
 .nx-page .mce-throbber,
 .nx-page .mce-panel {
-  background: #fff;
+  background: $shade-light-0;
 }
 
 .nx-page .mce-textbox:focus,
@@ -571,7 +576,7 @@
 .nx-page .mce-toolbar .mce-btn.mce-disabled,
 .nx-page .mce-btn-group .mce-first,
 .nx-page .mce-btn-group .mce-last {
-  border: 0 none;
+  border: 0;
 }
 
 .nx-page .mce-panel,
@@ -642,7 +647,7 @@
 }
 
 .nx-page .mce-floatpanel {
-  box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, .1);
 }
 
 .nx-page .mce-textbox:focus {
@@ -653,19 +658,19 @@
 .nx-page .mce-menu-item.mce-selected,
 .nx-page .mce-menu-item:focus,
 .nx-page .mce-toolbar .mce-btn.mce-active {
-  background: #fff;
+  background: $shade-light-0;
 }
 
 .nx-page .mce-menu-item:hover .mce-btn i,
 .nx-page .mce-menu-item.mce-selected .mce-btn i,
 .nx-page .mce-menu-item:focus .mce-btn i,
 .nx-page .mce-toolbar .mce-btn.mce-active i {
-  color: #0af;
+  color: $link;
 }
 
 .nx-page .mce-menu-item:hover .mce-text,
 .nx-page .mce-menu-item.mce-selected .mce-text {
-  color: #333;
+  color: $font-color;
 }
 
 .nx-page .mce-tooltip-inner {
@@ -673,7 +678,7 @@
 }
 
 .nx-page .mce-toolbar-grp.mce-panel {
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.05) inset;
+  box-shadow: 0 0 25px rgba(0, 0, 0, .05) inset;
 }
 
 .nx-page .mce-fullscreen {
