@@ -128,7 +128,7 @@
 .thumbnailContainer {
   background: none no-repeat scroll center center transparent;
   height: 11em;
-  margin: 0 -0.8em .7em;
+  margin: 0 -1em .7em;
 }
 
 .folderishThumbnail:after {
@@ -141,9 +141,9 @@
 
 // Display of thumbnail in Thumbnail Listing mode
 .bubbleListing .thumbnailContainer {
-  background-color: #f8fafc;
+  background-color: #fafafa;
   background-size: contain;
-  border-bottom: 1px solid $shade-light-50;
+  border-radius: 3px 3px 0 0;
 }
 
 // Display of thumbnail in Content views Listing mode
@@ -192,11 +192,6 @@
 
 .dataInput .fieldColumn .widgetPanel {
   padding: 0;
-}
-
-// =Advanced Widgets
-.containerField {
-  padding-bottom: 1.5em;
 }
 
 // =Listing Widgets
