@@ -86,7 +86,7 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
 
     protected String getESIndexName() {
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        return esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
+        return esa.getIndexNameForType(ElasticSearchConstants.SEQ_ID_TYPE);
     }
 
 }
