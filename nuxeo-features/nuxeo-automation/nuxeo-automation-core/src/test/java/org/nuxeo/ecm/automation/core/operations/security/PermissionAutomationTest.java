@@ -37,7 +37,7 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.document.AddPermission;
 import org.nuxeo.ecm.automation.core.operations.document.BlockPermissionInheritance;
 import org.nuxeo.ecm.automation.core.operations.document.UnblockPermissionInheritance;
-import org.nuxeo.ecm.automation.core.operations.document.UpdatePermission;
+import org.nuxeo.ecm.automation.core.operations.document.ReplacePermission;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -110,7 +110,7 @@ public class PermissionAutomationTest {
     }
 
     @Test
-    public void canUpdatePermission() throws OperationException {
+    public void canReplacePermission() throws OperationException {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
@@ -121,13 +121,13 @@ public class PermissionAutomationTest {
         automationService.run(ctx, AddPermission.ID, params);
         ctx.setInput(src);
 
-        // Update permission
+        // Replace permission
         params.put("user", "members");
         params.put("permission", "Everything");
         params.put("id", "members:Write:true:Administrator::");
 
         assertEquals("Write", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
-        automationService.run(ctx, UpdatePermission.ID, params);
+        automationService.run(ctx, ReplacePermission.ID, params);
         src.refresh();
         assertEquals("Everything", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
 

@@ -35,16 +35,14 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 
 /**
- * Updates a given ACE.
- * <p>
- * Updates only the non-null fields, otherwise keep the ones of the old ACE.
+ * Replaces a given ACE.
  *
  * @since 7.4
  */
-@Operation(id = UpdatePermission.ID, category = Constants.CAT_DOCUMENT, label = "Add Permission", description = "Update a given permission on the input document(s). Returns the document(s).")
-public class UpdatePermission {
+@Operation(id = ReplacePermission.ID, category = Constants.CAT_DOCUMENT, label = "Replace Permission", description = "Replace a given permission on the input document(s). Returns the document(s).")
+public class ReplacePermission {
 
-    public static final String ID = "Document.UpdatePermission";
+    public static final String ID = "Document.ReplacePermission";
 
     public static final String NOTIFY_KEY = "notify";
 
@@ -79,18 +77,18 @@ public class UpdatePermission {
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws ClientException {
-        updatePermission(doc);
+        replacePermission(doc);
         return session.getDocument(doc.getRef());
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef docRef) throws ClientException {
         DocumentModel doc = session.getDocument(docRef);
-        updatePermission(doc);
+        replacePermission(doc);
         return doc;
     }
 
-    protected void updatePermission(DocumentModel doc) throws ClientException {
+    protected void replacePermission(DocumentModel doc) throws ClientException {
         Map<String, Serializable> contextData = new HashMap<>();
         if (notify != null && notify) {
             contextData.put(NOTIFY_KEY, true);
@@ -100,14 +98,11 @@ public class UpdatePermission {
         }
 
         ACE oldACE = ACE.fromId(id);
-        String username = user != null ? user : oldACE.getUsername();
-        String permission = this.permission != null ? this.permission : oldACE.getPermission();
-        String creator = session.getPrincipal().getName();
 
-        ACE newACE = ACE.builder(username, permission)
-                        .creator(creator)
-                        .begin(begin != null ? begin : oldACE.getBegin())
-                        .end(end != null ? end : oldACE.getEnd())
+        ACE newACE = ACE.builder(user, permission)
+                        .creator(session.getPrincipal().getName())
+                        .begin(begin)
+                        .end(end)
                         .contextData(contextData)
                         .build();
 

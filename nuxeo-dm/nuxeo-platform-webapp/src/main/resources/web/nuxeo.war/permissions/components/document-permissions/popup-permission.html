@@ -18,7 +18,7 @@
 <dom-module id="popup-permission">
     <template>
         <nx-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
-        <nx-operation id="updateOp" op="Document.UpdatePermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
+        <nx-operation id="replaceOp" op="Document.ReplacePermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
 
         <template is="dom-if" if="{{!updatingACE}}">
             <paper-button raised="true" on-click="togglePopup">[[i18n('label.permissions.newPermission', 'New Permission')]]</paper-button>
@@ -171,20 +171,21 @@
                 return;
             }
 
-            if(this.params.begin) {
+            var dateBased = this.selectedTimeFrame === 'datebased';
+            if(this.params.begin && dateBased) {
                 this.params.begin = this.params.begin.length > 0 ? moment(new Date(this.params.begin)).format() : null;
             } else {
                 this.params.begin = null;
             }
 
-            if(this.params.end) {
+            if(this.params.end && dateBased) {
                 this.params.end = this.params.end.length > 0 ? moment(new Date(this.params.end)).format() : null;
             } else {
                 this.params.end = null;
             }
 
             if (this.updatingACE) {
-                this.$.updateOp.execute();
+                this.$.replaceOp.execute();
             } else {
                 this.$.createOp.execute();
             }
