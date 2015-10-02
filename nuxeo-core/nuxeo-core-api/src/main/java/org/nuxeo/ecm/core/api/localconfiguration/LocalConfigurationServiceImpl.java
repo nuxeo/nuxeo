@@ -32,7 +32,7 @@ public class LocalConfigurationServiceImpl extends DefaultComponent implements L
     @Override
     public <T extends LocalConfiguration> T getConfiguration(Class<T> configurationClass, String configurationFacet,
             DocumentModel currentDoc) {
-        if (currentDoc == null) {
+        if (currentDoc == null || currentDoc.getRef() == null) {
             return null;
         }
 
