@@ -117,6 +117,18 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.elasticsearch</groupId>
+      <artifactId>nuxeo-elasticsearch-seqgen</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.elasticsearch</groupId>
+      <artifactId>nuxeo-elasticsearch-audit</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm</groupId>
       <artifactId>nuxeo-drive-core</artifactId>
       <type>test-jar</type>
