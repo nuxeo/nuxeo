@@ -22,7 +22,8 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
-@Deploy("org.nuxeo.elasticsearch.http.readonly")
+@Deploy({ "org.nuxeo.elasticsearch.http.readonly",
+        "org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml" })
 public class TestAuditRequestFilter {
 
     @Inject
