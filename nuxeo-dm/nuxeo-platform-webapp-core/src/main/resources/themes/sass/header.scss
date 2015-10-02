@@ -64,11 +64,9 @@
 .userSearchBlock {
   float: right;
   line-height: 200%;
-  margin: 1em 1em 0 .5em;
+  margin: 1em 2.1em 0 .5em;
   text-transform: none;
-  -moz-transition: all 0.3s ease 0.1s;
-  -webkit-transition: all 0.3s ease 0.1s;
-  transition: all 0.3s ease 0.1s;
+  transition: all .3s ease .1s;
 }
 
 // old search input kept for anonymous dashboard mode
