@@ -146,13 +146,11 @@ public class EditableModelImpl extends DataModel implements EditableModel, Seria
 
     @Override
     public void setWrappedData(Object data) {
+        index = -1;
         if (data == null) {
             this.data = null;
-            setRowIndex(-1);
         } else {
             this.data = (List) data;
-            index = -1;
-            setRowIndex(0);
             for (int i = 0; i < this.data.size(); i++) {
                 keyMap.put(i, i);
             }
