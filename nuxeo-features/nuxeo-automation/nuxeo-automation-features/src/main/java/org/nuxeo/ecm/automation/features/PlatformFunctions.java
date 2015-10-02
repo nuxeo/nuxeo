@@ -162,6 +162,15 @@ public class PlatformFunctions extends CoreFunctions {
         return StringEscapeUtils.escapeHtml(str);
     }
 
+    /**
+     * Escapes a string according to NXQL escaping rules.
+     * <p>
+     * The resulting string is safe to include between single quotes in a NXQL expression.
+     *
+     * @param str the input string
+     * @return the escaped string
+     * @since 6.0-HF21, 7.10
+     */
     public static String nxqlEscape(String str) {
         return NXQL.escapeStringInner(str);
     }
