@@ -5,6 +5,7 @@
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
     <version>7.10-SNAPSHOT</version>
+    <relativePath>../../../../nuxeo-distribution/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
