@@ -24,8 +24,8 @@ import javax.inject.Inject;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.AbstractChangeFinderTestCase;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -55,12 +55,12 @@ public class TestESAuditChangeFinder extends AbstractChangeFinderTestCase {
         // Explicit refresh
         esa.refresh();
         // Explicit refresh for the audit index until it is handled by esa.refresh
-        esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).get();
+        esa.getClient().admin().indices().prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).get();
     }
 
     @Override
     protected void cleanUpAuditLog() {
-        esa.dropAndInitIndex(ESAuditBackend.IDX_NAME);
+        esa.dropAndInitIndex(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
     }
 
 }

@@ -45,8 +45,8 @@ import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.runtime.api.Framework;
 
@@ -87,8 +87,8 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     protected List<LogEntry> queryESAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds, int limit) {
 
-        SearchRequestBuilder builder = getClient().prepareSearch(ESAuditBackend.IDX_NAME).setTypes(
-                ESAuditBackend.IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getClient().prepareSearch(getESIndexName()).setTypes(
+                ElasticSearchConstants.ENTRY_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
         FilterBuilder filterBuilder = buildFilterClauses(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
@@ -217,8 +217,8 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     @Override
     public long getUpperBound() {
-        SearchRequestBuilder builder = getClient().prepareSearch(ESAuditBackend.IDX_NAME).setTypes(
-                ESAuditBackend.IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getClient().prepareSearch(getESIndexName()).setTypes(
+                ElasticSearchConstants.ENTRY_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         // TODO refactor this to use max clause
         builder.setQuery(QueryBuilders.matchAllQuery());
         builder.addSort("id", SortOrder.DESC);
@@ -272,5 +272,10 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             esClient = esa.getClient();
         }
         return esClient;
+    }
+
+    protected String getESIndexName() {
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        return esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
     }
 }

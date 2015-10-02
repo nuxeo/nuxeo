@@ -24,8 +24,8 @@ import org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,7 +48,7 @@ public class NuxeoDriveWaitForElasticsearchCompletion {
         // Explicit refresh
         esa.refresh();
         // Explicit refresh for the audit index until it is handled by esa.refresh
-        esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).get();
+        esa.getClient().admin().indices().prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).get();
     }
 
 }
