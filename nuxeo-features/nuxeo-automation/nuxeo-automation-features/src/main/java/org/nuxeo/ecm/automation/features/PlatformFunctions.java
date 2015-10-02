@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -162,6 +163,10 @@ public class PlatformFunctions extends CoreFunctions {
 
     public static String htmlEscape(String str) {
         return StringEscapeUtils.escapeHtml(str);
+    }
+
+    public static String nxqlEscape(String str) {
+        return NXQL.escapeStringInner(str);
     }
 
     /**
