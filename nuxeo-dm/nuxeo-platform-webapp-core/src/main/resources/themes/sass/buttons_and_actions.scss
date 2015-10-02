@@ -10,7 +10,7 @@
   background: none $shade-light-0;
   border: 1px solid $shade-medium-20;
   border-radius: 4px;
-  color: #555;
+  color: $font-color;
   cursor: pointer;
   display: inline-block;
   font-size: 11px;
@@ -66,6 +66,9 @@
 .nx-page input[type="submit"]:disabled:hover,
 .nx-page input[type="button"]:disabled,
 .nx-page input[type="button"]:disabled:hover {
+  background: none rgba(255, 255, 255, .8);
+  border-color: $shade-light-30;
+  box-shadow: none;
   cursor: not-allowed;
   display: none;
 }
@@ -288,7 +291,7 @@
   background-color: transparent;
   border: 1px solid transparent;
   border-radius: 3px;
-  color: #555;
+  color: $font-color;
   font-weight: bold;
   margin: 0;
 }
@@ -394,7 +397,7 @@
 }
 
 .separator {
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid $shade-light-50;
 }
 
 // =MainActions in Document Title Area
@@ -515,7 +518,7 @@
 
 // =Labels, tags, users
 .tag {
-  background: none $shade-light-30;
+  background: none $shade-light-20;
   border-radius: 16px;
   color: #333;
   display: inline-block;
@@ -546,7 +549,7 @@ a.tag,
 a.tag:hover,
 .tag a:hover,
 .tag img:hover {
-  background-color: #f6f6f6;
+  background-color: $shade-light-30;
   opacity: 1;
 }
 
@@ -560,7 +563,7 @@ a.tag:hover,
 .group,
 span.user,
 span.group {
-  background: url("${basePath}/icons/user.png") no-repeat scroll 7px 6px / 13px #eee;
+  background: url("${basePath}/icons/user.png") no-repeat scroll 7px 6px / 13px $shade-light-20;
   border-radius: 16px;
   color: $shade-strong-20;
   display: inline-block;
@@ -573,7 +576,7 @@ span.group {
 
 .group,
 span.group {
-  background: url("${basePath}/icons/group.png") no-repeat scroll 7px 6px /13px #eee;
+  background: url("${basePath}/icons/group.png") no-repeat scroll 7px 6px /13px $shade-light-20;
 }
 
 .user a:hover,
