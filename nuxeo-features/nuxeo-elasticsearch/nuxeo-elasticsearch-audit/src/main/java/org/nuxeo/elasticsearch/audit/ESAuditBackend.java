@@ -81,6 +81,7 @@ import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
@@ -93,10 +94,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author tiry
  */
 public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend {
-
-    public static final String IDX_NAME = "audit";
-
-    public static final String IDX_TYPE = "entry";
 
     public static final String SEQ_NAME = "audit";
 
@@ -176,12 +173,14 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     protected SearchRequestBuilder getSearchRequestBuilder() {
-        return getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        return getClient().prepareSearch(getESIndexName()).setTypes(ElasticSearchConstants.ENTRY_TYPE).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH);
     }
 
     @Override
     public LogEntry getLogEntryByID(long id) {
-        GetResponse ret = getClient().prepareGet(IDX_NAME, IDX_TYPE, String.valueOf(id)).get();
+        GetResponse ret = getClient().prepareGet(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
+                String.valueOf(id)).get();
         if (!ret.isExists()) {
             return null;
         }
@@ -320,8 +319,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 XContentBuilder builder = jsonBuilder();
                 JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
                 AuditEntryJSONWriter.asJSON(jsonGen, entry);
-                bulkRequest.add(getClient().prepareIndex(IDX_NAME, IDX_TYPE, String.valueOf(entry.getId())).setSource(
-                        builder));
+                bulkRequest.add(getClient().prepareIndex(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
+                        String.valueOf(entry.getId())).setSource(builder));
             }
 
             BulkResponse bulkResponse = bulkRequest.execute().actionGet();
@@ -341,7 +340,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public Long getEventsCount(String eventId) {
-        CountResponse res = getClient().prepareCount(IDX_NAME).setTypes(IDX_TYPE).setQuery(
+        CountResponse res = getClient().prepareCount(getESIndexName()).setTypes(ElasticSearchConstants.ENTRY_TYPE).setQuery(
                 QueryBuilders.constantScoreQuery(FilterBuilders.termFilter("eventId", eventId))).get();
         return res.getCount();
     }
@@ -565,7 +564,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     protected void logSearchRequest(SearchRequestBuilder request) {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
-                    IDX_NAME, IDX_TYPE, request.toString()));
+                    getESIndexName(), ElasticSearchConstants.ENTRY_TYPE, request.toString()));
         }
     }
 
@@ -578,7 +577,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                         MIGRATION_FLAG_PROP));
                 // Drop audit index first in case of a previous bad migration
                 ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-                esa.dropAndInitIndex(IDX_NAME);
+                esa.dropAndInitIndex(getESIndexName());
                 int batchSize = MIGRATION_DEFAULT_BACTH_SIZE;
                 String batchSizeProp = Framework.getProperty(MIGRATION_BATCH_SIZE_PROP);
                 if (batchSizeProp != null) {
@@ -599,7 +598,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
      * Ensures the audit sequence returns an UID greater or equal than the maximum log entry id.
      */
     protected void ensureUIDSequencer(Client esClient) {
-        boolean auditIndexExists = esClient.admin().indices().prepareExists(IDX_NAME).execute().actionGet().isExists();
+        boolean auditIndexExists = esClient.admin().indices().prepareExists(getESIndexName()).execute().actionGet().isExists();
         if (!auditIndexExists) {
             return;
         }
@@ -654,5 +653,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             }
 
         };
+    }
+
+    protected String getESIndexName() {
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        return esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
     }
 }

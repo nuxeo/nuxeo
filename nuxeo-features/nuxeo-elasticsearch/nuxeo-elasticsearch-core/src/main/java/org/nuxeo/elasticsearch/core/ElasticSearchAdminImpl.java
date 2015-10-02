@@ -275,6 +275,26 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     @Override
+    public List<String> getIndexNamesForType(String type) {
+        List<String> indexNames = new ArrayList<>();
+        for (ElasticSearchIndexConfig conf : indexConfig.values()) {
+            if (type.equals(conf.getType())) {
+                indexNames.add(conf.getName());
+            }
+        }
+        return indexNames;
+    }
+
+    @Override
+    public String getIndexNameForType(String type) {
+        List<String> indexNames = getIndexNamesForType(type);
+        if (indexNames.isEmpty()) {
+            throw new NoSuchElementException("No index defined for type: " + type);
+        }
+        return indexNames.get(0);
+    }
+
+    @Override
     public void flushRepositoryIndex(String repositoryName) {
         log.warn("Flushing index associated with repo: " + repositoryName);
         getClient().admin().indices().prepareFlush(getIndexNameForRepository(repositoryName)).execute().actionGet();

@@ -5,13 +5,16 @@ import static org.junit.Assert.fail;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.elasticsearch.audit.ESAuditBackend;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.http.readonly.filter.AuditRequestFilter;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+
+import com.google.inject.Inject;
 
 /**
  * @since 7.4
@@ -22,15 +25,16 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy("org.nuxeo.elasticsearch.http.readonly")
 public class TestAuditRequestFilter {
 
-    private static final String INDICES = ESAuditBackend.IDX_NAME;
-
-    private static final String TYPES = ESAuditBackend.IDX_TYPE;
+    @Inject
+    ElasticSearchAdmin esa;
 
     @Test
     public void testMatchAllAuditAsAdmin() throws Exception {
         String payload = "{\"query\": {\"match_all\": {}}}";
         AuditRequestFilter filter = new AuditRequestFilter();
-        filter.init(TestSearchRequestFilter.getAdminCoreSession(), INDICES, TYPES, "pretty", payload);
+        filter.init(TestSearchRequestFilter.getAdminCoreSession(),
+                esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE), ElasticSearchConstants.ENTRY_TYPE,
+                "pretty", payload);
         Assert.assertEquals(payload, filter.getPayload());
     }
 
@@ -39,7 +43,9 @@ public class TestAuditRequestFilter {
         String payload = "{\"query\": {\"match_all\": {}}}";
         AuditRequestFilter filter = new AuditRequestFilter();
         try {
-        filter.init(TestSearchRequestFilter.getNonAdminCoreSession(), INDICES, TYPES, "pretty", payload);
+            filter.init(TestSearchRequestFilter.getNonAdminCoreSession(),
+                    esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE), ElasticSearchConstants.ENTRY_TYPE,
+                    "pretty", payload);
         } catch (IllegalArgumentException e) {
             //Expected
             return;

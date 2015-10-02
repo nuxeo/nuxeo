@@ -89,6 +89,10 @@ elasticsearch.adminCenter.displayClusterInfo=false
 elastcisearch.reindex.onStartup=false
 # Use Elasticsearch as a backend for audit logs
 audit.elasticsearch.enabled=false
+# Name of the Elasticsearch index for audit logs
+audit.elasticsearch.indexName=${elasticsearch.indexName}-audit
+# Name of the Elasticsearch index for the uid sequencer
+seqgen.elasticsearch.indexName=${elasticsearch.indexName}-uidgen
 # Migrate audit logs from SQL storage to Elasticsearch indexing, requires audit.elasticsearch.enabled=true
 audit.elasticsearch.migration=false
 # Batch size for audit logs migration, only useful with audit.elasticsearch.migration=true

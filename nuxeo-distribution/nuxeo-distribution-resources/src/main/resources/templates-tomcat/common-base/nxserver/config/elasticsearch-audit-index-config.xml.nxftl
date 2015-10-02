@@ -1,0 +1,29 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.index.audit.contrib">
+  <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+	     point="elasticSearchIndex">
+
+    <elasticSearchIndex name="${audit.elasticsearch.indexName}" type="entry" >
+      <mapping>
+        {
+          "properties" : {
+	    "eventDate": {
+	      "format": "dateOptionalTime",
+	      "type": "date"
+	    },
+	    "logDate": {
+	      "format": "dateOptionalTime",
+	      "type": "date"
+	    }
+          }
+        }
+      </mapping>
+    </elasticSearchIndex>
+
+  </extension>
+
+</component>
+</#escape>

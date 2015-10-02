@@ -57,10 +57,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.elasticsearch</groupId>
-      <artifactId>nuxeo-elasticsearch-audit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.elasticsearch</groupId>
       <artifactId>nuxeo-elasticsearch-core</artifactId>
       <type>test-jar</type>
     </dependency> 

@@ -2,6 +2,7 @@
 org.nuxeo.runtime.trackers.files.threadstracking.config
 <#if elasticsearch.enabled != "true" || audit.elasticsearch.enabled != "true">
 org.nuxeo.elasticsearch.audit.contrib
+org.nuxeo.elasticsearch.index.audit.contrib
 org.nuxeo.ecm.platform.audit.PageProviderservice.es.contrib
 org.nuxeo.admin.audit.es.contentView.contrib
 </#if>

@@ -16,11 +16,14 @@
  */
 package org.nuxeo.elasticsearch.seqgen;
 
+import java.util.NoSuchElementException;
+
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
 
@@ -36,8 +39,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ESUIDSequencer extends AbstractUIDSequencer {
 
-    public static final String IDX_TYPE = "seqId";
-
     protected Client esClient = null;
 
     protected Client getClient() {
@@ -46,7 +47,7 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
             esClient = esa.getClient();
             try {
                 ensureESIndex(esClient);
-            } catch (NuxeoException e) {
+            } catch (NoSuchElementException | NuxeoException e) {
                 esClient = null;
                 throw e;
             }
@@ -64,8 +65,8 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
     @Override
     public int getNext(String sequenceName) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
-        String indexName = getName();
-        IndexResponse res = getClient().prepareIndex(indexName, IDX_TYPE, sequenceName).setSource(source).execute().actionGet();
+        IndexResponse res = getClient().prepareIndex(getESIndexName(), ElasticSearchConstants.SEQ_ID_TYPE, sequenceName).setSource(
+                source).execute().actionGet();
         return (int) res.getVersion();
     }
 
@@ -75,11 +76,17 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
     }
 
     protected void ensureESIndex(Client esClient) {
-        boolean indexExists = esClient.admin().indices().prepareExists(getName()).execute().actionGet().isExists();
+        boolean indexExists = esClient.admin().indices().prepareExists(getESIndexName()).execute().actionGet().isExists();
         if (!indexExists) {
-            throw new NuxeoException(String.format("Sequencer %s needs an elasticSearchIndex contribution named %s",
-                    getName(), getName()));
+            throw new NuxeoException(String.format(
+                    "Sequencer %s needs an elasticSearchIndex contribution with type %s", getName(),
+                    ElasticSearchConstants.SEQ_ID_TYPE));
         }
+    }
+
+    protected String getESIndexName() {
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        return esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
     }
 
 }

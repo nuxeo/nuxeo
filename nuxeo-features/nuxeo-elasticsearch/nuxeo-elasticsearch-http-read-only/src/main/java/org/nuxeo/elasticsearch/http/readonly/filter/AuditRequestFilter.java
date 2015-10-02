@@ -21,8 +21,10 @@ package org.nuxeo.elasticsearch.http.readonly.filter;
 import org.json.JSONException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.elasticsearch.audit.ESAuditBackend;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.http.readonly.AbstractSearchRequestFilterImpl;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Define a elasticsearch passthrough filter for audit index. Only administrator can access the audit index.
@@ -36,8 +38,9 @@ public class AuditRequestFilter extends AbstractSearchRequestFilterImpl {
         if (!this.principal.isAdministrator()) {
             throw new IllegalArgumentException("Invalid index submitted: " + indices);
         }
-        this.indices = ESAuditBackend.IDX_NAME;
-        this.types = ESAuditBackend.IDX_TYPE;
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        this.indices = esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
+        this.types = ElasticSearchConstants.ENTRY_TYPE;
         this.rawQuery = rawQuery;
         this.payload = payload;
         if (payload == null && !principal.isAdministrator()) {
@@ -49,16 +52,6 @@ public class AuditRequestFilter extends AbstractSearchRequestFilterImpl {
     @Override
     public String getPayload() throws JSONException {
         return payload;
-    }
-
-    @Override
-    public String getIndices() {
-        return ESAuditBackend.IDX_NAME;
-    }
-
-    @Override
-    public String getTypes() {
-        return ESAuditBackend.IDX_TYPE;
     }
 
 }

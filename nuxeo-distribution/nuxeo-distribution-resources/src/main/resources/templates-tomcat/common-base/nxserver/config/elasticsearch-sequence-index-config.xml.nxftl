@@ -1,9 +1,11 @@
+<#escape x as x?xml>
 <?xml version="1.0"?>
 <component name="org.nuxeo.elasticsearch.index.sequence.contrib">
+  <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
 
-    <elasticSearchIndex name="uidgen" type="seqId">
+    <elasticSearchIndex name="${seqgen.elasticsearch.indexName}" type="seqId">
 
       <settings>
         {
@@ -26,3 +28,4 @@
   </extension>
 
 </component>
+</#escape>

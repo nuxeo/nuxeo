@@ -262,6 +262,16 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
+    public List<String> getIndexNamesForType(String type) {
+        return esa.getIndexNamesForType(type);
+    }
+
+    @Override
+    public String getIndexNameForType(String type) {
+        return esa.getIndexNameForType(type);
+    }
+
+    @Override
     public int getPendingWorkerCount() {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         return  wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.SCHEDULED);

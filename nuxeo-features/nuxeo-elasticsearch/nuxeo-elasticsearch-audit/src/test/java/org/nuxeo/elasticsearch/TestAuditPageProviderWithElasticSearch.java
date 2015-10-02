@@ -39,7 +39,6 @@ import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -72,8 +71,8 @@ public class TestAuditPageProviderWithElasticSearch {
 
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
-        esa.getClient().admin().indices().prepareFlush(ESAuditBackend.IDX_NAME).execute().actionGet();
-        esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).execute().actionGet();
+        esa.getClient().admin().indices().prepareFlush(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).execute().actionGet();
+        esa.getClient().admin().indices().prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).execute().actionGet();
 
         TransactionHelper.startTransaction();
 

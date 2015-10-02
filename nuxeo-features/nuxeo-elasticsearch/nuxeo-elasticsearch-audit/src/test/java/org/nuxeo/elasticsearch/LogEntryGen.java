@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -15,7 +14,6 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -47,8 +45,8 @@ public class LogEntryGen {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
 
-        esa.getClient().admin().indices().prepareFlush(ESAuditBackend.IDX_NAME).execute().actionGet();
-        esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).execute().actionGet();
+        esa.getClient().admin().indices().prepareFlush(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).execute().actionGet();
+        esa.getClient().admin().indices().prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).execute().actionGet();
         TransactionHelper.startTransaction();
 
     }

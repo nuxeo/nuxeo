@@ -19,6 +19,7 @@
 package org.nuxeo.elasticsearch.api;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.elasticsearch.client.Client;
@@ -76,6 +77,21 @@ public interface ElasticSearchAdmin {
      * @since 7.2
      */
     String getIndexNameForRepository(String repositoryName);
+
+    /**
+     * Get the index names with the given type.
+     *
+     * @since 7.10
+     */
+    List<String> getIndexNamesForType(String type);
+
+    /**
+     * Get the first index name with the given type.
+     *
+     * @throws NoSuchElementException if there is no Elasticsearch index with the given type.
+     * @since 7.10
+     */
+    String getIndexNameForType(String type);
 
     /**
      * Returns true if there are indexing activities scheduled or running.
