@@ -132,6 +132,16 @@ video {
   *zoom: 1;
 }
 
+*::-moz-selection {
+  background-color: $button-primary;
+  color: $shade-light-0;
+}
+
+*::selection {
+  background-color: $button-primary;
+  color: $shade-light-0;
+}
+
 // =Links and Titles
 .nx-page a {
   color: $link;
