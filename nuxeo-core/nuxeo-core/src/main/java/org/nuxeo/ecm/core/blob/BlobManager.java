@@ -54,6 +54,24 @@ public interface BlobManager {
         public Long length;
 
         public String digest;
+
+        /** Empty constructor. */
+        public BlobInfo() {
+        }
+
+        /**
+         * Copy constructor.
+         *
+         * @since 7.10
+         */
+        public BlobInfo(BlobInfo other) {
+            key = other.key;
+            mimeType = other.mimeType;
+            encoding = other.encoding;
+            filename = other.filename;
+            length = other.length;
+            digest = other.digest;
+        }
     }
 
     /**
