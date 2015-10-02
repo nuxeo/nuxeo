@@ -30,7 +30,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
-import org.nuxeo.elasticsearch.audit.ESAuditBackend;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.http.readonly.filter.AuditRequestFilter;
 import org.nuxeo.runtime.api.Framework;
 
@@ -48,8 +49,9 @@ public class RoutingAuditRequestFilter extends AuditRequestFilter {
     public void init(CoreSession session, String indices, String types, String rawQuery, String payload) {
         this.session = session;
         this.principal = (NuxeoPrincipal) session.getPrincipal();
-        this.indices = ESAuditBackend.IDX_NAME;
-        this.types = ESAuditBackend.IDX_TYPE;
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        this.indices = esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
+        this.types = ElasticSearchConstants.ENTRY_TYPE;
         this.rawQuery = rawQuery;
         this.payload = payload;
         if (payload == null && !principal.isAdministrator()) {
