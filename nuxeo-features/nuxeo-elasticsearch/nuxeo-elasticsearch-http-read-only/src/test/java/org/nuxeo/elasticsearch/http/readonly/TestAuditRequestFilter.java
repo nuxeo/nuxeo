@@ -47,7 +47,7 @@ public class TestAuditRequestFilter {
                     esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE), ElasticSearchConstants.ENTRY_TYPE,
                     "pretty", payload);
         } catch (IllegalArgumentException e) {
-            //Expected
+            // Expected
             return;
         }
         fail("Non Admin should not be able to access audit");

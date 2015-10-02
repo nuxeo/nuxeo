@@ -107,7 +107,6 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     protected Client esClient = null;
 
-    @SuppressWarnings("hiding")
     protected static final Log log = LogFactory.getLog(ESAuditBackend.class);
 
     protected BaseLogEntryProvider provider = null;

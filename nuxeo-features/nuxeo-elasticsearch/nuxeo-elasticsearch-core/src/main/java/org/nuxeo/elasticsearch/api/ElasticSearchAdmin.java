@@ -21,8 +21,9 @@ package org.nuxeo.elasticsearch.api;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import org.elasticsearch.client.Client;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * Administration interface for Elasticsearch service
@@ -47,8 +48,8 @@ public interface ElasticSearchAdmin {
     void initIndexes(boolean dropIfExists);
 
     /**
-     * Reinitialize an index. This will drop the existing index, recreate it with its settings and
-     * mapping, the index will be empty.
+     * Reinitialize an index. This will drop the existing index, recreate it with its settings and mapping, the index
+     * will be empty.
      *
      * @since 7.3
      */
@@ -71,9 +72,8 @@ public interface ElasticSearchAdmin {
 
     /**
      * Get the index name associated with the repository name.
-
-     * throws NoSuchElementException if there is no Elasticsearch index associated with the requested repository.
      *
+     * @throws NoSuchElementException if there is no Elasticsearch index associated with the requested repository.
      * @since 7.2
      */
     String getIndexNameForRepository(String repositoryName);
@@ -101,8 +101,7 @@ public interface ElasticSearchAdmin {
     boolean isIndexingInProgress();
 
     /**
-     * A {@link java.util.concurrent.Future} that accepts callback on completion when all the indexing
-     * worker are done.
+     * A {@link java.util.concurrent.Future} that accepts callback on completion when all the indexing worker are done.
      *
      * @since 7.2
      */
@@ -142,6 +141,7 @@ public interface ElasticSearchAdmin {
 
     /**
      * Elasticsearch run {@link ElasticSearchAdmin#optimizeRepositoryIndex} on all document indexes,
+     *
      * @since 7.2
      */
     void optimize();
@@ -177,8 +177,8 @@ public interface ElasticSearchAdmin {
     int getRunningWorkerCount();
 
     /**
-     * Returns the total number of command processed by Elasticsearch for this Nuxeo instance.
-     * Useful for test assertion.
+     * Returns the total number of command processed by Elasticsearch for this Nuxeo instance. Useful for test
+     * assertion.
      *
      * @since 5.9.4
      */
@@ -190,6 +190,5 @@ public interface ElasticSearchAdmin {
      * @since 7.2
      */
     boolean isEmbedded();
-
 
 }

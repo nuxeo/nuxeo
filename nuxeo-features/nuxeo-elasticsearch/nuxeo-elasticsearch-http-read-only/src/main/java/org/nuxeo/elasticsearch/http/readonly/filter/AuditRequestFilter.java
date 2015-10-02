@@ -33,9 +33,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AuditRequestFilter extends AbstractSearchRequestFilterImpl {
 
+    @Override
     public void init(CoreSession session, String indices, String types, String rawQuery, String payload) {
-        this.principal = (NuxeoPrincipal) session.getPrincipal();
-        if (!this.principal.isAdministrator()) {
+        principal = (NuxeoPrincipal) session.getPrincipal();
+        if (!principal.isAdministrator()) {
             throw new IllegalArgumentException("Invalid index submitted: " + indices);
         }
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
