@@ -40,7 +40,7 @@ import org.openqa.selenium.support.ui.Select;
  *
  * @since 7.2
  */
-public class ITJSListWidgetTest extends AbstractTest {
+public class ITAjaxListWidgetTest extends AbstractTest {
 
     private final static String DUMMY_HTML_TEXT_CONTENT_1 = "dummy content";
 
