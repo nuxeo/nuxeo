@@ -23,6 +23,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -159,6 +160,10 @@ public class PlatformFunctions extends CoreFunctions {
 
     public static String htmlEscape(String str) {
         return StringEscapeUtils.escapeHtml(str);
+    }
+
+    public static String nxqlEscape(String str) {
+        return NXQL.escapeStringInner(str);
     }
 
     /**
