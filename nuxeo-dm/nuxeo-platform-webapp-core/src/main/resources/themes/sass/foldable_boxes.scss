@@ -1,9 +1,9 @@
 // ----- Boxes & Foldable boxes styles.
 .foldableBox {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border-radius: 4px;
   border: 1px solid;
-  border-color: $shade-medium-10;
+  border-color: $shade-light-30;
   font-size: .9em;
   margin-bottom: 1.8em;
 }
@@ -61,7 +61,7 @@
 }
 
 .foldableBox h3.foldedDisabled {
-  color: #555;
+  color: $shade-strong-10;
 }
 
 .foldableBox h3 a,
@@ -79,7 +79,7 @@
 }
 
 .foldableBox .boxBody {
-  border-top: 1px solid #eee;
+  border-top: 1px solid $shade-light-30;
   clear: both;
   font-size: 1.05em;
   padding: 1em;
@@ -104,7 +104,6 @@
 .foldableLightBox div.unfolded a {
   color: $font-color;
   float: left;
-  font-size: 1em;
   margin: 0;
   padding: 0 .4em;
   text-decoration: none;
@@ -112,15 +111,16 @@
 
 .foldableLightBox div.folded,
 .foldableLightBox div.unfolded {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 2px;
-  display: inline-flex;
   font-size: .9em;
 }
 
+.foldableLightBox .foldableHeaderLink {
+  border: 1px solid $shade-medium-20;
+  border-radius: 2px;
+  line-height: 2.1em; }
+
 .foldableLightBox .boxBody {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border: 1px solid $shade-light-50;
   clear: both;
   font-size: .85em;
@@ -171,8 +171,8 @@
 
 // =Bubble boxes
 .bubbleBox {
-  background-color: #fff;
-  border: 1px solid #eee;
+  background-color: $shade-light-0;
+  border: 1px solid $shade-light-30;
   border-radius: 3px;
   display: block;
   margin: 0 1em 1em 0;
@@ -217,7 +217,7 @@
 }
 
 .bubbleShadow {
-  box-shadow: 0 -1px 2px #eee inset;
+  box-shadow: 0 -1px 2px $shade-light-30 inset;
 }
 
 a.bubbleBox:hover {
