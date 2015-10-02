@@ -512,7 +512,6 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 model.addTemplateValue();
             }
         }
-        model.setRowIndex(-1);
         return model;
     }
 
@@ -588,10 +587,14 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      * @param rowIndex The rowIndex of the row that should be made current. Use -1 to clear the current row.
      */
     public void setRowIndex(int rowIndex) {
-        Object oldValue = saveRequestMapModelValue();
-        preRowDataChange();
-        getEditableModel().setRowIndex(rowIndex);
-        postRowDataChange(oldValue);
+        // do not change row index if not needed
+        int current = getEditableModel().getRowIndex();
+        if (current != rowIndex) {
+            Object oldValue = saveRequestMapModelValue();
+            preRowDataChange();
+            getEditableModel().setRowIndex(rowIndex);
+            postRowDataChange(oldValue);
+        }
     }
 
     /**
@@ -603,14 +606,18 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      * @param rowKey The rowKey of the row that should be made current. Use null to clear the current row.
      */
     public void setRowKey(Integer rowKey) {
-        // XXX AT: do not save state before setting row key as current index
-        // may not point to the same object anymore (XXX: need to handle this
-        // better, as events may change the data too, in which case we would
-        // want the state to be saved).
-        // preRowDataChange();
-        Object oldRequestValue = saveRequestMapModelValue();
-        getEditableModel().setRowKey(rowKey);
-        postRowDataChange(oldRequestValue);
+        // do not change row key if not needed
+        Integer current = getEditableModel().getRowKey();
+        if ((current != null && !current.equals(rowKey)) || (current == null && rowKey != null)) {
+            // XXX AT: do not save state before setting row key as current index
+            // may not point to the same object anymore (XXX: need to handle this
+            // better, as events may change the data too, in which case we would
+            // want the state to be saved).
+            // preRowDataChange();
+            Object oldRequestValue = saveRequestMapModelValue();
+            getEditableModel().setRowKey(rowKey);
+            postRowDataChange(oldRequestValue);
+        }
     }
 
     /**
@@ -794,6 +801,11 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
     @SuppressWarnings("deprecation")
     public String getContainerClientId(FacesContext context) {
         String id = super.getClientId(context);
+        // avoid trigger of editable model creation for id retrieval
+        InternalState iState = getInternalState(false);
+        if (iState == null || iState._model == null) {
+            return id;
+        }
         int index = getRowIndex();
         if (index != -1) {
             id += NamingContainer.SEPARATOR_CHAR + String.valueOf(index);
@@ -979,7 +991,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             setRowIndex(-1);
         }
         Collection<String> idsToVisit = context.getSubtreeIdsToVisit(this);
-        assert (idsToVisit != null);
+        assert idsToVisit != null;
 
         // All ids or non-empty collection means we need to visit our children.
         return (!idsToVisit.isEmpty());
@@ -1108,8 +1120,8 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 Boolean setDiff = getDiff();
                 if (setDiff) {
                     // set list diff instead of the whole list
-                    EditableModel model = getEditableModel();
                     // FIXME NXP-16515
+                    // EditableModel model = getEditableModel();
                     // ve.setValue(context.getELContext(), model.getListDiff());
                     ve.setValue(context.getELContext(), getLocalValue());
                 } else {
@@ -1138,9 +1150,8 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 setValid(false);
             }
             if (caught != null) {
-                assert (message != null);
+                assert message != null;
                 // PENDING(edburns): verify this is in the spec.
-                @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
                 UpdateModelException toQueue = new UpdateModelException(message, caught);
                 ExceptionQueuedEventContext eventContext = new ExceptionQueuedEventContext(context, toQueue, this,
                         PhaseId.UPDATE_MODEL_VALUES);
