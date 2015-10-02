@@ -53,7 +53,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml",
-        "org.nuxeo.elasticsearch.audit:test-pageprovider-track-contrib.xml"})
+        "org.nuxeo.elasticsearch.audit:test-pageprovider-track-contrib.xml" })
 public class TestPageProviderTracking {
 
     protected @Inject CoreSession session;
@@ -63,7 +63,6 @@ public class TestPageProviderTracking {
 
     @Inject
     protected PageProviderService pps;
-
 
     @Test
     public void shouldLogPageProviderCallsInAudit() throws Exception {
@@ -76,14 +75,14 @@ public class TestPageProviderTracking {
         assertNotNull(pp);
 
         AuditReader reader = Framework.getLocalService(AuditReader.class);
-        List<LogEntry> trail = reader.queryLogs(new String[]{"search"}, null);
+        List<LogEntry> trail = reader.queryLogs(new String[] { "search" }, null);
 
         assertEquals(0, trail.size());
 
         pp.getCurrentPage();
 
         LogEntryGen.flushAndSync();
-        trail = reader.queryLogs(new String[]{"search"}, null);
+        trail = reader.queryLogs(new String[] { "search" }, null);
         assertEquals(1, trail.size());
 
         LogEntry entry = trail.get(0);
@@ -92,18 +91,19 @@ public class TestPageProviderTracking {
 
         assertEquals("search", entry.getEventId());
 
-        assertEquals("CURRENT_DOCUMENT_CHILDREN_TRACK", entry.getExtendedInfos().get("pageProviderName").getSerializableValue());
+        assertEquals("CURRENT_DOCUMENT_CHILDREN_TRACK",
+                entry.getExtendedInfos().get("pageProviderName").getSerializableValue());
 
         assertEquals(0L, entry.getExtendedInfos().get("pageIndex").getSerializableValue());
 
         assertEquals(0L, entry.getExtendedInfos().get("resultsCountInPage").getSerializableValue());
 
-        assertTrue(((String)entry.getExtendedInfos().get("params").getSerializableValue()).contains(session.getRootDocument().getId()));
+        assertTrue(((String) entry.getExtendedInfos().get("params").getSerializableValue()).contains(session.getRootDocument().getId()));
 
         pp.getCurrentPage();
 
         LogEntryGen.flushAndSync();
-        trail = reader.queryLogs(new String[]{"search"}, null);
+        trail = reader.queryLogs(new String[] { "search" }, null);
         assertEquals(2, trail.size());
 
     }
