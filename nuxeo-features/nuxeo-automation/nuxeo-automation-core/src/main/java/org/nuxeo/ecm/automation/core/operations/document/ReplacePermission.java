@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 /**
  * Replaces a given ACE.
  *
- * @since 7.4
+ * @since 7.10
  */
 @Operation(id = ReplacePermission.ID, category = Constants.CAT_DOCUMENT, label = "Replace Permission", description = "Replace a given permission on the input document(s). Returns the document(s).")
 public class ReplacePermission {
