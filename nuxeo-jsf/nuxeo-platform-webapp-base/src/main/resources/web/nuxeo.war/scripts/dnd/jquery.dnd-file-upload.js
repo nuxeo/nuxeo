@@ -12,6 +12,8 @@ if (!log) {
 
 (function ($) {
 
+  var initializingBatch = false;
+  var batchInitialized = false;
   var sendingRequestsInProgress = false;
   var tryToUploadDirectoryContent = false;
   var uploadStack = new Array();
@@ -62,7 +64,7 @@ if (!log) {
       if (targetUrl.indexOf("/", targetUrl.length - 1) == -1) {
         targetUrl = targetUrl + "/";
       }
-      targetUrl = targetUrl + "batch/files/" + opts.handler.batchStarted();
+      targetUrl = targetUrl + "upload/" + opts.handler.batchStarted();
       jQuery.ajax({
         type: 'GET',
         contentType: 'application/json+nxrequest',
@@ -94,9 +96,13 @@ if (!log) {
     uploadTimeout: 30000,
     execTimeout: 30000,
     handler: {
+      // invoked to generate a batchId server-side
+      initBatch: function(callback) {
+        callback(null);
+      },
       // invoked when new files are dropped
       batchStarted: function () {
-        return "X"
+        return "X";
       },
       // invoked when the upload for given file has been started
       uploadStarted: function (fileIndex, file) {
@@ -333,16 +339,31 @@ if (!log) {
   }
 
   function uploadFiles(opts) {
-
     if (nbUploadInprogress >= opts.numConcurrentUploads) {
       sendingRequestsInProgress = false;
       log("delaying upload for next file(s) " + uploadIdx + "+ since there are already " + nbUploadInprogress + " active uploads");
       return;
     }
 
-    var batchId = opts.handler.batchStarted();
-    sendingRequestsInProgress = true;
+    if (!batchInitialized && !initializingBatch) {
+      initializingBatch = true;
+      opts.handler.initBatch(function(err) {
+        if (err) {
+          throw new Error(err);
+        }
 
+        batchInitialized = true;
+        doUploadFiles(opts);
+      });
+    } else if (batchInitialized) {
+      doUploadFiles(opts);
+    }
+  }
+
+  function doUploadFiles(opts) {
+    var batchId = opts.handler.batchStarted();
+
+    sendingRequestsInProgress = true;
     while (uploadStack.length > 0) {
       var file = uploadStack.shift();
       // create a new xhr object
@@ -391,7 +412,7 @@ if (!log) {
       if (targetUrl.indexOf("/", targetUrl.length - 1) == -1) {
         targetUrl = targetUrl + "/";
       }
-      targetUrl = targetUrl + "batch/upload";
+      targetUrl = targetUrl + "upload/" + batchId + "/" + uploadIdx;
 
       log("starting upload for file " + uploadIdx);
       xhr.open(opts.method, targetUrl);
@@ -400,8 +421,6 @@ if (!log) {
       xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.name));
       xhr.setRequestHeader("X-File-Size", file.size);
       xhr.setRequestHeader("X-File-Type", file.type);
-      xhr.setRequestHeader("X-Batch-Id", batchId);
-      xhr.setRequestHeader("X-File-Idx", uploadIdx);
 
       xhr.setRequestHeader('Nuxeo-Transaction-Timeout', uploadTimeoutS);
       nbUploadInprogress++;
@@ -429,7 +448,7 @@ if (!log) {
     var upload = xhr.upload;
     log("readyStateChange event on file upload " + upload.fileIndex + " (state : " + xhr.readyState + ")");
     if (xhr.readyState == 4) {
-      if (xhr.status == 200) {
+      if (xhr.status == 201) {
         load(upload, opts);
       } else {
         log("Upload failed, status: " + xhr.status);

@@ -128,7 +128,7 @@ public class BatchUploadTest extends BaseTest {
 
         // Get batch id, used as a session id
         ClientResponse response = getResponse(RequestType.POST, "upload");
-        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         String batchId = node.get("batchId").getValueAsText();
         assertNotNull(batchId);
@@ -291,7 +291,7 @@ public class BatchUploadTest extends BaseTest {
 
         // Get batch id, used as a session id
         ClientResponse response = getResponse(RequestType.POST, "upload");
-        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         String batchId = node.get("batchId").getValueAsText();
         assertNotNull(batchId);

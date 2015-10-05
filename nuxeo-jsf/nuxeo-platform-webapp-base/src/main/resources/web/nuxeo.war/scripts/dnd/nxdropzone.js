@@ -207,25 +207,39 @@ DropZoneUIHandler.prototype.cancelUpload = function () {
   }
   this.cancelCB();
   if (this.batchId) {
-    var targetUrl = this.url + 'batch/drop/' + this.batchId;
+    var targetUrl = this.url + 'upload/' + this.batchId;
     jQuery.ajax({
-      type: 'GET',
-      contentType: 'application/json+nxrequest',
+      type: 'DELETE',
       url: targetUrl,
       timeout: 10000});
   }
 };
 
-DropZoneUIHandler.prototype.batchStarted = function () {
-  this.cancelled = false;
+DropZoneUIHandler.prototype.initBatch = function (callback) {
   if (this.batchId == null) {
     // select the target DropZone
     this.selectTargetZone();
-    // generate a batchId
-    this.batchId = "batch-" + new Date().getTime() + "-" + Math.floor(Math.random() * 1000);
-    // fetch import options
-    this.fetchOptions();
+
+    var self = this;
+    var postUrl = this.url + 'upload';
+    jQuery.post(postUrl)
+      .done(function(data) {
+        // fetch import options
+        self.fetchOptions();
+        self.batchId = data.batchId;
+        callback(null);
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        callback(errorThrown);
+      })
+  } else {
+    callback(null);
   }
+};
+
+DropZoneUIHandler.prototype.batchStarted = function () {
+  this.cancelled = false;
+
   // Add the status bar on top of body
   var panel = jQuery("#dropzone-info-panel");
   panel.css({ position: 'absolute', left: '30%', top: '30%' });
@@ -235,7 +249,6 @@ DropZoneUIHandler.prototype.batchStarted = function () {
   jQuery("#dndMsgUploadCompleted").css("display", "none");
   jQuery("#dropzone-bar-msg").html("...");
   jQuery("#dropzone-bar-btn").css("visibility", "hidden");
-
   return this.batchId;
 };
 
