@@ -17,29 +17,55 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeNotNull;
+import static org.junit.Assume.assumeFalse;
 import static org.nuxeo.ecm.core.storage.sql.AzureBinaryManager.ACCOUNT_KEY_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.AzureBinaryManager.ACCOUNT_NAME_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.AzureBinaryManager.CONTAINER_PROPERTY;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.ecm.core.blob.binary.LazyBinary;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
+import com.microsoft.azure.storage.Constants;
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.core.StreamMd5AndLength;
+import com.microsoft.azure.storage.core.Utility;
+
 /**
- * WARNING: You must pass those variables to your test configuration: -Dnuxeo.storage.azure.account.name: Azure account
- * name -Dnuxeo.storage.azure.account.key: Azure account key -Dnuxeo.storage.azure.container: A test container name
+ * WARNING: You must pass those variables to your test configuration:
+ *
+ * <pre>
+ *   -Dnuxeo.storage.azure.account.name: Azure account name
+ *   -Dnuxeo.storage.azure.account.key: Azure account key
+ *   -Dnuxeo.storage.azure.container: A test container name
+ * </pre>
  *
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  */
@@ -49,27 +75,128 @@ public class TestAzureBinaryManager {
 
     private static Map<String, String> properties = new HashMap<>();
 
+    private static final String CONTENT = "this is a file au caf\u00e9";
+
+    private static final String CONTENT_MD5 = "d25ea4f4642073b7f218024d397dbaef";
+
+    private static final String CONTENT2 = "abc";
+
+    private static final String CONTENT2_MD5 = "900150983cd24fb0d6963f7d28e17f72";
+
+    private static final String CONTENT3 = "defg";
+
+    private static final String CONTENT3_MD5 = "025e4da7edac35ede583f5e8d51aa7ec";
+
+    protected final static List<String> PARAMETERS = Arrays.asList(ACCOUNT_KEY_PROPERTY, ACCOUNT_NAME_PROPERTY,
+            CONTAINER_PROPERTY);
+
     private AzureBinaryManager binaryManager;
 
     @BeforeClass
     public static void initialize() {
-        Arrays.asList(ACCOUNT_KEY_PROPERTY, ACCOUNT_NAME_PROPERTY, CONTAINER_PROPERTY).forEach(s -> {
+        PARAMETERS.forEach(s -> {
             properties.put(s, Framework.getProperty(AzureBinaryManager.getPropertyKey(s)));
         });
 
-        assumeNotNull(properties.get(ACCOUNT_KEY_PROPERTY), properties.get(ACCOUNT_NAME_PROPERTY),
-                properties.get(CONTAINER_PROPERTY));
+        // Ensure mandatory parameters are set
+        PARAMETERS.forEach(s -> {
+            assumeFalse(isBlank(properties.get(s)));
+        });
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        // Cleanup keys
+        Properties props = Framework.getProperties();
+        PARAMETERS.forEach(props::remove);
     }
 
     @Before
     public void setUp() throws IOException {
         binaryManager = new AzureBinaryManager();
         binaryManager.initialize("azuretest", properties);
+        removeObjects();
+    }
+
+    protected Set<String> listObjects() {
+        Set<String> digests = new HashSet<>();
+        String containerName = binaryManager.container.getName();
+
+        binaryManager.container.listBlobs().forEach(lb -> {
+            String digest = lb.getUri().toString().split(containerName)[1].substring(1);
+            digests.add(digest);
+        });
+        return digests;
+    }
+
+    protected void removeObjects() {
+        listObjects().forEach(s -> {
+            try {
+                binaryManager.container.getBlockBlobReference(s).delete();
+            } catch (StorageException | URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Test
-    public void testSomething() {
-        assertTrue(true);
+    public void testStoreFile() throws Exception {
+        Binary binary = binaryManager.getBinary(CONTENT_MD5);
+        assertTrue(binary instanceof LazyBinary);
+        if (binary.getStream() != null) {
+            // the tests have already been run
+            // make sure we delete it from the bucket first
+            binaryManager.removeBinary(CONTENT_MD5);
+            binaryManager.fileCache.clear();
+        }
+
+        // store binary
+        byte[] bytes = CONTENT.getBytes("UTF-8");
+        binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
+        assertNotNull(binary);
+
+        // get binary (from cache)
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        assertNotNull(binary);
+        assertEquals(bytes.length, binary.getLength());
+        assertEquals(CONTENT, toString(binary.getStream()));
+
+        // get binary (clean cache)
+        binaryManager.fileCache.clear();
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        assertNotNull(binary);
+        assertTrue(binary instanceof LazyBinary);
+        assertEquals(CONTENT, toString(binary.getStream()));
+        assertEquals(bytes.length, binary.getLength());
+        // refetch, now in cache
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        assertFalse(binary instanceof LazyBinary);
+        assertEquals(CONTENT, toString(binary.getStream()));
+        assertEquals(bytes.length, binary.getLength());
+
+        // get binary (clean cache), fetch length first
+        binaryManager.fileCache.clear();
+        binary = binaryManager.getBinary(CONTENT_MD5);
+        assertNotNull(binary);
+        assertTrue(binary instanceof LazyBinary);
+        assertEquals(bytes.length, binary.getLength());
+        assertEquals(CONTENT, toString(binary.getStream()));
     }
 
+    protected static String toString(InputStream stream) throws IOException {
+        return IOUtils.toString(stream, "UTF-8");
+    }
+
+    @Test
+    public void ensureDigestDecode() throws IOException, StorageException {
+
+        Blob azerty = Blobs.createBlob(CONTENT2);
+        String azureMd5;
+        try (InputStream is = azerty.getStream()) {
+            StreamMd5AndLength md5 = Utility.analyzeStream(is, azerty.getLength(), 2 * Constants.MB, true, true);
+            azureMd5 = md5.getMd5();
+        }
+
+        assertTrue(AzureFileStorage.isBlobDigestCorrect(CONTENT2_MD5, azureMd5));
+    }
 }

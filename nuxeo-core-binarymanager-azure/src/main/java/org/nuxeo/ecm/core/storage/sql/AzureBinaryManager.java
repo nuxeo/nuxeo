@@ -93,7 +93,11 @@ public class AzureBinaryManager extends CachingBinaryManager implements BlobProv
     }
 
     protected FileStorage getFileStorage() {
-        return new AzureFileStorage();
+        return new AzureFileStorage(container);
+    }
+
+    protected void removeBinary(String digest) throws URISyntaxException, StorageException {
+        container.getBlockBlobReference(digest).delete();
     }
 
     @Override
