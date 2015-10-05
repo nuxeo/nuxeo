@@ -23,10 +23,7 @@ import static org.nuxeo.ecm.core.api.event.CoreEventConstants.NEW_ACP;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACE;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACP;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
-import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_COMMENT;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
-import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFIED;
-import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFY;
 import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
 import static org.nuxeo.ecm.permissions.Constants.ACL_NAME_KEY;
 import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
@@ -108,7 +105,7 @@ public class PermissionListener implements EventListener {
                     Boolean notify = (Boolean) ace.getContextData(NOTIFY_KEY);
                     String comment = (String) ace.getContextData(Constants.COMMENT_KEY);
                     notify = notify != null ? notify : false;
-                    Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, diff.aclName, ace, notify, false,
+                    Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, diff.aclName, ace, notify,
                             comment);
                     session.createEntry(m);
 
@@ -127,36 +124,20 @@ public class PermissionListener implements EventListener {
         try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
             Boolean notify = (Boolean) newACE.getContextData(NOTIFY_KEY);
             String comment = (String) newACE.getContextData(COMMENT_KEY);
-            boolean notified = false;
 
             String oldId = computeDirectoryId(doc, changedACLName, oldACE.getId());
             DocumentModel oldEntry = session.getEntry(oldId);
             if (oldEntry != null) {
-                boolean oldNotified = (boolean) oldEntry.getPropertyValue(ACE_INFO_NOTIFIED);
-                boolean oldNotify = (boolean) oldEntry.getPropertyValue(ACE_INFO_NOTIFY);
-                String oldComment = (String) oldEntry.getPropertyValue(ACE_INFO_COMMENT);
-
-                // put back notified to false if notify has changed
-                notified = !(notify != null && notify != oldNotify) && oldNotified;
-                // only use old notify and comment if not updated
-                if (notify == null) {
-                    notify = oldNotify;
-                }
-                if (comment == null) {
-                    comment = oldComment;
-                }
-
                 // remove the old entry
                 session.deleteEntry(oldId);
             }
 
             // add the new entry
             notify = notify != null ? notify : false;
-            Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, changedACLName, newACE, notify, notified,
-                    comment);
+            Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, changedACLName, newACE, notify, comment);
             session.createEntry(m);
 
-            if (notify && newACE.isGranted() && newACE.isEffective() && !notified) {
+            if (notify && newACE.isGranted() && newACE.isEffective()) {
                 firePermissionNotificationEvent(docCtx, changedACLName, newACE);
             }
         }

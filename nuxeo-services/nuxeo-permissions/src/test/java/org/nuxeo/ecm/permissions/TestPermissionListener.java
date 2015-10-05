@@ -177,7 +177,7 @@ public class TestPermissionListener {
     }
 
     @Test
-    public void replacingAnACEShouldKeepNotifyAndComment() {
+    public void replacingAnACEShouldReplaceTheOldEntry() {
         DocumentModel doc = createTestDocument();
 
         ACP acp = doc.getACP();
@@ -185,9 +185,7 @@ public class TestPermissionListener {
         ACE fryACE = new ACE("fry", WRITE, true);
         fryACE.putContextData(NOTIFY_KEY, true);
         fryACE.putContextData(COMMENT_KEY, "fry comment");
-        ACE leelaACE = new ACE("leela", READ, true);
         acl.add(fryACE);
-        acl.add(leelaACE);
         acp.addACL(acl);
         doc.setACP(acp, true);
 
@@ -195,19 +193,13 @@ public class TestPermissionListener {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("docId", doc.getId());
             DocumentModelList entries = dirSession.query(filter);
-            assertEquals(2, entries.size());
+            assertEquals(1, entries.size());
 
             String id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, fryACE.getId());
             DocumentModel entry = dirSession.getEntry(id);
             assertEquals(fryACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
             assertTrue((Boolean) entry.getPropertyValue("aceinfo:notify"));
             assertEquals("fry comment", entry.getPropertyValue("aceinfo:comment"));
-
-            id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, leelaACE.getId());
-            entry = dirSession.getEntry(id);
-            assertEquals(leelaACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
-            assertFalse((Boolean) entry.getPropertyValue("aceinfo:notify"));
-            assertNull(entry.getPropertyValue("aceinfo:comment"));
         }
 
         // replacing the ACE for fry
@@ -217,18 +209,28 @@ public class TestPermissionListener {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("docId", doc.getId());
             DocumentModelList entries = dirSession.query(filter);
-            assertEquals(2, entries.size());
+            assertEquals(1, entries.size());
 
             String id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, newFryACE.getId());
             DocumentModel entry = dirSession.getEntry(id);
             assertEquals(newFryACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
-            assertTrue((Boolean) entry.getPropertyValue("aceinfo:notify"));
-            assertEquals("fry comment", entry.getPropertyValue("aceinfo:comment"));
-
-            id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, leelaACE.getId());
-            entry = dirSession.getEntry(id);
-            assertEquals(leelaACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
             assertFalse((Boolean) entry.getPropertyValue("aceinfo:notify"));
+            assertNull(entry.getPropertyValue("aceinfo:comment"));
+        }
+
+        ACE newFryACE2 = ACE.builder("fry", WRITE).build();
+        newFryACE2.putContextData(NOTIFY_KEY, true);
+        session.replaceACE(doc.getRef(), ACL.LOCAL_ACL, newFryACE, newFryACE2);
+        try (Session dirSession = directoryService.open(ACE_INFO_DIRECTORY)) {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("docId", doc.getId());
+            DocumentModelList entries = dirSession.query(filter);
+            assertEquals(1, entries.size());
+
+            String id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, newFryACE2.getId());
+            DocumentModel entry = dirSession.getEntry(id);
+            assertEquals(newFryACE2.getId(), entry.getPropertyValue("aceinfo:aceId"));
+            assertTrue((Boolean) entry.getPropertyValue("aceinfo:notify"));
             assertNull(entry.getPropertyValue("aceinfo:comment"));
         }
     }

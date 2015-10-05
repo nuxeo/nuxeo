@@ -52,8 +52,6 @@ public class Constants {
 
     public static final String ACE_INFO_NOTIFY = "aceinfo:notify";
 
-    public static final String ACE_INFO_NOTIFIED = "aceinfo:notified";
-
     public static final String ACE_INFO_COMMENT = "aceinfo:comment";
 
 }

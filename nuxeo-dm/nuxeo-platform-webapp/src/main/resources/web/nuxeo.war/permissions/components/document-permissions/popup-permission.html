@@ -74,14 +74,12 @@
                     </div>
                 </div>
                 <div id="notification">
-                    <template is="dom-if" if="{{showNotificationFields}}">
-                        <div layout horizontal>
-                            <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">[[i18n('label.permissions.notify', 'Send an email to notify user')]]</paper-checkbox>
-                        </div>
-                        <div layout horizontal>
-                            <iron-autogrow-textarea placeholder="[[i18n('label.permissions.notifyPlaceholder', 'Hi! Could you comment this document and...')]]" id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
-                        </div>
-                    </template>
+                    <div layout horizontal>
+                        <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">[[i18n('label.permissions.notify', 'Send an email to notify user')]]</paper-checkbox>
+                    </div>
+                    <div layout horizontal>
+                        <iron-autogrow-textarea placeholder="[[i18n('label.permissions.notifyPlaceholder', 'Hi! Could you comment this document and...')]]" id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
+                    </div>
                 </div>
             </paper-dialog-scrollable>
 
@@ -123,11 +121,6 @@
             updatingACE: {
                 type: Boolean,
                 computed: 'isUpdatingACE(ace)'
-            },
-            showNotificationFields: {
-                type: Boolean,
-                value: true,
-                computed: 'shouldShowNotification(ace)'
             },
             disableTimeFrame: {
                 type: Boolean,
@@ -273,12 +266,6 @@
 
         isUpdatingACE: function(ace) {
             return ace !== null;
-        },
-
-        shouldShowNotification: function(ace) {
-            if (ace !== null) {
-                return ace.begin !== null;
-            }
         },
 
         _onFocus: function() {

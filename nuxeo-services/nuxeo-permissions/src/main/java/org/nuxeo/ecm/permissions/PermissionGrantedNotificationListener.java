@@ -20,7 +20,6 @@ package org.nuxeo.ecm.permissions;
 import static org.nuxeo.ecm.permissions.Constants.ACE_GRANTED_TEMPLATE;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_COMMENT;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
-import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFIED;
 import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
 import static org.nuxeo.ecm.permissions.Constants.ACL_NAME_KEY;
 import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
@@ -38,6 +37,7 @@ import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.features.PlatformFunctions;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -83,26 +83,19 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
         }
 
         DocumentEventContext docCtx = (DocumentEventContext) eventCtx;
+        CoreSession coreSession = docCtx.getCoreSession();
         DocumentModel doc = docCtx.getSourceDocument();
+        if (doc == null || !coreSession.exists(doc.getRef())) {
+            return;
+        }
+
         ACE ace = (ACE) docCtx.getProperty(ACE_KEY);
         String aclName = (String) docCtx.getProperty(ACL_NAME_KEY);
         if (ace == null || ace.isDenied() || aclName == null) {
             return;
         }
 
-        UserManager userManager = Framework.getService(UserManager.class);
-        NuxeoPrincipal principal = userManager.getPrincipal(ace.getUsername());
-        StringList to = null;
-        if (principal != null) {
-            to = new StringList(Collections.singletonList(principal.getEmail()));
-        } else {
-            NuxeoGroup group = userManager.getGroup(ace.getUsername());
-            if (group != null) {
-                PlatformFunctions platformFunctions = new PlatformFunctions();
-                to = platformFunctions.getEmailsFromGroup(group.getName());
-            }
-        }
-
+        StringList to = getRecipients(ace.getUsername());
         if (to == null) {
             // no recipient
             return;
@@ -110,15 +103,15 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
 
         Expression from = Scripting.newExpression("Env[\"mail.from\"]");
         NotificationService notificationService = NotificationServiceHelper.getNotificationService();
-        String subject = String.format(SUBJECT_FORMAT, notificationService.getEMailSubjectPrefix(), "New permission on",
-                doc.getTitle());
+        String subject = String.format(SUBJECT_FORMAT, notificationService.getEMailSubjectPrefix(),
+                "New permission on", doc.getTitle());
 
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
             String id = PermissionHelper.computeDirectoryId(doc, aclName, ace.getId());
             DocumentModel entry = session.getEntry(id);
 
-            OperationContext ctx = new OperationContext(doc.getCoreSession());
+            OperationContext ctx = new OperationContext(coreSession);
             ctx.setInput(doc);
             ctx.put("ace", ace);
             if (entry != null) {
@@ -126,6 +119,7 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
             }
             String aceCreator = ace.getCreator();
             if (aceCreator != null) {
+                UserManager userManager = Framework.getService(UserManager.class);
                 NuxeoPrincipal creator = userManager.getPrincipal(aceCreator);
                 if (creator != null) {
                     ctx.put("aceCreator",
@@ -134,18 +128,33 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
             }
 
             OperationChain chain = new OperationChain("SendMail");
-            chain.add(SendMail.ID).set("from", from).set("to", to).set("HTML", true).set("subject", subject).set(
-                    "message", ACE_GRANTED_TEMPLATE);
+            chain.add(SendMail.ID)
+                 .set("from", from)
+                 .set("to", to)
+                 .set("HTML", true)
+                 .set("subject", subject)
+                 .set("message", ACE_GRANTED_TEMPLATE);
             Framework.getService(AutomationService.class).run(ctx, chain);
-
-            if (entry != null) {
-                entry.setPropertyValue(ACE_INFO_NOTIFIED, true);
-                session.updateEntry(entry);
-            }
         } catch (OperationException e) {
             log.warn("Unable to notify user", e);
             log.debug(e, e);
         }
+    }
+
+    protected StringList getRecipients(String username) {
+        UserManager userManager = Framework.getService(UserManager.class);
+        NuxeoPrincipal principal = userManager.getPrincipal(username);
+        StringList to = null;
+        if (principal != null) {
+            to = new StringList(Collections.singletonList(principal.getEmail()));
+        } else {
+            NuxeoGroup group = userManager.getGroup(username);
+            if (group != null) {
+                PlatformFunctions platformFunctions = new PlatformFunctions();
+                to = platformFunctions.getEmailsFromGroup(group.getName());
+            }
+        }
+        return to;
     }
 
     @Override

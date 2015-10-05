@@ -8,7 +8,6 @@
   <xs:element name="aclName" type="xs:string" />
   <xs:element name="aceId" type="xs:string" />
   <xs:element name="notify" type="xs:boolean" />
-  <xs:element name="notified" type="xs:boolean"/>
   <xs:element name="comment" type="xs:string" />
 
 </xs:schema>

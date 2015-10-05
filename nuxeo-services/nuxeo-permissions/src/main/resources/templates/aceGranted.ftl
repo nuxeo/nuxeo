@@ -19,7 +19,7 @@
                 <p style="margin:0 0 20px;font-size:14px;">
                   You now have the <b>${ace.permission}</b> permission on <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docUrl}">${Document.title}</a><#if ace.end??> until ${ace.end.time?datetime?string("MM/dd/yyyy - HH:mm")}</#if>.
                 </p>
-              <#if comment??>
+              <#if comment?has_content>
                 <p style="margin:0;font-size:14px;">
                   ${aceCreator} says:
                 </p>

@@ -77,6 +77,7 @@ import org.nuxeo.runtime.api.Framework;
  *   }
  * }
  * </pre>
+ *
  * </p>
  *
  * @since 7.4
@@ -107,8 +108,8 @@ public class ExtendedACLJsonEnricher extends AbstractJsonEnricher<DocumentModel>
                 jg.writeStringField("creator", ace.getCreator());
                 jg.writeStringField("begin",
                         ace.getBegin() != null ? DateParser.formatW3CDateTime(ace.getBegin().getTime()) : null);
-                jg.writeStringField("end",
-                        ace.getEnd() != null ? DateParser.formatW3CDateTime(ace.getEnd().getTime()) : null);
+                jg.writeStringField("end", ace.getEnd() != null ? DateParser.formatW3CDateTime(ace.getEnd().getTime())
+                        : null);
                 jg.writeStringField("status", ace.getStatus().toString().toLowerCase());
                 Map<String, Serializable> m = computeAdditionalFields(document, acl.getName(), ace.getId());
                 for (Map.Entry<String, Serializable> entry : m.entrySet()) {

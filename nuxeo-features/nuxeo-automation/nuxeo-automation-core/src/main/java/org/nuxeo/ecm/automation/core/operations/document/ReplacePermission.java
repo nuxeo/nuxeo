@@ -70,7 +70,7 @@ public class ReplacePermission {
     String id;
 
     @Param(name = "notify", required = false, description = "Notify the user or not")
-    Boolean notify;
+    boolean notify = false;
 
     @Param(name = "comment", required = false, description = "Comment")
     String comment;
@@ -90,12 +90,8 @@ public class ReplacePermission {
 
     protected void replacePermission(DocumentModel doc) throws ClientException {
         Map<String, Serializable> contextData = new HashMap<>();
-        if (notify != null && notify) {
-            contextData.put(NOTIFY_KEY, true);
-            if (comment != null) {
-                contextData.put(COMMENT_KEY, comment);
-            }
-        }
+        contextData.put(NOTIFY_KEY, notify);
+        contextData.put(COMMENT_KEY, comment);
 
         ACE oldACE = ACE.fromId(id);
 

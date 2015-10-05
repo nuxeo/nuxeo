@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ACE_STATUS_UPDATED
 import static org.nuxeo.ecm.core.api.security.ACL.INHERITED_ACL;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_COMMENT;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
-import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFIED;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFY;
 import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
 import static org.nuxeo.ecm.permissions.Constants.ACL_NAME_KEY;
@@ -74,13 +73,10 @@ public class ACEStatusUpdatedListener implements PostCommitFilteringEventListene
         }
 
         try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
-
-            for (DocumentRef ref : docRefs) {
-                if (session.exists(ref)) {
-                    DocumentModel doc = session.getDocument(ref);
-                    checkForEffectiveACE(session, doc);
-                }
-            }
+            docRefs.stream().filter(session::exists).forEach(ref -> {
+                DocumentModel doc = session.getDocument(ref);
+                checkForEffectiveACE(session, doc);
+            });
         }
     }
 
@@ -101,13 +97,10 @@ public class ACEStatusUpdatedListener implements PostCommitFilteringEventListene
                         DocumentModel entry = dirSession.getEntry(id);
                         if (entry != null) {
                             boolean notify = (boolean) entry.getPropertyValue(ACE_INFO_NOTIFY);
-                            boolean notified = (boolean) entry.getPropertyValue(ACE_INFO_NOTIFIED);
                             String comment = (String) entry.getPropertyValue(ACE_INFO_COMMENT);
-                            if (notify && !notified) {
+                            if (notify) {
                                 // send the event for the notification
-                                if (comment != null) {
-                                    ace.putContextData(COMMENT_KEY, comment);
-                                }
+                                ace.putContextData(COMMENT_KEY, comment);
                                 firePermissionNotificationEvent(session, doc, aclName, ace);
                             }
                         }

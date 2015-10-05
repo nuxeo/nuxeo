@@ -22,7 +22,6 @@ import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_ACL_NAME;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_COMMENT;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DOC_ID;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_ID;
-import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFIED;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFY;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_REPOSITORY_NAME;
 
@@ -46,7 +45,7 @@ public class PermissionHelper {
     }
 
     public static Map<String, Object> createDirectoryEntry(DocumentModel doc, String aclName, ACE ace, boolean notify,
-            boolean notified, String comment) {
+            String comment) {
         Map<String, Object> m = new HashMap<>();
         m.put(ACE_INFO_ID, computeDirectoryId(doc, aclName, ace.getId()));
         m.put(ACE_INFO_REPOSITORY_NAME, doc.getRepositoryName());
@@ -54,7 +53,6 @@ public class PermissionHelper {
         m.put(ACE_INFO_ACL_NAME, aclName);
         m.put(ACE_INFO_ACE_ID, ace.getId());
         m.put(ACE_INFO_NOTIFY, notify);
-        m.put(ACE_INFO_NOTIFIED, notified);
         m.put(ACE_INFO_COMMENT, comment);
         return m;
     }
