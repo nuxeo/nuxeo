@@ -115,6 +115,18 @@
   padding: 0 0 2em;
 }
 
+.nxconnectBox .button.primary {
+  background-color: #ff452a;
+  border-color: #ff452a;
+  font-size: 1em;
+  margin-left: 2em;
+}
+
+.nxconnectBox .button.primary:hover {
+  background-color: #dd1c00;
+  border-color: #dd1c00;
+}
+
 .nxconnectBox .gridRow.separate {
   border-top: 1px solid $shade-medium-10;
 }
