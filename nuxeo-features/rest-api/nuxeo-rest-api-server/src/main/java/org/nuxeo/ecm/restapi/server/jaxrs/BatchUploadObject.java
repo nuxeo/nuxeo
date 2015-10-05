@@ -93,7 +93,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         String batchId = bm.initBatch();
         Map<String, String> result = new HashMap<String, String>();
         result.put("batchId", batchId);
-        return buildResponse(Status.OK, result);
+        return buildResponse(Status.CREATED, result);
     }
 
     @POST
