@@ -22,6 +22,8 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
@@ -41,6 +43,8 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
  * @since 7.10
  */
 public class AzureBinaryManager extends CachingBinaryManager implements BlobProvider {
+
+    private static final Log log = LogFactory.getLog(AzureBinaryManager.class);
 
     private static final String DEFAULT_CACHE_SIZE = "100 mb";
 
@@ -85,19 +89,26 @@ public class AzureBinaryManager extends CachingBinaryManager implements BlobProv
             String cacheSizeStr = getProperty(CACHE_PROPERTY, DEFAULT_CACHE_SIZE);
             initializeCache(cacheSizeStr, getFileStorage());
 
-            // TODO
-            // Create dedicated GarbageCollector
+            createGarbageCollector();
         } catch (URISyntaxException | InvalidKeyException | StorageException e) {
             throw new IOException("Unable to initialize Azure binary manager", e);
         }
+    }
+
+    protected void createGarbageCollector() {
+        garbageCollector = new AzureGarbageCollector(this);
     }
 
     protected FileStorage getFileStorage() {
         return new AzureFileStorage(container);
     }
 
-    protected void removeBinary(String digest) throws URISyntaxException, StorageException {
-        container.getBlockBlobReference(digest).delete();
+    protected void removeBinary(String digest) {
+        try {
+            container.getBlockBlobReference(digest).delete();
+        } catch (StorageException | URISyntaxException e) {
+            log.error("Unable to remove binary " + digest, e);
+        }
     }
 
     @Override
