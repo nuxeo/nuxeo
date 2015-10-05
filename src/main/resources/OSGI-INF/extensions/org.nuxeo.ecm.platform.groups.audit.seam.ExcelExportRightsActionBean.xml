@@ -8,7 +8,7 @@
       order="200"
       label="action.acl.audit.export"
       icon="/icons/export_acl.png">
-      <category>DOCUMENT_EXPORT_VIEW_COMMAND_ACTION</category>
+      <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
