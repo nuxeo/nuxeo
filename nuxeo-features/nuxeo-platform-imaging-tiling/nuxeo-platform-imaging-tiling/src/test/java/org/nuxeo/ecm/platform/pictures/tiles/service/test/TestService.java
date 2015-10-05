@@ -38,7 +38,6 @@ import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilesImpl;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
-import org.nuxeo.ecm.platform.pictures.tiles.gimp.GimpExecutor;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.tiler.MagickTiler;
 import org.nuxeo.ecm.platform.pictures.tiles.service.GCTask;
 import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingCacheGCManager;
@@ -100,7 +99,6 @@ public class TestService extends NXRuntimeTestCase {
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);
 
-        GimpExecutor.setUseQuickExec(false);
         image.setFilename("slow.jpg");
         PictureTiles tiles = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0, false);
         assertNotNull(tiles);
@@ -108,16 +106,12 @@ public class TestService extends NXRuntimeTestCase {
         // System.out.println("ExecTime="
         // + tiles.getInfo().get("JavaProcessExecTime"));
 
-        GimpExecutor.setUseQuickExec(true);
         image.setFilename("quick.jpg");
         PictureTiles tiles2 = pts.getTilesFromBlob(image, 255, 255, 20, 0, 0, false);
         assertNotNull(tiles2);
         assertFalse(tiles2.getZoomfactor() == 0);
         // System.out.println("ExecTime="
         // + tiles2.getInfo().get("JavaProcessExecTime"));
-
-        GimpExecutor.setUseQuickExec(false);
-
     }
 
     @Test

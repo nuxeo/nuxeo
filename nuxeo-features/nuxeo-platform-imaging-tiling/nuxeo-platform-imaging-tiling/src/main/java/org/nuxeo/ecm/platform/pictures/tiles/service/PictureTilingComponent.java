@@ -41,7 +41,6 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilesImpl;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilingService;
 import org.nuxeo.ecm.platform.pictures.tiles.api.imageresource.BlobResource;
 import org.nuxeo.ecm.platform.pictures.tiles.api.imageresource.ImageResource;
-import org.nuxeo.ecm.platform.pictures.tiles.gimp.tiler.GimpTiler;
 import org.nuxeo.ecm.platform.pictures.tiles.magick.tiler.MagickTiler;
 import org.nuxeo.ecm.platform.pictures.tiles.tilers.PictureTiler;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -67,8 +66,6 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
 
     protected static PictureTiler defaultTiler = new MagickTiler();
 
-    protected static List<PictureTiler> availableTilers = new ArrayList<>();
-
     protected static Map<String, String> envParameters = new HashMap<>();
 
     protected Map<String, String> blobProperties = new HashMap<>();
@@ -84,8 +81,6 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
     @Override
     public void activate(ComponentContext context) {
         defaultTiler = new MagickTiler();
-        availableTilers.add(defaultTiler);
-        availableTilers.add(new GimpTiler());
         startGC();
     }
 
