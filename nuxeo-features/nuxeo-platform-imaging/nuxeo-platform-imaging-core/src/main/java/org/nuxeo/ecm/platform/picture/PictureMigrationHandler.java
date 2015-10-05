@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -149,9 +150,11 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
             }
             return false;
         }
-        blob.setFilename(blob.getFilename().replaceAll("^Original_", ""));
+        String filename = blob.getFilename();
+        filename = StringUtils.defaultString(filename).replaceAll("^Original_", "");
+        blob.setFilename(filename);
         picture.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
-        picture.setPropertyValue(FILE_FILENAME_PROPERTY, blob.getFilename());
+        picture.setPropertyValue(FILE_FILENAME_PROPERTY, filename);
         multiviewPicture.removeView(ORIGINAL_VIEW_TITLE);
         if (picture.isVersion()) {
             picture.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);

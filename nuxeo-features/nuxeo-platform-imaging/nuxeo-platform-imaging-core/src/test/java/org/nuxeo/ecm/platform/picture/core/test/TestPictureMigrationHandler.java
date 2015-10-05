@@ -61,14 +61,24 @@ public class TestPictureMigrationHandler {
 
     @Test
     public void testPictureMigration() throws IOException {
+        doTestPictureMigration("test.jpg", "Original_test.jpg");
+    }
+
+    @Test
+    public void testPictureMigrationNullFilename() throws IOException {
+        doTestPictureMigration("", null);
+    }
+
+    public void doTestPictureMigration(String expected, String filename) throws IOException {
         // create an "old" picture
         List<Map<String, Serializable>> views = new ArrayList<>();
         Map<String, Serializable> map = new HashMap<>();
         map.put("title", "Original");
         Blob originalBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
-                + "test.jpg"), "image/jpeg", null, "Original_test.jpg");
+                + "test.jpg"), "image/jpeg", null, null);
+        originalBlob.setFilename(filename); // don't default to file's name when null
         map.put("content", (Serializable) originalBlob);
-        map.put("filename", "Original_test.jpg");
+        map.put("filename", filename);
         views.add(map);
         Blob thumbnailBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext(ImagingResourcesHelper.TEST_DATA_FOLDER
                 + "test.jpg"), "image/jpeg", null, "Thumbnail_test.jpg");
@@ -103,7 +113,7 @@ public class TestPictureMigrationHandler {
         assertNotNull(bh);
         Blob blob = bh.getBlob();
         assertNotNull(blob);
-        assertEquals("test.jpg", blob.getFilename());
+        assertEquals(expected, blob.getFilename());
         assertNotNull(picture.getPropertyValue("file:content"));
         multiviewPicture = picture.getAdapter(MultiviewPicture.class);
         pictureViews = multiviewPicture.getViews();
