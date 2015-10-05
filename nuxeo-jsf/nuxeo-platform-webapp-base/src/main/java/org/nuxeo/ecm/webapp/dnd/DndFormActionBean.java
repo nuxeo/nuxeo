@@ -181,6 +181,7 @@ public class DndFormActionBean implements Serializable {
         sb.append("var collectedData= ");
         JSONObject jsonObject = new JSONObject();
 
+        Map<String, Map<String, Serializable>> metadataCollector = getCollector();
         // Collect meta-data
         JSONObject formData = new JSONObject();
         for (String key : metadataCollector.keySet()) {
