@@ -57,6 +57,8 @@ public class TestFilesystemBlobProvider {
 
     private static final String CONTENT = "hello";
 
+    private static final String CONTENT_MD5 = "5d41402abc4b2a76b9719d911017c592";
+
     private static final String PROVIDER_ID = "testfs";
 
     protected Mockery mockery = new JUnit4Mockery();
@@ -109,8 +111,13 @@ public class TestFilesystemBlobProvider {
 
         // same with explicit blob
         blobInfo.key = tmpFilePath;
+        blobInfo.mimeType = "text/plain";
         blob = ((FilesystemBlobProvider) blobManager.getBlobProvider(PROVIDER_ID)).createBlob(blobInfo);
         assertEquals(key, blob.getKey());
+        assertEquals(tmpFile.getFileName().toString(), blob.getFilename());
+        assertEquals("text/plain", blob.getMimeType());
+        assertEquals(CONTENT.length(), blob.getLength());
+        assertEquals(CONTENT_MD5, blob.getDigest());
         try (InputStream in = blob.getStream()) {
             assertEquals(CONTENT, IOUtils.toString(in));
         }
