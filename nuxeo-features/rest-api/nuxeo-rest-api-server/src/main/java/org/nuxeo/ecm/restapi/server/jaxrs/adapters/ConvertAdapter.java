@@ -22,6 +22,7 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
@@ -155,22 +156,35 @@ public class ConvertAdapter extends DefaultAdapter {
     }
 
     @POST
-    public Object convert(@QueryParam("converter") String converter, @QueryParam("async") boolean async,
-            @Context UriInfo uriInfo) {
-        BlobHolder bh = getBlobHolderToConvert();
+    public Object convert(@FormParam("converter") String converter, @FormParam("type") String type,
+                          @FormParam("format") String format, @FormParam("async") boolean async,
+                          @Context UriInfo uriInfo) {
         if (!async) {
-            return convertWithConverter(bh, converter, uriInfo);
+            return convert(converter, type, format, uriInfo);
         }
 
+        String conversionId;
+        BlobHolder bh = getBlobHolderToConvert();
         Map<String, Serializable> parameters = computeConversionParameters(uriInfo);
         ConversionService conversionService = Framework.getService(ConversionService.class);
-        String id = conversionService.scheduleConversion(converter, bh, parameters);
+        if (StringUtils.isNotBlank(converter)) {
+            conversionId = conversionService.scheduleConversion(converter, bh, parameters);
+        } else if (StringUtils.isNotBlank(type)) {
+            conversionId = conversionService.scheduleConversionToMimeType(type, bh, parameters);
+        } else if (StringUtils.isNotBlank(format)) {
+            MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+            String mimeType = mimetypeRegistry.getMimetypeFromExtension(format);
+            conversionId = conversionService.scheduleConversionToMimeType(mimeType, bh, parameters);
+        } else {
+            throw new IllegalParameterException("No converter, type or format parameter specified");
+        }
+
         String serverURL = ctx.getServerURL().toString();
         if (serverURL.endsWith("/")) {
             serverURL = serverURL.substring(0, serverURL.length() - 1);
         }
-        String pollingURL = String.format("%s%s/conversions/%s/poll", serverURL, ctx.getModulePath(), id);
-        ConversionScheduled conversionScheduled = new ConversionScheduled(id, pollingURL);
+        String pollingURL = String.format("%s%s/conversions/%s/poll", serverURL, ctx.getModulePath(), conversionId);
+        ConversionScheduled conversionScheduled = new ConversionScheduled(conversionId, pollingURL);
         try {
             return Response.status(Response.Status.ACCEPTED)
                            .location(new URI(pollingURL))

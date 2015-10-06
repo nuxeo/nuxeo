@@ -17,7 +17,13 @@
 
 package org.nuxeo.ecm.core.convert.tests;
 
-import com.google.inject.Inject;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -26,22 +32,13 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.convert.service.ConversionWork;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.google.inject.Inject;
 
 /**
  * @since 7.4
@@ -49,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(FeaturesRunner.class)
 @Features(ConvertFeature.class)
 @Deploy({ "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.cache" })
-@LocalDeploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-enabled-gc.xml",
+@LocalDeploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-test.xml",
         "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml" })
 public class TestAsyncConversion {
 
@@ -60,7 +57,27 @@ public class TestAsyncConversion {
     protected EventService eventService;
 
     @Test
-    public void shouldStoreResultInTransientStore() throws IOException {
+    public void shouldDoAsyncConversionGivenDestinationMimeType() throws IOException {
+        File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
+        Blob blob = Blobs.createBlob(file, "application/msword", null, "hello.doc");
+        BlobHolder bh = new SimpleBlobHolder(blob);
+
+        String id = conversionService.scheduleConversionToMimeType("test/cache", bh, null);
+        assertNotNull(id);
+
+        eventService.waitForAsyncCompletion();
+
+        BlobHolder result = conversionService.getConversionResult(id, true);
+        assertNotNull(result);
+        List<Blob> blobs = result.getBlobs();
+        assertEquals(1, blobs.size());
+        Blob resultBlob = blobs.get(0);
+        assertEquals(blob.getFilename(), resultBlob.getFilename());
+        assertEquals(blob.getMimeType(), resultBlob.getMimeType());
+    }
+
+    @Test
+    public void shouldDoAsyncConversionGivenConverterName() throws IOException {
         File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
         Blob blob = Blobs.createBlob(file, "application/msword", null, "hello.doc");
         BlobHolder bh = new SimpleBlobHolder(blob);
@@ -78,4 +95,5 @@ public class TestAsyncConversion {
         assertEquals(blob.getFilename(), resultBlob.getFilename());
         assertEquals(blob.getMimeType(), resultBlob.getMimeType());
     }
+
 }

@@ -17,12 +17,10 @@
 
 package org.nuxeo.ecm.core.convert.service;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -40,13 +38,20 @@ public class ConversionWork extends TransientStoreWork {
 
     protected String converterName;
 
+    protected String destinationMimeType;
+
     protected Map<String, Serializable> parameters;
 
     protected String inputEntryKey;
 
-    public ConversionWork(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters) {
+    public ConversionWork(String converterName, String destinationMimeType, BlobHolder blobHolder,
+            Map<String, Serializable> parameters) {
         super();
+        if (converterName == null && destinationMimeType == null) {
+            throw new IllegalArgumentException("'convertName' or 'destinationMimeType' must not be null");
+        }
         this.converterName = converterName;
+        this.destinationMimeType = destinationMimeType;
         this.parameters = parameters;
         if (this.parameters == null) {
             this.parameters = new HashMap<>();
@@ -76,7 +81,8 @@ public class ConversionWork extends TransientStoreWork {
         }
 
         ConversionService conversionService = Framework.getService(ConversionService.class);
-        BlobHolder result = conversionService.convert(converterName, inputBlobHolder, parameters);
+        BlobHolder result = converterName != null ? conversionService.convert(converterName, inputBlobHolder,
+                parameters) : conversionService.convertToMimeType(destinationMimeType, inputBlobHolder, parameters);
         if (result == null) {
             return;
         }
@@ -108,6 +114,10 @@ public class ConversionWork extends TransientStoreWork {
 
     @Override
     public String getTitle() {
-        return String.format("Conversion using '%s' converter", converterName);
+        if (converterName != null) {
+            return String.format("Conversion using '%s' converter", converterName);
+        } else {
+            return String.format("Conversion using '%s' target mime type", destinationMimeType);
+        }
     }
 }

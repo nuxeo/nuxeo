@@ -61,12 +61,20 @@ public class ConverterTest extends BaseTest {
 
     @Test
     public void shouldConvertBlobUsingNamedConverter() {
+        doSynchronousConversion("converter", "any2pdf", false);
+    }
+
+    protected void doSynchronousConversion(String paramName, String paramValue, boolean convertDocument) {
         DocumentModel doc = createDummyDocument();
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.putSingle("converter", "any2pdf");
-        ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
-                + "/@blob/file:content/@convert", queryParams);
+        queryParams.putSingle(paramName, paramValue);
+        String path = "path" + doc.getPathAsString() + "/";
+        if (!convertDocument) {
+            path += "@blob/file:content/";
+        }
+        path += "@convert";
+        ClientResponse response = getResponse(RequestType.GET, path, queryParams);
         assertEquals(200, response.getStatus());
     }
 
@@ -77,52 +85,38 @@ public class ConverterTest extends BaseTest {
         doc = session.createDocument(doc);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-
         return doc;
     }
 
     @Test
     public void shouldConvertBlobUsingMimeType() {
-        DocumentModel doc = createDummyDocument();
-
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.putSingle("type", "application/pdf");
-        ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
-                + "/@blob/file:content/@convert", queryParams);
-        assertEquals(200, response.getStatus());
+        doSynchronousConversion("type", "application/pdf", false);
     }
 
     @Test
     public void shouldConvertBlobUsingFormat() {
-        DocumentModel doc = createDummyDocument();
-
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.putSingle("format", "pdf");
-        ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString()
-                + "/@blob/file:content/@convert", queryParams);
-        assertEquals(200, response.getStatus());
+        doSynchronousConversion("format", "pdf", false);
     }
 
     @Test
     public void shouldConvertDocument() {
-        DocumentModel doc = createDummyDocument();
-
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.putSingle("converter", "any2pdf");
-        ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString() + "/@convert",
-                queryParams);
-        assertEquals(200, response.getStatus());
+        doSynchronousConversion("converter", "any2pdf", true);
     }
 
     @Test
-    public void shouldScheduleAnAsyncConversion() throws IOException {
+    public void shouldScheduleAsynchronousConversionUsingNamedConverter() throws IOException {
+        doAsynchronousConversion("converter", "any2pdf");
+    }
+
+    public void doAsynchronousConversion(String paramName, String paramValue) throws IOException {
         DocumentModel doc = createDummyDocument();
 
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.putSingle("converter", "any2pdf");
-        queryParams.putSingle("async", "true");
-        ClientResponse response = getResponse(RequestType.POST, "path" + doc.getPathAsString() + "/@convert",
-                queryParams);
+        MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
+        formData.add(paramName, paramValue);
+        formData.add("async", "true");
+        WebResource wr = service.path("path" + doc.getPathAsString() + "/@convert");
+        ClientResponse response = wr.getRequestBuilder().post(ClientResponse.class, formData);
+
         assertEquals(202, response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertNotNull(node);
@@ -143,7 +137,7 @@ public class ConverterTest extends BaseTest {
 
         // polling URL should redirect to the result URL when done
         client.setFollowRedirects(false);
-        WebResource wr = client.resource(pollingURL);
+        wr = client.resource(pollingURL);
         response = wr.get(ClientResponse.class);
         assertEquals(303, response.getStatus());
         headers = response.getHeaders();
@@ -160,6 +154,27 @@ public class ConverterTest extends BaseTest {
 
         wr = client.resource(resultURL);
         response = wr.get(ClientResponse.class);
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public void shouldScheduleAsynchronousConversionUsingMimeType() throws IOException {
+        doAsynchronousConversion("type", "application/pdf");
+    }
+
+    @Test
+    public void shouldScheduleAsynchronousConversionUsingFormat() throws IOException {
+        doAsynchronousConversion("format", "pdf");
+    }
+
+    @Test
+    public void shouldAllowSynchronousConversionUsingPOST() {
+        DocumentModel doc = createDummyDocument();
+
+        MultivaluedMap<String, String> formData = new MultivaluedMapImpl();
+        formData.add("converter", "any2pdf");
+        WebResource wr = service.path("path" + doc.getPathAsString() + "/@convert");
+        ClientResponse response = wr.getRequestBuilder().post(ClientResponse.class, formData);
         assertEquals(200, response.getStatus());
     }
 

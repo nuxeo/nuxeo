@@ -326,7 +326,16 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     @Override
     public String scheduleConversion(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters) {
         WorkManager workManager = Framework.getService(WorkManager.class);
-        ConversionWork work = new ConversionWork(converterName, blobHolder, parameters);
+        ConversionWork work = new ConversionWork(converterName, null, blobHolder, parameters);
+        workManager.schedule(work);
+        return work.getId();
+    }
+
+    @Override
+    public String scheduleConversionToMimeType(String destinationMimeType, BlobHolder blobHolder,
+            Map<String, Serializable> parameters) {
+        WorkManager workManager = Framework.getService(WorkManager.class);
+        ConversionWork work = new ConversionWork(null, destinationMimeType, blobHolder, parameters);
         workManager.schedule(work);
         return work.getId();
     }
