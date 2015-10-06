@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Retrieves stored Rendition associated to a DocumentModel.
@@ -77,7 +78,8 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
             storedRendition = docs.get(0);
             if (!isVersionable) {
                 Calendar renditionLastModified = (Calendar) storedRendition.getPropertyValue("dc:modified");
-                Calendar sourceLastModified = (Calendar) source.getPropertyValue("dc:modified");
+                String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
+                Calendar sourceLastModified = (Calendar) source.getPropertyValue(modificationDatePropertyName);
                 if (renditionLastModified == null || sourceLastModified == null
                         || sourceLastModified.after(renditionLastModified)) {
                     storedRendition = null;
@@ -92,6 +94,12 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
 
     public DocumentModel getStoredRendition() {
         return storedRendition;
+    }
+
+    protected String getSourceDocumentModificationDatePropertyName() {
+        RenditionService rs = Framework.getService(RenditionService.class);
+        RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
+        return def.getSourceDocumentModificationDatePropertyName();
     }
 
 }

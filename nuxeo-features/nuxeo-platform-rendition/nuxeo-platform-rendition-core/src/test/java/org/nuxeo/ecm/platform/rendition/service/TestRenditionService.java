@@ -446,7 +446,8 @@ public class TestRenditionService {
             renditionService.storeRendition(file, "renditionDefinitionWithUnknownOperationChain");
             fail();
         } catch (NuxeoException e) {
-            assertTrue(e.getMessage(), e.getMessage().startsWith("Rendition renditionDefinitionWithUnknownOperationChain not available"));
+            assertTrue(e.getMessage(),
+                    e.getMessage().startsWith("Rendition renditionDefinitionWithUnknownOperationChain not available"));
         }
     }
 
@@ -502,6 +503,34 @@ public class TestRenditionService {
             assertTrue(e.getMessage(),
                     e.getMessage().startsWith("Rendition pdf not available"));
         }
+    }
+
+    @Test
+    public void shouldNotStoreRenditionByDefault() {
+        DocumentModel folder = createFolderWithChildren();
+        String renditionName = ZIP_TREE_EXPORT_RENDITION_DEFINITION;
+        Rendition rendition = renditionService.getRendition(folder, renditionName);
+        assertNotNull(rendition);
+        assertFalse(rendition.isStored());
+    }
+
+    @Test
+    public void shouldStoreRenditionByDefault() {
+        DocumentModel folder = createFolderWithChildren();
+        String renditionName = ZIP_TREE_EXPORT_RENDITION_DEFINITION + "Lazily";
+        Rendition rendition = renditionService.getRendition(folder, renditionName);
+        assertNotNull(rendition);
+        assertFalse(rendition.isStored());
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("interrupted", e);
+        }
+        eventService.waitForAsyncCompletion(5000);
+        rendition = renditionService.getRendition(folder, renditionName);
+        assertNotNull(rendition);
+        assertTrue(rendition.isStored());
     }
 
     @Test

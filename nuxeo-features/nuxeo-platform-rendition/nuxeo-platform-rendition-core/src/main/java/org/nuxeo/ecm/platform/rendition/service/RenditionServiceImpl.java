@@ -281,31 +281,24 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
     @Override
     public Rendition getRendition(DocumentModel doc, String renditionName) {
-        return getRendition(doc, renditionName, false);
+        RenditionDefinition renditionDefinition = getAvailableRenditionDefinition(doc, renditionName);
+        return getRendition(doc, renditionDefinition, renditionDefinition.isStoreByDefault());
     }
 
     @Override
     public Rendition getRendition(DocumentModel doc, String renditionName, boolean store) {
+        RenditionDefinition renditionDefinition = getAvailableRenditionDefinition(doc, renditionName);
+        return getRendition(doc, renditionDefinition, store);
+    }
 
-        RenditionDefinition renditionDefinition = renditionDefinitionRegistry.getRenditionDefinition(renditionName);
-        if (renditionDefinition == null) {
-            renditionDefinition = renditionDefinitionProviderRegistry.getRenditionDefinition(renditionName, doc);
-            if (renditionDefinition == null) {
-                String message = "The rendition definition '%s' is not registered";
-                throw new NuxeoException(String.format(message, renditionName));
-            }
-        }
-
-        if (!renditionDefinition.getProvider().isAvailable(doc, renditionDefinition)) {
-            throw new NuxeoException("Rendition " + renditionName + " not available for this doc " + doc.getId());
-        }
+    protected Rendition getRendition(DocumentModel doc, RenditionDefinition renditionDefinition, boolean store) {
 
         DocumentModel stored = null;
         boolean isVersionable = doc.isVersionable();
         if (!isVersionable || !doc.isCheckedOut()) {
             // stored renditions are only done against a non-versionable doc
             // or a versionable doc that is not checkedout
-            RenditionFinder finder = new RenditionFinder(doc, renditionName);
+            RenditionFinder finder = new RenditionFinder(doc, renditionDefinition.getName());
             if (isVersionable) {
                 finder.runUnrestricted();
             } else {
@@ -335,6 +328,22 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         } else {
             return rendition;
         }
+    }
+
+    protected RenditionDefinition getAvailableRenditionDefinition(DocumentModel doc, String renditionName) {
+        RenditionDefinition renditionDefinition = renditionDefinitionRegistry.getRenditionDefinition(renditionName);
+        if (renditionDefinition == null) {
+            renditionDefinition = renditionDefinitionProviderRegistry.getRenditionDefinition(renditionName, doc);
+            if (renditionDefinition == null) {
+                String message = "The rendition definition '%s' is not registered";
+                throw new NuxeoException(String.format(message, renditionName));
+            }
+        }
+
+        if (!renditionDefinition.getProvider().isAvailable(doc, renditionDefinition)) {
+            throw new NuxeoException("Rendition " + renditionName + " not available for this doc " + doc.getId());
+        }
+        return renditionDefinition;
     }
 
     @Override
