@@ -319,8 +319,6 @@ public class TestScriptRunnerInfrastructure {
             if (v != null) {
                 if (v.getClass() == String.class) {
                     buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
-                }else{
-
                 }
             } else {
                 buf.append(entry.getKey()).append("=").append("\n");
