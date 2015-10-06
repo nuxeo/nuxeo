@@ -36,7 +36,6 @@
     <nuxeo.categorization.version>7.10-SNAPSHOT</nuxeo.categorization.version>
     <nuxeo.replication.version>7.10-SNAPSHOT</nuxeo.replication.version>
     <nuxeo.activity.version>7.10-SNAPSHOT</nuxeo.activity.version>
-    <nuxeo.birt.version>7.10-SNAPSHOT</nuxeo.birt.version>
     <nuxeo.suggestbox.version>7.10-SNAPSHOT</nuxeo.suggestbox.version>
     <nuxeo.dam.version>7.10-SNAPSHOT</nuxeo.dam.version>
     <nuxeo.quota.version>7.10-SNAPSHOT</nuxeo.quota.version>
@@ -92,7 +91,6 @@
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-apidoc-server</module>
-    <module>nuxeo-birt</module>
     <module>nuxeo-activity</module>
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
@@ -541,18 +539,6 @@
         <groupId>org.nuxeo.activity</groupId>
         <artifactId>nuxeo-activity</artifactId>
         <version>${nuxeo.activity.version}</version>
-      </dependency>
-
-      <!-- BIRT reporting -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-birt-reporting</artifactId>
-        <version>${nuxeo.birt.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-birt-reporting-web</artifactId>
-        <version>${nuxeo.birt.version}</version>
       </dependency>
 
       <!-- Suggest Box -->
