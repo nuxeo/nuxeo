@@ -102,7 +102,10 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
                         if (log.isTraceEnabled()) {
                             log.trace("Receive invalidations: " + rInvals);
                         }
-                        receivedInvals.add(rInvals.getInvalidations());
+                        Invalidations invals = rInvals.getInvalidations();
+                        synchronized (RedisClusterInvalidator.this) {
+                            receivedInvals.add(invals);
+                        }
                     } catch (IllegalArgumentException e) {
                         log.error("Fail to read message: " + message, e);
                     }
@@ -149,8 +152,12 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
 
     @Override
     public Invalidations receiveInvalidations() {
-        Invalidations ret = receivedInvals;
-        receivedInvals = new Invalidations();
+        Invalidations newInvals = new Invalidations();
+        Invalidations ret;
+        synchronized (this) {
+            ret = receivedInvals;
+            receivedInvals = newInvals;
+        }
         return ret;
     }
 
