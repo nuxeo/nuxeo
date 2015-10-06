@@ -4,6 +4,7 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">
     <schema name="dataset" src="schemas/dataset.xsd" prefix="ds" />
+    <schema name="list" src="schemas/list.xsd" prefix="list" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
@@ -11,6 +12,10 @@
 
     <doctype name="DataSet" extends="File">
       <schema name="dataset" />
+    </doctype>
+
+    <doctype name="List" extends="File">
+      <schema name="list" />
     </doctype>
 
 

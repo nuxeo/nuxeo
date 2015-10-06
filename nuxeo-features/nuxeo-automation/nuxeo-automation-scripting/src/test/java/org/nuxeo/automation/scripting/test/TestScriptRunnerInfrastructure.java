@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -317,6 +319,8 @@ public class TestScriptRunnerInfrastructure {
             if (v != null) {
                 if (v.getClass() == String.class) {
                     buf.append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
+                }else{
+
                 }
             } else {
                 buf.append(entry.getKey()).append("=").append("\n");
@@ -381,5 +385,26 @@ public class TestScriptRunnerInfrastructure {
         assertNotNull(doc);
         assertTrue(doc instanceof DocumentModel);
         assertTrue((Boolean) ctx.get("entry"));
+    }
+
+    @Test
+    public void canHandleJavaListMap() throws IOException, OperationException {
+        DocumentModel doc = new DocumentModelImpl("/", "doc", "List");
+        List<String> attachments = new ArrayList<>();
+        attachments.add("att1");
+        attachments.add("att2");
+        attachments.add("att3");
+        doc.setPropertyValue("list:items", (Serializable) attachments);
+        Map<String, String> values = new HashMap<>();
+        values.put("name", "vlad");
+        values.put("description", "desc");
+        doc.setPropertyValue("list:complexItem", (Serializable) values);
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(session.createDocument(doc));
+        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestList", null);
+        assertEquals("att1\n" + "att2\n" + "att3\n" + "newValue\n" + "att2\n" + "att3\n" + "vlad\n" + "desc\n",
+                outContent.toString());
+        assertEquals("newValue", ((String[]) result.getPropertyValue("list:items"))[0]);
+        assertEquals("vlad", ((Map) result.getPropertyValue("list:complexItem")).get("name"));
     }
 }

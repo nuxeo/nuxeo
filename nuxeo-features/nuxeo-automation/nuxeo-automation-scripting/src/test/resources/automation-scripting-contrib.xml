@@ -298,6 +298,42 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestList">
+      <inputType>void</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <param name="document" type="string"/>
+
+      <script><![CDATA[
+        function run(input, params) {
+          var items = input.getPropertyValue("list:items");
+          for (var i in items) {
+            print(items[i]);
+          }
+
+          var newItems = ["newValue", "att2", "att3"];
+
+          var inputUpdated = Document.Update(input, {
+            "properties" : {
+                "list:items" : newItems
+            }
+          });
+
+          items = inputUpdated.getPropertyValue("list:items");
+          for (var i in items) {
+            print(items[i]);
+          }
+
+          var complex = inputUpdated.getPropertyValue("list:complexItem");
+
+          print(complex.name);
+          print(complex.description);
+
+          return inputUpdated;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
