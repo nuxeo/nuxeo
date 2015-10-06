@@ -62,6 +62,15 @@ object NuxeoRest {
       .check(status.in(200))
   }
 
+  def deleteDocument() = {
+    http("Delete ${type}")
+      .delete(Constants.GAT_API_PATH + "/${url}")
+      .headers(Headers.base)
+      .header("Content-Type", "application/json")
+      .basicAuth("${user}", "${password}")
+      .check(status.in(204))
+  }
+
   def getParentFolderOfCurrentDocument(comment: String = "Get Parent Folder", schemas: String = "*", enrichers: String = "", parts: String = "") = {
     http(comment)
       .get(Constants.GAT_API_PATH + "/${parentPath}")

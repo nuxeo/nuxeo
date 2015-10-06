@@ -1,0 +1,57 @@
+package org.nuxeo.cap.bench
+
+/*
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Delbosc Benoit
+ */
+
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+
+import scala.concurrent.duration.Duration
+
+object ScnCRUD {
+
+  def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
+    scenario("DeleteCreateUpdateReadDocuments").exec(
+      during(duration, "counterName") {
+        feed(documents)
+          .feed(Feeders.usersCircular)
+          .exec(NuxeoRest.deleteDocument())
+          .pause(pause)
+          .exec(NuxeoRest.createDocument())
+          .pause(pause)
+          .exec(NuxeoRest.updateDocument())
+          .pause(pause)
+          .exec(NuxeoRest.getDocument())
+          .pause(pause)
+      }
+    )
+  }
+
+}
+
+
+class Sim50CRUD extends Simulation {
+  val httpProtocol = http
+    .baseURL(Parameters.getBaseUrl())
+    .disableWarmUp
+    .acceptEncodingHeader("gzip, deflate")
+    .connection("keep-alive")
+  val documents = Feeders.createRandomDocFeeder()
+  val scn = ScnCRUD.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
+  setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
+    .protocols(httpProtocol).exponentialPauses
+}

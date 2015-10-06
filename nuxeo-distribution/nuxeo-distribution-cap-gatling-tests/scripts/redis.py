@@ -38,11 +38,17 @@ class RedisWriter(object):
         self.prefix = prefix
         self.usePipeProtocol = usePipeProtocol
 
+    def set(self, key, value):
+        self.write(["SET", self._addPrefix(key), escapeRedisValue(value)])
+
     def sadd(self, key, value):
         self.write(["SADD", self._addPrefix(key), escapeRedisValue(value)])
 
     def zadd(self, key, level, value):
         self.write(["ZADD", self._addPrefix(key), str(level), escapeRedisValue(value)])
+
+    def rpush(self, key, value):
+        self.write(["RPUSH", self._addPrefix(key), escapeRedisValue(value)])
 
     def hmset(self, key, values):
         cmd = ["HMSET", self._addPrefix(key)]
