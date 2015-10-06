@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
@@ -112,6 +114,8 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
             // set ACL
             giveReadRightToUser(rendition);
         }
+        setCorrectModificationDate(rendition, sourceDocument);
+        rendition.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
         // do not apply default versioning to rendition
         rendition.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
         rendition = session.saveDocument(rendition);
@@ -224,6 +228,22 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         Long minorVersion = (Long) versionDocument.getPropertyValue("uid:minor_version");
         rendition.setPropertyValue("uid:minor_version", minorVersion);
         rendition.setPropertyValue("uid:major_version", versionDocument.getPropertyValue("uid:major_version"));
+    }
+
+    protected void setCorrectModificationDate(DocumentModel rendition, DocumentModel sourceDocument) {
+        String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
+        if (RenditionDefinition.DEFAULT_SOURCE_DOCUMENT_MODIFICATION_DATE_PROPERTY_NAME.equals(
+                modificationDatePropertyName)) {
+            return;
+        }
+        Calendar sourceLastModified = (Calendar) sourceDocument.getPropertyValue(modificationDatePropertyName);
+        rendition.setPropertyValue("dc:modified", sourceLastModified);
+    }
+
+    protected String getSourceDocumentModificationDatePropertyName() {
+        RenditionService rs = Framework.getService(RenditionService.class);
+        RenditionDefinition def = ((RenditionServiceImpl)rs).getRenditionDefinition(renditionName);
+        return def.getSourceDocumentModificationDatePropertyName();
     }
 
 }
