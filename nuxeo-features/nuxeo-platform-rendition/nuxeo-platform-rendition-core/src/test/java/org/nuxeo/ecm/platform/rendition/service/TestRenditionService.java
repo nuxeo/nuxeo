@@ -30,6 +30,8 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -270,6 +272,9 @@ public class TestRenditionService {
             renditionName += "Lazily";
         }
         Rendition rendition = getRendition(folder, renditionName, true, isLazy);
+        assertTrue(rendition.isStored());
+        assertTrue(rendition.isCompleted());
+        assertEquals(rendition.getHostDocument().getPropertyValue("dc:modified"), rendition.getModificationDate());
 
         DocumentModel renditionDocument = session.getDocument(rendition.getHostDocument().getRef());
 
@@ -305,6 +310,14 @@ public class TestRenditionService {
         folder = session.saveDocument(folder);
         rendition = getRendition(folder, renditionName, false, isLazy);
         assertFalse(rendition.isStored());
+        assertTrue(rendition.isCompleted());
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTimeInMillis(rendition.getBlob().getFile().lastModified());
+        assertEquals(cal, rendition.getModificationDate());
+        if (isLazy) {
+            rendition = renditionService.getRendition(folder, renditionName, false);
+            assertEquals(cal, rendition.getModificationDate());
+        }
     }
 
     protected Rendition getRendition(DocumentModel doc, String renditionName, boolean store, boolean isLazy) {
@@ -312,6 +325,8 @@ public class TestRenditionService {
         assertNotNull(rendition);
         if (isLazy) {
             assertFalse(rendition.isStored());
+            assertFalse(rendition.isCompleted());
+            assertNull(rendition.getModificationDate());
             Blob blob = rendition.getBlob();
             assertEquals(0, blob.getLength());
             assertTrue(blob.getMimeType().contains("empty=true"));
