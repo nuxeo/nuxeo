@@ -33,6 +33,8 @@ import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 @XObject("renditionDefinition")
 public class RenditionDefinition {
 
+    public static final String DEFAULT_SOURCE_DOCUMENT_MODIFICATION_DATE_PROPERTY_NAME = "dc:modified";
+
     protected RenditionProvider provider;
 
     @XNode("@name")
@@ -82,6 +84,19 @@ public class RenditionDefinition {
      */
     @XNodeList(value = "filters/filter-id", type = ArrayList.class, componentType = String.class)
     protected List<String> filterIds;
+
+    /**
+     * @since 7.10
+     */
+    @XNode("sourceDocumentModificationDatePropertyName")
+    protected String sourceDocumentModificationDatePropertyName =
+            DEFAULT_SOURCE_DOCUMENT_MODIFICATION_DATE_PROPERTY_NAME;
+
+    /**
+     * @since 7.10
+     */
+    @XNode("storeByDefault")
+    protected Boolean storeByDefault;
 
     public String getName() {
         return name;
@@ -168,6 +183,27 @@ public class RenditionDefinition {
         return filterIds;
     }
 
+    /**
+     * @since 7.10
+     */
+    public String getSourceDocumentModificationDatePropertyName() {
+        return sourceDocumentModificationDatePropertyName;
+    }
+
+    /**
+     * @since 7.10
+     */
+    public boolean isStoreByDefault() {
+        return storeByDefault != null && storeByDefault;
+    }
+
+    /**
+     * @since 7.10
+     */
+    public boolean isStoreByDefaultSet() {
+        return storeByDefault != null;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -217,6 +253,21 @@ public class RenditionDefinition {
     }
 
     /**
+     * @since 7.10
+     */
+    public void setSourceDocumentModificationDatePropertyName(String sourceDocumentModificationDatePropertyName) {
+        this.sourceDocumentModificationDatePropertyName = sourceDocumentModificationDatePropertyName;
+    }
+
+    /**
+     * @since 7.10
+     */
+    public void setStoreByDefault(boolean storeByDefault) {
+        this.storeByDefault = storeByDefault;
+    }
+
+
+    /**
      * @since 7.3
      */
     @Override
@@ -237,6 +288,8 @@ public class RenditionDefinition {
             clone.filterIds = new ArrayList<>();
             clone.filterIds.addAll(filterIds);
         }
+        clone.sourceDocumentModificationDatePropertyName = sourceDocumentModificationDatePropertyName;
+        clone.storeByDefault = storeByDefault;
         return clone;
     }
 }
