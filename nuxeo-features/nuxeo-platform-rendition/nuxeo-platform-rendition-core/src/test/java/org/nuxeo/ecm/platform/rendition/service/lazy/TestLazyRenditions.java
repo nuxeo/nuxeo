@@ -17,7 +17,10 @@
 
 package org.nuxeo.ecm.platform.rendition.service.lazy;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.io.IOUtils;
@@ -42,6 +45,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
+
+import java.util.Calendar;
 
 @Deploy({ "org.nuxeo.ecm.core.cache","org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core"})
 @RunWith(FeaturesRunner.class)
@@ -68,34 +73,26 @@ public class TestLazyRenditions {
 
     @Test
     public void testRenditions() throws Exception {
-
-        Assert.assertNotNull(rs);
-
+        assertNotNull(rs);
         Rendition rendition = rs.getRendition(session.getRootDocument(), "iamlazy");
-
-        Assert.assertNotNull(rendition);
-
+        assertNotNull(rendition);
         Blob blob = rendition.getBlob();
-
-        Assert.assertEquals(0, blob.getLength());
-
+        assertEquals(0, blob.getLength());
         assertTrue(blob.getMimeType().contains("empty=true"));
-
         Thread.sleep(1000);
-
         Framework.getService(EventService.class).waitForAsyncCompletion(5000);
 
         rendition = rs.getRendition(session.getRootDocument(), "iamlazy");
-
         blob = rendition.getBlob();
-
         assertFalse(blob.getMimeType().contains("empty=true"));
-
+        Calendar modificationDate = rendition.getModificationDate();
+        rendition = rs.getRendition(session.getRootDocument(), "iamlazy");
+        blob = rendition.getBlob();
+        assertFalse(blob.getMimeType().contains("empty=true"));
+        assertEquals(modificationDate, rendition.getModificationDate());
         String data = IOUtils.toString(blob.getStream());
-
-        Assert.assertEquals("I am really lazy", data);
-
-        Assert.assertNotEquals(17, blob.getLength());
+        assertEquals("I am really lazy", data);
+        assertNotEquals(17, blob.getLength());
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(AbstractLazyCachableRenditionProvider.CACHE_NAME);
@@ -109,10 +106,8 @@ public class TestLazyRenditions {
         // re ask for the rendition : it should not be here anymore
         rendition = rs.getRendition(session.getRootDocument(), "iamlazy");
         blob = rendition.getBlob();
-        Assert.assertEquals(0, blob.getLength());
+        assertEquals(0, blob.getLength());
         assertTrue(blob.getMimeType().contains("empty=true"));
-
-
     }
 
 }
