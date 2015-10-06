@@ -326,6 +326,7 @@ public class AESBinaryManager extends LocalBinaryManager {
         File tmp;
         try {
             tmp = File.createTempFile("bin_", ".tmp", tmpDir);
+            Framework.trackFile(tmp, tmp);
             OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp));
             InputStream in = new BufferedInputStream(new FileInputStream(file));
             try {
