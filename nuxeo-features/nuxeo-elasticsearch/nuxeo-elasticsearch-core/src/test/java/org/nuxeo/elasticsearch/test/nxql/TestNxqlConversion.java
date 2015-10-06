@@ -536,6 +536,27 @@ public class TestNxqlConversion {
     }
 
     @Test
+    public void testOrderByWithComplexProperties() throws Exception {
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM File ORDER BY file:content/name DESC");
+        String es = qb.makeQuery().toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                        "  \"filtered\" : {\n" + //
+                        "    \"query\" : {\n" + //
+                        "      \"match_all\" : { }\n" + //
+                        "    },\n" + //
+                        "    \"filter\" : {\n" + //
+                        "      \"terms\" : {\n" + //
+                        "        \"ecm:primaryType\" : [ \"File\" ]\n" + //
+                        "      }\n" + //
+                        "    }\n" + //
+                        "  }\n" + //
+                        "}", es);
+        Assert.assertEquals(1, qb.getSortInfos().size());
+        Assert.assertEquals("SortInfo [sortColumn=file:content.name, sortAscending=false]", qb.getSortInfos().get(0)
+                .toString());
+   }
+
+    @Test
     public void testConvertHint() throws Exception {
         String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: INDEX(some:field) */ dc:title = 'foo'").toString();
         assertEqualsEvenUnderWindows("{\n" + //

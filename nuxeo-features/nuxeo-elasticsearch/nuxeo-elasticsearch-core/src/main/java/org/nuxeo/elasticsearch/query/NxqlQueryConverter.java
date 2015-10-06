@@ -608,7 +608,7 @@ final public class NxqlQueryConverter {
 
             @Override
             public void visitOrderByExpr(OrderByExpr node) {
-                String name = node.reference.name;
+                String name = getFieldName(node.reference.name, null);
                 if (NXQL.ECM_FULLTEXT_SCORE.equals(name)) {
                     name = "_score";
                 }
