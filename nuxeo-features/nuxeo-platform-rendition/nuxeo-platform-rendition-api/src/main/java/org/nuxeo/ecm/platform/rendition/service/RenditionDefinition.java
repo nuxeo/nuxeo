@@ -1,24 +1,31 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
+ *
  * Contributors:
- * Nuxeo - initial API and implementation
+ *     Thomas Roger
+ *     Thierry Delprat
+ *     Florent Guillaume
+ *     ron1
  */
-
 package org.nuxeo.ecm.platform.rendition.service;
+
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -27,7 +34,6 @@ import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 /**
  * Definition of a rendition.
  *
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.4.1
  */
 @XObject("renditionDefinition")
@@ -35,10 +41,26 @@ public class RenditionDefinition {
 
     public static final String DEFAULT_SOURCE_DOCUMENT_MODIFICATION_DATE_PROPERTY_NAME = "dc:modified";
 
-    protected RenditionProvider provider;
+    /** True if the boolean is null or TRUE, false otherwise. */
+    private static boolean defaultTrue(Boolean bool) {
+        return !FALSE.equals(bool);
+    }
+
+    /** False if the boolean is null or FALSE, true otherwise. */
+    private static boolean defaultFalse(Boolean bool) {
+        return TRUE.equals(bool);
+    }
 
     @XNode("@name")
     protected String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /**
      * @since 7.3
@@ -46,20 +68,68 @@ public class RenditionDefinition {
     @XNode("@cmisName")
     protected String cmisName;
 
+    public String getCmisName() {
+        return cmisName;
+    }
+
+    public void setCmisName(String cmisName) {
+        this.cmisName = cmisName;
+    }
+
     @XNode("@enabled")
-    Boolean enabled;
+    protected Boolean enabled;
+
+    public boolean isEnabled() {
+        return defaultTrue(enabled);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = Boolean.valueOf(enabled);
+    }
 
     @XNode("label")
     protected String label;
 
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
     @XNode("icon")
     protected String icon;
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 
     @XNode("kind")
     protected String kind;
 
+    public String getKind() {
+        return kind;
+    }
+
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
     @XNode("operationChain")
     protected String operationChain;
+
+    public String getOperationChain() {
+        return operationChain;
+    }
+
+    public void setOperationChain(String operationChain) {
+        this.operationChain = operationChain;
+    }
 
     /**
      * @since 6.0
@@ -68,81 +138,46 @@ public class RenditionDefinition {
     protected Boolean allowEmptyBlob;
 
     /**
+     * @since 7.3
+     */
+    public boolean isEmptyBlobAllowed() {
+        return defaultFalse(allowEmptyBlob);
+    }
+
+    public void setAllowEmptyBlob(boolean allowEmptyBlob) {
+        this.allowEmptyBlob = Boolean.valueOf(allowEmptyBlob);
+    }
+
+    /**
      * @since 6.0
      */
     @XNode("@visible")
     protected Boolean visible;
 
+    public boolean isVisible() {
+        return defaultTrue(visible);
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = Boolean.valueOf(visible);
+    }
+
     @XNode("@class")
     protected Class<? extends RenditionProvider> providerClass;
-
-    @XNode("contentType")
-    protected String contentType;
-
-    /**
-     * @since 7.2
-     */
-    @XNodeList(value = "filters/filter-id", type = ArrayList.class, componentType = String.class)
-    protected List<String> filterIds;
-
-    /**
-     * @since 7.10
-     */
-    @XNode("sourceDocumentModificationDatePropertyName")
-    protected String sourceDocumentModificationDatePropertyName =
-            DEFAULT_SOURCE_DOCUMENT_MODIFICATION_DATE_PROPERTY_NAME;
-
-    /**
-     * @since 7.10
-     */
-    @XNode("storeByDefault")
-    protected Boolean storeByDefault;
-
-    public String getName() {
-        return name;
-    }
-
-    public String getCmisName() {
-        return cmisName;
-    }
-
-    public boolean isEnabled() {
-        return enabled == null || enabled;
-    }
-
-    /**
-     * @since 7.3
-     */
-    public boolean isEnabledSet() {
-        return enabled != null;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public String getOperationChain() {
-        return operationChain;
-    }
 
     public Class<? extends RenditionProvider> getProviderClass() {
         return providerClass;
     }
 
+    public void setProviderClass(Class<? extends RenditionProvider> providerClass) {
+        this.providerClass = providerClass;
+    }
+
+    // computed from providerClass
+    protected RenditionProvider provider;
+
     public RenditionProvider getProvider() {
         return provider;
-    }
-
-    public void setProvider(RenditionProvider provider) {
-        this.provider = provider;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public String getKind() {
-        return kind;
     }
 
     public String getProviderType() {
@@ -153,103 +188,47 @@ public class RenditionDefinition {
         return provider.getClass().getSimpleName();
     }
 
+    public void setProvider(RenditionProvider provider) {
+        this.provider = provider;
+    }
+
+    @XNode("contentType")
+    protected String contentType;
+
     public String getContentType() {
         return contentType;
-    }
-
-    /**
-     * @since 7.3
-     */
-    public boolean isEmptyBlobAllowed() {
-        return allowEmptyBlob != null && allowEmptyBlob;
-    }
-
-    public boolean isEmptyBlobAllowedSet() {
-        return allowEmptyBlob != null;
-    }
-
-    public boolean isVisible() {
-        return visible == null || visible;
-    }
-
-    /**
-     * @since 7.3
-     */
-    public boolean isVisibleSet() {
-        return visible != null;
-    }
-
-    public List<String> getFilterIds() {
-        return filterIds;
-    }
-
-    /**
-     * @since 7.10
-     */
-    public String getSourceDocumentModificationDatePropertyName() {
-        return sourceDocumentModificationDatePropertyName;
-    }
-
-    /**
-     * @since 7.10
-     */
-    public boolean isStoreByDefault() {
-        return storeByDefault != null && storeByDefault;
-    }
-
-    /**
-     * @since 7.10
-     */
-    public boolean isStoreByDefaultSet() {
-        return storeByDefault != null;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setCmisName(String cmisName) {
-        this.cmisName = cmisName;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public void setKind(String kind) {
-        this.kind = kind;
-    }
-
-    public void setOperationChain(String operationChain) {
-        this.operationChain = operationChain;
-    }
-
-    public void setAllowEmptyBlob(boolean allowEmptyBlob) {
-        this.allowEmptyBlob = allowEmptyBlob;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-
-    public void setProviderClass(Class<? extends RenditionProvider> providerClass) {
-        this.providerClass = providerClass;
     }
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
     }
 
+    /**
+     * @since 7.2
+     */
+    @XNodeList(value = "filters/filter-id", type = ArrayList.class, componentType = String.class)
+    protected List<String> filterIds;
+
+    public List<String> getFilterIds() {
+        return filterIds;
+    }
+
     public void setFilterIds(List<String> filterIds) {
         this.filterIds = filterIds;
+    }
+
+    /**
+     * @since 7.10
+     */
+    @XNode("sourceDocumentModificationDatePropertyName")
+    protected String sourceDocumentModificationDatePropertyName;
+
+    /**
+     * @since 7.10
+     */
+    public String getSourceDocumentModificationDatePropertyName() {
+        return StringUtils.defaultString(sourceDocumentModificationDatePropertyName,
+                DEFAULT_SOURCE_DOCUMENT_MODIFICATION_DATE_PROPERTY_NAME);
     }
 
     /**
@@ -262,34 +241,90 @@ public class RenditionDefinition {
     /**
      * @since 7.10
      */
-    public void setStoreByDefault(boolean storeByDefault) {
-        this.storeByDefault = storeByDefault;
-    }
-
+    @XNode("storeByDefault")
+    protected Boolean storeByDefault;
 
     /**
-     * @since 7.3
+     * @since 7.10
      */
-    @Override
-    public RenditionDefinition clone() {
-        RenditionDefinition clone = new RenditionDefinition();
-        clone.name = name;
-        clone.cmisName = cmisName;
-        clone.enabled = enabled;
-        clone.label = label;
-        clone.icon = icon;
-        clone.kind = kind;
-        clone.operationChain = operationChain;
-        clone.allowEmptyBlob = allowEmptyBlob;
-        clone.visible = visible;
-        clone.providerClass = providerClass;
-        clone.contentType = contentType;
-        if (filterIds != null) {
-            clone.filterIds = new ArrayList<>();
-            clone.filterIds.addAll(filterIds);
-        }
-        clone.sourceDocumentModificationDatePropertyName = sourceDocumentModificationDatePropertyName;
-        clone.storeByDefault = storeByDefault;
-        return clone;
+    public boolean isStoreByDefault() {
+        return defaultFalse(storeByDefault);
     }
+
+    /**
+     * @since 7.10
+     */
+    public void setStoreByDefault(boolean storeByDefault) {
+        this.storeByDefault = Boolean.valueOf(storeByDefault);
+    }
+
+    /** Empty constructor. */
+    public RenditionDefinition() {
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @since 7.10
+     */
+    public RenditionDefinition(RenditionDefinition other) {
+        name = other.name;
+        cmisName = other.cmisName;
+        enabled = other.enabled;
+        label = other.label;
+        icon = other.icon;
+        kind = other.kind;
+        operationChain = other.operationChain;
+        allowEmptyBlob = other.allowEmptyBlob;
+        visible = other.visible;
+        providerClass = other.providerClass;
+        contentType = other.contentType;
+        filterIds = other.filterIds == null ? null : new ArrayList<>(other.filterIds);
+        sourceDocumentModificationDatePropertyName = other.sourceDocumentModificationDatePropertyName;
+        storeByDefault = other.storeByDefault;
+    }
+
+    /** @since 7.10 */
+    public void merge(RenditionDefinition other) {
+        if (other.cmisName != null) {
+            cmisName = other.cmisName;
+        }
+        if (other.enabled != null) {
+            enabled = other.enabled;
+        }
+        if (other.label != null) {
+            label = other.label;
+        }
+        if (other.icon != null) {
+            icon = other.icon;
+        }
+        if (other.operationChain != null) {
+            operationChain = other.operationChain;
+        }
+        if (other.allowEmptyBlob != null) {
+            allowEmptyBlob = other.allowEmptyBlob;
+        }
+        if (other.visible != null) {
+            visible = other.visible;
+        }
+        if (other.providerClass != null) {
+            providerClass = other.providerClass;
+        }
+        if (other.contentType != null) {
+            contentType = other.contentType;
+        }
+        if (other.filterIds != null) {
+            if (filterIds == null) {
+                filterIds = new ArrayList<>();
+            }
+            filterIds.addAll(other.filterIds);
+        }
+        if (other.sourceDocumentModificationDatePropertyName != null) {
+            sourceDocumentModificationDatePropertyName = other.sourceDocumentModificationDatePropertyName;
+        }
+        if (other.storeByDefault != null) {
+            storeByDefault = other.storeByDefault;
+        }
+    }
+
 }

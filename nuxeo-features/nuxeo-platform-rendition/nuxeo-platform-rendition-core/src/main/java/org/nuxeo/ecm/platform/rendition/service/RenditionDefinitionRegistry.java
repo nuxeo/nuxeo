@@ -119,61 +119,12 @@ public class RenditionDefinitionRegistry extends ContributionFragmentRegistry<Re
 
     @Override
     public RenditionDefinition clone(RenditionDefinition contrib) {
-        return contrib.clone();
+        return new RenditionDefinition(contrib);
     }
 
     @Override
     public void merge(RenditionDefinition source, RenditionDefinition dest) {
-        if (source.isEnabledSet() && source.isEnabled() != dest.isEnabled()) {
-            dest.setEnabled(source.isEnabled());
-        }
-
-        String cmisName = source.getCmisName();
-        if (cmisName != null) {
-            dest.setCmisName(cmisName);
-        }
-
-        String label = source.getLabel();
-        if (label != null) {
-            dest.setLabel(label);
-        }
-
-        String icon = source.getIcon();
-        if (icon != null) {
-            dest.setIcon(icon);
-        }
-
-        String kind = source.getKind();
-        if (kind != null) {
-            dest.setKind(kind);
-        }
-
-        String operationChain = source.getOperationChain();
-        if (operationChain != null) {
-            dest.setOperationChain(operationChain);
-        }
-
-        if (source.isEmptyBlobAllowedSet() && source.isEmptyBlobAllowed() != dest.isEmptyBlobAllowed()) {
-            dest.setAllowEmptyBlob(source.isEmptyBlobAllowed());
-        }
-
-        if (source.isVisibleSet() && source.isVisible() != dest.isVisible()) {
-            dest.setVisible(source.isVisible());
-        }
-
-        Class<? extends RenditionProvider> providerClass = source.getProviderClass();
-        if (providerClass != null) {
-            dest.setProviderClass(providerClass);
-        }
-
-        String contentType = source.getContentType();
-        if (contentType != null) {
-            dest.setContentType(contentType);
-        }
-
-        List<String> newFilterIds = new ArrayList<>();
-        newFilterIds.addAll(dest.getFilterIds());
-        newFilterIds.addAll(source.getFilterIds());
-        dest.setFilterIds(newFilterIds);
+        dest.merge(source);
     }
+
 }
