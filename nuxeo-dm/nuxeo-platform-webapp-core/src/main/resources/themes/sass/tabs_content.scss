@@ -56,7 +56,6 @@
 
 .documentTitle {
   display: inline-block;
-  font-weight: bold;
 }
 
 .documentDownloadLink {
@@ -544,6 +543,7 @@
 
 .infoViewRight .documentTitle,
 .bubbleBox.bubbleListing .documentTitle {
+  font-weight: bold;
   max-width: 22em;
   overflow: hidden;
   text-overflow: ellipsis;
