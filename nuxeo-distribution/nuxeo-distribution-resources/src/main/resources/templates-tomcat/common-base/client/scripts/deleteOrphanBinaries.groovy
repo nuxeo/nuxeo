@@ -15,7 +15,7 @@
  *     Julien Carsique
  */
 
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.storage.sql.management.SQLRepositoryStatus;
 import org.nuxeo.ecm.core.storage.sql.management.SQLRepositoryStatusMBean;
 
