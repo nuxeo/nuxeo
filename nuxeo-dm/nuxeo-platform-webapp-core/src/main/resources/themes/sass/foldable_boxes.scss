@@ -215,10 +215,6 @@
   padding: 0 .5em 0 0;
 }
 
-.bubbleShadow {
-  box-shadow: 0 -1px 2px $shade-light-30 inset;
-}
-
 a.bubbleBox:hover {
   background: none $shade-light-10;
   color: $font-color;
