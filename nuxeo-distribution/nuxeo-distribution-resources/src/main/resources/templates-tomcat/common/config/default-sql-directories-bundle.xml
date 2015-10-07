@@ -5,6 +5,7 @@
   <implementation class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor" />
 
   <require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
+  <require>org.nuxeo.ecm.platform.digestauth.config</require>
 
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
     point="directories">
@@ -64,6 +65,18 @@
           dualReferenceField="subGroups" />
       </references>
 
+    </directory>
+
+    <directory name="digestauth">
+      <cacheEntryName>sql-digestauth-entry-cache</cacheEntryName>
+      <cacheEntryWithoutReferencesName>sql-digestauth-entry-cache-without-references</cacheEntryWithoutReferencesName>
+      <schema>digestauth</schema>
+      <table>digestauth</table>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
   </extension>

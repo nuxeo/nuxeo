@@ -1,6 +1,7 @@
 bench.target=.
 
 org.nuxeo.ecm.instance.description=Nuxeo Gatling bench
-nuxeo.vcs.idtype=sequence
 
-
+nuxeo.cache.maxsize=510
+nuxeo.cache.ttl=20
+nuxeo.cache.concurrencylevel=50

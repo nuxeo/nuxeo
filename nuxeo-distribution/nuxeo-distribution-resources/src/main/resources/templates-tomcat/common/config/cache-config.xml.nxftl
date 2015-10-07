@@ -63,6 +63,19 @@
       <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
     </cache>
 
+    <cache name="sql-digestauth-entry-cache" class="${className}">
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+    <cache name="sql-digestauth-entry-cache-without-references" class="${className}">
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+
   </extension>
 
 </component>
