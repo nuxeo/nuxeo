@@ -142,7 +142,7 @@ public class SQLDirectory extends AbstractDirectory {
      *
      * @since 6.0
      */
-    protected void initConnection() {
+    protected synchronized void initConnection() {
         Connection sqlConnection = getConnection();
         try {
             dialect = Dialect.createDialect(sqlConnection, null);
@@ -295,7 +295,7 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     @Override
-    public synchronized Session getSession() throws DirectoryException {
+    public Session getSession() throws DirectoryException {
         if (dialect == null) {
             initConnection();
         }
