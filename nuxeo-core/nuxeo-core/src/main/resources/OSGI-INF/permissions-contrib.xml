@@ -22,11 +22,11 @@
 
     <permission name="WriteProperties" />
     <permission name="ReadVersion"/>
- 
+
     <permission name="WriteVersion" >
        <include>WriteProperties</include>
     </permission>
-    
+
     <permission name="Version" >
        <include>ReadVersion</include>
        <include>WriteVersion</include>
@@ -91,7 +91,6 @@
     <visibility>
       <item show="true" order="10">Read</item>
       <item show="true" order="50" denyPermission="Write">ReadWrite</item>
-      <item show="true" order="60" denyPermission="Remove">ReadRemove</item>
       <item show="true" order="100">Everything</item>
     </visibility>
 

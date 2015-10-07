@@ -99,19 +99,19 @@ public class TestSecurityService extends NXRuntimeTestCase {
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove", "Everything"),
+        assertEquals(Arrays.asList("Read", "ReadWrite",  "Everything"),
                 permStrings(orderedVisiblePermissions));
 
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove", "Everything"),
+        assertEquals(Arrays.asList("Read", "ReadWrite",  "Everything"),
                 permStrings(orderedVisiblePermissions));
 
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Read", "ReadWrite", "ReadRemove", "Everything"),
+        assertEquals(Arrays.asList("Read", "ReadWrite",  "Everything"),
                 permStrings(orderedVisiblePermissions));
     }
 
@@ -157,21 +157,21 @@ public class TestSecurityService extends NXRuntimeTestCase {
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite", "ReadRemove", "Everything"),
+        assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite", "Everything"),
                 permStrings(orderedVisiblePermissions));
 
         // Section is overridden
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite", "ReadRemove", "Everything"),
+        assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite", "Everything"),
                 permStrings(orderedVisiblePermissions));
 
         // Workspace falls back to default thus is overridden too
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite", "ReadRemove", "Everything"),
+        assertEquals(Arrays.asList("Read", "CustomCompoundPerm", "ReadWrite", "Everything"),
                 permStrings(orderedVisiblePermissions));
     }
 
@@ -202,19 +202,19 @@ public class TestSecurityService extends NXRuntimeTestCase {
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Everything"), permStrings(orderedVisiblePermissions));
+        assertEquals(Arrays.asList("Write", "Read", "Everything"), permStrings(orderedVisiblePermissions));
 
         // custom settings for the Section type
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Everything"), permStrings(orderedVisiblePermissions));
+        assertEquals(Arrays.asList("Write", "Read", "Everything"), permStrings(orderedVisiblePermissions));
 
         // Workspace falls back to default thus is overridden too
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Everything"), permStrings(orderedVisiblePermissions));
+        assertEquals(Arrays.asList("Write", "Read", "Everything"), permStrings(orderedVisiblePermissions));
     }
 
     @Test
@@ -225,19 +225,19 @@ public class TestSecurityService extends NXRuntimeTestCase {
         List<UserVisiblePermission> orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Everything"), permStrings(orderedVisiblePermissions));
+        assertEquals(Arrays.asList("Write", "Read", "Everything"), permStrings(orderedVisiblePermissions));
 
         // custom settings for the Section type
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Section");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "ReadRemove", "Everything", "Read"), permStrings(orderedVisiblePermissions));
+        assertEquals(Arrays.asList("Write", "Everything", "Read"), permStrings(orderedVisiblePermissions));
 
         // Workspace falls back to default thus is overridden too
         orderedVisiblePermissions = pp.getUserVisiblePermissionDescriptors("Workspace");
         assertNotNull(orderedVisiblePermissions);
 
-        assertEquals(Arrays.asList("Write", "Read", "ReadRemove", "Everything"), permStrings(orderedVisiblePermissions));
+        assertEquals(Arrays.asList("Write", "Read", "Everything"), permStrings(orderedVisiblePermissions));
     }
 
     @Test
@@ -246,16 +246,16 @@ public class TestSecurityService extends NXRuntimeTestCase {
         List<UserVisiblePermission> vp = pp.getUserVisiblePermissionDescriptors();
         assertNotNull(vp);
 
-        UserVisiblePermission deleteVP = null;
+        UserVisiblePermission writeVP = null;
         for (UserVisiblePermission uvp : vp) {
-            if (uvp.getId().equals("ReadRemove")) {
-                deleteVP = uvp;
+            if (uvp.getId().equals("ReadWrite")) {
+                writeVP = uvp;
                 break;
             }
         }
-        assertNotNull(deleteVP);
-        assertEquals("Remove", deleteVP.getDenyPermission());
-        assertEquals("ReadRemove", deleteVP.getPermission());
+        assertNotNull(writeVP);
+        assertEquals("Write", writeVP.getDenyPermission());
+        assertEquals("ReadWrite", writeVP.getPermission());
     }
 
     @Test
