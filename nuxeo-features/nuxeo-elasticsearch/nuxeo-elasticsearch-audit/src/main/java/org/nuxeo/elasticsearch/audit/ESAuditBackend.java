@@ -514,7 +514,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
                     long t0 = System.currentTimeMillis();
                     long nbEntriesMigrated = 0;
-                    int pageIdx = 0;
+                    int pageIdx =  1;
 
                     while (nbEntriesMigrated < nbEntriesToMigrate) {
                         @SuppressWarnings("unchecked")
