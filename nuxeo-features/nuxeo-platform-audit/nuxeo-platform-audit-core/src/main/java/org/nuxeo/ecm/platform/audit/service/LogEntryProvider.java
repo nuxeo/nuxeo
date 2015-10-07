@@ -187,6 +187,8 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         Query query = em.createQuery("from LogEntry log where " + whereClause);
         if (pageNb > 1) {
             query.setFirstResult((pageNb - 1) * pageSize);
+        }else if(pageNb == 0){
+            log.warn("Requested pageNb equals 0 but page index start at 1. Will fallback to fetch the first page");
         }
         query.setMaxResults(pageSize);
         return doPublish(query.getResultList());
