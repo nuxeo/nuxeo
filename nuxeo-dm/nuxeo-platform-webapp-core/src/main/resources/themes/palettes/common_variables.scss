@@ -6,6 +6,7 @@ $title: #213f7d;
 
 // Shades
 $shade-light-0: #fff;
+$shade-light-5: #fafafa;
 $shade-light-10: #f8f9fb;
 $shade-light-20: #f3f6f9;
 $shade-light-30: #eee;
@@ -33,13 +34,23 @@ $success-label: #569150;
 $warning-label: #e27000;
 $error-label: #d4002d;
 
+// Labels & Messages
+$label-info-background: #50c3f0;
+$label-success-background: #94d144;
+$label-warning-background: #ffa939;
+$label-error-background: #f04e34;
+
 // Elements
 $tabs-selected: #fff;
 $subtabs-selected: #fff;
 
 $button: #fff;
 $button-disabled: transparent;
+$button-focus: #2e9cff;
 
 $widget: #f1f4f8;
 
 $dropzone: #92cdff;
+
+// Border radius
+$common-radius: 3px;
