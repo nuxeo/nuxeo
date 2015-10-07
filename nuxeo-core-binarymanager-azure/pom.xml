@@ -9,7 +9,6 @@
   </parent>
 
   <properties>
-    <azure.core.version>0.8.1</azure.core.version>
     <azure.storage.version>3.1.0</azure.storage.version>
   </properties>
   <artifactId>nuxeo-core-binarymanager-azure</artifactId>
@@ -55,12 +54,6 @@
       <artifactId>azure-storage</artifactId>
       <version>${azure.storage.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.microsoft.azure</groupId>
-      <artifactId>azure-core</artifactId>
-      <version>${azure.core.version}</version>
-    </dependency>
-
   </dependencies>
 
   <repositories>

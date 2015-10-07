@@ -57,7 +57,6 @@ public class AzureFileStorage implements FileStorage {
             t0 = System.currentTimeMillis();
             log.debug("storing blob " + digest + " to Azure");
         }
-        String azureDigest;
         CloudBlockBlob blob;
         try {
             blob = container.getBlockBlobReference(digest);
