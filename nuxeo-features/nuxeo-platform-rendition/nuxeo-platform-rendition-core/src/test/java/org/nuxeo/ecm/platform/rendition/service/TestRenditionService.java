@@ -30,6 +30,8 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIO
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -270,6 +272,9 @@ public class TestRenditionService {
             renditionName += "Lazily";
         }
         Rendition rendition = getRendition(folder, renditionName, true, isLazy);
+        assertTrue(rendition.isStored());
+        assertTrue(rendition.isCompleted());
+        assertEquals(rendition.getHostDocument().getPropertyValue("dc:modified"), rendition.getModificationDate());
 
         DocumentModel renditionDocument = session.getDocument(rendition.getHostDocument().getRef());
 
@@ -305,6 +310,14 @@ public class TestRenditionService {
         folder = session.saveDocument(folder);
         rendition = getRendition(folder, renditionName, false, isLazy);
         assertFalse(rendition.isStored());
+        assertTrue(rendition.isCompleted());
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTimeInMillis(rendition.getBlob().getFile().lastModified());
+        assertEquals(cal, rendition.getModificationDate());
+        if (isLazy) {
+            rendition = renditionService.getRendition(folder, renditionName, false);
+            assertEquals(cal, rendition.getModificationDate());
+        }
     }
 
     protected Rendition getRendition(DocumentModel doc, String renditionName, boolean store, boolean isLazy) {
@@ -312,6 +325,8 @@ public class TestRenditionService {
         assertNotNull(rendition);
         if (isLazy) {
             assertFalse(rendition.isStored());
+            assertFalse(rendition.isCompleted());
+            assertNull(rendition.getModificationDate());
             Blob blob = rendition.getBlob();
             assertEquals(0, blob.getLength());
             assertTrue(blob.getMimeType().contains("empty=true"));
@@ -432,7 +447,8 @@ public class TestRenditionService {
             renditionService.storeRendition(file, "renditionDefinitionWithUnknownOperationChain");
             fail();
         } catch (NuxeoException e) {
-            assertTrue(e.getMessage(), e.getMessage().startsWith("Rendition renditionDefinitionWithUnknownOperationChain not available"));
+            assertTrue(e.getMessage(),
+                    e.getMessage().startsWith("Rendition renditionDefinitionWithUnknownOperationChain not available"));
         }
     }
 
@@ -488,6 +504,34 @@ public class TestRenditionService {
             assertTrue(e.getMessage(),
                     e.getMessage().startsWith("Rendition pdf not available"));
         }
+    }
+
+    @Test
+    public void shouldNotStoreRenditionByDefault() {
+        DocumentModel folder = createFolderWithChildren();
+        String renditionName = ZIP_TREE_EXPORT_RENDITION_DEFINITION;
+        Rendition rendition = renditionService.getRendition(folder, renditionName);
+        assertNotNull(rendition);
+        assertFalse(rendition.isStored());
+    }
+
+    @Test
+    public void shouldStoreRenditionByDefault() {
+        DocumentModel folder = createFolderWithChildren();
+        String renditionName = ZIP_TREE_EXPORT_RENDITION_DEFINITION + "Lazily";
+        Rendition rendition = renditionService.getRendition(folder, renditionName);
+        assertNotNull(rendition);
+        assertFalse(rendition.isStored());
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("interrupted", e);
+        }
+        eventService.waitForAsyncCompletion(5000);
+        rendition = renditionService.getRendition(folder, renditionName);
+        assertNotNull(rendition);
+        assertTrue(rendition.isStored());
     }
 
     @Test

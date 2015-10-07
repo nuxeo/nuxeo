@@ -16,6 +16,7 @@
       <contentType>application/zip</contentType>
       <allowEmptyBlob>true</allowEmptyBlob>
       <operationChain>zipTreeExportRendition</operationChain>
+      <storeByDefault>true</storeByDefault>
       <filters>
         <filter-id>folder</filter-id>
       </filters>
