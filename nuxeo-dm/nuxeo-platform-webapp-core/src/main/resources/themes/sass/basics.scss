@@ -1,5 +1,7 @@
 // ----- Basics styles
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -13,8 +15,8 @@ iframe {
 html {
   font-size: 100%;
   height: 100%;
+  -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
 }
 
 body,
@@ -23,14 +25,14 @@ body,
   direction: ltr;
   font-family: $default-font;
   font-size: 17px;
-  letter-spacing: .01em;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
   height: 100%;
+  letter-spacing: .01em;
   line-height: 22px;
   text-rendering: optimizelegibility;
-  vertical-align: baseline;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   transition: color 250ms ease 0s, background 250ms ease 0s, border 250ms ease 0s;
+  vertical-align: baseline;
 }
 
 ul {
@@ -69,10 +71,10 @@ input[type="checkbox"] {
 }
 
 input[type="search"] {
-  -webkit-box-sizing: content-box;
-     -moz-box-sizing: content-box;
-          box-sizing: content-box;
   -webkit-appearance: textfield;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
 }
 
 input[type="search"]::-webkit-search-decoration,
@@ -95,8 +97,8 @@ button,
 input,
 select,
 textarea {
-  margin: 0;
   font-size: 100%;
+  margin: 0;
   vertical-align: middle;
 }
 
@@ -108,16 +110,16 @@ input {
 
 button::-moz-focus-inner,
 input::-moz-focus-inner {
-  padding: 0;
   border: 0;
+  padding: 0;
 }
 
 button,
 input[type="button"],
 input[type="reset"],
 input[type="submit"] {
-  cursor: pointer;
   -webkit-appearance: button;
+  cursor: pointer;
 }
 
 button i {
@@ -162,9 +164,12 @@ a:active,
   outline: medium none;
 }
 
-h1, h2,
-h3, h4,
-h5, h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
 .mainTitle {
   color: $title;
   font-weight: bold;
@@ -174,8 +179,8 @@ h5, h6,
 h1,
 .mainTitle {
   font-size: 1.6em;
-  padding: .5em 0 1em;
   margin-top: 0;
+  padding: .5em 0 1em;
   word-wrap: break-word;
 }
 
@@ -196,27 +201,33 @@ h4 {
 
 h5 {
   font-size: 1.1em;
-  margin: .2em 0 .2em 0;
+  margin: .2em 0;
 }
 
 h6 {
   color: $shade-strong-20;
   font-size: 1em;
-  margin: .2em 0 .2em 0;
+  margin: .2em 0;
 }
 
 .icon {
   margin-right: .3em;
 }
 
-input, select, textarea,
-button, keygen, isindex, legend, a {
+input,
+select,
+textarea,
+button,
+keygen,
+isindex,
+legend,
+a {
   font-size: inherit;
 }
 
 hr {
-  border-top: none;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid $shade-light-30;
+  border-top: 0;
   margin: 2em 0 2.5em;
 }
 
@@ -226,9 +237,9 @@ hr {
 
 .clearfix:before,
 .clearfix:after {
+  content: '';
   display: table;
   line-height: 0;
-  content: "";
 }
 
 .clearfix:after {
@@ -236,9 +247,19 @@ hr {
 }
 
 // =Compat styles
-.field, select, textarea, .serverChoice a, .fullWidth, .tabsBar,
-.gridBox, .grayBox, .simpleBox, .infoViewRight .infoViewInfoLayout,
-input[type="text"], input[type="file"], input[type="password"] {
+.field,
+select,
+textarea,
+.serverChoice a,
+.fullWidth,
+.tabsBar,
+.gridBox,
+.grayBox,
+.simpleBox,
+.infoViewRight .infoViewInfoLayout,
+input[type="text"],
+input[type="file"],
+input[type="password"] {
  -moz-box-sizing: border-box;
  -webkit-box-sizing: border-box;
 }

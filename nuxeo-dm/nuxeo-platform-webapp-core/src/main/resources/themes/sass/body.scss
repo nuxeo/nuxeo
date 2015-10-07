@@ -15,14 +15,14 @@
 .nxMainContainer .verticalTabsColumn,
 .nxMainContainer .nxSearchForm {
   background: none $column-background;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16);
   bottom: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .16);
   font-size: .85em;
-  width: 19%;
+  overflow-y: auto;
   padding: 6em 1em;
   position: fixed;
-  overflow-y: auto;
   top: 0;
+  width: 19%;
 }
 
 .nxMainContainer .column > div:last-child,

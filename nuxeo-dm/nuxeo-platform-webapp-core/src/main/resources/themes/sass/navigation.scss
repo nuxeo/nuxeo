@@ -1,9 +1,9 @@
 // ----- Navigation tabs, subtabs and back links styles
 // =Tabs
 .tabsBar {
-  background: none #fff;
+  background: none $shade-light-0;
   border: 1px solid $shade-light-50;
-  border-radius: 3px;
+  border-radius: $common-radius;
   display: inline-block;
   font-family: arial,sans-serif;
   font-size: 1em;
@@ -18,17 +18,17 @@
 }
 
 .tabsBar li {
-  border-width: 1px;
-  border-style: none solid none none;
   border-color: $shade-light-50;
+  border-style: none solid none none;
+  border-width: 1px;
   float: left;
   padding: 0;
 }
 
 .tabsBar.vertical li {
-  border-width: 1px;
-  border-style: none solid none none;
   border-color: $shade-light-50;
+  border-style: none solid none none;
+  border-width: 1px;
   display: block;
   float: none;
   padding: 0;
@@ -55,7 +55,7 @@
 .modularTabs li a:hover,
 .modularTabs li.selected a,
 .modularTabs li.selected a:visited {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border-color: $tabs-horizontal-color;
   color: $font-color;
 }
@@ -82,26 +82,26 @@
 
 .subtabsBar {
   background: none transparent;
-  border-style: none none solid;
-  border-width: 1px;
   border-color: $shade-light-50;
   border-radius: 0;
+  border-style: none none solid;
+  border-width: 1px;
   font-size: .9em;
   margin-top: .5em;
 }
 
 .subtabsBar li {
   border: 0;
-  margin: 0 0 -0.1em .3em;
+  margin: 0 0 -.1em .3em;
 }
 
 .subtabsBar a,
 .subtabsBar a:visited {
   background: none $shade-light-10;
-  border-width: 1px;
-  border-style: solid solid none;
   border-color: $shade-light-50;
   border-radius: 2px 2px 0 0;
+  border-style: solid solid none;
+  border-width: 1px;
   color: $shade-strong-20;
   padding: .22em .4em;
 }
@@ -146,11 +146,11 @@
 
 .tabsBar.vertical li a,
 .tabsBar.vertical li a:visited {
+  border-left: 3px solid transparent;
+  border-top: 0;
   color: $tabs-vertical-color;
   display: block;
   font-size: 1.2em;
-  border-top: none;
-  border-left: 3px solid transparent;
   padding: .7em 0 .7em 1.5em;
   text-decoration: none;
   transition: none;
@@ -165,29 +165,28 @@
 
 .tabsBar.vertical li:hover a,
 .tabsBar.vertical li.selected a {
-  border-left: 3px solid;
-  background-color: rgba(0,0,0,0.5);
-  border-color: $tabs-horizontal-color;
-  border-top: medium none;
-  color: #fff;
+  background-color: rgba(0, 0, 0, .5);
+  border-left: 3px solid $tabs-horizontal-color;
+  border-top: 0;
+  color: $shade-light-0;
 }
 
 // =Navigation controls
 .pageNavigationControls,
 #pageNavigationControls {
   border: medium none;
+  float: right;
   margin: .2em 0 .5em;
   padding: 0;
   text-align: right;
-  float: right;
 }
 
 .pageNavigationControls .currentPageStatus,
 #pageNavigationControls .currentPageStatus {
   color: $shade-strong-20;
   display: inline-block;
-  font-weight: bold;
   font-size: .9em;
+  font-weight: bold;
   margin: 0 .5em;
   padding-top: .3em;
   vertical-align: top;
@@ -196,9 +195,9 @@
 .pageNavigationControls input[type="image"],
 #pageNavigationControls input[type="image"] {
   background-color: $shade-light-50;
-  border: 1px solid #ddd !important;
-  border-radius: 2px;
+  border: 1px solid $shade-medium-10 !important;
   border-left: none !important;
+  border-radius: $common-radius;
   margin: 0;
   padding: .3em;
 }
@@ -228,7 +227,7 @@
 
 #selection_buttons:after {
   clear: both;
-  content: ".";
+  content: '.';
   display: block;
   font-size: 0;
   height: 0;
@@ -239,7 +238,7 @@
 .directoryBack {
   display: inline;
   float: right;
-  margin: 0 -0.9em 0 0;
+  margin: 0 -.9em 0 0;
 }
 
 .directoryBack:after {

@@ -15,16 +15,14 @@ input[type="url"],
 input[type="search"],
 input[type="tel"],
 input[type="color"] {
+  border-radius: $common-radius;
+  color: $font-color;
   display: inline-block;
-  padding: 4px 6px;
-  margin-bottom: 10px;
   font-size: 14px;
   line-height: 1.4em;
-  color: #555;
+  margin-bottom: 10px;
+  padding: 4px 6px;
   vertical-align: middle;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
 }
 
 textarea {
@@ -46,8 +44,8 @@ input[type="url"],
 input[type="search"],
 input[type="tel"],
 input[type="color"] {
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
+  background-color: $shade-light-0;
+  border: 1px solid $shade-medium-10;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
   transition: border-color .15s ease-in-out 0s, box-shadow .15s ease-in-out 0s;
 }
@@ -68,9 +66,9 @@ input[type="search"]:focus,
 input[type="tel"]:focus,
 input[type="color"]:focus {
   border-color: rgba(82, 168, 236, .8);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 2px 0 #00adff, 0 0 3px #b5dcff;
   outline: 0;
   outline: thin dotted \9;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 2px 0 #00adff, 0 0 3px #b5dcff;
 }
 
 input[type="radio"],
@@ -104,8 +102,8 @@ form select {
 select,
 input[type="file"] {
   height: 30px;
-  *margin-top: 4px;
   line-height: 30px;
+  *margin-top: 4px;
 }
 
 input[type="file"] {
@@ -113,8 +111,8 @@ input[type="file"] {
 }
 
 select {
-  background-color: #fff;
-  border: 1px solid #ccc;
+  background-color: $shade-light-0;
+  border: 1px solid $shade-medium-10;
 }
 
 select[multiple],
@@ -127,7 +125,7 @@ select:focus,
 input[type="file"]:focus,
 input[type="radio"]:focus,
 input[type="checkbox"]:focus {
-  outline: thin dotted #333;
+  outline: thin dotted $shade-strong-30;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -158,14 +156,13 @@ option {
 .nx-page input[type="text"],
 .nx-page input[type="file"],
 .nx-page input[type="password"] {
-  font-family: $default-font;
-  background: none #fff;
-  box-sizing: border-box;
-  border: 1px solid;
-  border-color: $shade-medium-10;
-  border-radius: 2px;
+  background: none $shade-light-0;
+  border: 1px solid $shade-medium-10;
+  border-radius: $common-radius;
   box-shadow: 0 1px 1px rgba(0, 0, 0, .07) inset;
+  box-sizing: border-box;
   display: inline-block;
+  font-family: $default-font;
   font-size: 1em;
   margin-bottom: .5em;
   padding: .5em;
@@ -216,7 +213,7 @@ option {
 .nx-page textarea:focus,
 .nx-page input[type="text"]:focus,
 .nx-page input[type="password"]:focus {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border-color: #2e9cff;
   box-shadow: 0 2px 0 #00adff, 0 0 3px #b5dcff;
   color: $font-color;
@@ -249,16 +246,16 @@ textarea::-webkit-input-placeholder {
 
 .nx-page .contentViewQuickFilterForm input.dataInputText {
   border-radius: 3px 0 0 3px;
-  border-right: medium none;
+  border-right: 0;
   margin: 0;
 }
 
 .nx-page .contentViewQuickFilterForm .button,
 .nx-page .action_bar .button,
 #selection_buttons .widgetPanel .button {
+  font-size: .9em;
   height: 2.4em;
   line-height: 2.3em;
-  font-size: .9em;
   padding: 0 1em;
 }
 
@@ -271,8 +268,8 @@ textarea::-webkit-input-placeholder {
 .nx-page #document_create .buttonsGadget,
 .nx-page #createThread .buttonsGadget,
 .nx-page #document_send .buttonsGadget {
-  border-top: 1px solid #eee;
-  background-color: #fafafa;
+  background-color: $shade-light-5;
+  border-top: 1px solid $shade-light-30;
   margin: 2em -2em -2em;
   padding: 1em 2em .5em;
 }
@@ -282,9 +279,8 @@ textarea::-webkit-input-placeholder {
 .nx-page .button.primary,
 .nx-page input.button.primary {
   background-color: $button-primary;
-  border: 1px solid;
-  border-color: $button-primary;
-  color: #fff;
+  border: 1px solid $button-primary;
+  color: $shade-light-0;
 }
 
 .nx-page #document_create .buttonsGadget .horizontalAction:first-child .button:hover,
@@ -330,7 +326,7 @@ textarea::-webkit-input-placeholder {
 
 .nx-page .dataInput textarea,
 .nx-page .dataInput input {
-  background-color: #fff;
+  background-color: $shade-light-0;
 }
 
 // Column Edition

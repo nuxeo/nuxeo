@@ -12,7 +12,7 @@ table th {
 }
 
 table td {
-  vertical-align:top;
+  vertical-align: top;
 }
 
 // Table models
@@ -22,7 +22,7 @@ table td {
 .dataOutput,
 .dataList,
 .dataInput {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border-color: $shade-light-50;
   clear: both;
   line-height: 1.3em;
@@ -65,15 +65,15 @@ table td {
 .dataTable,
 .fieldColumn .dataTable {
   border-collapse: separate;
+  border-radius: $common-radius;
   border-style: solid none none solid;
-  border-radius: 2px;
   border-width: 1px;
 }
 
 .dataTable th,
 .dataTable td {
-  border-style: none solid solid none;
   border-color: $shade-light-50;
+  border-style: none solid solid none;
   border-width: 1px;
   padding: .7em .4em;
 }
@@ -162,7 +162,7 @@ table td {
 .dataTableLine td td,
 .dataOutput td td,
 .dataList td td {
-  border: 0 0;
+  border: 0;
 }
 
 .dataTable td th,
@@ -331,12 +331,12 @@ div.actionsColumn {
 }
 
 .fieldColumn img {
-  margin: 0 .4em -0.2em .2em;
+  margin: 0 .4em -.2em .2em;
 }
 
 .fieldColumn + .labelColumn {
-  text-align: right;
   padding-right: 1em;
+  text-align: right;
 }
 
 #fancybox-content .labelColumn {
@@ -386,8 +386,8 @@ table.palettePreviewColors td div {
 
 // Compat styles <5.8
 .dataOutput2Columns {
-  margin-top: .7em;
   margin-bottom: .4em;
+  margin-top: .7em;
 }
 
 .twoColumns {
@@ -424,7 +424,7 @@ table.palettePreviewColors td div {
 
 .workflowFieldColumn table,
 .relationCreateFieldColumn table {
-  border: 0 none;
+  border: 0;
   margin: 0;
 }
 
@@ -445,8 +445,8 @@ table.palettePreviewColors td div {
 .listItem .moveDownBtn,
 .listItem .deleteBtn {
   display: block;
-  width: 16px;
   height: 16px;
+  width: 16px;
 }
 
 .listItem .moveUpBtn {
@@ -467,16 +467,16 @@ table.palettePreviewColors td div {
 .listItem:nth-of-type(1) > :not(.listItem) > :not(.listItem) > .moveUpBtn,
 .listItem:nth-of-type(1) > :not(.listItem) > :not(.listItem) > :not(.listItem) > .moveUpBtn,
 .listItem:nth-of-type(1) > :not(.listItem) > :not(.listItem) > :not(.listItem) > :not(.listItem) > .moveUpBtn {
-  pointer-events: none;
-  cursor: default;
   background-image: url('${basePath}/icons/inactive_go_up.png');
+  cursor: default;
+  pointer-events: none;
 }
 
 .listItem:nth-last-of-type(1) > :not(.listItem) > .moveDownBtn,
 .listItem:nth-last-of-type(1) > :not(.listItem) > :not(.listItem) > .moveDownBtn,
 .listItem:nth-last-of-type(1) > :not(.listItem) > :not(.listItem) > :not(.listItem) > .moveDownBtn,
 .listItem:nth-last-of-type(1) > :not(.listItem) > :not(.listItem) > :not(.listItem) > :not(.listItem) > .moveDownBtn {
-  pointer-events: none;
-  cursor: default;
   background-image: url('${basePath}/icons/inactive_go_down.png');
+  cursor: default;
+  pointer-events: none;
 }

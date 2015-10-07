@@ -2,7 +2,7 @@
 .tabsContent {
   background: none $shade-light-0;
   border: 1px solid $shade-light-50;
-  border-radius: 2px;
+  border-radius: $common-radius;
   padding: 2em 1.5em;
 }
 
@@ -17,9 +17,9 @@
 }
 
 .mainNoTabs {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border: 1px solid $shade-light-50;
-  border-radius: 3px;
+  border-radius: $common-radius;
   padding: 2em;
 }
 
@@ -41,8 +41,7 @@
 }
 
 .contentViewTitle {
-  border-bottom: 1px solid;
-  border-color: $shade-light-50;
+  border-bottom: 1px solid $shade-light-50;
   clear: both;
   line-height: normal;
   margin: 1em 0 .5em;
@@ -58,15 +57,6 @@
 .documentTitle {
   display: inline-block;
   font-weight: bold;
-}
-
-.infoViewRight .documentTitle,
-.bubbleBox.bubbleListing .documentTitle {
-  max-width: 22em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  word-wrap: break-word;
 }
 
 .documentDownloadLink {
@@ -117,7 +107,7 @@
 
 .coloredWidget {
   background: none $widget;
-  border-radius: 3px;
+  border-radius: $common-radius;
   box-shadow: 0 1px 1px rgba(0, 0, 0, .15), -1px 0 0 rgba(0, 0, 0, .02), 1px 0 0 rgba(0, 0, 0, .02), 0 1px 0 rgba(0, 0, 0, .10);
   display: block;
   margin-bottom: 1em;
@@ -128,7 +118,7 @@
 .metadata_block .summaryTitle,
 .coloredWidget .summaryTitle {
   border-top: medium none;
-  padding: 0 0 0.5em;
+  padding: 0 0 .5em;
 }
 
 .content_block .actionsColumn {
@@ -170,9 +160,8 @@
 
 .textBlock,
 .note_content_block {
-  border: 1px solid;
-  border-color: $shade-light-50;
-  border-radius: 3px;
+  border: 1px solid $shade-light-50;
+  border-radius: $common-radius;
   color: $shade-strong-100;
   display: block;
   margin: 0 0 1.4em;
@@ -336,7 +325,7 @@
 .note_content_block code {
   background-color: $shade-light-10;
   border: 1px solid $shade-light-50;
-  border-radius: 3px;
+  border-radius: $common-radius;
   font-family: "Lucida Console","Monaco","Courier", monospace;
   font-size: 90%;
   line-height: normal;
@@ -512,10 +501,11 @@
 }
 
 .bubbleBox.bubbleListing .documentTitle {
-  max-width: none;
-  padding-bottom: .3em;
-  width: 15em;
-  word-wrap: normal;
+  width: 13.75em;
+}
+
+.bubbleBox .documentDownloadLink {
+  margin: 0;
 }
 
 .bubbleBox.bubbleListing span:not(.documentTitle) {
@@ -538,8 +528,8 @@
 
 .thumbnailOptions input,
 .thumbnailOptions input[type="submit"] {
-  background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
-  border: medium none;
+  background: 0;
+  border: 0;
   color: $link;
   font-size: 1em;
   font-weight: normal;
@@ -550,6 +540,15 @@
 .thumbnailOptions input:hover,
 .thumbnailOptions input[type="submit"]:hover {
   color: $link-hover;
+}
+
+.infoViewRight .documentTitle,
+.bubbleBox.bubbleListing .documentTitle {
+  max-width: 22em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: break-word;
 }
 
 // TinyMce override
@@ -586,11 +585,11 @@
 }
 
 .nx-page .mce-btn {
-  background: #f0f0f0;
+  background: $shade-light-10;
 }
 
 .nx-page .mce-btn:hover {
-  background: #f4f4f4;
+  background: $shade-light-20;
   border-radius: none;
 }
 
@@ -618,7 +617,7 @@
 
 .nx-page .mce-toolbar .mce-btn,
 .nx-page .mce-toolbar .mce-btn.mce-disabled {
-  background: none 0;
+  background: 0;
   padding: 0;
 }
 
@@ -633,8 +632,8 @@
 }
 
 .nx-page .mce-in .mce-panel {
-  background: #f3f3f3;
-  border-top: 1px solid #ddd;
+  background: $shade-light-10;
+  border-top: 1px solid $shade-medium-10;
 }
 
 .nx-page .mce-edit-area {
@@ -642,7 +641,7 @@
 }
 
 .nx-page .mce-statusbar .mce-container-body {
-  background-color: #f9f9f9;
+  background-color: $shade-light-5;
   padding: .4em;
 }
 

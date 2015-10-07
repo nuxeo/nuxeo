@@ -83,7 +83,7 @@ paper-dialog .disabled {
 
 // Forms
 .nx-elements textarea {
-  border: medium none;
+  border: 0;
   box-shadow: none;
   margin: auto;
   min-height: auto;
@@ -98,7 +98,7 @@ paper-dialog .disabled {
 }
 
 iron-autogrow-textarea {
-  border-color: #ccc;
+  border-color: $shade-medium-10;
   min-height: 5em;
 }
 

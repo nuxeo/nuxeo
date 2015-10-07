@@ -9,7 +9,7 @@
 .nx-page input[type="button"] {
   background: none $shade-light-0;
   border: 1px solid $shade-medium-20;
-  border-radius: 4px;
+  border-radius: $common-radius;
   color: $font-color;
   cursor: pointer;
   display: inline-block;
@@ -45,7 +45,7 @@
 .nx-page input[type="reset"]:focus,
 .nx-page input[type="submit"]:focus,
 .nx-page input[type="button"]:focus {
-  border-color: #2e9cff;
+  border-color: $button-focus;
   box-shadow: 0 0 3px #b5dcff;
   outline: none;
 }
@@ -248,7 +248,7 @@
 
 .actionList .actionSubList {
   background-color: $shade-light-0;
-  border-radius: 3px;
+  border-radius: $common-radius;
   box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
   display: none;
   list-style: none;
@@ -290,16 +290,16 @@
 .horizontalAction ~ .actionList li {
   background-color: transparent;
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: $common-radius;
   color: $font-color;
   font-weight: bold;
   margin: 0;
 }
 
 .globalActions .horizontalAction .button {
-  background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+  background:  none;
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: $common-radius;
   height: auto;
   margin: 0;
   padding: 0 1em;
@@ -349,7 +349,7 @@
 
 .globalActionBar .actionList .actionSubList {
   background-color: $shade-light-0;
-  border-radius: 3px;
+  border-radius: $common-radius;
   box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
   display: none;
   list-style: none;
@@ -388,7 +388,7 @@
 .globalActionBar .actionList .actionSubList li a:hover {
   background-color: $shade-light-10;
   border: 0;
-  border-radius: none;
+  border-radius: 0;
   box-shadow: none;
 }
 
@@ -438,7 +438,7 @@
   background: url('${basePath}/icons/import.png') no-repeat scroll 29% center / 25px 25px;
   background-color: $button-import;
   border: 0;
-  border-radius: 2px;
+  border-radius: $common-radius;
   box-shadow: none;
   color: $shade-light-0;
   cursor: pointer;
@@ -476,7 +476,7 @@
 
 // =RightClick menu
 #contextMenu {
-  border-radius: 3px;
+  border-radius: $common-radius;
   left: 0;
   position: absolute;
   top: 0;
@@ -534,7 +534,7 @@
 a.tag,
 .tag a,
 .tagLink a {
-  color: #333 !important;
+  color: $shade-strong-30 !important;
   text-decoration: none;
 }
 
@@ -554,7 +554,7 @@ a.tag:hover,
 }
 
 .tag.newTag {
-  background: url("${basePath}/icons/add.png") no-repeat scroll 0 0 #e0f8d9;
+  background: url('${basePath}/icons/add.png') no-repeat scroll 0 0 $success-background;
   color: $font-color;
   padding: 0 .3em 0 1.3em;
 }
@@ -563,20 +563,20 @@ a.tag:hover,
 .group,
 span.user,
 span.group {
-  background: url("${basePath}/icons/user.png") no-repeat scroll 7px 6px / 13px $shade-light-20;
+  background: url('${basePath}/icons/user.png') no-repeat scroll 7px 6px / 13px $shade-light-20;
   border-radius: 16px;
   color: $shade-strong-20;
   display: inline-block;
   font-size: .95em;
-  padding: .1em .7em .1em 2em;
-  margin: 0 .2em .2em 0;
   line-height: 1.7em;
+  margin: 0 .2em .2em 0;
+  padding: .1em .7em .1em 2em;
   white-space: nowrap;
 }
 
 .group,
 span.group {
-  background: url("${basePath}/icons/group.png") no-repeat scroll 7px 6px /13px $shade-light-20;
+  background: url('${basePath}/icons/group.png') no-repeat scroll 7px 6px /13px $shade-light-20;
 }
 
 .user a:hover,
@@ -598,15 +598,14 @@ a .group:hover {
 }
 
 .sticker {
-  background-color: $shade-strong-10;
-  border-radius: 3px;
-  color: #fff;
+  background-color: $shade-light-30;
+  border-radius: $common-radius;
+  color: $info-label;
   display: inline-block;
   font-size: .95em;
   font-weight: bold;
   margin: .2em .5em .2em 0;
   padding: .1em .6em;
-  text-shadow: 0 1px rgba(0, 0, 0, 0.3);
 }
 
 // =Icon size management for upload in Nuxeo Studio

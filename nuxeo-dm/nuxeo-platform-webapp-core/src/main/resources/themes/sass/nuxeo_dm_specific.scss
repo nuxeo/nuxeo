@@ -1,6 +1,6 @@
 // Specific styles for the Document Management View
 .content .tabsContent {
-  background: none #fff;
+  background: none $shade-light-0;
   padding: 2em 1.5em;
 }
 
@@ -19,33 +19,16 @@
   padding-right: 0;
 }
 
-.summary .gridBox:nth-child(2) {
-  background-color: #fafafa;
-  padding: 2em 1em;
-  position: relative;
-}
-
-.summary .gridBox:nth-child(2)::before {
-  border-color: #f8f8f8 #fff;
-  border-style: solid;
-  border-width: 0 12px 12px 0;
-  box-shadow: -1px 1px 1px rgba(0, 0, 0, .15);
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
 // =List of available servers
 .serverChoice {
   float: left;
 }
 
 .serverChoice a {
-  border: 1px solid #ddd;
+  border: 1px solid $shade-medium-10;
   border-radius: 5px;
-  box-shadow: 0 -5px 5px #eee inset;
-  color: #000;
+  box-shadow: 0 -5px 5px $shade-light-30 inset;
+  color: $font-color;
   display: block;
   font-weight: bold;
   margin: 1em;
@@ -72,7 +55,7 @@
 }
 
 .userClipboardContent {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border-radius: 0 0 3px 3px;
   margin: 0;
   padding: 1em .7em;
@@ -82,9 +65,8 @@
 .dropInto,
 .dropIntoClipboardCopy {
   background-color: $shade-light-20;
-  border: 1px dashed;
-  border-color: $shade-medium-10;
-  border-radius: 3px;
+  border: 1px dashed $shade-medium-10;
+  border-radius: $common-radius;
 }
 
 #clipboardCopy {

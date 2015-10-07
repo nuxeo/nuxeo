@@ -42,7 +42,7 @@
 
 a.twitt,
 a.linkedin {
-  background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat left top / 32px;
+  background: transparent url('${basePath}/icons/icones-metanav.png') no-repeat left top / 32px;
   display: inline-block;
   height: 16px;
   transition: none;
@@ -50,7 +50,7 @@ a.linkedin {
 }
 
 a.linkedin {
-  background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat -16px top / 32px;
+  background: transparent url('${basePath}/icons/icones-metanav.png') no-repeat -16px top / 32px;
 }
 
 a.twitt:hover {
@@ -69,7 +69,7 @@ a.linkedin .footerLabel {
  // =Connect Banner
 .bannerBottom {
   background-color: #585c69;
-  border-radius: 3px;
+  border-radius: $common-radius;
   color: $shade-light-0;
   margin: 1.5em 0 3em;
   padding: 1em 1.4em;
@@ -84,7 +84,7 @@ a.linkedin .footerLabel {
 .nx-page .bannerBottom .button {
   background-color: #ff452a;
   border: 0;
-  border-radius: 2px;
+  border-radius: $common-radius;
   color: $shade-light-0;
   height: auto;
   line-height: unset;
@@ -120,7 +120,7 @@ a.linkedin .footerLabel {
 
 .bannerBottom .register-instance a,
 .bannerBottom .hf-account a {
-  border-radius: 2px;
+  border-radius: $common-radius;
   color: #60ccff;
   display: inline-block;
   padding: .2em 1em;

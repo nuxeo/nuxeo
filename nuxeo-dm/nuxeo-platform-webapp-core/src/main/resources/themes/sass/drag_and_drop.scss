@@ -16,15 +16,15 @@
 }
 
 .loadingComplete {
-  background: transparent url("${basePath}/icons/checked.gif") no-repeat left center;
+  background: transparent url('${basePath}/icons/checked.gif') no-repeat left center;
   padding: .2em 0 0 1.6em;
 }
 
 .dropPanel {
-  padding: 1em;
-  background: #bbc;
-  border-radius: 5px;
+  background-color: $shade-light-10;
+  border-radius: $common-radius;
   height: 250px;
+  padding: 1em;
 }
 
 .dropzone {
@@ -33,8 +33,8 @@
 }
 
 .dropzoneHL {
-  border: 2px dashed $shade-medium-10;
   background-color: $shade-light-10;
+  border: 2px dashed $shade-medium-10;
 }
 
 .dropzoneTarget {
@@ -50,7 +50,7 @@
 }
 
 .dropezoneTargetOverlay:hover {
-  background-color: rgba(200,220,250,0.3);
+  background-color: rgba(200, 220, 250, .3);
 }
 
 .dropzone-info-block {
@@ -67,7 +67,7 @@
 .dropzone-info-progress {
   background-color: $column-background;
   height: 3px;
-  width: 0%;
+  width: 0;
 }
 
 .dropzone-info-item {
@@ -76,8 +76,8 @@
 }
 
 .dropzone-info-name {
-  text-align: center;
   margin-bottom: .2em;
+  text-align: center;
 }
 
 .dropzone-bar {
@@ -85,8 +85,8 @@
 }
 
 input.dropzone-bar-btn {
-  visibility:hidden;
   margin-top: 2em !important;
+  visibility: hidden;
 }
 
 .dropzone-bar-msg {
@@ -96,10 +96,10 @@ input.dropzone-bar-btn {
 
 .dndFormPanel {
   display: none;
-  position: absolute;
-  z-index: 5000;
   max-height: 350px;
   overflow: auto;
+  position: absolute;
+  z-index: 5000;
 }
 
 .dndProgressPanel {
@@ -110,27 +110,27 @@ input.dropzone-bar-btn {
 
 .dndFormPanel,
 .dndProgressPanel {
+  background-color: $shade-light-0;
   border: 1px solid $shade-medium-20;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
-  background-color: #fff;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, .3);
   font-size: 12px;
-  padding : 2em;
-  min-height: 8em;
   max-height: 25em;
-  min-width: 35em;
   max-width: 60em;
+  min-height: 8em;
+  min-width: 35em;
+  padding: 2em;
 }
 
 .dndFormPanel th {
-  text-align: left;
-  padding-bottom: 1em;
   font-size: 1.1em;
   font-weight: bold;
+  padding-bottom: 1em;
+  text-align: left;
 }
 
 .dndFormPanel td {
-  vertical-align: top;
   padding: 0 3.2em 1em 0;
+  vertical-align: top;
 }
 
 .dndFormPanel input {
@@ -143,7 +143,7 @@ input.dropzone-bar-btn {
 
 #uploadedFileList div {
   color: $shade-medium-20;
-  margin : 0 0 .5em;
+  margin: 0 0 .5em;
 }
 
 .importOperationForm iframe {
@@ -160,19 +160,19 @@ input.dropzone-bar-btn {
 
 #dndContinueButton {
   display: none;
-  padding: 5px ;
+  padding: 5px;
 }
 
 #operationForm {
-  border-style: none none none solid;
   border-color: $shade-strong-20;
+  border-style: none none none solid;
   border-width: 2px;
 }
 
 // Drag and drop in DAM
 .dropzoneFilled {
-	text-align: left;
-	padding: .5em;
+  padding: .5em;
+  text-align: left;
 }
 
 .dropzoneTarget .simpleBox {
@@ -183,8 +183,8 @@ input.dropzone-bar-btn {
 .droppedItemInProgress {
   color: $font-color;
   display: inline-block;
-  font-weight: bold;
   font-size: .85em;
+  font-weight: bold;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -199,13 +199,13 @@ input.dropzone-bar-btn {
 
 .progressBarContainer {
   display: inline-block;
-  margin: 0.3em;
+  margin: .3em;
   vertical-align: top;
   width: 30%;
 }
 
 .progressBar {
   background-color: $column-background;
-	display: inline-block;
-	height: 13px;
+  display: inline-block;
+  height: 13px;
 }

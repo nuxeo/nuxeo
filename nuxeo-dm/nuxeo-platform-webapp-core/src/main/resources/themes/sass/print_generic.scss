@@ -1,10 +1,15 @@
 // ----- Print styles
 body {
-  color: #000;
+  color: $shade-strong-100;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-h1,h2,h3,h4,h5,h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: bold;
   margin: .2em 0 .6em;
   padding: 0;
@@ -22,12 +27,14 @@ h3 {
   font-size: 120%;
 }
 
-h4, h5, h6 {
+h4,
+h5,
+h6 {
   font-size: 110%;
 }
 
 div {
-  background-color: #fff;
+  background-color: $shade-light-0;
   float: none;
 }
 
@@ -38,7 +45,7 @@ img {
 a:link,
 a:visited {
   background: transparent;
-  color: #000;
+  color: $shade-strong-100;
   text-decoration: none;
 }
 
@@ -54,7 +61,7 @@ a:visited {
 
 // Breadcrumb
 .breadcrumbs {
-  float:left;
+  float: left;
   font-size: .8em;
   margin-bottom: 1.8em;
 }
@@ -68,11 +75,11 @@ a:visited {
 
 .labelColumn,
 .fieldColumn {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid $shade-light-30;
 }
 
 .labelColumn span {
-  padding: .2em 0 0 0;
+  padding: .2em 0 0;
 }
 
 .fieldColumn {
@@ -85,12 +92,12 @@ a:visited {
 }
 
 .fieldColumn .widgetPanel td.fieldColumn {
-   padding: 0;
+  padding: 0;
  }
 
 .dataList th,
 .dataOutput th {
-  background-color: #eee;
+  background-color: $shade-light-30;
   padding: .4em .5em;
   text-align: left;
 }
@@ -103,7 +110,7 @@ a:visited {
 .dataList,
 .dataOutput,
 .dataOutput2Columns {
-  border: 1px solid #dbdbdb;
+  border: 1px solid $shade-medium-10;
   border-collapse: collapse;
 }
 
@@ -111,7 +118,7 @@ a:visited {
 .dataOutput td {
   border-width: 1px;
   border-style: solid none;
-  border-color: #dbdbdb;
+  border-color: $shade-medium-10;
   padding: .4em .3em;
 }
 
@@ -149,8 +156,8 @@ a:visited {
 }
 
 .gridBox img {
-  max-width: 15cm;
   max-height: 15cm;
+  max-width: 15cm;
 }
 
 .widgetPanel,
@@ -195,8 +202,6 @@ a:visited {
 }
 
 .description_block {
-  background-color: #f1f2f3;
-  border: 1px solid #ddd;
   font-size: 110%;
   font-weight: bold;
   line-height: 130%;
@@ -216,15 +221,15 @@ a:visited {
 }
 
 .description_block .creationDate {
-  color: #888;
+  color: $font-color;
   font-weight: normal;
 }
 
 // Note view
 .textBlock,
 .note_content_block {
-  border: 1px solid #ddd;
-  border-radius: 3px;
+  border: 1px solid $shade-medium-10;
+  border-radius: $common-radius;
   display: block;
   font-size: 110%;
   margin-bottom: 2em;
@@ -327,8 +332,8 @@ a:visited {
 .note_content_block ul,
 .note_content_block ol {
   list-style: disc outside none;
-  padding: 0 0 0 2.7em ;
   margin: 0 0 .4em;
+  padding: 0 0 0 2.7em;
 }
 
 .textBlock li,
@@ -380,10 +385,9 @@ a:visited {
 .textBlock code,
 .note_content_block pre,
 .note_content_block code {
-  background-color: #f7f7f7;
-  border: 1px solid;
-  border-color: $shade-medium-10;
-  border-radius: 3px;
+  background-color: $shade-medium-10;
+  border: 1px solid $shade-medium-10;
+  border-radius: $common-radius;
   font-family: "Lucida Console","Monaco","Courier",monospace;
   font-size: 90%;
   line-height: normal;
@@ -410,7 +414,7 @@ a:visited {
 }
 
 .commentBlock .commentAuthor {
-  color: #888;
+  color: $font-color;
   font-weight: bold;
 }
 
@@ -441,9 +445,9 @@ a:visited {
 
 // Tags
 .tagLink {
-  background-color: #f1f2f3;
-  border: 1px solid #aaa;
-  border-radius: 3px;
+  background-color: $shade-light-0;
+  border: 1px solid $shade-light-30;
+  border-radius: $common-radius;
   margin: 0 .5em 0 0;
   padding: 0 .2em .1em .3em;
 }

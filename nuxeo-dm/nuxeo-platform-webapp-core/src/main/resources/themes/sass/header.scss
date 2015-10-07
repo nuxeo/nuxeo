@@ -1,7 +1,7 @@
 // ----- Header styles
 .nxHeader {
   background-color: $header-background;
-  box-shadow: 0 1px 1px 0 rgba(0,0,0,0.18);
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .18);
   height: 3em;
   line-height: initial;
   position: fixed;
@@ -26,7 +26,6 @@
 .nxHeader .content {
   float: right;
   font-size: 12px;
-  font-family: Arial;
   text-transform: uppercase;
   vertical-align: middle;
   width: 81%;
@@ -43,8 +42,6 @@
 .nxHeader a:active {
   color: $header-links;
   text-decoration: none;
-  -moz-transition: none;
-  -webkit-transition: none;
   transition: none;
 }
 
@@ -81,16 +78,16 @@
 }
 
 .userSearchBlock .directoryFilter {
-  background: #e4e4e4 url('${basePath}/icons/search.png') no-repeat 95% center;
-  box-sizing: border-box;
-  box-shadow: none;
-  border: 1px solid #e4e4e4;
+  background: $shade-light-30 url('${basePath}/icons/search.png') no-repeat 95% center;
+  border: 1px solid $shade-light-30;
   border-radius: 1em;
+  box-shadow: none;
+  box-sizing: border-box;
   font-size: 1em;
   height: 25px;
   line-height: normal;
-  padding: .4em 2em .3em .6em;
   margin: 0 .6em 0 0;
+  padding: .4em 2em .3em .6em;
   transition: all .2s ease .1s;
 }
 
@@ -116,15 +113,27 @@
   margin-bottom: 0;
 }
 
-.userSearchBlock .select2-container-multi .select2-choices {
-  background: #fafafa url('${basePath}/icons/search.png') no-repeat 98% center;
-  border-color: $shade-light-30;
+.userSearchBlock .select2-container-multi .select2-choices,
+.userSearchBlock .select2-container-multi.select2-container-active .select2-choices:hover {
+  background: $shade-light-0 url('${basePath}/icons/search.png') no-repeat 98% center;
+  border-color: transparent;
   box-shadow: none;
+  transition: background-color .2s ease .1s;
+}
+
+.userSearchBlock .select2-container-multi .select2-choices:hover {
+  background-color: $shade-light-30;
 }
 
 .userSearchBlock .select2-container-multi .select2-choices .select2-search-field input {
   box-shadow: none;
   margin: 0;
+  padding-right: 2.5em;
+  text-align: right;
+}
+
+.userSearchBlock .select2-container-multi.select2-container-active .select2-choices .select2-search-field input {
+  text-align: left;
 }
 
 // =UserServices
@@ -190,7 +199,7 @@
 // Override default dropdown button styles
 .userMenuActions .actionList .dropdown,
 .userMenuActions .actionList .dropdown:hover {
-  background: url("${basePath}/icons/user_menu.png") no-repeat scroll 4px center #fff;
+  background: url("${basePath}/icons/user_menu.png") no-repeat scroll 4px center $shade-light-0;
   border: 0;
   border-radius: 20px;
   box-shadow: none;
@@ -201,13 +210,13 @@
 }
 
 .userMenuActions .actionList .dropdown:hover {
-  background-color: #fff;
+  background-color: $shade-light-0;
   box-shadow: 0 0 1px rgba(0, 0, 0, .7);
 }
 
 .userMenuActions .button {
-  background-color: rgba(0, 0, 0, 0);
-  border: medium none;
+  background-color: transparent;
+  border: 0;
   box-shadow: none;
   color: $header-links;
   line-height: 1.7em;
@@ -220,7 +229,7 @@
 }
 
 .nxHeader .actionList .actionSubList li a {
-  color: #000;
+  color: $shade-strong-100;
 }
 
 // =Studio header link

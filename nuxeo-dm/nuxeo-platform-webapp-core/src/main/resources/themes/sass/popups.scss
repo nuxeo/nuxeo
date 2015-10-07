@@ -5,17 +5,17 @@
 }
 
 #fancybox-wrap {
+  box-sizing: content-box;
   font-family: $default-font;
   font-size: .75em;
-  box-sizing: content-box;
   z-index: 10005;
 }
 
 #fancybox-wrap a,
 #fancybox-wrap a:link,
 #fancybox-wrap a:visited {
-  text-decoration: none;
   color: $link;
+  text-decoration: none;
 }
 
 #fancybox-wrap a:hover,
@@ -26,21 +26,21 @@
 #fancybox-content h3,
 .mce-window-head {
   background-color: $shade-light-20;
-  border-bottom: 1px solid #e7e7e7;
+  border-bottom: 1px solid $shade-light-50;
   margin: 0;
   padding: 1em 1.7em;
 }
 
 #fancybox-content .content {
-  background-color: #fff;
-  padding: 2em 2em 2.5em;
+  background-color: $shade-light-0;
   min-height: 20em;
   overflow: auto;
+  padding: 2em 2em 2.5em;
 }
 
 #fancybox-content .buttonsGadget {
   background-color: $shade-light-20;
-  border-top: 1px solid #e7e7e7;
+  border-top: 1px solid $shade-light-50;
   font-size: 1.1em;
   margin: 0;
   padding: 1em 1.8em .5em;
@@ -63,9 +63,8 @@
 #fancybox-content .buttonsGadget input[type="button"]:disabled,
 #fancybox-content .buttonsGadget input[type="button"]:disabled:hover {
   background: none transparent;
-  border: 1px solid;
+  border: 1px solid $shade-light-50;
   box-shadow: none;
-  border-color: $shade-light-50;
   color: $shade-medium-10;
   cursor: default;
   display: initial;
@@ -88,7 +87,7 @@
 
 .mce-window-head .mce-close {
   background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
-  border: medium none;
+  border: 0;
   margin: 0;
   padding: .2em 0;
 }
@@ -96,23 +95,23 @@
 .mce-in .mce-panel,
 .mce-in .mce-foot {
   background-color: $shade-light-20;
-  border-top: 1px solid #e7e7e7;
+  border-top: 1px solid $shade-light-50;
 }
 
 .mce-window .mce-widget.mce-btn {
-  border: medium none;
+  border: 0;
 }
 
 .mce-primary button, .mce-primary button i {
   background-color: $button-primary;
   border-color: $button-primary;
-  box-shadow: inset 0px 1px 0px rgba(255,255,255,0.3);
-  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3);
+  color: $shade-light-0;
   text-shadow: none;
 }
 
 .mce-primary button:hover, .mce-primary button:hover i {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 -30px 20px rgba(255, 255, 255, 0.2) inset, inset 0px 1px 0px rgba(255,255,255,0.4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .2), 0 -30px 20px rgba(255, 255, 255, .2) inset, inset 0 1px 0 rgba(255, 255, 255, .4);
   transition: all 150ms ease-in-out 0s;
 }
 
@@ -151,10 +150,9 @@
 // =Generic Popup div
 .genericPopUp {
   background-color: $shade-light-0;
-  border: 1px solid;
-  border-color: $shade-medium-10;
-  border-radius: 3px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  border: 1px solid $shade-medium-10;
+  border-radius: $common-radius;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .4);
   display: none;
   left: 26%;
   padding: 0;
@@ -167,8 +165,8 @@
   background-color: $shade-light-10;
   border-bottom: 1px solid $shade-light-50;
   color: $title;
-  font-weight: bold;
   font-size: .9em;
+  font-weight: bold;
   margin: 0;
   padding: 1em 1.7em;
 }

@@ -22,7 +22,7 @@
 .breadcrumbs a,
 .breadcrumbs a:link,
 .breadcrumbs a:visited {
-  background-color: rgba(255, 255, 255, 0);
+  background-color: transparent;
   color: $shade-strong-20;
   display: inline-block;
   font-weight: normal;
@@ -58,11 +58,8 @@
 }
 
 .breadcrumbs .dropDownMenu.dropdown {
-  background-color: rgba(255,255,255,0);
-  background-position: 94% center;
-  background-image: none;
-  background-size: 13px 13px;
-  border: medium none;
+  background: none transparent 94% center / 13px 13px;
+  border: 0;
   box-shadow: none;
   color: $shade-strong-20;
   height: 24px;
@@ -78,7 +75,7 @@
 
 .breadcrumbs .dropdown:after {
   background: url('/nuxeo/icons/dropdown.png') no-repeat scroll right center;
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -90,7 +87,7 @@
 .breadcrumbs a:hover,
 .breadcrumbs a:active,
 .breadcrumbs .dropDownMenu.dropdown:hover {
-  background-color: rgba(255,255,255,1);
+  background-color: $shade-light-0;
 }
 
 .breadcrumbs .dropDownMenu.dropdown:hover {
@@ -103,29 +100,29 @@
 
 .breadcrumbs a:hover:after,
 .breadcrumbs a:hover:before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
-  border: 0 solid rgba(255,255,255,1);
+  border: 0 solid $shade-light-0;
   border-width: 12px 4px;
   width: 0;
   height: 0;
 }
 
 .breadcrumbs a:hover:before{
-  left:-6px;
-  border-left-color:transparent;
+  border-left-color: transparent;
+  left: -6px;
 }
 
 .breadcrumbs a:hover:after{
-  left: 100%;
   border-color: transparent;
-  border-left-color: rgba(255,255,255,1);
+  border-left-color: $shade-light-0;
+  left: 100%;
 }
 
 .breadcrumbs a:first-of-type{
-  padding-left:.5em;
   border-radius: .2em 0 0 .2em;
+  padding-left: .5em;
 }
 
 .breadcrumbs a:first-of-type:before {
@@ -133,7 +130,7 @@
 }
 
 .breadcrumbs .dropDownMenu.dropdown > img {
-  margin: 0 -0.4em -0.5em 0;
+  margin: 0 -.4em -.5em 0;
 }
 
 .breadcrumbs .actionSubList {

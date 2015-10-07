@@ -4,13 +4,16 @@
 // A .gridContainer contains several .gridRow. vertically
 // Each .gridRow contains several .gridBox horizontally
 // A .gridBox may contain several .widgetPanel vertically.
-.gridContainer:before, .gridContainer:after,
-.gridRow:before, .gridRow:after {
-  content: " ";
+.gridContainer:before,
+.gridContainer:after,
+.gridRow:before,
+.gridRow:after {
+  content: ' ';
   display: table;
 }
 
-.gridContainer:after, .gridRow:after {
+.gridContainer:after,
+.gridRow:after {
   clear: both;
 }
 
@@ -83,9 +86,9 @@
 
 .gridBox h3,
 .gridBox h4 {
-  border-width: 1px;
-  border-style: none none solid;
   border-color: $shade-light-50;
+  border-style: none none solid;
+  border-width: 1px;
   font-size: 1.2em;
   margin: .7em 0 .5em;
   padding: .4em 0;
@@ -93,9 +96,9 @@
 
 .summaryTitle,
 .gridBox .summaryTitle {
-  border-width: 1px;
-  border-style: solid none none;
   border-color: $shade-light-30;
+  border-style: solid none none;
+  border-width: 1px;
   color: $title;
   display: block;
   font-size: 1.2em;
@@ -126,13 +129,13 @@
 }
 
 .thumbnailContainer {
-  background: none no-repeat scroll center center transparent;
+  background: 0;
   height: 11em;
   margin: 0 -1em .7em;
 }
 
 .folderishThumbnail:after {
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, .7);
   content: url('${basePath}/icons/folder.gif');
   display: inline-block;
   margin: .2em;
@@ -141,18 +144,20 @@
 
 // Display of thumbnail in Thumbnail Listing mode
 .bubbleListing .thumbnailContainer {
-  background-color: #fafafa;
+  background-color: $shade-light-5;
+  background-position: center center;
+  background-repeat: no-repeat;
   background-size: contain;
   border-radius: 3px 3px 0 0;
 }
 
 // Display of thumbnail in Content views Listing mode
 .dataOutput td .thumbnailContainer {
+  background-position: top left;
   background-size: contain;
   height: 3rem;
-  width: 4rem;
   margin: 0;
-  background-position: top left;
+  width: 4rem;
 }
 
 // =Standard Widgets
@@ -160,7 +165,7 @@
 .widgetPanel,
 .actionsWidgetPanel {
   display: block;
-  padding: 0 2em 1.5em 0.1em;
+  padding: 0 2em 1.5em .1em;
 }
 
 .action_bar .widgetPanel,
@@ -169,19 +174,20 @@
 }
 
 .contextActions .actionLink.button  {
-  margin: 0;
-  border-left: medium none;
+  border-left: 0;
   line-height: normal;
+  margin: 0;
 }
 
 .contextActions .actionLink.button  {
-  margin: 0;
-  border-left: none;
+  border-left: 0;
   line-height: normal;
+  margin: 0;
 }
 
 .widgetPanel .widgetPanel,
-.widgetPanel .actionsWidgetPanel {
+.widgetPanel .actionsWidgetPanel,
+.dataInput .fieldColumn .widgetPanel {
   padding: 0;
 }
 
@@ -190,14 +196,10 @@
   width: 100%;
 }
 
-.dataInput .fieldColumn .widgetPanel {
-  padding: 0;
-}
-
 // =Listing Widgets
 .listWidgetPanel {
   display: block;
-  margin-left: -0.3em;
+  margin-left: -.3em;
 }
 
 // =Specifics
@@ -211,7 +213,7 @@
 }
 
 .indicators .widgetPanel img {
-  margin: 0 0 -0.17em;
+  margin: 0 0 -.17em;
 }
 
 // CompactLayout mode
@@ -224,8 +226,8 @@
 .compactLayout .containerField,
 .compactLayout .containerWidgetPanel,
 .compactLayout .dataInput .containerLabel span {
-  display: block;
   clear: both;
+  display: block;
 }
 
 .compactLayout .labelColumn,
@@ -254,15 +256,15 @@
 
 .compactLayout input[type="text"].rich-calendar-input {
   font-size: .9em;
-  margin: .1em .3em .5em 0em;
+  margin: .1em .3em .5em 0;
 }
 
 .compactLayout .tinyLabel {
   color: $shade-strong-20;
   display: inline-block;
-  text-align: right;
-  padding: .4em .4em 0 0;
   max-width: 30px;
+  padding: .4em .4em 0 0;
+  text-align: right;
 }
 
 .compactLayout .fieldColumn {
@@ -285,7 +287,7 @@
 
 // Compact buttons
 .compactLayout .button {
-  margin: 0 .5em .1em 0em;
+  margin: 0 .5em .1em 0;
 }
 
 .compactLayout .sticker {
@@ -339,7 +341,7 @@
 }
 
 .compactLayout .widgetHeader.foldedDisabled {
-  border-style: none;
+  border: 0;
   color: $font-color;
   font-size: 1em;
   font-weight: bold;
@@ -395,11 +397,11 @@
 
 // InfoView Layout
 .infoViewLeft {
+  background-color: $shade-strong-100;
+  bottom: 0;
+  left: 0;
   position: fixed;
   top: 0;
-  bottom: 0;
-  background-color: #000;
-  left: 0;
 }
 
 .infoViewLeft .actionsWidgetPanel {
@@ -407,7 +409,7 @@
 }
 
 .infoViewLeft .note_content_block {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border-radius: 0;
   bottom: 0;
   box-shadow: none;
@@ -421,7 +423,7 @@
 }
 
 .infoViewDocContainer .documentPreview {
-  background-color: #fff;
+  background-color: $shade-light-0;
   padding: 0 5em;
 }
 
@@ -434,7 +436,7 @@
 }
 
 .infoViewLeft .pictureContainer:before {
-  content: "";
+  content: '';
   display: inline-block;
   height: 100%;
   vertical-align: middle;
@@ -472,15 +474,15 @@
 .infoViewRight {
   background-color: $shade-light-10;
   bottom: 0;
-  box-shadow: -1px 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow: -1px 0 1px rgba(0, 0, 0, .1);
   position: absolute;
   right: 0;
   top: 0;
 }
 
 .infoViewRight .infoViewTitle {
-  background-color: #fff;
-  box-shadow: 0 2px 1px rgba(0, 0, 0, 0.2);
+  background-color: $shade-light-0;
+  box-shadow: 0 2px 1px rgba(0, 0, 0, .2);
   font-size: 1.3em;
   font-weight: bold;
   padding: 1em;
@@ -521,7 +523,7 @@
 }
 
 .infoViewRight .infoViewInfoLayout .containerWidgetPanel {
-  background-color: #fff;
+  background-color: $shade-light-0;
   margin: 0 1em 1em;
   padding: .5em 1em;
 }
@@ -547,7 +549,7 @@
 }
 
 .infoViewRight .quote {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid $shade-light-30;
   padding: .3em .4em .7em 0;
 }
 
@@ -556,8 +558,8 @@
 }
 
 .compactLayout .infoViewInfoLayout .widgetHeader.foldedDisabled {
-  border: medium none;
-  color: #000;
+  border: 0;
+  color: $shade-strong-100;
   font-size: 1.2em;
   margin: 0 0 1em;
   padding: 0;
@@ -573,9 +575,9 @@
 }
 
 .infoViewRight .infoViewActions {
-  background-color: #fff;
+  background-color: $shade-light-0;
   bottom: 0;
-  box-shadow: 0 -2px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 -2px 1px rgba(0, 0, 0, .2);
   padding: 1em;
   position: fixed;
   width: 100%;
@@ -583,7 +585,7 @@
 }
 
 .infoViewInfoLayout .dataInput .fieldColumn img {
-  margin: .1em .2em -0.2em 0;
+  margin: .1em .2em -.2em 0;
 }
 
 .infoViewActions .horizontalAction {
@@ -592,15 +594,16 @@
 }
 
 .infoViewDocContainer iframe {
-  background-color: #fff;
+  background-color: $shade-light-0;
   border: 0;
   box-sizing: border-box;
 }
 
 .infoView {
-  background: url('${basePath}/icons/chevron-left.png') no-repeat scroll center center / 80% auto rgba(0, 0, 0, 0.3);
-  border-radius: 3px;
+  background: url('${basePath}/icons/chevron-left.png') no-repeat scroll center center / 80% auto rgba(0, 0, 0, .3);
+  border-radius: $common-radius;
   height: 8em;
+  left: 1.5%;
   position: fixed;
   top: 45%;
   width: 2em;
@@ -608,7 +611,7 @@
 }
 
 .infoView.nxNext {
-  background: url('${basePath}/icons/chevron-right.png') no-repeat scroll center center / 80% auto rgba(0, 0, 0, 0.3);
+  background: url('${basePath}/icons/chevron-right.png') no-repeat scroll center center / 80% auto rgba(0, 0, 0, .3);
   left: 63%;
 }
 
