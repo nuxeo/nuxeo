@@ -7,7 +7,7 @@
 
 .nxMainContainer .nxSearchForm {
   background-color: $shade-light-0;
-  box-shadow: 1px 0 1px 0 rgba(0, 0, 0, .18);
+  box-shadow: 1px 0 1px rgba(0, 0, 0, .18);
   font-size: .8em;
   padding: 4.7em 1.5em 5em;
   width: 19%;
@@ -27,9 +27,9 @@
 }
 
 .nxSearchResults .contentViewUpperActions {
-  background: $shade-light-0;
-  border-radius: .3em;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, .1);
+  background: none $shade-light-0;
+  border: 1px solid $shade-light-50;
+  border-radius: $common-radius;
   float: none;
   padding: .7em 1em .6em;
 }

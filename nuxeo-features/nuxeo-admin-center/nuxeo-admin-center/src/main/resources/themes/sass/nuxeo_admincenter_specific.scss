@@ -91,8 +91,8 @@
 
 .nxconnectBox .gridStyle7 {
   font-size: 14px;
-  min-height: 160px;
   margin-top: 1.5em;
+  min-height: 160px;
 }
 
 .nxconnectBox .gridStyle7 img {
@@ -144,8 +144,8 @@
 }
 
 .nxofflineBox .gridStyle1 {
+  padding-top: .15em;
   text-align: center;
-  padding-top: 0.15em;
 }
 
 .nxofflineBox .importantLabel {
@@ -173,7 +173,7 @@
 }
 
 .setupPanel .dataOutput td {
-  border: none;
+  border: 0;
   padding: 0 0 .4em .6em;
 }
 
@@ -200,8 +200,8 @@
 
 h5 {
   color: $shade-strong-20;
-  font-weight: bold;
   font-size: 1.1em;
+  font-weight: bold;
   margin: 1em 0 .4em;
 }
 
