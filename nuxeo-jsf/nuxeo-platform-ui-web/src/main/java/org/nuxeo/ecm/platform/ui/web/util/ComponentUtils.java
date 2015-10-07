@@ -347,6 +347,7 @@ public final class ComponentUtils {
      * @since 5.3.1
      */
     public static UIComponent getBase(UIComponent anchor) {
+        // init base to given component in case there's no naming container for it
         UIComponent base = anchor;
         UIComponent container = anchor.getNamingContainer();
         if (container != null) {
@@ -354,6 +355,9 @@ public final class ComponentUtils {
             if (supContainer != null) {
                 container = supContainer;
             }
+        }
+        if (container != null) {
+            base = container;
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format("Resolved base '%s' for anchor '%s'", base.getId(), anchor.getId()));
