@@ -76,7 +76,7 @@
                       user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                       on-aceupdated="refresh"></popup-permission>
                     <paper-icon-button icon="delete" on-click="localRightsDel" raised="true"></paper-icon-button>
-                    <popup-confirm id="confirmation">
+                    <popup-confirm id="confirmation" delete-label="[[i18n('command.delete', 'Delete')]]" cancel-label="[[i18n('label.permissions.cancel', 'Cancel')]]">
                       <paper-dialog-scrollable>
                         <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be deleted')]]</h2>
 

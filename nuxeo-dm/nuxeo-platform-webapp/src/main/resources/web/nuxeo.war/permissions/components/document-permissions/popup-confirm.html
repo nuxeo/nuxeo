@@ -7,8 +7,8 @@
     <paper-dialog id="dialog">
       <content></content>
       <div class="buttons">
-        <paper-button dialog-dismissive raised="true" on-tap="_onCancel">{{cancel}}</paper-button>
-        <paper-button dialog-affirmative raised="true" on-tap="_onConfirm">{{confirm}}</paper-button>
+        <paper-button dialog-dismissive raised="true" on-tap="_onCancel">{{cancelLabel}}</paper-button>
+        <paper-button dialog-affirmative raised="true" on-tap="_onConfirm">{{deleteLabel}}</paper-button>
       </div>
     </paper-dialog>
   </template>
@@ -22,11 +22,11 @@
     properties: {
       onCancel: Function,
       onConfirm: Function,
-      confirm: {
+      deleteLabel: {
         type: String,
-        value: 'Ok'
+        value: 'Delete'
       },
-      cancel: {
+      cancelLabel: {
         type: String,
         value: 'Cancel'
       }
