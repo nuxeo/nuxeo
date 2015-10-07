@@ -4,6 +4,18 @@
   display: none;
 }
 
+#nxw_homeTabs_tab_content .gridBox .widgetPanel {
+  padding: 0 1em 0 0;
+}
+
+#nxw_homeTabs_tab_content .gridBox.gridStyle6:nth-child(2) .widgetPanel {
+  padding-right: 0;
+}
+
+#nxw_homeTabs_tab_content .gridBox.gridStyle6:nth-child(2) .foldableBox {
+  margin-right: 0;
+}
+
 #usersPanel > .tabsContent,
 #groupsPanel > .tabsContent {
   margin-top: 0;
@@ -19,10 +31,6 @@ select {
 
 .widget .content {
   width: 100%;
-}
-
-p.directoryBack {
-  padding: .2em .2em .2em 2em;
 }
 
 .description_block span {
