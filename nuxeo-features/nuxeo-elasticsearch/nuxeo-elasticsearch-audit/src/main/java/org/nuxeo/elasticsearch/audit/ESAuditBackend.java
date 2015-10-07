@@ -575,7 +575,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements
         
                     long t0 = System.currentTimeMillis();
                     long nbEntriesMigrated=0;
-                    int pageIdx =  0;
+                    int pageIdx =  1;
                     
                     while (nbEntriesMigrated < nbEntriesToMigrate) {
                         List<LogEntry> entries = (List<LogEntry>)sourceBackend.nativeQuery("from LogEntry log order by log.id asc", pageIdx, batchSize);
