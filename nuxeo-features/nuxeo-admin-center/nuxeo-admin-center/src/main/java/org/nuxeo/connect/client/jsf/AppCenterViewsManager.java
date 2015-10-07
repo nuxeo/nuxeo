@@ -50,6 +50,7 @@ import org.nuxeo.connect.client.ui.SharedPackageListingsSettings;
 import org.nuxeo.connect.client.vindoz.InstallAfterRestart;
 import org.nuxeo.connect.client.we.StudioSnapshotHelper;
 import org.nuxeo.connect.connector.ConnectServerError;
+import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.DownloadablePackage;
 import org.nuxeo.connect.data.DownloadingPackage;
 import org.nuxeo.connect.packages.PackageManager;
@@ -145,6 +146,15 @@ public class AppCenterViewsManager implements Serializable {
     protected ValidationStatus studioSnapshotValidationStatus;
 
     private FileTime lastUpdate = null;
+
+    protected DownloadablePackage studioSnapshotPackage;
+
+    /**
+     * Using a dedicated property because studioSnapshotPackage might be null.
+     *
+     * @since 7.10
+     */
+    protected Boolean studioSnapshotPackageCached = false;
 
     public String getSearchString() {
         if (searchString == null) {
@@ -281,10 +291,7 @@ public class AppCenterViewsManager implements Serializable {
 
     protected FileTime getLastUpdateDate() {
         if (lastUpdate == null) {
-            PackageManager pm = Framework.getLocalService(PackageManager.class);
-            // TODO NXP-16228: should directly request the SNAPSHOT package (if only we knew its name!)
-            List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
-            DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
+            DownloadablePackage snapshotPkg = getStudioProjectSnapshot();
             if (snapshotPkg != null) {
                 PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);
                 try {
@@ -300,13 +307,43 @@ public class AppCenterViewsManager implements Serializable {
         return lastUpdate;
     }
 
-    public String getStudioInstallationStatus() {
-        if (studioSnapshotStatus == null) {
+    /**
+     * @since 7.10
+     */
+    public String getStudioUrl() {
+        return ConnectUrlConfig.getStudioUrl(getSnapshotStudioProjectName());
+    }
+
+    /**
+     * @since 7.10
+     */
+    public DownloadablePackage getStudioProjectSnapshot() {
+        if (!studioSnapshotPackageCached) {
             PackageManager pm = Framework.getLocalService(PackageManager.class);
             // TODO NXP-16228: should directly request the SNAPSHOT package (if only we knew its name!)
             List<DownloadablePackage> pkgs = pm.listRemoteAssociatedStudioPackages();
+            studioSnapshotPackage = StudioSnapshotHelper.getSnapshot(pkgs);
+            studioSnapshotPackageCached = true;
+        }
+        return studioSnapshotPackage;
+    }
+
+    /**
+     * @return null if there is no SNAPSHOT package
+     * @since 7.10
+     */
+    public String getSnapshotStudioProjectName() {
+        DownloadablePackage snapshotPkg = getStudioProjectSnapshot();
+        if (snapshotPkg != null) {
+            return snapshotPkg.getName();
+        }
+        return null;
+    }
+
+    public String getStudioInstallationStatus() {
+        if (studioSnapshotStatus == null) {
             LocalPackage pkg = null;
-            DownloadablePackage snapshotPkg = StudioSnapshotHelper.getSnapshot(pkgs);
+            DownloadablePackage snapshotPkg = getStudioProjectSnapshot();
             if (snapshotPkg != null) {
                 try {
                     PackageUpdateService pus = Framework.getLocalService(PackageUpdateService.class);

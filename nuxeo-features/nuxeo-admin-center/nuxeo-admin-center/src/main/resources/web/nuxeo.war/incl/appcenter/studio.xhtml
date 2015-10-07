@@ -34,6 +34,13 @@
         <h:outputText value="#{messages['label.studio.devmod.desc']}" escape="false" />
       </div>
 
+      <c:if test="#{appsViews.getSnapshotStudioProjectName() != null}">
+        <div class="studioUpdateActions">
+          <h:outputText value="#{messages['label.studio.project.name']}" />
+          <h:outputText value="#{appsViews.getSnapshotStudioProjectName()}" styleClass="boldLabel" />
+        </div>
+      </c:if>
+
       <div class="studioUpdateActions">
         <table width="100%">
           <tr>
@@ -140,7 +147,7 @@
             </td>
             <td style="text-align:center;vertical-align:middle">
               <c:if test="#{connectServerReachable and registredConnectInstance}">
-                <a target="studio" href="#{nuxeoConnectUrl}studio/ide">
+                <a target="studio" href="#{appsViews.getStudioUrl()}">
                   <img src="#{contextPath}/icons/studio32.png"/>
                   <h:outputText value="#{messages['action.studio.go']}" styleClass="boldLabel"/>
                 </a>
