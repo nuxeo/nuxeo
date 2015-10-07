@@ -115,7 +115,11 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
             ctx.setInput(doc);
             ctx.put("ace", ace);
             if (entry != null) {
-                ctx.put("comment", entry.getPropertyValue(ACE_INFO_COMMENT));
+                String comment = (String) entry.getPropertyValue(ACE_INFO_COMMENT);
+                if (comment != null) {
+                    comment = comment.replaceAll("\n", "<br/>");
+                    ctx.put("comment", comment);
+                }
             }
             String aceCreator = ace.getCreator();
             if (aceCreator != null) {
