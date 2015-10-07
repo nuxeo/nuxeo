@@ -130,6 +130,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     public static final String PERSISTER_XP = "persister";
 
+    /**
+     * @since 7.10
+     */
+    public static final String ACTOR_ACE_CREATOR = "Workflow";
+
     // FIXME: use ContributionFragmentRegistry instances instead to handle hot
     // reload
 
@@ -1245,7 +1250,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     acp.removeACL(aclName);
                     ACL acl = new ACLImpl(aclName);
                     for (String actorId : actorIds) {
-                        acl.add(new ACE(actorId, permission, true));
+                        acl.add(ACE.builder(actorId, permission).creator(ACTOR_ACE_CREATOR).build());
                     }
                     acp.addACL(0, acl); // add first to get before blocks
                     doc.setACP(acp, true);
