@@ -21,6 +21,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.Blob;
@@ -92,6 +93,11 @@ public abstract class AbstractBinaryManager implements BinaryManager {
 
     @Override
     abstract public Binary getBinary(String digest);
+
+    @Override
+    public void removeBinaries(Set<String> digests) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Gets existing descriptor or creates a default one.

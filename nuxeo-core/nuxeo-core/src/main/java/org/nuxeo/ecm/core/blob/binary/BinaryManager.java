@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.blob.binary;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -63,6 +64,14 @@ public interface BinaryManager {
      * @return the corresponding binary
      */
     Binary getBinary(String digest);
+
+    /**
+     * Remove definitively a set of binaries
+     *
+     * @since 7.10
+     * @param digests a set of digests, must not be {@code null}.
+     */
+    void removeBinaries(Set<String> digests);
 
     /**
      * Returns the Binary Garbage Collector that can be used for this binary manager.
