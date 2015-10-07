@@ -16,12 +16,15 @@
 
 package org.nuxeo.ecm.platform.rendition.impl;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
@@ -71,10 +74,7 @@ public abstract class AbstractRendition implements Rendition {
 
     @Override
     public Calendar getModificationDate() {
-        if (!isStored()) {
-            // for on the fly rendition return the current time
-            return new GregorianCalendar();
-        } else {
+        if (isStored()) {
             DocumentModel hdoc = getHostDocument();
             if (hdoc != null) {
                 try {
@@ -83,6 +83,16 @@ public abstract class AbstractRendition implements Rendition {
                     log.error(e);
                 }
             }
+        } else if (isCompleted()) {
+            Calendar cal = GregorianCalendar.getInstance();
+            Blob blob = getBlob();
+            if (blob != null) {
+                File file = blob.getFile();
+                if (file != null) {
+                    cal.setTimeInMillis(file.lastModified());
+                }
+            }
+            return cal;
         }
         return null;
     }
