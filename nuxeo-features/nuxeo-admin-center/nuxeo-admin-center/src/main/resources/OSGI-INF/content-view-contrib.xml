@@ -115,7 +115,7 @@
       <resultLayouts>
         <layout name="permissions_search_listing" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
+          showCSVExport="true" />
       </resultLayouts>
 
     </contentView>
@@ -144,7 +144,7 @@
       <resultLayouts>
         <layout name="permissions_search_listing" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
+          showCSVExport="true" />
       </resultLayouts>
 
     </contentView>
