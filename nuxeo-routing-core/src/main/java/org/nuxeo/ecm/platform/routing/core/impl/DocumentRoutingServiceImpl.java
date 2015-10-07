@@ -213,8 +213,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 if (startInstance) {
                     fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(),
                             new HashMap<String, Serializable>());
-                    DocumentRoutingEngineService routingEngine = Framework.getLocalService(
-                            DocumentRoutingEngineService.class);
+                    DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
                     routingEngine.start(route, map, session);
                     fireEventAfterWorkflowStarted(route, session);
                 }
@@ -275,8 +274,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 }
                 fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<String, Serializable>(),
                         route, session);
-                DocumentRoutingEngineService routingEngine = Framework.getLocalService(
-                        DocumentRoutingEngineService.class);
+                DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
                 routingEngine.start(route, map, session);
                 fireEventAfterWorkflowStarted(route, session);
             }
@@ -290,10 +288,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         eventProperties.put("modelId", route.getModelId());
         eventProperties.put("modelName", route.getModelName());
         if (route instanceof GraphRoute) {
-            eventProperties.put(RoutingAuditHelper.WORKFLOW_VARIABLES, (Serializable) ((GraphRoute) route).getVariables());
+            eventProperties.put(RoutingAuditHelper.WORKFLOW_VARIABLES,
+                    (Serializable) ((GraphRoute) route).getVariables());
         }
-        fireEvent(DocumentRoutingConstants.Events.afterWorkflowStarted.name(), eventProperties,
-                route, session);
+        fireEvent(DocumentRoutingConstants.Events.afterWorkflowStarted.name(), eventProperties, route, session);
     }
 
     @Override
@@ -341,8 +339,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
         @Override
         public void run() {
-            DocumentRoutingEngineService routingEngine = Framework.getLocalService(
-                    DocumentRoutingEngineService.class);
+            DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
             DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
             DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
             routingEngine.resume(routeInstance, nodeId, task != null ? task.getId() : null, data, status, session);
@@ -359,7 +356,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }
         return routes;
     }
-
 
     @Override
     public List<DocumentRoute> getAvailableDocumentRoute(CoreSession session) {
@@ -387,8 +383,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel, CoreSession userSession)
-            {
+    public DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel, CoreSession userSession) {
         new UnrestrictedSessionRunner(userSession) {
             @Override
             public void run() {
@@ -662,8 +657,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public DocumentRoute importRouteModel(URL modelToImport, boolean overwrite, CoreSession session)
-            {
+    public DocumentRoute importRouteModel(URL modelToImport, boolean overwrite, CoreSession session) {
         if (modelToImport == null) {
             throw new NuxeoException(("No resource containing route templates found"));
         }
@@ -730,8 +724,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME, null, null, 0L, props);
         } else {
             pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME, null, null, 0L, props,
-                    searchString + '%');
+                    DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME, null, null, 0L, props, searchString + '%');
         }
         allRouteModels.addAll(pageProvider.getCurrentPage());
         while (pageProvider.isNextPageAvailable()) {
@@ -881,8 +874,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public void removePermissionFromTaskAssignees(CoreSession session, final List<DocumentModel> docs, Task task)
-            {
+    public void removePermissionFromTaskAssignees(CoreSession session, final List<DocumentModel> docs, Task task) {
         final String aclName = getRoutingACLName(task);
         new UnrestrictedSessionRunner(session) {
             @Override
@@ -901,8 +893,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      * @since 7.4
      */
     @Override
-    public void removePermissionsForTaskActors(CoreSession session, final List<DocumentModel> docs, String taskId)
-            {
+    public void removePermissionsForTaskActors(CoreSession session, final List<DocumentModel> docs, String taskId) {
         final String aclRoutingName = getRoutingACLName(taskId);
         final String aclDelegationName = getDelegationACLName(taskId);
         new UnrestrictedSessionRunner(session) {
@@ -928,7 +919,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      * Finds an ACL name specific to the task (there may be several tasks applying permissions to the same document).
      */
     protected static String getRoutingACLName(Task task) {
-        return  getRoutingACLName(task.getId());
+        return getRoutingACLName(task.getId());
     }
 
     /**
@@ -1083,8 +1074,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }.runUnrestricted();
     }
 
-    protected void updateTaskInfo(CoreSession session, GraphRoute graph, Task task, String status)
-            {
+    protected void updateTaskInfo(CoreSession session, GraphRoute graph, Task task, String status) {
         String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
         if (StringUtils.isEmpty(nodeId)) {
             throw new DocumentRouteException("No nodeId found on task: " + task.getId());
@@ -1116,13 +1106,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
                     GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
                     if (routeInstance == null) {
-                        throw new DocumentRouteException(
-                                "Invalid routeInstanceId: " + routeId + " referenced by the task " + taskId);
+                        throw new DocumentRouteException("Invalid routeInstanceId: " + routeId
+                                + " referenced by the task " + taskId);
                     }
                     GraphNode node = routeInstance.getNode(task.getType());
                     if (node == null) {
-                        throw new DocumentRouteException(
-                                "Invalid node " + routeId + " referenced by the task " + taskId);
+                        throw new DocumentRouteException("Invalid node " + routeId + " referenced by the task "
+                                + taskId);
                     }
                     if (!node.allowTaskReassignment()) {
                         throw new DocumentRouteException("Task " + taskId + " can not be reassigned. Node "
@@ -1140,13 +1130,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
                     // Audit task reassignment
                     Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-                    eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
+                    eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                            DocumentRoutingConstants.ROUTING_CATEGORY);
                     eventProperties.put("taskName", task.getName());
                     eventProperties.put("actors", (Serializable) actors);
                     eventProperties.put("modelId", routeInstance.getModelId());
                     eventProperties.put("modelName", routeInstance.getModelName());
                     eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
-                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR, ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
+                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR,
+                            ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
                     eventProperties.put("comment", comment);
                     // compute duration since workflow started
                     long timeSinceWfStarted = RoutingAuditHelper.computeDurationSinceWfStarted(task.getProcessId());
@@ -1158,7 +1150,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     if (timeSinceWfStarted >= 0) {
                         eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
                     }
-                    DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
+                    DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
+                            task.getDocument());
                     envContext.setProperties(eventProperties);
                     EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
                     eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskReassigned.name()));
@@ -1184,17 +1177,17 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
                     GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
                     if (routeInstance == null) {
-                        throw new DocumentRouteException(
-                                "Invalid routeInstanceId: " + routeId + " referenced by the task " + taskId);
+                        throw new DocumentRouteException("Invalid routeInstanceId: " + routeId
+                                + " referenced by the task " + taskId);
                     }
                     GraphNode node = routeInstance.getNode(task.getType());
                     if (node == null) {
-                        throw new DocumentRouteException(
-                                "Invalid node " + routeId + " referenced by the task " + taskId);
+                        throw new DocumentRouteException("Invalid node " + routeId + " referenced by the task "
+                                + taskId);
                     }
                     DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                    Framework.getLocalService(TaskService.class).delegateTask(session, taskId, delegatedActors,
-                            comment);
+                    Framework.getLocalService(TaskService.class)
+                             .delegateTask(session, taskId, delegatedActors, comment);
                     // refresh task
                     task.getDocument().refresh();
                     // grant permission to the new assignees
@@ -1202,13 +1195,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
                     // Audit task delegation
                     Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-                    eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
+                    eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
+                            DocumentRoutingConstants.ROUTING_CATEGORY);
                     eventProperties.put("taskName", task.getName());
                     eventProperties.put("delegatedActors", (Serializable) delegatedActors);
                     eventProperties.put("modelId", routeInstance.getModelId());
                     eventProperties.put("modelName", routeInstance.getModelName());
                     eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, routeInstance.getInitiator());
-                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR, ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
+                    eventProperties.put(RoutingAuditHelper.TASK_ACTOR,
+                            ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
                     eventProperties.put("comment", comment);
 
                     // compute duration since workflow started
@@ -1222,7 +1217,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                         eventProperties.put(RoutingAuditHelper.TIME_SINCE_TASK_STARTED, timeSinceTaskStarted);
                     }
 
-                    DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
+                    DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(),
+                            task.getDocument());
                     envContext.setProperties(eventProperties);
                     EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
                     eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskDelegated.name()));
@@ -1266,8 +1262,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public int doCleanupDoneAndCanceledRouteInstances(final String reprositoryName, final int limit)
-            {
+    public int doCleanupDoneAndCanceledRouteInstances(final String reprositoryName, final int limit) {
         WfCleaner unrestrictedSessionRunner = new WfCleaner(reprositoryName, limit);
         unrestrictedSessionRunner.runUnrestricted();
         return unrestrictedSessionRunner.getNumberOfCleanedUpWf();
@@ -1358,8 +1353,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      * @since 7.2
      */
     @Override
-    public List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser(CoreSession session, String worflowModelName) {
-        final String query = String.format("SELECT * FROM %s WHERE docri:initiator = '%s' AND ecm:currentLifeCycleState = '%s'",
+    public List<DocumentRoute> getRunningWorkflowInstancesLaunchedByCurrentUser(CoreSession session,
+            String worflowModelName) {
+        final String query = String.format(
+                "SELECT * FROM %s WHERE docri:initiator = '%s' AND ecm:currentLifeCycleState = '%s'",
                 DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, session.getPrincipal().getName(),
                 DocumentRouteElement.ElementLifeCycleState.running);
         DocumentModelList documentModelList = session.query(query.toString());
@@ -1382,7 +1379,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     /**
-     * Returns true  id the document route is a model, false if it is just an instance i.e. a running workflow.
+     * Returns true id the document route is a model, false if it is just an instance i.e. a running workflow.
      *
      * @since 7.2
      */
