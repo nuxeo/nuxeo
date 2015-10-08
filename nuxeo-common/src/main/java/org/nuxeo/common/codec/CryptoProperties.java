@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 import org.apache.commons.codec.binary.Base64;
@@ -74,7 +75,7 @@ public class CryptoProperties extends Properties {
 
     private static final Random random = new SecureRandom();
 
-    private Map<String, String> encrypted = new Hashtable<>();
+    private Map<String, String> encrypted = new ConcurrentHashMap<>();
 
     /**
      * @param defaults

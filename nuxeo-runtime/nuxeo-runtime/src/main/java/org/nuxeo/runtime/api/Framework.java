@@ -57,6 +57,8 @@ public final class Framework {
 
     private static final Log log = LogFactory.getLog(Framework.class);
 
+    private static Boolean testModeSet;
+
     /**
      * Global dev property
      *
@@ -413,7 +415,10 @@ public final class Framework {
      * Activating this mode, some of the code may not behave as it would in production, to ease up testing.
      */
     public static boolean isTestModeSet() {
-        return isBooleanPropertyTrue(NUXEO_TESTING_SYSTEM_PROP);
+        if (testModeSet == null) {
+            testModeSet = isBooleanPropertyTrue(NUXEO_TESTING_SYSTEM_PROP);
+        }
+        return testModeSet;
     }
 
     /**

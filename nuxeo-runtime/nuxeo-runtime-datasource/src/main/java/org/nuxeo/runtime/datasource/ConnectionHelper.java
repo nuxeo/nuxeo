@@ -11,6 +11,14 @@
  */
 package org.nuxeo.runtime.datasource;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.JDBCUtils;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,14 +38,6 @@ import javax.transaction.Status;
 import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.JDBCUtils;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * This helper provides a way to get a JDBC connection, through {@link #getConnection(String)}, that will return a
@@ -80,6 +80,22 @@ public class ConnectionHelper {
      * datasource is not used.
      */
     public static final String EXCLUDE_DS = "nuxeo.db.singleDataSource.exclude";
+
+
+    private static final String singleDsPropertyCached;
+
+    private static final String excludeDsPropertyCached;
+
+    static {
+        if (Framework.isTestModeSet()) {
+            // no cache for test mode so unit test can change this property at runtime
+            excludeDsPropertyCached = null;
+            singleDsPropertyCached = null;
+        } else {
+            excludeDsPropertyCached = Framework.getProperty(EXCLUDE_DS, "");
+            singleDsPropertyCached = Framework.getProperty(SINGLE_DS, "");
+        }
+    }
 
     /**
      * Wrapper for a connection that delegates calls to either a private connection, or a per-transaction shared one if
@@ -746,7 +762,7 @@ public class ConnectionHelper {
      */
     public static boolean useSingleConnection(String dataSourceName) {
         if (dataSourceName != null) {
-            String excludes = Framework.getProperty(EXCLUDE_DS);
+            String excludes = getExcludeDsProperty();
             if ("*".equals(excludes)) {
                 return false;
             }
@@ -759,7 +775,7 @@ public class ConnectionHelper {
                 }
             }
         }
-        return !StringUtils.isBlank(Framework.getProperty(SINGLE_DS));
+        return !StringUtils.isBlank(getSingleDsProperty());
     }
 
     /**
@@ -812,19 +828,33 @@ public class ConnectionHelper {
     }
 
     private static Connection getConnection(boolean noSharing) throws SQLException {
-        String dataSourceName = Framework.getProperty(SINGLE_DS);
+        String dataSourceName = getSingleDsProperty();
         if (StringUtils.isBlank(dataSourceName)) {
             return null;
         }
         if (noSharing) {
             return getPhysicalConnection(dataSourceName);
         }
-        return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[] { Connection.class },
+        return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[]{Connection.class},
                 new ConnectionHandle());
     }
 
+    private static String getSingleDsProperty() {
+        if (singleDsPropertyCached != null) {
+            return singleDsPropertyCached;
+        }
+        return Framework.getProperty(SINGLE_DS);
+    }
+
+    private static String getExcludeDsProperty() {
+        if (excludeDsPropertyCached != null) {
+            return excludeDsPropertyCached;
+        }
+        return Framework.getProperty(EXCLUDE_DS);
+    }
+
     private static Connection getPhysicalConnection() throws SQLException {
-        return getPhysicalConnection(Framework.getProperty(SINGLE_DS));
+        return getPhysicalConnection(getSingleDsProperty());
     }
 
     /**
