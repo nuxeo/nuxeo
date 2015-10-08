@@ -9,8 +9,6 @@
 
     <a4j:outputPanel id="permissions_purge_panel" layout="block">
 
-
-
       <nxu:set var="purgeStatus" value="#{adminPermissionsActions.purgeStatus}">
         <nxu:set var="purgeScheduled" value="#{not empty purgeStatus and purgeStatus.isScheduled()}">
           <nxu:set var="purgeRunning" value="#{not empty purgeStatus and purgeStatus.isRunning()}">
@@ -57,6 +55,7 @@
                             render="permissions_purge_panel"
                             disabled="#{empty contentView.currentPageProvider.currentPage}"
                             styleClass="button primary"/>
+                        <span class="detail">#{messages['label.permissions.purge.confirm']}</span>
                       </h:form>
                     </c:if>
 
