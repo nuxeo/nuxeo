@@ -304,7 +304,7 @@ public class SQLDirectory extends AbstractDirectory {
         return session;
     }
 
-    protected synchronized void addSession(final SQLSession session) throws DirectoryException {
+    protected void addSession(final SQLSession session) throws DirectoryException {
         super.addSession(session);
         registerInTx(session);
     }
