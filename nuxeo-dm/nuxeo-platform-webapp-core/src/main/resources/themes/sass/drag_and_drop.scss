@@ -111,8 +111,7 @@ input.dropzone-bar-btn {
 .dndFormPanel,
 .dndProgressPanel {
   background-color: $shade-light-0;
-  border: 1px solid $shade-medium-20;
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, .3);
+  box-shadow: 1px 1px 15px rgba(0, 0, 0, .3);
   font-size: 12px;
   max-height: 25em;
   max-width: 60em;
@@ -126,6 +125,7 @@ input.dropzone-bar-btn {
   font-weight: bold;
   padding-bottom: 1em;
   text-align: left;
+  vertical-align: top;
 }
 
 .dndFormPanel td {
@@ -161,12 +161,6 @@ input.dropzone-bar-btn {
 #dndContinueButton {
   display: none;
   padding: 5px;
-}
-
-#operationForm {
-  border-color: $shade-strong-20;
-  border-style: none none none solid;
-  border-width: 2px;
 }
 
 // Drag and drop in DAM

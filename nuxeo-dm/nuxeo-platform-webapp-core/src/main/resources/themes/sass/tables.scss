@@ -148,8 +148,8 @@ table td {
 .dataInput th,
 .dataInput td {
   background-color: none;
-  border: 0 0;
-  padding: .5em .6em .6em 0;
+  border: 0;
+  padding: .5em .6em .6em .5em;
 }
 
 .dataTable .dataTable,
@@ -236,7 +236,7 @@ th:first-child input[type="checkbox"] {
 }
 
 table.noHover tr:hover {
-  background: none transparent;
+  background: 0;
 }
 
 // Specifics
