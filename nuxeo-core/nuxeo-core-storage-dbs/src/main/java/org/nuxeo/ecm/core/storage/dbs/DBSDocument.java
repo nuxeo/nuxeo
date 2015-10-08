@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -101,6 +103,8 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  * @since 5.9.4
  */
 public class DBSDocument implements Document {
+
+    private static final Log log = LogFactory.getLog(DBSDocument.class);
 
     private static final Long ZERO = Long.valueOf(0);
 
@@ -775,12 +779,32 @@ public class DBSDocument implements Document {
                 if (value instanceof Delta) {
                     value = ((Delta) value).getFullValue();
                 }
+                if (value instanceof Object[]) {
+                    Object[] array = (Object[]) value;
+                    if (array.length == 0) {
+                        value = null;
+                    } else if (array.length == 1) {
+                        // data migration not done in database, return a simple value anyway
+                        value = (Serializable) array[0];
+                    } else {
+                        log.warn("Property " + name + ": expected a simple value but read an array: "
+                                + Arrays.toString(array));
+                        value = (Serializable) array[0];
+                    }
+                }
                 property.init(value);
             } else if (type.isListType()) {
                 ListType listType = (ListType) type;
                 if (listType.getFieldType().isSimpleType()) {
                     // array
-                    Object[] array = (Object[]) state.get(name);
+                    Serializable object = state.get(name);
+                    Object[] array;
+                    if (object instanceof Object[]) {
+                        array = (Object[]) object;
+                    } else {
+                        // data migration not done in database, return an array anyway
+                        array = new Object[] { object };
+                    }
                     array = typedArray(listType.getFieldType(), array);
                     property.init(array);
                 } else {
@@ -981,10 +1005,32 @@ public class DBSDocument implements Document {
                 throw new IllegalStateException("xpath=" + xpath + " start="
                         + start + " last element is not scalar");
             }
+            Type pt = propType.getType();
             if (v instanceof Object[]) {
                 // convert to typed array
-                Type lt = ((ListType) propType.getType()).getFieldType();
-                v = typedArray(lt, (Object[]) v);
+                if (pt instanceof ListType) {
+                    Type lt = ((ListType) pt).getFieldType();
+                    v = typedArray(lt, (Object[]) v);
+                } else {
+                    // data migration not done in database, return a simple value anyway
+                    Object[] array = (Object[]) v;
+                    if (array.length == 0) {
+                        v = null;
+                    } else if (array.length == 1) {
+                        v = (Serializable) array[0];
+                    } else {
+                        log.warn("Property " + xpath + ": expected a simple value but read an array: "
+                                + Arrays.toString(array));
+                        v = (Serializable) array[0];
+                    }
+                }
+            } else {
+                if (pt instanceof ListType) {
+                    // data migration not done in database, return an array anyway
+                    // convert to typed array
+                    Type lt = ((ListType) pt).getFieldType();
+                    v = typedArray(lt, new Object[] { v });
+                }
             }
             prefetch.put(xpath, v);
         } else {
