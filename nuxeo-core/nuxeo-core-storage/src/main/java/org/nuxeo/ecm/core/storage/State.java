@@ -31,6 +31,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.model.Delta;
 
 import com.google.common.collect.ImmutableSet;
@@ -45,6 +47,8 @@ import com.google.common.collect.ImmutableSet;
 public class State implements StateAccessor, Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    protected static final Log log = LogFactory.getLog(State.class);
 
     private static final int HASHMAP_DEFAULT_INITIAL_CAPACITY = 16;
 
@@ -572,12 +576,32 @@ public class State implements StateAccessor, Serializable {
 
     @Override
     public Object getSingle(String name) {
-        return get(name);
+        Serializable object = get(name);
+        if (object instanceof Object[]) {
+            Object[] array = (Object[]) object;
+            if (array.length == 0) {
+                return null;
+            } else if (array.length == 1) {
+                // data migration not done in database, return a simple value anyway
+                return array[0];
+            } else {
+                log.warn("Property " + name + ": expected a simple value but read an array: " + Arrays.toString(array));
+                return array[0];
+            }
+        } else {
+            return object;
+        }
     }
 
     @Override
     public Object[] getArray(String name) {
-        return (Object[]) get(name);
+        Serializable object = get(name);
+        if (object instanceof Object[]) {
+            return (Object[]) object;
+        } else {
+            // data migration not done in database, return an array anyway
+            return new Object[] { object };
+        }
     }
 
     @Override
