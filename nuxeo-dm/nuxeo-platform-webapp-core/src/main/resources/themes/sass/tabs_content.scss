@@ -16,6 +16,10 @@
   margin: 1em 0 0;
 }
 
+.subtabsBar ~ .tabsContent {
+  padding: 2em 0;
+}
+
 .mainNoTabs {
   background-color: $shade-light-0;
   border: 1px solid $shade-light-50;
@@ -646,7 +650,9 @@
 }
 
 .nx-page .mce-floatpanel {
+  border: 0;
   box-shadow: 0 3px 5px rgba(0, 0, 0, .1);
+  width: auto !important;
 }
 
 .nx-page .mce-textbox:focus {
