@@ -120,7 +120,7 @@ public class SQLDirectory extends AbstractDirectory {
 
     private List<String> storedFieldNames;
 
-    private Dialect dialect;
+    private volatile Dialect dialect;
 
     public SQLDirectory(SQLDirectoryDescriptor config) {
         super(config.name);
@@ -142,7 +142,7 @@ public class SQLDirectory extends AbstractDirectory {
      *
      * @since 6.0
      */
-    protected synchronized void initConnection() {
+    protected void initConnection() {
         Connection sqlConnection = getConnection();
         try {
             dialect = Dialect.createDialect(sqlConnection, null);
@@ -296,12 +296,21 @@ public class SQLDirectory extends AbstractDirectory {
 
     @Override
     public Session getSession() throws DirectoryException {
-        if (dialect == null) {
-            initConnection();
-        }
+        checkConnection();
         SQLSession session = new SQLSession(this, config);
         addSession(session);
         return session;
+    }
+
+    protected void checkConnection() {
+        // double checked locking with volatile pattern to ensure concurrent lazy init
+        if (dialect == null) {
+            synchronized (this) {
+                if (dialect == null) {
+                    initConnection();
+                }
+            }
+        }
     }
 
     protected void addSession(final SQLSession session) throws DirectoryException {
