@@ -9,9 +9,6 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <properties>
-    <azure.storage.version>3.1.0</azure.storage.version>
-  </properties>
   <artifactId>nuxeo-core-binarymanager-azure</artifactId>
   <name>Nuxeo Core Azure BinaryManager</name>
   <description>Nuxeo Core Azure BinaryManager</description>
@@ -53,25 +50,16 @@
     <dependency>
       <groupId>com.microsoft.azure</groupId>
       <artifactId>azure-storage</artifactId>
-      <version>${azure.storage.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-binarymanager-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/public</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/public-snapshot</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
 </project>

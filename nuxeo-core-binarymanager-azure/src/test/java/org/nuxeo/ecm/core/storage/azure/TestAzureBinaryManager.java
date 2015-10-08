@@ -15,14 +15,14 @@
  *     Nuxeo
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.azure;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
-import static org.nuxeo.ecm.core.storage.sql.AzureBinaryManager.ACCOUNT_KEY_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.AzureBinaryManager.ACCOUNT_NAME_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.AzureBinaryManager.CONTAINER_PROPERTY;
+import static org.nuxeo.ecm.core.storage.azure.AzureBinaryManager.ACCOUNT_KEY_PROPERTY;
+import static org.nuxeo.ecm.core.storage.azure.AzureBinaryManager.ACCOUNT_NAME_PROPERTY;
+import static org.nuxeo.ecm.core.storage.azure.AzureBinaryManager.CONTAINER_PROPERTY;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.storage.common.AbstractCloudBinaryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;

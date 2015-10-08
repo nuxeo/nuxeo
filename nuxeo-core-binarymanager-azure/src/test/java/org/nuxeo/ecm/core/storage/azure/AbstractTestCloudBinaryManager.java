@@ -15,7 +15,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage.azure;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
