@@ -29,6 +29,10 @@ paper-material.paper-material-0[elevation="1"] {
   box-shadow: none;
 }
 
+paper-icon-button {
+  width: 2.5em;
+}
+
 // Dialog
 iron-overlay-backdrop {
   z-index: 1050 !important;
@@ -104,4 +108,10 @@ iron-autogrow-textarea {
 
 #notification paper-checkbox {
   margin-bottom: .5em;
+}
+
+// Tables
+.acl-table .pending {
+  background-color: $shade-light-5;
+  opacity: .55;
 }

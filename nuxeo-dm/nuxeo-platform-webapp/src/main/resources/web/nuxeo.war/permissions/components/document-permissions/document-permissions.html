@@ -67,7 +67,7 @@
             <template is="dom-repeat" items="{{localAces}}" as="ace">
               <div class="acl-table-row">
                 <div><span>{{ace.username}}</span></div>
-                <div><span>[[i18n(ace.permission)]]</span></div>
+                <div><span class="label">[[i18n(ace.permission)]]</span></div>
                 <div><span>{{formatTimeFrame(ace)}}</span></div>
                 <div><span>{{ace.creator}}</span></div>
                 <div>
@@ -75,7 +75,7 @@
                     <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}"
                       user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                       on-aceupdated="refresh"></popup-permission>
-                    <paper-icon-button icon="delete" on-click="localRightsDel" raised="true"></paper-icon-button>
+                    <paper-icon-button icon="delete" on-click="localRightsDel"></paper-icon-button>
                     <popup-confirm id="confirmation" delete-label="[[i18n('command.delete', 'Delete')]]" cancel-label="[[i18n('label.permissions.cancel', 'Cancel')]]">
                       <paper-dialog-scrollable>
                         <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be deleted')]]</h2>
@@ -111,11 +111,11 @@
     <div class="bubbleBox">
       <div class="bubbleHeader">
         <template is="dom-if" if="{{canBlockInheritance}}">
-          <paper-button id="block" raised="true" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]
+          <paper-button id="block" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]
           </paper-button>
         </template>
         <template is="dom-if" if="{{canUnblockInheritance}}">
-          <paper-button id="unblock" raised="true" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]
+          <paper-button id="unblock" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]
           </paper-button>
         </template>
         <h3>[[i18n('label.permissions.inherited', 'Permissions inherited from upper levels')]]</h3>
