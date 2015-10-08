@@ -89,7 +89,7 @@
           <predicate parameter="ecm:acl/*1/end" operator="&gt;=">
             <field schema="permissions_search" name="ace_end" />
           </predicate>
-          <predicate parameter="ecm:acl/*1/name" operator="=">
+          <predicate parameter="ecm:acl/*1/name" operator="LIKE">
             <field schema="permissions_search" name="ace_acl_name" />
           </predicate>
           <predicate parameter="ecm:ancestorId" operator="IN">
