@@ -63,6 +63,7 @@ public abstract class AbstractBinaryGarbageCollector<T extends CachingBinaryMana
         }
         try {
             Set<String> unmarked = getUnmarkedBlobs();
+            marked = null;
 
             if (delete) {
                 binaryManager.removeBinaries(unmarked);

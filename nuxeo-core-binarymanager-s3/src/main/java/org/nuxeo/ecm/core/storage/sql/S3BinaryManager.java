@@ -34,7 +34,6 @@ import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -48,15 +47,14 @@ import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
-import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
-import org.nuxeo.ecm.core.blob.binary.CachingBinaryManager;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.storage.common.AbstractBinaryGarbageCollector;
+import org.nuxeo.ecm.core.storage.common.AbstractCloudBinaryManager;
 import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonClientException;
@@ -93,7 +91,7 @@ import com.google.common.base.Objects;
  * Because the BLOB length can be accessed independently of the binary stream, it is also cached in a simple text file
  * if accessed before the stream.
  */
-public class S3BinaryManager extends CachingBinaryManager implements BlobProvider {
+public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     private static final String MD5 = "MD5"; // must be MD5 for Etag
 
@@ -103,6 +101,8 @@ public class S3BinaryManager extends CachingBinaryManager implements BlobProvide
     }
 
     private static final Log log = LogFactory.getLog(S3BinaryManager.class);
+
+    public static final String PROPERTY_PREFIX = "nuxeo.s3storage";
 
     public static final String BUCKET_NAME_KEY = "nuxeo.s3storage.bucket";
 
@@ -121,8 +121,6 @@ public class S3BinaryManager extends CachingBinaryManager implements BlobProvide
     public static final String AWS_SECRET_ENV_KEY = "AWS_SECRET_ACCESS_KEY";
 
     public static final String CACHE_SIZE_KEY = "nuxeo.s3storage.cachesize";
-
-    public static final String DEFAULT_CACHE_SIZE = "100 MB";
 
     /** AWS ClientConfiguration default 50 */
     public static final String CONNECTION_MAX_KEY = "nuxeo.s3storage.connection.max";
@@ -179,9 +177,44 @@ public class S3BinaryManager extends CachingBinaryManager implements BlobProvide
     protected int directDownloadExpire;
 
     @Override
-    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
-        super.initialize(blobProviderId, properties);
+    public void close() {
+        // this also shuts down the AmazonS3Client
+        transferManager.shutdownNow();
+        super.close();
+    }
 
+    /**
+     * Aborts uploads that crashed and are older than 1 day.
+     *
+     * @since 7.2
+     */
+    protected void abortOldUploads() throws IOException {
+        int oneDay = 1000 * 60 * 60 * 24;
+        try {
+            transferManager.abortMultipartUploads(bucketName, new Date(System.currentTimeMillis() - oneDay));
+        } catch (AmazonClientException e) {
+            throw new IOException("Failed to abort old uploads", e);
+        }
+    }
+
+    /**
+     * Gets an integer framework property, or -1 if undefined.
+     */
+    protected static int getIntProperty(String key) {
+        String s = Framework.getProperty(key);
+        int value = -1;
+        if (!isBlank(s)) {
+            try {
+                value = Integer.parseInt(s.trim());
+            } catch (NumberFormatException e) {
+                log.error("Cannot parse " + key + ": " + s);
+            }
+        }
+        return value;
+    }
+
+    @Override
+    protected void setupCloudClient() throws IOException {
         // Get settings from the configuration
         // TODO parse properties too
         bucketName = Framework.getProperty(BUCKET_NAME_KEY);
@@ -197,11 +230,6 @@ public class S3BinaryManager extends CachingBinaryManager implements BlobProvide
         String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
         String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
         String proxyPassword = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
-
-        String cacheSizeStr = Framework.getProperty(CACHE_SIZE_KEY);
-        if (isBlank(cacheSizeStr)) {
-            cacheSizeStr = DEFAULT_CACHE_SIZE;
-        }
 
         int maxConnections = getIntProperty(CONNECTION_MAX_KEY);
         int maxErrorRetry = getIntProperty(CONNECTION_RETRY_KEY);
@@ -339,57 +367,27 @@ public class S3BinaryManager extends CachingBinaryManager implements BlobProvide
             directDownloadExpire = DEFAULT_DIRECTDOWNLOAD_EXPIRE;
         }
 
-        // Create file cache
-        initializeCache(cacheSizeStr, newFileStorage());
-        createGarbageCollector();
-
         transferManager = new TransferManager(amazonS3);
         abortOldUploads();
     }
 
-    @Override
-    public void close() {
-        // this also shuts down the AmazonS3Client
-        transferManager.shutdownNow();
-        super.close();
-    }
-
-    /**
-     * Aborts uploads that crashed and are older than 1 day.
-     *
-     * @since 7.2
-     */
-    protected void abortOldUploads() throws IOException {
-        int oneDay = 1000 * 60 * 60 * 24;
-        try {
-            transferManager.abortMultipartUploads(bucketName, new Date(System.currentTimeMillis() - oneDay));
-        } catch (AmazonClientException e) {
-            throw new IOException("Failed to abort old uploads", e);
-        }
-    }
-
-    /**
-     * Gets an integer framework property, or -1 if undefined.
-     */
-    protected static int getIntProperty(String key) {
-        String s = Framework.getProperty(key);
-        int value = -1;
-        if (!isBlank(s)) {
-            try {
-                value = Integer.parseInt(s.trim());
-            } catch (NumberFormatException e) {
-                log.error("Cannot parse " + key + ": " + s);
-            }
-        }
-        return value;
-    }
-
-    protected void createGarbageCollector() {
-        garbageCollector = new S3BinaryGarbageCollector(this);
-    }
-
     protected void removeBinary(String digest) {
         amazonS3.deleteObject(bucketName, digest);
+    }
+
+    @Override
+    protected String getPropertyPrefix() {
+        return PROPERTY_PREFIX;
+    }
+
+    @Override
+    protected BinaryGarbageCollector instantiateGarbageCollector() {
+        return new S3BinaryGarbageCollector(this);
+    }
+
+    @Override
+    public void removeBinaries(Set<String> digests) {
+        digests.forEach(this::removeBinary);
     }
 
     protected static boolean isMissingKey(AmazonClientException e) {
@@ -405,7 +403,8 @@ public class S3BinaryManager extends CachingBinaryManager implements BlobProvide
         return MD5_RE.matcher(digest).matches();
     }
 
-    protected FileStorage newFileStorage() {
+    @Override
+    protected FileStorage getFileStorage() {
         return new S3FileStorage();
     }
 
@@ -533,18 +532,10 @@ public class S3BinaryManager extends CachingBinaryManager implements BlobProvide
     /**
      * Garbage collector for S3 binaries that stores the marked (in use) binaries in memory.
      */
-    public static class S3BinaryGarbageCollector implements BinaryGarbageCollector {
+    public static class S3BinaryGarbageCollector extends AbstractBinaryGarbageCollector<S3BinaryManager> {
 
-        protected final S3BinaryManager binaryManager;
-
-        protected volatile long startTime;
-
-        protected BinaryManagerStatus status;
-
-        protected Set<String> marked;
-
-        public S3BinaryGarbageCollector(S3BinaryManager binaryManager) {
-            this.binaryManager = binaryManager;
+        protected S3BinaryGarbageCollector(S3BinaryManager binaryManager) {
+            super(binaryManager);
         }
 
         @Override
@@ -553,89 +544,39 @@ public class S3BinaryManager extends CachingBinaryManager implements BlobProvide
         }
 
         @Override
-        public BinaryManagerStatus getStatus() {
-            return status;
-        }
-
-        @Override
-        public boolean isInProgress() {
-            // volatile as this is designed to be called from another thread
-            return startTime != 0;
-        }
-
-        @Override
-        public void start() {
-            if (startTime != 0) {
-                throw new RuntimeException("Already started");
-            }
-            startTime = System.currentTimeMillis();
-            status = new BinaryManagerStatus();
-            marked = new HashSet<>();
-
-            // XXX : we should be able to do better
-            // and only remove the cache entry that will be removed from S3
-            binaryManager.fileCache.clear();
-        }
-
-        @Override
-        public void mark(String digest) {
-            marked.add(digest);
-            // TODO : should clear the specific cache entry
-        }
-
-        @Override
-        public void stop(boolean delete) {
-            if (startTime == 0) {
-                throw new RuntimeException("Not started");
-            }
-
-            try {
-                // list S3 objects in the bucket
-                // record those not marked
-                Set<String> unmarked = new HashSet<>();
-                ObjectListing list = null;
-                do {
-                    if (list == null) {
-                        list = binaryManager.amazonS3.listObjects(binaryManager.bucketName,
-                                binaryManager.bucketNamePrefix);
+        public Set<String> getUnmarkedBlobs() {
+            // list S3 objects in the bucket
+            // record those not marked
+            Set<String> unmarked = new HashSet<>();
+            ObjectListing list = null;
+            do {
+                if (list == null) {
+                    list = binaryManager.amazonS3.listObjects(binaryManager.bucketName, binaryManager.bucketNamePrefix);
+                } else {
+                    list = binaryManager.amazonS3.listNextBatchOfObjects(list);
+                }
+                for (S3ObjectSummary summary : list.getObjectSummaries()) {
+                    String digest = summary.getKey();
+                    if (!isMD5(digest)) {
+                        // ignore files that cannot be MD5 digests for
+                        // safety
+                        continue;
+                    }
+                    long length = summary.getSize();
+                    if (marked.contains(digest)) {
+                        status.numBinaries++;
+                        status.sizeBinaries += length;
                     } else {
-                        list = binaryManager.amazonS3.listNextBatchOfObjects(list);
-                    }
-                    for (S3ObjectSummary summary : list.getObjectSummaries()) {
-                        String digest = summary.getKey();
-                        if (!isMD5(digest)) {
-                            // ignore files that cannot be MD5 digests for
-                            // safety
-                            continue;
-                        }
-                        long length = summary.getSize();
-                        if (marked.contains(digest)) {
-                            status.numBinaries++;
-                            status.sizeBinaries += length;
-                        } else {
-                            status.numBinariesGC++;
-                            status.sizeBinariesGC += length;
-                            // record file to delete
-                            unmarked.add(digest);
-                            marked.remove(digest); // optimize memory
-                        }
-                    }
-                } while (list.isTruncated());
-                marked = null; // help GC
-
-                // delete unmarked objects
-                if (delete) {
-                    for (String digest : unmarked) {
-                        binaryManager.removeBinary(digest);
+                        status.numBinariesGC++;
+                        status.sizeBinariesGC += length;
+                        // record file to delete
+                        unmarked.add(digest);
+                        marked.remove(digest); // optimize memory
                     }
                 }
+            } while (list.isTruncated());
 
-            } catch (AmazonClientException e) {
-                throw new RuntimeException(e);
-            }
-
-            status.gcDuration = System.currentTimeMillis() - startTime;
-            startTime = 0;
+            return unmarked;
         }
     }
 
