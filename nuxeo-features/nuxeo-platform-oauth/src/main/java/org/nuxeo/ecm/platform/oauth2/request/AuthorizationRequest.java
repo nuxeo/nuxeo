@@ -1,13 +1,16 @@
 package org.nuxeo.ecm.platform.oauth2.request;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.*;
+import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.invalid_request;
+import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.server_error;
+import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.unauthorized_client;
+import static org.nuxeo.ecm.platform.ui.web.auth.oauth2.NuxeoOAuth2Filter.ERRORS.unsupported_response_type;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,7 +28,7 @@ import org.nuxeo.runtime.api.Framework;
 public class AuthorizationRequest extends Oauth2Request {
     private static final Log log = LogFactory.getLog(AuthorizationRequest.class);
 
-    protected static Map<String, AuthorizationRequest> requests = new HashMap<>();
+    protected static Map<String, AuthorizationRequest> requests = new ConcurrentHashMap<>();
 
     protected String responseType;
 
@@ -153,7 +156,9 @@ public class AuthorizationRequest extends Oauth2Request {
     public static AuthorizationRequest fromCode(String authorizationCode) {
         for (AuthorizationRequest auth : requests.values()) {
             if (auth.authorizationCode != null && auth.authorizationCode.equals(authorizationCode)) {
-                requests.remove(auth.sessionId);
+                if (auth.sessionId != null) {
+                    requests.remove(auth.sessionId);
+                }
                 return auth.isExpired() ? null : auth;
             }
         }
