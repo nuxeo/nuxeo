@@ -93,7 +93,7 @@ public class FSExporterTestAttachedFiles {
         session.save();
 
         Framework.getLocalService(FSExporter.class);
-        service.export(session, "/default-domain/", "/tmp/", "GET_CHILDREN_PP");
+        service.export(session, "/default-domain/", "/tmp/", "");
 
         String targetPath = "/tmp" + folder.getPathAsString() + "/" + blob.getFilename();
         Assert.assertTrue(new File(targetPath).exists());

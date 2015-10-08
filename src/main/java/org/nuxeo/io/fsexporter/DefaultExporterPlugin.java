@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 public class DefaultExporterPlugin implements FSExporterPlugin {
 
     @Override
-    public DocumentModelList getChildren(CoreSession session, DocumentModel doc, String myPageProvider)
+    public DocumentModelList getChildren(CoreSession session, DocumentModel doc, String customQuery)
             throws Exception {
 
         PageProviderService ppService = null;
@@ -57,19 +58,19 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
 
         // if the user gives a query, we build a new Page Provider with the
         // query provided
-        if (myPageProvider != null) {
-            if (myPageProvider.contains("WHERE")) {
-                query = myPageProvider + " AND ecm:parentId = ?";
+        if (StringUtils.isNotBlank(customQuery)) {
+            if (customQuery.toLowerCase().contains(" where")) {
+                query = customQuery + " AND ecm:parentId = ?";
             } else {
-                query = myPageProvider + " where ecm:parentId = ?";
+                query = customQuery + " where ecm:parentId = ?";
             }
         } else {
             query = "SELECT * FROM Document WHERE ecm:parentId = ? AND ecm:mixinType !='HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !='deleted'";
         }
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setPattern(query);
-
-        pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc, null, null, null, props,
+        
+        pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc, null, null, null, null, props,
                 new Object[] { doc.getId() });
 
         int countPages = 1;

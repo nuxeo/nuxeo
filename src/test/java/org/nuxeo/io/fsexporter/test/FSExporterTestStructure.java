@@ -99,7 +99,7 @@ public class FSExporterTestStructure {
         session.save();
 
         Framework.getLocalService(FSExporter.class);
-        service.export(session, "/default-domain/", "/tmp/", "GET_CHILDREN_PP");
+        service.export(session, "/default-domain/", "/tmp/", "");
 
         // verify that My File In Section.txt exists
         String targetPathSection = "/tmp" + mySection.getPathAsString() + "/" + blobSection.getFilename();

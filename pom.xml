@@ -9,7 +9,7 @@
 
   <groupId>org.nuxeo.io</groupId>
   <artifactId>nuxeo-fsexporter</artifactId>
-  <name>Nuxeo FS Exporter</name>
+  <name>Nuxeo File System Exporter</name>
 
   <dependencies>
     <dependency>

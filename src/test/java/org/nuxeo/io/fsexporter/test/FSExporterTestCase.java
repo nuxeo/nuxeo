@@ -68,7 +68,7 @@ public class FSExporterTestCase {
         session.save();
 
         Framework.getLocalService(FSExporter.class);
-        service.export(session, "/default-domain/", "/tmp/", "GET_CHILDREN_PP");
+        service.export(session, "/default-domain/", "/tmp/", "");
 
         // Assure que cela s'est passe comme attendu
         String targetPath = "/tmp" + folder.getPathAsString() + "/" + blob.getFilename();
