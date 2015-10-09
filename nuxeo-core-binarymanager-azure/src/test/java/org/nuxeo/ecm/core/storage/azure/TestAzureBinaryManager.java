@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -81,6 +82,11 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
         PARAMETERS.forEach(s -> {
             properties.put(s, Framework.getProperty(bm.getConfigurationKey(s)));
         });
+
+        if (StringUtils.isBlank(properties.get(ACCOUNT_KEY_PROPERTY))) {
+            properties.put(ACCOUNT_NAME_PROPERTY, System.getenv("AZURE_NAME_ACCOUNT"));
+            properties.put(ACCOUNT_KEY_PROPERTY, System.getenv("AZURE_ACCESS_SECRET"));
+        }
 
         // Ensure mandatory parameters are set
         PARAMETERS.forEach(s -> {
