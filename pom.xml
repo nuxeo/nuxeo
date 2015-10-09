@@ -102,8 +102,7 @@
     <module>nuxeo-rating</module>
     <module>nuxeo-agenda</module>
     <module>nuxeo-multi-tenant</module>
-    <module>nuxeo-core-binarymanager-s3</module>
-    <module>nuxeo-core-binarymanager-jclouds</module>
+    <module>nuxeo-core-binarymanager-cloud</module>
     <module>nuxeo-diff</module>
     <module>nuxeo-template-rendering</module>
     <module>nuxeo-web-mobile</module>
@@ -676,10 +675,26 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-      <!-- Amazon AWS S3 storage for blobs -->
+      <!-- Binary Managers -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-common</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-common</artifactId>
+        <version>${nuxeo.addons.version}</version>
+        <type>test-jar</type>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-binarymanager-s3</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-azure</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
