@@ -15,7 +15,7 @@ Be sure to protect your user id and token using the [configuration data encrypti
 
 # Optional parameters
 
-- nuxeo.storage.azure.endpointProtocol : the region code your S3 bucket will be placed in.
+- nuxeo.storage.azure.endpointProtocol : the url protocol (default is HTTPS)
 
 - nuxeo.storage.azure.cachesize : size of the local cache (default is 100MB).
 
