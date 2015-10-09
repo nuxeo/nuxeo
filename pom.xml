@@ -12,7 +12,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <template.rendering.studio.version>1.2.0-73</template.rendering.studio.version>
+    <template.rendering.studio.version>1.3.0-74</template.rendering.studio.version>
   </properties>
 
   <modules>
