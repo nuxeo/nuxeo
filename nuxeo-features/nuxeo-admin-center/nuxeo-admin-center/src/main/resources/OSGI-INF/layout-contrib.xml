@@ -1833,7 +1833,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field>data["ecm:acl/*1/permission"]</field>
+          <field>#{messages[securityActions.getLabel(layoutValue.data["ecm:acl/*1/permission"])]}</field>
         </fields>
       </widget>
       <widget name="ace_username" type="text">
@@ -1847,7 +1847,7 @@
       </widget>
       <widget name="ace_creator" type="text">
         <labels>
-          <label mode="any">label.ace.grantedBy</label>
+          <label mode="any">label.permissions.grantedBy</label>
         </labels>
         <translated>true</translated>
         <fields>

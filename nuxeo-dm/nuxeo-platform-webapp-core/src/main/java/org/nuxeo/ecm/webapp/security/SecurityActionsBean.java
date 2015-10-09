@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webapp.security;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -34,6 +33,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -678,4 +678,9 @@ public class SecurityActionsBean extends InputController implements SecurityActi
             return false;
         }
     }
+
+    public String getLabel(String permission) {
+        return StringUtils.isNotBlank(permission) ? labeler.makeLabel(permission) : permission;
+    }
+
 }
