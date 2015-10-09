@@ -18,8 +18,8 @@
 package org.nuxeo.ecm.core.storage.common;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -47,7 +47,7 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     protected abstract BinaryGarbageCollector instantiateGarbageCollector();
 
     @Override
-    public abstract void removeBinaries(Set<String> digests);
+    public abstract void removeBinaries(Collection<String> digests);
 
     /**
      * Configure Cloud client using properties

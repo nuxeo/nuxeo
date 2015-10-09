@@ -32,6 +32,7 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -386,7 +387,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     }
 
     @Override
-    public void removeBinaries(Set<String> digests) {
+    public void removeBinaries(Collection<String> digests) {
         digests.forEach(this::removeBinary);
     }
 

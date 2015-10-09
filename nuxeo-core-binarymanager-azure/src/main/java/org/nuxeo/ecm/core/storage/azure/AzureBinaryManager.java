@@ -20,7 +20,7 @@ package org.nuxeo.ecm.core.storage.azure;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
-import java.util.Set;
+import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -98,7 +98,7 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
     }
 
     @Override
-    public void removeBinaries(Set<String> digests) {
+    public void removeBinaries(Collection<String> digests) {
         digests.forEach(this::removeBinary);
     }
 }

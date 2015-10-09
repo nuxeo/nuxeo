@@ -39,8 +39,6 @@ import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.blob.binary.CachingBinaryManager;
 import org.nuxeo.ecm.core.blob.binary.LazyBinary;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 7.10
@@ -70,7 +68,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
     }
 
     protected void removeObject(String digest) throws IOException {
-        getBinaryManager().removeBinaries(new ImmutableSet.Builder<String>().add(digest).build());
+        getBinaryManager().removeBinaries(Collections.singleton(digest));
     }
 
     @Before
