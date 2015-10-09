@@ -1,4 +1,4 @@
-This addon implements a BinaryManager that stores binaries in several Cloud blob based provider like Amazon S3 or Microsft Azure blob.
+This addon implements a BinaryManager that stores binaries in several Cloud blob based providers like Amazon S3 or Microsoft Azure.
 For efficiency, a local disk cache (with limited size) is also used.
 
 # Modules
