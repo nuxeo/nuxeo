@@ -2,6 +2,17 @@
 
 <fragment version="1">
 
+  <extension target="faces-config#APPLICATION">
+    <system-event-listener>
+      <system-event-listener-class>
+        org.nuxeo.ecm.web.resources.jsf.listener.ResourceOrderingListener
+      </system-event-listener-class>
+      <system-event-class>
+        javax.faces.event.PreRenderViewEvent
+      </system-event-class>
+    </system-event-listener>
+  </extension>
+
   <extension target="faces-config#COMPONENT">
 
     <component>
