@@ -81,7 +81,7 @@ import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.amazonaws.services.s3.transfer.model.UploadResult;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * A Binary Manager that stores binaries as S3 BLOBs
@@ -218,7 +218,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         // Get settings from the configuration
         // TODO parse properties too
         bucketName = Framework.getProperty(BUCKET_NAME_KEY);
-        bucketNamePrefix = Objects.firstNonNull(Framework.getProperty(BUCKET_PREFIX_KEY), StringUtils.EMPTY);
+        bucketNamePrefix = MoreObjects.firstNonNull(Framework.getProperty(BUCKET_PREFIX_KEY), StringUtils.EMPTY);
         String bucketRegion = Framework.getProperty(BUCKET_REGION_KEY);
         if (isBlank(bucketRegion)) {
             bucketRegion = DEFAULT_BUCKET_REGION;
