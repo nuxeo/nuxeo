@@ -66,7 +66,7 @@ input[type="search"]:focus,
 input[type="tel"]:focus,
 input[type="color"]:focus {
   border-color: rgba(82, 168, 236, .8);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 2px 0 #00adff, 0 0 3px #b5dcff;
+  box-shadow: 0 0 3px #b5dcff;
   outline: 0;
   outline: thin dotted \9;
 }
@@ -215,7 +215,7 @@ option {
 .nx-page input[type="password"]:focus {
   background-color: $shade-light-0;
   border-color: #2e9cff;
-  box-shadow: 0 2px 0 #00adff, 0 0 3px #b5dcff;
+  box-shadow: 0 0 3px #b5dcff;
   color: $font-color;
   outline: 0 none;
 }
