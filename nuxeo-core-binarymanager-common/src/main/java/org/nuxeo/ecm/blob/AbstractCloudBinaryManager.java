@@ -18,12 +18,16 @@
 package org.nuxeo.ecm.blob;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.CachingBinaryManager;
@@ -45,6 +49,8 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     protected abstract FileStorage getFileStorage();
 
     protected abstract BinaryGarbageCollector instantiateGarbageCollector();
+
+    protected abstract boolean isUsingRemoteURI();
 
     @Override
     public abstract void removeBinaries(Collection<String> digests);
@@ -82,6 +88,26 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     public String writeBlob(Blob blob, Document doc) throws IOException {
         // just delegate to avoid copy/pasting code
         return new BinaryBlobProvider(this).writeBlob(blob, doc);
+    }
+
+    @Override
+    public URI getURI(ManagedBlob blob, BlobManager.UsageHint hint, HttpServletRequest servletRequest)
+            throws IOException {
+        if (hint != BlobManager.UsageHint.DOWNLOAD || !isUsingRemoteURI()) {
+            return null;
+        }
+        String digest = blob.getKey();
+        // strip prefix
+        int colon = digest.indexOf(':');
+        if (colon >= 0) {
+            digest = digest.substring(colon + 1);
+        }
+
+        return getRemoteUri(digest, blob, servletRequest);
+    }
+
+    protected URI getRemoteUri(String digest, ManagedBlob blob, HttpServletRequest servletRequest) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -45,17 +45,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.RFC2231;
+import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
+import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
-import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
-import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonClientException;
@@ -601,20 +600,12 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     }
 
     @Override
-    public URI getURI(ManagedBlob blob, UsageHint hint, HttpServletRequest servletRequest) throws IOException {
-        if (hint != UsageHint.DOWNLOAD || !directDownload) {
-            return null;
-        }
-        String digest = blob.getKey();
-        // strip prefix
-        int colon = digest.indexOf(':');
-        if (colon >= 0) {
-            digest = digest.substring(colon + 1);
-        }
-        return getS3URI(digest, blob, servletRequest);
+    protected boolean isUsingRemoteURI() {
+        return directDownload;
     }
 
-    protected URI getS3URI(String digest, Blob blob, HttpServletRequest servletRequest) throws IOException {
+    @Override
+    protected URI getRemoteUri(String digest, ManagedBlob blob, HttpServletRequest servletRequest) throws IOException {
         String key = bucketNamePrefix + digest;
         Date expiration = new Date();
         expiration.setTime(expiration.getTime() + directDownloadExpire * 1000);
