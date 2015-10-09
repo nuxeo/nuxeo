@@ -15,7 +15,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.ecm.core.storage.common;
+package org.nuxeo.ecm.blob;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

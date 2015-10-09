@@ -54,8 +54,8 @@ import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.storage.common.AbstractBinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.common.AbstractCloudBinaryManager;
+import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
+import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonClientException;

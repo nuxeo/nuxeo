@@ -15,7 +15,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.ecm.core.storage.azure;
+package org.nuxeo.ecm.blob.azure;
 
 import java.net.URISyntaxException;
 import java.util.EnumSet;
@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.storage.common.AbstractBinaryGarbageCollector;
+import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
 
 import com.microsoft.azure.storage.ResultContinuation;
 import com.microsoft.azure.storage.ResultSegment;

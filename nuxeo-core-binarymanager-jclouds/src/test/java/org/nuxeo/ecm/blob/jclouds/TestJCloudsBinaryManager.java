@@ -14,12 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+package org.nuxeo.ecm.blob.jclouds;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.jclouds.blobstore.domain.PageSet;
 import org.jclouds.blobstore.domain.StorageMetadata;
 import org.jclouds.blobstore.options.ListContainerOptions;
+import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.blob.binary.Binary;
@@ -80,7 +76,7 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
     public void testJCloudsBinaryManager() throws Exception {
 
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
-        assertTrue(binary instanceof LazyBinary);
+        Assert.assertTrue(binary instanceof LazyBinary);
         if (binary.getStream() != null) {
             // the tests have already been run
             // make sure we delete it from the bucket first
@@ -91,20 +87,20 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
-        assertNotNull(binary);
+        Assert.assertNotNull(binary);
 
         // get binary (from cache)
         binary = binaryManager.getBinary(CONTENT_MD5);
-        assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
-        assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
+        Assert.assertNotNull(binary);
+        Assert.assertEquals(bytes.length, binary.getLength());
+        Assert.assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
 
         // get binary (clean cache)
         binaryManager.fileCache.clear();
         binary = binaryManager.getBinary(CONTENT_MD5);
-        assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
-        assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
+        Assert.assertNotNull(binary);
+        Assert.assertEquals(bytes.length, binary.getLength());
+        Assert.assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
     }
 
     /**
@@ -114,19 +110,19 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
     public void testJCloudsBinaryManagerGC() throws Exception {
 
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
-        assertTrue(binary instanceof LazyBinary);
+        Assert.assertTrue(binary instanceof LazyBinary);
 
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
-        assertNotNull(binary);
-        assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
+        Assert.assertNotNull(binary);
+        Assert.assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
 
         // get binary
         binary = binaryManager.getBinary(CONTENT_MD5);
-        assertNotNull(binary);
-        assertEquals(bytes.length, binary.getLength());
-        assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
+        Assert.assertNotNull(binary);
+        Assert.assertEquals(bytes.length, binary.getLength());
+        Assert.assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
 
         // another binary we'll GC
         binaryManager.getBinary(Blobs.createBlob(CONTENT2));
@@ -134,26 +130,26 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         // another binary we'll keep
         binaryManager.getBinary(Blobs.createBlob(CONTENT3));
 
-        assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
+        Assert.assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // GC in non-delete mode
         BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
-        assertFalse(gc.isInProgress());
+        Assert.assertFalse(gc.isInProgress());
         gc.start();
-        assertTrue(gc.isInProgress());
+        Assert.assertTrue(gc.isInProgress());
         gc.mark(CONTENT_MD5);
         gc.mark(CONTENT3_MD5);
-        assertTrue(gc.isInProgress());
+        Assert.assertTrue(gc.isInProgress());
         gc.stop(false);
-        assertFalse(gc.isInProgress());
+        Assert.assertFalse(gc.isInProgress());
         BinaryManagerStatus status = gc.getStatus();
-        assertEquals(2, status.numBinaries);
+        Assert.assertEquals(2, status.numBinaries);
         // binaries size not computed
         // assertEquals(bytes.length + 4, status.sizeBinaries);
-        assertEquals(1, status.numBinariesGC);
+        Assert.assertEquals(1, status.numBinariesGC);
         // TODO size in metadata available only in upcoming JClouds 1.9.0 (JCLOUDS-654)
         // assertEquals(3, status.sizeBinariesGC);
-        assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
+        Assert.assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT2_MD5, CONTENT3_MD5)), listObjects());
 
         // real GC
         gc = binaryManager.getGarbageCollector();
@@ -162,13 +158,13 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         gc.mark(CONTENT3_MD5);
         gc.stop(true);
         status = gc.getStatus();
-        assertEquals(2, status.numBinaries);
+        Assert.assertEquals(2, status.numBinaries);
         // binaries size not computed
         // assertEquals(bytes.length + 4, status.sizeBinaries);
-        assertEquals(1, status.numBinariesGC);
+        Assert.assertEquals(1, status.numBinariesGC);
         // TODO size in metadata available only in upcoming JClouds 1.9.0 (JCLOUDS-654)
         // assertEquals(3, status.sizeBinariesGC);
-        assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
+        Assert.assertEquals(new HashSet<String>(Arrays.asList(CONTENT_MD5, CONTENT3_MD5)), listObjects());
 
         // another GC after not marking content3
         gc = binaryManager.getGarbageCollector();
@@ -176,13 +172,13 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         gc.mark(CONTENT_MD5);
         gc.stop(true);
         status = gc.getStatus();
-        assertEquals(1, status.numBinaries);
+        Assert.assertEquals(1, status.numBinaries);
         // binaries size not computed
         // assertEquals(bytes.length, status.sizeBinaries);
-        assertEquals(1, status.numBinariesGC);
+        Assert.assertEquals(1, status.numBinariesGC);
         // TODO size in metadata available only in upcoming JClouds 1.9.0 (JCLOUDS-654)
         // assertEquals(4, status.sizeBinariesGC);
-        assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
+        Assert.assertEquals(Collections.singleton(CONTENT_MD5), listObjects());
     }
 
     /**
@@ -192,7 +188,8 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         Set<String> digests = new HashSet<String>();
         ListContainerOptions options = ListContainerOptions.NONE;
         for (;;) {
-            PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.container, options);
+            PageSet<? extends StorageMetadata> metadatas = binaryManager.blobStore.list(binaryManager.container,
+                    options);
             for (StorageMetadata metadata : metadatas) {
                 String digest = metadata.getName();
                 if (!JCloudsBinaryManager.isMD5(digest)) {

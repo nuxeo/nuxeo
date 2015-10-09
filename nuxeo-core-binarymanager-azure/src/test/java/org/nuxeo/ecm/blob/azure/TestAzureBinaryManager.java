@@ -15,14 +15,11 @@
  *     Nuxeo
  */
 
-package org.nuxeo.ecm.core.storage.azure;
+package org.nuxeo.ecm.blob.azure;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
-import static org.nuxeo.ecm.core.storage.azure.AzureBinaryManager.ACCOUNT_KEY_PROPERTY;
-import static org.nuxeo.ecm.core.storage.azure.AzureBinaryManager.ACCOUNT_NAME_PROPERTY;
-import static org.nuxeo.ecm.core.storage.azure.AzureBinaryManager.CONTAINER_PROPERTY;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,8 +39,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.storage.common.AbstractCloudBinaryManager;
-import org.nuxeo.ecm.core.storage.common.AbstractTestCloudBinaryManager;
+import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
+import org.nuxeo.ecm.blob.AbstractTestCloudBinaryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -71,8 +68,8 @@ import com.microsoft.azure.storage.core.Utility;
 @Features(RuntimeFeature.class)
 public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<AzureBinaryManager> {
 
-    protected final static List<String> PARAMETERS = Arrays.asList(ACCOUNT_KEY_PROPERTY, ACCOUNT_NAME_PROPERTY,
-            CONTAINER_PROPERTY);
+    protected final static List<String> PARAMETERS = Arrays.asList(AzureBinaryManager.ACCOUNT_KEY_PROPERTY, AzureBinaryManager.ACCOUNT_NAME_PROPERTY,
+            AzureBinaryManager.CONTAINER_PROPERTY);
 
     protected static Map<String, String> properties = new HashMap<>();
 
@@ -83,9 +80,9 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
             properties.put(s, Framework.getProperty(bm.getConfigurationKey(s)));
         });
 
-        if (StringUtils.isBlank(properties.get(ACCOUNT_KEY_PROPERTY))) {
-            properties.put(ACCOUNT_NAME_PROPERTY, System.getenv("AZURE_NAME_ACCOUNT"));
-            properties.put(ACCOUNT_KEY_PROPERTY, System.getenv("AZURE_ACCESS_SECRET"));
+        if (StringUtils.isBlank(properties.get(AzureBinaryManager.ACCOUNT_KEY_PROPERTY))) {
+            properties.put(AzureBinaryManager.ACCOUNT_NAME_PROPERTY, System.getenv("AZURE_NAME_ACCOUNT"));
+            properties.put(AzureBinaryManager.ACCOUNT_KEY_PROPERTY, System.getenv("AZURE_ACCESS_SECRET"));
         }
 
         // Ensure mandatory parameters are set

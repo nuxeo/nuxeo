@@ -15,7 +15,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.ecm.core.storage.azure;
+package org.nuxeo.ecm.blob.azure;
 
 import java.io.File;
 import java.io.FileInputStream;

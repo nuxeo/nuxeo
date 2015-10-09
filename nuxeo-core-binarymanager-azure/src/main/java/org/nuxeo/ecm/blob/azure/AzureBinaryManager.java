@@ -15,7 +15,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.ecm.core.storage.azure;
+package org.nuxeo.ecm.blob.azure;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
-import org.nuxeo.ecm.core.storage.common.AbstractCloudBinaryManager;
+import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 
 import com.microsoft.azure.storage.CloudStorageAccount;
 import com.microsoft.azure.storage.StorageException;
