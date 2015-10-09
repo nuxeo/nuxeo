@@ -423,6 +423,7 @@
         <resource>seam_remoting.xhtml</resource>
         <resource>automation.js</resource>
         <resource>nuxeo_javascript_context.xhtml</resource>
+        <resource>nuxeo.js</resource>
       </resources>
     </bundle>
 
