@@ -3,12 +3,19 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxr="http://nuxeo.org/nxweb/resources"
   class="nx-page nx-branding">
 
   <f:view contentType="text/html" />
+  <f:event listener="#{nuxeoWebResourceDispatcher.processEvent}" type="preRenderView" />
+
   <h:head id="pageHead">
+
+    <nxu:set var="pageFlavor" value="#{pageFlavor}">
+      <nxr:insert target="#{nuxeoWebResourceDispatcher.headStartTarget}" />
+    </nxu:set>
 
     <title>
       <ui:insert name="page title" />
@@ -23,21 +30,37 @@
     <ui:insert name="header_scripts" />
 
     <ui:insert name="page head resources">
-      <ui:decorate template="/incl/page_head.xhtml">
-        <ui:param name="pageName" value="#{pageName}" />
-        <ui:param name="pageFlavor" value="#{pageFlavor}" />
-      </ui:decorate>
+      <nxu:set var="pageCssTarget" value="#{nuxeoWebResourceDispatcher.headStartTarget}">
+      <nxu:set var="pageJsBodyStartTarget" value="#{nuxeoWebResourceDispatcher.bodyStartTarget}">
+      <nxu:set var="pageJsTarget" value="#{nuxeoWebResourceDispatcher.bodyJavaScriptTarget}">
+        <ui:include src="/incl/page_head.xhtml" />
+      </nxu:set>
+      </nxu:set>
+      </nxu:set>
     </ui:insert>
     <ui:insert name="page head" />
 
+    <nxr:insert target="headend" />
   </h:head>
   <h:body>
 
-    <div class="includes displayNone">
-      <ui:insert name="basic body includes" />
-    </div>
+    <nxr:insert target="#{nuxeoWebResourceDispatcher.bodyStartTarget}" />
 
-    <ui:insert name="basic body" />
+    <nxu:set var="pageCssTarget" value="#{nuxeoWebResourceDispatcher.headStartTarget}">
+    <nxu:set var="pageJsBodyStartTarget" value="#{nuxeoWebResourceDispatcher.bodyStartTarget}">
+    <nxu:set var="pageJsTarget" value="#{nuxeoWebResourceDispatcher.bodyJavaScriptTarget}">
+
+      <div class="includes displayNone">
+        <ui:insert name="basic body includes" />
+      </div>
+
+      <ui:insert name="basic body" />
+
+    </nxu:set>
+    </nxu:set>
+    </nxu:set>
+
+    <nxr:insert target="#{nuxeoWebResourceDispatcher.bodyEndTarget}" />
 
   </h:body>
 

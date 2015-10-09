@@ -41,6 +41,15 @@ public interface Resource extends Serializable {
     String getURI();
 
     /**
+     * Returns an optional target to push resources to in the page.
+     * <p>
+     * Currently only useful to JSF resources.
+     *
+     * @since 7.10
+     */
+    String getTarget();
+
+    /**
      * Names of the resource dependencies.
      */
     List<String> getDependencies();

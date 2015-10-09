@@ -31,4 +31,19 @@
     <property name="nuxeo.jsf.useAjaxTabs">false</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Properties controlling resources management:
+      <ul>
+        <li><strong>nuxeo.jsf.combinePageResources</strong>: serve all js and CSS resources
+            of a page with a single request (instead of bundle by bundle)</li>
+        <li><strong>nuxeo.jsf.deferJavaScriptLoading</strong>: move all JavaScript resources
+            at the end of the page. WARNING - enabling this might break
+            some inline JavaScript code behaviors.</li>
+      </ul>
+    </documentation>
+    <property name="nuxeo.jsf.combinePageResources">true</property>
+    <property name="nuxeo.jsf.deferJavaScriptLoading">true</property>
+  </extension>
+
 </component>

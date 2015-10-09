@@ -40,6 +40,16 @@ public class ResourceDescriptor implements Resource {
     @XNode("@type")
     public String type;
 
+    /**
+     * Target for this resource.
+     * <p>
+     * Currently only useful for JSF resources reallocation in the page.
+     *
+     * @since 7.10
+     */
+    @XNode("@target")
+    public String target;
+
     @XNode("path")
     public String path;
 
@@ -145,6 +155,20 @@ public class ResourceDescriptor implements Resource {
      */
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    /**
+     * @since 7.10
+     */
+    public String getTarget() {
+        return target;
+    }
+
+    /**
+     * @since 7.10
+     */
+    public void setTarget(String target) {
+        this.target = target;
     }
 
 }

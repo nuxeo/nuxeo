@@ -153,15 +153,17 @@ public class ResourceBundleHandler extends PageResourceHandler {
         switch (type) {
         case jsfjs:
             for (Resource r : retrieveResources(wrm, bundle, type)) {
-                ComponentConfig config = getJSFResourceComponentConfig(r, "javax.faces.resource.Script", targetValue,
-                        nextHandler);
+                String rtarget = r.getTarget();
+                ComponentConfig config = getJSFResourceComponentConfig(r, "javax.faces.resource.Script",
+                        rtarget == null ? targetValue : rtarget, nextHandler);
                 new ScriptResourceHandler(config).apply(ctx, parent);
             }
             break;
         case jsfcss:
             for (Resource r : retrieveResources(wrm, bundle, type)) {
+                String rtarget = r.getTarget();
                 ComponentConfig config = getJSFResourceComponentConfig(r, "javax.faces.resource.Stylesheet",
-                        targetValue, nextHandler);
+                        rtarget == null ? targetValue : rtarget, nextHandler);
                 new StylesheetResourceHandler(config).apply(ctx, parent);
             }
             break;
