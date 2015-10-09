@@ -154,7 +154,7 @@ public class ModelImporter {
                         "nxtrSamplesContainer");
                 container.setPropertyValue("dc:title", "Discover Customization Examples");
                 container.setPropertyValue("nxtplsamplescontainer:instructions",
-                        "<span class=\"nxtrExplanations\">The BigCorp company wants to showcase their expertise to their prospects. They used Nuxeo Studio and Template Rendering to be able to generate portfolios on the fly, based on existing projects.<br /><br /><strong>It's your turn now! Open the \"Accelerating a Rigid Process\" project</strong> and follow the instructions.</span>");
+                        "<span class=\"nxtrExplanations\">The BigCorp company uses Nuxeo Studio and template rendering to generate custom project portfolios that showcase relevant expertise to potential new clients.<br /><br /><strong>It's your turn now! Open the \"BigCorp Transforms GreatBank Customer Service\" project</strong> and follow the instructions.</span>");
                 container = session.createDocument(container);
             } else {
                 container = session.getDocument(targetPath);
@@ -173,7 +173,7 @@ public class ModelImporter {
                     "Workspace");
             container.setPropertyValue("dc:title", "More (Raw) Examples");
             container.setPropertyValue("dc:description",
-                    "This space contains raw examples to demonstrate the Nuxeo Template Rendering's advanced possibilities. Go to the \"Discover Customization Samples\" folder first if you did not follow its instructions yet.");
+                    "This space contains raw examples to demonstrate the Nuxeo template rendering add-on's advanced possibilities. Go to the \"Discover Customization Samples\" folder first if you did not follow its instructions yet.");
             container = session.createDocument(container);
         } else {
             container = session.getDocument(targetPath);

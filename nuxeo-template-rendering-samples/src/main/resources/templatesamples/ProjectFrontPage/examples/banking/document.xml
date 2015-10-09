@@ -29,15 +29,11 @@
   <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file"></schema>
   <schema xmlns:nxtrportfolio="http://www.nuxeo.org/ecm/project/schemas/template-module-demo/nxtrportfolio" name="nxtrportfolio">
     <nxtrportfolio:instructions><![CDATA[<span class="nxtrExplanations">You are now in the portfolio. It can reference several projects, including the one you added. Generate it and observe the template rendering magic happening.</span>]]></nxtrportfolio:instructions>
-    <nxtrportfolio:introduction><![CDATA[Dear Madam Something,
+    <nxtrportfolio:introduction><![CDATA[Thank you for your interest in working with BigCorp. We are pleased to share with you a showcase of recent projects completed for some of our financial services clients.
 
-Following up with your recent request, please find enclosed a showcase of some recent projects our company realized.
+We hope these carefully chosen samples will demonstrate our financial services industry expertise and the new business value we can bring to your organization.
 
-As requested, all are related to major bank industry companies or financial institutions.
-
-We hope these carefully chosen samples will demonstrate our expertise level, and what value we can bring to your own project.
-
-Please feel free to contact our company representative for any further information you may need: contact@nuxeo.com]]></nxtrportfolio:introduction>
+Your account executive will be in touch with you shortly. In the meantime, please do not hesitate to contact us with any questions. We welcome the opportunity to work with you!]]></nxtrportfolio:introduction>
   </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon><![CDATA[/img/portfolio-16.png]]></common:icon>
@@ -48,12 +44,12 @@ Please feel free to contact our company representative for any further informati
     <files:files/>
   </schema>
   <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
-    <dc:description><![CDATA[All right! Now add the project to this portfolio. You will be able to browse this portfolio afterwards.]]></dc:description>
+    <dc:description><![CDATA[OK! Now add the project to this portfolio. You will be able to browse this portfolio afterwards.]]></dc:description>
     <dc:creator><![CDATA[Administrator]]></dc:creator>
     <dc:modified><![CDATA[2015-07-27T15:43:41.00Z]]></dc:modified>
     <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
     <dc:created><![CDATA[2015-07-27T15:43:41.00Z]]></dc:created>
-    <dc:title><![CDATA[Bank Industry Related Projects]]></dc:title>
+    <dc:title><![CDATA[Financial Services Industry Related Projects]]></dc:title>
     <dc:subjects/>
     <dc:contributors>
       <item><![CDATA[Administrator]]></item>

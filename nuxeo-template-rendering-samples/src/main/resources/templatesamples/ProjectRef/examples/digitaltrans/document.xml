@@ -55,13 +55,20 @@
         <price_per_day><![CDATA[650.0]]></price_per_day>
       </item>
     </nxtrproject:involved_people>
-    <nxtrproject:abstract><![CDATA[Getting new financial products to market is a heavy business process. It is managed, as you would expect, by 1000’s of pages of documents that few can understand.
-Putting these documents in a document management system was done for the past 15 years. 
-When we morphed this into software, we enabled a radically new way to leverage this process in term of sharing, reuse, business audit etc.
-Now we go faster, but still safely, and are able to accelerate time to market of our whole product line.]]></nxtrproject:abstract>
+    <nxtrproject:abstract><![CDATA[GreatBank selected BigCorp as its technology consulting firm of choice to select and implement its new core banking customer service system and reporting and analysis tools.
+
+“BigCorp completed the project one month ahead of schedule”, said Louis Smith, VP of Consumer Financial Services. “Their consultants really understand how to best utilize technology for banking and financial services companies.”
+
+Smith identified many key new business benefits provided by BigCorp’s new systems:
+
+– 35% decrease in customer churn
+– 25% increase in cross-selling to existing customers
+– 40% decrease in customer services expenses thanks to new technology efficiencies
+
+GreatBank is now engaging with BigCorp to help the company launch its new consumer brokerage services division.]]></nxtrproject:abstract>
     <nxtrproject:industry><![CDATA[Bank]]></nxtrproject:industry>
     <nxtrproject:date_of_delivery><![CDATA[2019-07-13T22:00:00.00Z]]></nxtrproject:date_of_delivery>
-    <nxtrproject:quote><![CDATA[The butterfly project gave us wings! Thanks to that new software and BigCorp's expertise, we reduced our time to market by a whole 67%.]]></nxtrproject:quote>
+    <nxtrproject:quote><![CDATA[Leading bank boosts cross-selling revenue by 25%; cuts costs by 40%]]></nxtrproject:quote>
   </schema>
   <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
     <dc:description/>
@@ -69,7 +76,7 @@ Now we go faster, but still safely, and are able to accelerate time to market of
     <dc:modified><![CDATA[2015-07-23T08:58:09.17Z]]></dc:modified>
     <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
     <dc:created><![CDATA[2015-07-17T13:40:11.72Z]]></dc:created>
-    <dc:title><![CDATA[Accelerating a Rigid Process Without Compromising Safety]]></dc:title>
+    <dc:title><![CDATA[BigCorp Transforms GreatBank Customer Service]]></dc:title>
     <dc:subjects/>
     <dc:contributors>
       <item><![CDATA[Administrator]]></item>
