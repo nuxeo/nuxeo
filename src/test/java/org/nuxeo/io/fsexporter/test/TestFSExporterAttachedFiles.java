@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -45,7 +46,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "nuxeo-fsexporter" })
-public class FSExporterTestAttachedFiles {
+public class TestFSExporterAttachedFiles {
 
     @Inject
     CoreSession session;
@@ -99,9 +100,10 @@ public class FSExporterTestAttachedFiles {
         Assert.assertTrue(new File(targetPath).exists());
 
         // verify that the blobs exist
-        String targetPathBlob1 = "/tmp" + folder.getPathAsString() + "/" + blob1.getFilename();
+        // The code has added the name as prefix: "myfile-"
+        String targetPathBlob1 = "/tmp" + folder.getPathAsString() + "/myfile-" + blob1.getFilename();
         Assert.assertTrue(new File(targetPathBlob1).exists());
-        String targetPathBlob2 = "/tmp" + folder.getPathAsString() + "/" + blob2.getFilename();
+        String targetPathBlob2 = "/tmp" + folder.getPathAsString() + "/myfile-" + blob2.getFilename();
         Assert.assertTrue(new File(targetPathBlob2).exists());
     }
 }

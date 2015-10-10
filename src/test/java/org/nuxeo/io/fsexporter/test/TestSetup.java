@@ -1,4 +1,4 @@
-/*
+	/*
  * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
@@ -33,8 +33,10 @@ public class TestSetup {
 
     @Test
     public void shouldDeclareService() {
+
         FSExporterService fes = Framework.getLocalService(FSExporterService.class);
         Assert.assertNotNull(fes);
+
     }
 
     // add here tests on contribution deployment

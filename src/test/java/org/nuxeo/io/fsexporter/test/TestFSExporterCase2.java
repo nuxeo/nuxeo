@@ -14,6 +14,7 @@
  * Contributors:
  *     annejubert
  */
+
 package org.nuxeo.io.fsexporter.test;
 
 import java.io.File;
@@ -41,7 +42,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "nuxeo-fsexporter" })
-public class FSExporterTestCase {
+public class TestFSExporterCase2 {
 
     @Inject
     CoreSession session;
@@ -52,10 +53,20 @@ public class FSExporterTestCase {
     @Test
     public void shouldExportFile() throws Exception {
 
-        DocumentModel folder = session.createDocumentModel("/default-domain/", "myfolder", "Folder");
+        // creation of folders
+        DocumentModel folder = session.createDocumentModel("/default-domain/", "myfolder1", "Folder");
         folder.setPropertyValue("dc:title", "Mon premier repertoire");
         session.createDocument(folder);
 
+        DocumentModel folder2 = session.createDocumentModel("/default-domain/", "myfolder2", "Folder");
+        folder.setPropertyValue("dc:title", "Mon deuxieme repertoire");
+        session.createDocument(folder2);
+
+        DocumentModel subFolder = session.createDocumentModel(folder2.getPathAsString(), "subFolder", "Folder");
+        subFolder.setPropertyValue("dc:title", "Mon deuxieme repertoire");
+        session.createDocument(subFolder);
+
+        // creation of files
         DocumentModel file = session.createDocumentModel(folder.getPathAsString(), "myfile", "File");
         file.setPropertyValue("dc:title", "Mon premier fichier");
 
@@ -65,13 +76,38 @@ public class FSExporterTestCase {
         file.setPropertyValue("file:content", (Serializable) blob);
         session.createDocument(file);
 
+        DocumentModel file2 = session.createDocumentModel(folder2.getPathAsString(), "myfile2", "File");
+        file2.setPropertyValue("dc:title", "Mon deuxieme fichier");
+
+        Blob blob2 = new StringBlob("some content");
+        blob2.setFilename("MyFile2.txt");
+        blob2.setMimeType("text/plain");
+        file2.setPropertyValue("file:content", (Serializable) blob2);
+        session.createDocument(file2);
+
+        DocumentModel fileSubFolder = session.createDocumentModel(subFolder.getPathAsString(), "fileSubFolder", "File");
+        fileSubFolder.setPropertyValue("dc:title", "mon fichier dans un subfolder");
+
+        Blob blobSubFolder = new StringBlob("some content");
+        blobSubFolder.setFilename("MyFileSubFolder.txt");
+        blobSubFolder.setMimeType("text/plain");
+        fileSubFolder.setPropertyValue("file:content", (Serializable) blobSubFolder);
+        session.createDocument(fileSubFolder);
+
         session.save();
 
         Framework.getLocalService(FSExporter.class);
         service.export(session, "/default-domain/", "/tmp/", "");
 
-        // Assure que cela s'est passe comme attendu
+        // verify that myfile.txt exists
         String targetPath = "/tmp" + folder.getPathAsString() + "/" + blob.getFilename();
         Assert.assertTrue(new File(targetPath).exists());
+
+        // verify that MyFileSubFolder.txt exists
+        String targetPathSubFolder = "/tmp" + subFolder.getPathAsString() + "/" + blobSubFolder.getFilename();
+        Assert.assertTrue(new File(targetPathSubFolder).exists());
+
+        // verify that
+
     }
 }

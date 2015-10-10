@@ -42,7 +42,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "nuxeo-fsexporter" })
-public class FSExporterTestAccents {
+public class TestFSExporterAccents {
 
     @Inject
     CoreSession session;
@@ -51,7 +51,7 @@ public class FSExporterTestAccents {
     FSExporter service;
 
     @Test
-    public void shouldExportFile() throws Exception {
+    public void shouldExportFileTest() throws Exception {
 
         // creation of subfolders in sections, templates and workspaces
         DocumentModel mySection = session.createDocumentModel("/default-domain/sections", "ma premiere Section - 1",

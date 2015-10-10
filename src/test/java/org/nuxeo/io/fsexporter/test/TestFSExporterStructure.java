@@ -42,7 +42,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "nuxeo-fsexporter" })
-public class FSExporterTestStructure {
+public class TestFSExporterStructure {
 
     @Inject
     CoreSession session;
