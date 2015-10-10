@@ -21,6 +21,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,11 +68,15 @@ public class TestFSExporterCase {
 
         session.save();
 
+        String tmp = System.getProperty("java.io.tmpdir");
         Framework.getLocalService(FSExporter.class);
-        service.export(session, "/default-domain/", "/tmp/", "");
+        service.export(session, "/default-domain/", tmp, "");
+        
+        // Remove last "/"in the path
+        String pathPrefix = StringUtils.removeEnd(tmp, "/");
 
         // Assure que cela s'est passe comme attendu
-        String targetPath = "/tmp" + folder.getPathAsString() + "/" + blob.getFilename();
+        String targetPath = pathPrefix + folder.getPathAsString() + "/" + blob.getFilename();
         Assert.assertTrue(new File(targetPath).exists());
     }
 }

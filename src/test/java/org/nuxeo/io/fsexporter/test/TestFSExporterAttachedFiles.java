@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -93,17 +94,22 @@ public class TestFSExporterAttachedFiles {
 
         session.save();
 
-        Framework.getLocalService(FSExporter.class);
-        service.export(session, "/default-domain/", "/tmp/", "");
+        String tmp = System.getProperty("java.io.tmpdir");
 
-        String targetPath = "/tmp" + folder.getPathAsString() + "/" + blob.getFilename();
+        Framework.getLocalService(FSExporter.class);
+        service.export(session, "/default-domain/", tmp, "");
+        
+        // Remove last "/"in the path
+        String pathPrefix = StringUtils.removeEnd(tmp, "/");
+
+        String targetPath = pathPrefix + folder.getPathAsString() + "/" + blob.getFilename();
         Assert.assertTrue(new File(targetPath).exists());
 
         // verify that the blobs exist
         // The code has added the name as prefix: "myfile-"
-        String targetPathBlob1 = "/tmp" + folder.getPathAsString() + "/myfile-" + blob1.getFilename();
+        String targetPathBlob1 = pathPrefix + folder.getPathAsString() + "/myfile-" + blob1.getFilename();
         Assert.assertTrue(new File(targetPathBlob1).exists());
-        String targetPathBlob2 = "/tmp" + folder.getPathAsString() + "/myfile-" + blob2.getFilename();
+        String targetPathBlob2 = pathPrefix + folder.getPathAsString() + "/myfile-" + blob2.getFilename();
         Assert.assertTrue(new File(targetPathBlob2).exists());
     }
 }

@@ -22,6 +22,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -128,25 +129,28 @@ public class TestFSExporterAccents {
 
         session.save();
 
-        String tmp = System.getProperty("java.io.tmp");
+        String tmp = System.getProperty("java.io.tmpdir");
 
         Framework.getLocalService(FSExporter.class);
-        service.export(session, "/default-domain/", "/tmp/", "");
+        service.export(session, "/default-domain/", tmp, "");
+        
+        // Remove last "/"in the path
+        String pathPrefix = StringUtils.removeEnd(tmp, "/");
 
         // verify that My File In Section.txt exists
-        String targetPathSection = "/tmp" + mySection.getPathAsString() + "/" + blobSection.getFilename();
+        String targetPathSection = pathPrefix + mySection.getPathAsString() + "/" + blobSection.getFilename();
         Assert.assertTrue(new File(targetPathSection).exists());
 
         // verify that My File In Workspace.txt exists
-        String targetPathWorkspace = "/tmp" + myWorkspace.getPathAsString() + "/" + blobWorkspace.getFilename();
+        String targetPathWorkspace = pathPrefix + myWorkspace.getPathAsString() + "/" + blobWorkspace.getFilename();
         Assert.assertTrue(new File(targetPathWorkspace).exists());
 
         // verify that My File In Template.txt exists
-        String targetPathTemplate = "/tmp" + myTemplate.getPathAsString() + "/" + blobTemplate.getFilename();
+        String targetPathTemplate = pathPrefix + myTemplate.getPathAsString() + "/" + blobTemplate.getFilename();
         Assert.assertTrue(new File(targetPathTemplate).exists());
 
         // verify that file in a workspace with empty name.txt exists s
-        String targetPathFileEmptyWorkspace = "/tmp" + myWorkspaceEmptyName.getPathAsString() + "/"
+        String targetPathFileEmptyWorkspace = pathPrefix + myWorkspaceEmptyName.getPathAsString() + "/"
                 + blobWorkspaceEmptyName.getFilename();
         Assert.assertTrue(new File(targetPathFileEmptyWorkspace).exists());
     }
