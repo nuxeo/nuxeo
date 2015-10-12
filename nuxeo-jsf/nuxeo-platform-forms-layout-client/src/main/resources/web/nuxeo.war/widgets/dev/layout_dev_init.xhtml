@@ -1,8 +1,9 @@
 <c:if xmlns="http://www.w3.org/1999/xhtml"
+ xmlns:h="http://java.sun.com/jsf/html"
  xmlns:c="http://java.sun.com/jstl/core"
  test="#{nuxeoLayoutManagerBean.devModeSet}">
 
-<script type="text/javascript">
+<h:outputScript target="#{pageJsTarget}">
   (function() {
     var nxlDevEnabled = #{nuxeoLayoutManagerBean.devModeSet};
     function doDevMode() {
@@ -45,5 +46,5 @@
       }
     });
   })();
-</script>
+</h:outputScript>
 </c:if>
