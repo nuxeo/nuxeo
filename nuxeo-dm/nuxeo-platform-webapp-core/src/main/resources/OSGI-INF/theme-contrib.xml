@@ -193,9 +193,6 @@
     <resource name="confirm-alerts.xhtml" type="xhtml">
       <uri>/incl/confirm-alerts.xhtml</uri>
     </resource>
-    <resource name="confirm-alerts.xhtml" type="xhtml">
-      <uri>/incl/confirm-alerts.xhtml</uri>
-    </resource>
     <resource name="DragAndDrop.js" type="js">
       <uri>/scripts/DragAndDrop.js</uri>
     </resource>
