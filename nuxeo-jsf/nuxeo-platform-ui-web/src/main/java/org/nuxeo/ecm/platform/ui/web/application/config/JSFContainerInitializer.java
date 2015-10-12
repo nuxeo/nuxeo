@@ -1,11 +1,18 @@
-/*******************************************************************************
- * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+/*
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- ******************************************************************************/
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ */
 package org.nuxeo.ecm.platform.ui.web.application.config;
 
 import java.lang.annotation.Annotation;
@@ -27,6 +34,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.HandlesTypes;
 
+/**
+ * TODO.
+ *
+ * @since TODO
+ */
 @HandlesTypes({ FacesBehavior.class, FacesBehaviorRenderer.class, FacesComponent.class, FacesConverter.class,
         FacesValidator.class, FacesRenderer.class, ManagedBean.class, NamedEvent.class })
 public class JSFContainerInitializer implements ServletContainerInitializer {
