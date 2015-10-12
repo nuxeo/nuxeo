@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.blob;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
@@ -24,6 +26,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
@@ -41,6 +45,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractCloudBinaryManager extends CachingBinaryManager implements BlobProvider {
 
+    private static final Log log = LogFactory.getLog(AbstractCloudBinaryManager.class);
+
     /**
      * Gets the property prefix used in configurarion properties
      */
@@ -49,8 +55,6 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     protected abstract FileStorage getFileStorage();
 
     protected abstract BinaryGarbageCollector instantiateGarbageCollector();
-
-    protected abstract boolean isUsingRemoteURI();
 
     @Override
     public abstract void removeBinaries(Collection<String> digests);
@@ -62,19 +66,41 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
     protected Map<String, String> properties;
 
+    protected boolean directDownload = false;
+
+    protected int directDownloadExpire;
+
     public static final String CACHE_PROPERTY = "cache";
 
     public static final String DEFAULT_CACHE_SIZE = "100 mb";
+
+    public static final String DIRECTDOWNLOAD_PROPERTY = "directdownload";
+
+    public static final String DEFAULT_DIRECTDOWNLOAD = "false";
+
+    public static final String DIRECTDOWNLOAD_EXPIRE_PROPERTY = "directdownload.expire";
+
+    public static final int DEFAULT_DIRECTDOWNLOAD_EXPIRE = 60 * 60; // 1h
 
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
         this.properties = properties;
 
-        setupCloudClient();
-
+        // Set cache size
         String cacheSizeStr = getProperty(CACHE_PROPERTY, DEFAULT_CACHE_SIZE);
         initializeCache(cacheSizeStr, getFileStorage());
+
+        // Enable direct download from the remote binary store
+        directDownload = Boolean.parseBoolean(getProperty(DIRECTDOWNLOAD_PROPERTY, DEFAULT_DIRECTDOWNLOAD));
+        directDownloadExpire = getIntFrameworkProperty(DIRECTDOWNLOAD_EXPIRE_PROPERTY);
+        if (directDownloadExpire < 0) {
+            directDownloadExpire = DEFAULT_DIRECTDOWNLOAD_EXPIRE;
+        }
+
+        // Setup remote client
+        setupCloudClient();
+
         garbageCollector = instantiateGarbageCollector();
     }
 
@@ -93,7 +119,7 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     @Override
     public URI getURI(ManagedBlob blob, BlobManager.UsageHint hint, HttpServletRequest servletRequest)
             throws IOException {
-        if (hint != BlobManager.UsageHint.DOWNLOAD || !isUsingRemoteURI()) {
+        if (hint != BlobManager.UsageHint.DOWNLOAD || !isDirectDownload()) {
             return null;
         }
         String digest = blob.getKey();
@@ -104,6 +130,10 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         }
 
         return getRemoteUri(digest, blob, servletRequest);
+    }
+
+    protected boolean isDirectDownload() {
+        return directDownload;
     }
 
     protected URI getRemoteUri(String digest, ManagedBlob blob, HttpServletRequest servletRequest) throws IOException {
@@ -125,6 +155,22 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         }
 
         return Framework.getProperty(getConfigurationKey(propertyName), defaultValue);
+    }
+
+    /**
+     * Gets an integer framework property, or -1 if undefined.
+     */
+    protected static int getIntFrameworkProperty(String key) {
+        String s = Framework.getProperty(key);
+        int value = -1;
+        if (!isBlank(s)) {
+            try {
+                value = Integer.parseInt(s.trim());
+            } catch (NumberFormatException e) {
+                log.error("Cannot parse " + key + ": " + s);
+            }
+        }
+        return value;
     }
 
     public String getConfigurationKey(String propertyName) {

@@ -146,11 +146,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String DIRECTDOWNLOAD_KEY = "nuxeo.s3storage.downloadfroms3";
 
-    public static final String DEFAULT_DIRECTDOWNLOAD = "false";
-
     public static final String DIRECTDOWNLOAD_EXPIRE_KEY = "nuxeo.s3storage.downloadfroms3.expire";
-
-    public static final int DEFAULT_DIRECTDOWNLOAD_EXPIRE = 60 * 60; // 1h
 
     private static final Pattern MD5_RE = Pattern.compile("(.*/)?[0-9a-f]{32}");
 
@@ -171,10 +167,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     protected AmazonS3 amazonS3;
 
     protected TransferManager transferManager;
-
-    protected boolean directDownload;
-
-    protected int directDownloadExpire;
 
     @Override
     public void close() {
@@ -197,22 +189,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
     }
 
-    /**
-     * Gets an integer framework property, or -1 if undefined.
-     */
-    protected static int getIntProperty(String key) {
-        String s = Framework.getProperty(key);
-        int value = -1;
-        if (!isBlank(s)) {
-            try {
-                value = Integer.parseInt(s.trim());
-            } catch (NumberFormatException e) {
-                log.error("Cannot parse " + key + ": " + s);
-            }
-        }
-        return value;
-    }
-
     @Override
     protected void setupCloudClient() throws IOException {
         // Get settings from the configuration
@@ -231,10 +207,10 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
         String proxyPassword = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
 
-        int maxConnections = getIntProperty(CONNECTION_MAX_KEY);
-        int maxErrorRetry = getIntProperty(CONNECTION_RETRY_KEY);
-        int connectionTimeout = getIntProperty(CONNECTION_TIMEOUT_KEY);
-        int socketTimeout = getIntProperty(SOCKET_TIMEOUT_KEY);
+        int maxConnections = getIntFrameworkProperty(CONNECTION_MAX_KEY);
+        int maxErrorRetry = getIntFrameworkProperty(CONNECTION_RETRY_KEY);
+        int connectionTimeout = getIntFrameworkProperty(CONNECTION_TIMEOUT_KEY);
+        int socketTimeout = getIntFrameworkProperty(SOCKET_TIMEOUT_KEY);
 
         String keystoreFile = Framework.getProperty(KEYSTORE_FILE_KEY);
         String keystorePass = Framework.getProperty(KEYSTORE_PASS_KEY);
@@ -362,7 +338,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
 
         directDownload = Boolean.parseBoolean(Framework.getProperty(DIRECTDOWNLOAD_KEY, DEFAULT_DIRECTDOWNLOAD));
-        directDownloadExpire = getIntProperty(DIRECTDOWNLOAD_EXPIRE_KEY);
+        directDownloadExpire = getIntFrameworkProperty(DIRECTDOWNLOAD_EXPIRE_KEY);
         if (directDownloadExpire < 0) {
             directDownloadExpire = DEFAULT_DIRECTDOWNLOAD_EXPIRE;
         }
@@ -600,7 +576,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     }
 
     @Override
-    protected boolean isUsingRemoteURI() {
+    protected boolean isDirectDownload() {
         return directDownload;
     }
 

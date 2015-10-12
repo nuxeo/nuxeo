@@ -98,11 +98,6 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
     }
 
     @Override
-    protected boolean isUsingRemoteURI() {
-        return false;
-    }
-
-    @Override
     public void removeBinaries(Collection<String> digests) {
         digests.forEach(this::removeBinary);
     }
