@@ -12,6 +12,7 @@
       <translateEmptySentence>true</translateEmptySentence>
 
       <coreQueryPageProvider>
+        <trackUsage>true</trackUsage>
         <property name="coreSession">#{documentManager}</property>
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <whereClause docType="DefaultSearch">
@@ -168,6 +169,7 @@
       <translateEmptySentence>true</translateEmptySentence>
 
       <coreQueryPageProvider>
+        <trackUsage>true</trackUsage>
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <property name="coreSession">#{documentManager}</property>
         <whereClause docType="DefaultSearch">
@@ -227,6 +229,7 @@
       <translateEmptySentence>true</translateEmptySentence>
 
       <coreQueryPageProvider>
+        <trackUsage>true</trackUsage>
         <property name="coreSession">#{documentManager}</property>
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <searchDocumentType>DefaultSearch</searchDocumentType>
