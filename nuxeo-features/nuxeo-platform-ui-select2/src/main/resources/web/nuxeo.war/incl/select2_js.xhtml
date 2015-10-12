@@ -15,9 +15,9 @@
       var currentUserLang = "#{localeSelector.language}";
     </script>
 
-    <h:outputScript library="org.nuxeo.select2" name="select2.js" target="#{pageJsTarget}" />
+    <h:outputScript library="org.nuxeo.select2" name="#{nxDevModeSet?'select2.js':'select2.min.js'}" target="#{pageJsTarget}" />
     <h:outputScript library="org.nuxeo.select2" name="select2_locale_#{localeSelector.language}.js" target="#{pageJsTarget}" />
-    <h:outputScript library="org.nuxeo.select2" name="nuxeo-select2.js" target="#{pageJsTarget}" />
+    <h:outputScript library="org.nuxeo.select2" name="#{nxDevModeSet?'nuxeo-select2.js':'nuxeo-select2.min.js'}" target="#{pageJsTarget}" />
 
     <h:outputScript target="#{pageJsTarget}">
       jQuery(document).ready(function() {

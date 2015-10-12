@@ -2,7 +2,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<h:outputScript src="/tinymce/tinymce.js" target="#{pageJsTarget}" />
+<h:outputScript src="#{nxDevModeSet?'/tinymce/tinymce.js':'/tinymce/tinymce.min.js'}" target="#{pageJsTarget}" />
 <h:outputScript src="/tinymce/tinymce_init.js" target="#{pageJsTarget}" />
 
 </ui:fragment>

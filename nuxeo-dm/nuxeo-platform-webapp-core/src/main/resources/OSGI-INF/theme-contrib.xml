@@ -9,11 +9,11 @@
       <uri>javax.faces:jsf.js</uri>
     </resource>
     <resource name="fixjsfviewstate.js" type="jsfjs">
-      <uri>org.nuxeo.jsf:fixviewstate.js</uri>
+      <uri>org.nuxeo.jsf:fixviewstate.min.js</uri>
       <require>jsf.js</require>
     </resource>
     <resource name="fixmultipartajax.js" type="jsfjs">
-      <uri>org.nuxeo.jsf:fixmultipartajax.js</uri>
+      <uri>org.nuxeo.jsf:fixmultipartajax.min.js</uri>
       <require>jsf.js</require>
     </resource>
     <resource name="jquery.js" type="jsfjs">
@@ -28,11 +28,11 @@
       <require>richfaces.js</require>
     </resource>
     <resource name="widget-utils.js" type="jsfjs">
-      <uri>org.nuxeo:widget-utils.js</uri>
+      <uri>org.nuxeo:widget-utils.min.js</uri>
       <require>richfaces-queue.js</require>
     </resource>
     <resource name="select2.js" type="jsfjs">
-      <uri>org.nuxeo.select2:select2.js</uri>
+      <uri>org.nuxeo.select2:select2.min.js</uri>
       <require>widget-utils.js</require>
     </resource>
 
