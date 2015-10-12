@@ -406,7 +406,7 @@ public class NuxeoFrame extends JFrame {
     protected Component buildSummaryPanel() {
         JPanel summaryPanel = new JPanel();
         summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.PAGE_AXIS));
-        summaryPanel.setBackground(new Color(35, 37, 59));
+        summaryPanel.setBackground(new Color(35, 63, 125));
         summaryPanel.setForeground(Color.WHITE);
 
         summaryPanel.add(new JLabel("<html><font color=#ffffdd>" + NuxeoLauncherGUI.getMessage("summary.status.label")));
