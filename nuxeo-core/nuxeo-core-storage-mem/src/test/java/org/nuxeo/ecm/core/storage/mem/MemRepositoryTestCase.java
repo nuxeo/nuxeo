@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -43,8 +42,6 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
     protected CoreSession session;
 
     protected int initialOpenSessions;
-
-    protected int initialSingleConnections;
 
     protected BlobProviderDescriptor blobProviderDescriptor;
 
@@ -101,7 +98,6 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
 
     protected void initCheckLeaks() {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
-        initialSingleConnections = ConnectionHelper.countConnectionReferences();
     }
 
     protected void checkLeaks() {
@@ -115,14 +111,6 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
                 log.warn("Leaking session", info);
             }
         }
-        int finalSingleConnections = ConnectionHelper.countConnectionReferences();
-        int leakedSingleConnections = finalSingleConnections - initialSingleConnections;
-        if (leakedSingleConnections > 0) {
-            log.error(String.format("There are %s single datasource connection(s) open at tear down; "
-                    + "the test leaked %s connection(s).", Integer.valueOf(finalSingleConnections),
-                    Integer.valueOf(leakedSingleConnections)));
-        }
-        ConnectionHelper.clearConnectionReferences();
     }
 
     public void waitForAsyncCompletion() {

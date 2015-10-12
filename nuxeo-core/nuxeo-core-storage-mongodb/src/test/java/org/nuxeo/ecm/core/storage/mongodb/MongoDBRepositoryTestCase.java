@@ -25,13 +25,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerComponent;
-import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -52,8 +50,6 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     protected CoreSession session;
 
     protected int initialOpenSessions;
-
-    protected int initialSingleConnections;
 
     /**
      * Query of NOT (something) matches docs where (something) did not match because the field was null. field.
@@ -134,7 +130,6 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
 
     protected void initCheckLeaks() {
         initialOpenSessions = CoreInstance.getInstance().getNumberOfSessions();
-        initialSingleConnections = ConnectionHelper.countConnectionReferences();
     }
 
     protected void checkLeaks() {
@@ -148,14 +143,6 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
                 log.warn("Leaking session", info);
             }
         }
-        int finalSingleConnections = ConnectionHelper.countConnectionReferences();
-        int leakedSingleConnections = finalSingleConnections - initialSingleConnections;
-        if (leakedSingleConnections > 0) {
-            log.error(String.format("There are %s single datasource connection(s) open at tear down; "
-                    + "the test leaked %s connection(s).", Integer.valueOf(finalSingleConnections),
-                    Integer.valueOf(leakedSingleConnections)));
-        }
-        ConnectionHelper.clearConnectionReferences();
     }
 
     public void waitForAsyncCompletion() {
