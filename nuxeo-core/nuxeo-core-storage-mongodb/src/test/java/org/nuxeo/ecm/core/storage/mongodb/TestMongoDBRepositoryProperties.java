@@ -202,6 +202,18 @@ public class TestMongoDBRepositoryProperties extends MongoDBRepositoryTestCase {
     }
 
     @Test
+    public void testArrayWithNullFirst() throws Exception {
+        assertNotNull(doc.getPropertyValue("tp:stringArray"));
+        String[] values = { null, "bar" };
+        doc.setPropertyValue("tp:stringArray", values);
+        session.saveDocument(doc);
+        session.save();
+        nextTransaction();
+        doc = session.getDocument(doc.getRef());
+        assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:stringArray")));
+    }
+
+    @Test
     public void testComplexList() throws Exception {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:complexList") instanceof List);

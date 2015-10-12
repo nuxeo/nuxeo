@@ -242,7 +242,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
                         value = (Serializable) l;
                     } else {
                         // turn the list into a properly-typed array
-                        Class<?> klass = list.get(0).getClass();
+                        Class<?> klass = Object.class;
+                        for (Object o : list) {
+                            if (o != null) {
+                                klass = o.getClass();
+                                break;
+                            }
+                        }
                         Object[] ar = (Object[]) Array.newInstance(klass, list.size());
                         int i = 0;
                         for (Object el : list) {
