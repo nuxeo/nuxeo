@@ -87,9 +87,6 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         super.initialize(blobProviderId, properties);
         this.properties = properties;
 
-        // Set cache size
-        String cacheSizeStr = getProperty(CACHE_PROPERTY, DEFAULT_CACHE_SIZE);
-        initializeCache(cacheSizeStr, getFileStorage());
 
         // Enable direct download from the remote binary store
         directDownload = Boolean.parseBoolean(getProperty(DIRECTDOWNLOAD_PROPERTY, DEFAULT_DIRECTDOWNLOAD));
@@ -100,6 +97,10 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
         // Setup remote client
         setupCloudClient();
+
+        // Set cache size
+        String cacheSizeStr = getProperty(CACHE_PROPERTY, DEFAULT_CACHE_SIZE);
+        initializeCache(cacheSizeStr, getFileStorage());
 
         garbageCollector = instantiateGarbageCollector();
     }
