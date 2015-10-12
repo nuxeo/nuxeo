@@ -23,13 +23,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
@@ -61,14 +59,11 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
-import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
@@ -78,7 +73,6 @@ import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 import org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
-import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
@@ -86,7 +80,6 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Implementation of the {@link AuditBackend} interface using Elasticsearch persistence
@@ -482,78 +475,15 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     public String migrate(final int batchSize) {
 
-        final AuditBackend sourceBackend = new DefaultAuditBackend();
-        sourceBackend.activate(component);
-
         final String MIGRATION_WORK_ID = "AuditMigration";
 
         WorkManager wm = Framework.getService(WorkManager.class);
-
         State migrationState = wm.getWorkState(MIGRATION_WORK_ID);
         if (migrationState != null) {
             return "Migration already scheduled : " + migrationState.toString();
         }
-        @SuppressWarnings("unchecked")
-        List<Long> res = (List<Long>) sourceBackend.nativeQuery("select count(*) from LogEntry", 1, 20);
 
-        final long nbEntriesToMigrate = res.get(0);
-
-        Work migrationWork = new AbstractWork(MIGRATION_WORK_ID) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public String getTitle() {
-                return "Audit migration worker";
-            }
-
-            @Override
-            public void work() {
-                TransactionHelper.commitOrRollbackTransaction();
-                try {
-
-                    long t0 = System.currentTimeMillis();
-                    long nbEntriesMigrated = 0;
-                    int pageIdx =  1;
-
-                    while (nbEntriesMigrated < nbEntriesToMigrate) {
-                        @SuppressWarnings("unchecked")
-                        List<LogEntry> entries = (List<LogEntry>) sourceBackend.nativeQuery(
-                                "from LogEntry log order by log.id asc", pageIdx, batchSize);
-
-                        if (entries.size() == 0) {
-                            log.warn("Migration ending after " + nbEntriesMigrated + " entries");
-                            break;
-                        }
-                        setProgress(new Progress(nbEntriesMigrated, nbEntriesToMigrate));
-                        addLogEntries(entries);
-                        pageIdx++;
-                        nbEntriesMigrated += entries.size();
-                        log.info("Migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
-                        double dt = (System.currentTimeMillis() - t0) / 1000.0;
-                        if (dt != 0) {
-                            log.info("Migration speed: " + (nbEntriesMigrated / dt) + " entries/s");
-                        }
-                    }
-                    log.info("Audit migration from SQL to Elasticsearch done: " + nbEntriesMigrated
-                            + " entries migrated");
-
-                    // Log technical event in audit as a flag to know if the migration has been processed at application
-                    // startup
-                    AuditLogger logger = Framework.getService(AuditLogger.class);
-                    LogEntry entry = logger.newLogEntry();
-                    entry.setCategory("NuxeoTechnicalEvent");
-                    entry.setEventId(MIGRATION_DONE_EVENT);
-                    entry.setPrincipalName(SecurityConstants.SYSTEM_USERNAME);
-                    entry.setEventDate(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());
-                    addLogEntries(Collections.singletonList(entry));
-                } finally {
-                    TransactionHelper.startTransaction();
-                    sourceBackend.deactivate();
-                }
-            }
-        };
-
+        Work migrationWork = new ESAuditMigrationWork(MIGRATION_WORK_ID, batchSize);
         wm.schedule(migrationWork);
         return "Migration work started : " + MIGRATION_WORK_ID;
     }
