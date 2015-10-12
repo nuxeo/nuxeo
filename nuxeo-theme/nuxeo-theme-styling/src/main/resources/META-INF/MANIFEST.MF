@@ -7,5 +7,4 @@ Bundle-Vendor: Nuxeo
 Bundle-Category: web
 Require-Bundle: org.nuxeo.web.resources.core
 Nuxeo-Component: OSGI-INF/theme-styling-framework.xml,
- OSGI-INF/theme-local-configuration.xml,
- OSGI-INF/webresources-contrib.xml
+ OSGI-INF/theme-local-configuration.xml

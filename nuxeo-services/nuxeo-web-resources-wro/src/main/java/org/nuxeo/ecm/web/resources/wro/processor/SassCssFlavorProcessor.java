@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.theme.styling.wro;
+package org.nuxeo.ecm.web.resources.wro.processor;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

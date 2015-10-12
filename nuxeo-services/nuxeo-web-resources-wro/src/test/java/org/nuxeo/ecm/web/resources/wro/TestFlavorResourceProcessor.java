@@ -14,7 +14,12 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.theme.styling.tests;
+package org.nuxeo.ecm.web.resources.wro;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -41,12 +46,12 @@ import org.mockito.MockitoAnnotations;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroModelFactory;
+import org.nuxeo.ecm.web.resources.wro.processor.FlavorResourceProcessor;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
-import org.nuxeo.theme.styling.wro.SassCssFlavorProcessor;
 
 import ro.isdc.wro.config.Context;
 import ro.isdc.wro.model.factory.DefaultWroModelFactoryDecorator;
@@ -56,20 +61,15 @@ import ro.isdc.wro.model.resource.ResourceType;
 import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
 import ro.isdc.wro.util.WroTestUtils;
 
-import static org.junit.Assert.assertEquals;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 /**
- * @since 7.4
+ * @since 7.3
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
 @Deploy({ "org.nuxeo.theme.styling", "org.nuxeo.web.resources.core" })
-@LocalDeploy({ "org.nuxeo.theme.styling:webresources-test-config.xml",
-        "org.nuxeo.theme.styling:theme-styling-test-config.xml" })
-public class TestSassResourceProcessor {
+@LocalDeploy({ "org.nuxeo.web.resources.wro:webresources-test-config.xml",
+        "org.nuxeo.web.resources.wro:theme-styling-test-config.xml" })
+public class TestFlavorResourceProcessor {
 
     @Inject
     protected WebResourceManager service;
@@ -102,7 +102,7 @@ public class TestSassResourceProcessor {
         WroModelFactory factory = DefaultWroModelFactoryDecorator.decorate(new NuxeoWroModelFactory(),
                 Collections.emptyList());
         WroTestUtils.init(factory);
-        victim = new SassCssFlavorProcessor();
+        victim = new FlavorResourceProcessor();
         WroTestUtils.initProcessor(victim);
     }
 
@@ -113,18 +113,24 @@ public class TestSassResourceProcessor {
 
     @Test
     public void shouldSupportCorrectResourceTypes() {
-        WroTestUtils.assertProcessorSupportResourceTypes(new SassCssFlavorProcessor(), ResourceType.CSS);
+        WroTestUtils.assertProcessorSupportResourceTypes(new FlavorResourceProcessor(), ResourceType.CSS);
     }
 
     @Test
-    public void testSassResourceProcessor() throws Exception {
-        when(mockRequest.getQueryString()).thenReturn("uri?flavor=default");
-        final Reader reader = new InputStreamReader(getTestFile("themes/sass/app.scss"));
+    public void testFlavorResourceProcessor() throws Exception {
+        checkFlavorFor("wro/css_default_rendering.txt", "default");
+        checkFlavorFor("wro/css_dark_rendering.txt", "dark");
+        checkFlavorFor("wro/css_sub_dark_rendering.txt", "subDark");
+        checkFlavorFor("wro/css_no_flavor_rendering.txt", "foo");
+    }
+
+    protected void checkFlavorFor(String filePath, String flavor) throws Exception {
+        when(mockRequest.getQueryString()).thenReturn("uri?flavor=" + flavor);
+        final Reader reader = new InputStreamReader(getTestFile("themes/css/nuxeo_dm_default.css"));
         final StringWriter writer = new StringWriter();
-        victim.process(Resource.create(org.nuxeo.ecm.web.resources.api.Resource.PREFIX + "sass_app.scss",
+        victim.process(Resource.create(org.nuxeo.ecm.web.resources.api.Resource.PREFIX + "nuxeo_dm_default.css",
                 ResourceType.CSS), reader, writer);
-        ByteArrayInputStream bais = new ByteArrayInputStream(writer.toString().getBytes());
-        WroTestUtils.compare(getTestFile("wro/sass_css_rendering.txt"), bais);
+        WroTestUtils.compare(getTestFile(filePath), new ByteArrayInputStream(writer.toString().getBytes()));
     }
 
     protected static InputStream getTestFile(String filePath) throws Exception {
