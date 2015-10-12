@@ -1296,6 +1296,9 @@ public class DBSSession implements Session {
                 }
                 aceList.add(aceMap);
             }
+            if (aceList.isEmpty()) {
+                continue;
+            }
             State aclMap = new State(2);
             aclMap.put(KEY_ACL_NAME, name);
             aclMap.put(KEY_ACL, (Serializable) aceList);
@@ -1316,6 +1319,9 @@ public class DBSSession implements Session {
             String name = (String) aclMap.get(KEY_ACL_NAME);
             @SuppressWarnings("unchecked")
             List<Serializable> aceList = (List<Serializable>) aclMap.get(KEY_ACL);
+            if (aceList == null) {
+                continue;
+            }
             ACL acl = new ACLImpl(name);
             for (Serializable aceSer : aceList) {
                 State aceMap = (State) aceSer;

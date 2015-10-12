@@ -68,6 +68,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -75,6 +76,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
         "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-permissions-contrib.xml" })
 public class TestSQLRepositorySecurity {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -601,6 +605,26 @@ public class TestSQLRepositorySecurity {
             list = bobSession.query("SELECT * FROM Folder");
             assertEquals(1, list.size());
         }
+    }
+
+    @Test
+    public void testEmptyLocalACL() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
+        doc = session.createDocument(doc);
+        ACP acp = doc.getACP();
+        ACL acl = acp.getOrCreateACL();
+        // don't add anything
+        doc.setACP(acp, true);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        coreFeature.reopenCoreSession();
+
+        session.getDocument(doc.getRef());
+        acp = doc.getACP();
+        acl = acp.getACL(ACL.LOCAL_ACL);
+        assertNull(acl);
     }
 
 }

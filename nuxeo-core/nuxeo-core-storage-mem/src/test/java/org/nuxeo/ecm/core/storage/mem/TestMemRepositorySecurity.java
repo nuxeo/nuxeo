@@ -780,4 +780,22 @@ public class TestMemRepositorySecurity extends MemRepositoryTestCase {
         }
     }
 
+    @Test
+    public void testEmptyLocalACL() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
+        doc = session.createDocument(doc);
+        ACP acp = doc.getACP();
+        ACL acl = acp.getOrCreateACL();
+        // don't add anything
+        doc.setACP(acp, true);
+        session.save();
+
+        nextTransaction();
+
+        session.getDocument(doc.getRef());
+        acp = doc.getACP();
+        acl = acp.getACL(ACL.LOCAL_ACL);
+        assertNull(acl);
+    }
+
 }
