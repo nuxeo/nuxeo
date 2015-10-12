@@ -596,7 +596,9 @@ public class State implements StateAccessor, Serializable {
     @Override
     public Object[] getArray(String name) {
         Serializable object = get(name);
-        if (object instanceof Object[]) {
+        if (object == null) {
+            return null;
+        } else if (object instanceof Object[]) {
             return (Object[]) object;
         } else {
             // data migration not done in database, return an array anyway
