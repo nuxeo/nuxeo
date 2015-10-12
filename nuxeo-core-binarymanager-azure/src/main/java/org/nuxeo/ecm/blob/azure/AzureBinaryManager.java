@@ -18,20 +18,32 @@
 package org.nuxeo.ecm.blob.azure;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
 
 import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.StorageCredentialsSharedAccessSignature;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.SharedAccessBlobHeaders;
+import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
 
 /**
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
@@ -87,6 +99,38 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
 
     protected FileStorage getFileStorage() {
         return new AzureFileStorage(container);
+    }
+
+    @Override
+    protected URI getRemoteUri(String digest, ManagedBlob blob, HttpServletRequest servletRequest) throws IOException {
+        try {
+            CloudBlockBlob blockBlobReference = container.getBlockBlobReference(digest);
+            SharedAccessBlobPolicy policy = new SharedAccessBlobPolicy();
+            policy.setPermissionsFromString("r");
+
+            Instant endDateTime = LocalDateTime.now()
+                                               .plusSeconds(directDownloadExpire)
+                                               .atZone(ZoneId.systemDefault())
+                                               .toInstant();
+            policy.setSharedAccessExpiryTime(Date.from(endDateTime));
+
+            SharedAccessBlobHeaders headers = new SharedAccessBlobHeaders();
+            headers.setContentDisposition(getContentDispositionHeader(blob, servletRequest));
+            headers.setContentType(getContentTypeHeader(blob));
+
+            String sas = blockBlobReference.generateSharedAccessSignature(policy, headers, null);
+
+            CloudBlockBlob signedBlob = new CloudBlockBlob(blockBlobReference.getUri(),
+                    new StorageCredentialsSharedAccessSignature(sas));
+            return signedBlob.getQualifiedUri();
+        } catch (URISyntaxException | InvalidKeyException | StorageException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    protected boolean isDirectDownload() {
+        return super.isDirectDownload();
     }
 
     protected void removeBinary(String digest) {

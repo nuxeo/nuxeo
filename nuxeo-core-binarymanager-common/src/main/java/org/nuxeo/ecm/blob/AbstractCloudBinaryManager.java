@@ -26,8 +26,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.CachingBinaryManager;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.api.Framework;
 
@@ -86,7 +89,6 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
         this.properties = properties;
-
 
         // Enable direct download from the remote binary store
         directDownload = Boolean.parseBoolean(getProperty(DIRECTDOWNLOAD_PROPERTY, DEFAULT_DIRECTDOWNLOAD));
@@ -176,5 +178,26 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
     public String getConfigurationKey(String propertyName) {
         return String.format("%s.%s", getPropertyPrefix(), propertyName);
+    }
+
+    protected String getContentTypeHeader(Blob blob) {
+        String contentType = blob.getMimeType();
+        String encoding = blob.getEncoding();
+        if (contentType != null && !StringUtils.isBlank(encoding)) {
+            int i = contentType.indexOf(';');
+            if (i >= 0) {
+                contentType = contentType.substring(0, i);
+            }
+            contentType += "; charset=" + encoding;
+        }
+        return contentType;
+    }
+
+    protected String getContentDispositionHeader(Blob blob, HttpServletRequest servletRequest) {
+        if (servletRequest == null) {
+            return RFC2231.encodeContentDisposition(blob.getFilename(), false, null);
+        } else {
+            return DownloadHelper.getRFC2231ContentDisposition(servletRequest, blob.getFilename());
+        }
     }
 }

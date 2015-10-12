@@ -44,7 +44,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.ecm.core.api.Blob;
@@ -53,7 +52,6 @@ import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
-import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.api.Framework;
 
@@ -594,27 +592,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             return url.toURI();
         } catch (URISyntaxException e) {
             throw new IOException(e);
-        }
-    }
-
-    protected String getContentTypeHeader(Blob blob) {
-        String contentType = blob.getMimeType();
-        String encoding = blob.getEncoding();
-        if (contentType != null && !StringUtils.isBlank(encoding)) {
-            int i = contentType.indexOf(';');
-            if (i >= 0) {
-                contentType = contentType.substring(0, i);
-            }
-            contentType += "; charset=" + encoding;
-        }
-        return contentType;
-    }
-
-    protected String getContentDispositionHeader(Blob blob, HttpServletRequest servletRequest) {
-        if (servletRequest == null) {
-            return RFC2231.encodeContentDisposition(blob.getFilename(), false, null);
-        } else {
-            return DownloadHelper.getRFC2231ContentDisposition(servletRequest, blob.getFilename());
         }
     }
 
