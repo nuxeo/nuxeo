@@ -5,16 +5,29 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxr="http://nuxeo.org/nxweb/resources">
 
-  <nxu:set var="page" value="#{themeStylingService.getPage(pageName)}">
-    <c:if test="#{page != null}">
-      <nxr:bundle items="#{page.resourceBundles}"
+  <c:choose>
+    <c:when test="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.combinePageResources')}">
+      <nxr:page name="#{pageName}"
         target="#{pageTarget}"
         target_js="#{pageJsTarget}"
         target_css="#{pageCssTarget}"
         target_html="#{pageHtmlTarget}">
         <f:param name="flavor" value="#{empty pageFlavor? 'default': pageFlavor}" />
-      </nxr:bundle>
-    </c:if>
-  </nxu:set>
+      </nxr:page>
+    </c:when>
+    <c:otherwise>
+      <nxu:set var="page" value="#{themeStylingService.getPage(pageName)}">
+        <c:if test="#{page != null}">
+          <nxr:bundle items="#{page.resourceBundles}"
+            target="#{pageTarget}"
+            target_js="#{pageJsTarget}"
+            target_css="#{pageCssTarget}"
+            target_html="#{pageHtmlTarget}">
+            <f:param name="flavor" value="#{empty pageFlavor? 'default': pageFlavor}" />
+          </nxr:bundle>
+        </c:if>
+      </nxu:set>
+    </c:otherwise>
+  </c:choose>
 
 </ui:composition>

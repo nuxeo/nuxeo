@@ -16,11 +16,12 @@
  */
 package org.nuxeo.ecm.web.resources.wro;
 
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
 
@@ -32,7 +33,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroCacheKeyFactory;
+import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroPageCacheKeyFactory;
 
 import ro.isdc.wro.cache.CacheKey;
 import ro.isdc.wro.config.Context;
@@ -43,9 +44,9 @@ import ro.isdc.wro.model.group.processor.InjectorBuilder;
 import ro.isdc.wro.model.resource.ResourceType;
 
 /**
- * @since 7.3
+ * @since 7.10
  */
-public class TestNuxeoCacheKeyFactory {
+public class TestNuxeoWroPageCacheKeyFactory {
 
     @Mock
     private HttpServletRequest mockRequest;
@@ -53,7 +54,7 @@ public class TestNuxeoCacheKeyFactory {
     @Mock
     private GroupExtractor mockGroupExtractor;
 
-    private NuxeoWroCacheKeyFactory victim;
+    private NuxeoWroPageCacheKeyFactory victim;
 
     @BeforeClass
     public static void onBeforeClass() {
@@ -69,7 +70,7 @@ public class TestNuxeoCacheKeyFactory {
     public void setUp() {
         initMocks(this);
         Context.set(Context.standaloneContext());
-        victim = new NuxeoWroCacheKeyFactory();
+        victim = new NuxeoWroPageCacheKeyFactory();
         final WroManagerFactory managerFactory = new BaseWroManagerFactory().setGroupExtractor(mockGroupExtractor);
         InjectorBuilder.create(managerFactory).build().inject(victim);
     }
@@ -91,19 +92,20 @@ public class TestNuxeoCacheKeyFactory {
 
     @Test
     public void shouldCreateNullCacheKeyWhenRequestDoesNotContainEnoughInfo() {
+        when(mockRequest.getRequestURI()).thenReturn("foo");
         assertNull(victim.create(mockRequest));
     }
 
     @Test
     public void shouldCreateNullCacheKeyWhenRequestDoesNotContainResourceType() {
-        when(mockGroupExtractor.getGroupName(mockRequest)).thenReturn("g1");
+        when(mockRequest.getRequestURI()).thenReturn("foo");
         when(mockGroupExtractor.getResourceType(mockRequest)).thenReturn(null);
         assertNull(victim.create(mockRequest));
     }
 
     @Test
     public void shouldCreateNullCacheKeyWhenRequestDoesNotGroupName() {
-        when(mockGroupExtractor.getGroupName(mockRequest)).thenReturn(null);
+        when(mockRequest.getRequestURI()).thenReturn("foo");
         when(mockGroupExtractor.getResourceType(mockRequest)).thenReturn(ResourceType.CSS);
         assertNull(victim.create(mockRequest));
     }
@@ -111,7 +113,7 @@ public class TestNuxeoCacheKeyFactory {
     @Test
     public void shouldCreateValidCacheKeyWhenRequestContainsAllRequiredInfo() {
         when(mockGroupExtractor.isMinimized(mockRequest)).thenReturn(true);
-        when(mockGroupExtractor.getGroupName(mockRequest)).thenReturn("g1");
+        when(mockRequest.getRequestURI()).thenReturn("/wro/api/v1/resource/page/g1");
         when(mockGroupExtractor.getResourceType(mockRequest)).thenReturn(ResourceType.CSS);
         assertEquals(new CacheKey("g1", ResourceType.CSS, true), victim.create(mockRequest));
     }
@@ -119,25 +121,44 @@ public class TestNuxeoCacheKeyFactory {
     @Test
     public void shouldHaveMinimizationTurnedOffWhenMinimizeEnabledIsFalse() throws IOException {
         when(mockGroupExtractor.isMinimized(mockRequest)).thenReturn(true);
-        when(mockGroupExtractor.getGroupName(mockRequest)).thenReturn("g1");
+        when(mockRequest.getRequestURI()).thenReturn("/wro/api/v1/resource/page/g1");
         when(mockGroupExtractor.getResourceType(mockRequest)).thenReturn(ResourceType.CSS);
         Context.get().getConfig().setMinimizeEnabled(false);
         assertEquals(new CacheKey("g1", ResourceType.CSS, false), victim.create(mockRequest));
     }
 
     @Test
-    public void shouldChangeWithFlavor() throws IOException {
+    public void shouldDetectSlash() throws IOException {
         Context.get().getConfig().setMinimizeEnabled(false);
-        when(mockGroupExtractor.getGroupName(mockRequest)).thenReturn("g1");
+        when(mockRequest.getRequestURI()).thenReturn("/wro/api/v1/resource/page/galaxy/default");
         when(mockGroupExtractor.getResourceType(mockRequest)).thenReturn(ResourceType.CSS);
 
         when(mockRequest.getQueryString()).thenReturn("flavor=foo");
-        CacheKey fooKey = new CacheKey("g1", ResourceType.CSS, false);
+        CacheKey fooKey = new CacheKey("galaxy/default", ResourceType.CSS, false);
         fooKey.addAttribute("flavor", "foo");
         assertEquals(fooKey, victim.create(mockRequest));
 
         when(mockRequest.getQueryString()).thenReturn("flavor=bar");
-        CacheKey barKey = new CacheKey("g1", ResourceType.CSS, false);
+        CacheKey barKey = new CacheKey("galaxy/default", ResourceType.CSS, false);
+        barKey.addAttribute("flavor", "bar");
+        assertEquals(barKey, victim.create(mockRequest));
+
+        assertNotEquals(barKey, fooKey);
+    }
+
+    @Test
+    public void shouldChangeWithFlavor() throws IOException {
+        Context.get().getConfig().setMinimizeEnabled(false);
+        when(mockRequest.getRequestURI()).thenReturn("/wro/api/v1/resource/page/galaxy/default");
+        when(mockGroupExtractor.getResourceType(mockRequest)).thenReturn(ResourceType.CSS);
+
+        when(mockRequest.getQueryString()).thenReturn("flavor=foo");
+        CacheKey fooKey = new CacheKey("galaxy/default", ResourceType.CSS, false);
+        fooKey.addAttribute("flavor", "foo");
+        assertEquals(fooKey, victim.create(mockRequest));
+
+        when(mockRequest.getQueryString()).thenReturn("flavor=bar");
+        CacheKey barKey = new CacheKey("galaxy/default", ResourceType.CSS, false);
         barKey.addAttribute("flavor", "bar");
         assertEquals(barKey, victim.create(mockRequest));
 
@@ -147,16 +168,16 @@ public class TestNuxeoCacheKeyFactory {
     @Test
     public void shouldChangeWithParams() throws IOException {
         Context.get().getConfig().setMinimizeEnabled(false);
-        when(mockGroupExtractor.getGroupName(mockRequest)).thenReturn("g1");
+        when(mockRequest.getRequestURI()).thenReturn("/wro/api/v1/resource/page/galaxy/default");
         when(mockGroupExtractor.getResourceType(mockRequest)).thenReturn(ResourceType.CSS);
 
         when(mockRequest.getQueryString()).thenReturn("flavor=foo");
-        CacheKey fooKey = new CacheKey("g1", ResourceType.CSS, false);
+        CacheKey fooKey = new CacheKey("galaxy/default", ResourceType.CSS, false);
         fooKey.addAttribute("flavor", "foo");
         assertEquals(fooKey, victim.create(mockRequest));
 
         when(mockRequest.getQueryString()).thenReturn("flavor=foo&bar=blah");
-        CacheKey barKey = new CacheKey("g1", ResourceType.CSS, false);
+        CacheKey barKey = new CacheKey("galaxy/default", ResourceType.CSS, false);
         barKey.addAttribute("flavor", "foo");
         barKey.addAttribute("bar", "blah");
         assertEquals(barKey, victim.create(mockRequest));

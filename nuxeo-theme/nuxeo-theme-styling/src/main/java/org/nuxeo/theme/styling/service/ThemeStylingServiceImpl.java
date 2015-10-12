@@ -515,15 +515,39 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         if (page != null) {
             // merge with global resources
             PageDescriptor globalPage = pageReg.getPage("*");
-            if (globalPage != null) {
-                PageDescriptor clone = globalPage.clone();
-                clone.setAppendFlavors(true);
-                clone.setAppendResources(true);
-                clone.setAppendStyles(true);
-                page.merge(clone);
-            }
+            mergePage(page, globalPage);
         }
         return page;
+    }
+
+    @Override
+    public List<PageDescriptor> getPages() {
+        List<PageDescriptor> pages = new ArrayList<PageDescriptor>();
+        List<String> names = pageReg.getPageNames();
+        PageDescriptor globalPage = pageReg.getPage("*");
+        for (String name : names) {
+            if ("*".equals(name)) {
+                continue;
+            }
+            PageDescriptor page = pageReg.getPage(name);
+            if (page != null) {
+                // merge with global resources
+                mergePage(page, globalPage);
+            }
+            pages.add(page);
+        }
+        return pages;
+    }
+
+    protected void mergePage(PageDescriptor page, PageDescriptor globalPage) {
+        if (page != null && globalPage != null) {
+            // merge with global resources
+            PageDescriptor clone = globalPage.clone();
+            clone.setAppendFlavors(true);
+            clone.setAppendResources(true);
+            clone.setAppendStyles(true);
+            page.merge(clone);
+        }
     }
 
     @Override

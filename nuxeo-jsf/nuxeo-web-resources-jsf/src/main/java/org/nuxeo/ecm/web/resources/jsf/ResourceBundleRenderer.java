@@ -62,9 +62,9 @@ public class ResourceBundleRenderer extends AbstractResourceRenderer {
         List<Resource> rs = wrm.getResources(new ResourceContextImpl(), name, type);
         if (rs != null && !rs.isEmpty()) {
             if (ResourceType.css.equals(type)) {
-                encodeEnd(context, component, ResourceType.css, ENDPOINT_PATH + name + ".css");
+                encodeEnd(context, component, ResourceType.css, BUNDLE_ENDPOINT_PATH + name + ".css");
             } else if (ResourceType.js.equals(type)) {
-                encodeEnd(context, component, ResourceType.js, ENDPOINT_PATH + name + ".js");
+                encodeEnd(context, component, ResourceType.js, BUNDLE_ENDPOINT_PATH + name + ".js");
             } else if (ResourceType.html.equals(type)) {
                 for (Resource r : rs) {
                     encodeEnd(context, component, ResourceType.html, COMPONENTS_PATH + r.getPath());

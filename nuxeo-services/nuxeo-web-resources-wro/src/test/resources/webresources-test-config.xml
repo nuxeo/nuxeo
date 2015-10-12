@@ -85,4 +85,16 @@
 
   </extension>
 
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <page name="galaxy/default" charset="utf-8">
+      <resources>
+        <bundle>myapp</bundle>
+        <bundle>all</bundle>
+        <resource>cycle3.js</resource>
+      </resources>
+    </page>
+
+  </extension>
+
 </component>

@@ -95,6 +95,15 @@ public interface ThemeStylingService {
     PageDescriptor getPage(String name);
 
     /**
+     * Rerurns all pages declared on the service, except the global one named "*".
+     * <p>
+     * Resources and bundles declared for all pages will also be attached to returned pages.
+     *
+     * @since 7.10
+     **/
+    List<PageDescriptor> getPages();
+
+    /**
      * Returns the negotiated String value for given target variable.
      * <p>
      * Context can be dependent on the target variable, depending on how this method is called/used and corresponding

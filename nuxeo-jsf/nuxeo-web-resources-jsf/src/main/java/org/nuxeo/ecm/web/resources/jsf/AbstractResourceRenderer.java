@@ -43,7 +43,21 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.Param;
  */
 public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
 
-    public static final String ENDPOINT_PATH = "/wro/api/v1/resource/bundle/";
+    /**
+     * @since 7.10
+     */
+    public static final String BUNDLE_ENDPOINT_PATH = "/wro/api/v1/resource/bundle/";
+
+    /**
+     * @deprecated since 7.10, use {@link #BUNDLE_ENDPOINT_PATH} instead.
+     */
+    @Deprecated
+    public static final String ENDPOINT_PATH = BUNDLE_ENDPOINT_PATH;
+
+    /**
+     * @since 7.10
+     */
+    public static final String PAGE_ENDPOINT_PATH = "/wro/api/v1/resource/page/";
 
     public static final String COMPONENTS_PATH = "/bower_components/";
 
@@ -73,8 +87,8 @@ public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
         return getUrlWithParams(context, component, value);
     }
 
-    protected org.nuxeo.ecm.web.resources.api.Resource resolveNuxeoResource(FacesContext context,
-            UIComponent component, String resource) throws UnsupportedEncodingException {
+    protected org.nuxeo.ecm.web.resources.api.Resource resolveNuxeoResource(FacesContext context, UIComponent component,
+            String resource) throws UnsupportedEncodingException {
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
         return wrm.getResource(resource);
     }
@@ -89,13 +103,13 @@ public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
             if (!suffixed.endsWith(ResourceType.css.getSuffix())) {
                 suffixed += ResourceType.css.getSuffix();
             }
-            return ENDPOINT_PATH + suffixed;
+            return BUNDLE_ENDPOINT_PATH + suffixed;
         } else if (ResourceType.js.matches(resource)) {
             String suffixed = name;
             if (!suffixed.endsWith(ResourceType.js.getSuffix())) {
                 suffixed += ResourceType.js.getSuffix();
             }
-            return ENDPOINT_PATH + suffixed;
+            return BUNDLE_ENDPOINT_PATH + suffixed;
         } else if (ResourceType.html.matches(resource)) {
             // assume html resources are copied to the war "components" sub-directory for now
             return COMPONENTS_PATH + resource.getPath();
@@ -141,15 +155,14 @@ public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
 
         WebConfiguration webConfig = WebConfiguration.getInstance();
 
-        if (library == null
-                && name != null
-                && name.startsWith(webConfig.getOptionValue(WebConfiguration.WebContextInitParameter.WebAppContractsDirectory))) {
+        if (library == null && name != null && name.startsWith(
+                webConfig.getOptionValue(WebConfiguration.WebContextInitParameter.WebAppContractsDirectory))) {
 
             if (context.isProjectStage(ProjectStage.Development)) {
 
                 String msg = "Illegal path, direct contract references are not allowed: " + name;
-                context.addMessage(component.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR, msg,
-                        msg));
+                context.addMessage(component.getClientId(context),
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
             }
             resource = null;
         }
@@ -158,8 +171,8 @@ public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
 
             if (context.isProjectStage(ProjectStage.Development)) {
                 String msg = "Unable to find resource " + (library == null ? "" : library + ", ") + name;
-                context.addMessage(component.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR, msg,
-                        msg));
+                context.addMessage(component.getClientId(context),
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg));
             }
 
         } else {

@@ -40,6 +40,11 @@ public class NuxeoWroServletContextListener extends WroServletContextListener {
     }
 
     @Override
+    protected String getListenerName() {
+        return "bundle";
+    }
+
+    @Override
     protected WroManagerFactory newManagerFactory() {
         return new NuxeoWroManagerFactory();
     }

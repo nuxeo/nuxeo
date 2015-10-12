@@ -23,13 +23,9 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIOutput;
 import javax.faces.view.facelets.ComponentConfig;
-import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
-import javax.faces.view.facelets.MetaRuleset;
-import javax.faces.view.facelets.MetaTagHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 
@@ -37,19 +33,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.web.resources.api.Resource;
-import org.nuxeo.ecm.web.resources.api.ResourceContextImpl;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
-import org.nuxeo.ecm.web.resources.jsf.ResourceBundleRenderer;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.faces.facelets.tag.TagAttributeImpl;
-import com.sun.faces.facelets.tag.TagAttributesImpl;
 import com.sun.faces.facelets.tag.jsf.html.ScriptResourceHandler;
 import com.sun.faces.facelets.tag.jsf.html.StylesheetResourceHandler;
-import com.sun.faces.facelets.tag.ui.IncludeHandler;
 
 /**
  * Tag handler for resource bundles, resolving early resources that need to be included at build time (e.g JSF and XHTML
@@ -57,39 +47,15 @@ import com.sun.faces.facelets.tag.ui.IncludeHandler;
  *
  * @since 7.4
  */
-public class ResourceBundleHandler extends MetaTagHandler {
+public class ResourceBundleHandler extends PageResourceHandler {
 
     private static final Log log = LogFactory.getLog(ResourceBundleHandler.class);
 
-    protected final TagConfig config;
-
-    protected final TagAttribute name;
-
-    protected final TagAttribute type;
-
     protected final TagAttribute items;
-
-    protected final TagAttribute target;
-
-    protected final TagAttribute[] vars;
-
-    protected final ResourceType[] handledTypesArray = { ResourceType.css, ResourceType.js, ResourceType.jsfcss,
-            ResourceType.jsfjs, ResourceType.html, ResourceType.xhtml, ResourceType.xhtmlfirst };
 
     public ResourceBundleHandler(TagConfig config) {
         super(config);
-        this.config = config;
-        name = getAttribute("name");
         items = getAttribute("items");
-        type = getAttribute("type");
-        target = getAttribute("target");
-        vars = tag.getAttributes().getAll();
-    }
-
-    @Override
-    @SuppressWarnings("rawtypes")
-    protected MetaRuleset createMetaRuleset(Class type) {
-        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -139,21 +105,30 @@ public class ResourceBundleHandler extends MetaTagHandler {
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
         LeafFaceletHandler leaf = new LeafFaceletHandler();
         if (rtype == ResourceType.any) {
-            for (String bundle : bundles) {
-                String cssTarget = targetValue;
-                String jsTarget = targetValue;
-                String htmlTarget = targetValue;
-                if (vars != null) {
-                    for (TagAttribute var : vars) {
-                        if ("target_css".equalsIgnoreCase(var.getLocalName())) {
-                            cssTarget = var.getValue(ctx);
-                        } else if ("target_js".equalsIgnoreCase(var.getLocalName())) {
-                            jsTarget = var.getValue(ctx);
-                        } else if ("target_html".equalsIgnoreCase(var.getLocalName())) {
-                            htmlTarget = var.getValue(ctx);
+            String cssTarget = targetValue;
+            String jsTarget = targetValue;
+            String htmlTarget = targetValue;
+            if (vars != null) {
+                for (TagAttribute var : vars) {
+                    if ("target_css".equalsIgnoreCase(var.getLocalName())) {
+                        String val = resolveAttribute(ctx, var);
+                        if (val != null) {
+                            cssTarget = val;
+                        }
+                    } else if ("target_js".equalsIgnoreCase(var.getLocalName())) {
+                        String val = resolveAttribute(ctx, var);
+                        if (val != null) {
+                            jsTarget = val;
+                        }
+                    } else if ("target_html".equalsIgnoreCase(var.getLocalName())) {
+                        String val = resolveAttribute(ctx, var);
+                        if (val != null) {
+                            htmlTarget = val;
                         }
                     }
                 }
+            }
+            for (String bundle : bundles) {
                 // first include handlers that match JSF resources
                 applyBundle(ctx, parent, wrm, bundle, ResourceType.jsfcss, cssTarget, leaf);
                 applyBundle(ctx, parent, wrm, bundle, ResourceType.jsfjs, jsTarget, leaf);
@@ -175,120 +150,38 @@ public class ResourceBundleHandler extends MetaTagHandler {
 
     protected void applyBundle(FaceletContext ctx, UIComponent parent, WebResourceManager wrm, String bundle,
             ResourceType type, String targetValue, FaceletHandler nextHandler) throws IOException {
-        List<Resource> rs = wrm.getResources(new ResourceContextImpl(), bundle, type.name());
-        if (rs != null && !rs.isEmpty()) {
-            switch (type) {
-            case jsfjs:
-                for (Resource r : rs) {
-                    ComponentConfig config = getJSFResourceComponentConfig(r, "javax.faces.resource.Script",
-                            targetValue, nextHandler);
-                    new ScriptResourceHandler(config).apply(ctx, parent);
-                }
-                break;
-            case jsfcss:
-                for (Resource resource : rs) {
-                    ComponentConfig config = getJSFResourceComponentConfig(resource, "javax.faces.resource.Stylesheet",
-                            targetValue, nextHandler);
-                    new StylesheetResourceHandler(config).apply(ctx, parent);
-                }
-                break;
-            case xhtmlfirst:
-                includeXHTML(ctx, parent, rs, nextHandler);
-                break;
-            case xhtml:
-                includeXHTML(ctx, parent, rs, nextHandler);
-                break;
-            case js:
-                includeResourceBundle(ctx, parent, bundle, type, targetValue, nextHandler);
-                break;
-            case css:
-                includeResourceBundle(ctx, parent, bundle, type, targetValue, nextHandler);
-                break;
-            case html:
-                includeResourceBundle(ctx, parent, bundle, type, targetValue, nextHandler);
-                break;
-            default:
-                break;
+        switch (type) {
+        case jsfjs:
+            for (Resource r : retrieveResources(wrm, bundle, type)) {
+                ComponentConfig config = getJSFResourceComponentConfig(r, "javax.faces.resource.Script", targetValue,
+                        nextHandler);
+                new ScriptResourceHandler(config).apply(ctx, parent);
             }
-        }
-    }
-
-    protected ResourceType resolveType(String type) {
-        if (StringUtils.isBlank(type)) {
-            return ResourceType.any;
-        }
-        ResourceType parsed = ResourceType.parse(type);
-        if (parsed != null) {
-            List<ResourceType> handled = Arrays.asList(handledTypesArray);
-            if (handled.contains(parsed)) {
-                return parsed;
+            break;
+        case jsfcss:
+            for (Resource r : retrieveResources(wrm, bundle, type)) {
+                ComponentConfig config = getJSFResourceComponentConfig(r, "javax.faces.resource.Stylesheet",
+                        targetValue, nextHandler);
+                new StylesheetResourceHandler(config).apply(ctx, parent);
             }
-        }
-        return null;
-    }
-
-    protected TagAttributeImpl getTagAttribute(String name, String value) {
-        return new TagAttributeImpl(tag.getLocation(), "", name, name, value);
-    }
-
-    protected ComponentConfig getJSFResourceComponentConfig(Resource resource, String rendererType, String target,
-            FaceletHandler nextHandler) {
-        String componentType = UIOutput.COMPONENT_TYPE;
-        String uri = resource.getURI();
-        String resourceName;
-        String resourceLib;
-        int i = uri != null ? uri.indexOf(":") : -1;
-        if (i > 0) {
-            resourceLib = uri.substring(0, i);
-            resourceName = uri.substring(i + 1);
-        } else {
-            resourceLib = null;
-            resourceName = uri;
-        }
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
-        attrs.add(getTagAttribute("name", resourceName));
-        if (!StringUtils.isBlank(resourceLib)) {
-            attrs.add(getTagAttribute("library", resourceLib));
-        }
-        if (!StringUtils.isBlank(target)) {
-            attrs.add(getTagAttribute("target", target));
-        }
-        TagAttributesImpl attributes = new TagAttributesImpl(attrs.toArray(new TagAttribute[] {}));
-        ComponentConfig cconfig = TagConfigFactory.createComponentConfig(config, tagId, attributes, nextHandler,
-                componentType, rendererType);
-        return cconfig;
-    }
-
-    protected void includeResourceBundle(FaceletContext ctx, UIComponent parent, String name, ResourceType type,
-            String target, FaceletHandler nextHandler) throws IOException {
-        String componentType = UIOutput.COMPONENT_TYPE;
-        List<TagAttribute> attrs = new ArrayList<TagAttribute>();
-        attrs.add(getTagAttribute("name", name));
-        attrs.add(getTagAttribute("type", type.name()));
-        if (!StringUtils.isBlank(target)) {
-            attrs.add(getTagAttribute("target", target));
-        }
-        TagAttributesImpl attributes = new TagAttributesImpl(attrs.toArray(new TagAttribute[] {}));
-        ComponentConfig cconfig = TagConfigFactory.createComponentConfig(config, tagId, attributes, nextHandler,
-                componentType, ResourceBundleRenderer.RENDERER_TYPE);
-        new ComponentHandler(cconfig).apply(ctx, parent);
-    }
-
-    protected void includeXHTML(FaceletContext ctx, UIComponent parent, List<Resource> rs, FaceletHandler leaf)
-            throws IOException {
-        if (rs != null && !rs.isEmpty()) {
-            for (Resource r : rs) {
-                String uri = r.getURI();
-                if (StringUtils.isBlank(uri)) {
-                    log.error(String.format("Invalid resource '%s': no uri defined at %s", r.getName(),
-                            tag.getLocation()));
-                    continue;
-                }
-                TagAttributeImpl srcAttr = getTagAttribute("src", uri);
-                TagAttributesImpl attributes = new TagAttributesImpl(new TagAttribute[] { srcAttr });
-                TagConfig xconfig = TagConfigFactory.createTagConfig(config, tagId, attributes, leaf);
-                new IncludeHandler(xconfig).apply(ctx, parent);
-            }
+            break;
+        case xhtmlfirst:
+            includeXHTML(ctx, parent, retrieveResources(wrm, bundle, type), nextHandler);
+            break;
+        case xhtml:
+            includeXHTML(ctx, parent, retrieveResources(wrm, bundle, type), nextHandler);
+            break;
+        case js:
+            includeResourceBundle(ctx, parent, bundle, type, targetValue, nextHandler);
+            break;
+        case css:
+            includeResourceBundle(ctx, parent, bundle, type, targetValue, nextHandler);
+            break;
+        case html:
+            includeResourceBundle(ctx, parent, bundle, type, targetValue, nextHandler);
+            break;
+        default:
+            break;
         }
     }
 

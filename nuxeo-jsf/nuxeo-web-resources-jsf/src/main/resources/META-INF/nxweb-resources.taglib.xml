@@ -77,7 +77,7 @@
       </p>
       <p>
         This tag will generate multiple HTML tags depending on resource types
-        inside the bundle (js, css, hmtl) and will respect dependencies
+        inside the bundle (JS, CSS, HTML) and will respect dependencies
         between resources, but will place CSS aggregated resources first, then
         JavaScript aggregated resources, then HTML imports (not aggregated).
       </p>
@@ -95,10 +95,28 @@
     </description>
     <attribute>
       <name>name</name>
-      <required>true</required>
+      <required>false</required>
       <type>java.lang.String</type>
       <description>
         Name of the resource bundle as registered on the service.
+      </description>
+    </attribute>
+    <attribute>
+      <name>items</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Collection of bundle names, as an alternative to a single name of
+        a page.
+      </description>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The type of resource to select (css, js, etc...). All resources will
+        be taken into account if empty.
       </description>
     </attribute>
     <attribute>
@@ -112,6 +130,122 @@
         rendered at the same point in the view where the tag is located.
         Currently supported values for this attribute are "head", "body", and
         "form".
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_js</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for JavaScript resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_css</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for CSS resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_html</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for HTML resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
+    <tag-name>page</tag-name>
+    <handler-class>
+      org.nuxeo.ecm.web.resources.jsf.handler.PageResourceHandler
+    </handler-class>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler managing import of all resource bundles declared on the
+        WebResourceManager service for a page declared on the
+        ThemeStylingService.
+      </p>
+      <p>
+        This tag will generate multiple HTML tags depending on resource types
+        inside the bundles (js, css, hmtl) and will respect dependencies
+        between resources, but will place CSS aggregated resources first, then
+        JavaScript aggregated resources, then HTML imports (not aggregated).
+      </p>
+      <p>
+        It also handles inclusion of XHTML templates, using resource types
+        xhtml and xhtmlfirst: resources with type xhtmlfirst will be included
+        before any other type of resources; resources with type xhtml will be
+        included after.
+      </p>
+      Example:
+      <pre>
+        &lt;nxr:page name="mypage" target="head" /&gt;
+      </pre>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the page as registered on the ThemeService.
+      </description>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The type of resource to select (css, js, etc...). All resources will
+        be taken into account if empty.
+      </description>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The target area for which this resource will be rendered. For
+        example, target="head" would cause the resource to be rendered within
+        the head element. If no value is specified, the script element is
+        rendered at the same point in the view where the tag is located.
+        Currently supported values for this attribute are "head", "body", and
+        "form".
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_js</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for JavaScript resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_css</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for CSS resources (optional, defaults to target
+        attribute value).
+      </description>
+    </attribute>
+    <attribute>
+      <name>target_html</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Specific target for HTML resources (optional, defaults to target
+        attribute value).
       </description>
     </attribute>
   </tag>

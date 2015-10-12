@@ -89,6 +89,15 @@ public class PageRegistry extends ContributionFragmentRegistry<PageDescriptor> {
     }
 
     /**
+     * Returns all the page names.
+     *
+     * @since 7.10
+     */
+    public List<String> getPageNames() {
+        return new ArrayList<String>(pageResources.keySet());
+    }
+
+    /**
      * @deprecated since 7.4: use {@link #getPages()} instead.
      */
     @Deprecated
