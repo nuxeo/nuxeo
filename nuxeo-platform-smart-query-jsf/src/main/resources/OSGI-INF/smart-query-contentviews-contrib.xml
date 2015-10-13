@@ -44,16 +44,12 @@
 
       <searchLayout name="nxql_incremental_smart_query" />
       <resultLayouts>
-        <layout name="search_listing_ajax" title="document_listing"
+        <layout name="document_listing_thumbnail" title="document_thumbnail_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon_2_columns_icon.png"
+          showSlideshow="true" showEditRows="true" />
+        <layout name="document_listing_table" title="document_listing"
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
-          showCSVExport="true" />
-        <layout
-          name="document_virtual_navigation_listing_ajax_compact_2_columns"
-          title="document_listing_compact_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_compact_2_columns_icon.png" />
-        <layout name="document_virtual_navigation_listing_ajax_icon_2_columns"
-          title="document_listing_icon_2_columns" translateTitle="true"
-          iconPath="/icons/document_listing_icon_2_columns_icon.png" />
+          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
       </resultLayouts>
       <resultColumns>
         #{smartNXQLQueryActions.selectedLayoutColumns}
