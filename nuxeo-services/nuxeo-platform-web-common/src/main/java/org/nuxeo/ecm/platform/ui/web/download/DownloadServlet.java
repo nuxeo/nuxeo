@@ -216,7 +216,7 @@ public class DownloadServlet extends HttpServlet {
             session.removeAttribute(blobId);
         }
         DownloadService downloadService = Framework.getService(DownloadService.class);
-        downloadService.downloadBlob(req, resp, null, null, blob, null, "DownloadFile");
+        downloadService.downloadBlob(req, resp, null, null, blob, null, "operation");
     }
 
     // used by ClipboardActionsBean
@@ -228,7 +228,7 @@ public class DownloadServlet extends HttpServlet {
         try {
             Blob zipBlob = Blobs.createBlob(tmpZip);
             DownloadService downloadService = Framework.getService(DownloadService.class);
-            downloadService.downloadBlob(req, resp, null, null, zipBlob, "clipboard.zip", "ZipExport");
+            downloadService.downloadBlob(req, resp, null, null, zipBlob, "clipboard.zip", "clipboardZip");
         } finally {
             tmpZip.delete();
         }
