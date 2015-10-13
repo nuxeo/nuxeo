@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -122,6 +123,12 @@ public class TestPageProvider {
         consoleAppender.setThreshold(consoleThresold);
         consoleThresold = null;
     }
+
+    @Before
+    public void setupIndex() throws Exception {
+        esa.initIndexes(true);
+    }
+
     @Test
     public void ICanUseANativePageProvider() throws Exception {
         PageProviderService pps = Framework.getService(PageProviderService.class);

@@ -21,6 +21,7 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -118,6 +119,11 @@ public class TestTreeIndexing {
     public void disableSynchronousMode() {
         ElasticSearchInlineListener.useSyncIndexing.set(false);
         syncMode = false;
+    }
+
+    @Before
+    public void setUpMapping() throws Exception {
+        esa.initIndexes(true);
     }
 
     protected void buildTree() {

@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -58,6 +59,11 @@ public class TestAuditWithElasticSearch {
 
     @Inject
     protected ElasticSearchAdmin esa;
+
+    @Before
+    public void setupIndex() throws Exception {
+        esa.initIndexes(true);
+    }
 
     @Test
     public void shouldUseESBackend() throws Exception {

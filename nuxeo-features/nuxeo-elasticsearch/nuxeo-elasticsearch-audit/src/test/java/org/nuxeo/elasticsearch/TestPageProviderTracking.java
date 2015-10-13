@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -63,6 +64,11 @@ public class TestPageProviderTracking {
 
     @Inject
     protected PageProviderService pps;
+
+    @Before
+    public void setupIndex() throws Exception {
+        esa.initIndexes(true);
+    }
 
     @Test
     public void shouldLogPageProviderCallsInAudit() throws Exception {
