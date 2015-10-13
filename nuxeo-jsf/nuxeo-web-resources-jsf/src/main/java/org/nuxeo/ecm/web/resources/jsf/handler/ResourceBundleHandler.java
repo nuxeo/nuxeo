@@ -146,20 +146,11 @@ public class ResourceBundleHandler extends MetaTagHandler {
                 if (vars != null) {
                     for (TagAttribute var : vars) {
                         if ("target_css".equalsIgnoreCase(var.getLocalName())) {
-                            String val = resolveAttribute(ctx, var);
-                            if (val != null) {
-                                cssTarget = val;
-                            }
+                            cssTarget = var.getValue(ctx);
                         } else if ("target_js".equalsIgnoreCase(var.getLocalName())) {
-                            String val = resolveAttribute(ctx, var);
-                            if (val != null) {
-                                jsTarget = val;
-                            }
+                            jsTarget = var.getValue(ctx);
                         } else if ("target_html".equalsIgnoreCase(var.getLocalName())) {
-                            String val = resolveAttribute(ctx, var);
-                            if (val != null) {
-                                htmlTarget = val;
-                            }
+                            htmlTarget = var.getValue(ctx);
                         }
                     }
                 }
@@ -180,14 +171,6 @@ public class ResourceBundleHandler extends MetaTagHandler {
                 applyBundle(ctx, parent, wrm, bundle, rtype, targetValue, leaf);
             }
         }
-    }
-
-    protected String resolveAttribute(FaceletContext ctx, TagAttribute var) {
-        String val = var.getValue(ctx);
-        if (!StringUtils.isBlank(val)) {
-            return val;
-        }
-        return null;
     }
 
     protected void applyBundle(FaceletContext ctx, UIComponent parent, WebResourceManager wrm, String bundle,
