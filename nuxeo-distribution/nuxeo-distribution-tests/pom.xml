@@ -10,7 +10,7 @@
   <artifactId>nuxeo-distribution-tests</artifactId>
   <packaging>pom</packaging>
   <name>Helper POM with Nuxeo test dependencies</name>
-  <description>This POM lists all Nuxeo test dependencies.</description>
+  <description>Convenient helper POM listing the Nuxeo test dependencies</description>
 
   <dependencies>
     <dependency>

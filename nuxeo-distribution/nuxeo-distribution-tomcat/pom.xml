@@ -10,8 +10,8 @@
 
   <artifactId>nuxeo-distribution-tomcat</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo Tomcat Build</name>
-  <description>Package Nuxeo with Tomcat</description>
+  <name>Nuxeo CAP Tomcat Build</name>
+  <description>Package Nuxeo CAP with Tomcat</description>
 
   <properties>
     <!-- Use a Nuxeo lightened Tomcat -->

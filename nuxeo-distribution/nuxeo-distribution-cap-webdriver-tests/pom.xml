@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-distribution-cap-webdriver-tests</artifactId>
   <name>Nuxeo CAP WebDriver Tests</name>
-  <description>WebDriver functional tests on CAP distribution</description>
+  <description>WebDriver functional tests on Nuxeo CAP</description>
 
   <properties>
     <connect.password>setTheValueInYourSettings</connect.password>

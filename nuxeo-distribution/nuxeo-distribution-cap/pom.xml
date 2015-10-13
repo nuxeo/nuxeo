@@ -9,8 +9,8 @@
 
   <artifactId>nuxeo-distribution-cap</artifactId>
   <packaging>zip</packaging>
-  <name>Nuxeo CAP</name>
-  <description>Nuxeo Content Application Platform NXR.</description>
+  <name>Nuxeo CAP NXR</name>
+  <description>Nuxeo Content Application Platform NXR</description>
 
   <dependencies>
     <dependency>

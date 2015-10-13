@@ -8,7 +8,7 @@ This module builds, packages and tests the Nuxeo products.
 
 Building Nuxeo products requires the following tools:
 
-  * JDK 7 (Oracle's JDK or OpenJDK recommended)
+  * JDK 8 (Oracle's JDK or OpenJDK recommended)
   * Apache Maven 3.1.1+
   * Apache Ant 1.7.1+ (optional)
   * Open Source tools that will be downloaded by Maven when needed.
@@ -24,11 +24,10 @@ Maven usage: `mvn clean package [options]`
 
 #### Examples
 
- * Build all Nuxeo products without running Integration Tests:
+ * Build all Nuxeo products without running Unit, Functional, Integration or Performance Tests:
 
         mvn clean package
-        mvn clean verify -DskipTests
-        mvn clean verify -DskipITs
+        mvn clean verify -DskipTests -DskipITs
 
  * Build all Nuxeo products running Integration Tests:
 
@@ -38,67 +37,49 @@ Maven usage: `mvn clean package [options]`
 
         mvn clean package -pl :nuxeo-distribution-tomcat
 
- * Build only the Tomcat CAP distribution (excluding Core Server)
-
-        mvn clean package -pl :nuxeo-distribution-tomcat -Pnuxeo-cap
-
- * Run CAP Functional Tests after build of the needed resources:
+ * Run CAP WebDriver Functional Tests after build of the needed resources:
 
         mvn clean verify -pl :nuxeo-distribution-cap-webdriver-tests -am
 
 ### Build with Ant (deprecated)
 
-Ant is available at the top level: Ant targets have been defined to provide
-user-friendly commands for most used build cases.
-
-Ant usage: `ant distrib [-Ddistrib=profile]`
-
-#### Examples
-
-        ant distrib
-        ant distrib -Ddistrib=nuxeo-dm
-        ant distrib -Ddistrib=tomcat
-
+Ant usage: `ant package`
 
 ### Available Maven profiles
 
  * sdk: build SDK distributions for use in Nuxeo IDE
- * qa, nightly: for internal use at Nuxeo
+ * qa, nightly: for internal use at Nuxeo (daily, internal, nightly builds)
+ * tomcat, pgsql, mssql, oracle10g, oracle11g, oracle12c, monitor, mongodb, bench, perf: for internal use at Nuxeo (testing)
 
 ## Modules listing
 
- * nuxeo-distribution-cap: Content Application Platform NXR
- * nuxeo-distribution-cap/ftest/webdriver: WebDriver tests for CAP
- * nuxeo-distribution-coreserver: CoreServer NXR
- * nuxeo-distribution-dm: Document Management NXR
- * nuxeo-distribution-dm/ftest/cmis: CMIS tests for DM
- * nuxeo-distribution-dm/ftest/funkload: FunkLoad tests for DM
- * nuxeo-distribution-dm/ftest/selenium: Selenium tests for DM
- * nuxeo-distribution-dm/ftest/webdriver: WebDriver tests for DM
- * nuxeo-distribution-resources: Resources archives used in other packagings (doc, binaries, templates).
- * nuxeo-distribution-tests: Helper POM with Nuxeo test dependencies
- * nuxeo-distribution-tomcat: Tomcat distributions
- * nuxeo-functional-tests: Framework for testing nuxeo distributions
- * nuxeo-launcher: Control Panel and launcher
- * nuxeo-marketplace-dm: Marketplace Package of DM
+ * nuxeo-functional-tests: Framework for testing Nuxeo distributions
  * nuxeo-startup-wizard: Startup Wizard WebApp
- * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests for Tomcat wizard
+ * nuxeo-launcher: Control Panel and Launcher
+ * nuxeo-distribution-resources: Resources for packaging (doc, binaries, configuration templates)
+ * nuxeo-distribution-tests: Convenient helper POM listing the Nuxeo test dependencies
+ * nuxeo-distribution-coreserver: Core Server NXR
+ * nuxeo-distribution-cap: Content Application Platform NXR
+ * nuxeo-distribution-tomcat: Package Nuxeo CAP with Tomcat
+ * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests on Startup Wizard
+ * nuxeo-distribution-cap-cmis-tests: CMIS tests on Nuxeo CAP
+ * nuxeo-distribution-cap-funkload-tests: Funkload tests and bench on Nuxeo CAP
+ * nuxeo-distribution-cap-gatling-tests: Gatling bench on Nuxeo CAP
+ * nuxeo-distribution-cap-selenium-tests: Selenium functional tests on Nuxeo CAP
+ * nuxeo-distribution-cap-webdriver-tests: WebDriver functional tests on Nuxeo CAP
+ * nuxeo-marketplace-dm: Transitional Marketplace Package for DM
 
 ## Produced packages
 
  * NXR packages
    * Core Server
    * Content Application Platform (CAP)
-   * Advanced Document Management (DM)
-   * Digital Assets Management (DAM)
-   * Social Collaboration (SC)
  * Marketplace Packages
-   * Advanced Document Management (DM)
-   * Digital Assets Management (DAM)
-   * Social Collaboration (SC)
+   * Transitional Package for Advanced Document Management (DM)
  * Tomcat packages
    * Core Server
    * Content Application Platform (CAP)
+   * SDK
 
 ## Understanding Maven phases and options
 
@@ -124,11 +105,9 @@ A minimal server NXR. An embedded repository will be started. No other  platform
 
 This application can be used to debug, test or develop nuxeo components that need a repository connection.
 
-Remoting will be also available in the future via Nuxeo Runtime.
-
 Built NXR is in `nuxeo-distribution-coreserver/target/`.
 
-It is available within Tomcat in `nuxeo-distribution-tomcat/target/`.
+It is packaged within Tomcat in `nuxeo-distribution-tomcat/target/` (see "coreserver").
 
 
 ### Nuxeo CAP
@@ -137,15 +116,15 @@ Basic document management features.
 
 Built NXR is in `nuxeo-distribution-cap/target/`.
 
-This is the default available application in `nuxeo-distribution-tomcat/target/`.
+This is the default packaged application in `nuxeo-distribution-tomcat/target/` (see "nuxeo-cap").
 
 ### Nuxeo Document Management
 
-Advanced document management features.
+Advanced document management features. The package has been split and deprecated; it is kept for helping in transition.
 
-Built NXR is in `nuxeo-distribution-dm/target/`.
+Built Marketplace Package is in `nuxeo-marketplace-dm/target/`.
 
-It is installable in the default available application in `nuxeo-distribution-tomcat/target/` when running the wizard and selecting DM (for users), or by activating the "nuxeo-dm" preset (for developers).
+It can be installed in CAP Tomcat using `nuxeoctl` or from the Administration page within the Nuxeo server.
 
 ### Other applications
 
@@ -153,22 +132,23 @@ There are a lot of other useful addons (see <http://nuxeo.github.io>) and applic
 
 Addons are manually built and deployed on the target server.
 
-Marketplace applications are installable from the Admin Center within the Nuxeo server.
+Marketplace applications can be installed using `nuxeoctl` or from the Administration page within the Nuxeo server.
 
 ## Custom build
 
 It is of course possible to create custom builds/assemblies.
 
-Multiple technologies have been used for packaging in the nuxeo-distribution project:
+### ant-assembly-maven-plugin
+
+We recommend to use the [ant-assembly-maven-plugin](http://doc.nuxeo.com/x/BIAO).
+
+Other technologies have been tested and used over time for packaging in the nuxeo-distribution project:
 [maven-assembly-plugin](http://maven.apache.org/plugins/maven-assembly-plugin/), [maven-nuxeo-plugin](http://hg.nuxeo.org/tools/maven-nuxeo-plugin/), [maven-antrun-extended-plugin](http://java.net/projects/maven-antrun-extended-plugin), [nuxeo-distribution-tools](https://github.com/nuxeo/nuxeo-distribution-tools),
-[ant-assembly-maven-plugin](https://github.com/nuxeo/ant-assembly-maven-plugin).
+[ant-assembly-maven-plugin](https://github.com/nuxeo/ant-assembly-maven-plugin). They are all based on Maven principles with the objectives to avoid duplication, ease maintenance and upgrade, rely on Maven artifacts, be OS independent.
 
-They are all based on Maven principles with the objectives to avoid duplication,
-ease maintenance and upgrade, rely on Maven artifacts, be OS independent.
+### assembly.xml
 
-We recommend to use our newest tool [ant-assembly-maven-plugin](http://doc.nuxeo.com/x/BIAO).
-
-Execution of the assembly is done from Maven execution as a Maven plugin.
+The execution of an assembly is managed by the Maven plugin during the build.
 
 Based on Ant syntax, it provides access to major Maven concepts and Ant flexibility.
 
@@ -176,6 +156,8 @@ Principles of an assembly are generally to:
 
   * inherit a Maven dependency tree/graph (list of artifacts to work with)
   * use this dependency tree to dispatch artifacts into directories
-  * download complementary artifacts (default packaging, resources, drivers, ...)
-  * download an empty server (JBoss, Jetty, Tomcat, ...)
+  * download complementary artifacts (default packaging, resources, drivers...)
+  * download an empty server (JBoss, Jetty, Tomcat...)
   * assemble all those parts as a ZIP build product.
+
+Assemblies are also used to orchestrate the environment and server setup for testing.

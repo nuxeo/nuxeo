@@ -10,8 +10,8 @@
 
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-launcher</artifactId>
-  <name>Nuxeo multi-OS startup</name>
-  <description>Build a Nuxeo launcher working with all Nuxeo products</description>
+  <name>Nuxeo Control Panel and Launcher</name>
+  <description>Nuxeo Control Panel and Launcher</description>
 
   <dependencies>
     <dependency>

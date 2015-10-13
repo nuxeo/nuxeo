@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-distribution-cap-gatling-tests</artifactId>
   <name>Nuxeo CAP Gatling Bench</name>
-  <description>Gatling bench for Nuxeo CAP</description>
+  <description>Gatling bench on Nuxeo CAP</description>
   <packaging>pom</packaging>
 
   <properties>

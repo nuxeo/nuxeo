@@ -9,7 +9,8 @@
 
   <artifactId>nuxeo-distribution-coreserver</artifactId>
   <packaging>zip</packaging>
-  <name>Nuxeo Core Server</name>
+  <name>CoreServer NXR</name>
+  <description>Nuxeo Core Server NXR</description>
 
   <dependencies>
     <dependency>

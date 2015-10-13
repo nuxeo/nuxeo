@@ -11,7 +11,7 @@
   <artifactId>nuxeo-distribution-resources</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Distribution Resources</name>
-  <description>Resources files for Nuxeo distributions</description>
+  <description>Resources for packaging (doc, binaries, configuration templates)</description>
 
   <dependencies>
     <dependency>

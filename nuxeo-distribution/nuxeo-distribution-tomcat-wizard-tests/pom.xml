@@ -9,8 +9,8 @@
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
   <artifactId>nuxeo-distribution-tomcat-wizard-tests</artifactId>
-  <name>Nuxeo Tomcat Wizard Integration Tests</name>
-  <description>Nuxeo Functional Tests on Tomcat distribution with wizard not done</description>
+  <name>Nuxeo Startup Wizard WebDriver tests</name>
+  <description>WebDriver tests on Nuxeo Startup Wizard</description>
 
   <properties>
     <connect.password>setTheValueInYourSettings</connect.password>

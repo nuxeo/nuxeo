@@ -10,8 +10,8 @@
 
   <artifactId>nuxeo-distribution-cap-funkload-tests</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo CAP Funkload test and bench</name>
-  <description>Funkload test and bench on Nuxeo CAP</description>
+  <name>Nuxeo CAP Funkload tests and bench</name>
+  <description>Funkload tests and bench on Nuxeo CAP</description>
 
   <dependencies>
     <dependency>
