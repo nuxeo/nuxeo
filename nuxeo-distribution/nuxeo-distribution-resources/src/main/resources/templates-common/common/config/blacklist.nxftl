@@ -4,6 +4,7 @@ org.nuxeo.runtime.trackers.files.threadstracking.config
 org.nuxeo.elasticsearch.audit.contrib
 org.nuxeo.elasticsearch.index.audit.contrib
 org.nuxeo.ecm.platform.audit.PageProviderservice.es.contrib
+org.nuxeo.ecm.platform.audit.search.contrib
 org.nuxeo.admin.audit.es.contentView.contrib
 </#if>
 </#escape>
