@@ -363,7 +363,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         if (defs != null) {
             for (RenditionDefinition def : defs) {
                 if (!onlyVisible || onlyVisible && def.isVisible()) {
-                    Rendition rendition = getRendition(doc, def.getName());
+                    Rendition rendition = getRendition(doc, def.getName(), false);
                     if (rendition != null) {
                         renditions.add(rendition);
                     }
