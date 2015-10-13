@@ -3,21 +3,37 @@ For efficiency, a local disk cache (with limited size) is also used.
 
 Be sure to protect your user id and token using the [configuration data encryption](https://doc.nuxeo.com/x/4YeRAQ).
 
-# Mandatory parameters
+# Configuration
 
-- nuxeo.core.binarymanager=org.nuxeo.ecm.core.storage.azure.AzureBinaryManager
+Configuration you have to add in your `nuxeo.conf` file:
+
+## Enable default Azure Binary Manager
+
+`nuxeo.core.binarymanager=org.nuxeo.ecm.blob.azure.AzureBinaryManager`
+
+## Enable CDN Azure Binary Manager
+
+See the [Microsoft Azure documentation page](https://azure.microsoft.com/en-us/documentation/articles/cdn-overview/) about how you can enable the CDN feature.
+
+`nuxeo.core.binarymanager=org.nuxeo.ecm.blob.azure.AzureCDNBinaryManager`
+
+## Mandatory parameters
 
 - nuxeo.storage.azure.container : the name of the Azure container
 
 - nuxeo.storage.azure.account.name : your Azure storage account name
 
-- nuxeo.storage.azure.account.key : your Azure storage access key
+- nuxeo.storage.azure.account.key : your Azure storage access key (Do not forget to use [data encryption](https://doc.nuxeo.com/x/4YeRAQ))
 
-# Optional parameters
+## Optional parameters
 
-- nuxeo.storage.azure.endpointProtocol : the url protocol (default is HTTPS)
+- nuxeo.storage.azure.endpointProtocol : the url protocol (default is `HTTPS`)
 
-- nuxeo.storage.azure.cachesize : size of the local cache (default is 100MB).
+- nuxeo.storage.azure.cachesize : size of the local cache (default is `100MB`).
+
+- nuxeo.storage.azure.directdownload : enable direct download from Azure servers (default is `false`)
+
+- nuxeo.storage.azure.cdn.host : *(only if you enable direct download and use the Azure CDN)* your Azure CDN host where your blobs are available.
 
 # Building
 

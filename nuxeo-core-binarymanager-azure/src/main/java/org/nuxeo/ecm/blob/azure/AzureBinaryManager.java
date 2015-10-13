@@ -128,11 +128,6 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
         }
     }
 
-    @Override
-    protected boolean isDirectDownload() {
-        return super.isDirectDownload();
-    }
-
     protected void removeBinary(String digest) {
         try {
             container.getBlockBlobReference(digest).delete();
