@@ -1,0 +1,28 @@
+<ui:fragment
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core">
+  <c:if test="#{nxl:isLikeViewMode(widget.mode) or nxl:isLikePlainMode(widget.mode)}"><h:outputText value="#{messages['label.permissions.ace.status.pending']}" rendered="#{field == '0'}" /><h:outputText value="#{messages['label.permissions.ace.status.effective']}" rendered="#{empty field or field == '1'}" /><h:outputText value="#{messages['label.permissions.ace.status.archived']}" rendered="#{field == '2'}" /></c:if>
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <h:selectOneMenu value="#{field}"
+      styleClass="#{widgetProperty_styleClass}"
+      required="#{widgetProperty_required}">
+
+      <f:selectItem itemValue="all"
+        itemLabel="#{messages['label.permissions.ace.status.all']}" />
+      <f:selectItem itemValue="0"
+        itemLabel="#{messages['label.permissions.ace.status.pending']}" />
+      <f:selectItem itemValue="1"
+        itemLabel="#{messages['label.permissions.ace.status.effective']}" />
+      <f:selectItem itemValue="2"
+        itemLabel="#{messages['label.permissions.ace.status.archived']}" />
+
+    </h:selectOneMenu>
+
+  </c:if>
+
+</ui:fragment>

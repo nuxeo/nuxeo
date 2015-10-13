@@ -50,6 +50,31 @@ public class AdminPermissionsActions implements Serializable {
 
     protected String purgeWorkId;
 
+    protected String selectedACEStatus = "all";
+
+    public String getSelectedACEStatus() {
+        return selectedACEStatus;
+    }
+
+    public void setSelectedACEStatus(String selectedACEStatus) {
+        this.selectedACEStatus = selectedACEStatus;
+    }
+
+    public String getACEStatusFixedPart() {
+        switch (selectedACEStatus) {
+            case "default":
+                return null;
+            case "0":
+                return "AND ecm:acl/*1/status = 0";
+            case "1":
+                return "AND (ecm:acl/*1/status IS NULL OR ecm:acl/*1/status = 1)";
+            case "2":
+                return "AND ecm:acl/*1/status = 2";
+            default:
+                return null;
+        }
+    }
+
     public void doPurge() {
         ContentView contentView = contentViewActions.getContentView(PERMISSIONS_PURGE_CONTENT_VIEW);
         DocumentModel searchDocumentModel = contentView.getSearchDocumentModel();

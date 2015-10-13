@@ -1641,6 +1641,9 @@
           <widget>date_range</widget>
         </row>
         <row>
+          <widget>status</widget>
+        </row>
+        <row>
           <widget>aclName</widget>
         </row>
       </rows>
@@ -1704,6 +1707,20 @@
         <properties widgetMode="edit">
           <property name="styleClass">dataInputTextDate</property>
           <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="status" type="template">
+        <labels>
+          <label mode="any">label.permissions.ace.status</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>#{adminPermissionsActions.selectedACEStatus}</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/ace_status_widget.xhtml
+          </property>
         </properties>
       </widget>
       <widget name="aclName" type="text">
@@ -1815,6 +1832,13 @@
           </properties>
           <widget>ace_end</widget>
         </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">ecm:acl/*1/status</property>
+          </properties>
+          <widget>ace_status</widget>
+        </column>
       </columns>
       <widget name="document_title" type="listing_id_title_link">
         <labels>
@@ -1884,6 +1908,20 @@
         <properties mode="csv">
           <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
           <property name="csv_forceType">date</property>
+        </properties>
+      </widget>
+      <widget name="ace_status" type="template">
+        <labels>
+          <label mode="any">label.permissions.ace.status</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data["ecm:acl/*1/status"]</field>
+        </fields>
+        <properties mode="any">
+          <property name="template">
+            /widgets/ace_status_widget.xhtml
+          </property>
         </properties>
       </widget>
     </layout>

@@ -69,10 +69,13 @@
         <property name="coreSession">#{documentManager}</property>
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <whereClause docType="PermissionsSearch">
-          <fixedPart statement="SELECT ecm:uuid, dc:title, ecm:acl/*1/principal, ecm:acl/*1/creator, ecm:acl/*1/permission, ecm:acl/*1/begin, ecm:acl/*1/end FROM Document">
+          <fixedPart quoteParameters="false" escapeParameters="false"
+            statement="SELECT ecm:uuid, dc:title, ecm:acl/*1/principal, ecm:acl/*1/creator, ecm:acl/*1/permission,
+              ecm:acl/*1/begin, ecm:acl/*1/end, ecm:acl/*1/status FROM Document">
             ecm:mixinType != 'HiddenInNavigation'
             AND ecm:isCheckedInVersion = 0
             AND SORTED_COLUMN IS NOT NULL
+            ?
           </fixedPart>
           <predicate parameter="ecm:acl/*1/principal" operator="IN">
             <field schema="permissions_search" name="ace_username" />
@@ -96,6 +99,7 @@
             <field schema="permissions_search" name="ecm_ancestorIds" />
           </predicate>
         </whereClause>
+        <parameter>#{adminPermissionsActions.ACEStatusFixedPart}</parameter>
         <pageSize>20</pageSize>
         <sort column="dc:title" ascending="true" />
       </genericPageProvider>
