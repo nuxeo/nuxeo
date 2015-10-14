@@ -38,7 +38,7 @@
       </properties>
     </action>
     <action id="Chain.FileManager.ImportWithMetaDataInSeam"
-      link="${org.nuxeo.ecm.contextPath}/dndFormCollector.faces?schema=dc&#038;layout=dndEdit"
+      link="${org.nuxeo.ecm.contextPath}/dndFormCollector.faces?schemas=dc&#038;layouts=dndEdit"
       order="30" label="label.smart.import.with.md"
       help="desc.smart.import.with.md">
       <category>ContentView</category>
