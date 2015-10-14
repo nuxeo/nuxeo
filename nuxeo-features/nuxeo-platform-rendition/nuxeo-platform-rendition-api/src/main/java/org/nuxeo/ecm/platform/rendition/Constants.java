@@ -42,5 +42,9 @@ public class Constants {
     // live doc if the rendition was derived from a versionable doc, otherwise null
     public static final String RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY = "rend:sourceVersionableId";
 
+    // date the source doc was modified according to property named
+    // RenditionDefinition#sourceDocumentModificationDatePropertyName
+    public static final String RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY = "rend:sourceModificationDate";
+
     public static final String RENDITION_NAME_PROPERTY = "rend:renditionName";
 }

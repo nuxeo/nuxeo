@@ -17,7 +17,9 @@ package org.nuxeo.ecm.platform.rendition.service;
 
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_NAME_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 
@@ -67,6 +69,15 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
                 }
             }
             query.append("ecm:isCheckedInVersion = 1 AND ");
+        } else {
+            String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
+            Calendar sourceLastModified = (Calendar) source.getPropertyValue(modificationDatePropertyName);
+            if (sourceLastModified != null) {
+                query.append(RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY);
+                query.append(" >= ");
+                query.append(formatTimestamp(sourceLastModified));
+                query.append(" AND ");
+            }
         }
         query.append(RENDITION_SOURCE_ID_PROPERTY);
         query.append(" = '");
@@ -76,19 +87,7 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
         List<DocumentModel> docs = session.query(query.toString());
         if (docs.size() > 0) {
             storedRendition = docs.get(0);
-            if (!isVersionable) {
-                Calendar renditionLastModified = (Calendar) storedRendition.getPropertyValue("dc:modified");
-                String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
-                Calendar sourceLastModified = (Calendar) source.getPropertyValue(modificationDatePropertyName);
-                if (renditionLastModified == null || sourceLastModified == null
-                        || sourceLastModified.after(renditionLastModified)) {
-                    storedRendition = null;
-                } else {
-                    storedRendition.detach(true);
-                }
-            } else {
-                storedRendition.detach(true);
-            }
+            storedRendition.detach(true);
         }
     }
 
@@ -100,6 +99,10 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
         RenditionService rs = Framework.getService(RenditionService.class);
         RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
         return def.getSourceDocumentModificationDatePropertyName();
+    }
+
+    protected static String formatTimestamp(Calendar cal) {
+        return new SimpleDateFormat("'TIMESTAMP' ''yyyy-MM-dd HH:mm:ss.SSS''").format(cal.getTime());
     }
 
 }
