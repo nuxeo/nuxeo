@@ -109,7 +109,7 @@
             <tbody>
               <tr>
                 <nxl:subWidget>
-                  <td class="fieldColumnn containerField">
+                  <td class="fieldColumn containerField">
                     <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
                     <ui:decorate template="/widgets/incl/form_template.xhtml">
                       <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
@@ -218,7 +218,7 @@
                         </ui:include>
                       </c:if>
                     </td>
-                    <td class="fieldColumnn containerField">
+                    <td class="fieldColumn containerField">
                       <c:set var="addFormName" value="nxw_addForm_#{widgetIndex}" />
                       <ui:decorate template="/widgets/incl/form_template.xhtml">
                         <ui:param name="addForm" value="#{containerWidgetProps[addFormName] or widgetControl_requireSurroundingForm}" />
