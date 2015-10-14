@@ -740,7 +740,7 @@ public class TestDefaultFileSystemItemFactory {
         assertNotNull(sectionItem);
         assertFalse(sectionItem.getCanCreateChild());
         assertFalse(sectionItem.getCanRename());
-        assertFalse(sectionItem.getCanDelete());
+        assertTrue(sectionItem.getCanDelete());
 
         // Publish documents in the Section and check its children
         session.publishDocument(file, section);
