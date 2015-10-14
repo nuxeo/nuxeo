@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.directory;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,6 +41,8 @@ import com.codahale.metrics.SharedMetricRegistries;
  */
 public class DirectoryCache {
 
+    private static final Serializable CACHE_MISS = Boolean.FALSE;
+
     protected final String name;
 
     protected Cache entryCache;
@@ -50,9 +53,15 @@ public class DirectoryCache {
 
     protected String entryCacheWithoutReferencesName = null;
 
+    protected boolean negativeCaching;
+
     protected final MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     protected final Counter hitsCounter;
+
+    protected final Counter negativeHitsCounter;
+
+    protected final Counter missesCounter;
 
     protected final Counter invalidationsCounter;
 
@@ -65,6 +74,8 @@ public class DirectoryCache {
     protected DirectoryCache(String name) {
         this.name = name;
         hitsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "hits"));
+        negativeHitsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "neghits"));
+        missesCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "misses"));
         invalidationsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache",
                 "invalidations"));
         sizeCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "size"));
@@ -100,32 +111,27 @@ public class DirectoryCache {
             return source.getEntryFromSource(entryId, fetchReferences);
         }
 
-        DocumentModel dm = null;
-        if (fetchReferences) {
-            dm = (DocumentModel) getEntryCache().get(entryId);
-            if (dm == null) {
-                // fetch the entry from the backend and cache it for later
-                // reuse
-                dm = source.getEntryFromSource(entryId, fetchReferences);
-                if (dm != null) {
-                    getEntryCache().put(entryId, dm);
+        Cache cache = fetchReferences ? getEntryCache() : getEntryCacheWithoutReferences();
+        Serializable entry = cache.get(entryId);
+        if (CACHE_MISS.equals(entry)) {
+            negativeHitsCounter.inc();
+            return null;
+        }
+        DocumentModel dm = (DocumentModel) entry;
+        if (dm == null) {
+            // fetch the entry from the backend and cache it for later reuse
+            dm = source.getEntryFromSource(entryId, fetchReferences);
+            if (dm != null) {
+                cache.put(entryId, dm);
+                if (fetchReferences) {
                     sizeCounter.inc();
                 }
-            } else {
-                hitsCounter.inc();
+            } else if (negativeCaching) {
+                cache.put(entryId, CACHE_MISS);
             }
+            missesCounter.inc();
         } else {
-            dm = (DocumentModel) getEntryCacheWithoutReferences().get(entryId);
-            if (dm == null) {
-                // fetch the entry from the backend and cache it for later
-                // reuse
-                dm = source.getEntryFromSource(entryId, fetchReferences);
-                if (dm != null) {
-                    getEntryCacheWithoutReferences().put(entryId, dm);
-                }
-            } else {
-                hitsCounter.inc();
-            }
+            hitsCounter.inc();
         }
         try {
             if (dm == null) {
@@ -179,6 +185,10 @@ public class DirectoryCache {
 
     public void setEntryCacheWithoutReferencesName(String entryCacheWithoutReferencesName) {
         this.entryCacheWithoutReferencesName = entryCacheWithoutReferencesName;
+    }
+
+    public void setNegativeCaching(Boolean negativeCaching) {
+        this.negativeCaching = Boolean.TRUE.equals(negativeCaching);
     }
 
     public Cache getEntryCache() {

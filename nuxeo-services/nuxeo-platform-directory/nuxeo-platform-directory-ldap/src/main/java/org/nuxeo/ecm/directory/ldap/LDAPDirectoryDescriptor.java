@@ -70,6 +70,9 @@ public class LDAPDirectoryDescriptor {
     @XNode("cacheEntryWithoutReferencesName")
     public String cacheEntryWithoutReferencesName = null;
 
+    @XNode("negativeCaching")
+    public Boolean negativeCaching;
+
     @XNodeMap(value = "fieldMapping", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> fieldMapping = new HashMap<String, String>();
 
