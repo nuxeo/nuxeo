@@ -52,9 +52,22 @@ public class Batch {
 
     public Batch(String id) {
         this.id = id;
-        baseDir = new Path(System.getProperty("java.io.tmpdir")).append(
-                id).toString();
-        new File(baseDir).mkdirs();
+
+        File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+        baseDir = new Path(tmpDir.getPath()).append(id).toString();
+
+        File file = new File(baseDir);
+
+        try {
+            if (!org.apache.commons.io.FileUtils.directoryContains(tmpDir,
+                    file)) {
+                throw new SecurityException("Trying to traverse illegal path");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error when trying to create Batch", e);
+        }
+
+        file.mkdirs();
     }
 
     public void addBlob(String idx, Blob blob) {
