@@ -40,7 +40,7 @@ public class ITComplexWidgetTest extends AbstractWidgetPageTest {
         checkNoError();
         Locator.waitForTextNotPresent(driver.findElement(By.xpath("//html")), "Value is required");
 
-        String tableStruct = "./table/tbody/tr/td[2]/table/tbody/";
+        String tableStruct = "./table/tbody/tr/td[2]/div/table/tbody/";
         String viewFormId = "complexWidgetLayout_view_form";
         WebElement viewEl = driver.findElement(By.id(viewFormId));
         assertEquals("String item", viewEl.findElement(By.xpath(tableStruct + "tr[1]")).getText());
