@@ -281,13 +281,14 @@ public class LDAPDirectory extends AbstractDirectory {
 
     public SearchControls getSearchControls(boolean fetchAllAttributes) {
         if (fetchAllAttributes) {
+            // return the precomputed scts instance
+            return searchControls;
+        } else {
             // build a new ftcs instance with no attribute filtering
             SearchControls scts = new SearchControls();
             scts.setSearchScope(config.getSearchScope());
+            scts.setReturningAttributes(new String[] { config.rdnAttribute, config.fieldMapping.get(config.idField) });
             return scts;
-        } else {
-            // return the precomputed scts instance
-            return searchControls;
         }
     }
 
@@ -363,8 +364,7 @@ public class LDAPDirectory extends AbstractDirectory {
     public String getBaseFilter() {
         // NXP-2461: always add control on id field in base filter
         String idField = getIdField();
-        DirectoryFieldMapper fieldMapper = getFieldMapper();
-        String idAttribute = fieldMapper.getBackendField(idField);
+        String idAttribute = getFieldMapper().getBackendField(idField);
         String idFilter = String.format("(%s=*)", idAttribute);
         if (baseFilter != null && !"".equals(baseFilter)) {
             if (baseFilter.startsWith("(")) {
