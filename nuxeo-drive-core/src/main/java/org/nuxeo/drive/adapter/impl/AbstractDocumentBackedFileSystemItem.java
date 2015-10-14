@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -166,9 +167,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         creationDate = (Calendar) doc.getPropertyValue("dc:created");
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
         CoreSession docSession = doc.getCoreSession();
-        canRename = docSession.hasPermission(doc.getRef(), SecurityConstants.WRITE_PROPERTIES);
+        canRename = !doc.hasFacet(FacetNames.PUBLISH_SPACE) && !doc.isProxy()
+                && docSession.hasPermission(doc.getRef(), SecurityConstants.WRITE_PROPERTIES);
         DocumentRef parentRef = doc.getParentRef();
-        canDelete = docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE)
+        canDelete = !doc.hasFacet(FacetNames.PUBLISH_SPACE) && !doc.isProxy()
+                && docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE)
                 && (parentRef == null || docSession.hasPermission(parentRef, SecurityConstants.REMOVE_CHILDREN));
 
         String parentPath;

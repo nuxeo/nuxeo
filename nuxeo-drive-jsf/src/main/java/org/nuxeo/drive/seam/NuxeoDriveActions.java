@@ -141,10 +141,10 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     public boolean canEditDocument(DocumentModel doc) {
-        if (doc == null) {
+        if (doc == null || !documentManager.exists(doc.getRef())) {
             return false;
         }
-        if (doc.isFolder()) {
+        if (doc.isFolder() || doc.isProxy()) {
             return false;
         }
         if (!documentManager.hasPermission(doc.getRef(), SecurityConstants.WRITE)) {

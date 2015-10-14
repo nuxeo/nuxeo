@@ -564,6 +564,14 @@ public class TestNuxeoDriveManager {
         assertEquals(fsItemIdUser1, fsItemIdUser2);
     }
 
+    @Test
+    public void testSectionRegistration() {
+        log.trace("Create a Section and register it as a synchronization root for user1");
+        DocumentModel section = session.createDocument(session.createDocumentModel("/", "section", "Section"));
+        nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), section, user1Session);
+        assertTrue(isUserSubscribed("user1", section));
+    }
+
     protected DocumentModel doc(String path) {
         return doc(session, path);
     }

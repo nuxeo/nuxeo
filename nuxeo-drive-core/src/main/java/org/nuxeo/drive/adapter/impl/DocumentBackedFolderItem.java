@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -186,7 +187,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     protected void initialize(DocumentModel doc) {
         this.name = docTitle;
         this.folder = true;
-        this.canCreateChild = doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN);
+        this.canCreateChild = !doc.hasFacet(FacetNames.PUBLISH_SPACE)
+                && doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN);
     }
 
     protected FileManager getFileManager() {

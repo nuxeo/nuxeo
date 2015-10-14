@@ -274,7 +274,7 @@ public class TestDefaultFileSystemItemFactory {
 
         // Proxy
         DocumentModel proxy = session.createProxy(note.getRef(), folder.getRef());
-        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(proxy));
+        assertTrue(defaultFileSystemItemFactory.isFileSystemItem(proxy));
 
         // HiddenInNavigation
         note.addFacet("HiddenInNavigation");
@@ -728,6 +728,29 @@ public class TestDefaultFileSystemItemFactory {
         boolean ordered = coreFeature.getStorageConfiguration().hasSubSecondResolution();
         checkChildren(folderChildren, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
                 adaptableChild.getId(), ordered);
+    }
+
+    @Test
+    public void testSection() {
+        // Check that a Section is adaptable as a FileSystemItem by the defaultSyncRootFolderItemFactory
+        DocumentModel section = session.createDocument(session.createDocumentModel("/", "sectionSyncRoot", "Section"));
+        nuxeoDriveManager.registerSynchronizationRoot(principal, section, session);
+        FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultSyncRootFolderItemFactory");
+        FolderItem sectionItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(section);
+        assertNotNull(sectionItem);
+        assertFalse(sectionItem.getCanCreateChild());
+        assertFalse(sectionItem.getCanRename());
+        assertFalse(sectionItem.getCanDelete());
+
+        // Publish documents in the Section and check its children
+        session.publishDocument(file, section);
+        session.publishDocument(note, section);
+        session.save();
+        List<FileSystemItem> children = sectionItem.getChildren();
+        assertEquals(2, children.size());
+        FileSystemItem child = children.get(0);
+        assertFalse(child.getCanRename());
+        assertFalse(child.getCanDelete());
     }
 
     @Test

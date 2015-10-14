@@ -51,8 +51,6 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
 
     private static final Log log = LogFactory.getLog(DefaultFileSystemItemFactory.class);
 
-    protected static final String RENDITION_FACET = "Rendition";
-
     protected static final String VERSIONING_DELAY_PARAM = "versioningDelay";
 
     protected static final String VERSIONING_OPTION_PARAM = "versioningOption";
@@ -79,7 +77,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
     /**
      * The default factory considers that a {@link DocumentModel} is adaptable as a {@link FileSystemItem} if:
      * <ul>
-     * <li>It is not a version nor a proxy nor a rendition</li>
+     * <li>It is not a version</li>
      * <li>AND it is not HiddenInNavigation</li>
      * <li>AND it is not in the "deleted" life cycle state, unless {@code includeDeleted} is true</li>
      * <li>AND it is Folderish or it can be adapted as a {@link BlobHolder} with a blob</li>
@@ -93,22 +91,6 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
         if (doc.isVersion()) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Document %s is a version, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
-            return false;
-        }
-        // Check proxy
-        if (doc.isProxy()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is a proxy, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
-            }
-            return false;
-        }
-        // Check rendition
-        if (doc.hasFacet(RENDITION_FACET)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Document %s is a rendition, it cannot be adapted as a FileSystemItem.",
                         doc.getId()));
             }
             return false;

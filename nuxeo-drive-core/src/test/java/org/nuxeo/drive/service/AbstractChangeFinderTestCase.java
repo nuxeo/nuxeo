@@ -1039,6 +1039,87 @@ public abstract class AbstractChangeFinderTestCase {
         }
     }
 
+    @Test
+    public void testSection() throws Exception {
+        DocumentModel section;
+        DocumentModel doc1;
+        DocumentModel proxy1;
+        DocumentModel proxy2;
+        List<FileSystemItemChange> changes;
+        try {
+            // Create a Section and register it as a synchronization root
+            section = session.createDocument(session.createDocumentModel("/", "sectionSyncRoot", "Section"));
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), section, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes, expecting 2:
+            // - rootRegistered for section
+            // - documentCreated for section
+            changes = getChanges(session.getPrincipal());
+            assertEquals(2, changes.size());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(section.getId(), "rootRegistered", "test",
+                    "defaultSyncRootFolderItemFactory#test#" + section.getId(), "sectionSyncRoot"));
+            expectedChanges.add(new SimpleFileSystemItemChange(section.getId(), "documentCreated", "test",
+                    "defaultSyncRootFolderItemFactory#test#" + section.getId(), "sectionSyncRoot"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+
+            // Publish 2 documents in the section
+            doc1 = session.createDocumentModel("/folder1", "doc1", "File");
+            doc1.setPropertyValue("file:content", new StringBlob("The content of file 1."));
+            doc1 = session.createDocument(doc1);
+            proxy1 = session.publishDocument(doc1, section);
+            DocumentModel doc2 = session.createDocumentModel("/folder1", "doc2", "File");
+            doc2.setPropertyValue("file:content", new StringBlob("The content of file 2."));
+            doc2 = session.createDocument(doc2);
+            proxy2 = session.publishDocument(doc2, section);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes, expecting 4:
+            // - documentProxyPublished for proxy2
+            // - documentCreated for proxy2
+            // - documentProxyPublished for proxy1
+            // - documentCreated for proxy1
+            changes = getChanges();
+            assertEquals(4, changes.size());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(proxy2.getId(), "documentProxyPublished", "test",
+                    "defaultFileSystemItemFactory#test#" + proxy2.getId(), "doc2"));
+            expectedChanges.add(new SimpleFileSystemItemChange(proxy2.getId(), "documentCreated", "test",
+                    "defaultFileSystemItemFactory#test#" + proxy2.getId(), "doc2"));
+            expectedChanges.add(new SimpleFileSystemItemChange(proxy1.getId(), "documentProxyPublished", "test",
+                    "defaultFileSystemItemFactory#test#" + proxy1.getId(), "doc1"));
+            expectedChanges.add(new SimpleFileSystemItemChange(proxy1.getId(), "documentCreated", "test",
+                    "defaultFileSystemItemFactory#test#" + proxy1.getId(), "doc1"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+
+            // Update an existing proxy
+            doc1.setPropertyValue("file:content", new StringBlob("The updated content of file 1."));
+            session.saveDocument(doc1);
+            session.publishDocument(doc1, section);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes, expecting 1:
+            // - documentProxyPublished for proxy1
+            changes = getChanges();
+            assertEquals(1, changes.size());
+            assertEquals(new SimpleFileSystemItemChange(proxy1.getId(), "documentProxyPublished", "test",
+                    "defaultFileSystemItemFactory#test#" + proxy1.getId(), "doc1"),
+                    toSimpleFileSystemItemChange(changes.get(0)));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
     /**
      * Gets the document changes for the given user's synchronization roots using the {@link AuditChangeFinder} and
      * updates {@link #lastEventLogId}.

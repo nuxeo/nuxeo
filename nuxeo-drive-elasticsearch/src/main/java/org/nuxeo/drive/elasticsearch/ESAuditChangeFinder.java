@@ -131,11 +131,11 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             // 'documentCreated' or log.eventId = 'documentModified' or
             // log.eventId = 'documentMoved' or log.eventId =
             // 'documentCreatedByCopy' or log.eventId = 'documentRestored' or
-            // log.eventId = 'addedToCollection’) or log.category =
+            // log.eventId = 'addedToCollection’ or log.eventId = 'documentProxyPublished’) or log.category =
             // 'eventLifeCycleCategory' and log.eventId =
             // 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' )
             String eventIds[] = { "documentCreated", "documentModified", "documentMoved", "documentCreatedByCopy",
-                    "documentRestored", "addedToCollection" };
+                    "documentRestored", "addedToCollection", "documentProxyPublished" };
             OrFilterBuilder orEventsFilter = FilterBuilders.orFilter();
             orEventsFilter.add(getEventsClause("eventDocumentCategory", eventIds, true));
             orEventsFilter.add(getEventsClause("eventLifeCycleCategory", new String[] { "lifecycle_transition_event" },
