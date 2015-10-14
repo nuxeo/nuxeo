@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -36,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation.PathNode;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -55,6 +57,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestDocumentValidationService {
+
+    // it comes from the message bundle messages_en.properties
+    private static final String MESSAGE_FOR_USERS_FIRSTNAME = "message_for_users_firstname";
 
     private static final String SIMPLE_FIELD = "vs:groupCode";
 
@@ -373,6 +378,10 @@ public class TestDocumentValidationService {
         DocumentValidationReport violations;
         violations = validator.validate("vs:users/0/firstname", "Bob");
         assertFalse(violations.hasError());
+        violations = validator.validate("vs:users/firstname", "Bob");
+        assertFalse(violations.hasError());
+        violations = validator.validate("vs:users/user/firstname", "Bob");
+        assertFalse(violations.hasError());
         violations = validator.validate("vs:users/0/firstname", null);
         assertEquals(1, violations.numberOfErrors());
         assertTrue(violations.asList().get(0).getConstraint() instanceof NotNullConstraint);
@@ -409,6 +418,60 @@ public class TestDocumentValidationService {
         assertTrue(violations.hasError());
         assertEquals(1, violations.numberOfErrors());
         assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
+    }
+
+    @Test
+    public void testValidateDocumentPropertyViolationMessage() {
+        DocumentValidationReport violations;
+        doc.setPropertyValue("vs:groupCode", 123);
+        HashMap<String, String> user = new HashMap<String, String>();
+        user.put("lastname", "The kid");
+        doc.getProperty("vs:users").addValue(0, user);
+        violations = validator.validate(doc);
+        assertTrue(violations.hasError());
+        List<ConstraintViolation> violationList = violations.asList();
+        assertEquals(1, violationList.size());
+        ConstraintViolation violation = violationList.get(0);
+        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
+    }
+
+    @Test
+    public void testValidatePropertyViolationMessage() {
+        DocumentValidationReport violations;
+        doc.setPropertyValue("vs:groupCode", 123);
+        HashMap<String, String> user = new HashMap<String, String>();
+        user.put("lastname", "The kid");
+        doc.getProperty("vs:users").addValue(0, user);
+        Property userFirstnameProperty = doc.getProperty("vs:users").get(0).get("firstname");
+        violations = validator.validate(userFirstnameProperty);
+        assertTrue(violations.hasError());
+        List<ConstraintViolation> violationList = violations.asList();
+        assertEquals(1, violationList.size());
+        ConstraintViolation violation = violationList.get(0);
+        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
+    }
+
+    @Test
+    public void testValidateXPathViolationMessage() {
+        DocumentValidationReport violations;
+        violations = validator.validate("vs:users/0/firstname", null);
+        assertTrue(violations.hasError());
+        List<ConstraintViolation> violationList = violations.asList();
+        assertEquals(1, violationList.size());
+        ConstraintViolation violation = violationList.get(0);
+        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
+        violations = validator.validate("vs:users/firstname", null);
+        assertTrue(violations.hasError());
+        violationList = violations.asList();
+        assertEquals(1, violationList.size());
+        violation = violationList.get(0);
+        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
+        violations = validator.validate("vs:users/user/firstname", null);
+        assertTrue(violations.hasError());
+        violationList = violations.asList();
+        assertEquals(1, violationList.size());
+        violation = violationList.get(0);
+        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
     }
 
     // //////////////////////////////////////

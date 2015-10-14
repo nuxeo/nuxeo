@@ -190,6 +190,15 @@ public class ConstraintViolation implements Serializable {
             return listItem;
         }
 
+        @Override
+        public String toString() {
+            if (listItem) {
+                return field.getName().getPrefixedName();
+            } else {
+                return field.getName().getPrefixedName() + "[" + index + "]";
+            }
+        }
+
     }
 
 }

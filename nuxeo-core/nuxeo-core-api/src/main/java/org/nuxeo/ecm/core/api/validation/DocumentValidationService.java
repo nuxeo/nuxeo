@@ -100,6 +100,7 @@ public interface DocumentValidationService {
     /**
      * Validates a value according to some {@link Field} definition.
      *
+     * @param validateSubProperties Tell whether the sub properties must be validated.
      * @since 7.2
      */
     DocumentValidationReport validate(Field field, Object value, boolean validateSubProperties);
@@ -112,6 +113,14 @@ public interface DocumentValidationService {
     DocumentValidationReport validate(Property property);
 
     /**
+     * Validates a property according to its {@link Field} definition.
+     *
+     * @param validateSubProperties Tell whether the sub properties must be validated.
+     * @since 7.10
+     */
+    DocumentValidationReport validate(Property property, boolean validateSubProperties);
+
+    /**
      * Validates a value according to some {@link Field} definition.
      *
      * @param xpath schema:fieldName, for example dc:title - the xpath could also be a value that match a complex
@@ -120,5 +129,16 @@ public interface DocumentValidationService {
      * @since 7.1
      */
     DocumentValidationReport validate(String xpath, Object value);
+
+    /**
+     * Validates a value according to some {@link Field} definition.
+     *
+     * @param xpath schema:fieldName, for example dc:title - the xpath could also be a value that match a complex
+     *            property field (for example, an field of a complex type in a list: schema:list:complex:field).
+     * @param validateSubProperties Tell whether the sub properties must be validated.
+     * @throws IllegalArgumentException If the xpath does not match any field.
+     * @since 7.10
+     */
+    DocumentValidationReport validate(String xpath, Object value, boolean validateSubProperties);
 
 }

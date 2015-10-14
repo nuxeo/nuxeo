@@ -29,6 +29,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation.PathNode;
@@ -119,7 +120,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                     Field field = schemaDef.getField(fieldName);
                     Property property = document.getProperty(field.getName().getPrefixedName());
                     List<PathNode> path = Arrays.asList(new PathNode(property.getField()));
-                    violations.addAll(validateAnyTypeProperty(property.getSchema(), path, property, true));
+                    violations.addAll(validateAnyTypeProperty(property.getSchema(), path, property, true, true));
                 }
             }
         } else {
@@ -127,7 +128,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                 for (Field field : schema.getFields()) {
                     Property property = document.getProperty(field.getName().getPrefixedName());
                     List<PathNode> path = Arrays.asList(new PathNode(property.getField()));
-                    violations.addAll(validateAnyTypeProperty(property.getSchema(), path, property, false));
+                    violations.addAll(validateAnyTypeProperty(property.getSchema(), path, property, false, true));
                 }
             }
         }
@@ -136,8 +137,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
 
     @Override
     public DocumentValidationReport validate(Field field, Object value) {
-        Schema schema = field.getDeclaringType().getSchema();
-        return new DocumentValidationReport(validate(schema, field, value, true));
+        return validate(field, value, true);
     }
 
     @Override
@@ -148,18 +148,83 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
 
     @Override
     public DocumentValidationReport validate(Property property) {
-        List<PathNode> path = Arrays.asList(new PathNode(property.getField()));
-        return new DocumentValidationReport(validateAnyTypeProperty(property.getSchema(), path, property, false));
+        return validate(property, true);
     }
 
     @Override
-    public DocumentValidationReport validate(String xpath, Object value) throws IllegalArgumentException {
-        SchemaManager tm = Framework.getService(SchemaManager.class);
-        Field field = tm.getField(xpath);
-        if (field == null) {
-            throw new IllegalArgumentException("Invalid xpath " + xpath);
+    public DocumentValidationReport validate(Property property, boolean validateSubProperties) {
+        List<PathNode> path = new ArrayList<>();
+        Property inspect = property;
+        while (inspect != null && !(inspect instanceof DocumentPart)) {
+            path.add(0, new PathNode(inspect.getField()));
+            inspect = inspect.getParent();
         }
-        return new DocumentValidationReport(validate(field.getDeclaringType().getSchema(), field, value, true));
+        return new DocumentValidationReport(validateAnyTypeProperty(property.getSchema(), path, property, false,
+                validateSubProperties));
+    }
+
+    @Override
+    public DocumentValidationReport validate(String xpath, Object value) {
+        return validate(xpath, value, true);
+    }
+
+    @Override
+    public DocumentValidationReport validate(String xpath, Object value, boolean validateSubProperties)
+            throws IllegalArgumentException {
+        SchemaManager tm = Framework.getService(SchemaManager.class);
+        List<String> splittedXpath = Arrays.asList(xpath.split("\\/"));
+        List<PathNode> path = new ArrayList<>();
+        Field field = null;
+        String fieldXpath = null;
+        // rebuild the field path
+        for (String xpathToken : splittedXpath) {
+            // manage the list item case
+            if (field != null && field.getType().isListType()) {
+                // get the list field type
+                Field itemField = ((ListType) field.getType()).getField();
+                if (xpathToken.matches("\\d+")) {
+                    // if the current token is an index, append the token and append an indexed PathNode to the path
+                    fieldXpath += "/" + xpathToken;
+                    field = itemField;
+                    int index = Integer.parseInt(xpathToken);
+                    path.add(new PathNode(field, index));
+                } else if (xpathToken.equals(itemField.getName().getLocalName())) {
+                    // if the token is equals to the item's field name
+                    // ignore it on the xpath but append the item's field to the path node
+                    field = itemField;
+                    path.add(new PathNode(field));
+                } else {
+                    // otherwise, the token in an item's element
+                    // append the token and append the item's field and the item's element's field to the path node
+                    fieldXpath += "/" + xpathToken;
+                    field = itemField;
+                    path.add(new PathNode(field));
+                    field = tm.getField(fieldXpath);
+                    if (field == null) {
+                        throw new IllegalArgumentException("Invalid xpath " + fieldXpath);
+                    }
+                    path.add(new PathNode(field));
+                }
+            } else {
+                // in any case, if it's the first item, the token is the path
+                if (fieldXpath == null) {
+                    fieldXpath = xpathToken;
+                } else {
+                    // otherwise, append the token to the existing path
+                    fieldXpath += "/" + xpathToken;
+                }
+                // get the field
+                field = tm.getField(fieldXpath);
+                // check it exists
+                if (field == null) {
+                    throw new IllegalArgumentException("Invalid xpath " + fieldXpath);
+                }
+                // append the pathnode
+                path.add(new PathNode(field));
+            }
+        }
+        Schema schema = field.getDeclaringType().getSchema();
+        return new DocumentValidationReport(validateAnyTypeField(schema, path, field, value, validateSubProperties));
     }
 
     // ///////////////////
@@ -290,15 +355,21 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
      * @since 7.1
      */
     private List<ConstraintViolation> validateAnyTypeProperty(Schema schema, List<PathNode> path, Property prop,
-            boolean dirtyOnly) {
+            boolean dirtyOnly, boolean validateSubProperties) {
         Field field = prop.getField();
         if (!dirtyOnly || prop.isDirty()) {
             if (field.getType().isSimpleType()) {
                 return validateSimpleTypeProperty(schema, path, prop, dirtyOnly);
             } else if (field.getType().isComplexType()) {
-                return validateComplexTypeProperty(schema, path, prop, dirtyOnly);
+                // ignore for now the case when the complex property is null with a null contraints because it's
+                // currently impossible
+                if (validateSubProperties) {
+                    return validateComplexTypeProperty(schema, path, prop, dirtyOnly);
+                }
             } else if (field.getType().isListType()) {
-                return validateListTypeProperty(schema, path, prop, dirtyOnly);
+                if (validateSubProperties) {
+                    return validateListTypeProperty(schema, path, prop, dirtyOnly);
+                }
             }
         }
         // unrecognized type : ignored
@@ -357,7 +428,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                     for (Property child : prop.getChildren()) {
                         List<PathNode> subPath = new ArrayList<PathNode>(path);
                         subPath.add(new PathNode(child.getField()));
-                        violations.addAll(validateAnyTypeProperty(schema, subPath, child, dirtyOnly));
+                        violations.addAll(validateAnyTypeProperty(schema, subPath, child, dirtyOnly, true));
                     }
                 }
             }
@@ -402,7 +473,7 @@ public class DocumentValidationServiceImpl extends DefaultComponent implements D
                     for (Property child : prop.getChildren()) {
                         List<PathNode> subPath = new ArrayList<PathNode>(path);
                         subPath.add(new PathNode(child.getField(), index));
-                        violations.addAll(validateAnyTypeProperty(schema, subPath, child, dirtyOnly));
+                        violations.addAll(validateAnyTypeProperty(schema, subPath, child, dirtyOnly, true));
                         index++;
                     }
                 }
