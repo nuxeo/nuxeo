@@ -95,11 +95,6 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
             properties.put(s, Framework.getProperty(bm.getConfigurationKey(s)));
         });
 
-        if (StringUtils.isBlank(properties.get(AzureBinaryManager.ACCOUNT_KEY_PROPERTY))) {
-            properties.put(AzureBinaryManager.ACCOUNT_NAME_PROPERTY, System.getenv("AZURE_NAME_ACCOUNT"));
-            properties.put(AzureBinaryManager.ACCOUNT_KEY_PROPERTY, System.getenv("AZURE_ACCESS_SECRET"));
-        }
-
         // Ensure mandatory parameters are set
         PARAMETERS.forEach(s -> {
             assumeFalse(isBlank(properties.get(s)));

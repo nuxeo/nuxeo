@@ -29,6 +29,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
@@ -84,6 +85,11 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
                 getProperty(ACCOUNT_KEY_PROPERTY));
         try {
             storageAccount = CloudStorageAccount.parse(connectionString);
+
+            if (StringUtils.isBlank(properties.get(AzureBinaryManager.ACCOUNT_KEY_PROPERTY))) {
+                properties.put(AzureBinaryManager.ACCOUNT_NAME_PROPERTY, System.getenv("AZURE_STORAGE_ACCOUNT"));
+                properties.put(AzureBinaryManager.ACCOUNT_KEY_PROPERTY, System.getenv("AZURE_STORAGE_ACCESS_KEY"));
+            }
 
             blobClient = storageAccount.createCloudBlobClient();
             container = blobClient.getContainerReference(getProperty(CONTAINER_PROPERTY));
