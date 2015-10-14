@@ -480,3 +480,7 @@ table.palettePreviewColors td div {
   cursor: default;
   pointer-events: none;
 }
+
+.table-overflow {
+  overflow: auto;
+}
