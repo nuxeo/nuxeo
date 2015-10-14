@@ -20,10 +20,12 @@ import static org.nuxeo.ecm.platform.rendition.Constants.FILES_SCHEMA;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_NAME_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -177,6 +179,13 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         if (isVersionable) {
             rendition.setPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY, liveDocumentId);
         }
+
+        String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
+        Calendar sourceLastModified = (Calendar) sourceDocument.getPropertyValue(modificationDatePropertyName);
+        if (sourceLastModified != null) {
+            rendition.setPropertyValue(RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY, sourceLastModified);
+        }
+
         rendition.setPropertyValue(RENDITION_NAME_PROPERTY, renditionName);
 
         return rendition;
@@ -224,6 +233,12 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         Long minorVersion = (Long) versionDocument.getPropertyValue("uid:minor_version");
         rendition.setPropertyValue("uid:minor_version", minorVersion);
         rendition.setPropertyValue("uid:major_version", versionDocument.getPropertyValue("uid:major_version"));
+    }
+
+    protected String getSourceDocumentModificationDatePropertyName() {
+        RenditionService rs = Framework.getService(RenditionService.class);
+        RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
+        return def.getSourceDocumentModificationDatePropertyName();
     }
 
 }
