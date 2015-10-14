@@ -47,7 +47,7 @@
 
     <c:if test="#{not removeForm}">
       <c:if test="#{not useAjaxForm}">
-        <h:form id="#{formId}">
+        <h:form id="#{formId}" styleClass="table-overflow">
           <ui:include src="documents_layout_table_content.xhtml" />
         </h:form>
         <f:subview id="#{formId}_buttons">
@@ -55,7 +55,7 @@
         </f:subview>
       </c:if>
       <c:if test="#{useAjaxForm}">
-        <h:form id="#{formId}">
+        <h:form id="#{formId}" styleClass="table-overflow">
           <ui:include src="documents_layout_table_content.xhtml" />
         </h:form>
         <f:subview id="#{formId}_buttons">
@@ -65,7 +65,9 @@
     </c:if>
 
     <c:if test="#{removeForm}">
-      <ui:include src="documents_layout_table_content.xhtml" />
+      <div class="table-overflow">
+        <ui:include src="documents_layout_table_content.xhtml" />
+      </div>
       <f:subview id="#{formId}_buttons">
         <ui:insert name="buttons" />
       </f:subview>

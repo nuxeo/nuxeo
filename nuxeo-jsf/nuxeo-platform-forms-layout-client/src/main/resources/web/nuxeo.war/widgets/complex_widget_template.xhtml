@@ -18,6 +18,7 @@
   <c:set var="displaySubLabels" value="#{not widgetProperty_hideSubLabels}" />
   <c:set var="isEditMode" value="#{widget.mode == 'edit'}" />
 
+  <div class="table-overflow">
   <c:choose>
 
     <c:when test="#{widgetProperty_display == 'table'}">
@@ -114,6 +115,7 @@
     </c:otherwise>
 
   </c:choose>
+  </div>
 
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
