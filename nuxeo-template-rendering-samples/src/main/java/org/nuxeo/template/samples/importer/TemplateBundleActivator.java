@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.template.importer;
+package org.nuxeo.template.samples.importer;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,10 +26,10 @@ import java.util.Enumeration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -57,7 +57,7 @@ public class TemplateBundleActivator implements BundleActivator {
         return this.context.getBundle().getResource(path);
     }
 
-    public Enumeration findEntries(String path) {
+    public Enumeration<?> findEntries(String path) {
         return this.context.getBundle().findEntries(path, null, true);
     }
 
@@ -83,18 +83,7 @@ public class TemplateBundleActivator implements BundleActivator {
         if (dataDirPath != null) {
             return;
         }
-        String dataDir;
-        if (Framework.isTestModeSet()) {
-            try {
-                tmpDir = File.createTempFile("templates.", "");
-                tmpDir.delete();
-                dataDir = tmpDir.getAbsolutePath();
-            } catch (IOException e) {
-                throw new NuxeoException(e);
-            }
-        } else {
-            dataDir = Framework.getProperty("nuxeo.data.dir");
-        }
+        String dataDir = Environment.getDefault().getData().getPath();
         Path path = new Path(dataDir);
         path = path.append("resources");
         dataDirPath = path.toString();
@@ -128,7 +117,7 @@ public class TemplateBundleActivator implements BundleActivator {
             dataDir.mkdirs();
         }
 
-        Enumeration urls = findEntries(getTemplateResourcesRootPath());
+        Enumeration<?> urls = findEntries(getTemplateResourcesRootPath());
         while (urls.hasMoreElements()) {
             URL resourceURL = (URL) urls.nextElement();
             try {

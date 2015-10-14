@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.template.importer;
+package org.nuxeo.template.samples.importer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.template.importer;
+package org.nuxeo.template.samples.importer;
 
 import java.io.BufferedInputStream;
 import java.io.File;

@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.template.importer;
+package org.nuxeo.template.samples.importer;
 
 import java.io.File;
 import java.io.FileFilter;

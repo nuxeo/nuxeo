@@ -31,9 +31,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -41,12 +41,11 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.deckjs.DeckJSConverterConstants;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.event",
         "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
         "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.template.manager.api", "org.nuxeo.template.manager",
-        "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.deckjs",
-        "org.nuxeo.template.manager.samples:OSGI-INF/extensions.xml",
+        "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.deckjs", "org.nuxeo.template.manager.samples",
         "studio.extensions.template-module-demo" })
 public class TestDeckJSPDFConverter {
 
