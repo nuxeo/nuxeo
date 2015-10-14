@@ -45,12 +45,14 @@ public class AdminPermissionsActions implements Serializable {
 
     public static final String CATEGORY_PURGE_WORK = "permissionsPurge";
 
+    public static final String ACE_STATUS_ALL = "all";
+
     @In(create = true)
     protected ContentViewActions contentViewActions;
 
     protected String purgeWorkId;
 
-    protected String selectedACEStatus = "all";
+    protected String selectedACEStatus = ACE_STATUS_ALL;
 
     public String getSelectedACEStatus() {
         return selectedACEStatus;
@@ -62,7 +64,7 @@ public class AdminPermissionsActions implements Serializable {
 
     public String getACEStatusFixedPart() {
         switch (selectedACEStatus) {
-            case "default":
+            case ACE_STATUS_ALL:
                 return null;
             case "0":
                 return "AND ecm:acl/*1/status = 0";
