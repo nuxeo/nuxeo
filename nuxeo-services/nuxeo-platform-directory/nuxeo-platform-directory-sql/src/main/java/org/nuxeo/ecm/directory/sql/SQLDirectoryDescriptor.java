@@ -120,7 +120,7 @@ public class SQLDirectoryDescriptor {
 
     @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
     public PermissionDescriptor[] permissions = null;
-    
+
     @XNode("@remove")
     private boolean remove = false;
 
@@ -129,6 +129,9 @@ public class SQLDirectoryDescriptor {
 
     @XNode("cacheEntryWithoutReferencesName")
     public String cacheEntryWithoutReferencesName = null;
+
+    @XNode("negativeCaching")
+    public Boolean negativeCaching;
 
     @XNodeList(value = "filters/staticFilter", type = SQLStaticFilter[].class, componentType = SQLStaticFilter.class)
     private SQLStaticFilter[] staticFilters;
@@ -464,6 +467,9 @@ public class SQLDirectoryDescriptor {
         if (other.cacheEntryWithoutReferencesName != null || overwite) {
             cacheEntryWithoutReferencesName = other.cacheEntryWithoutReferencesName;
         }
+        if (other.negativeCaching != null || overwite) {
+            negativeCaching = other.negativeCaching;
+        }
         if ((other.staticFilters != null && other.staticFilters.length != 0)
                 || overwite) {
             staticFilters = other.staticFilters;
@@ -520,6 +526,7 @@ public class SQLDirectoryDescriptor {
         clone.remove = remove;
         clone.cacheEntryName = cacheEntryName;
         clone.cacheEntryWithoutReferencesName = cacheEntryWithoutReferencesName;
+        clone.negativeCaching = negativeCaching;
         if (staticFilters != null) {
             clone.staticFilters = new SQLStaticFilter[staticFilters.length];
             for (int i = 0; i < staticFilters.length; i++) {

@@ -141,7 +141,7 @@ public class SQLDirectory extends AbstractDirectory {
         // cache parameterization
         cache.setEntryCacheName(config.cacheEntryName);
         cache.setEntryCacheWithoutReferencesName(config.cacheEntryWithoutReferencesName);
-
+        cache.setNegativeCaching(config.negativeCaching);
     }
 
     /**

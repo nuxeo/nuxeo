@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<!-- This is a test setup for SQL directories that is similar to the default-sql-directories-bundles.xml 
+<!-- This is a test setup for SQL directories that is similar to the default-sql-directories-bundles.xml
   setup except that the datasource is set to a in memory backend -->
 
 <component name="org.nuxeo.ecm.directory.sql.storage.override">
@@ -21,6 +21,7 @@
       <cacheEntryName>override-entry-cache</cacheEntryName>
       <cacheEntryWithoutReferencesName>override-entry-cache-wo-ref
       </cacheEntryWithoutReferencesName>
+      <negativeCaching>true</negativeCaching>
     </directory>
 
   </extension>

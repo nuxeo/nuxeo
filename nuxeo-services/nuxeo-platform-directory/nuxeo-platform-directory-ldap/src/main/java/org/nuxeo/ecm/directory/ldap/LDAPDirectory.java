@@ -160,6 +160,7 @@ public class LDAPDirectory extends AbstractDirectory {
         // cache parameterization
         cache.setEntryCacheName(config.cacheEntryName);
         cache.setEntryCacheWithoutReferencesName(config.cacheEntryWithoutReferencesName);
+        cache.setNegativeCaching(config.negativeCaching);
 
         log.debug(String.format(
                 "initialized LDAP directory %s with fields [%s] and references [%s]",

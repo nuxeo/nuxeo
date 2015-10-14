@@ -70,6 +70,9 @@ public class LDAPDirectoryDescriptor {
     @XNode("cacheEntryWithoutReferencesName")
     public String cacheEntryWithoutReferencesName = null;
 
+    @XNode("negativeCaching")
+    public Boolean negativeCaching;
+
     @XNodeMap(value = "fieldMapping", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> fieldMapping = new HashMap<String, String>();
 
@@ -112,7 +115,7 @@ public class LDAPDirectoryDescriptor {
 
     @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
     public PermissionDescriptor[] permissions = null;
-    
+
     @XNode("emptyRefMarker")
     public String emptyRefMarker = "cn=emptyRef";
 
@@ -130,14 +133,14 @@ public class LDAPDirectoryDescriptor {
 
     @XNode("queryTimeLimit")
     private int queryTimeLimit = 0; // default to wait indefinitely
-    
+
     // Add attribute to allow to ignore referrals resolution
     /**
      * Since 5.9.4
      */
     @XNode("followReferrals")
     protected boolean followReferrals = true; // default to true
-    
+
     protected EntryAdaptor entryAdaptor;
 
     @XObject(value = "entryAdaptor")
