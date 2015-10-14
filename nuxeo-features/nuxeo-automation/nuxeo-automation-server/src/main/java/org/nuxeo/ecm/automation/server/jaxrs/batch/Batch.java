@@ -52,7 +52,8 @@ public class Batch {
 
     public Batch(String id) {
         this.id = id;
-        baseDir = new Path(System.getProperty("java.io.tmpdir")).append(id).toString();
+        baseDir = new Path(System.getProperty("java.io.tmpdir")).append(
+                id).toString();
         new File(baseDir).mkdirs();
     }
 
@@ -100,14 +101,14 @@ public class Batch {
 
         List<Blob> blobs = new ArrayList<Blob>();
 
-        if (uploadInProgress.get() > 0 && timeoutS>0) {
-            for (int i = 0; i < timeoutS*5; i++) {
+        if (uploadInProgress.get() > 0 && timeoutS > 0) {
+            for (int i = 0; i < timeoutS * 5; i++) {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                if (uploadInProgress.get()==0) {
+                if (uploadInProgress.get() == 0) {
                     break;
                 }
             }
@@ -134,16 +135,16 @@ public class Batch {
      */
     public Blob getBlob(String fileId, int timeoutS) {
 
-        Blob result =  uploadedBlob.get(fileId);
-        if (result==null && timeoutS>0 && uploadInProgress.get()>0) {
-            for (int i = 0; i < timeoutS*5; i++) {
+        Blob result = uploadedBlob.get(fileId);
+        if (result == null && timeoutS > 0 && uploadInProgress.get() > 0) {
+            for (int i = 0; i < timeoutS * 5; i++) {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                result =  uploadedBlob.get(fileId);
-                if (result!=null) {
+                result = uploadedBlob.get(fileId);
+                if (result != null) {
                     break;
                 }
             }
