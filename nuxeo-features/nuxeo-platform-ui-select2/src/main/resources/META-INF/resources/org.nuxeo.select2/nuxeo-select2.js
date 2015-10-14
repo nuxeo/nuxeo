@@ -55,12 +55,13 @@
   var userSelectionDefaultFormatter = userEntryDefaultFormatter;
 
   function docSelectionDefaultFormatter(doc) {
-    var markup = "";
+    var markup = "<div title='" + escapeHTML(doc.path) + "'>";
     if (doc.properties && doc.properties['common:icon']) {
       markup += "<img src='" + window.nxContextPath
           + doc.properties['common:icon'] + "' class='smallIcon' />"
     }
     markup += getDocLinkElt(doc);
+    markup += "</div>";
     markup += warnMessage(doc);
     return markup;
   }
