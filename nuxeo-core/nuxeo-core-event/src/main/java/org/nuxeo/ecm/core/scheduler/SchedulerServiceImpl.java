@@ -1,18 +1,14 @@
 /*
- * (C) Copyright 2007-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * Copyright (c) 2007-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
  *     Florent Guillaume
+ *     Thierry Martins
  */
 package org.nuxeo.ecm.core.scheduler;
 
@@ -20,9 +16,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
-import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,14 +32,18 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RuntimeContext;
-import org.quartz.CronTrigger;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.matchers.GroupMatcher;
 
 /**
  * Schedule service implementation. Since the cleanup of the quartz job is done when service is activated, ( see see
@@ -58,6 +60,11 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     protected Scheduler scheduler;
 
     protected final ScheduleExtensionRegistry registry = new ScheduleExtensionRegistry();
+
+    /**
+     * @since 7.10
+     */
+    private Map<String, JobKey> jobKeys = new HashMap<String, JobKey>();
 
     @Override
     public void activate(ComponentContext context) {
@@ -97,10 +104,9 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
 
         // clean up all nuxeo jobs
         // https://jira.nuxeo.com/browse/NXP-7303
-        String[] jobs = scheduler.getJobNames("nuxeo");
-        for (String job : jobs) {
-            unschedule(job);
-        }
+        GroupMatcher<JobKey> matcher = GroupMatcher.jobGroupEquals("nuxeo");
+        Set<JobKey> jobs = scheduler.getJobKeys(matcher);
+        scheduler.deleteJobs(new ArrayList<JobKey>(jobs));
         for (Schedule each : registry.getSchedules()) {
             registerSchedule(each);
         }
@@ -181,29 +187,30 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
 
     protected void schedule(Schedule schedule, Map<String, Serializable> parameters) {
         log.info("Registering " + schedule);
-        JobDetail job = new JobDetail(schedule.getId(), "nuxeo", EventJob.class);
-        JobDataMap map = job.getJobDataMap();
-        map.put("eventId", schedule.getEventId());
-        map.put("eventCategory", schedule.getEventCategory());
-        map.put("username", schedule.getUsername());
 
+        JobDataMap map = new JobDataMap();
         if (parameters != null) {
             map.putAll(parameters);
         }
+        JobDetail job = JobBuilder.newJob(EventJob.class)
+                .withIdentity(schedule.getId(), "nuxeo")
+                .usingJobData(map)
+                .usingJobData("eventId", schedule.getEventId())
+                .usingJobData("eventCategory", schedule.getEventCategory())
+                .usingJobData("username", schedule.getUsername())
+                .build();
 
-        Trigger trigger;
-        try {
-            trigger = new CronTrigger(schedule.getId(), "nuxeo", schedule.getCronExpression());
-        } catch (ParseException e) {
-            log.error(String.format("invalid cron expresion '%s' for schedule '%s'", schedule.getCronExpression(),
-                    schedule.getId()), e);
-            return;
-        }
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(schedule.getId(), "nuxeo")
+                .withSchedule(CronScheduleBuilder.cronSchedule(schedule.getCronExpression()))
+                .build();
+
         // This is useful when testing to avoid multiple threads:
         // trigger = new SimpleTrigger(schedule.getId(), "nuxeo");
 
         try {
             scheduler.scheduleJob(job, trigger);
+            jobKeys.put(schedule.getId(), job.getKey());
         } catch (ObjectAlreadyExistsException e) {
             log.trace("Overriding scheduler with id: " + schedule.getId());
             // when jobs are persisted in a database, the job should already
@@ -238,7 +245,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
 
     protected boolean unschedule(String jobId) {
         try {
-            return scheduler.deleteJob(jobId, "nuxeo");
+            return scheduler.deleteJob(jobKeys.get(jobId));
         } catch (SchedulerException e) {
             log.error(String.format("failed to unschedule job with '%s': %s", jobId, e.getMessage()), e);
         }

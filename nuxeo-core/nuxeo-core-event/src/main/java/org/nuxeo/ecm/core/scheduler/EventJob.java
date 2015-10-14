@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.core.scheduler;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -65,7 +69,6 @@ public class EventJob implements Job {
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected void execute(JobDataMap dataMap) throws LoginException {
         String eventId = dataMap.getString("eventId");
         String eventCategory = dataMap.getString("eventCategory");
@@ -100,7 +103,7 @@ public class EventJob implements Job {
             UserPrincipal principal = new UserPrincipal(username, null, false, false);
             EventContext eventContext = new EventContextImpl(null, principal);
             eventContext.setProperty("category", eventCategory);
-            eventContext.setProperties(dataMap);
+            eventContext.setProperties(getWrappedMap(dataMap));
             Event event = new EventImpl(eventId, eventContext);
 
             // start transaction
@@ -127,6 +130,18 @@ public class EventJob implements Job {
                 loginContext.logout();
             }
         }
+    }
+
+    /**
+     * @return a plain map from a JobDataMap object
+     * @since 7.10
+     */
+    private Map<String, Serializable> getWrappedMap(JobDataMap jobMap) {
+        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        for (String key : jobMap.getKeys()) {
+            map.put(key, (Serializable) jobMap.get(key));
+        }
+        return map;
     }
 
 }

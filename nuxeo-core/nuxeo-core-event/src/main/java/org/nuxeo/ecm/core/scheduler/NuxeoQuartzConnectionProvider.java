@@ -58,4 +58,12 @@ public class NuxeoQuartzConnectionProvider implements ConnectionProvider {
         connection.close();
     }
 
+    /**
+     * @since 7.10
+     */
+    @Override
+    public void initialize() throws SQLException {
+        // do nothing
+    }
+
 }

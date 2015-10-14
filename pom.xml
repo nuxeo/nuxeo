@@ -2614,12 +2614,7 @@
       <dependency>
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
-        <version>1.8.6</version>
-      </dependency>
-      <dependency>
-        <groupId>org.quartz-scheduler</groupId>
-        <artifactId>quartz-oracle</artifactId>
-        <version>1.8.6</version>
+        <version>2.2.2</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
