@@ -38,7 +38,7 @@ public final class RenderingContextWebUtils {
 
     private static final String CTX_KEY = "_STORED_GENERATED_RENDERING_CONTEXT";
 
-    private static final String REQUEST_KEY = "_STORED_GENERATED_HTTP_SERVLET_REQUEST";
+    public static final String REQUEST_KEY = "_STORED_GENERATED_HTTP_SERVLET_REQUEST";
 
     private RenderingContextWebUtils() {
     }
@@ -51,15 +51,35 @@ public final class RenderingContextWebUtils {
      */
     public static RenderingContext getContext(ServletRequest request) {
         // try to get an existing RenderingContext from the request
-        Object stored = request.getAttribute(CTX_KEY);
+        Object stored = request.getAttribute(getContextKey());
         if (stored != null) {
             return (RenderingContext) stored;
         }
         RenderingContextBuilder builder = CtxBuilder.builder();
         fillContext(builder, request);
         RenderingContext ctx = builder.get();
-        request.setAttribute(CTX_KEY, ctx);
+        registerContext(request, ctx);
         return ctx;
+    }
+
+    /**
+     * Register the given context as the context to use to manage the marshalling.
+     *
+     * @param request The current request.
+     * @param ctx The context to register.
+     * @since 7.10
+     */
+    public static void registerContext(ServletRequest request, RenderingContext ctx) {
+        request.setAttribute(getContextKey(), ctx);
+    }
+
+    /**
+     * Return the key used to store the context in the request.
+     *
+     * @since 7.10
+     */
+    public static String getContextKey() {
+        return CTX_KEY;
     }
 
     /**
