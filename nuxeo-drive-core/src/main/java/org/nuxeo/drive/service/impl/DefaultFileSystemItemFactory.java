@@ -139,8 +139,8 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
             if (blobProvider != null && !blobProvider.supportsWrite()) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
-                        "Blob for Document %s is backed by an ExtendedBlobProvider, it cannot be adapted as a FileSystemItem.",
-                        doc.getId()));
+                            "Blob for Document %s is backed by an ExtendedBlobProvider, it cannot be adapted as a FileSystemItem.",
+                            doc.getId()));
                 }
                 return false;
             }
