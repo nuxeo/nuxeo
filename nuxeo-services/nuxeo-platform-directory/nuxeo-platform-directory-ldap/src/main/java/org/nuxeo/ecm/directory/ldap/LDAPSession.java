@@ -267,7 +267,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences)
             throws DirectoryException {
         try {
-            SearchResult result = getLdapEntry(id);
+            SearchResult result = getLdapEntry(id, true);
             if (result == null) {
                 return null;
             }
@@ -372,7 +372,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     @Override
     public DocumentModelList getEntries() throws DirectoryException {
         try {
-            SearchControls scts = directory.getSearchControls();
+            SearchControls scts = directory.getSearchControls(true);
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "LDAPSession.getEntries(): LDAP search base='%s' filter='%s' "
@@ -623,9 +623,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 }
                 index++;
             }
-            String filterExpr = "(&" + directory.getBaseFilter()
-                    + StringUtils.join(filters) + ')';
-            SearchControls scts = directory.getSearchControls();
+            String filterExpr = "(&" + directory.getBaseFilter() + StringUtils.join(filters) + ')';
+            SearchControls scts = directory.getSearchControls(true);
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format(

@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -501,7 +502,7 @@ public class LDAPReference extends AbstractReference {
 
             if (staticAttributeIdIsDn) {
                 try {
-                    targetLdapEntry = targetSession.getLdapEntry(targetId, true);
+                    targetLdapEntry = targetSession.getLdapEntry(targetId, false);
                     if (targetLdapEntry == null) {
                         String msg = String.format(
                                 "Failed to perform inverse lookup on LDAPReference"
@@ -592,7 +593,7 @@ public class LDAPReference extends AbstractReference {
                     // only fetch the entry if not already fetched by the
                     // static
                     // attributes references resolution
-                    targetLdapEntry = targetSession.getLdapEntry(targetId, true);
+                    targetLdapEntry = targetSession.getLdapEntry(targetId, false);
                 }
                 if (targetLdapEntry == null) {
                     String msg = String.format(
