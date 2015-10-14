@@ -685,22 +685,22 @@
           <widget>subjects</widget>
         </row>
         <row>
+          <widget>coverage</widget>
+        </row>
+        <row>
+          <widget>expired</widget>
+        </row>
+        <row>
           <widget>rights</widget>
         </row>
         <row>
           <widget>source</widget>
         </row>
         <row>
-          <widget>coverage</widget>
-        </row>
-        <row>
           <widget>format</widget>
         </row>
         <row>
           <widget>language</widget>
-        </row>
-        <row>
-          <widget>expired</widget>
         </row>
       </rows>
     </layout>
