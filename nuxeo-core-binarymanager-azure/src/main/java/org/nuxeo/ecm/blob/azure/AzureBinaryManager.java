@@ -80,16 +80,16 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
 
     @Override
     protected void setupCloudClient() throws IOException {
+        if (StringUtils.isBlank(properties.get(AzureBinaryManager.ACCOUNT_KEY_PROPERTY))) {
+            properties.put(AzureBinaryManager.ACCOUNT_NAME_PROPERTY, System.getenv("AZURE_STORAGE_ACCOUNT"));
+            properties.put(AzureBinaryManager.ACCOUNT_KEY_PROPERTY, System.getenv("AZURE_STORAGE_ACCESS_KEY"));
+        }
+
         String connectionString = String.format(STORAGE_CONNECTION_STRING,
                 getProperty(ENDPOINT_PROTOCOL_PROPERTY, "https"), getProperty(ACCOUNT_NAME_PROPERTY),
                 getProperty(ACCOUNT_KEY_PROPERTY));
         try {
             storageAccount = CloudStorageAccount.parse(connectionString);
-
-            if (StringUtils.isBlank(properties.get(AzureBinaryManager.ACCOUNT_KEY_PROPERTY))) {
-                properties.put(AzureBinaryManager.ACCOUNT_NAME_PROPERTY, System.getenv("AZURE_STORAGE_ACCOUNT"));
-                properties.put(AzureBinaryManager.ACCOUNT_KEY_PROPERTY, System.getenv("AZURE_STORAGE_ACCESS_KEY"));
-            }
 
             blobClient = storageAccount.createCloudBlobClient();
             container = blobClient.getContainerReference(getProperty(CONTAINER_PROPERTY));
