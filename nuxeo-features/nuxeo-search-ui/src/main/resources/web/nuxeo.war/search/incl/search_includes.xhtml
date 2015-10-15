@@ -9,7 +9,7 @@
       <nxu:set var="searchPermanentLinkUrl" value="#{searchUIActions.searchPermanentLinkUrl}" cache="true">
         <c:if test="#{not empty searchPermanentLinkUrl}">
           <script type="text/javascript">
-            history.pushState(null, '#{currentDocument.title}', '#{searchPermanentLinkUrl}');
+            history.pushState(null, '#{nxu:javaScriptEscape(currentDocument.title)}', '#{nxu:javaScriptEscape(searchPermanentLinkUrl)}');
           </script>
         </c:if>
       </nxu:set>
