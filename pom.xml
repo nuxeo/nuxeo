@@ -5488,6 +5488,28 @@
   </scm>
 
   <repositories>
+    <!-- Hotfix Repositories -->
+    <repository>
+      <id>hotfix-releases</id>
+      <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-releases</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>hotfix-snapshots</id>
+      <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>public</id>
       <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
@@ -5543,16 +5565,12 @@
       <url>scpexe://gironde.nuxeo.com/home/mavenweb/site/</url>
     </site>
     <repository>
-      <id>public-releases</id>
-      <url>
-        http://maven.in.nuxeo.com/nexus/content/repositories/public-releases
-      </url>
+      <id>hotfix-releases</id>
+      <url>http://maven.in.nuxeo.com/nexus/content/repositories/hotfix-releases</url>
     </repository>
     <snapshotRepository>
-      <id>public-snapshots</id>
-      <url>
-        http://maven.in.nuxeo.com/nexus/content/repositories/public-snapshots
-      </url>
+      <id>hotfix-snapshots</id>
+      <url>http://maven.in.nuxeo.com/nexus/content/repositories/hotfix-snapshots</url>
       <uniqueVersion>true</uniqueVersion>
     </snapshotRepository>
   </distributionManagement>
