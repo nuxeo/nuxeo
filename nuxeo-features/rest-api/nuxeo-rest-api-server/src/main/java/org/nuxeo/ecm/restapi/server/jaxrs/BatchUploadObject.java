@@ -25,12 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -39,14 +41,22 @@ import javax.ws.rs.core.Response.Status.Family;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
+import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchFileEntry;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
@@ -82,6 +92,8 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     protected static final String REQUEST_BATCH_ID = "batchId";
 
     protected static final String REQUEST_FILE_IDX = "fileIdx";
+
+    protected static final String OPERATION_ID = "operationId";
 
     public static final String UPLOAD_TYPE_NORMAL = "normal";
 
@@ -221,6 +233,51 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         return buildResponse(Status.OK, result);
     }
 
+    @POST
+    @Produces("application/json")
+    @Path("{batchId}/execute/{operationId}")
+    public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(OPERATION_ID) String operationId,
+            @Context HttpServletRequest request, ExecutionRequest xreq) {
+        return executeBatch(batchId, null, operationId, request, xreq);
+    }
+
+    @POST
+    @Produces("application/json")
+    @Path("{batchId}/{fileIdx}/execute/{operationId}")
+    public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx,
+            @PathParam(OPERATION_ID) String operationId, @Context HttpServletRequest request, ExecutionRequest xreq) {
+        return executeBatch(batchId, fileIdx, operationId, request, xreq);
+    }
+
+    protected Object executeBatch(String batchId, String fileIdx, String operationId, HttpServletRequest request,
+            ExecutionRequest xreq) {
+        RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> {
+            BatchManager bm = Framework.getService(BatchManager.class);
+            bm.clean(batchId);
+        });
+
+        try {
+            CoreSession session = ctx.getCoreSession();
+            OperationContext ctx = xreq.createContext(request, session);
+            Map<String, Object> params = xreq.getParams();
+            BatchManager bm = Framework.getLocalService(BatchManager.class);
+            Object result;
+            if (StringUtils.isBlank(fileIdx)) {
+                result = bm.execute(batchId, operationId, session, ctx, params);
+            } else {
+                result = bm.execute(batchId, fileIdx, operationId, session, ctx, params);
+            }
+            return ResponseHelper.getResponse(result, request);
+        } catch (NuxeoException | MessagingException | IOException e) {
+            log.error("Error while executing automation batch ", e);
+            if (WebException.isSecurityError(e)) {
+                return buildJSONResponse(Status.FORBIDDEN, "{\"error\" : \"" + e.getMessage() + "\"}");
+            } else {
+                return buildJSONResponse(Status.INTERNAL_SERVER_ERROR, "{\"error\" : \"" + e.getMessage() + "\"}");
+            }
+        }
+    }
+
     protected Response buildResponse(StatusType status, Object object) throws IOException {
         return buildResponse(status, object, false);
     }
@@ -237,14 +294,20 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected Response buildJSONResponse(StatusType status, String message) {
-        return Response.status(status).header("Content-Length", message.length()).type(MediaType.APPLICATION_JSON).entity(
-                message).build();
+        return Response.status(status)
+                       .header("Content-Length", message.length())
+                       .type(MediaType.APPLICATION_JSON)
+                       .entity(message)
+                       .build();
     }
 
     protected Response buildHTMLResponse(StatusType status, String message) {
         message = "<html>" + message + "</html>";
-        return Response.status(status).header("Content-Length", message.length()).type(MediaType.TEXT_HTML_TYPE).entity(
-                message).build();
+        return Response.status(status)
+                       .header("Content-Length", message.length())
+                       .type(MediaType.TEXT_HTML_TYPE)
+                       .entity(message)
+                       .build();
     }
 
     protected Response buildEmptyResponse(StatusType status) {

@@ -62,9 +62,12 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Exposes {@link Batch} as a JAX-RS resource
  *
+ * @deprecated Use {@link org.nuxeo.ecm.restapi.server.jaxrs.BatchUploadObject} instead.
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  * @author Antoine Taillefer
  */
+@Deprecated
 @WebObject(type = "batch")
 public class BatchResource extends AbstractResource<ResourceTypeImpl> {
 
@@ -169,11 +172,11 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
         return buildFromMap(result, useIFrame);
     }
 
+    @Deprecated
     @POST
     @Produces("application/json")
     @Path("/execute")
     public Object exec(@Context HttpServletRequest request, ExecutionRequest xreq) {
-
         Map<String, Object> params = xreq.getParams();
         String batchId = (String) params.get(REQUEST_BATCH_ID);
         String fileIdx = (String) params.get(REQUEST_FILE_IDX);

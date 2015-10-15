@@ -265,12 +265,9 @@ public class BatchUploadTest extends BaseTest {
         TransactionHelper.startTransaction();
 
         String json = "{\"params\":{";
-        json += "\"operationId\":\"Blob.Attach\",";
-        json += "\"batchId\":\"" + batchId + "\",";
-        json += "\"fileIdx\":\"0\",";
         json += "\"document\":\"" + file.getPathAsString() + "\"";
         json += "}}";
-        response = getResponse(RequestType.POSTREQUEST, "batch/execute", json);
+        response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json);
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
 
         DocumentModel doc = session.getDocument(new PathRef("/testBatchExecuteDoc"));
@@ -488,12 +485,9 @@ public class BatchUploadTest extends BaseTest {
         TransactionHelper.startTransaction();
 
         String json = "{\"params\":{";
-        json += "\"operationId\":\"Blob.Attach\",";
-        json += "\"batchId\":\"" + batchId + "\",";
-        json += "\"fileIdx\":\"0\",";
         json += "\"document\":\"" + file.getPathAsString() + "\"";
         json += "}}";
-        response = getResponse(RequestType.POSTREQUEST, "batch/execute", json);
+        response = getResponse(RequestType.POSTREQUEST, "upload/" + batchId + "/0/execute/Blob.Attach", json);
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
 
         DocumentModel doc = session.getDocument(new PathRef("/testBatchExecuteDoc"));
