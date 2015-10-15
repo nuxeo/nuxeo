@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.blob;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.IOException;
 import java.net.URI;
@@ -153,7 +154,7 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     }
 
     protected String getProperty(String propertyName, String defaultValue) {
-        if (properties.containsKey(propertyName)) {
+        if (properties.containsKey(propertyName) && isNotBlank(properties.get(propertyName))) {
             return properties.get(propertyName);
         }
 
