@@ -199,11 +199,21 @@ public abstract class AbstractTransientStore implements TransientStore {
     }
 
     public File getCachingDirectory(String key) {
-        File cachingDir = new File(cacheDir, getCachingDirName(key));
-        if (!cachingDir.exists()) {
-            cachingDir.mkdir();
+
+        try {
+            File cachingDir = new File(cacheDir.getCanonicalFile(), getCachingDirName(key));
+
+            if (!cachingDir.getCanonicalPath().startsWith(cacheDir.getCanonicalPath())) {
+                throw new SecurityException("Trying to traverse illegal path");
+            }
+
+            if (!cachingDir.exists()) {
+                cachingDir.mkdir();
+            }
+            return cachingDir;
+        } catch (IOException e) {
+            throw new RuntimeException("Error when trying to access cache directory");
         }
-        return cachingDir;
     }
 
     @Override
