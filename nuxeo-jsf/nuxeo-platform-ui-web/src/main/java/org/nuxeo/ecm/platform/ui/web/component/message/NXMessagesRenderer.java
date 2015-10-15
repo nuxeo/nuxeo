@@ -25,8 +25,14 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIMessages;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ComponentSystemEvent;
+import javax.faces.event.ComponentSystemEventListener;
+import javax.faces.event.ListenerFor;
+import javax.faces.event.PostAddToViewEvent;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.renderkit.html_basic.MessagesRenderer;
@@ -36,9 +42,12 @@ import com.sun.faces.renderkit.html_basic.MessagesRenderer;
  *
  * @since 5.7.3
  */
-public class NXMessagesRenderer extends MessagesRenderer {
+@ListenerFor(systemEventClass = PostAddToViewEvent.class)
+public class NXMessagesRenderer extends MessagesRenderer implements ComponentSystemEventListener {
 
     public static final String RENDERER_TYPE = "javax.faces.NXMessages";
+
+    private static final String COMP_KEY = NXMessagesRenderer.class.getName() + "_COMPOSITE_COMPONENT";
 
     @Override
     public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
@@ -53,7 +62,7 @@ public class NXMessagesRenderer extends MessagesRenderer {
 
         UIMessages messages = (UIMessages) component;
         ResponseWriter writer = context.getResponseWriter();
-        assert (writer != null);
+        assert(writer != null);
 
         String clientId = ((UIMessages) component).getFor();
         // if no clientId was included
@@ -66,9 +75,9 @@ public class NXMessagesRenderer extends MessagesRenderer {
         }
 
         // "for" attribute optional for Messages
-        Iterator messageIter = getMessageIter(context, clientId, component);
+        Iterator<?> messageIter = getMessageIter(context, clientId, component);
 
-        assert (messageIter != null);
+        assert(messageIter != null);
 
         if (!messageIter.hasNext()) {
             if (mustRender) {
@@ -128,8 +137,8 @@ public class NXMessagesRenderer extends MessagesRenderer {
             writer.writeAttribute("type", "text/javascript", null);
 
             String scriptContent = "jQuery(document).ready(function() {\n" + "  jQuery.ambiance({\n" + "    "
-                    + "message: \"%s\",\n" + "    title: \"%s\",\n" + "    type: \"%s\",\n"
-                    + "    className: \"%s\",\n" + "    timeout: \"%d\"" + "  })\n" + "});\n";
+                    + "message: \"%s\",\n" + "    title: \"%s\",\n" + "    type: \"%s\",\n" + "    className: \"%s\",\n"
+                    + "    timeout: \"%d\"" + "  })\n" + "});\n";
             String formattedScriptContent;
             if (showDetail) {
                 formattedScriptContent = String.format(scriptContent, StringEscapeUtils.escapeJavaScript(detail),
@@ -143,4 +152,37 @@ public class NXMessagesRenderer extends MessagesRenderer {
 
         }
     }
+
+    /*
+     * When this method is called, we know that there is a component with a script renderer somewhere in the view. We
+     * need to make it so that when an element with a name given by the value of the optional "target" component
+     * attribute is encountered, this component can be called upon to render itself. This method will add the component
+     * (associated with this Renderer) to a facet in the view only if a "target" component attribute is set.
+     */
+    public void processEvent(ComponentSystemEvent event) throws AbortProcessingException {
+        UIComponent component = event.getComponent();
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        String target = verifyTarget((String) component.getAttributes().get("target"));
+        if (target != null) {
+            // We're checking for a composite component here as if the resource
+            // is relocated, it may still require it's composite component context
+            // in order to properly render. Store it for later use by
+            // encodeBegin() and encodeEnd().
+            UIComponent cc = UIComponent.getCurrentCompositeComponent(context);
+            if (cc != null) {
+                component.getAttributes().put(COMP_KEY, cc.getClientId(context));
+            }
+            context.getViewRoot().addComponentResource(context, component, target);
+
+        }
+    }
+
+    protected String verifyTarget(String toVerify) {
+        if (StringUtils.isBlank(toVerify)) {
+            return null;
+        }
+        return toVerify;
+    }
+
 }
