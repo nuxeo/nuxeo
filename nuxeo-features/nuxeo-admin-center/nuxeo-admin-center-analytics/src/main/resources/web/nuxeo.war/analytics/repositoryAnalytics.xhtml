@@ -1,0 +1,20 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+     style="overflow: hidden">
+
+  <script src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+  <link rel="import" href="#{baseURL}analytics/elements/elements.vulcanized.html"></link>
+
+  <template is="dom-bind">
+
+    <div style="text-align: right; padding: 0 20px;">
+      <input type="date" value="{{startDate::change}}" style="display: inline; width: 150px"></input>
+      <input type="date" value="{{endDate::change}}" style="display: inline; width: 150px"></input>
+    </div>
+
+    <nx-connection id="nx_connection" url="/nuxeo"></nx-connection>
+    <nuxeo-repository-analytics-dashboard start-date="[[startDate]]" end-date="[[endDate]]"></nuxeo-repository-analytics-dashboard>
+
+  </template>
+
+</div>

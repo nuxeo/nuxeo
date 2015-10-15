@@ -1,0 +1,12 @@
+<component name="org.nuxeo.admin.center.analytics.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+    <action id="RepositoryAnalytics" link="/analytics/repositoryAnalytics.xhtml"
+      type="admin_rest_document_link"
+      label="Repository Analytics" order="40">
+      <category>UsersActivity_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+  </extension>
+
+</component>

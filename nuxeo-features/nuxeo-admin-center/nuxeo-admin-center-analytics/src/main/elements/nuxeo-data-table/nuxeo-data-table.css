@@ -1,0 +1,64 @@
+#table .thead .tr .th,
+#table .tbody .tr .td,
+#table .tbody .tr .td-host::shadow .td,
+#tableHeader, #tableFooter {
+    padding-top: 18px;
+    padding-bottom: 11px; /* -1px because of the border */
+}
+
+#table .thead .tr .th {
+    padding-top: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, .22);
+}
+
+#table .thead .tr .th,
+#table .tbody .tr .td {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#table .thead .tr .th,
+#table .tbody .tr .td {
+    padding-right: 56px;
+}
+
+#table .thead .tr .th:first-of-type,
+#table .tbody .tr .td:first-of-type {
+    padding-left: 24px;
+}
+
+#table .thead .tr .th:last-of-type,
+#table .tbody .tr .td:last-of-type {
+    padding-right: 24px;
+}
+
+#table .thead .tr .th {
+    font-size: 12px;
+    color: rgba(0, 0, 0, .54);
+}
+
+#table .thead .tr .th {
+    position: relative;
+    overflow: visible;
+}
+
+
+#table .tbody .tr {
+    border-top: 1px solid rgba(0, 0, 0, .22);
+}
+#table .tbody .tr:first-of-type {
+    border-top: none;
+}
+
+#table .tbody .tr .td,
+#table .tbody .tr .td-host::shadow .td {
+    font-size: 13px;
+    color: rgba(0, 0, 0, .87);
+    line-height: 13px;
+}
+
+#table {
+    position: relative;
+}

@@ -1,0 +1,17 @@
+{
+  "name": "nuxeo-admin-center-analytics",
+  "version": "1.0.0",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-autoprefixer": "^3.0.3",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-copy": "^0.8.0",
+    "grunt-vulcanize": "^1.0.0",
+    "load-grunt-tasks": "^3.2.0",
+    "time-grunt": "^1.2.1"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  }
+}

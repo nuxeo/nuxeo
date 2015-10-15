@@ -1,0 +1,95 @@
+:host {
+  display: block;
+  margin-top: 10px;
+  padding: 0 10px;
+  font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #444;
+}
+
+[content] {
+  @apply(--layout-flex);
+  @apply(--layout-horizontal);
+  margin-top: 10px;
+}
+
+paper-card {
+  background-color: transparent;
+  float: left;
+  height: 450px;
+  margin-bottom: 20px;
+  text-align: center;
+  padding: 10px;
+  width: 33.3%;
+}
+
+paper-card /deep/ paper-material {
+  height: 450px;
+}
+
+paper-card /deep/ .header .title-text {
+  line-height: 1.2em;
+}
+
+paper-card /deep/ canvas {
+  margin-bottom: 15px;
+  max-height: 250px;
+  max-width: 500px;
+}
+
+chart-bar,
+chart-line,
+chart-pie {
+  height: 100%;
+  margin: 25px auto 0 auto;
+  width: 100%;
+  display: block;
+  font-size: 0.8em;
+}
+
+chart-bar /deep/ .chart-legend ul,
+chart-pie /deep/ .chart-legend ul,
+chart-line /deep/ .chart-legend ul {
+  list-style: none;
+  padding: 0;
+}
+
+chart-bar /deep/ .chart-legend li,
+chart-pie /deep/ .chart-legend li,
+chart-line /deep/ .chart-legend li {
+  display: inline-block;
+  margin-right: 15px;
+}
+
+chart-bar /deep/ .chart-legend li span,
+chart-pie /deep/ .chart-legend li span,
+chart-line /deep/ .chart-legend li span {
+  display: inline-block;
+  height: 12px;
+  margin-right: 5px;
+  width: 12px;
+}
+
+iron-icon {
+  color: #ccc;
+  --iron-icon-width: 144px;
+  --iron-icon-height: 144px;
+  margin-top: 50px;
+}
+
+@media (max-width: 1440px) {
+  paper-card {
+    width: 50%;
+  }
+}
+
+@media (max-width: 1024px) {
+  paper-card {
+    width: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  paper-card {
+    width: 100%;
+  }
+}
