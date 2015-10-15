@@ -154,8 +154,9 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     }
 
     protected String getProperty(String propertyName, String defaultValue) {
-        if (properties.containsKey(propertyName) && isNotBlank(properties.get(propertyName))) {
-            return properties.get(propertyName);
+        String propValue = properties.get(propertyName);
+        if (isNotBlank(propValue)) {
+            return propValue;
         }
 
         return Framework.getProperty(getConfigurationKey(propertyName), defaultValue);
