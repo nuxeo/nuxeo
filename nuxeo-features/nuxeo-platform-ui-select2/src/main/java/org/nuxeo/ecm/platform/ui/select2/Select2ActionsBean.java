@@ -496,6 +496,9 @@ public class Select2ActionsBean implements Serializable {
         return false;
     }
 
+    /**
+     * @deprecated since 7.10: JSF resources mechanism allows to detect resources already included in the page natively.
+     */
     public boolean mustIncludeResources() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext != null) {
