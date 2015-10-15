@@ -5,7 +5,7 @@
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
     <version>7.10-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath />
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
@@ -20,7 +20,6 @@
     <module>nuxeo-core-binarymanager-jclouds</module>
   </modules>
 
-  <!-- dependencies set in Nuxeo toplevel POM -->
   <repositories>
     <repository>
       <id>public</id>
