@@ -113,6 +113,7 @@ public class Helper {
         String content = FILE1_CONTENT;
         String filename = "testfile.txt";
         Blob blob1 = Blobs.createBlob(content);
+        blob1.setDigest(DigestUtils.md5Hex(content));
         blob1.setFilename(filename);
         file1.setPropertyValue("content", (Serializable) blob1);
         Calendar cal1 = getCalendar(2007, 3, 1, 12, 0, 0);

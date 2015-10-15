@@ -256,7 +256,8 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         }
     }
 
-    public static ContentStream getContentStream(DocumentModel doc) throws CmisRuntimeException {
+    public static ContentStream getContentStream(DocumentModel doc, HttpServletRequest request)
+            throws CmisRuntimeException {
         BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
         if (blobHolder == null) {
             throw new CmisStreamNotSupportedException();
@@ -266,9 +267,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             return null;
         }
         GregorianCalendar lastModified = (GregorianCalendar) doc.getPropertyValue("dc:modified");
-        DownloadService downloadService = Framework.getService(DownloadService.class);
-        downloadService.logDownload(doc, DownloadService.BLOBHOLDER_0, blob.getFilename(), "cmis", null);
-        return new NuxeoContentStream(blob, lastModified);
+        return NuxeoContentStream.create(doc, DownloadService.BLOBHOLDER_0, blob, "cmis", null, lastModified, request);
     }
 
     public static void setContentStream(DocumentModel doc, ContentStream contentStream, boolean overwrite)

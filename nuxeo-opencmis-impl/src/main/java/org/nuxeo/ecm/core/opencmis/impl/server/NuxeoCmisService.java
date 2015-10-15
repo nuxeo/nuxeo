@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.chemistry.opencmis.client.api.ObjectId;
@@ -808,7 +809,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         // TODO offset, length
         if (streamId == null) {
             DocumentModel doc = getDocumentModel(objectId);
-            ContentStream cs = NuxeoPropertyData.getContentStream(doc);
+            HttpServletRequest request = (HttpServletRequest) getCallContext().get(CallContext.HTTP_SERVLET_REQUEST);
+            ContentStream cs = NuxeoPropertyData.getContentStream(doc, request);
             if (cs != null) {
                 return cs;
             }
@@ -868,10 +870,9 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         Calendar modificationDate = rendition.getModificationDate();
         GregorianCalendar lastModified = (modificationDate instanceof GregorianCalendar)
                 ? (GregorianCalendar) modificationDate : null;
-        DownloadService downloadService = Framework.getService(DownloadService.class);
-        downloadService.logDownload(doc, null, blob.getFilename(), "cmisRendition",
-                Collections.singletonMap("rendition", renditionName));
-        return new NuxeoContentStream(blob, lastModified);
+        HttpServletRequest request = (HttpServletRequest) getCallContext().get(CallContext.HTTP_SERVLET_REQUEST);
+        return NuxeoContentStream.create(doc, null, blob, "cmisRendition",
+                Collections.singletonMap("rendition", renditionName), lastModified, request);
     }
 
     @Override
