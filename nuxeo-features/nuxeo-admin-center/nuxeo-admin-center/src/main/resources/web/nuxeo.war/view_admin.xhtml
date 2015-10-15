@@ -9,16 +9,13 @@
   xmlns:a4j="http://richfaces.org/a4j">
   <ui:param name="pageName" value="admin/default" />
 
-  <ui:define name="header_scripts">
-    <ui:include src="/incl/sysinfo/confirmRestartScript.xhtml" />
-  </ui:define>
-
   <ui:define name="page title">
     <h:outputText value="#{nuxeoApplicationName} - #{messages['label.main.tab.admin.center']}"/>
   </ui:define>
 
   <ui:define name="body">
 
+    <ui:include src="/incl/sysinfo/confirmRestartScript.xhtml" />
     <nxl:widget name="adminCenterTabs" mode="view" value="#{currentDocument}" />
 
   </ui:define>

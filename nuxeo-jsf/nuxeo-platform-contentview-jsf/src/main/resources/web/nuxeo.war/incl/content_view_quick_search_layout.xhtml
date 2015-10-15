@@ -110,10 +110,10 @@ empty:
         </h:form>
 
         <c:if test="#{showFilterFormBox or nxu:hasMessages(filterFormId)}">
-          <script>
+          <h:outputScript target="#{pageJsTarget}">
             openFancyBox('##{filterFormId}_box', {onClosed: #{filterFormId}closeFancybox});
             jQuery('##{filterFormId}').focusFirst();
-          </script>
+          </h:outputScript>
         </c:if>
 
         <div  style="display:none;">

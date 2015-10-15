@@ -11,11 +11,11 @@
         <!-- search form -->
         <h:form id="searchForm"
           onsubmit="document.getElementById('usersListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('usersListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');">
-          <script>
+          <h:outputScript target="#{pageJsTarget}">
             jQuery(document).ready(function() {
               jQuery('#usersListingView\\:searchForm').focusFirst();
             });
-          </script>
+          </h:outputScript>
           <h:inputText id="searchText"
             value="#{userManagementActions.searchString}"
             styleClass="directoryFilter" />

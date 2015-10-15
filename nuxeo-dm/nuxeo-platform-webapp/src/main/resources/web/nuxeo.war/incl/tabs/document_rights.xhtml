@@ -177,23 +177,21 @@
           value="#{messages['command.security.delPerm']}" class="button floatL"
           rendered="${not empty securityActions.currentDocumentUsers}"
           action="#{securityActions.removePermissions}"
-          disabled="#{!securityActions.canRemoveSecurityRules}"/> <h:panelGroup
-        id="security_button_remove_script">
-        <script>
-          <!--
-          var checked = isOneCheckBoxChecked("dataTable_local_rights");
-          var btn = document.getElementById("rights_content:security_button_remove");
-          if (btn) {
-            if (checked) {
-              btn.removeAttribute("disabled");
+          disabled="#{!securityActions.canRemoveSecurityRules}"/>
+        <h:panelGroup id="security_button_remove_script">
+          <h:outputScript target="#{pageJsTarget}">
+            var checked = isOneCheckBoxChecked("dataTable_local_rights");
+            var btn = document.getElementById("rights_content:security_button_remove");
+            if (btn) {
+              if (checked) {
+                btn.removeAttribute("disabled");
+              }
+              else {
+                btn.setAttribute("disabled", "disabled");
+              }
             }
-            else {
-              btn.setAttribute("disabled", "disabled");
-            }
-          }
-          -->
-        </script>
-      </h:panelGroup>
+          </h:outputScript>
+        </h:panelGroup>
       </h:form>
     </a4j:outputPanel>
 
@@ -216,11 +214,11 @@
 
     <a4j:region renderRegionOnly="true">
       <h:form id="add_rights_form">
-        <script>
+        <h:outputScript target="#{pageJsTarget}">
           jQuery(document).ready(function () {
             jQuery('#add_rights_form').focusFirst();
           });
-        </script>
+        </h:outputScript>
         <table class="dataInput">
           <tbody>
           <tr>

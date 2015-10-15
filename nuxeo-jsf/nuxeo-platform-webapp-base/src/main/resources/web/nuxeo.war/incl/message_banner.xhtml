@@ -2,6 +2,7 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxh="http://nuxeo.org/nxweb/html">
 
@@ -9,7 +10,7 @@
 
     <div class="facesStatusMessage">
       <c:if test="#{facesContext.maximumSeverity.ordinal >= 2}">
-        <script type="text/javascript">
+        <h:outputScript target="#{pageJsTarget}">
           jQuery(document).ready(function() {
             jQuery.ambiance({
               title: "#{messages['feedback.correctErrors']}",
@@ -18,9 +19,9 @@
               timeout: 0
             })
           });
-        </script>
+        </h:outputScript>
       </c:if>
-      <script type="text/javascript">
+      <h:outputScript target="#{pageJsTarget}">
         jsf.ajax.addOnError(function(data) {
           jQuery.ambiance({
             title: data.description,
@@ -29,13 +30,13 @@
             timeout: 0
           });
         });
-      </script>
+      </h:outputScript>
     </div>
 
-    <nxh:messages globalOnly="true"
+    <nxh:messages globalOnly="true" target="#{pageJsTarget}"
       infoClass="infoFeedback"
       warnClass="warningFeedback"
-      errorClass="errorFeedback"/>
+      errorClass="errorFeedback" />
 
   </a4j:outputPanel>
 

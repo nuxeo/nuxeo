@@ -14,11 +14,11 @@
   </h3>
 
   <h:form id="createGroup" rendered="#{groupManagementActions.allowCreateGroup and notReadOnly}">
-    <script>
+    <h:outputScript target="#{pageJsTarget}">
       jQuery(document).ready(function() {
         jQuery('#createGroupView\\:createGroup').focusFirst();
       });
-    </script>
+    </h:outputScript>
     <nxl:layout name="group" mode="create" value="#{groupManagementActions.newGroup}" />
     <table class="dataInput">
       <tbody>

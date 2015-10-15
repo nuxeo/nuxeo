@@ -3,7 +3,7 @@
  xmlns:c="http://java.sun.com/jstl/core"
  xmlns:h="http://java.sun.com/jsf/html">
 
-  <script>
+  <h:outputScript target="#{pageJsTarget}">
     function confirmRestart() {
       var testerName = '#{frameworkPropertyActions.getProperty("org.nuxeo.ecm.tester.name")}';
       if (testerName == "Nuxeo-Selenium-Tester") {
@@ -17,6 +17,6 @@
       }
       return window.confirm(restartMessage);
     }
-  </script>
+  </h:outputScript>
 
 </c:if>

@@ -23,11 +23,11 @@
   </h:form>
 
   <h:form id="deleteGroupForm" rendered="#{groupManagementActions.allowDeleteGroup and notReadOnly}">
-    <script type="text/javascript">
+    <h:outputScript target="#{pageJsTarget}">
     function confirmDeleteGroup() {
       return confirm("#{messages['label.userManager.confirmDeleteGroup']}");
     }
-    </script>
+    </h:outputScript>
     <div class="action_bar">
       <ul>
         <li class="selected">
@@ -76,11 +76,11 @@
     </h:form>
 
     <h:form id="editGroup" rendered="#{groupManagementActions.detailsMode == 'edit' and groupManagementActions.allowEditGroup and notReadOnly}">
-      <script>
+      <h:outputScript target="#{pageJsTarget}">
          jQuery(document).ready(function() {
            jQuery('#viewGroupView\\:editGroup').focusFirst();
          });
-      </script>
+      </h:outputScript>
       <nxl:layout name="group" mode="edit" value="#{groupManagementActions.selectedGroup}" />
       <table class="dataInput">
         <tbody>

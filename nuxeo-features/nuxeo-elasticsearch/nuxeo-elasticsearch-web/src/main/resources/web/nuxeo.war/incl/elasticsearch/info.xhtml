@@ -1,13 +1,14 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
-     xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
-     xmlns:c="http://java.sun.com/jstl/core"
-     class="hostInfos">
+<h:panelGroup layout="block"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxr="http://nuxeo.org/nxweb/resources"
+  styleClass="hostInfos">
 
-  <script src="#{baseURL}scripts/json2html.js" type='text/javascript'></script>
-  <script src="#{baseURL}scripts/jquery.json2html.js"
-          type='text/javascript'></script>
-  <script src="#{baseURL}scripts/displayESJSON.js"
-          type='text/javascript'></script>
+  <h:outputScript src="/scripts/json2html.js" target="#{pageJsTarget}" />
+  <h:outputScript src="/scripts/jquery.json2html.js" target="#{pageJsTarget}" />
+  <h:outputScript src="/scripts/displayESJSON.js" target="#{pageJsTarget}" />
 
    <c:choose>
     <c:when test="#{esAdmin.isIndexingInProgress()}">
@@ -73,8 +74,7 @@ Number of command processed since Nuxeo instance startup: <h:outputText value="#
 
       <div id="ESConfig"></div>
 
-      <a4j:outputPanel ajaxRendered="true">
-        <script>
+<h:outputScript target="#{pageJsTarget}">
 function initExpandAll(divId) {
   jQuery('#' + divId + 'Open').click(function() {
     jQuery(this).css('display', 'none');
@@ -96,7 +96,6 @@ function initESInfo() {
 
   displayESJSON('config', <h:outputText value="#{esAdmin.nodesInfo}" escape="false" />, jQuery('#ESConfig'));
   displayESJSON('stats', <h:outputText value="#{esAdmin.nodesStats}" escape="false" />, jQuery('#ESStats'));
-
 }
 
 jQuery(document).ready(function(){
@@ -104,8 +103,9 @@ jQuery(document).ready(function(){
   initExpandAll('ESStats');
   initExpandAll('ESConfig');
 })
-    </script>
-      </a4j:outputPanel>
+</h:outputScript>
+
     </c:when>
   </c:choose>
-</div>
+
+</h:panelGroup>

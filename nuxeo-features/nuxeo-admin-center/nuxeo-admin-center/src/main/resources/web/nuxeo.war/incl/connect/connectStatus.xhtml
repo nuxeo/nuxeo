@@ -47,12 +47,12 @@
                           errorClass="errorMessage" for="online" id="online" />
                       </div>
 
-                      <script type="text/javascript">
+                      <h:outputScript target="#{pageJsTarget}">
                         function openInstanceRegistration() {
                           var url = '#{nuxeoConnectUrl}connect/wizardInstanceRegistration/?wizardCallbackUrl=#{baseURL}site/connectClient/registerInstanceCallback?cb=yes';
                           window.open(url, 'instanceRegistrationPopup', 'width=1024,height=768');
                         }
-                      </script>
+                      </h:outputScript>
 
                       <h:form>
                         <a4j:jsFunction name="registerInstanceCallback" render="connectStatusPanel">

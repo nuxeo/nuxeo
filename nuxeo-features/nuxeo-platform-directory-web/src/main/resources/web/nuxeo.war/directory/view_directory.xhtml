@@ -7,11 +7,11 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <script type="text/javascript">
+  <h:outputScript target="#{pageJsTarget}">
     function confirmDeleteDirectoryEntry() {
       return confirm("#{messages['label.vocabulary.entry.confirmDelete']}");
     }
-  </script>
+  </h:outputScript>
 
   <a4j:outputPanel id="viewDirectoryPanel" layout="block">
 

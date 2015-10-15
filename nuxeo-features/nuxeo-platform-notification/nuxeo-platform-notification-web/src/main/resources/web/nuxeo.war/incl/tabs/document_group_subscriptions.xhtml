@@ -28,11 +28,11 @@
   </h:form>
 
   <h:form id="add_subscriptions">
-    <script>
+    <h:outputScript target="#{pageJsTarget}">
       jQuery(document).ready(function() {
         jQuery('#add_subscriptions').focusFirst();
       });
-    </script>
+    </h:outputScript>
 
     <div class="userAndGroupFilter">
 

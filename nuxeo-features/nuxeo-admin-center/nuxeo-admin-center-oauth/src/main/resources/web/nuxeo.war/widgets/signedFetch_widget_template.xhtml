@@ -7,7 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <c:if test="#{widget.mode == 'edit'}">
-    <script>
+    <h:outputScript target="#{pageJsTarget}">
     function toggleLogin(wid, value) {
 
       var loginSpan = document.getElementById(wid + '_loginBox');
@@ -17,7 +17,7 @@
         loginSpan.style.display='none';
       }
     }
-    </script>
+    </h:outputScript>
     <h:selectOneListbox value="#{field}" id="#{widget.id}_checkbox" onchange="toggleLogin('#{widget.id}', this.value)" size="1">
       <f:selectItem itemValue="none" itemLabel="#{messages['label.signedfetch.none']}" />
       <f:selectItem itemValue="opensocial:viewer" itemLabel="#{messages['label.signedfetch.opensocialViewer']}" />

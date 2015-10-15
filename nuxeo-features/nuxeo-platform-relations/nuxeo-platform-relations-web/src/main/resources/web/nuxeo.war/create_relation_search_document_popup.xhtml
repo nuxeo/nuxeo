@@ -7,7 +7,7 @@
   xmlns:a4j="http://richfaces.org/a4j"
   class="popUpContent" id="popUpContent">
 
-    <script language="javascript" type="text/javascript">
+    <h:outputScript target="#{pageJsTarget}">
       function updateParent(documentUid, documentTitle) {
         parentInput = document.getElementById('createForm:objectDocumentUid');
         parentInput.value = documentUid;
@@ -17,7 +17,7 @@
         parentTitleSaved.value = documentTitle;
         hidePopUp();
       }
-    </script>
+    </h:outputScript>
 
     <nxu:set var="contentViewName" value="relation_search">
     <nxu:set var="contentViewId" value="0">

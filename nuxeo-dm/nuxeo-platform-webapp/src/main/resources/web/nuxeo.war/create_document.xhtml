@@ -25,11 +25,6 @@
       <ui:include src="/incl/safeEdit.xhtml"/>
 
       <h:form enctype="multipart/form-data" id="document_create" styleClass="safeEditEnabled" >
-        <script>
-        jQuery(document).ready(function() {
-          jQuery('#document_create').focusFirst();
-        });
-      </script>
         <nxl:documentLayout mode="create" value="#{changeableDocument}" />
         <div class="buttonsGadget">
           <input type="hidden" name="parentDocumentPath"
@@ -37,11 +32,12 @@
           <nxl:widget name="documentCreateButtons" mode="view" value="#{changeableDocument}" />
         </div>
       </h:form>
-      <script>
+      <h:outputScript target="#{pageJsTarget}">
         jQuery(document).ready(function() {
-           jQuery('#document_create').initSafeEditOnForm("create-#{currentDocument.id}-#{changeableDocument.type}", "#{messages['safeedit.page.has.unsaved.changes']}");
+          jQuery('#document_create').focusFirst();
+          jQuery('#document_create').initSafeEditOnForm("create-#{currentDocument.id}-#{changeableDocument.type}", "#{messages['safeedit.page.has.unsaved.changes']}");
         });
-     </script>
+     </h:outputScript>
     </div>
   </ui:define>
 

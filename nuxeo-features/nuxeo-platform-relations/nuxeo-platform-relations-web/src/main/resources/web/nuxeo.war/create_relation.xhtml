@@ -7,7 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <script language="javascript">
+  <h:outputScript target="#{pageJsTarget}">
 
     function popupSearch(createFormId, url) {
       popup = window.open(url, '_blank', 'toolbar=0, scrollbars=1, location=0, statusbar=0, menubar=0, resizable=1, dependent=1, width=712, height=480');
@@ -74,7 +74,7 @@
         hideAllRelationPopUps();
       }
     });
-  </script>
+  </h:outputScript>
 
   <h3>
     <h:form>

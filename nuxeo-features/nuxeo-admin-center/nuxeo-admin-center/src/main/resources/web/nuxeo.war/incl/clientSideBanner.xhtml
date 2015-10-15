@@ -33,7 +33,7 @@
             </div>
           </div>
 
-          <script>
+          <h:outputScript target="#{pageJsTarget}">
               jQuery(document).ready(function() {
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
@@ -55,7 +55,7 @@
                       });
                 }
               }
-          </script>
+          </h:outputScript>
         </c:if>
 
       </c:when>
@@ -101,7 +101,7 @@
           </p>
         </div>
 
-        <script>
+        <h:outputScript target="#{pageJsTarget}">
             jQuery(document).ready(function() {
               var script = document.createElement('script');
               script.type = 'text/javascript';
@@ -118,7 +118,7 @@
                     }
                   });
             }
-        </script>
+        </h:outputScript>
 
       </c:otherwise>
 

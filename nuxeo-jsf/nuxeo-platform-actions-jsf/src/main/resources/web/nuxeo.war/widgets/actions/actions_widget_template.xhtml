@@ -97,11 +97,11 @@
             </li>
           </ul>
 
-          <script>
+          <h:outputScript target="#{pageJsTarget}">
             jQuery(document).ready(function() {
               jQuery("##{idPrefix}dropDownMenu").dropdown();
             });
-          </script>
+          </h:outputScript>
 
         </c:when>
 

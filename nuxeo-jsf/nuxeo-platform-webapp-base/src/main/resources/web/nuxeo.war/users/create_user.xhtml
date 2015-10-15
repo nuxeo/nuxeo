@@ -14,11 +14,11 @@
   </h3>
 
   <h:form id="createUser" rendered="#{userManagementActions.allowCreateUser and notReadOnly}">
-    <script>
+    <h:outputScript target="#{pageJsTarget}">
       jQuery(document).ready(function() {
         jQuery('#createUserView\\:createUser').focusFirst();
       });
-    </script>
+    </h:outputScript>
 
     <nxl:layout name="user"
       mode="create" value="#{userManagementActions.newUser}" />

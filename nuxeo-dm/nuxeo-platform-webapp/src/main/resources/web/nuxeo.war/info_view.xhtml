@@ -22,7 +22,7 @@
 
     <nxl:layout value="#{currentDocument}" name="gridInfoViewLayout" mode="view" />
 
-    <script type="text/javascript">
+    <h:outputScript target="#{pageJsTarget}">
       jQuery(document).ready(function() {
         // focus inside the iframe
         jQuery(".infoView.nxNext a").focus();
@@ -71,7 +71,7 @@
           window.location.href = urls[index + 1] + "?conversationId=" + currentConversationId;
         }
       }
-    </script>
+    </h:outputScript>
   </ui:define>
 
 </ui:composition>

@@ -81,13 +81,13 @@
                     </a4j:jsFunction>
                   </h:form>
 
-                  <script>
+                  <h:outputScript target="#{pageJsTarget}">
                     jQuery(document).ready(function() {
                       openFancyBox('#validation_status_box', {
                           onClosed: validation_status_box_closeFancybox
                         });
                     });
-                  </script>
+                  </h:outputScript>
 
                   <div style="display:none">
                     <div id="validation_status_box">
@@ -221,7 +221,7 @@
       </h:form>
     </div>
 
-<script>
+<h:outputScript target="#{pageJsTarget}">
 //<![CDATA[
   function displayConnectIframe() {
       var margin = 80;
@@ -242,7 +242,7 @@
     openFancyBox('#studioBigUpdateWaiter', { modal: true, autoDimensions: false, width: "120", height:"105" });
   }
 //]]>
-</script>
+</h:outputScript>
 
     <c:if test="#{connectServerReachable and registredConnectInstance}">
       <span id="beforeIframe"></span>

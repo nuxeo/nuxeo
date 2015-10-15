@@ -3,9 +3,9 @@
   xmlns:a4j="http://richfaces.org/a4j" xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <script type="text/javascript" src="#{baseURL}scripts/jquery/jquery.tablesorter.js"></script>
-  <script type="text/javascript" src="#{baseURL}scripts/jquery/jquery.tablesorter_filter.js"></script>
-  <style>
+  <h:outputScript target="#{pageJsTarget}" src="/scripts/jquery/jquery.tablesorter.js" />
+  <h:outputScript target="#{pageJsTarget}" src="/scripts/jquery/jquery.tablesorter_filter.js" />
+  <h:outputStylesheet target="#{pageCssTarget}">
 .tablesorter .header {
   background-position: center left;
   background-repeat: no-repeat;
@@ -46,7 +46,7 @@
   text-shadow: none;
   font-weight: bold;
 }
-  </style>
+  </h:outputStylesheet>
 
   <a4j:outputPanel id="workManagerListing" layout="block">
 
@@ -101,7 +101,7 @@
       </div>
     </ui:repeat>
 
-    <script type="text/javascript">
+    <h:outputScript target="#{pageJsTarget}">
       // console.log("FOO");
       // $(document).ready(function(){
         jQuery(".tablesorter").tablesorter();
@@ -109,7 +109,7 @@
           $(this).next(".workManagerQueueInfo").toggle();
         });
       // });
-    </script>
+    </h:outputScript>
 
   </a4j:outputPanel>
 </div>

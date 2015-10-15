@@ -1,5 +1,6 @@
 <ui:composition
   xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core">
 <div>
@@ -13,10 +14,10 @@
     <c:set var="safeEdit_message" value="safeedit.page.has.unsaved.changes" />
   </c:if>
 
-  <script src="#{contextPath}/scripts/safeEdit.js"></script>
-  <script src="#{contextPath}/scripts/safeEditUI.js"></script>
+  <h:outputScript src="/scripts/safeEdit.js" target="#{pageJsTarget}" />
+  <h:outputScript src="/scripts/safeEditUI.js" target="#{pageJsTarget}" />
 
-  <script type="text/javascript">
+  <h:outputScript target="#{pageJsTarget}">
     var nuxeo = (function(nuxeo) {
       nuxeo.safeEdit = {
         restorePrompt: {
@@ -28,7 +29,7 @@
       };
       return nuxeo;
     })(nuxeo || {});
-  </script>
+  </h:outputScript>
 
 </div>
 </ui:composition>

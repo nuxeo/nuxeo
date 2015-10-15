@@ -39,7 +39,7 @@
 
   </div>
   <span id="beforeIframe"></span>
-<script>
+<h:outputScript target="#{pageJsTarget}">
 //<![CDATA[
 function displayConnectIframe() {
   var margin = 80;
@@ -53,7 +53,7 @@ function displayConnectIframe() {
   jQuery("#connectIframe").css("display","block");
 }
 //]]>
-</script>
+</h:outputScript>
 
   <c:if test="#{connectServerReachable and registredConnectInstance}">
     <iframe id="connectIframe" src="#{contextPath}/site/connectClient/packages/updates?type=#{appsViews.packageTypeFilter}&amp;filterOnPlatform=#{appsViews.platformFilter}" frameborder="0" scrolling="auto" width="100%"

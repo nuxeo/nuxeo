@@ -105,7 +105,7 @@
       </a4j:outputPanel>
 
       <c:if test="#{useHtml5DragAndDrop}">
-        <script type="text/javascript">
+        <h:outputScript target="#{pageJsTarget}">
           if (jQuery('#fancybox-content').html() !== '') {
             jQuery(".jsDocumentsImportZone").nxDropZone({
               url : "#{contextPath}/api/v1/",
@@ -118,7 +118,7 @@
               handler : nuxeo.documentsImport.createDocumentsImportDocumentHandler("#{importActions.generateBatchId()}")
             });
           }
-        </script>
+        </h:outputScript>
       </c:if>
 
     </div>
@@ -143,14 +143,14 @@
               styleClass="button" />
 
             <c:if test="#{importButtonDisabled}">
-              <script type="text/javascript">
+              <h:outputScript target="#{pageJsTarget}">
                 nuxeo.documentsImport.disableBulkImportButton();
-              </script>
+              </h:outputScript>
             </c:if>
             <c:if test="#{!importButtonDisabled}">
-              <script type="text/javascript">
+              <h:outputScript target="#{pageJsTarget}">
                 nuxeo.documentsImport.enableBulkImportButton();
-              </script>
+              </h:outputScript>
             </c:if>
 
           </nxu:set>

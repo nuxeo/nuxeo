@@ -23,9 +23,9 @@
       value="#{nxd:complexDocumentUrl('id', currentDocument, null, null, true)}"
       readonly="true" onclick="javascript:this.focus();this.select();" size="120"/>
 
-    <script>
+    <h:outputScript target="#{pageJsTarget}">
       jQuery('.permalinkFocus').focus();jQuery('.permalinkFocus').select();
-    </script>
+    </h:outputScript>
 
   </div>
 

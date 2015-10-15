@@ -92,11 +92,11 @@
 
     <ui:insert name="edit_user_tab_content">
       <h:form id="editUser" rendered="#{userManagementActions.detailsMode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
-        <script>
+        <h:outputScript target="#{pageJsTarget}">
          jQuery(document).ready(function() {
            jQuery('#viewUserView\\:editUser').focusFirst();
          });
-        </script>
+        </h:outputScript>
         <nxl:layout name="user" mode="edit" value="#{userManagementActions.selectedUser}" />
         <table class="dataInput">
           <tbody>

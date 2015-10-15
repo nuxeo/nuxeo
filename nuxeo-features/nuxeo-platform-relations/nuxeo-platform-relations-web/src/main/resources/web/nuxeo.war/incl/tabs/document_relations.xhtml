@@ -15,7 +15,7 @@
     <ui:include src="/create_relation.xhtml" />
   </c:if>
 
-<script type="text/javascript">
+<h:outputScript target="#{pageJsTarget}">
   function toggleLayers(more_block, more_items) {
     var objMoreBlock = document.getElementById(more_block).style;
     var objMoreItems = document.getElementById(more_items).style;
@@ -24,7 +24,7 @@
     if(objMoreItems.display == "none")
       objMoreItems.display = "block";
   }
-</script>
+</h:outputScript>
 
 <h:form id="document_relations" rendered="#{not empty currentDocumentOutgoingRelations}">
 

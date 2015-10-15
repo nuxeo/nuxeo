@@ -11,12 +11,6 @@
 
 <h:form enctype="multipart/form-data" id="document_edit" styleClass="safeEditEnabled" >
 
-  <script>
-    jQuery(document).ready(function() {
-      jQuery('#document_edit').focusFirst();
-    });
-  </script>
-
   <nxl:documentLayout mode="edit" value="#{currentDocument}" />
 
   <nxl:layout name="document_edit_form_options"
@@ -26,11 +20,12 @@
    <nxl:widget name="documentEditButtons" mode="view" value="#{currentDocument}" />
   </div>
 
-  <script>
+  <h:outputScript target="#{pageJsTarget}">
     jQuery(document).ready(function() {
+      jQuery('#document_edit').focusFirst();
       jQuery('#document_edit').initSafeEditOnForm("#{currentDocument.id}", "#{messages['safeedit.page.has.unsaved.changes']}");
     });
-</script>
+  </h:outputScript>
 
 </h:form>
 

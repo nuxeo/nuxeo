@@ -27,7 +27,7 @@
 
 <c:if test="#{widget.mode == 'edit'}">
 
-  <script type="text/javascript">
+  <h:outputScript target="#{pageJsTarget}">
     jQuery(document).ready(function() {
       var config = {
         'width'              : '50%',
@@ -66,7 +66,7 @@
       return false;
     }
 
-  </script>
+  </h:outputScript>
 
   <a4j:outputPanel id="#{widget.id}_multipleValuePanel"
       layout="block"

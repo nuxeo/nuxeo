@@ -55,7 +55,7 @@
       </h:form>
     </div>
 
-    <script>
+    <h:outputScript target="#{pageJsTarget}">
     //<![CDATA[
     function displayConnectIframe() {
         var margin = 80;
@@ -69,7 +69,7 @@
         jQuery("#connectIframe").css("display","block");
     }
     //]]>
-    </script>
+    </h:outputScript>
 
     <span id="beforeIframe"></span>
     <c:if test="#{connectServerReachable}">

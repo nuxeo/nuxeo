@@ -219,11 +219,11 @@
           </ui:insert>
 
           <a4j:outputPanel id="#{resultsPanelId}" layout="block">
-            <script>
+            <h:outputScript target="#{pageJsTarget}">
               jQuery(document).ready(function() {
                 initNXDrapAndDropOnPage(jQuery('##{contentViewRenderId}_panel'));
               });
-            </script>
+            </h:outputScript>
 
             <ui:decorate template="/incl/documents_layout_table.xhtml">
               <ui:param name="providerId" value="#{contentViewId}" />

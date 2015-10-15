@@ -20,11 +20,11 @@
     </h3>
     <ui:include src="/incl/message_banner.xhtml" />
     <h:form enctype="multipart/form-data" id="document_create">
-      <script>
+      <h:outputScript target="#{pageJsTarget}">
         jQuery(document).ready(function() {
           jQuery('#document_create').focusFirst();
         });
-      </script>
+      </h:outputScript>
       <nxl:documentLayout mode="create" value="#{changeableDocument}" />
       <div class="buttonsGadget">
         <input type="hidden" name="parentDocumentPath"
