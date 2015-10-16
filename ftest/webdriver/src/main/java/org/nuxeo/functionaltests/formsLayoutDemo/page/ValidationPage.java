@@ -93,7 +93,7 @@ public class ValidationPage {
 
     public void fillLayoutInvalid() {
         LayoutElement l = getLayout();
-        l.getWidget("nxw_groupCode").setInputValue("invalid string");
+        l.getWidget("nxw_groupCode").setInputValue("-25");
         submitWhileTyping();
         l.getWidget("nxw_manager:nxw_firstname").setInputValue("  ");
         submitWhileTyping();
@@ -148,10 +148,10 @@ public class ValidationPage {
     public void checkLayoutInvalid() {
         LayoutElement l = getLayout();
         assertEquals("", l.getWidget("nxw_title").getMessageValue());
-        assertEquals("'invalid string' is not a number. Example: 99.", l.getWidget("nxw_groupCode").getMessageValue());
+        assertEquals("The group code must be a positive integer.", l.getWidget("nxw_groupCode").getMessageValue());
         assertEquals("This value must match the format \".*\\S.*\".",
                 l.getWidget("nxw_manager:nxw_firstname").getMessageValue());
-        assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
+        assertEquals("The manager's lastname must start with an uppercase character.",
                 l.getWidget("nxw_manager:nxw_lastname").getMessageValue());
         JSListWidgetElement slist = l.getWidget("nxw_roles", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
@@ -159,7 +159,8 @@ public class ValidationPage {
                 slist.getSubWidget("nxw_role", 0).getMessageValue());
         JSListWidgetElement list = l.getWidget("nxw_users", JSListWidgetElement.class);
         assertEquals("", slist.getMessageValue());
-        assertEquals("This value must match the format \".*\\S.*\".", list.getSubWidget("nxw_fn", 0).getMessageValue());
+        assertEquals("A user's firstname must contain at least one character.",
+                list.getSubWidget("nxw_fn", 0).getMessageValue());
         assertEquals("This value must match the format \"[A-Z][a-z '-]+\".",
                 list.getSubWidget("nxw_ln", 0).getMessageValue());
         JSListWidgetElement llist = l.getWidget("nxw_listOfListsWidget", JSListWidgetElement.class);
