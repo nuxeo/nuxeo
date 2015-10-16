@@ -12,6 +12,10 @@
      <pattern>${org.nuxeo.ecm.contextPath}/seam/resource/remoting/interface.js.*</pattern>
     </filterConfig>
 
+    <filterConfig name="tinymce" cached="true" cacheTime="3600">
+      <pattern>${org.nuxeo.ecm.contextPath}/tinymce.*</pattern>
+    </filterConfig>
+
   </extension>
 
 </component>
