@@ -59,8 +59,7 @@ public class Batch {
         File file = new File(baseDir);
 
         try {
-            if (!org.apache.commons.io.FileUtils.directoryContains(tmpDir,
-                    file)) {
+            if (!file.getCanonicalPath().startsWith(tmpDir.getCanonicalPath())) {
                 throw new SecurityException("Trying to traverse illegal path");
             }
         } catch (IOException e) {
