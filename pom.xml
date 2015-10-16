@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>6.0-HF16-SNAPSHOT</version>
+    <version>6.0-HF22-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.datadog</groupId>
@@ -13,7 +14,6 @@
   <description>Component that sends Nuxeo metrics to datadog</description>
 
   <dependencies>
-
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-core</artifactId>
@@ -35,7 +35,6 @@
       <scope>test</scope>
       <version>1.6.1</version>
     </dependency>
-
   </dependencies>
 
   <repositories>
