@@ -22,6 +22,7 @@
   padding: 6em 1em;
   position: fixed;
   top: 0;
+  transition: width .1s ease .5ms;
   width: 19%;
 }
 
@@ -38,6 +39,46 @@
 .nxMainContainer .verticalTabsContent,
 .nxMainContainer .nxSearchResults {
   margin-left: 19%;
+}
+
+@media only screen and (min-width: 768px) {
+  .nxMainContainer .column,
+  .nxMainContainer .verticalTabsColumn,
+  .nxMainContainer .nxSearchForm {
+    width: 235px;
+  }
+  .nxMainContainer .column + .content,
+  .nxMainContainer .verticalTabsContent,
+  .nxMainContainer .nxSearchResults {
+    margin-left: 235px;
+    padding: 2em 2.5em 3em;
+  }
+}
+
+@media only screen and (min-width: 1278px) {
+  .nxMainContainer .column,
+  .nxMainContainer .verticalTabsColumn,
+  .nxMainContainer .nxSearchForm {
+    width: 280px;
+  }
+  .nxMainContainer .column + .content,
+  .nxMainContainer .verticalTabsContent,
+  .nxMainContainer .nxSearchResults {
+    margin-left: 280px;
+  }
+}
+
+@media only screen and (min-width: 1678px) {
+  .nxMainContainer .column,
+  .nxMainContainer .verticalTabsColumn,
+  .nxMainContainer .nxSearchForm {
+    width: 340px;
+  }
+  .nxMainContainer .column + .content,
+  .nxMainContainer .verticalTabsContent,
+  .nxMainContainer .nxSearchResults {
+    margin-left: 340px;
+  }
 }
 
 // Description of folders - to be moved to tabs_content
