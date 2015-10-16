@@ -12,13 +12,6 @@
           submitting twice the same form (accidental double-click).
         </li>
         <li>
-          <strong>nuxeo.jsf.useAjaxTabs</strong>: enables ajaxified tabs on document views. Activation also relies on
-          the user's browser because this feature requires manipulating the browser's session history in JavaScript to
-          preserve bookmarkable URLs (see compatibility table at
-          <a href="http://caniuse.com/#search=pushstate" target="_blank">http://caniuse.com/#search=pushstate</a>, for
-          instance).
-        </li>
-        <li>
           <strong>nuxeo.jsf.defaultBytePrefixFormat</strong>: defines the default byte prefix format used by the
           printFileSize JSF function, that displays a pretty print of the size of a file. Available formats are "SI",
           "IEC" or "JEDEC". See <a href="http://en.wikipedia.org/wiki/Byte" target="_blank">the Wikipedia article on
@@ -30,7 +23,6 @@
     </documentation>
 
     <property name="nuxeo.jsf.enableDoubleClickShield">true</property>
-    <property name="nuxeo.jsf.useAjaxTabs">false</property>
     <property name="nuxeo.jsf.defaultBytePrefixFormat">SI</property>
     <property name="nuxeo.jsf.removeAliasOptims">false</property>
 

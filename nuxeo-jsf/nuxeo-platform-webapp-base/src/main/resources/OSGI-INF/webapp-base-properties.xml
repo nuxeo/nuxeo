@@ -20,4 +20,15 @@
     <property name="nuxeo.jsf.combinePageResources">true</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      <strong>nuxeo.jsf.useAjaxTabs</strong>: enables ajaxified tabs on document views. Activation also relies on
+      the user's browser because this feature requires manipulating the browser's session history in JavaScript to
+      preserve bookmarkable URLs (see compatibility table at
+      <a href="http://caniuse.com/#search=pushstate" target="_blank">http://caniuse.com/#search=pushstate</a>, for
+      instance).
+    </documentation>
+    <property name="nuxeo.jsf.useAjaxTabs">false</property>
+  </extension>
+
 </component>
