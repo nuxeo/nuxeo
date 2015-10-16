@@ -283,4 +283,14 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
         return result;
     }
 
+    @Override
+    public String getContentUrl() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getContentUrl(String streamId) {
+        throw new UnsupportedOperationException();
+    }
+
 }

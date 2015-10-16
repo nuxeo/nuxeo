@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.opencmis.impl.client;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -45,6 +46,7 @@ import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.BulkUpdateObjectIdAndChangeToken;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.FailedToDeleteData;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
 import org.apache.chemistry.opencmis.commons.data.ObjectList;
 import org.apache.chemistry.opencmis.commons.data.Properties;
@@ -55,14 +57,17 @@ import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
+import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BulkUpdateObjectIdAndChangeTokenImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
@@ -131,6 +136,11 @@ public class NuxeoSession implements Session {
     @Override
     public OperationContext getDefaultContext() {
         return defaultContext;
+    }
+
+    @Override
+    public Map<String, String> getSessionParameters() {
+        return Collections.emptyMap();
     }
 
     protected String getRepositoryId() {
@@ -295,6 +305,49 @@ public class NuxeoSession implements Session {
     }
 
     @Override
+    public boolean exists(ObjectId objectId) {
+        return exists(objectId.getId());
+    }
+
+    @Override
+    public boolean exists(String objectId) {
+        try {
+            service.getObject(repositoryId, objectId, PropertyIds.OBJECT_ID, Boolean.FALSE, IncludeRelationships.NONE,
+                    "cmis:none", Boolean.FALSE, Boolean.FALSE, null);
+            return true;
+        } catch (CmisObjectNotFoundException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean existsPath(String parentPath, String name) {
+        if (parentPath == null || !parentPath.startsWith("/")) {
+            throw new CmisInvalidArgumentException("Invalid parent path: " + parentPath);
+        }
+        if (StringUtils.isEmpty(name)) {
+            throw new CmisInvalidArgumentException("Invalid empty name: " + name);
+        }
+        StringBuilder path = new StringBuilder(parentPath);
+        if (!parentPath.endsWith("/")) {
+            path.append('/');
+        }
+        path.append(name);
+        return existsPath(path.toString());
+    }
+
+    @Override
+    public boolean existsPath(String path) {
+        try {
+            service.getObjectByPath(repositoryId, path, PropertyIds.OBJECT_ID, Boolean.FALSE, IncludeRelationships.NONE,
+                    "cmis:none", Boolean.FALSE, Boolean.FALSE, null);
+            return true;
+        } catch (CmisObjectNotFoundException e) {
+            return false;
+        }
+    }
+
+    @Override
     public CmisObject getObject(ObjectId objectId) {
         return getObject(objectId, getDefaultContext());
     }
@@ -336,6 +389,27 @@ public class NuxeoSession implements Session {
     @Override
     public CmisObject getObjectByPath(String path) {
         return getObjectByPath(path, getDefaultContext());
+    }
+
+    @Override
+    public CmisObject getObjectByPath(String parentPath, String name) {
+        return getObjectByPath(parentPath, name, getDefaultContext());
+    }
+
+    @Override
+    public CmisObject getObjectByPath(String parentPath, String name, OperationContext context) {
+        if (parentPath == null || !parentPath.startsWith("/")) {
+            throw new CmisInvalidArgumentException("Invalid parent path: " + parentPath);
+        }
+        if (StringUtils.isEmpty(name)) {
+            throw new CmisInvalidArgumentException("Invalid empty name: " + name);
+        }
+        StringBuilder path = new StringBuilder(parentPath);
+        if (!parentPath.endsWith("/")) {
+            path.append('/');
+        }
+        path.append(name);
+        return getObjectByPath(path.toString(), context);
     }
 
     @Override
@@ -521,6 +595,14 @@ public class NuxeoSession implements Session {
     @Override
     public void delete(ObjectId objectId, boolean allVersions) {
         service.deleteObject(repositoryId, objectId.getId(), Boolean.valueOf(allVersions), null);
+    }
+
+    @Override
+    public List<String> deleteTree(ObjectId folderId, boolean allVersions, UnfileObject unfile,
+            boolean continueOnFailure) {
+        FailedToDeleteData res = service.deleteTree(repositoryId, folderId.getId(), Boolean.valueOf(allVersions),
+                unfile, Boolean.valueOf(continueOnFailure), null);
+        return res.getIds();
     }
 
     @Override

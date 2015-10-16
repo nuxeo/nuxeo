@@ -539,7 +539,7 @@ public class CmisSuiteSession {
 
         CmisObject ob = session.getObjectByPath("/testfolder1/testfile1");
         List<Rendition> renditions = ob.getRenditions();
-        assertTrue(renditions.isEmpty());
+        assertTrue(renditions == null || renditions.isEmpty());
 
         // no renditions by default with object
 
@@ -547,7 +547,7 @@ public class CmisSuiteSession {
         OperationContext oc = session.createOperationContext();
         ob = session.getObject(session.createObjectId(ob.getId()), oc);
         renditions = ob.getRenditions();
-        assertTrue(renditions.isEmpty());
+        assertTrue(renditions == null || renditions.isEmpty());
 
         // check rendition content stream requested directly
         // even though the doc has no renditions requested

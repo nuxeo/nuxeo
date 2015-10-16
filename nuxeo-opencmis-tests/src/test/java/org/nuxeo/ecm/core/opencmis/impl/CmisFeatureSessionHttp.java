@@ -241,6 +241,10 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
         }
     }
 
+    // org.apache.chemistry.opencmis.server.shared.HttpUtils.splitPath returns [""] instead of []
+    // if there's not at least a non-empty servlet or context, so provide one.
+    public static final String CONTEXT = "context";
+
     protected void setUpTomcat() throws Exception {
         tomcat = new Tomcat();
         tomcat.setBaseDir("."); // for tmp dir
@@ -257,9 +261,9 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
         URL url = getClass().getResource(BASE_RESOURCE);
         assertNotNull(url);
         File docBase = new File(url.getPath());
-        org.apache.catalina.Context context = tomcat.addContext("/", docBase.getAbsolutePath());
+        org.apache.catalina.Context context = tomcat.addContext("/" + CONTEXT, docBase.getAbsolutePath());
         String SERVLET_NAME = "testServlet";
-        Wrapper servlet = tomcat.addServlet("/", SERVLET_NAME, getServlet());
+        Wrapper servlet = tomcat.addServlet("/" + CONTEXT, SERVLET_NAME, getServlet());
         servlet.addInitParameter(CmisAtomPubServlet.PARAM_CALL_CONTEXT_HANDLER,
                 BasicAuthCallContextHandler.class.getName());
         servlet.addInitParameter(CmisAtomPubServlet.PARAM_CMIS_VERSION, CmisVersion.CMIS_1_1.value());
@@ -269,7 +273,7 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
             addFilter(context, SERVLET_NAME, f.name, f.filter);
         }
 
-        serverURI = new URI("http://" + HOST + ':' + PORT + '/');
+        serverURI = new URI("http://" + HOST + ':' + PORT + '/' + CONTEXT);
         tomcat.start();
     }
 

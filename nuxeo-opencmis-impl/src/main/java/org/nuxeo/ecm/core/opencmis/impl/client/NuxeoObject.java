@@ -358,4 +358,19 @@ public abstract class NuxeoObject implements CmisObject {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public Set<String> getPermissionsForPrincipal(String principalId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void applyPolicy(ObjectId policyId, boolean refresh) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removePolicy(ObjectId policyId, boolean refresh) {
+        throw new UnsupportedOperationException();
+    }
+
 }

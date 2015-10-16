@@ -72,7 +72,7 @@ public class NuxeoCmisAtomPubServlet extends CmisAtomPubServlet {
     }
 
     @Override
-    protected void printError(Exception ex, HttpServletResponse response) {
+    protected void printError(Exception ex, HttpServletRequest request, HttpServletResponse response) {
         ErrorInfo errorInfo = extractError(ex);
         if (response.isCommitted()) {
             LOG.warn("Failed to send error message to client. " + "Response is already committed.", ex);
