@@ -20,6 +20,10 @@
     <action id="TAB_MANAGE">
       <filter-id>denyForTenantConfig</filter-id>
     </action>
+    <!-- Hide Permissions tab for tenants -->
+    <action id="TAB_PERMISSIONS">
+      <filter-id>denyForTenantConfig</filter-id>
+    </action>
 
     <action id="TAB_CONTENT_HISTORY">
       <filter-id>denyForTenantConfig</filter-id>
