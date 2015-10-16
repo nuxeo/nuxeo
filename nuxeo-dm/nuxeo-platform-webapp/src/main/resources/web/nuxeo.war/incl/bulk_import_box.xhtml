@@ -110,9 +110,9 @@
               uploadRateRefreshTime : 500,
               numConcurrentUploads : 3,
               dropContext : ctx,
-              uploadTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
-              execTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
-              extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
+              uploadTimeout : #{configurationService.getProperty("org.nuxeo.dnd.upload.timeout","30000")},
+              execTimeout : #{configurationService.getProperty("org.nuxeo.dnd.exec.timeout","30000")},
+              extendedModeTimeout : #{configurationService.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")},
               handler : nuxeo.documentsImport.createDocumentsImportDocumentHandler("#{importActions.generateBatchId()}")
             });
           }

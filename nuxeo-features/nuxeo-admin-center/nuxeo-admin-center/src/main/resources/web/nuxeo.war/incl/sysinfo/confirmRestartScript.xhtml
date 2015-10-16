@@ -5,7 +5,7 @@
 
   <script>
     function confirmRestart() {
-      var testerName = '#{frameworkPropertyActions.getFrameworkProperty("org.nuxeo.ecm.tester.name")}';
+      var testerName = '#{frameworkPropertyActions.getProperty("org.nuxeo.ecm.tester.name")}';
       if (testerName == "Nuxeo-Selenium-Tester") {
           // webdriver sometimes has problems giving focus to alerts
           return true;

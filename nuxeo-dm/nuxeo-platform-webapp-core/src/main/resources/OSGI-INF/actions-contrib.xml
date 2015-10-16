@@ -902,7 +902,7 @@
       <rule grant="true">
         <permission>WriteSecurity</permission>
         <facet>Folderish</facet>
-        <condition>#{frameworkPropertyActions.getFrameworkProperty("org.nuxeo.ecm.tester.name") == 'Nuxeo-Selenium-Tester'}</condition>
+        <condition>#{frameworkPropertyActions.getProperty("org.nuxeo.ecm.tester.name") == 'Nuxeo-Selenium-Tester'}</condition>
       </rule>
     </filter>
 
