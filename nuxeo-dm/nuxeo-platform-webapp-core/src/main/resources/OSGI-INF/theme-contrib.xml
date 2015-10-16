@@ -5,25 +5,25 @@
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
     <!-- JSF resources -->
-    <resource name="jsf.js" type="jsfjs">
+    <resource name="jsf.js" type="jsfjs" target="bodystart">
       <uri>javax.faces:jsf.js</uri>
     </resource>
-    <resource name="fixjsfviewstate.js" type="jsfjs">
+    <resource name="fixjsfviewstate.js" type="jsfjs" target="bodystart">
       <uri>org.nuxeo.jsf:fixviewstate.min.js</uri>
       <require>jsf.js</require>
     </resource>
-    <resource name="fixmultipartajax.js" type="jsfjs">
+    <resource name="fixmultipartajax.js" type="jsfjs" target="bodystart">
       <uri>org.nuxeo.jsf:fixmultipartajax.min.js</uri>
       <require>jsf.js</require>
     </resource>
-    <resource name="jquery.js" type="jsfjs">
+    <resource name="jquery.js" type="jsfjs" target="bodystart">
       <uri>org.richfaces:jquery.js</uri>
     </resource>
-    <resource name="richfaces.js" type="jsfjs">
+    <resource name="richfaces.js" type="jsfjs" target="bodystart">
       <uri>org.richfaces:richfaces.js</uri>
       <require>jsf.js</require>
     </resource>
-    <resource name="richfaces-queue.js" type="jsfjs">
+    <resource name="richfaces-queue.js" type="jsfjs" target="bodystart">
       <uri>org.richfaces:richfaces-queue.js</uri>
       <require>richfaces.js</require>
     </resource>
