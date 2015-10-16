@@ -141,8 +141,12 @@ public class ConstraintViolation implements Serializable {
             // use the message if there's one
             return message;
         } else {
-            // use the constraint message
-            return constraint.getErrorMessage(invalidValue, locale);
+            if (locale != null && Locale.ENGLISH.getLanguage().equals(locale.getLanguage())) {
+                // use the constraint message
+                return constraint.getErrorMessage(invalidValue, locale);
+            } else {
+                return getMessage(Locale.ENGLISH);
+            }
         }
     }
 
