@@ -258,7 +258,7 @@ public class RestHelper implements Serializable {
             StringBuilder sb = new StringBuilder();
             sb.append(defaultTheme);
             sb.append("/print");
-            parameters.put("theme", sb.toString());
+            parameters.put("page", sb.toString());
         }
         return DocumentModelFunctions.documentUrl(null, doc, null, parameters, false, BaseURL.getBaseURL());
     }
