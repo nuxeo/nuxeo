@@ -32,6 +32,10 @@
       <pattern>${org.nuxeo.ecm.contextPath}/js.*</pattern>
     </filterConfig>
 
+    <filterConfig name="scripts" cached="true" cacheTime="3600">
+      <pattern>${org.nuxeo.ecm.contextPath}/scripts.*</pattern>
+    </filterConfig>
+
     <filterConfig name="waitdialog" cached="true" cacheTime="3600">
       <pattern>${org.nuxeo.ecm.contextPath}/waitdialog.*</pattern>
     </filterConfig>
