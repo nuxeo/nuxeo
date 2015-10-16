@@ -35,10 +35,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoRequestControllerFilter;
+
 /**
  * Adding http cache header (Cache-Control : max-age AND Expire) to the response.
  *
  * @author <a href="mailto:stan@nuxeo.com">Sun Seng David TAN</a>
+ * @deprecated: caching handled by {@link NuxeoRequestControllerFilter}
  */
 @Deprecated
 public class SimpleCacheFilter implements Filter {
