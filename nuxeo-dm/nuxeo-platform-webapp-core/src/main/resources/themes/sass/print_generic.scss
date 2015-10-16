@@ -51,12 +51,25 @@ a:visited {
 
 // Page layout
 .nxMainContainer {
+  background-color: $shade-light-0;
   margin: 0 auto;
   width: 95%;
 }
 
-.nxMainContainer content {
-  padding: 1.5em;
+.nxMainContainer .content {
+  padding: 0;
+}
+
+.nxHeader,
+.nxFooter,
+.nxMainContainer .column,
+.nxMainContainer .verticalTabsColumn {
+  display: none;
+}
+
+.nxMainContainer .column + .content,
+.nxMainContainer .verticalTabsContent {
+  margin-left: 0;
 }
 
 // Breadcrumb
@@ -143,11 +156,14 @@ a:visited {
 // Images
 .smallIcon {
   height: 16px;
+  padding: 0;
   width: 16px;
 }
 
 // Document view
-.tabsContent {
+.tabsContent,
+.content .tabsContent {
+  border: 0;
   padding: 0 0 1em;
 }
 
@@ -467,6 +483,7 @@ input.tagInput,
 .syndicationLinks,
 .listingLayoutSelector,
 .pageNavigationControls,
+.contentViewUpperActions,
 .contentViewHeaderSortTooltip img,
 .contextActions .actionsWidgetPanel {
   display: none;
