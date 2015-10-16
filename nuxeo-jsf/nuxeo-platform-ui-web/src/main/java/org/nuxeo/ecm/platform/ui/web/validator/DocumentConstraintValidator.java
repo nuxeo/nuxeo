@@ -130,10 +130,12 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
             Object value) {
         DocumentValidationService s = Framework.getService(DocumentValidationService.class);
         DocumentValidationReport report = null;
-        Field field = resolveField(context, vref, e);
+        XPathAndField field = resolveField(context, vref, e);
         if (field != null) {
             boolean validateSubs = getHandleSubProperties().booleanValue();
-            report = s.validate(field, value, validateSubs);
+            // use the xpath to validate the field
+            // this allow to get the custom message defined for field if there's error
+            report = s.validate(field.xpath, value, validateSubs);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("VALIDATED  value '%s' for expression '%s', base=%s, prop=%s", value,
                         e.getExpressionString(), vref.getBase(), vref.getProperty()));
@@ -152,20 +154,37 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
         return null;
     }
 
-    protected Field resolveField(FacesContext context, ValueReference vref, ValueExpression ve) {
+    private class XPathAndField {
+
+        private Field field;
+
+        private String xpath;
+
+        public XPathAndField(Field field, String xpath) {
+            super();
+            this.field = field;
+            this.xpath = xpath;
+        }
+
+    }
+
+    protected XPathAndField resolveField(FacesContext context, ValueReference vref, ValueExpression ve) {
         Object base = vref.getBase();
         Object propObj = vref.getProperty();
         if (propObj != null && !(propObj instanceof String)) {
             // ignore cases where prop would not be a String
             return null;
         }
+        String xpath = null;
         Field field = null;
         String prop = (String) propObj;
         Class<?> baseClass = base.getClass();
         if (DocumentPropertyContext.class.isAssignableFrom(baseClass)) {
             DocumentPropertyContext dc = (DocumentPropertyContext) base;
-            field = getField(String.format("%s:%s", dc.getSchema(), prop));
+            xpath = String.format("%s:%s", dc.getSchema(), prop);
+            field = getField(xpath);
         } else if (Property.class.isAssignableFrom(baseClass)) {
+            xpath = ((Property) base).getPath() + "/" + prop;
             field = getField(((Property) base).getField(), prop);
         } else if (ProtectedEditableModel.class.isAssignableFrom(baseClass)) {
             ProtectedEditableModel model = (ProtectedEditableModel) base;
@@ -173,9 +192,14 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
             ValueExpressionAnalyzer expressionAnalyzer = new ValueExpressionAnalyzer(listVe);
             ValueReference listRef = expressionAnalyzer.getReference(context.getELContext());
             if (isResolvable(listRef, listVe)) {
-                Field parentField = resolveField(context, listRef, listVe);
+                XPathAndField parentField = resolveField(context, listRef, listVe);
                 if (parentField != null) {
-                    field = getField(parentField, "*");
+                    field = getField(parentField.field, "*");
+                    if (parentField.xpath == null) {
+                        xpath = field.getName().getLocalName();
+                    } else {
+                        xpath = parentField.xpath + "/" + field.getName().getLocalName();
+                    }
                 }
             }
         } else if (ListItemMapper.class.isAssignableFrom(baseClass)) {
@@ -191,15 +215,24 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
             ValueExpressionAnalyzer expressionAnalyzer = new ValueExpressionAnalyzer(listVe);
             ValueReference listRef = expressionAnalyzer.getReference(context.getELContext());
             if (isResolvable(listRef, listVe)) {
-                Field parentField = resolveField(context, listRef, listVe);
+                XPathAndField parentField = resolveField(context, listRef, listVe);
                 if (parentField != null) {
-                    field = getField(parentField, prop);
+                    field = getField(parentField.field, prop);
+                    if (parentField.xpath == null) {
+                        xpath = field.getName().getLocalName();
+                    } else {
+                        xpath = parentField.xpath + "/" + field.getName().getLocalName();
+                    }
                 }
             }
         } else {
             log.error(String.format("Cannot validate expression '%s, base=%s'", ve.getExpressionString(), base));
         }
-        return field;
+        // cleanup / on begin or at end
+        if (xpath != null) {
+            xpath = xpath.replaceAll("(^\\/)|(\\/$)", "");
+        }
+        return new XPathAndField(field, xpath.replaceAll("(^\\\\/)|(\\\\/$)", ""));
     }
 
     protected Field getField(Field field, String subName) {
