@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.auth.saml;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,6 +39,8 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding;
 import org.nuxeo.ecm.platform.auth.saml.binding.SAMLBinding;
+import org.nuxeo.ecm.platform.auth.saml.mock.MockHttpSession;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -45,7 +48,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
-import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.AuthnRequest;
 import org.opensaml.ws.message.decoder.MessageDecodingException;
 import org.opensaml.xml.Configuration;
@@ -61,6 +63,7 @@ import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -148,7 +151,7 @@ public class SAMLAuthenticatorTest {
     public void testRetrieveIdentity() throws Exception {
 
         HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
-                "text/html");
+                "text/html", "/relay");
 
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
@@ -162,6 +165,9 @@ public class SAMLAuthenticatorTest {
         final List<Cookie> cookies = captor.getAllValues();
 
         assertTrue(!cookies.isEmpty());
+
+        String redirectUri = (String) req.getSession(true).getAttribute(NXAuthConstants.START_PAGE_SAVE_KEY);
+        assertEquals("/relay", redirectUri);
     }
 
     @Test
@@ -183,9 +189,11 @@ public class SAMLAuthenticatorTest {
         assertTrue(SAMLBinding.uriComparator.compare("https://dummy", "http://dummy"));
     }
 
-    protected HttpServletRequest getMockRequest(String messageFile, String method, String url, String contentType)
+    protected HttpServletRequest getMockRequest(String messageFile, String method, String url, String contentType, String relayState)
             throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = new MockHttpSession();
+        when(request.getSession(anyBoolean())).thenReturn(session);
         URL urlP = new URL(url);
         File file = new File(getClass().getResource(messageFile).toURI());
         String message = Base64.encodeFromFile(file.getAbsolutePath());
@@ -195,13 +203,12 @@ public class SAMLAuthenticatorTest {
         when(request.getParameter("SAMLart")).thenReturn(null);
         when(request.getParameter("SAMLRequest")).thenReturn(null);
         when(request.getParameter("SAMLResponse")).thenReturn(message);
-        when(request.getParameter("RelayState")).thenReturn("");
+        when(request.getParameter("RelayState")).thenReturn(relayState);
         when(request.getParameter("Signature")).thenReturn("");
         when(request.getRequestURI()).thenReturn(urlP.getPath());
         when(request.getRequestURL()).thenReturn(new StringBuffer(url));
         when(request.getAttribute("javax.servlet.request.X509Certificate")).thenReturn(null);
         when(request.isSecure()).thenReturn(false);
-        // when(request.getAttribute(SAMLConstants.LOCAL_ENTITY_ID)).thenReturn(null);
         return request;
     }
 
