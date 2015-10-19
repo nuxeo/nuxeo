@@ -91,9 +91,6 @@ public class TransientStorageComplianceFixture {
 
         putEntry(ts, "1");
 
-        // check non existing entry
-        assertFalse(ts.exists("2"));
-
         // check FS
         File cacheDir = ((AbstractTransientStore) ts).getCachingDirectory("1");
         assertTrue(cacheDir.exists());
@@ -145,6 +142,24 @@ public class TransientStorageComplianceFixture {
 
         size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(0, size);
+    }
+
+    @Test
+    public void verifyNullCases() throws Exception {
+
+        TransientStoreService tss = Framework.getService(TransientStoreService.class);
+        TransientStore ts = tss.getStore("testStore");
+
+        assertFalse(ts.exists("fakeEntry"));
+        assertNull(ts.getParameters("fakeEntry"));
+        assertNull(ts.getParameter("fakeEntry", "fakeParameter"));
+        assertNull(ts.getBlobs("fakeEntry"));
+        assertEquals(-1, ts.getSize("fakeEntry"));
+        assertFalse(ts.isCompleted("fakeEntry"));
+
+        ts.putParameter("testEntry", "param1", "value");
+        assertNull(ts.getParameter("testEntry", "param2"));
+        assertTrue(ts.getBlobs("testEntry").isEmpty());
     }
 
     @Test(expected = MaximumTransientSpaceExceeded.class)
