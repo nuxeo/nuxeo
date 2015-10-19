@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 
 /**
@@ -29,6 +31,8 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
  * @since 7.10
  */
 public class StorageEntry implements Serializable {
+
+    protected Log log = LogFactory.getLog(StorageEntry.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -45,6 +49,7 @@ public class StorageEntry implements Serializable {
     }
 
     public StorageEntry(long size, boolean completed) {
+        log.debug("Creating new StorageEntry");
         params = null;
         blobInfos = null;
         this.size = size;

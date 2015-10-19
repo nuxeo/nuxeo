@@ -173,6 +173,7 @@ public abstract class AbstractTransientStore implements TransientStore {
             }
             blobInfos.add(blobInfo);
         }
+        log.debug("Stored blobs on the file system: " + blobInfos);
         return blobInfos;
     }
 
@@ -213,6 +214,7 @@ public abstract class AbstractTransientStore implements TransientStore {
     }
 
     protected List<Blob> loadBlobs(List<Map<String, String>> blobInfos) {
+        log.debug("Loading blobs from the file system: " + blobInfos);
         List<Blob> blobs = new ArrayList<>();
         for (Map<String, String> info : blobInfos) {
             File blobFile = new File(info.get("file"));
@@ -271,6 +273,7 @@ public abstract class AbstractTransientStore implements TransientStore {
 
     @Override
     public void removeAll() {
+        log.debug("Removing all entries from TransientStore " + config.getName());
         removeAllEntries();
         doGC();
     }

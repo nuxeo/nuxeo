@@ -104,6 +104,7 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     public void init(TransientStoreConfig config) {
+        log.debug("Initializing RedisTransientStore: " + config.getName());
         super.init(config);
         namespace = redisAdmin.namespace("transientStore", config.getName());
         sizeKey = namespace + "size";
@@ -111,6 +112,7 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     public void shutdown() {
+        log.debug("Shutting down RedisTransientStore: " + config.getName());
         // Nothing to do here.
     }
 
@@ -123,7 +125,12 @@ public class RedisTransientStore extends AbstractTransientStore {
     @Override
     public void putParameter(String key, String parameter, Serializable value) {
         redisExecutor.execute((RedisCallable<Void>) jedis -> {
-            jedis.hset(getBytes(namespace + join(key, "params")), getBytes(parameter), serialize(value));
+            String paramsKey = namespace + join(key, "params");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Setting field %s to value %s in Redis hash stored at key %s", parameter,
+                        value, paramsKey));
+            }
+            jedis.hset(getBytes(paramsKey), getBytes(parameter), serialize(value));
             return null;
         });
     }
@@ -131,18 +138,28 @@ public class RedisTransientStore extends AbstractTransientStore {
     @Override
     public Serializable getParameter(String key, String parameter) {
         return redisExecutor.execute((RedisCallable<Serializable>) jedis -> {
-            byte[] paramBytes = jedis.hget(getBytes(namespace + join(key, "params")), getBytes(parameter));
+            String paramsKey = namespace + join(key, "params");
+            byte[] paramBytes = jedis.hget(getBytes(paramsKey), getBytes(parameter));
             if (paramBytes == null) {
                 return null;
             }
-            return deserialize(paramBytes);
+            Serializable res = deserialize(paramBytes);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Fetched field %s from Redis hash stored at key %s: %s", parameter, paramsKey,
+                        res));
+            }
+            return res;
         });
     }
 
     @Override
     public void putParameters(String key, Map<String, Serializable> parameters) {
         redisExecutor.execute((RedisCallable<Void>) jedis -> {
-            jedis.hmset(getBytes(namespace + join(key, "params")), serialize(parameters));
+            String paramsKey = namespace + join(key, "params");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Setting fields %s in Redis hash stored at key %s", parameters, paramsKey));
+            }
+            jedis.hmset(getBytes(paramsKey), serialize(parameters));
             return null;
         });
     }
@@ -150,11 +167,16 @@ public class RedisTransientStore extends AbstractTransientStore {
     @Override
     public Map<String, Serializable> getParameters(String key) {
         return redisExecutor.execute((RedisCallable<Map<String, Serializable>>) jedis -> {
-            Map<byte[], byte[]> paramBytes = jedis.hgetAll(getBytes(namespace + join(key, "params")));
+            String paramsKey = namespace + join(key, "params");
+            Map<byte[], byte[]> paramBytes = jedis.hgetAll(getBytes(paramsKey));
             if (paramBytes.isEmpty()) {
                 return null;
             }
-            return deserialize(paramBytes);
+            Map<String, Serializable> res = deserialize(paramBytes);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Fetched fields from Redis hash stored at key %s: %s", paramsKey, res));
+            }
+            return res;
         });
     }
 
@@ -167,6 +189,10 @@ public class RedisTransientStore extends AbstractTransientStore {
         String blobCount = redisExecutor.execute((RedisCallable<String>) jedis -> {
             return jedis.hget(namespace + key, "blobCount");
         });
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Fetched field \"blobCount\" from Redis hash stored at key %s: %s",
+                    namespace + key, blobCount));
+        }
         if (blobCount == null) {
             // Check for existing parameters
             Map<String, Serializable> parameters = getParameters(key);
@@ -193,6 +219,10 @@ public class RedisTransientStore extends AbstractTransientStore {
                             "Entry with key %s is inconsistent: blobCount = %d but key %s doesn't exist", key,
                             entryBlobCount, blobInfoKey));
                 }
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Fetched fields from Redis hash stored at key %s: %s", blobInfoKey,
+                            blobInfo));
+                }
                 return blobInfo;
             });
             blobInfos.add(entryBlobInfo);
@@ -209,6 +239,10 @@ public class RedisTransientStore extends AbstractTransientStore {
             if (size == null) {
                 return -1L;
             }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Fetched field \"size\" from Redis hash stored at key %s: %s", namespace + key,
+                        size));
+            }
             return Long.parseLong(size);
         });
     }
@@ -217,6 +251,10 @@ public class RedisTransientStore extends AbstractTransientStore {
     public boolean isCompleted(String key) {
         return redisExecutor.execute((RedisCallable<Boolean>) jedis -> {
             String completed = jedis.hget(namespace + key, "completed");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Fetched field \"completed\" from Redis hash stored at key %s: %s", namespace
+                        + key, completed));
+            }
             return Boolean.parseBoolean(completed);
         });
     }
@@ -224,6 +262,10 @@ public class RedisTransientStore extends AbstractTransientStore {
     @Override
     public void setCompleted(String key, boolean completed) {
         redisExecutor.execute((RedisCallable<Void>) jedis -> {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Setting field \"completed\" to value %s in Redis hash stored at key %s",
+                        completed, namespace + key));
+            }
             jedis.hset(namespace + key, "completed", String.valueOf(completed));
             return null;
         });
@@ -242,7 +284,11 @@ public class RedisTransientStore extends AbstractTransientStore {
 
             // Remove summary
             redisExecutor.execute((RedisCallable<Long>) jedis -> {
-                return jedis.del(namespace + key);
+                Long deleted = jedis.del(namespace + key);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Deleted %d Redis hash stored at key %s", deleted, namespace + key));
+                }
+                return deleted;
             });
 
             // Decrement storage size
@@ -257,7 +303,12 @@ public class RedisTransientStore extends AbstractTransientStore {
 
         // Remove parameters
         redisExecutor.execute((RedisCallable<Long>) jedis -> {
-            return jedis.del(getBytes(namespace + join(key, "params")));
+            String paramsKey = namespace + join(key, "params");
+            Long deleted = jedis.del(getBytes(paramsKey));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Deleted %d Redis hash stored at key %s", deleted, paramsKey));
+            }
+            return deleted;
         });
     }
 
@@ -304,6 +355,10 @@ public class RedisTransientStore extends AbstractTransientStore {
         entrySummary.put("blobCount", String.valueOf(blobCount));
         entrySummary.put("size", String.valueOf(sizeOfBlobs));
         redisExecutor.execute((RedisCallable<Void>) jedis -> {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Setting fields %s in Redis hash stored at key %s", entrySummary, namespace
+                        + key));
+            }
             jedis.hmset(namespace + key, entrySummary);
             return null;
         });
@@ -314,7 +369,12 @@ public class RedisTransientStore extends AbstractTransientStore {
                 String blobInfoIndex = String.valueOf(i);
                 Map<String, String> blobInfo = blobInfos.get(i);
                 redisExecutor.execute((RedisCallable<String>) jedis -> {
-                    return jedis.hmset(namespace + join(key, "blobs", blobInfoIndex), blobInfo);
+                    String blobInfoKey = namespace + join(key, "blobs", blobInfoIndex);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Setting fields %s in Redis hash stored at key %s", blobInfo,
+                                blobInfoKey));
+                    }
+                    return jedis.hmset(blobInfoKey, blobInfo);
                 });
             }
         }
@@ -327,6 +387,9 @@ public class RedisTransientStore extends AbstractTransientStore {
             if (value == null) {
                 return 0L;
             }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Fetched value of Redis key %s: %s", sizeKey, value));
+            }
             return Long.parseLong(value);
         });
     }
@@ -334,6 +397,9 @@ public class RedisTransientStore extends AbstractTransientStore {
     @Override
     protected void setStorageSize(final long newSize) {
         redisExecutor.execute((RedisCallable<Void>) jedis -> {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Setting Redis key %s to value %s", sizeKey, newSize));
+            }
             jedis.set(sizeKey, "" + newSize);
             return null;
         });
@@ -343,6 +409,9 @@ public class RedisTransientStore extends AbstractTransientStore {
     protected long incrementStorageSize(final long size) {
         return redisExecutor.execute((RedisCallable<Long>) jedis -> {
             Long incremented = jedis.incrBy(sizeKey, size);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Incremeted Redis key %s to %d", sizeKey, incremented));
+            }
             return incremented;
         });
     }
@@ -351,6 +420,9 @@ public class RedisTransientStore extends AbstractTransientStore {
     protected long decrementStorageSize(final long size) {
         return redisExecutor.execute((RedisCallable<Long>) jedis -> {
             Long decremented = jedis.decrBy(sizeKey, size);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Decremeted Redis key %s to %d", sizeKey, decremented));
+            }
             return decremented;
         });
     }
@@ -366,6 +438,9 @@ public class RedisTransientStore extends AbstractTransientStore {
             if (summary.isEmpty()) {
                 return null;
             }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Fetched fields from Redis hash stored at key %s: %s", namespace + key, summary));
+            }
             return summary;
         });
     }
@@ -377,7 +452,12 @@ public class RedisTransientStore extends AbstractTransientStore {
                 for (int i = 0; i < blobCount; i++) {
                     String blobInfoIndex = String.valueOf(i);
                     redisExecutor.execute((RedisCallable<Long>) jedis -> {
-                        return jedis.del(namespace + join(key, "blobs", blobInfoIndex));
+                        String blobInfoKey = namespace + join(key, "blobs", blobInfoIndex);
+                        Long deleted = jedis.del(blobInfoKey);
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Deleted %d Redis hash stored at key %s", deleted, blobInfoKey));
+                        }
+                        return deleted;
                     });
                 }
             }
