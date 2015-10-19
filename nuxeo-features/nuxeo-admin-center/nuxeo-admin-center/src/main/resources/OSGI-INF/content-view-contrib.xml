@@ -108,9 +108,6 @@
       <showFilterForm>true</showFilterForm>
 
       <waitForExecution>true</waitForExecution>
-      <waitForExecutionSentence>
-        label.search.waitForExecution
-      </waitForExecutionSentence>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
