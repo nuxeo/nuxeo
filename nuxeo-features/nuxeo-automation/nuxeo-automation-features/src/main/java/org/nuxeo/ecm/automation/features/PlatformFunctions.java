@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.uidgen.UIDGeneratorService;
 import org.nuxeo.ecm.core.uidgen.UIDSequencer;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -69,8 +70,7 @@ public class PlatformFunctions extends CoreFunctions {
         return getUserManager().getPrincipal(username);
     }
 
-    protected String getEmail(NuxeoPrincipal principal, String userSchemaName, String userEmailFieldName)
-            {
+    protected String getEmail(NuxeoPrincipal principal, String userSchemaName, String userEmailFieldName) {
         if (principal == null) {
             return null;
         }
@@ -154,8 +154,13 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     public String getNextId(final String key) {
-        UIDSequencer svc = Framework.getService(UIDSequencer.class);
-        return Integer.toString(svc.getNext(key));
+        return getNextId(key, "hibernateSequencer");
+    }
+
+    public String getNextId(final String key, final String sequencerName) {
+        UIDGeneratorService uidGeneratorService = Framework.getService(UIDGeneratorService.class);
+        UIDSequencer seq = uidGeneratorService.getSequencer(sequencerName);
+        return Integer.toString(seq.getNext(key));
     }
 
     public static String htmlEscape(String str) {
