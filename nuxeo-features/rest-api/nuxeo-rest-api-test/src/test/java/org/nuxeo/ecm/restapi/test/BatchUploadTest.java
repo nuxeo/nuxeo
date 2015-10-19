@@ -231,7 +231,7 @@ public class BatchUploadTest extends BaseTest {
     }
 
     /**
-     * Tests the use of /upload + /batch/execute.
+     * Tests the use of /upload + /upload/{batchId}/{fileIdx}/execute.
      *
      * @since 7.4
      */
@@ -257,7 +257,7 @@ public class BatchUploadTest extends BaseTest {
         headers.put("X-File-Type", mimeType);
         getResponse(RequestType.POST, "upload/" + batchId + "/0", data, headers);
 
-        // Create a doc and attach the uploaded blob to it using the /batch/execute endpoint
+        // Create a doc and attach the uploaded blob to it using the /upload/{batchId}/{fileIdx}/execute endpoint
         DocumentModel file = session.createDocumentModel("/", "testBatchExecuteDoc", "File");
         file = session.createDocument(file);
         TransactionHelper.commitOrRollbackTransaction();
@@ -422,7 +422,7 @@ public class BatchUploadTest extends BaseTest {
     }
 
     /**
-     * Tests the use of /upload using file chunks + /batch/execute.
+     * Tests the use of /upload using file chunks + /upload/{batchId}/{fileIdx}/execute.
      *
      * @since 7.4
      */
@@ -477,7 +477,7 @@ public class BatchUploadTest extends BaseTest {
         assertEquals("0", node.get("uploadedChunkId").getValueAsText());
         assertEquals("2", node.get("chunkCount").getValueAsText());
 
-        // Create a doc and attach the uploaded blob to it using the /batch/execute endpoint
+        // Create a doc and attach the uploaded blob to it using the /batch/{batchId}/{fileIdx}/execute endpoint
         DocumentModel file = session.createDocumentModel("/", "testBatchExecuteDoc", "File");
         file = session.createDocument(file);
         TransactionHelper.commitOrRollbackTransaction();
