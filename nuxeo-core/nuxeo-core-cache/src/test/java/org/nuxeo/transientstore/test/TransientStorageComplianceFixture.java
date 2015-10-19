@@ -48,7 +48,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features({ TransientStoreFeature.class })
+@Features(TransientStoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.event")
 public class TransientStorageComplianceFixture {
 

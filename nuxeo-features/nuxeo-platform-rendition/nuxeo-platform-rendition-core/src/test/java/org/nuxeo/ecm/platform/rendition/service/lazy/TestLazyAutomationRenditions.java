@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -40,10 +39,10 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 import com.google.inject.Inject;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Deploy({ "org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core",
         "org.nuxeo.ecm.automation.core" })
@@ -141,6 +140,5 @@ public class TestLazyAutomationRenditions {
         folder = session.getDocument(folder.getRef());
         return folder;
     }
-
 
 }

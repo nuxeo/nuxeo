@@ -80,7 +80,7 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
         DocumentModel doc = session.getDocument(docRef);
 
         RenditionService rs = Framework.getService(RenditionService.class);
-        RenditionDefinition def = ((RenditionServiceImpl)rs).getRenditionDefinition(renditionName);
+        RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
 
         List<Blob> blobs = doComputeRendition(session, doc, def);
 

@@ -124,7 +124,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         String contentType = request.getHeader("Content-Type");
         String uploadType = request.getHeader("X-Upload-Type");
         String contentLength = request.getHeader("Content-Length");
-        String uploadChunkIdx = request.getHeader("X-Upload-Chunk-Index");
+        String uploadChunkIndex = request.getHeader("X-Upload-Chunk-Index");
         String chunkCount = request.getHeader("X-Upload-Chunk-Count");
         String fileName = request.getHeader("X-File-Name");
         String fileSize = request.getHeader("X-File-Size");
@@ -153,10 +153,10 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         }
 
         if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
-            log.debug(String.format("Uploading chunk [index=%s / total=%s] (%sb) for file %s", uploadChunkIdx,
+            log.debug(String.format("Uploading chunk [index=%s / total=%s] (%sb) for file %s", uploadChunkIndex,
                     chunkCount, uploadedSize, fileName));
-            bm.addStream(batchId, fileIdx, is, Integer.valueOf(chunkCount), Integer.valueOf(uploadChunkIdx), fileName,
-                    mimeType, Long.valueOf(fileSize));
+            bm.addStream(batchId, fileIdx, is, Integer.valueOf(chunkCount), Integer.valueOf(uploadChunkIndex),
+                    fileName, mimeType, Long.valueOf(fileSize));
         } else {
             // Use non chunked mode by default if X-Upload-Type header is not provided
             uploadType = UPLOAD_TYPE_NORMAL;
@@ -171,7 +171,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         result.put("uploadType", uploadType);
         result.put("uploadedSize", uploadedSize);
         if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
-            result.put("uploadedChunkId", uploadChunkIdx);
+            result.put("uploadedChunkId", uploadChunkIndex);
             result.put("chunkCount", chunkCount);
             BatchFileEntry fileEntry = bm.getFileEntry(batchId, fileIdx);
             if (!fileEntry.isChunksCompleted()) {
@@ -294,20 +294,14 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected Response buildJSONResponse(StatusType status, String message) {
-        return Response.status(status)
-                       .header("Content-Length", message.length())
-                       .type(MediaType.APPLICATION_JSON)
-                       .entity(message)
-                       .build();
+        return Response.status(status).header("Content-Length", message.length()).type(MediaType.APPLICATION_JSON).entity(
+                message).build();
     }
 
     protected Response buildHTMLResponse(StatusType status, String message) {
         message = "<html>" + message + "</html>";
-        return Response.status(status)
-                       .header("Content-Length", message.length())
-                       .type(MediaType.TEXT_HTML_TYPE)
-                       .entity(message)
-                       .build();
+        return Response.status(status).header("Content-Length", message.length()).type(MediaType.TEXT_HTML_TYPE).entity(
+                message).build();
     }
 
     protected Response buildEmptyResponse(StatusType status) {

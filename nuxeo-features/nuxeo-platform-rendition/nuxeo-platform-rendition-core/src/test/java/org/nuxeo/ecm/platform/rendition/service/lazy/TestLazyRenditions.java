@@ -23,9 +23,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Calendar;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -46,7 +47,6 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 import com.google.inject.Inject;
 
-import java.util.Calendar;
 @Deploy({ "org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core" })
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, TransientStoreFeature.class })
