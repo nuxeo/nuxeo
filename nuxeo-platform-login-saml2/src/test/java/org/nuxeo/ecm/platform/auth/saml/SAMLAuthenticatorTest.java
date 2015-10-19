@@ -28,6 +28,8 @@ import static org.mockito.Matchers.startsWith;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +52,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.saml2.core.AuthnRequest;
+import org.opensaml.saml2.core.LogoutRequest;
 import org.opensaml.ws.message.decoder.MessageDecodingException;
 import org.opensaml.xml.Configuration;
 import org.opensaml.xml.io.Unmarshaller;
@@ -190,6 +193,17 @@ public class SAMLAuthenticatorTest {
         String logoutURL = samlAuth.getSLOUrl(req, resp);
 
         assertTrue(logoutURL.startsWith("http://dummy/SLORedirect"));
+
+        List<NameValuePair> params = URLEncodedUtils.parse(new URI(logoutURL), "UTF-8");
+        assertEquals(HTTPRedirectBinding.SAML_REQUEST, params.get(0).getName());
+        String samlRequest = params.get(0).getValue();
+        SAMLObject message = decodeMessage(samlRequest);
+
+        // Validate type
+        assertTrue(message instanceof LogoutRequest);
+
+        LogoutRequest logout = (LogoutRequest) message;
+        assertEquals("http://dummy/SLORedirect", logout.getDestination());
     }
 
     // NXP17044: strips scheme to fix validity check with reverse proxies

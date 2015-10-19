@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.auth.saml;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,7 +61,7 @@ import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.security.MetadataCredentialResolver;
-import org.opensaml.util.URLBuilder;
+import org.opensaml.ws.message.decoder.MessageDecodingException;
 import org.opensaml.ws.transport.InTransport;
 import org.opensaml.ws.transport.http.HttpServletRequestAdapter;
 import org.opensaml.ws.transport.http.HttpServletResponseAdapter;
@@ -71,17 +70,12 @@ import org.opensaml.xml.ConfigurationException;
 import org.opensaml.xml.encryption.ChainingEncryptedKeyResolver;
 import org.opensaml.xml.encryption.InlineEncryptedKeyResolver;
 import org.opensaml.xml.encryption.SimpleRetrievalMethodEncryptedKeyResolver;
-import org.opensaml.xml.io.Marshaller;
-import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.parse.BasicParserPool;
 import org.opensaml.xml.security.credential.Credential;
 import org.opensaml.xml.security.keyinfo.KeyInfoCredentialResolver;
 import org.opensaml.xml.security.keyinfo.StaticKeyInfoCredentialResolver;
 import org.opensaml.xml.signature.SignatureTrustEngine;
 import org.opensaml.xml.signature.impl.ExplicitKeySignatureTrustEngine;
-import org.opensaml.xml.util.Pair;
-import org.opensaml.xml.util.XMLHelper;
-import org.w3c.dom.Element;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -90,7 +84,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -539,27 +532,13 @@ public class SAMLAuthenticationProvider
 
         try {
             LogoutRequest logoutRequest = slo.buildLogoutRequest(context, credential);
-            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(
-                    logoutRequest);
-            if (marshaller == null) {
-                log.error("Unable to marshall message, no marshaller registered " +
-                        "for message object: " + logoutRequest.getElementQName());
-            }
-            Element dom = marshaller.marshall(logoutRequest);
-            StringWriter buffer = new StringWriter();
-            XMLHelper.writeNode(dom, buffer);
-            String encodedSaml = Base64.encodeBase64String(
-                    buffer.toString().getBytes());
+            logoutRequest.setDestination(slo.getEndpoint().getLocation());
+            context.setOutboundSAMLMessage(logoutRequest);
 
-            // Add the SAML as parameter
-            URLBuilder urlBuilder = new URLBuilder(logoutURL);
-            urlBuilder.getQueryParams().add(
-                    new Pair<>(HTTPRedirectBinding.SAML_REQUEST, encodedSaml));
-            logoutURL = urlBuilder.buildURL();
+            HTTPRedirectBinding binding = (HTTPRedirectBinding) getBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+            logoutURL = binding.buildRedirectURL(context, slo.getEndpoint().getLocation());
         } catch (SAMLException e) {
             log.error("Failed to get SAML Logout request", e);
-        } catch (MarshallingException e) {
-            log.error("Encountered error marshalling message to its DOM representation", e);
         }
 
         return logoutURL;
