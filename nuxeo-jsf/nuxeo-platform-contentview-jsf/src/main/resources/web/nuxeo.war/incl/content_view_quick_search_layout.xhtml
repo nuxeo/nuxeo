@@ -50,6 +50,8 @@ empty:
           styleClass="button"
           action="#{contentView.resetPageProvider()}">
           <nxu:actionListenerMethod
+            value="#{contentView.setExecuted(true)}" />
+          <nxu:actionListenerMethod
             value="#{jsfResetActions.resetComponents}" />
           <f:attribute name="selectedValue" value="false" />
           <f:attribute name="targetComponentId" value="#{cvid}_showFilterFormBox" />
@@ -130,6 +132,8 @@ empty:
                 id="submitFilter"
                 styleClass="button"
                 action="#{contentView.resetPageProvider()}">
+                <nxu:actionListenerMethod
+                  value="#{contentView.setExecuted(true)}" />
                 <nxu:actionListenerMethod
                   value="#{jsfResetActions.resetComponents}" />
                 <f:ajax execute="@form" render="#{elementsToReRender}" />

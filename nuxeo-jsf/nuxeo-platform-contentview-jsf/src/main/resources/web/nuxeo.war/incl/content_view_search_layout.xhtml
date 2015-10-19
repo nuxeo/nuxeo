@@ -70,6 +70,8 @@ empty:
             action="#{contentView.resetPageProvider}"
             styleClass="button">
             <nxu:actionListenerMethod
+              value="#{contentView.setExecuted(true)}" />
+            <nxu:actionListenerMethod
               value="#{jsfResetActions.resetComponents}" />
             <f:ajax execute="@form" render="#{elementsToReRender}" />
           </h:commandButton>
