@@ -60,6 +60,7 @@ String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeade
 String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
 boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
+String fieldAutocomplete = screenConfig.getFieldAutocomplete() ? "on" : "off";
 
 String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "113");
 String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "20");
@@ -288,7 +289,7 @@ body {
     <tr>
       <td align="center">
         <%@ include file="login_welcome.jsp" %>
-        <form method="post" action="nxstartup.faces">
+        <form method="post" action="nxstartup.faces" autocomplete="<%= fieldAutocomplete %>">
           <!-- To prevent caching -->
           <%
               response.setHeader("Cache-Control", "no-cache"); // HTTP 1.1

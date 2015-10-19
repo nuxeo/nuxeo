@@ -65,6 +65,9 @@ public class LoginScreenConfig implements Serializable {
     @XNode("logoHeight")
     protected String logoHeight;
 
+    @XNode("fieldAutocomplete")
+    protected Boolean fieldAutocomplete;
+
     /**
      * Boolean to disable background-cover CSS behavior on login page background, as it may not be compliant with all
      * browsers (see NXP-12972/NXP-12978).
@@ -130,6 +133,9 @@ public class LoginScreenConfig implements Serializable {
         }
         if (newConfig.logoWidth != null) {
             this.logoWidth = newConfig.logoWidth;
+        }
+        if (newConfig.fieldAutocomplete != null) {
+            this.fieldAutocomplete = newConfig.fieldAutocomplete;
         }
 
         if (providers == null) {
@@ -216,6 +222,10 @@ public class LoginScreenConfig implements Serializable {
             return false;
         }
         return true;
+    }
+
+    public Boolean getFieldAutocomplete() {
+        return fieldAutocomplete == null ? true : fieldAutocomplete;
     }
 
     @XNode("headerStyle")
