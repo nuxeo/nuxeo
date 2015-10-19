@@ -43,7 +43,7 @@
       }
     </style>
     <nx-document id="doc" auto doc-id="{{docId}}" doc-path="{{docPath}}" response="{{doc}}"
-      enrichers="extendedAcls, permissions, userVisiblePermissions"></nx-document>
+      enrichers="acls, permissions, userVisiblePermissions" params="{{params}}"></nx-document>
 
     <div class="bubbleBox">
       <div class="bubbleHeader">
@@ -66,10 +66,10 @@
             </div>
             <template is="dom-repeat" items="{{localAces}}" as="ace">
               <div class="acl-table-row">
-                <div><span>{{ace.username}}</span></div>
+                <div><span title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
                 <div><span class="label">[[i18n(ace.permission)]]</span></div>
                 <div><span>{{formatTimeFrame(ace)}}</span></div>
-                <div><span>{{ace.creator}}</span></div>
+                <div><span title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
                 <div>
                   <template is="dom-if" if="{{hasEverythingRight}}">
                     <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}"
@@ -88,10 +88,10 @@
                             <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
                           </div>
                           <div class="acl-table-row">
-                            <div><span>{{ace.username}}</span></div>
+                            <div><span title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
                             <div><span class="label">[[i18n(ace.permission)]]</span></div>
                             <div><span>{{formatTimeFrame(ace)}}</span></div>
-                            <div><span>{{ace.creator}}</span></div>
+                            <div><span title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
                           </div>
                         </div>
                       </paper-dialog-scrollable>
@@ -136,10 +136,10 @@
             </div>
             <template is="dom-repeat" items="{{inheritedAces}}" as="ace">
               <div class="acl-table-row">
-                <div><span>{{ace.username}}</span></div>
+                <div><span title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
                 <div><span class="label">[[i18n(ace.permission)]]</span></div>
                 <div><span>{{formatTimeFrame(ace)}}</span></div>
-                <div><span>{{ace.creator}}</span></div>
+                <div><span title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
               </div>
             </template>
           </div>
@@ -210,6 +210,13 @@
         type: Boolean,
         value: false,
         computed: 'computeCanUnblockInheritance(hasEverythingRight, hasInheritedAces)'
+      },
+      params: {
+        type: Object,
+        value: {
+          "fetch.acls": "username,creator,extended",
+          "depth": "children"
+        }
       }
     },
 
@@ -294,8 +301,8 @@
         for (var i = 0; i < this.acls.length; i++) {
           var acl = this.acls[i];
           if (acl.name !== 'inherited') {
-            for (var j = 0; j < acl.ace.length; j++) {
-              var ace = acl.ace[j];
+            for (var j = 0; j < acl.aces.length; j++) {
+              var ace = acl.aces[j];
               if (ace.granted && (ace.status === 'pending' || ace.status === 'effective')) {
                 ace.aclName = acl.name;
                 localAces.push(ace);
@@ -315,8 +322,8 @@
         for (var i = 0; i < this.acls.length; i++) {
           if (this.acls[i].name === 'inherited') {
             var acl = this.acls[i];
-            for (var j = 0; j < acl.ace.length; j++) {
-              var ace = acl.ace[j];
+            for (var j = 0; j < acl.aces.length; j++) {
+              var ace = acl.aces[j];
               if (ace.granted && (ace.status === 'pending' || ace.status === 'effective')) {
                 inheritedAces.push(ace);
               }
@@ -354,6 +361,53 @@
 
     unblockInheritance: function () {
       this.$.unblockOp.execute();
+    },
+
+    entityDisplay: function(entity) {
+      if (!entity) {
+        return '';
+      }
+
+      if (typeof entity === 'object') {
+        if (entity['entity-type'] === 'user') {
+          var id = entity.id;
+          var first = entity.properties.firstName;
+          var last = entity.properties.lastName;
+          if (first === null || first.length === 0) {
+            if (last === null || last.length === 0) {
+              return id;
+            } else {
+              return last;
+            }
+          } else {
+            if (last === null || last.length === 0) {
+              return first;
+            } else {
+              return first + ' ' + last;
+            }
+          }
+        } else if (entity['entity-type'] === 'group') {
+          var groupLabel = entity.grouplabel;
+          return groupLabel !== null && groupLabel.length > 0 ? groupLabel : entity.groupname;
+        }
+      }
+      return entity;
+    },
+
+    entityTooltip: function(entity) {
+      if (!entity) {
+        return '';
+      }
+
+      if (typeof entity === 'object') {
+        if (entity['entity-type'] === 'user') {
+          var email = entity.properties.email;
+          return entity.id + (email !== null && email.length > 0 ? ' - ' + email : '');
+        } else if (entity['entity-type'] === 'group') {
+          return entity.groupname;
+        }
+      }
+      return entity;
     }
   });
 </script>
