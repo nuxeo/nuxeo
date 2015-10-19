@@ -1,11 +1,11 @@
 @echo off
 rem ##
-rem ## (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+rem ## (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
 rem ##
 rem ## All rights reserved. This program and the accompanying materials
 rem ## are made available under the terms of the GNU Lesser General Public License
 rem ## (LGPL) version 2.1 which accompanies this distribution, and is available at
-rem ## http://www.gnu.org/licenses/lgpl.html
+rem ## http://www.gnu.org/licenses/lgpl-2.1.html
 rem ##
 rem ## This library is distributed in the hope that it will be useful,
 rem ## but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,7 +15,7 @@ rem ##
 rem ## Contributors:
 rem ##     Julien Carsique, Arnaud Kervern
 rem ##
-rem ## DOS script generating a static archive for Tomcat or JBoss
+rem ## DOS script generating a static archive for Tomcat (WAR)
 rem ##
 
 echo DEPRECATED - You should use "nuxeoctl pack <target> [options]"
@@ -134,7 +134,7 @@ if not exist "%NUXEO_TMP_DIR%" mkdir "%NUXEO_TMP_DIR%"
 :TMP_DIR_OK
 
 set PATH=%PATH%;%NUXEO_HOME%\3rdparty
-set JAVA_OPTS=-Xms512m -Xmx1024m -XX:MaxPermSize=256m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8
+set JAVA_OPTS=-Xms512m -Xmx1024m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8
 
 set NUXEO_EAR=%NUXEO_HOME%\server\default\deploy\nuxeo.ear
 REM ***** COPY nuxeo-runtime-deploy TO A TMP FOLDER *****

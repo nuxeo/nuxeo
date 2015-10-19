@@ -121,7 +121,7 @@ done << EOF
 `grep "^JAVA_OPTS=" "$NUXEO_CONF"`
 EOF
 # Defaults
-: ${JAVA_OPTS:="-Xms512m -Xmx1024m -XX:MaxPermSize=512m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8"}
+: ${JAVA_OPTS:="-Xms512m -Xmx1024m -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8"}
 # Force IPv4
 JAVA_OPTS="$JAVA_OPTS -Djava.net.preferIPv4Stack=true"
 
