@@ -119,9 +119,9 @@ public abstract class AbstractTransientStore implements TransientStore {
      */
     protected abstract void setStorageSize(long newSize);
 
-    protected abstract void incrementStorageSize(long size);
+    protected abstract long incrementStorageSize(long size);
 
-    protected abstract void decrementStorageSize(long size);
+    protected abstract long decrementStorageSize(long size);
 
     protected abstract void removeAllEntries();
 

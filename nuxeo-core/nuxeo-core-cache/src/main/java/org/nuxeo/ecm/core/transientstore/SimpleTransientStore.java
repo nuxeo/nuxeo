@@ -234,13 +234,15 @@ public class SimpleTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    protected void incrementStorageSize(long size) {
-        storageSize.addAndGet(size);
+    protected long incrementStorageSize(long size) {
+        long incremented = storageSize.addAndGet(size);
+        return incremented;
     }
 
     @Override
-    protected void decrementStorageSize(long size) {
-        storageSize.addAndGet(-size);
+    protected long decrementStorageSize(long size) {
+        long decremented = storageSize.addAndGet(-size);
+        return decremented;
     }
 
     @Override

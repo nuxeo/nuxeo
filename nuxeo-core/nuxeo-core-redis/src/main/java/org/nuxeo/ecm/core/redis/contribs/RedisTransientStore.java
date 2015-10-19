@@ -340,18 +340,18 @@ public class RedisTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    protected void incrementStorageSize(final long size) {
-        redisExecutor.execute((RedisCallable<Void>) jedis -> {
-            jedis.incrBy(sizeKey, size);
-            return null;
+    protected long incrementStorageSize(final long size) {
+        return redisExecutor.execute((RedisCallable<Long>) jedis -> {
+            Long incremented = jedis.incrBy(sizeKey, size);
+            return incremented;
         });
     }
 
     @Override
-    protected void decrementStorageSize(final long size) {
-        redisExecutor.execute((RedisCallable<Void>) jedis -> {
-            jedis.decrBy(sizeKey, size);
-            return null;
+    protected long decrementStorageSize(final long size) {
+        return redisExecutor.execute((RedisCallable<Long>) jedis -> {
+            Long decremented = jedis.decrBy(sizeKey, size);
+            return decremented;
         });
     }
 
