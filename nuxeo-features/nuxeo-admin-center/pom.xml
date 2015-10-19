@@ -18,6 +18,7 @@
     <module>nuxeo-admin-center</module>
     <module>nuxeo-admin-center-monitoring</module>
     <module>nuxeo-admin-center-oauth</module>
+    <module>nuxeo-admin-center-analytics</module>
   </modules>
 
 </project>
