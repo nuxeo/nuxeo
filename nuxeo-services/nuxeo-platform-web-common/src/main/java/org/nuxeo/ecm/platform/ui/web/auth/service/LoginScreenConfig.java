@@ -36,7 +36,6 @@ import org.nuxeo.runtime.api.Framework;
 public class LoginScreenConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     @XNodeList(value = "loginProviders/loginProvider", type = ArrayList.class, componentType = LoginProviderLink.class)
     protected List<LoginProviderLink> providers;
 
@@ -97,6 +96,12 @@ public class LoginScreenConfig implements Serializable {
      */
     @XNode("disableBackgroundSizeCover")
     protected Boolean disableBackgroundSizeCover;
+
+    /**
+     * @since 7.10
+     */
+    @XNode("loginButtonBackgroundColor")
+    protected String loginButtonBackgroundColor;
 
     public LoginScreenConfig() {
     }
@@ -164,9 +169,11 @@ public class LoginScreenConfig implements Serializable {
         if (newConfig.loop != null) {
             loop = newConfig.loop;
         }
-
         if (newConfig.muted != null) {
             muted = newConfig.muted;
+        }
+        if (newConfig.loginButtonBackgroundColor != null) {
+            loginButtonBackgroundColor = newConfig.loginButtonBackgroundColor;
         }
 
         if (providers == null) {
@@ -288,6 +295,10 @@ public class LoginScreenConfig implements Serializable {
     @XNode("bodyBackgroundStyle")
     public void setBodyBackgroundStyle(String bodyBackgroundStyle) {
         this.bodyBackgroundStyle = Framework.expandVars(bodyBackgroundStyle);
+    }
+
+    public String getLoginButtonBackgroundColor() {
+        return loginButtonBackgroundColor;
     }
 
     @XNode("loginBoxBackgroundStyle")

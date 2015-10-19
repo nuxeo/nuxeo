@@ -57,7 +57,8 @@ String iframeUrl = screenConfig.getNewsIframeUrl();
 
 String backgroundPath = context + "/img/login_bg.jpg";
 String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + backgroundPath + "') no-repeat center center fixed #333");
-String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "background-color: rgba(255,255,255,0.7);");
+String loginButtonBackgroundColor = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginButtonBackgroundColor(), "#ff452a");
+String headerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getHeaderStyle(), "");
 String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
 boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
@@ -66,7 +67,7 @@ String fieldAutocomplete = screenConfig.getFieldAutocomplete() ? "on" : "off";
 String logoWidth = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoWidth(), "113");
 String logoHeight = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoHeight(), "20");
 String logoAlt = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoAlt(), "Nuxeo");
-String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), context + "/img/nuxeo_logo.png");
+String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), context + "/img/login_logo.png");
 String currentYear = new DateTime().toString("Y");
 
 boolean hasVideos = screenConfig.hasVideos();
@@ -143,9 +144,8 @@ body {
 }
 
 .login_button {
-  border:0;
-  border-bottom:4px solid transparent;
-  background-color: #ff452a ;
+  border: 0;
+  background-color: <%= loginButtonBackgroundColor %>;
   color: white;
   cursor: pointer;
   font-size: 115%;
@@ -156,7 +156,7 @@ body {
 }
 
 .login_button:hover {
-  border-bottom: 4px solid #b72020;
+  box-shadow: 0 -4px 0 rgba(0, 0, 0, 0.3) inset;
 }
 
 .login_input, .login_button {
