@@ -40,11 +40,11 @@ import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
  * Tests file upload with the {@link BatchResource}.
@@ -57,8 +57,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @Deprecated
 @RunWith(FeaturesRunner.class)
-@Features(EmbeddedAutomationServerFeature.class)
-@Deploy("org.nuxeo.ecm.core.cache")
+@Features({ TransientStoreFeature.class, EmbeddedAutomationServerFeature.class })
 @Jetty(port = 18080)
 public class TestBatchResource {
 

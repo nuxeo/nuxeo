@@ -37,6 +37,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 import com.google.inject.Inject;
 
@@ -44,8 +45,8 @@ import com.google.inject.Inject;
  * @since 7.4
  */
 @RunWith(FeaturesRunner.class)
-@Features(ConvertFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.core.cache" })
+@Features({ ConvertFeature.class, TransientStoreFeature.class })
+@Deploy("org.nuxeo.ecm.core.event")
 @LocalDeploy({ "org.nuxeo.ecm.core.convert:OSGI-INF/convert-service-config-test.xml",
         "org.nuxeo.ecm.core.convert:OSGI-INF/converters-test-contrib3.xml" })
 public class TestAsyncConversion {

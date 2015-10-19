@@ -42,14 +42,14 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 import com.google.inject.Inject;
 
 import java.util.Calendar;
-
-@Deploy({ "org.nuxeo.ecm.core.cache","org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core"})
+@Deploy({ "org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core" })
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, TransientStoreFeature.class })
 @LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml")
 /**
  *
