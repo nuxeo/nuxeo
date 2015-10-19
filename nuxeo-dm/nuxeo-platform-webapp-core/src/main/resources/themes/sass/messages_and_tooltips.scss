@@ -194,16 +194,14 @@ a.ambiance-close {
   z-index: 10000;
 }
 
-.adminMessage .close {
+.content .adminMessage .close {
   color: $shade-light-0;
   display: block;
   float: right;
-  font-family: Arial,sans-serif;
   font-size: 2em;
   margin-left: 1.5em;
   position: relative;
   right: 0;
-  text-decoration: none;
   top: -2px;
 }
 

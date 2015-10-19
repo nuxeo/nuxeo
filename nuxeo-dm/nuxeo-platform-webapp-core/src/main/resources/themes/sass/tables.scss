@@ -147,7 +147,7 @@ table td {
 .dataInput,
 .dataInput th,
 .dataInput td {
-  background-color: none;
+  background-color: transparent;
   border: 0;
   padding: .5em .6em .6em .5em;
 }
@@ -161,7 +161,8 @@ table td {
 .dataTable td td,
 .dataTableLine td td,
 .dataOutput td td,
-.dataList td td {
+.dataList td td,
+.dataOutput .dataInput td {
   border: 0;
 }
 
