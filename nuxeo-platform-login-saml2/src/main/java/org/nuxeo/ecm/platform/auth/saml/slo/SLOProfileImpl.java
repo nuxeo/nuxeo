@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.auth.saml.slo;
 
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.platform.auth.saml.AbstractSAMLProfile;
+import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
 import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
 import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObject;
@@ -48,12 +49,13 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
 
         LogoutRequest request = build(LogoutRequest.DEFAULT_ELEMENT_NAME);
         request.setID(newUUID());
-        // TODO(nfgs) Build issuer
-        // request.setIssuer(issuer);
         request.setVersion(SAMLVersion.VERSION_20);
         request.setIssueInstant(new DateTime());
-
         request.setDestination(getEndpoint().getLocation());
+
+        Issuer issuer = build(Issuer.DEFAULT_ELEMENT_NAME);
+        issuer.setValue(SAMLConfiguration.getEntityId());
+        request.setIssuer(issuer);
 
         // Add session indexes
         if (credential.getSessionIndexes() == null || credential.getSessionIndexes().isEmpty()) {
