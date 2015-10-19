@@ -455,6 +455,14 @@ public class SAMLAuthenticationProvider
                     sessionId + "|" + nameValue + "|" + nameFormat);
         }
 
+        // Redirect to URL in relay state if any
+        HttpSession session = request.getSession(!response.isCommitted());
+        if (session != null) {
+            if (StringUtils.isNotEmpty(credential.getRelayState())) {
+                session.setAttribute(NXAuthConstants.START_PAGE_SAVE_KEY, credential.getRelayState());
+            }
+        }
+
         return new UserIdentificationInfo(userId, userId);
     }
 
