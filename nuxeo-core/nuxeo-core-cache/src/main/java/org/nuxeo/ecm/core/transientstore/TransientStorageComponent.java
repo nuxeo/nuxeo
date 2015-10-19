@@ -103,4 +103,8 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
         super.deactivate(context);
     }
 
+    public void cleanUpStores() {
+        stores.values().forEach(TransientStore::removeAll);
+    }
+
 }

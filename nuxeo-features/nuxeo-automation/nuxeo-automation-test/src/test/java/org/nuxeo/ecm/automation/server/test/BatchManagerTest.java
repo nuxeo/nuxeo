@@ -86,6 +86,8 @@ public class BatchManagerTest {
         assertNotNull(batch);
         assertEquals("testBatchId", batch.getKey());
 
+        // Check TransientStore storage size
+        assertEquals(0, bm.getTransientStore().getStorageSizeMB());
     }
 
     @Test
@@ -140,6 +142,9 @@ public class BatchManagerTest {
         assertEquals("text/plain", fileEntry2.getMimeType());
         assertEquals(23, fileEntry2.getFileSize());
         assertEquals(blob2, fileEntry2.getBlob());
+
+        // Check TransientStore storage size
+        assertEquals(40, ((AbstractTransientStore) bm.getTransientStore()).getStorageSize());
     }
 
     @Test
@@ -216,8 +221,12 @@ public class BatchManagerTest {
         assertEquals(chunk3, blob3.getString());
         assertEquals(8, blob3.getLength());
 
+        // Check TransientStore storage size
+        assertEquals(38, ((AbstractTransientStore) bm.getTransientStore()).getStorageSize());
+
         // Clean batch
         bm.clean(batchId);
+        assertEquals(0, bm.getTransientStore().getStorageSizeMB());
     }
 
     @Test
@@ -275,10 +284,12 @@ public class BatchManagerTest {
         assertFalse(bm.getTransientStore().exists(batchId + "_10_1"));
         assertFalse(tmpChunkedFile.exists());
         assertTrue(tmpFile.exists());
+        assertEquals(0, bm.getTransientStore().getStorageSizeMB());
 
         TransientStore ts = bm.getTransientStore();
         ts.doGC();
         assertFalse(tmpFile.exists());
+        assertEquals(0, bm.getTransientStore().getStorageSizeMB());
     }
 
 }
