@@ -65,7 +65,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 public abstract class AbstractJsonWriterTest<WriterClass extends Writer<MarshalledType>, MarshalledType> {
 
-    @LocalDeploy({ "org.nuxeo.ecm.core.io:OSGI-INF/MarshallerRegistry.xml",
+    @Deploy({ "org.nuxeo.ecm.core.io:OSGI-INF/MarshallerRegistry.xml",
             "org.nuxeo.ecm.core.io:OSGI-INF/marshallers-contrib.xml" })
     public static abstract class Local<WriterClass extends Writer<MarshalledType>, MarshalledType> extends
             AbstractJsonWriterTest<WriterClass, MarshalledType> {

@@ -56,14 +56,12 @@ public class DocumentJsonEnricherTest extends AbstractJsonWriterTest.Local<Docum
         Map<String, String> params = new HashMap<>();
         params.put("param1", "value1");
         params.put("param2", "value2");
-        RenderingContext ctx = CtxBuilder.enrichDoc("contextualParameters", "acls", "children", "breadcrumb",
-                "permissions")
+        RenderingContext ctx = CtxBuilder.enrichDoc("contextualParameters", "children", "breadcrumb", "permissions")
                                          .param("contextualParameters", params)
                                          .get();
         JsonAssert json = jsonAssert(root, ctx);
         json = json.has("contextParameters");
-        json.properties(6);
-        json.has("acls");
+        json.properties(5);
         json.has("children");
         json.has("breadcrumb");
         json.has("permissions");

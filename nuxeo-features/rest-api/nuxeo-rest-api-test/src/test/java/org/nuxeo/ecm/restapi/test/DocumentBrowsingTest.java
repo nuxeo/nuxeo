@@ -68,7 +68,8 @@ import com.sun.jersey.api.client.ClientResponse;
 @Jetty(port = 18090)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/marshallers-contrib.xml",
-        "org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml" })
+        "org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml",
+        "org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml" })
 public class DocumentBrowsingTest extends BaseTest {
 
     @Test
@@ -343,8 +344,11 @@ public class DocumentBrowsingTest extends BaseTest {
         // Then i get a the ACL
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("inherited",
-                node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("acls").get(0).get("name").getTextValue());
+        assertEquals("inherited", node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                                      .get("acls")
+                                      .get(0)
+                                      .get("name")
+                                      .getTextValue());
 
     }
 
@@ -384,8 +388,10 @@ public class DocumentBrowsingTest extends BaseTest {
         // thumbnail entry from the contributor
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(null,
-                node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").getTextValue());
+        assertEquals(null, node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                               .get("thumbnail")
+                               .get("url")
+                               .getTextValue());
     }
 
     @Test

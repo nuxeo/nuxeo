@@ -23,31 +23,35 @@ import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_COMMENT;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFY;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonGenerator;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
+import org.nuxeo.ecm.core.io.registry.context.MaxDepthReachedException;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Enrich {@link DocumentModel} Json.
  * <p>
- * Add {@link DocumentModel}'s ACP as json attachment with notifications info for each ACE (such as whether a
- * notification should be send and the notification comment).
+ * Add {@link DocumentModel}'s ACP as json attachment.
  * </p>
  * <p>
- * Enable if parameter enrichers.document=extendedAcls is present.
+ * Enable if parameter enrichers.document=acls is present.
  * </p>
  * <p>
  * Format is:
@@ -60,14 +64,17 @@ import org.nuxeo.runtime.api.Framework;
  *   "contextParameters": {
  *     "acls": [
  *       {
- *         "name":" inherited",
- *         "ace": [
+ *         "name": "inherited",
+ *         "aces" :[
  *           {
  *             "username": "administrators",
  *             "permission": "Everything",
  *             "granted": true,
- *             "notify": false,
- *             "comment": ""
+ *             "creator": "Administrator",
+ *             "begin": "2014-10-19T09:16:30.291Z",
+ *             "end": "2016-10-19T09:16:30.291Z"
+ *             "notify": true // optional
+ *             "comment": "" // optional
  *           },
  *           ...
  *         ]
@@ -79,48 +86,87 @@ import org.nuxeo.runtime.api.Framework;
  * </pre>
  *
  * </p>
+ * <p>
+ * {@code username} and {@code creator} property can be fetched with fetch.acls=username or fetch.acls=creator.
+ * </p>
+ * <p>
+ * Additional ACE fields (such as notify and notification comment) can be written by using fetch.acls=extended.
+ * </p>
  *
- * @since 7.4
+ * @see org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter
+ * @see org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter
+ * @since 7.2
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
-public class ExtendedACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
+public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
-    public static final String NAME = "extendedAcls";
+    public static final String NAME = "acls";
 
-    public ExtendedACLJsonEnricher() {
+    public static final String USERNAME_PROPERTY = "username";
+
+    public static final String CREATOR_PROPERTY = "creator";
+
+    public static final String EXTENDED_ACLS_PROPERTY = "extended";
+
+    public ACLJsonEnricher() {
         super(NAME);
     }
 
     @Override
     public void write(JsonGenerator jg, DocumentModel document) throws IOException {
         ACP item = document.getACP();
-        jg.writeArrayFieldStart("acls");
+        jg.writeArrayFieldStart(NAME);
         for (ACL acl : item.getACLs()) {
             jg.writeStartObject();
             jg.writeStringField("name", acl.getName());
-            jg.writeArrayFieldStart("ace");
+            jg.writeArrayFieldStart("aces");
             for (ACE ace : acl.getACEs()) {
                 jg.writeStartObject();
                 jg.writeStringField("id", ace.getId());
-                jg.writeStringField("username", ace.getUsername());
+                writePrincipalOrGroup(USERNAME_PROPERTY, ace.getUsername(), jg);
                 jg.writeStringField("permission", ace.getPermission());
                 jg.writeBooleanField("granted", ace.isGranted());
-                jg.writeStringField("creator", ace.getCreator());
+                writePrincipalOrGroup(CREATOR_PROPERTY, ace.getCreator(), jg);
+                DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
                 jg.writeStringField("begin",
-                        ace.getBegin() != null ? DateParser.formatW3CDateTime(ace.getBegin().getTime()) : null);
-                jg.writeStringField("end", ace.getEnd() != null ? DateParser.formatW3CDateTime(ace.getEnd().getTime())
+                        ace.getBegin() != null ? dateTimeFormatter.print(new DateTime(ace.getBegin())) : null);
+                jg.writeStringField("end", ace.getEnd() != null ? dateTimeFormatter.print(new DateTime(ace.getEnd()))
                         : null);
                 jg.writeStringField("status", ace.getStatus().toString().toLowerCase());
-                Map<String, Serializable> m = computeAdditionalFields(document, acl.getName(), ace.getId());
-                for (Map.Entry<String, Serializable> entry : m.entrySet()) {
-                    jg.writeObjectField(entry.getKey(), entry.getValue());
+
+                if (ctx.getFetched(NAME).contains(EXTENDED_ACLS_PROPERTY)) {
+                    Map<String, Serializable> m = computeAdditionalFields(document, acl.getName(), ace.getId());
+                    for (Map.Entry<String, Serializable> entry : m.entrySet()) {
+                        jg.writeObjectField(entry.getKey(), entry.getValue());
+                    }
                 }
+
                 jg.writeEndObject();
             }
             jg.writeEndArray();
             jg.writeEndObject();
         }
         jg.writeEndArray();
+    }
+
+    protected void writePrincipalOrGroup(String propertyName, String value, JsonGenerator jg) throws IOException {
+        if (ctx.getFetched(NAME).contains(propertyName)) {
+            try (Closeable resource = ctx.wrap().controlDepth().open()) {
+                UserManager userManager = Framework.getService(UserManager.class);
+                Object entity = userManager.getPrincipal(value);
+                if (entity == null) {
+                    entity = userManager.getGroup(value);
+                }
+
+                if (entity != null) {
+                    writeEntityField(propertyName, entity, jg);
+                    return;
+                }
+            } catch (MaxDepthReachedException e) {
+                // do nothing
+            }
+        }
+        jg.writeStringField(propertyName, value);
     }
 
     protected Map<String, Serializable> computeAdditionalFields(DocumentModel doc, String aclName, String aceId) {

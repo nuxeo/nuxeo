@@ -23,13 +23,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.io.marshallers.json.enrichers.ACLJsonEnricher;
 
 /**
  * This enricher adds a document ACLs
  *
  * @since 5.9.5
- * @deprecated This enricher was migrated to {@link ACLJsonEnricher}
+ * @deprecated This enricher was migrated to {@link org.nuxeo.ecm.permissions.ACLJsonEnricher}
  */
 @Deprecated
 public class ACLContentEnricher extends AbstractContentEnricher {

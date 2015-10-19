@@ -927,12 +927,12 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     @Test
     public void shouldReadContentEnricher() throws IOException {
         Document root = (Document) super.session.newRequest(FetchDocument.ID)
-                                                .setHeader("X-NXenrichers.document", "acls")
+                                                .setHeader("X-NXenrichers.document", "breadcrumb")
                                                 .set("value", "/")
                                                 .execute();
         assertNotNull(root.getContextParameters());
         assertEquals(1, root.getContextParameters().size());
-        assertEquals("local", ((PropertyList) root.getContextParameters().get("acls")).getMap(0).get("name"));
+        assertEquals("documents", ((PropertyMap) root.getContextParameters().get("breadcrumb")).get("entity-type"));
     }
 
     /**
