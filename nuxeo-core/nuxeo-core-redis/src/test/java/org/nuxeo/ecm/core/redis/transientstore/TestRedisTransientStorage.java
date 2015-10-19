@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.redis.transientstore;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
-import org.nuxeo.ecm.core.cache.CacheComplianceFixture;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.transientstore.test.TransientStorageComplianceFixture;
@@ -30,6 +29,6 @@ import org.nuxeo.transientstore.test.TransientStorageComplianceFixture;
 @RunWith(ContributableFeaturesRunner.class)
 @Features({ TransientStoreRedisFeature.class })
 @SuiteClasses(TransientStorageComplianceFixture.class)
-public class TestTransientStoreService {
+public class TestRedisTransientStorage {
 
 }

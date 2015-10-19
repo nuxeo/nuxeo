@@ -16,8 +16,8 @@
  */
 package org.nuxeo.transientstore.test;
 
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
@@ -25,7 +25,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
  * @since 7.2
  */
 @Features({ TransientStoreFeature.class })
-@LocalDeploy({ "org.nuxeo.ecm.core.cache.test:transientstore-contrib.xml" })
+@Deploy("org.nuxeo.ecm.core.cache.test:test-in-memory-transientstore-contrib.xml")
 public class InMemoryTransientStoreFeature extends SimpleFeature {
 
 }
