@@ -22,10 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
-import org.nuxeo.ecm.core.transientstore.StorageEntryImpl;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
 import org.nuxeo.runtime.api.Framework;
 
@@ -35,6 +32,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.4
  */
 public class ConversionWork extends TransientStoreWork {
+
+    private static final long serialVersionUID = 14593653977944460L;
 
     protected String converterName;
 
@@ -62,13 +61,7 @@ public class ConversionWork extends TransientStoreWork {
 
     protected void storeInputBlobHolder(BlobHolder blobHolder) {
         inputEntryKey = entryKey + "_input";
-        StorageEntry entry = new StorageEntryImpl(inputEntryKey);
-        entry.setBlobs(blobHolder.getBlobs());
-        Map<String, Serializable> properties = blobHolder.getProperties();
-        if (properties != null) {
-            entry.putAll(properties);
-        }
-        saveStorageEntry(entry);
+        putBlobHolder(inputEntryKey, blobHolder);
     }
 
     @Override
@@ -87,29 +80,19 @@ public class ConversionWork extends TransientStoreWork {
             return;
         }
 
-        StorageEntry entry = getStorageEntry();
-        entry.setBlobs(result.getBlobs());
-        Map<String, Serializable> properties = result.getProperties();
-        if (properties != null) {
-            entry.putAll(properties);
-        }
-        saveStorageEntry();
+        putBlobHolder(result);
 
         setStatus(null);
     }
 
     protected BlobHolder retrieveInputBlobHolder() {
-        StorageEntry inputEntry = getStorageEntry(inputEntryKey);
-        if (inputEntry == null) {
-            return null;
-        }
-        return new SimpleBlobHolderWithProperties(inputEntry.getBlobs(), inputEntry.getParameters());
+        return getBlobHolder(inputEntryKey);
     }
 
     @Override
     public void cleanUp(boolean ok, Exception e) {
         super.cleanUp(ok, e);
-        getStore().remove(inputEntryKey);
+        removeBlobHolder(inputEntryKey);
     }
 
     @Override

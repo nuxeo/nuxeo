@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -88,13 +87,11 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(getTransientStoreName());
 
-        StorageEntry entry = ts.get(key);
-        if (entry == null) {
+        if (!ts.exists(key)) {
             throw new NuxeoException("Rendition TransientStore entry can not be null");
         }
-        entry.setBlobs(blobs);
-        entry.put(AbstractLazyCachableRenditionProvider.COMPLETED_KEY, true);
-        ts.put(entry);
+        ts.putBlobs(key, blobs);
+        ts.setCompleted(key, true);
     }
 
     /**

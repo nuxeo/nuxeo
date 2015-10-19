@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConversionStatus;
@@ -39,7 +38,6 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
 import org.nuxeo.ecm.core.convert.extension.GlobalConfigDescriptor;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
@@ -359,15 +357,11 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
             return null;
         }
 
-        StorageEntry storageEntry = ConversionWork.getStorageEntry(result);
-        if (storageEntry == null) {
-            return null;
-        }
-
+        BlobHolder bh = ConversionWork.getBlobHolder(result);
         if (cleanTransientStoreEntry) {
-            ConversionWork.removeStorageEntry(result);
+            ConversionWork.removeBlobHolder(result);
         }
-        return new SimpleBlobHolderWithProperties(storageEntry.getBlobs(), storageEntry.getParameters());
+        return bh;
     }
 
     @Override

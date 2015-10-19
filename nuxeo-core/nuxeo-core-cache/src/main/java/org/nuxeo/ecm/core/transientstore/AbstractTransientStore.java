@@ -19,25 +19,28 @@ package org.nuxeo.ecm.core.transientstore;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.cache.CacheDescriptor;
-import org.nuxeo.ecm.core.cache.CacheService;
-import org.nuxeo.ecm.core.cache.CacheServiceImpl;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.transientstore.api.MaximumTransientSpaceExceeded;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base class for {@link TransientStore} implementation.
@@ -47,38 +50,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractTransientStore implements TransientStore {
 
-    protected TransientStoreConfig config;
-
     protected static final Log log = LogFactory.getLog(AbstractTransientStore.class);
 
+    protected TransientStoreConfig config;
+
     protected File cacheDir;
-
-    protected Cache l1Cache;
-
-    protected Cache l2Cache;
-
-    protected CacheDescriptor l1cd;
-
-    protected CacheDescriptor l2cd;
 
     @Override
     public void init(TransientStoreConfig config) {
         this.config = config;
-        CacheService cs = Framework.getService(CacheService.class);
-        if (cs == null) {
-            throw new UnsupportedOperationException("Cache service is required");
-        }
-        // register the caches
-        l1cd = getL1CacheConfig();
-        l2cd = getL2CacheConfig();
-        ((CacheServiceImpl) cs).registerCache(l1cd);
-        ((CacheServiceImpl) cs).registerCache(l2cd);
-        l1cd.start();
-        l2cd.start();
-
-        // get caches
-        l1Cache = cs.getCache(l1cd.name);
-        l2Cache = cs.getCache(l2cd.name);
 
         // initialize caching directory
         File transienStoreHome = new File(Environment.getDefault().getData(), "transientstores");
@@ -88,118 +68,115 @@ public abstract class AbstractTransientStore implements TransientStore {
     }
 
     @Override
-    public void shutdown() {
-        CacheService cs = Framework.getService(CacheService.class);
-        if (cs != null) {
-            if (l1cd != null) {
-                ((CacheServiceImpl) cs).unregisterCache(l1cd);
-            }
-            if (l2cd != null) {
-                ((CacheServiceImpl) cs).unregisterCache(l2cd);
-            }
-        }
-    }
+    public abstract void shutdown();
+
+    @Override
+    public abstract boolean exists(String key);
+
+    @Override
+    public abstract void putParameter(String key, String parameter, Serializable value);
+
+    @Override
+    public abstract Serializable getParameter(String key, String parameter);
+
+    @Override
+    public abstract void putParameters(String key, Map<String, Serializable> parameters);
+
+    @Override
+    public abstract Map<String, Serializable> getParameters(String key);
+
+    @Override
+    public abstract List<Blob> getBlobs(String key);
+
+    @Override
+    public abstract long getSize(String key);
+
+    @Override
+    public abstract boolean isCompleted(String key);
+
+    @Override
+    public abstract void setCompleted(String key, boolean completed);
+
+    @Override
+    public abstract void remove(String key);
+
+    @Override
+    public abstract void release(String key);
+
+    /**
+     * Updates the total storage size and the storage size of the entry with the given {@code key} according to
+     * {@code sizeOfBlobs} and stores the blob information in this entry.
+     */
+    protected abstract void persistBlobs(String key, long sizeOfBlobs, List<Map<String, String>> blobInfos);
+
+    /**
+     * Returns the size of the disk storage in bytes.
+     */
+    public abstract long getStorageSize();
+
+    /**
+     * Sets the size of the disk storage in bytes.
+     */
+    protected abstract void setStorageSize(long newSize);
 
     protected abstract void incrementStorageSize(long size);
 
     protected abstract void decrementStorageSize(long size);
 
-    protected void incrementStorageSize(StorageEntry entry) {
-        incrementStorageSize(entry.getSize());
-    }
-
-    protected void decrementStorageSize(StorageEntry entry) {
-        decrementStorageSize(entry.getSize());
-    }
-
-    public abstract long getStorageSize();
-
-    protected abstract void setStorageSize(long newSize);
-
-    public Cache getL1Cache() {
-        return l1Cache;
-    }
-
-    public Cache getL2Cache() {
-        return l2Cache;
-    }
+    protected abstract void removeAllEntries();
 
     @Override
-    public void put(StorageEntry entry) {
+    public void putBlobs(String key, List<Blob> blobs) {
         if (config.getAbsoluteMaxSizeMB() < 0 || getStorageSize() < config.getAbsoluteMaxSizeMB() * (1024 * 1024)) {
-            StorageEntry old = get(entry.getId());
-            if (old != null) {
-                decrementStorageSize(old.getLastStorageSize());
-            }
-            incrementStorageSize(entry);
-            entry = persistEntry(entry);
-            getL1Cache().put(entry.getId(), entry);
+            // Store blobs on the file system
+            List<Map<String, String>> blobInfos = storeBlobs(key, blobs);
+            // Persist blob information in the store
+            persistBlobs(key, getSizeOfBlobs(blobs), blobInfos);
         } else {
             throw new MaximumTransientSpaceExceeded();
         }
     }
 
-    protected StorageEntry persistEntry(StorageEntry entry) {
-        entry.persist(getCachingDirectory(entry.getId()));
-        return entry;
-    }
-
-    @Override
-    public StorageEntry get(String key) {
-        StorageEntry entry = (StorageEntry) getL1Cache().get(key);
-        if (entry == null) {
-            entry = (StorageEntry) getL2Cache().get(key);
+    protected List<Map<String, String>> storeBlobs(String key, List<Blob> blobs) {
+        if (blobs == null) {
+            return null;
         }
-        if (entry != null) {
-            entry.load(getCachingDirectory(key));
-        }
-        return entry;
-    }
-
-    @Override
-    public void remove(String key) {
-        StorageEntry entry = (StorageEntry) getL1Cache().get(key);
-        if (entry == null) {
-            entry = (StorageEntry) getL2Cache().get(key);
-            getL2Cache().invalidate(key);
-        } else {
-            getL1Cache().invalidate(key);
-        }
-        if (entry != null) {
-            decrementStorageSize(entry);
-            entry.beforeRemove();
-        }
-    }
-
-    @Override
-    public void release(String key) {
-        StorageEntry entry = (StorageEntry) getL1Cache().get(key);
-        if (entry != null) {
-            getL1Cache().invalidate(key);
-            if (getStorageSize() <= config.getTargetMaxSizeMB() * (1024 * 1024) || config.getTargetMaxSizeMB() < 0) {
-                getL2Cache().put(key, entry);
+        // Store blobs on the file system and compute blob information
+        List<Map<String, String>> blobInfos = new ArrayList<>();
+        for (Blob blob : blobs) {
+            Map<String, String> blobInfo = new HashMap<>();
+            File cachedFile = new File(getCachingDirectory(key), UUID.randomUUID().toString());
+            try {
+                if (blob instanceof FileBlob && ((FileBlob) blob).isTemporary()) {
+                    ((FileBlob) blob).moveTo(cachedFile);
+                } else {
+                    blob.transferTo(cachedFile);
+                }
+            } catch (IOException e) {
+                throw new NuxeoException(e);
             }
+            // Redis doesn't support null values
+            if (cachedFile.getAbsolutePath() != null) {
+                blobInfo.put("file", cachedFile.getAbsolutePath());
+            }
+            if (blob.getFilename() != null) {
+                blobInfo.put("filename", blob.getFilename());
+            }
+            if (blob.getEncoding() != null) {
+                blobInfo.put("encoding", blob.getEncoding());
+            }
+            if (blob.getMimeType() != null) {
+                blobInfo.put("mimetype", blob.getMimeType());
+            }
+            if (blob.getDigest() != null) {
+                blobInfo.put("digest", blob.getDigest());
+            }
+            blobInfos.add(blobInfo);
         }
-    }
-
-    @Override
-    public int getStorageSizeMB() {
-        return (int) getStorageSize() / (1024 * 1024);
-    }
-
-    protected String getCachingDirName(String key) {
-        String dirName = Base64.encodeBase64String(key.getBytes());
-        dirName = dirName.replaceAll("/", "_");
-        return dirName;
-    }
-
-    protected String getKeyCachingDirName(String dir) {
-        String key = dir.replaceAll("_", "/");
-        return new String(Base64.decodeBase64(key));
+        return blobInfos;
     }
 
     public File getCachingDirectory(String key) {
-
         try {
             File cachingDir = new File(cacheDir.getCanonicalFile(), getCachingDirName(key));
 
@@ -216,22 +193,55 @@ public abstract class AbstractTransientStore implements TransientStore {
         }
     }
 
+    protected String getCachingDirName(String key) {
+        String dirName = Base64.encodeBase64String(key.getBytes());
+        dirName = dirName.replaceAll("/", "_");
+        return dirName;
+    }
+
+    protected long getSizeOfBlobs(List<Blob> blobs) {
+        int size = 0;
+        if (blobs != null) {
+            for (Blob blob : blobs) {
+                long blobLength = blob.getLength();
+                if (blobLength > -1) {
+                    size += blobLength;
+                }
+            }
+        }
+        return size;
+    }
+
+    protected List<Blob> loadBlobs(List<Map<String, String>> blobInfos) {
+        List<Blob> blobs = new ArrayList<>();
+        for (Map<String, String> info : blobInfos) {
+            File blobFile = new File(info.get("file"));
+            Blob blob = new FileBlob(blobFile);
+            blob.setEncoding(info.get("encoding"));
+            blob.setMimeType(info.get("mimetype"));
+            blob.setFilename(info.get("filename"));
+            blob.setDigest(info.get("digest"));
+            blobs.add(blob);
+        }
+        return blobs;
+    }
+
+    @Override
+    public int getStorageSizeMB() {
+        return (int) getStorageSize() / (1024 * 1024);
+    }
+
     @Override
     public void doGC() {
         log.debug(String.format("Performing GC for TransientStore %s", config.getName()));
-        File dir = cacheDir;
         long newSize = 0;
         try {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dir.getAbsolutePath()))) {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(cacheDir.getAbsolutePath()))) {
                 for (Path entry : stream) {
                     String key = getKeyCachingDirName(entry.getFileName().toString());
                     try {
-                        if (getL1Cache().hasEntry(key)) {
-                            newSize += getSize(entry);
-                            continue;
-                        }
-                        if (getL2Cache().hasEntry(key)) {
-                            newSize += getSize(entry);
+                        if (exists(key)) {
+                            newSize += getFilePathSize(entry);
                             continue;
                         }
                         FileUtils.deleteDirectory(entry.toFile());
@@ -246,7 +256,12 @@ public abstract class AbstractTransientStore implements TransientStore {
         setStorageSize(newSize);
     }
 
-    protected long getSize(Path entry) {
+    protected String getKeyCachingDirName(String dir) {
+        String key = dir.replaceAll("_", "/");
+        return new String(Base64.decodeBase64(key));
+    }
+
+    protected long getFilePathSize(Path entry) {
         long size = 0;
         for (File file : entry.toFile().listFiles()) {
             size += file.length();
@@ -254,24 +269,10 @@ public abstract class AbstractTransientStore implements TransientStore {
         return size;
     }
 
-    public abstract Class<? extends Cache> getCacheImplClass();
-
-    protected class TransientCacheConfig extends CacheDescriptor {
-
-        TransientCacheConfig(String name, int ttl) {
-            super();
-            super.name = name;
-            super.implClass = getCacheImplClass();
-            super.ttl = ttl;
-        }
-    }
-
-    protected CacheDescriptor getL1CacheConfig() {
-        return new TransientCacheConfig(config.getName() + "L1", config.getFistLevelTTL());
-    }
-
-    protected CacheDescriptor getL2CacheConfig() {
-        return new TransientCacheConfig(config.getName() + "L2", config.getSecondLevelTTL());
+    @Override
+    public void removeAll() {
+        removeAllEntries();
+        doGC();
     }
 
 }

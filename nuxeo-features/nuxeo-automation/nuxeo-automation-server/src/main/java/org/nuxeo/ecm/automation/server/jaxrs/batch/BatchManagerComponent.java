@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,6 @@ import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
@@ -76,17 +76,10 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     @Override
     public String initBatch(String batchId, String contextName) {
         Batch batch = initBatchInternal(batchId, contextName);
-        return batch.getId();
+        return batch.getKey();
     }
 
     protected Batch initBatchInternal(String batchId, String contextName) {
-        if (batchId != null) {
-            StorageEntry entry = getTransientStore().get(batchId);
-            if (entry != null) {
-                return (Batch) entry;
-            }
-        }
-
         if (batchId == null || batchId.isEmpty()) {
             batchId = "batchId-" + UUID.randomUUID().toString();
         }
@@ -94,51 +87,46 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             contextName = DEFAULT_CONTEXT;
         }
 
-        Batch newBatch = new Batch(batchId);
-        getTransientStore().put(newBatch);
-        return newBatch;
+        // That's the way of storing an empty entry
+        getTransientStore().setCompleted(batchId, true);
+        return new Batch(batchId);
+    }
+
+    public Batch getBatch(String batchId) {
+        Map<String, Serializable> batchEntryParams = getTransientStore().getParameters(batchId);
+        if (batchEntryParams == null) {
+            return null;
+        }
+        return new Batch(batchId, batchEntryParams);
     }
 
     @Override
-    public void addStream(String batchId, String idx, InputStream is, String name, String mime) throws IOException {
+    public void addStream(String batchId, String index, InputStream is, String name, String mime) throws IOException {
         uploadInProgress.incrementAndGet();
         try {
-            Batch batch = (Batch) getTransientStore().get(batchId);
+            Batch batch = getBatch(batchId);
             if (batch == null) {
                 batch = initBatchInternal(batchId, null);
             }
-            String fileEntryId = batch.addFile(idx, is, name, mime);
-
-            // Need to synchronize manipulation of the batch TransientStore entry params
-            synchronized (this) {
-                batch = (Batch) getTransientStore().get(batch.getId());
-                batch.put(idx, fileEntryId);
-                getTransientStore().put(batch);
-            }
-            log.debug(String.format("Added file %s [%s] to batch %s", idx, name, batch.getId()));
+            batch.addFile(index, is, name, mime);
+            log.debug(String.format("Added file %s [%s] to batch %s", index, name, batch.getKey()));
         } finally {
             uploadInProgress.decrementAndGet();
         }
     }
 
     @Override
-    public void addStream(String batchId, String idx, InputStream is, int chunkCount, int chunkIdx, String name,
+    public void addStream(String batchId, String index, InputStream is, int chunkCount, int chunkIndex, String name,
             String mime, long fileSize) throws IOException {
         uploadInProgress.incrementAndGet();
         try {
-            Batch batch = (Batch) getTransientStore().get(batchId);
+            Batch batch = getBatch(batchId);
             if (batch == null) {
                 batch = initBatchInternal(batchId, null);
             }
-            String fileEntryId = batch.addChunk(idx, is, chunkCount, chunkIdx, name, mime, fileSize);
-
-            // Need to synchronize manipulation of the batch TransientStore entry params
-            synchronized (this) {
-                batch = (Batch) getTransientStore().get(batch.getId());
-                batch.put(idx, fileEntryId);
-                getTransientStore().put(batch);
-            }
-            log.debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIdx, idx, name, batch.getId()));
+            batch.addChunk(index, is, chunkCount, chunkIndex, name, mime, fileSize);
+            log.debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIndex, index, name,
+                    batch.getKey()));
         } finally {
             uploadInProgress.decrementAndGet();
         }
@@ -146,7 +134,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     @Override
     public boolean hasBatch(String batchId) {
-        return batchId != null && getTransientStore().get(batchId) != null;
+        return batchId != null && getTransientStore().exists(batchId);
     }
 
     @Override
@@ -168,7 +156,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
                 }
             }
         }
-        Batch batch = (Batch) getTransientStore().get(batchId);
+        Batch batch = getBatch(batchId);
         if (batch == null) {
             log.error("Unable to find batch with id " + batchId);
             return Collections.emptyList();
@@ -177,13 +165,13 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     }
 
     @Override
-    public Blob getBlob(String batchId, String fileId) {
-        return getBlob(batchId, fileId, 0);
+    public Blob getBlob(String batchId, String fileIndex) {
+        return getBlob(batchId, fileIndex, 0);
     }
 
     @Override
-    public Blob getBlob(String batchId, String fileId, int timeoutS) {
-        Blob blob = getBatchBlob(batchId, fileId);
+    public Blob getBlob(String batchId, String fileIndex, int timeoutS) {
+        Blob blob = getBatchBlob(batchId, fileIndex);
         if (blob == null && timeoutS > 0 && uploadInProgress.get() > 0) {
             for (int i = 0; i < timeoutS * 5; i++) {
                 try {
@@ -191,7 +179,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                blob = getBatchBlob(batchId, fileId);
+                blob = getBatchBlob(batchId, fileIndex);
                 if (blob != null) {
                     break;
                 }
@@ -204,18 +192,18 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         return blob;
     }
 
-    protected Blob getBatchBlob(String batchId, String fileId) {
+    protected Blob getBatchBlob(String batchId, String fileIndex) {
         Blob blob = null;
-        Batch batch = (Batch) getTransientStore().get(batchId);
+        Batch batch = getBatch(batchId);
         if (batch != null) {
-            blob = batch.getBlob(fileId);
+            blob = batch.getBlob(fileIndex);
         }
         return blob;
     }
 
     @Override
     public List<BatchFileEntry> getFileEntries(String batchId) {
-        Batch batch = (Batch) getTransientStore().get(batchId);
+        Batch batch = getBatch(batchId);
         if (batch == null) {
             return null;
         }
@@ -223,17 +211,17 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     }
 
     @Override
-    public BatchFileEntry getFileEntry(String batchId, String fileId) {
-        Batch batch = (Batch) getTransientStore().get(batchId);
+    public BatchFileEntry getFileEntry(String batchId, String fileIndex) {
+        Batch batch = getBatch(batchId);
         if (batch == null) {
             return null;
         }
-        return batch.getFileEntry(fileId);
+        return batch.getFileEntry(fileIndex);
     }
 
     @Override
     public void clean(String batchId) {
-        Batch batch = (Batch) getTransientStore().get(batchId);
+        Batch batch = getBatch(batchId);
         if (batch != null) {
             batch.clean();
         }
@@ -252,12 +240,13 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     }
 
     @Override
-    public Object execute(String batchId, String fileIdx, String chainOrOperationId, CoreSession session,
+    public Object execute(String batchId, String fileIndex, String chainOrOperationId, CoreSession session,
             Map<String, Object> contextParams, Map<String, Object> operationParams) {
-        Blob blob = getBlob(batchId, fileIdx, getUploadWaitTimeout());
+        Blob blob = getBlob(batchId, fileIndex, getUploadWaitTimeout());
         if (blob == null) {
             String message = String.format(
-                    "Unable to find batch associated with id '%s' or file associated with index '%s'", batchId, fileIdx);
+                    "Unable to find batch associated with id '%s' or file associated with index '%s'", batchId,
+                    fileIndex);
             log.error(message);
             throw new NuxeoException(message);
         }

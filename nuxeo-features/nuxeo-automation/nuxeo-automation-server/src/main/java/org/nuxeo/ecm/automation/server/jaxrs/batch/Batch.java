@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.transientstore.AbstractStorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.runtime.api.Framework;
 
@@ -42,26 +42,38 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.4.2
  */
-public class Batch extends AbstractStorageEntry {
-
-    private static final long serialVersionUID = 1L;
+public class Batch {
 
     protected static final Log log = LogFactory.getLog(Batch.class);
 
-    public Batch(String id) {
-        super(id);
+    public static final String CHUNKED_PARAM_NAME = "chunked";
+
+    protected String key;
+
+    protected Map<String, Serializable> fileEntries;
+
+    public Batch(String key) {
+        this(key, new HashMap<>());
+    }
+
+    public Batch(String key, Map<String, Serializable> fileEntries) {
+        this.key = key;
+        this.fileEntries = fileEntries;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     /**
      * Returns the uploaded blobs in the order the user chose to upload them.
      */
-    @Override
     public List<Blob> getBlobs() {
         List<Blob> blobs = new ArrayList<Blob>();
         List<String> sortedFileIndexes = getOrderedFileIndexes();
-        log.debug(String.format("Retrieving blobs for batch %s: %s", getId(), sortedFileIndexes));
-        for (String idx : sortedFileIndexes) {
-            Blob blob = retrieveBlob(idx);
+        log.debug(String.format("Retrieving blobs for batch %s: %s", key, sortedFileIndexes));
+        for (String index : sortedFileIndexes) {
+            Blob blob = retrieveBlob(index);
             if (blob != null) {
                 blobs.add(blob);
             }
@@ -69,28 +81,26 @@ public class Batch extends AbstractStorageEntry {
         return blobs;
     }
 
-    public Blob getBlob(String idx) {
-        log.debug(String.format("Retrieving blob %s for batch %s", idx, getId()));
-        return retrieveBlob(idx);
+    public Blob getBlob(String index) {
+        log.debug(String.format("Retrieving blob %s for batch %s", index, key));
+        return retrieveBlob(index);
     }
 
     protected List<String> getOrderedFileIndexes() {
         List<String> sortedFileIndexes = new ArrayList<String>();
-        if (getParameters() != null) {
-            sortedFileIndexes = new ArrayList<String>(getParameters().keySet());
-            Collections.sort(sortedFileIndexes, new Comparator<String>() {
-                @Override
-                public int compare(String o1, String o2) {
-                    return Integer.valueOf(o1).compareTo(Integer.valueOf(o2));
-                }
-            });
-        }
+        sortedFileIndexes = new ArrayList<String>(fileEntries.keySet());
+        Collections.sort(sortedFileIndexes, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return Integer.valueOf(o1).compareTo(Integer.valueOf(o2));
+            }
+        });
         return sortedFileIndexes;
     }
 
-    protected Blob retrieveBlob(String idx) {
+    protected Blob retrieveBlob(String index) {
         Blob blob = null;
-        BatchFileEntry fileEntry = getFileEntry(idx);
+        BatchFileEntry fileEntry = getFileEntry(index);
         if (fileEntry != null) {
             blob = fileEntry.getBlob();
         }
@@ -100,8 +110,8 @@ public class Batch extends AbstractStorageEntry {
     public List<BatchFileEntry> getFileEntries() {
         List<BatchFileEntry> fileEntries = new ArrayList<BatchFileEntry>();
         List<String> sortedFileIndexes = getOrderedFileIndexes();
-        for (String idx : sortedFileIndexes) {
-            BatchFileEntry fileEntry = getFileEntry(idx);
+        for (String index : sortedFileIndexes) {
+            BatchFileEntry fileEntry = getFileEntry(index);
             if (fileEntry != null) {
                 fileEntries.add(fileEntry);
             }
@@ -109,21 +119,38 @@ public class Batch extends AbstractStorageEntry {
         return fileEntries;
     }
 
-    public BatchFileEntry getFileEntry(String idx) {
+    public BatchFileEntry getFileEntry(String index) {
         BatchManager bm = Framework.getService(BatchManager.class);
-        String fileEntryId = (String) get(idx);
-        if (fileEntryId == null) {
+        String fileEntryKey = (String) fileEntries.get(index);
+        if (fileEntryKey == null) {
             return null;
         }
-        return (BatchFileEntry) bm.getTransientStore().get(fileEntryId);
+        Map<String, Serializable> fileEntryParams = bm.getTransientStore().getParameters(fileEntryKey);
+        if (fileEntryParams == null) {
+            return null;
+        }
+        boolean chunked = Boolean.parseBoolean((String) fileEntryParams.get(CHUNKED_PARAM_NAME));
+        if (chunked) {
+            return new BatchFileEntry(fileEntryKey, fileEntryParams);
+        } else {
+            List<Blob> fileEntryBlobs = bm.getTransientStore().getBlobs(fileEntryKey);
+            if (fileEntryBlobs == null) {
+                return null;
+            }
+            Blob blob = null;
+            if (!fileEntryBlobs.isEmpty()) {
+                blob = fileEntryBlobs.get(0);
+            }
+            return new BatchFileEntry(fileEntryKey, blob);
+        }
     }
 
     /**
-     * Adds a file with the given {@code idx} to the batch.
+     * Adds a file with the given {@code index} to the batch.
      *
-     * @return The id of the new {@link BatchFileEntry}.
+     * @return The key of the new {@link BatchFileEntry}.
      */
-    public String addFile(String idx, InputStream is, String name, String mime) throws IOException {
+    public String addFile(String index, InputStream is, String name, String mime) throws IOException {
         String mimeType = mime;
         if (mimeType == null) {
             mimeType = "application/octet-stream";
@@ -131,48 +158,36 @@ public class Batch extends AbstractStorageEntry {
         Blob blob = Blobs.createBlob(is, mime);
         blob.setFilename(name);
 
-        String fileEntryId = getId() + "_" + idx;
-        BatchFileEntry fileEntry = new BatchFileEntry(fileEntryId, blob);
-
+        String fileEntryKey = key + "_" + index;
         BatchManager bm = Framework.getService(BatchManager.class);
-        bm.getTransientStore().put(fileEntry);
+        bm.getTransientStore().putBlobs(fileEntryKey, Collections.singletonList(blob));
+        bm.getTransientStore().putParameter(fileEntryKey, CHUNKED_PARAM_NAME, String.valueOf(false));
+        bm.getTransientStore().putParameter(key, index, fileEntryKey);
 
-        return fileEntryId;
+        return fileEntryKey;
     }
 
     /**
-     * Adds a chunk with the given {@code chunkIdx} to the batch file with the given {@code idx}.
+     * Adds a chunk with the given {@code chunkIndex} to the batch file with the given {@code index}.
      *
-     * @return The id of the {@link BatchFileEntry}.
+     * @return The key of the {@link BatchFileEntry}.
      * @since 7.4
      */
-    public String addChunk(String idx, InputStream is, int chunkCount, int chunkIdx, String name, String mime,
-            long fileSize) throws IOException {
+    public String addChunk(String index, InputStream is, int chunkCount, int chunkIndex, String fileName,
+            String mimeType, long fileSize) throws IOException {
         BatchManager bm = Framework.getService(BatchManager.class);
         Blob blob = Blobs.createBlob(is);
 
-        BatchFileEntry fileEntry = null;
-        String fileEntryId = (String) get(idx);
-        if (fileEntryId != null) {
-            fileEntry = (BatchFileEntry) bm.getTransientStore().get(fileEntryId);
-        }
+        String fileEntryKey = key + "_" + index;
+        BatchFileEntry fileEntry = getFileEntry(index);
         if (fileEntry == null) {
-            if (fileEntryId == null) {
-                fileEntryId = getId() + "_" + idx;
-            }
-            fileEntry = new BatchFileEntry(fileEntryId, chunkCount, name, mime, fileSize);
-            bm.getTransientStore().put(fileEntry);
+            fileEntry = new BatchFileEntry(fileEntryKey, chunkCount, fileName, mimeType, fileSize);
+            bm.getTransientStore().putParameters(fileEntryKey, fileEntry.getParams());
+            bm.getTransientStore().putParameter(key, index, fileEntryKey);
         }
-        String chunkEntryId = fileEntry.addChunk(chunkIdx, blob);
+        fileEntry.addChunk(chunkIndex, blob);
 
-        // Need to synchronize manipulation of the file TransientStore entry params
-        synchronized (this) {
-            fileEntry = (BatchFileEntry) bm.getTransientStore().get(fileEntryId);
-            fileEntry.getChunks().put(chunkIdx, chunkEntryId);
-            put(idx, fileEntryId);
-            bm.getTransientStore().put(fileEntry);
-        }
-        return fileEntryId;
+        return fileEntryKey;
     }
 
     /**
@@ -180,34 +195,26 @@ public class Batch extends AbstractStorageEntry {
      */
     public void clean() {
         // Remove batch and all related storage entries from transient store, GC will clean up the files
-        log.debug(String.format("Cleaning batch %s", getId()));
+        log.debug(String.format("Cleaning batch %s", key));
         BatchManager bm = Framework.getService(BatchManager.class);
         TransientStore ts = bm.getTransientStore();
-        Map<String, Serializable> params = getParameters();
-        if (params != null) {
-            for (Serializable v : params.values()) {
-                String fileEntryId = (String) v;
-                // Check for chunk entries to remove
-                BatchFileEntry fileEntry = (BatchFileEntry) ts.get(fileEntryId);
-                if (fileEntry != null) {
-                    if (fileEntry.isChunked()) {
-                        for (String chunkEntryId : fileEntry.getChunkEntryIds()) {
-                            // Remove chunk entry
-                            ts.remove(chunkEntryId);
-                        }
+        for (String fileIndex : fileEntries.keySet()) {
+            // Check for chunk entries to remove
+            BatchFileEntry fileEntry = (BatchFileEntry) getFileEntry(fileIndex);
+            if (fileEntry != null) {
+                if (fileEntry.isChunked()) {
+                    for (String chunkEntryKey : fileEntry.getChunkEntryKeys()) {
+                        // Remove chunk entry
+                        ts.remove(chunkEntryKey);
                     }
-                    // Remove file entry
-                    ts.remove(fileEntryId);
+                    fileEntry.beforeRemove();
                 }
+                // Remove file entry
+                ts.remove(fileEntry.getKey());
             }
         }
         // Remove batch entry
-        ts.remove(getId());
-    }
-
-    @Override
-    public void beforeRemove() {
-        // Nothing to do here
+        ts.remove(key);
     }
 
 }

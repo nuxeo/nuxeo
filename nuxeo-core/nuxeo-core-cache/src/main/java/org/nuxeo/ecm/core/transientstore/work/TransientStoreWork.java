@@ -17,8 +17,11 @@
 
 package org.nuxeo.ecm.core.transientstore.work;
 
-import org.nuxeo.ecm.core.transientstore.StorageEntryImpl;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
+import java.io.Serializable;
+import java.util.Map;
+
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -31,31 +34,40 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class TransientStoreWork extends AbstractWork {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String STORE_NAME = "transientStoreWorkCache";
 
     public static final String KEY_SUFFIX = "_result";
 
     protected String entryKey;
 
-    protected transient StorageEntry entry;
-
     /**
-     * Returns a storage entry given its {@code key} from the transient store used by the {@code TransientStoreWork}.
+     * Stores the given {@link BlobHolder} as an entry with the given {@code key} in the transient store used by the
+     * {@code TransientStoreWork}.
      */
-    public static StorageEntry getStorageEntry(String key) {
-        TransientStore store = getStore();
-        return store.get(key);
+    public static void putBlobHolder(String key, BlobHolder bh) {
+        getStore().putBlobs(key, bh.getBlobs());
+        Map<String, Serializable> properties = bh.getProperties();
+        if (properties != null) {
+            getStore().putParameters(key, properties);
+        }
     }
 
     /**
-     * Remove a storage entry given its {@code key} from the transient store used by the {@code TransientStoreWork}.
+     * Returns a {@link BlobHolder} representing the entry with the given {@code key} in the transient store used by the
+     * {@code TransientStoreWork} or null if the entry doesn't exist.
      */
-    public static void removeStorageEntry(String key) {
+    public static BlobHolder getBlobHolder(String key) {
+        Map<String, Serializable> params = getStore().getParameters(key);
+        if (params == null) {
+            return null;
+        }
+        return new SimpleBlobHolderWithProperties(getStore().getBlobs(key), params);
+    }
+
+    public static void removeBlobHolder(String key) {
         getStore().remove(key);
-    }
-
-    protected static void saveStorageEntry(StorageEntry storageEntry) {
-        getStore().put(storageEntry);
     }
 
     protected static TransientStore getStore() {
@@ -77,20 +89,8 @@ public abstract class TransientStoreWork extends AbstractWork {
         entryKey = getId() + KEY_SUFFIX;
     }
 
-    protected StorageEntry getStorageEntry() {
-        if (entry == null) {
-            entry = getStorageEntry(entryKey);
-            if (entry == null) {
-                entry = new StorageEntryImpl(entryKey);
-            }
-        }
-        return entry;
-    }
-
-    protected void saveStorageEntry() {
-        if (entry != null) {
-            saveStorageEntry(entry);
-        }
+    protected void putBlobHolder(BlobHolder bh) {
+        putBlobHolder(entryKey, bh);
     }
 
     @Override

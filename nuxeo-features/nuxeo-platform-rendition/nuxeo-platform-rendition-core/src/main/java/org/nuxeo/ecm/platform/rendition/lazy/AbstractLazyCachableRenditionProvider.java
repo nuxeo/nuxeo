@@ -29,8 +29,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.transientstore.StorageEntryImpl;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -48,8 +46,6 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.2
  */
 public abstract class AbstractLazyCachableRenditionProvider implements RenditionProvider {
-
-    public static final String COMPLETED_KEY = "completed";
 
     public static final String WORKERID_KEY = "workerid";
 
@@ -80,19 +76,16 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             throw new NuxeoException("Unable to find Transient Store  " + CACHE_NAME);
         }
 
-        StorageEntry entry = ts.get(key);
-
-        if (entry == null) {
+        if (!ts.exists(key)) {
             Work work = getRenditionWork(key, doc, def);
             WorkManager wm = Framework.getService(WorkManager.class);
-            entry = new StorageEntryImpl(key);
-            entry.put(WORKERID_KEY, work.getId());
-            ts.put(entry);
+            ts.putParameter(key, WORKERID_KEY, work.getId());
             wm.schedule(work);
         } else {
-            if ((Boolean.TRUE).equals(entry.get(COMPLETED_KEY))) {
+            if (ts.isCompleted(key)) {
+                List<Blob> blobs = ts.getBlobs(key);
                 ts.release(key);
-                return entry.getBlobs();
+                return blobs;
             }
         }
         // return an empty Blob

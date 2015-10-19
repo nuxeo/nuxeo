@@ -17,35 +17,34 @@
 
 package org.nuxeo.transientstore.test.work;
 
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
-import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
-
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
+import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
 
 /**
  * @since 7.4
  */
 public class DummyTransientStoreWork extends TransientStoreWork {
 
+    private static final long serialVersionUID = -8543577711553345800L;
+
     @Override
     public void work() {
-        StorageEntry entry = getStorageEntry();
-        // store params
+        // store params and a blob
         Map<String, Serializable> params = new HashMap<>();
         params.put("firstparam", "firstvalue");
         params.put("secondparam", "secondvalue");
-        entry.putAll(params);
 
-        // store a Blob
         Blob blob = Blobs.createBlob("a simple blob", "text/plain");
-        entry.setBlobs(Collections.singletonList(blob));
 
-        saveStorageEntry();
+        BlobHolder bh = new SimpleBlobHolderWithProperties(blob, params);
+        putBlobHolder(bh);
     }
 
     @Override

@@ -46,7 +46,7 @@ public interface BatchManager {
      * <p>
      * Streams are persisted as temporary files.
      */
-    void addStream(String batchId, String idx, InputStream is, String name, String mime) throws IOException;
+    void addStream(String batchId, String index, InputStream is, String name, String mime) throws IOException;
 
     /**
      * Adds an inputStream as a chunk to a batch. Will create a new {@link Batch} if needed.
@@ -55,8 +55,8 @@ public interface BatchManager {
      *
      * @since 7.4
      */
-    void addStream(String batchId, String idx, InputStream is, int chunkCount, int chunkIdx, String name, String mime,
-            long fileSize) throws IOException;
+    void addStream(String batchId, String index, InputStream is, int chunkCount, int chunkIndex, String name,
+            String mime, long fileSize) throws IOException;
 
     /**
      * Returns true if there is a batch for the given {@code batchId}, false otherwise.
@@ -82,9 +82,9 @@ public interface BatchManager {
      */
     List<Blob> getBlobs(String batchId, int timeoutS);
 
-    Blob getBlob(String batchId, String fileId);
+    Blob getBlob(String batchId, String fileIndex);
 
-    Blob getBlob(String batchId, String fileId, int timeoutS);
+    Blob getBlob(String batchId, String fileIndex, int timeoutS);
 
     /**
      * @since 7.4
@@ -94,7 +94,7 @@ public interface BatchManager {
     /**
      * @since 7.4
      */
-    BatchFileEntry getFileEntry(String batchId, String fileId);
+    BatchFileEntry getFileEntry(String batchId, String fileIndex);
 
     /**
      * Cleanup the temporary storage associated to the batch
@@ -132,13 +132,13 @@ public interface BatchManager {
             Map<String, Object> operationParams);
 
     /**
-     * Executes the chain or operation on the {@code Blob} from the given {@code batchId} and {@code fileIdx}.
+     * Executes the chain or operation on the {@code Blob} from the given {@code batchId} and {@code fileIndex}.
      * <p>
      * This method does not clean the temporary storage associated to the {@code batchId}.
      *
      * @since 5.7.2
      */
-    Object execute(String batchId, String fileIdx, String chainOrOperationId, CoreSession session,
+    Object execute(String batchId, String fileIndex, String chainOrOperationId, CoreSession session,
             Map<String, Object> contextParams, Map<String, Object> operationParams);
 
     /**

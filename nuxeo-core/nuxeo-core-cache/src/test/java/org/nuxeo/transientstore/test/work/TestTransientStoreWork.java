@@ -22,13 +22,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
@@ -99,16 +100,16 @@ public class TestTransientStoreWork {
 
         TransientStoreService transientStoreService = Framework.getService(TransientStoreService.class);
         TransientStore transientStore = transientStoreService.getStore(TransientStoreWork.STORE_NAME);
-        StorageEntry entry = transientStore.get(result);
-        assertEquals(2, entry.getParameters().size());
-        String value = (String) entry.get("firstparam");
+        Map<String, Serializable> entryParams = transientStore.getParameters(result);
+        assertEquals(2, entryParams.size());
+        Serializable value = entryParams.get("firstparam");
         assertNotNull(value);
         assertEquals("firstvalue", value);
-        value = (String) entry.get("secondparam");
+        value = entryParams.get("secondparam");
         assertNotNull(value);
         assertEquals("secondvalue", value);
 
-        List<Blob> blobs = entry.getBlobs();
+        List<Blob> blobs = transientStore.getBlobs(result);
         assertEquals(1, blobs.size());
         Blob blob = blobs.get(0);
         assertEquals("a simple blob", blob.getString());

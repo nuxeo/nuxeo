@@ -37,10 +37,9 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.transientstore.AbstractTransientStore;
-import org.nuxeo.ecm.core.transientstore.StorageEntryImpl;
+import org.nuxeo.ecm.core.transientstore.SimpleTransientStore;
 import org.nuxeo.ecm.core.transientstore.TransientStorageGCTrigger;
 import org.nuxeo.ecm.core.transientstore.api.MaximumTransientSpaceExceeded;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
@@ -70,18 +69,15 @@ public class TransientStorageComplianceFixture {
 
     }
 
-    protected StorageEntry createEntry(String id) {
-
-        StorageEntry entry = new StorageEntryImpl(id);
-        entry.put("A", 1);
-        entry.put("B", "b");
+    protected void putEntry(TransientStore ts, String id) {
+        ts.putParameter(id, "A", String.valueOf(1));
+        ts.putParameter(id, "B", "b");
         String content = "FakeContent";
         Blob blob = new StringBlob(content);
         blob.setFilename("fake.txt");
         blob.setMimeType("text/plain");
         blob.setDigest(DigestUtils.md5Hex(content));
-        entry.setBlobs(Collections.singletonList(blob));
-        return entry;
+        ts.putBlobs(id, Collections.singletonList(blob));
     }
 
     @Test
@@ -93,7 +89,10 @@ public class TransientStorageComplianceFixture {
         long size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(0, size);
 
-        ts.put(createEntry("1"));
+        putEntry(ts, "1");
+
+        // check non existing entry
+        assertFalse(ts.exists("2"));
 
         // check FS
         File cacheDir = ((AbstractTransientStore) ts).getCachingDirectory("1");
@@ -102,45 +101,47 @@ public class TransientStorageComplianceFixture {
         assertTrue(cacheEntries.length > 0);
 
         // check that entry is stored
-        StorageEntry se = ts.get("1");
-        assertNotNull(se);
-        assertEquals(1, se.get("A"));
-        assertEquals("b", se.get("B"));
-        assertEquals("fake.txt", se.getBlobs().get(0).getFilename());
-        assertEquals("text/plain", se.getBlobs().get(0).getMimeType());
-        assertEquals(DigestUtils.md5Hex("FakeContent"), se.getBlobs().get(0).getDigest());
-        assertEquals("FakeContent", IOUtils.toString(se.getBlobs().get(0).getStream()));
+        assertTrue(ts.exists("1"));
+        assertFalse(ts.isCompleted("1"));
+        assertEquals(11, ts.getSize("1"));
+        assertEquals("1", ts.getParameter("1", "A"));
+        assertEquals("b", ts.getParameter("1", "B"));
+        List<Blob> blobs = ts.getBlobs("1");
+        assertEquals(1, blobs.size());
+        Blob blob = blobs.get(0);
+        assertEquals("fake.txt", blob.getFilename());
+        assertEquals("text/plain", blob.getMimeType());
+        assertEquals(DigestUtils.md5Hex("FakeContent"), blob.getDigest());
+        assertEquals("FakeContent", IOUtils.toString(blob.getStream()));
 
         size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(11, size);
 
         // update the entry
-        Blob blob = new StringBlob("FakeContent2");
-        blob.setFilename("fake2.txt");
-        blob.setMimeType("text/plain");
-        List<Blob> blobs = se.getBlobs();
-        blobs.add(blob);
-        se.setBlobs(blobs);
-        ts.put(se);
+        Blob otherBlob = new StringBlob("FakeContent2");
+        otherBlob.setFilename("fake2.txt");
+        otherBlob.setMimeType("text/plain");
+        blobs.add(otherBlob);
+        ts.putBlobs("1", blobs);
 
         // check update
-        se = ts.get("1");
-        assertNotNull(se);
-        assertEquals("fake.txt", se.getBlobs().get(0).getFilename());
-        assertEquals("fake2.txt", se.getBlobs().get(1).getFilename());
+        assertTrue(ts.exists("1"));
+        assertEquals(23, ts.getSize("1"));
+        blobs = ts.getBlobs("1");
+        assertEquals(2, blobs.size());
+        assertEquals("fake.txt", blobs.get(0).getFilename());
+        assertEquals("fake2.txt", blobs.get(1).getFilename());
         size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(23, size);
 
         // move to deletable entries
         // check that still here
         ts.release("1");
-        se = ts.get("1");
-        assertNotNull(se);
+        assertTrue(ts.exists("1"));
 
         // check Remove
         ts.remove("1");
-        se = ts.get("1");
-        assertNull(se);
+        assertFalse(ts.exists("1"));
 
         size = ((AbstractTransientStore) ts).getStorageSize();
         assertEquals(0, size);
@@ -150,7 +151,7 @@ public class TransientStorageComplianceFixture {
     public void verifyMaxSizeException() throws Exception {
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("microStore");
-        ts.put(createEntry("A"));
+        putEntry(ts, "A");
     }
 
     @Test
@@ -158,23 +159,24 @@ public class TransientStorageComplianceFixture {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("miniStore");
-        ts.put(createEntry("1"));
+        putEntry(ts, "1");
 
         // check that entry is stored
-        StorageEntry se = ts.get("1");
-        assertNotNull(se);
-        assertEquals(1, se.get("A"));
-        assertEquals("b", se.get("B"));
-        assertEquals("fake.txt", se.getBlobs().get(0).getFilename());
-        assertEquals("text/plain", se.getBlobs().get(0).getMimeType());
-        assertEquals("FakeContent", IOUtils.toString(se.getBlobs().get(0).getStream()));
+        assertTrue(ts.exists("1"));
+        assertEquals("1", ts.getParameter("1", "A"));
+        assertEquals("b", ts.getParameter("1", "B"));
+        List<Blob> blobs = ts.getBlobs("1");
+        assertEquals(1, blobs.size());
+        Blob blob = blobs.get(0);
+        assertEquals("fake.txt", blob.getFilename());
+        assertEquals("text/plain", blob.getMimeType());
+        assertEquals("FakeContent", IOUtils.toString(blob.getStream()));
 
         // move to deletable entries
-        // check that still here
+        // check that deleted
         ts.release("1");
 
-        se = ts.get("1");
-        assertNull(se);
+        assertFalse(ts.exists("1"));
     }
 
     @Test
@@ -182,11 +184,10 @@ public class TransientStorageComplianceFixture {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
-        ts.put(createEntry("X"));
+        putEntry(ts, "X");
 
         // check that entry is stored
-        StorageEntry se = ts.get("X");
-        assertNotNull(se);
+        assertTrue(ts.exists("X"));
 
         // check FS
         File cacheDir = ((AbstractTransientStore) ts).getCachingDirectory("X");
@@ -198,8 +199,7 @@ public class TransientStorageComplianceFixture {
         ts.doGC();
 
         // entry is still here
-        se = ts.get("X");
-        assertNotNull(se);
+        assertTrue(ts.exists("X"));
 
         // file is still here
         cacheEntries = cacheDir.listFiles();
@@ -212,8 +212,7 @@ public class TransientStorageComplianceFixture {
         ts.doGC();
 
         // entry is gone
-        se = ts.get("X");
-        assertNull(se);
+        assertFalse(ts.exists("X"));
 
         // cache dir is gone
         assertFalse(cacheDir.exists());
@@ -224,11 +223,10 @@ public class TransientStorageComplianceFixture {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
-        ts.put(createEntry("X"));
+        putEntry(ts, "X");
 
         // check that entry is stored
-        StorageEntry se = ts.get("X");
-        assertNotNull(se);
+        assertTrue(ts.exists("X"));
 
         // check FS
         File cacheDir = ((AbstractTransientStore) ts).getCachingDirectory("X");
@@ -246,8 +244,7 @@ public class TransientStorageComplianceFixture {
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
         // entry is gone
-        se = ts.get("X");
-        assertNull(se);
+        assertFalse(ts.exists("X"));
 
         // cache dir is gone
         assertFalse(cacheDir.exists());
@@ -258,36 +255,42 @@ public class TransientStorageComplianceFixture {
 
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
-        ts.put(createEntry("XXX"));
+        putEntry(ts, "XXX");
 
         // check that entry is stored
-        StorageEntry se = ts.get("XXX");
-        assertNotNull(se);
-        assertNotNull(((AbstractTransientStore) ts).getL1Cache().get("XXX"));
+        assertTrue(ts.exists("XXX"));
+        if (ts instanceof SimpleTransientStore) {
+            assertNotNull(((SimpleTransientStore) ts).getL1Cache().get("XXX"));
+        }
 
         // move to deletable entries
         // check that still here
         ts.release("XXX");
 
-        assertNull(((AbstractTransientStore) ts).getL1Cache().get("XXX"));
-        assertNotNull(((AbstractTransientStore) ts).getL2Cache().get("XXX"));
+        assertTrue(ts.exists("XXX"));
+        if (ts instanceof SimpleTransientStore) {
+            assertNull(((SimpleTransientStore) ts).getL1Cache().get("XXX"));
+            assertNotNull(((SimpleTransientStore) ts).getL2Cache().get("XXX"));
+        }
 
         // do GC
         ts.doGC();
 
         // check still here
-        se = ts.get("XXX");
-        assertNotNull(se);
+        assertTrue(ts.exists("XXX"));
 
-        // empty the L2 cache
-        ((AbstractTransientStore) ts).getL2Cache().invalidate("XXX");
+        // empty the L2 cache for the in-memory implementation or remove entry for the Redis one
+        if (ts instanceof SimpleTransientStore) {
+            ((SimpleTransientStore) ts).getL2Cache().invalidate("XXX");
+        } else {
+            ts.remove("XXX");
+        }
 
         // do GC
         ts.doGC();
 
         // check no longer there
-        se = ts.get("XXX");
-        assertNull(se);
+        assertFalse(ts.exists("XXX"));
     }
 
 }

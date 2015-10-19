@@ -21,7 +21,6 @@ package org.nuxeo.ecm.automation.server.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.ListUtils;
@@ -38,13 +36,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
-import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchChunkEntry;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchFileEntry;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
+import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerComponent;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
+import org.nuxeo.ecm.core.transientstore.AbstractTransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -75,26 +73,18 @@ public class BatchManagerTest {
         String batchId = bm.initBatch();
         assertNotNull(batchId);
         assertTrue(bm.hasBatch(batchId));
-
-        // Check transient store
-        StorageEntry se = bm.getTransientStore().get(batchId);
-        assertTrue(se instanceof Batch);
-        assertEquals(batchId, ((Batch) se).getId());
+        Batch batch = ((BatchManagerComponent) bm).getBatch(batchId);
+        assertNotNull(batch);
+        assertEquals(batchId, batch.getKey());
 
         // Init with a batch id
         batchId = bm.initBatch("testBatchId", null);
         assertEquals("testBatchId", batchId);
         assertTrue(bm.hasBatch("testBatchId"));
+        batch = ((BatchManagerComponent) bm).getBatch("testBatchId");
+        assertNotNull(batch);
+        assertEquals("testBatchId", batch.getKey());
 
-        // Check transient store
-        se = bm.getTransientStore().get("testBatchId");
-        assertTrue(se instanceof Batch);
-        assertEquals("testBatchId", ((Batch) se).getId());
-
-        // Check unicity
-        batchId = bm.initBatch("testBatchId", null);
-        assertEquals("testBatchId", batchId);
-        assertEquals(se, bm.getTransientStore().get("testBatchId"));
     }
 
     @Test
@@ -123,39 +113,32 @@ public class BatchManagerTest {
 
         // Check transient store
         // Batch entry
-        StorageEntry batchSE = bm.getTransientStore().get(batchId);
-        assertTrue(batchSE instanceof Batch);
-        Batch batch = (Batch) batchSE;
-        assertEquals(batchId, batch.getId());
+        Batch batch = ((BatchManagerComponent) bm).getBatch(batchId);
+        assertNotNull(batch);
+        assertEquals(batchId, batch.getKey());
         assertEquals(blob1, batch.getBlob("0"));
         assertEquals(blob2, batch.getBlob("1"));
         assertTrue(ListUtils.isEqualList(blobs, batch.getBlobs()));
-        // Batch file entries
-        assertEquals(2, batch.getParameters().size());
-        assertEquals(batchId + "_0", batch.get("0"));
-        assertEquals(batchId + "_1", batch.get("1"));
 
-        StorageEntry fileSE1 = bm.getTransientStore().get(batchId + "_0");
-        assertTrue(fileSE1 instanceof BatchFileEntry);
-        BatchFileEntry fileEntry1 = (BatchFileEntry) fileSE1;
-        assertEquals(batchId + "_0", fileEntry1.getId());
+        // Batch file entries
+        List<BatchFileEntry> batchFileEntries = batch.getFileEntries();
+        assertEquals(2, batchFileEntries.size());
+
+        BatchFileEntry fileEntry1 = batchFileEntries.get(0);
+        assertEquals(batchId + "_0", fileEntry1.getKey());
         assertFalse(fileEntry1.isChunked());
         assertEquals("Mon doc 1.txt", fileEntry1.getFileName());
         assertEquals("text/plain", fileEntry1.getMimeType());
         assertEquals(17, fileEntry1.getFileSize());
         assertEquals(blob1, fileEntry1.getBlob());
-        assertTrue(ListUtils.isEqualList(Collections.singletonList(blob1), fileEntry1.getBlobs()));
 
-        StorageEntry fileSE2 = bm.getTransientStore().get(batchId + "_1");
-        assertTrue(fileSE2 instanceof BatchFileEntry);
-        BatchFileEntry fileEntry2 = (BatchFileEntry) fileSE2;
-        assertEquals(batchId + "_1", fileEntry2.getId());
+        BatchFileEntry fileEntry2 = batchFileEntries.get(1);
+        assertEquals(batchId + "_1", fileEntry2.getKey());
         assertFalse(fileEntry2.isChunked());
         assertEquals("Mon doc 2.txt", fileEntry2.getFileName());
         assertEquals("text/plain", fileEntry2.getMimeType());
         assertEquals(23, fileEntry2.getFileSize());
         assertEquals(blob2, fileEntry2.getBlob());
-        assertTrue(ListUtils.isEqualList(Collections.singletonList(blob2), fileEntry2.getBlobs()));
     }
 
     @Test
@@ -184,64 +167,53 @@ public class BatchManagerTest {
         assertEquals(fileContent, blob.getString());
 
         // Check transient store
+
         // Batch entry
-        StorageEntry batchSE = bm.getTransientStore().get(batchId);
-        assertTrue(batchSE instanceof Batch);
-        Batch batch = (Batch) batchSE;
-        assertEquals(batchId, batch.getId());
+        Batch batch = ((BatchManagerComponent) bm).getBatch(batchId);
+        assertNotNull(batch);
+        assertEquals(batchId, batch.getKey());
         assertEquals(blob, batch.getBlob("0"));
+
         // Batch file entries
-        assertEquals(1, batch.getParameters().size());
-        assertEquals(batchId + "_0", batch.get("0"));
-        StorageEntry fileSE = bm.getTransientStore().get(batchId + "_0");
-        assertTrue(fileSE instanceof BatchFileEntry);
-        BatchFileEntry fileEntry = (BatchFileEntry) fileSE;
-        assertEquals(batchId + "_0", fileEntry.getId());
+        List<BatchFileEntry> batchFileEntries = batch.getFileEntries();
+        assertEquals(1, batchFileEntries.size());
+        BatchFileEntry fileEntry = batchFileEntries.get(0);
+        assertEquals(batchId + "_0", fileEntry.getKey());
         assertTrue(fileEntry.isChunked());
         assertEquals("Mon doc.txt", fileEntry.getFileName());
         assertEquals("text/plain", fileEntry.getMimeType());
         assertEquals(fileSize, fileEntry.getFileSize());
         assertEquals(3, fileEntry.getChunkCount());
-        assertEquals(Arrays.asList(0, 1, 2), fileEntry.getOrderedChunkIds());
+        assertEquals(Arrays.asList(0, 1, 2), fileEntry.getOrderedChunkIndexes());
         assertEquals(blob, fileEntry.getBlob());
-        assertTrue(ListUtils.isEqualList(Collections.singletonList(blob), fileEntry.getBlobs()));
 
         // Batch chunk entries
-        Collection<String> chunkEntryIds = fileEntry.getChunkEntryIds();
-        assertEquals(3, chunkEntryIds.size());
+        Collection<String> chunkEntryKeys = fileEntry.getChunkEntryKeys();
+        assertEquals(3, chunkEntryKeys.size());
 
-        String chunkEntryId1 = batchId + "_0_0";
-        assertTrue(chunkEntryIds.contains(chunkEntryId1));
-        StorageEntry chunkSE1 = bm.getTransientStore().get(chunkEntryId1);
-        assertTrue(chunkSE1 instanceof BatchChunkEntry);
-        BatchChunkEntry chunkEntry1 = (BatchChunkEntry) chunkSE1;
-        assertEquals(batchId + "_0_0", chunkEntry1.getId());
-        Blob blob1 = chunkEntry1.getBlob();
+        String chunkEntryKey1 = batchId + "_0_0";
+        assertTrue(chunkEntryKeys.contains(chunkEntryKey1));
+        List<Blob> chunkEntryBlobs = bm.getTransientStore().getBlobs(chunkEntryKey1);
+        assertEquals(1, chunkEntryBlobs.size());
+        Blob blob1 = chunkEntryBlobs.get(0);
         assertEquals(chunk1, blob1.getString());
         assertEquals(15, blob1.getLength());
-        assertTrue(ListUtils.isEqualList(Collections.singletonList(blob1), chunkEntry1.getBlobs()));
 
-        String chunkEntryId2 = batchId + "_0_1";
-        assertTrue(chunkEntryIds.contains(chunkEntryId2));
-        StorageEntry chunkSE2 = bm.getTransientStore().get(chunkEntryId2);
-        assertTrue(chunkSE2 instanceof BatchChunkEntry);
-        BatchChunkEntry chunkEntry2 = (BatchChunkEntry) chunkSE2;
-        assertEquals(batchId + "_0_1", chunkEntry2.getId());
-        Blob blob2 = chunkEntry2.getBlob();
+        String chunkEntryKey2 = batchId + "_0_1";
+        assertTrue(chunkEntryKeys.contains(chunkEntryKey2));
+        chunkEntryBlobs = bm.getTransientStore().getBlobs(chunkEntryKey2);
+        assertEquals(1, chunkEntryBlobs.size());
+        Blob blob2 = chunkEntryBlobs.get(0);
         assertEquals(chunk2, blob2.getString());
         assertEquals(15, blob2.getLength());
-        assertTrue(ListUtils.isEqualList(Collections.singletonList(blob2), chunkEntry2.getBlobs()));
 
-        String chunkEntryId3 = batchId + "_0_2";
-        assertTrue(chunkEntryIds.contains(chunkEntryId3));
-        StorageEntry chunkSE3 = bm.getTransientStore().get(chunkEntryId3);
-        assertTrue(chunkSE3 instanceof BatchChunkEntry);
-        BatchChunkEntry chunkEntry3 = (BatchChunkEntry) chunkSE3;
-        assertEquals(batchId + "_0_2", chunkEntry3.getId());
-        Blob blob3 = chunkEntry3.getBlob();
+        String chunkEntryKey3 = batchId + "_0_2";
+        assertTrue(chunkEntryKeys.contains(chunkEntryKey3));
+        chunkEntryBlobs = bm.getTransientStore().getBlobs(chunkEntryKey3);
+        assertEquals(1, chunkEntryBlobs.size());
+        Blob blob3 = chunkEntryBlobs.get(0);
         assertEquals(chunk3, blob3.getString());
         assertEquals(8, blob3.getLength());
-        assertTrue(ListUtils.isEqualList(Collections.singletonList(blob3), chunkEntry3.getBlobs()));
 
         // Clean batch
         bm.clean(batchId);
@@ -274,11 +246,11 @@ public class BatchManagerTest {
         Assert.assertEquals("Chunk 1 Chunk 2 ", blobs.get(10).getString());
 
         // Batch data
-        assertNotNull(bm.getTransientStore().get(batchId));
-        assertNotNull(bm.getTransientStore().get(batchId + "_5"));
-        assertNotNull(bm.getTransientStore().get(batchId + "_10"));
-        assertNotNull(bm.getTransientStore().get(batchId + "_10_0"));
-        assertNotNull(bm.getTransientStore().get(batchId + "_10_1"));
+        assertTrue(bm.getTransientStore().exists(batchId));
+        assertTrue(bm.getTransientStore().exists(batchId + "_5"));
+        assertTrue(bm.getTransientStore().exists(batchId + "_10"));
+        assertTrue(bm.getTransientStore().exists(batchId + "_10_0"));
+        assertTrue(bm.getTransientStore().exists(batchId + "_10_1"));
 
         // Batch non chunked file
         FileBlob fileBlob = (FileBlob) blobs.get(9);
@@ -295,11 +267,11 @@ public class BatchManagerTest {
         bm.clean(batchId);
         // Batch data has been removed from cache as well as temporary chunked file, but non chunked file is still there
         // while transient store GC is not called
-        assertNull(bm.getTransientStore().get(batchId));
-        assertNull(bm.getTransientStore().get(batchId + "_5"));
-        assertNull(bm.getTransientStore().get(batchId + "_10"));
-        assertNull(bm.getTransientStore().get(batchId + "_10_0"));
-        assertNull(bm.getTransientStore().get(batchId + "_10_1"));
+        assertFalse(bm.getTransientStore().exists(batchId));
+        assertFalse(bm.getTransientStore().exists(batchId + "_5"));
+        assertFalse(bm.getTransientStore().exists(batchId + "_10"));
+        assertFalse(bm.getTransientStore().exists(batchId + "_10_0"));
+        assertFalse(bm.getTransientStore().exists(batchId + "_10_1"));
         assertFalse(tmpChunkedFile.exists());
         assertTrue(tmpFile.exists());
 

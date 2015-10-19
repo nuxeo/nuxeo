@@ -327,7 +327,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         info.put("size", fileEntry.getFileSize());
         info.put("uploadType", uploadType);
         if (chunked) {
-            info.put("uploadedChunkIds", fileEntry.getOrderedChunkIds());
+            info.put("uploadedChunkIds", fileEntry.getOrderedChunkIndexes());
             info.put("chunkCount", fileEntry.getChunkCount());
         }
         return info;

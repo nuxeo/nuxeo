@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,41 +31,42 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.transientstore.AbstractStorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Represents a batch file backed by the {@link TransientStore}.
  * <p>
- * The file can be chunked or not. If it is chunked it references its chunks as {@link BatchChunkEntry} objects.
+ * The file can be chunked or not. If it is chunked it references its chunks as {@link TransientStore} entry keys.
  *
  * @since 7.4
  * @see Batch
  */
-public class BatchFileEntry extends AbstractStorageEntry {
-
-    private static final long serialVersionUID = 1L;
+public class BatchFileEntry {
 
     protected static final Log log = LogFactory.getLog(BatchFileEntry.class);
 
-    protected Blob chunkedBlob;
+    protected String key;
 
-    // Temporary file made from concatenated chunks
-    protected File tmpChunkedFile;
+    protected Map<String, Serializable> params;
+
+    protected Blob blob;
+
+    protected Blob chunkedBlob;
 
     /**
      * Returns a file entry that holds the given blob, not chunked.
      */
-    public BatchFileEntry(String id, Blob blob) {
-        super(id);
-        put("chunked", false);
-        setBlobs(Collections.singletonList(blob));
+    public BatchFileEntry(String key, Blob blob) {
+        this(key, false);
+        this.blob = blob;
     }
 
     /**
@@ -72,23 +74,47 @@ public class BatchFileEntry extends AbstractStorageEntry {
      *
      * @see BatchChunkEntry
      */
-    public BatchFileEntry(String id, int chunkCount, String fileName, String mime, long fileSize) {
-        super(id);
-        put("chunked", true);
-        put("chunkCount", chunkCount);
-        put("chunks", new HashMap<Integer, String>());
-        put("fileName", fileName);
-        put("mimeType", mime);
-        put("fileSize", fileSize);
+    public BatchFileEntry(String key, int chunkCount, String fileName, String mimeType, long fileSize) {
+        this(key, true);
+        params.put("chunkCount", String.valueOf(chunkCount));
+        if (!StringUtils.isEmpty(fileName)) {
+            params.put("fileName", fileName);
+        }
+        if (!StringUtils.isEmpty(mimeType)) {
+            params.put("mimeType", mimeType);
+        }
+        params.put("fileSize", String.valueOf(fileSize));
+    }
+
+    /**
+     * Returns a file entry that holds the given parameters.
+     */
+    public BatchFileEntry(String key, Map<String, Serializable> params) {
+        this.key = key;
+        this.params = params;
+    }
+
+    protected BatchFileEntry(String key, boolean chunked) {
+        this.key = key;
+        params = new HashMap<>();
+        params.put(Batch.CHUNKED_PARAM_NAME, String.valueOf(chunked));
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public Map<String, Serializable> getParams() {
+        return params;
     }
 
     public boolean isChunked() {
-        return (Boolean) get("chunked");
+        return Boolean.parseBoolean((String) params.get(Batch.CHUNKED_PARAM_NAME));
     }
 
     public String getFileName() {
         if (isChunked()) {
-            return (String) get("fileName");
+            return (String) params.get("fileName");
         } else {
             Blob blob = getBlob();
             if (blob == null) {
@@ -101,7 +127,7 @@ public class BatchFileEntry extends AbstractStorageEntry {
 
     public String getMimeType() {
         if (isChunked()) {
-            return (String) get("mimeType");
+            return (String) params.get("mimeType");
         } else {
             Blob blob = getBlob();
             if (blob == null) {
@@ -114,7 +140,7 @@ public class BatchFileEntry extends AbstractStorageEntry {
 
     public long getFileSize() {
         if (isChunked()) {
-            return (long) get("fileSize");
+            return Long.parseLong((String) params.get("fileSize"));
         } else {
             Blob blob = getBlob();
             if (blob == null) {
@@ -127,34 +153,38 @@ public class BatchFileEntry extends AbstractStorageEntry {
 
     public int getChunkCount() {
         if (!isChunked()) {
-            throw new NuxeoException(String.format("Cannot get chunk count of file entry %s as it is not chunked",
-                    getId()));
+            throw new NuxeoException(String.format("Cannot get chunk count of file entry %s as it is not chunked", key));
         }
-        return (int) get("chunkCount");
+        return Integer.parseInt((String) params.get("chunkCount"));
     }
 
-    @SuppressWarnings("unchecked")
     public Map<Integer, String> getChunks() {
         if (!isChunked()) {
-            throw new NuxeoException(String.format("Cannot get chunks of file entry %s as it is not chunked", getId()));
+            throw new NuxeoException(String.format("Cannot get chunks of file entry %s as it is not chunked", key));
         }
-        return (Map<Integer, String>) get("chunks");
+        Map<Integer, String> chunks = new HashMap<>();
+        for (String param : params.keySet()) {
+            if (NumberUtils.isDigits(param)) {
+                chunks.put(Integer.parseInt(param), (String) params.get(param));
+            }
+        }
+        return chunks;
     }
 
-    public List<Integer> getOrderedChunkIds() {
+    public List<Integer> getOrderedChunkIndexes() {
         if (!isChunked()) {
-            throw new NuxeoException(String.format("Cannot get chunk ids of file entry %s as it is not chunked",
-                    getId()));
+            throw new NuxeoException(String.format("Cannot get chunk indexes of file entry %s as it is not chunked",
+                    key));
         }
-        List<Integer> sortedChunkIds = new ArrayList<Integer>(getChunks().keySet());
-        Collections.sort(sortedChunkIds);
-        return sortedChunkIds;
+        List<Integer> sortedChunkIndexes = new ArrayList<Integer>(getChunks().keySet());
+        Collections.sort(sortedChunkIndexes);
+        return sortedChunkIndexes;
     }
 
-    public Collection<String> getChunkEntryIds() {
+    public Collection<String> getChunkEntryKeys() {
         if (!isChunked()) {
-            throw new NuxeoException(String.format("Cannot get chunk entry ids of file entry %s as it is not chunked",
-                    getId()));
+            throw new NuxeoException(String.format("Cannot get chunk entry keys of file entry %s as it is not chunked",
+                    key));
         }
         return getChunks().values();
     }
@@ -169,43 +199,52 @@ public class BatchFileEntry extends AbstractStorageEntry {
             if (chunkedBlob != null) {
                 return chunkedBlob;
             }
+            File tmpChunkedFile = null;
             try {
                 Map<Integer, String> chunks = getChunks();
                 int uploadedChunkCount = chunks.size();
                 int chunkCount = getChunkCount();
                 if (uploadedChunkCount != chunkCount) {
                     log.warn(String.format(
-                            "Cannot get blob for file entry %s as there are only %d uploaded chunks out of %d.",
-                            getId(), uploadedChunkCount, chunkCount));
+                            "Cannot get blob for file entry %s as there are only %d uploaded chunks out of %d.", key,
+                            uploadedChunkCount, chunkCount));
                     return null;
                 }
                 chunkedBlob = Blobs.createBlobWithExtension(null);
+                // Temporary file made from concatenated chunks
                 tmpChunkedFile = chunkedBlob.getFile();
                 BatchManager bm = Framework.getService(BatchManager.class);
-                // Sort chunk ids and concatenate them to build the entire blob
-                List<Integer> sortedChunks = getOrderedChunkIds();
-                for (int idx : sortedChunks) {
-                    BatchChunkEntry chunkEntry = (BatchChunkEntry) bm.getTransientStore().get(chunks.get(idx));
-                    Blob chunkBlob = chunkEntry.getBlob();
-                    if (chunkBlob != null) {
-                        transferTo(chunkBlob, tmpChunkedFile);
+                // Sort chunk indexes and concatenate them to build the entire blob
+                List<Integer> sortedChunkIndexes = getOrderedChunkIndexes();
+                for (int index : sortedChunkIndexes) {
+                    Blob chunk = getChunk(bm.getTransientStore(), chunks.get(index));
+                    if (chunk != null) {
+                        transferTo(chunk, tmpChunkedFile);
                     }
                 }
+                // Store tmpChunkedFile as a parameter for later deletion
+                bm.getTransientStore().putParameter(key, "tmpChunkedFilePath", tmpChunkedFile.getAbsolutePath());
                 chunkedBlob.setMimeType(getMimeType());
                 chunkedBlob.setFilename(getFileName());
                 return chunkedBlob;
             } catch (IOException ioe) {
-                beforeRemove();
+                if (tmpChunkedFile != null && tmpChunkedFile.exists()) {
+                    tmpChunkedFile.delete();
+                }
                 chunkedBlob = null;
                 throw new NuxeoException(ioe);
             }
         } else {
-            List<Blob> blobs = getBlobs();
-            if (CollectionUtils.isEmpty(blobs)) {
-                return null;
-            }
-            return blobs.get(0);
+            return blob;
         }
+    }
+
+    protected Blob getChunk(TransientStore ts, String key) {
+        List<Blob> blobs = ts.getBlobs(key);
+        if (CollectionUtils.isEmpty(blobs)) {
+            return null;
+        }
+        return blobs.get(0);
     }
 
     /**
@@ -219,46 +258,40 @@ public class BatchFileEntry extends AbstractStorageEntry {
         }
     }
 
-    public String addChunk(int idx, Blob blob) {
+    public String addChunk(int index, Blob blob) {
         if (!isChunked()) {
             throw new NuxeoException("Cannot add a chunk to a non chunked file entry.");
         }
         int chunkCount = getChunkCount();
-        if (idx < 0) {
-            throw new NuxeoException(String.format("Cannot add chunk with negative index %d.", idx));
+        if (index < 0) {
+            throw new NuxeoException(String.format("Cannot add chunk with negative index %d.", index));
         }
-        if (idx >= chunkCount) {
+        if (index >= chunkCount) {
             throw new NuxeoException(String.format(
-                    "Cannot add chunk with index %d to file entry %s as chunk count is %d.", idx, getId(), chunkCount));
+                    "Cannot add chunk with index %d to file entry %s as chunk count is %d.", index, key, chunkCount));
         }
-        if (getChunks().containsKey(idx)) {
+        if (getChunks().containsKey(index)) {
             throw new NuxeoException(String.format(
-                    "Cannot add chunk with index %d to file entry %s as it already exists.", idx, getId()));
+                    "Cannot add chunk with index %d to file entry %s as it already exists.", index, key));
         }
 
-        String chunkEntryId = getId() + "_" + idx;
-        BatchChunkEntry chunkEntry = new BatchChunkEntry(chunkEntryId, blob);
-
+        String chunkEntryKey = key + "_" + index;
         BatchManager bm = Framework.getService(BatchManager.class);
-        bm.getTransientStore().put(chunkEntry);
+        bm.getTransientStore().putBlobs(chunkEntryKey, Collections.singletonList(blob));
+        bm.getTransientStore().putParameter(key, String.valueOf(index), chunkEntryKey);
 
-        return chunkEntryId;
+        return chunkEntryKey;
     }
 
-    @Override
-    public List<Blob> getBlobs() {
-        if (isChunked()) {
-            return Collections.singletonList(getBlob());
-        } else {
-            return super.getBlobs();
-        }
-    }
-
-    @Override
     public void beforeRemove() {
-        if (tmpChunkedFile != null && tmpChunkedFile.exists()) {
-            log.debug(String.format("Deleting temporary chunked file %s", tmpChunkedFile.getAbsolutePath()));
-            tmpChunkedFile.delete();
+        BatchManager bm = Framework.getService(BatchManager.class);
+        String tmpChunkedFilePath = (String) bm.getTransientStore().getParameter(key, "tmpChunkedFilePath");
+        if (tmpChunkedFilePath != null) {
+            File tmpChunkedFile = new File(tmpChunkedFilePath);
+            if (tmpChunkedFile.exists()) {
+                log.debug(String.format("Deleting temporary chunked file %s", tmpChunkedFilePath));
+                tmpChunkedFile.delete();
+            }
         }
     }
 }
