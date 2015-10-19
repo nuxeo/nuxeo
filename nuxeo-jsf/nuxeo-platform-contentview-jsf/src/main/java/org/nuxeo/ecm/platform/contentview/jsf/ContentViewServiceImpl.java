@@ -352,6 +352,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         Long currentPage = contentViewState.getCurrentPage();
         Object[] params = contentViewState.getQueryParameters();
         // init page provider
+        contentView.setExecuted(true);
         contentView.getPageProvider(searchDocument, contentViewState.getSortInfos(), pageSize, currentPage, params);
         // restore rendering info, unless bindings are present on content
         // view configuration

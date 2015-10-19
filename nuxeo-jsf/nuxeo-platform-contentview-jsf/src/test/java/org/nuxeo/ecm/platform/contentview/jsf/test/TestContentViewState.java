@@ -275,6 +275,8 @@ public class TestContentViewState {
         assertNotNull(resultColumns);
         assertEquals(1, resultColumns.size());
         assertEquals("column_1", resultColumns.get(0));
+
+        assertTrue(contentView.isExecuted());
     }
 
     @Test
