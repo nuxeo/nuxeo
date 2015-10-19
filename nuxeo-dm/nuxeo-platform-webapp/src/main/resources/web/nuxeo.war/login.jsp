@@ -11,6 +11,7 @@
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig"%>
 <%@ page import="org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
+<%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginVideo" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -68,6 +69,9 @@ String logoAlt = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoAlt()
 String logoUrl = LoginScreenHelper.getValueWithDefault(screenConfig.getLogoUrl(), context + "/img/nuxeo_logo.png");
 String currentYear = new DateTime().toString("Y");
 
+boolean hasVideos = screenConfig.hasVideos();
+String muted = screenConfig.getVideoMuted() ? "muted " : "";
+String loop = screenConfig.getVideoLoop() ? "loop " : "";
 %>
 
 <html>
@@ -272,12 +276,36 @@ body {
   opacity: .8;
   filter: alpha(opacity = 80)
 }
+
+video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -100;
+  transform: translateX(-50%) translateY(-50%);
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  background: url('<%=backgroundPath%>') no-repeat;
+  background-size: cover;
+  transition: 1s opacity;
+}
 -->
 </style>
 
 </head>
 
 <body>
+<% if (hasVideos) { %>
+<video autoplay <%= muted + loop %> preload="auto" poster="<%=backgroundPath%>" id="bgvid">
+  <% for (LoginVideo video : screenConfig.getVideos()) { %>
+  <source src="<%= video.getSrc() %>" type="<%= video.getType() %>">
+  <% } %>
+</video>
+<% } %>
 <!-- Locale: <%= selectedLanguage %> -->
 <table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%" class="container">
   <tbody>

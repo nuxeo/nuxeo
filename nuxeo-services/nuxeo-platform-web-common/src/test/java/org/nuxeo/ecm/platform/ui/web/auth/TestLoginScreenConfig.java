@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
+import org.nuxeo.ecm.platform.ui.web.auth.service.LoginVideo;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -64,7 +66,12 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertEquals("#CCCCCC", config.getHeaderStyle());
         assertNull(config.getDisableBackgroundSizeCover());
         assertEquals(3, config.getProviders().size());
+        assertTrue(config.hasVideos());
+        assertEquals(2, config.getVideos().size());
 
+        LoginVideo loginVideo = config.getVideos().get(0);
+        assertTrue(isNotBlank(loginVideo.getType()));
+        assertTrue(isNotBlank(loginVideo.getSrc()));
     }
 
     @Test
@@ -108,6 +115,11 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNull(config.getProvider("facebook"));
         assertEquals("News", config.getProvider("google").getLink(null, null));
         assertEquals(Boolean.TRUE, config.getDisableBackgroundSizeCover());
+
+        assertFalse(config.hasVideos());
+
+        assertTrue(config.getVideoMuted());
+        assertFalse(config.getVideoLoop());
     }
 
     @Test

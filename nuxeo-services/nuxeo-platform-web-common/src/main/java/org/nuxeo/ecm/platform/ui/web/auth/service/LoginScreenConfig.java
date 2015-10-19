@@ -40,6 +40,24 @@ public class LoginScreenConfig implements Serializable {
     @XNodeList(value = "loginProviders/loginProvider", type = ArrayList.class, componentType = LoginProviderLink.class)
     protected List<LoginProviderLink> providers;
 
+    /**
+     * @since 7.10
+     */
+    @XNodeList(value = "loginVideos/loginVideo", type = ArrayList.class, componentType = LoginVideo.class)
+    protected List<LoginVideo> videos;
+
+    /**
+     * @since 7.10
+     */
+    @XNode("loginVideos@muted")
+    protected Boolean muted;
+
+    /**
+     * @since 7.10
+     */
+    @XNode("loginVideos@loop")
+    protected Boolean loop;
+
     protected String headerStyle;
 
     protected String footerStyle;
@@ -65,6 +83,9 @@ public class LoginScreenConfig implements Serializable {
     @XNode("logoHeight")
     protected String logoHeight;
 
+    /**
+     * @since 7.10
+     */
     @XNode("fieldAutocomplete")
     protected Boolean fieldAutocomplete;
 
@@ -136,6 +157,16 @@ public class LoginScreenConfig implements Serializable {
         }
         if (newConfig.fieldAutocomplete != null) {
             this.fieldAutocomplete = newConfig.fieldAutocomplete;
+        }
+        if (newConfig.videos != null) {
+            videos = newConfig.videos;
+        }
+        if (newConfig.loop != null) {
+            loop = newConfig.loop;
+        }
+
+        if (newConfig.muted != null) {
+            muted = newConfig.muted;
         }
 
         if (providers == null) {
@@ -215,6 +246,22 @@ public class LoginScreenConfig implements Serializable {
 
     public String getLogoHeight() {
         return logoHeight;
+    }
+
+    public List<LoginVideo> getVideos() {
+        return videos;
+    }
+
+    public Boolean getVideoMuted() {
+        return muted == null ? false : muted;
+    }
+
+    public Boolean getVideoLoop() {
+        return loop == null ? true : loop;
+    }
+
+    public boolean hasVideos() {
+        return videos != null && !videos.isEmpty();
     }
 
     public boolean getDisplayNews() {

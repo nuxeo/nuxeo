@@ -11,8 +11,13 @@
       <headerStyle>#CCCCCC</headerStyle>
       <footerStyle>Something</footerStyle>
       <bodyBackgroundStyle>url("${org.nuxeo.ecm.contextPath}/img/login_bg.png")
-        repeat scroll bottom left #cadfc0;</bodyBackgroundStyle>
+        repeat scroll bottom left #cadfc0;
+      </bodyBackgroundStyle>
 
+      <loginVideos muted="true" loop="false">
+        <loginVideo src="https://dummy/video.mp4" type="webm" />
+        <loginVideo src="https://dummy2/video.mp4" type="webm" />
+      </loginVideos>
       <loginProviders>
         <loginProvider name="google">
           <iconPath>nuxeo.war/img/google.png</iconPath>
