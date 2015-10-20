@@ -27,7 +27,7 @@ import org.nuxeo.transientstore.test.TransientStorageComplianceFixture;
  * Unit test of cache implementation on top of redis since 6.0
  */
 @RunWith(ContributableFeaturesRunner.class)
-@Features({ TransientStoreRedisFeature.class })
+@Features(TransientStoreRedisFeature.class)
 @SuiteClasses(TransientStorageComplianceFixture.class)
 public class TestRedisTransientStorage {
 

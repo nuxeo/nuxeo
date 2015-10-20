@@ -28,7 +28,7 @@ import org.nuxeo.runtime.test.runner.Features;
  * @since 7.2
  */
 @RunWith(ContributableFeaturesRunner.class)
-@Features({ InMemoryTransientStoreFeature.class })
+@Features(InMemoryTransientStoreFeature.class)
 @SuiteClasses(TransientStorageComplianceFixture.class)
 public class TestInMemoryTransientStorage {
 
