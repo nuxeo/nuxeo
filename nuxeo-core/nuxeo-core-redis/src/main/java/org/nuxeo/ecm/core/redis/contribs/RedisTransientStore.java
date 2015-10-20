@@ -146,8 +146,8 @@ public class RedisTransientStore extends AbstractTransientStore {
             }
             Serializable res = deserialize(paramBytes);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Fetched field %s from Redis hash stored at key %s: %s", parameter, paramsKey,
-                        res));
+                log.debug(String.format("Fetched field %s from Redis hash stored at key %s -> %s", parameter,
+                        paramsKey, res));
             }
             return res;
         });
@@ -175,7 +175,7 @@ public class RedisTransientStore extends AbstractTransientStore {
             }
             Map<String, Serializable> res = deserialize(paramBytes);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Fetched fields from Redis hash stored at key %s: %s", paramsKey, res));
+                log.debug(String.format("Fetched fields from Redis hash stored at key %s -> %s", paramsKey, res));
             }
             return res;
         });
@@ -191,8 +191,8 @@ public class RedisTransientStore extends AbstractTransientStore {
             return jedis.hget(namespace + key, "blobCount");
         });
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Fetched field \"blobCount\" from Redis hash stored at key %s: %s",
-                    namespace + key, blobCount));
+            log.debug(String.format("Fetched field \"blobCount\" from Redis hash stored at key %s -> %s", namespace
+                    + key, blobCount));
         }
         if (blobCount == null) {
             // Check for existing parameters
@@ -221,7 +221,7 @@ public class RedisTransientStore extends AbstractTransientStore {
                             entryBlobCount, blobInfoKey));
                 }
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Fetched fields from Redis hash stored at key %s: %s", blobInfoKey,
+                    log.debug(String.format("Fetched fields from Redis hash stored at key %s -> %s", blobInfoKey,
                             blobInfo));
                 }
                 return blobInfo;
@@ -241,8 +241,8 @@ public class RedisTransientStore extends AbstractTransientStore {
                 return -1L;
             }
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Fetched field \"size\" from Redis hash stored at key %s: %s", namespace + key,
-                        size));
+                log.debug(String.format("Fetched field \"size\" from Redis hash stored at key %s -> %s", namespace
+                        + key, size));
             }
             return Long.parseLong(size);
         });
@@ -253,7 +253,7 @@ public class RedisTransientStore extends AbstractTransientStore {
         return redisExecutor.execute((RedisCallable<Boolean>) jedis -> {
             String completed = jedis.hget(namespace + key, "completed");
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Fetched field \"completed\" from Redis hash stored at key %s: %s", namespace
+                log.debug(String.format("Fetched field \"completed\" from Redis hash stored at key %s -> %s", namespace
                         + key, completed));
             }
             return Boolean.parseBoolean(completed);
@@ -389,7 +389,7 @@ public class RedisTransientStore extends AbstractTransientStore {
                 return 0L;
             }
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Fetched value of Redis key %s: %s", sizeKey, value));
+                log.debug(String.format("Fetched value of Redis key %s -> %s", sizeKey, value));
             }
             return Long.parseLong(value);
         });
@@ -448,7 +448,8 @@ public class RedisTransientStore extends AbstractTransientStore {
                 return null;
             }
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Fetched fields from Redis hash stored at key %s: %s", namespace + key, summary));
+                log.debug(String.format("Fetched fields from Redis hash stored at key %s -> %s", namespace + key,
+                        summary));
             }
             return summary;
         });
