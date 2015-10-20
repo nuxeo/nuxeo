@@ -19,6 +19,8 @@ package org.nuxeo.ecm.admin.permissions;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -36,6 +40,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
+ * Work archiving ACEs based on a query.
+ *
  * @since 7.4
  */
 public class PermissionsPurgeWork extends AbstractWork {
@@ -90,8 +96,14 @@ public class PermissionsPurgeWork extends AbstractWork {
             // cleanup acp for all principals
             boolean changed = false;
             for (String username : usernames) {
-                if (acp.removeACEsByUsername(username)) {
-                    changed = true;
+                for (ACL acl : acp.getACLs()) {
+                    for (ACE ace : acl) {
+                        if (username.equals(ace.getUsername())) {
+                            Calendar now = new GregorianCalendar();
+                            ace.setEnd(now);
+                            changed = true;
+                        }
+                    }
                 }
             }
 
