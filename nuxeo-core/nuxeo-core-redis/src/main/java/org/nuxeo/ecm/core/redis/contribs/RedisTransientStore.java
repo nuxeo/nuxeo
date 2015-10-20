@@ -296,7 +296,7 @@ public class RedisTransientStore extends AbstractTransientStore {
             String size = summary.get("size");
             if (size != null) {
                 long entrySize = Integer.parseInt(size);
-                if (entrySize > -1) {
+                if (entrySize > 0) {
                     decrementStorageSize(entrySize);
                 }
             }
@@ -335,10 +335,12 @@ public class RedisTransientStore extends AbstractTransientStore {
                 entrySize = Long.parseLong(size);
             }
         }
-        if (entrySize > -1) {
+        if (entrySize > 0) {
             incrementStorageSize(sizeOfBlobs - entrySize);
         } else {
-            incrementStorageSize(sizeOfBlobs);
+            if (sizeOfBlobs > 0) {
+                incrementStorageSize(sizeOfBlobs);
+            }
         }
 
         // Delete old blobs

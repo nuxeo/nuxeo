@@ -228,7 +228,10 @@ public class SimpleTransientStore extends AbstractTransientStore {
                 getL1Cache().invalidate(key);
             }
             if (entry != null) {
-                decrementStorageSize(entry.getSize());
+                long entrySize = entry.getSize();
+                if (entrySize > 0) {
+                    decrementStorageSize(entrySize);
+                }
             }
         }
     }
@@ -256,7 +259,9 @@ public class SimpleTransientStore extends AbstractTransientStore {
             StorageEntry entry = getStorageEntry(key);
             // Update storage size
             if (entry == null) {
-                incrementStorageSize(sizeOfBlobs);
+                if (sizeOfBlobs > 0) {
+                    incrementStorageSize(sizeOfBlobs);
+                }
                 entry = new StorageEntry();
             } else {
                 incrementStorageSize(sizeOfBlobs - entry.getSize());
