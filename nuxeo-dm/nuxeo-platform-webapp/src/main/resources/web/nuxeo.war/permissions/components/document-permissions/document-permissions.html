@@ -65,11 +65,11 @@
               <div class="tmp-tab">[[i18n('label.permissions.actions', 'Actions')]]</div>
             </div>
             <template is="dom-repeat" items="{{localAces}}" as="ace">
-              <div class="acl-table-row">
-                <div><span title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
+              <div class$="[[aclRowClass(ace)]]">
+                <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
                 <div><span class="label">[[i18n(ace.permission)]]</span></div>
                 <div><span>{{formatTimeFrame(ace)}}</span></div>
-                <div><span title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
+                <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
                 <div>
                   <template is="dom-if" if="{{hasEverythingRight}}">
                     <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}"
@@ -87,11 +87,11 @@
                             <div class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
                             <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
                           </div>
-                          <div class="acl-table-row">
-                            <div><span title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
+                          <div class$="[[aclRowClass(ace)]]">
+                            <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
                             <div><span class="label">[[i18n(ace.permission)]]</span></div>
                             <div><span>{{formatTimeFrame(ace)}}</span></div>
-                            <div><span title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
+                            <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
                           </div>
                         </div>
                       </paper-dialog-scrollable>
@@ -135,11 +135,11 @@
               <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
             </div>
             <template is="dom-repeat" items="{{inheritedAces}}" as="ace">
-              <div class="acl-table-row">
-                <div><span title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
+              <div class$="[[aclRowClass(ace)]]">
+                <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
                 <div><span class="label">[[i18n(ace.permission)]]</span></div>
                 <div><span>{{formatTimeFrame(ace)}}</span></div>
-                <div><span title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
+                <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
               </div>
             </template>
           </div>
@@ -408,6 +408,25 @@
         }
       }
       return entity;
+    },
+
+    entityClass: function(entity) {
+      if (!entity) {
+        return '';
+      }
+
+      if (typeof entity === 'object') {
+        if (entity['entity-type'] === 'user') {
+          return 'tag user';
+        } else if (entity['entity-type'] === 'group') {
+          return 'tag group';
+        }
+      }
+      return '';
+    },
+
+    aclRowClass: function(ace) {
+      return 'acl-table-row' + ' ' + ace.status;
     }
   });
 </script>
