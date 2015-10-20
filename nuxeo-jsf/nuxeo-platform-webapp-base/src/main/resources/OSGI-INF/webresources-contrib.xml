@@ -13,9 +13,6 @@
     <resource name="nxdropzone.js">
       <uri>/scripts/dnd/nxdropzone.js</uri>
     </resource>
-    <resource name="nxdropout.js">
-      <uri>/scripts/dnd/nxdropout.js</uri>
-    </resource>
     <resource name="nxinternaldnd.js">
       <uri>/scripts/dnd/nxinternaldnd.js</uri>
     </resource>
@@ -30,7 +27,6 @@
         <resource>jquery.client.js</resource>
         <resource>jquery.dnd-file-upload.js</resource>
         <resource>nxdropzone.js</resource>
-        <resource>nxdropout.js</resource>
         <resource>nxinternaldnd.js</resource>
       </resources>
     </bundle>

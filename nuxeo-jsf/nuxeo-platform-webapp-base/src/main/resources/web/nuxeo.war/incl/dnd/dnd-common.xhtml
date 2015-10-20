@@ -27,8 +27,6 @@
     };
 
     function initNXDrapAndDropOnPage(scope) {
-      // init Browser Drag out support (Chrome only);
-      jQuery(".dropout",scope).dropout(baseURL,ctx.repository);
       // initernal DnD
       jQuery(".nxDraggable",scope).nxInitDraggables();
       jQuery(".nxDropTarget",scope).nxInitDropTargets();

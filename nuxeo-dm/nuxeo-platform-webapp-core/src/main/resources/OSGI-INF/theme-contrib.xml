@@ -36,18 +36,6 @@
       <require>widget-utils.js</require>
     </resource>
 
-    <resource name="prototype.js">
-      <uri>/scripts/prototype.js</uri>
-    </resource>
-    <resource name="effects.js">
-      <uri>/scripts/scriptaculous/effects.js</uri>
-      <require>prototype.js</require>
-    </resource>
-    <resource name="dragdrop.js">
-      <uri>/scripts/scriptaculous/dragdrop.js</uri>
-      <require>effects.js</require>
-      <require>prototype.js</require>
-    </resource>
     <!-- Seam 1.0.1.GA -->
     <resource name="seam-remote.js">
       <uri>/scripts/seam-remote.js</uri>
@@ -61,16 +49,6 @@
     </resource>
     <resource name="foldable-box.js">
       <uri>/scripts/foldable-box.js</uri>
-      <require>effects.js</require>
-    </resource>
-    <resource name="window.js">
-      <uri>/scripts/window.js</uri>
-    </resource>
-    <resource name="window_effects.js">
-      <uri>/scripts/window_effects.js</uri>
-    </resource>
-    <resource name="waitdlg.js">
-      <uri>/waitdialog/waitdlg.js</uri>
     </resource>
     <resource name="utils.js">
       <uri>/scripts/utils.js</uri>
@@ -376,12 +354,8 @@
         <resource>richfaces-queue.js</resource>
         <resource>widget-utils.js</resource>
         <resource>select2.js</resource>
-        <resource>dragdrop.js</resource>
         <resource>seam-remote.js</resource>
         <resource>foldable-box.js</resource>
-        <resource>window.js</resource>
-        <resource>window_effects.js</resource>
-        <resource>waitdlg.js</resource>
         <!-- include JS used for D&D and tableSelection -->
         <resource>utils.js</resource>
         <!-- include JS for contextual menu -->

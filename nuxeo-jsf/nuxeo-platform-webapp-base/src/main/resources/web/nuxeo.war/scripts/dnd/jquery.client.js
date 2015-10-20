@@ -1,5 +1,5 @@
 (function() {
-	
+
 	var BrowserDetect = {
 		init: function () {
 			this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
@@ -113,11 +113,14 @@
 				identity: "Linux"
 			}
 		]
-	
+
 	};
-	
+
 	BrowserDetect.init();
-	
+
+	if (!window.$) {
+		window.$ = {};
+	}
 	window.$.client = { os : BrowserDetect.OS, browser : BrowserDetect.browser };
-	
+
 })();

@@ -16,7 +16,7 @@
   <div id="docRefTarget:#{field_1}"
     class="#{nxu:test(field_3, 'nxDropTarget', '')}">
     <div id="docRef:#{field_1}"
-      class="cell popupTarget dropout nxDraggable"
+      class="cell popupTarget nxDraggable"
       docRef="#{field_1}">
       <nxd:restDocumentLink document="#{field_0}">
         <nxu:graphicImage
@@ -29,7 +29,7 @@
 
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
-  <nxp:image value="#{nxd:iconPath(field_0)}" alt="#{label}" title="#{label}" 
+  <nxp:image value="#{nxd:iconPath(field_0)}" alt="#{label}" title="#{label}"
              rendered="#{!empty nxd:iconPath(field_0)}"
              styleClass="smallIcon" />
 </c:if>

@@ -1,8 +1,18 @@
 (function() {
 
-  function escapeHTML(string) {
-    // prototype.js allows us to use escapeHTML on strings
-    return string.escapeHTML();
+  var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;'
+  };
+
+  function escapeHTML (string) {
+    return String(string).replace(/[&<>"'\/]/g, function fromEntityMap (s) {
+      return entityMap[s];
+    });
   }
 
   function warnMessage(entry) {

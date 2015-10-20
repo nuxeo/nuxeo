@@ -33,9 +33,9 @@
         </div>
         <script type="text/javascript">
           <h:outputText
-            value="new Draggable('docRef:#{doc.ref}', {revert:true});"/>
+            value="jQuery('#docRef:#{doc.ref}').draggable({ revert: true });" />
           <h:outputText rendered="#{doc.folder}"
-            value="Droppables.add('docRefTarget:#{doc.ref}', {accept:'cell', onDrop:function(element){moveElement(element,'docRef:#{doc.ref}')}, hoverclass:'dropInto'});"/>
+            value="jQuery('#docRefTarget:#{doc.ref}').droppable({ accept: '.cell', drop: function(event, ui) { moveElement(ui.draggable.get(0), 'docRef:#{doc.ref}'); }, hoverClass: 'dropInto' })" />
         </script>
       </nxu:column>
 
