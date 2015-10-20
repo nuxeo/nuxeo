@@ -245,8 +245,9 @@ textarea::-webkit-input-placeholder {
 }
 
 .nx-page .contentViewQuickFilterForm input.dataInputText {
-  border-radius: 3px 0 0 3px;
+  border-radius: $common-radius 0 0 $common-radius;
   border-right: 0;
+  height: 28px;
   margin: 0;
 }
 
@@ -254,13 +255,13 @@ textarea::-webkit-input-placeholder {
 .nx-page .action_bar .button,
 #selection_buttons .widgetPanel .button {
   font-size: .9em;
-  height: 2.36em;
+  height: 28px;
   line-height: 2.3em;
   padding: 0 1em;
 }
 
 .nx-page .contentViewQuickFilterForm input.button {
-  border-radius: 0 2px 2px 0;
+  border-radius: 0 $common-radius $common-radius 0;
   margin: 0;
 }
 
