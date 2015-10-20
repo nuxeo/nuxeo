@@ -1,3 +1,5 @@
+package org.nuxeo.ecm.restapi.test;
+
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -12,27 +14,25 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     dmetzler
- *     ataillefer
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.ecm.restapi.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
+import org.nuxeo.ecm.core.redis.transientstore.TransientStoreRedisFeature;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.restapi.server.jaxrs.BatchUploadObject;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.transientstore.test.InMemoryTransientStoreFeature;
 
 /**
- * Tests the {@link BatchUploadObject} endpoints against an in-memory implementation of the {@link TransientStore}.
- *
- * @since 5.8
+ * Tests the {@link BatchUploadObject} endpoints against a Redis implementation of the {@link TransientStore}.
+ * 
+ * @since 7.10
  */
 @RunWith(ContributableFeaturesRunner.class)
-@Features(InMemoryTransientStoreFeature.class)
+@Features(TransientStoreRedisFeature.class)
 @SuiteClasses(BatchUploadFixture.class)
-public class BatchUploadTest extends BaseTest {
+public class RedisBatchUploadTest extends BaseTest {
 
 }

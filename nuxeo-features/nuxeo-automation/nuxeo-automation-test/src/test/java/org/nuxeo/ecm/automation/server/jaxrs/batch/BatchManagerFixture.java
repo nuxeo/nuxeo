@@ -16,7 +16,7 @@
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  *
  */
-package org.nuxeo.ecm.automation.server.test;
+package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,10 +35,6 @@ import org.apache.commons.collections.ListUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
-import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchFileEntry;
-import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
-import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManagerComponent;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -50,10 +46,13 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
+/**
+ * @since 7.10
+ */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, TransientStoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
-public class BatchManagerTest {
+public class BatchManagerFixture {
 
     @Test
     public void testServiceRegistred() {

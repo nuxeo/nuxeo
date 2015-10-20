@@ -5,6 +5,9 @@
     target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent"
     point="store">
 
+    <store name="default" class="org.nuxeo.ecm.core.redis.contribs.RedisTransientStore">
+    </store>
+
     <store name="testStore" class="org.nuxeo.ecm.core.redis.contribs.RedisTransientStore">
     </store>
 

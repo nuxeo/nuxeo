@@ -12,27 +12,23 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     dmetzler
- *     ataillefer
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
-package org.nuxeo.ecm.restapi.test;
+package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
-import org.nuxeo.ecm.restapi.server.jaxrs.BatchUploadObject;
 import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.transientstore.test.InMemoryTransientStoreFeature;
 
 /**
- * Tests the {@link BatchUploadObject} endpoints against an in-memory implementation of the {@link TransientStore}.
- *
- * @since 5.8
+ * Tests the {@link BatchManager} against an in-memory implementation of the {@link TransientStore}.
  */
 @RunWith(ContributableFeaturesRunner.class)
 @Features(InMemoryTransientStoreFeature.class)
-@SuiteClasses(BatchUploadFixture.class)
-public class BatchUploadTest extends BaseTest {
+@SuiteClasses(BatchManagerFixture.class)
+public class BatchManagerTest {
 
 }

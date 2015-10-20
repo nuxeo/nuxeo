@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -429,7 +430,15 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     protected void removeAllEntries() {
-        // TODO https://jira.nuxeo.com/browse/NXP-18050
+        Set<String> keys = redisExecutor.execute((RedisCallable<Set<String>>) jedis -> {
+            return jedis.keys(namespace + "*");
+        });
+        for (String key : keys) {
+            redisExecutor.execute((RedisCallable<Void>) jedis -> {
+                jedis.del(key);
+                return null;
+            });
+        }
     }
 
     protected Map<String, String> getSummary(String key) {

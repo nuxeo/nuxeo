@@ -88,14 +88,17 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         }
 
         // That's the way of storing an empty entry
-        getTransientStore().setCompleted(batchId, true);
+        getTransientStore().setCompleted(batchId, false);
         return new Batch(batchId);
     }
 
     public Batch getBatch(String batchId) {
         Map<String, Serializable> batchEntryParams = getTransientStore().getParameters(batchId);
         if (batchEntryParams == null) {
-            return null;
+            if (!hasBatch(batchId)) {
+                return null;
+            }
+            batchEntryParams = new HashMap<>();
         }
         return new Batch(batchId, batchEntryParams);
     }
