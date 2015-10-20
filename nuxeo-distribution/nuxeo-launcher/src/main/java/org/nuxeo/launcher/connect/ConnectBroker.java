@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -209,7 +209,6 @@ public class ConnectBroker {
             foundId = foundPkgs.get(foundPkgs.lastKey());
         }
         return foundId;
-
     }
 
     protected String getLocalPackageIdFromName(String pkgName) {
@@ -702,13 +701,13 @@ public class ConnectBroker {
                     if (pkgId == null) {
                         if (ignoreMissing) {
                             log.warn("Could not add package: " + pkgToAdd);
-                            cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO, "Could not add package: " + pkgToAdd);
+                            cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO, "Could not add package.");
                         } else {
                             throw new PackageException("Could not find a remote or local (relative to "
                                     + "current directory or to NUXEO_HOME) " + "package with name or ID " + pkgToAdd);
                         }
                     } else {
-                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO, "Waiting for download");
+                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO, "Waiting for download...");
                         pkgIdsToDownload.add(pkgId);
                     }
                 } else {
@@ -755,7 +754,7 @@ public class ConnectBroker {
                 if (pkgId == null) {
                     if (ignoreMissing) {
                         log.warn("Could not add package: " + packageFileName);
-                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO, "Could not add package: " + packageFileName);
+                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO, "Could not add package.");
                         return null;
                     } else {
                         throw new PackageException("Could not find a remote or local (relative to "
@@ -1025,33 +1024,41 @@ public class ConnectBroker {
 
     @SuppressWarnings("unused")
     protected boolean downloadPackages(List<String> packagesToDownload) {
+        boolean isRegistered = LogicalInstanceIdentifier.isRegistered();
         List<String> packagesAlreadyDownloaded = new ArrayList<String>();
         Map<String, String> packagesToRemove = new HashMap<String, String>();
         for (String pkg : packagesToDownload) {
+            LocalPackage localPackage;
             try {
-                LocalPackage localPackage = getLocalPackage(pkg);
-                if (localPackage != null) {
-                    if (localPackage.getPackageState().isInstalled()) {
-                        log.error(String.format("Package %s is installed. Download skipped.", pkg));
-                        packagesAlreadyDownloaded.add(pkg);
-                    } else if (localPackage.getVersion().isSnapshot()) {
-                        log.info(String.format("Download of %s will replace the one already in local cache", pkg));
-                        packagesToRemove.put(localPackage.getId(), pkg);
-                    } else {
-                        log.info(String.format("Package %s is already in local cache", pkg));
-                        packagesAlreadyDownloaded.add(pkg);
-                    }
-                }
+                localPackage = getLocalPackage(pkg);
             } catch (PackageException e) {
-                log.error(String.format("Looking for package %s in local cache raised an error. Aborting.", pkg), e);
+                log.error(String.format("Looking for package '%s' in local cache raised an error. Aborting.", pkg), e);
                 return false;
+            }
+            if (localPackage == null) {
+                continue;
+            }
+            if (localPackage.getPackageState().isInstalled()) {
+                log.error(String.format("Package '%s' is installed. Download skipped.", pkg));
+                packagesAlreadyDownloaded.add(pkg);
+            } else if (localPackage.getVersion().isSnapshot()) {
+                if (localPackage.getVisibility() != PackageVisibility.PUBLIC && !isRegistered) {
+                    log.info(String.format("Update of '%s' requires being registered.", pkg));
+                    packagesAlreadyDownloaded.add(pkg);
+                } else {
+                    log.info(String.format("Download of '%s' will replace the one already in local cache.", pkg));
+                    packagesToRemove.put(localPackage.getId(), pkg);
+                }
+            } else {
+                log.info(String.format("Package '%s' is already in local cache.", pkg));
+                packagesAlreadyDownloaded.add(pkg);
             }
         }
 
         // First remove SNAPSHOT packages to replace
         for (String pkgToRemove : packagesToRemove.keySet()) {
             if (pkgRemove(pkgToRemove) == null) {
-                log.error(String.format("Failed to remove %s. Download of %s skipped", pkgToRemove,
+                log.error(String.format("Failed to remove '%s'. Download of '%s' skipped", pkgToRemove,
                         packagesToRemove.get(pkgToRemove)));
                 packagesToDownload.remove(packagesToRemove.get(pkgToRemove));
             }
@@ -1061,31 +1068,40 @@ public class ConnectBroker {
         if (packagesToDownload.isEmpty()) {
             return true;
         }
-        List<DownloadingPackage> pkgs = new ArrayList<DownloadingPackage>();
         // Queue downloads
         log.info("Downloading " + packagesToDownload + "...");
         boolean downloadOk = true;
+        List<DownloadingPackage> pkgs = new ArrayList<DownloadingPackage>();
         for (String pkg : packagesToDownload) {
             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_DOWNLOAD);
             cmdInfo.param = pkg;
+
+            // Check registration and package visibility
+            DownloadablePackage downloadablePkg = getPackageManager().findRemotePackageById(pkg);
+            if (downloadablePkg.getVisibility() != PackageVisibility.PUBLIC && !isRegistered) {
+                downloadOk = false;
+                cmdInfo.exitCode = 1;
+                cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Registration required.");
+                continue;
+            }
+
+            // Download
             try {
                 DownloadingPackage download = getPackageManager().download(pkg);
                 if (download != null) {
                     pkgs.add(download);
                     cmdInfo.param = download.getId();
-                    cmdInfo.newMessage(SimpleLog.LOG_LEVEL_DEBUG, "Downloading " + download);
+                    cmdInfo.newMessage(SimpleLog.LOG_LEVEL_DEBUG, "Downloading...");
                 } else {
                     downloadOk = false;
                     cmdInfo.exitCode = 1;
-                    cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
-                            String.format("Download failed for %s (not found)", pkg));
+                    cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download failed (not found).");
                 }
             } catch (ConnectServerError e) {
                 log.debug(e, e);
                 downloadOk = false;
                 cmdInfo.exitCode = 1;
-                cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
-                        String.format("Download failed for %s. %s", pkg, e.getMessage()));
+                cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download failed: " + e.getMessage());
             }
         }
         // Check and display progress
@@ -1109,14 +1125,13 @@ public class ConnectBroker {
                     if (false && !pkg.isDigestOk()) {
                         downloadOk = false;
                         cmdInfo.exitCode = 1;
-                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Wrong digest for package " + pkg.getName());
+                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Wrong digest.");
                     } else if (pkg.getPackageState() == PackageState.DOWNLOADED) {
-                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_DEBUG, "Downloaded " + pkg);
+                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_DEBUG, "Downloaded.");
                     } else {
                         downloadOk = false;
                         cmdInfo.exitCode = 1;
-                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
-                                String.format("Download failed for %s. %s", pkg, pkg.getErrorMessage()));
+                        cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download failed: " + pkg.getErrorMessage());
                         if (pkg.isServerError()) { // Wasted effort to continue other downloads
                             stopDownload = true;
                         }
@@ -1132,7 +1147,7 @@ public class ConnectBroker {
                 CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
                 cmdInfo.param = pkg.getId();
                 cmdInfo.exitCode = 1;
-                cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Interrupted download for " + pkg);
+                cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download interrupted.");
             }
         }
         return downloadOk;
