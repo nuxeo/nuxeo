@@ -958,7 +958,7 @@ public abstract class NuxeoLauncher {
             }
             // For help output purpose only: that option is managed and swallowed by the nuxeoctl Shell script
             launcherOptions.addOption(Option.builder()
-                                            .longOpt("--debug-launcher")
+                                            .longOpt("debug-launcher")
                                             .desc("Linux-only. Activate Java debugging mode on the Launcher.")
                                             .build());
             // Instance CLID option

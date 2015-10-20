@@ -254,10 +254,8 @@ public class ConnectBroker {
     protected String getRemotePackageId(String pkgNameOrId) {
         String pkgId = null;
         if (isRemotePackageId(pkgNameOrId)) {
-            // Check whether this is a remote package ID
             pkgId = pkgNameOrId;
         } else {
-            // Check whether this is a remote package name
             pkgId = getRemotePackageIdFromName(pkgNameOrId);
         }
         return pkgId;
@@ -1182,7 +1180,8 @@ public class ConnectBroker {
                     }
                 }
                 // Check whether we have new installs or upgrades
-                Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager().getAllPackagesByID();
+                Map<String, DownloadablePackage> allPackagesByID = NuxeoConnectClient.getPackageManager()
+                                                                                     .getAllPackagesByID();
                 for (String pkgToInstall : namesOrIdsToInstall) {
                     DownloadablePackage pkg = allPackagesByID.get(pkgToInstall);
                     if (pkg != null) {
