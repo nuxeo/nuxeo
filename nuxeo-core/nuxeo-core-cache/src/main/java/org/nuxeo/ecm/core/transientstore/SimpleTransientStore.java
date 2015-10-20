@@ -298,7 +298,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
     protected long incrementStorageSize(long size) {
         long incremented = storageSize.addAndGet(size);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Incremeted storage size of store %s to %s", config.getName(), incremented));
+            log.debug(String.format("Incremented storage size of store %s to %s", config.getName(), incremented));
         }
         return incremented;
     }
@@ -307,7 +307,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
     protected long decrementStorageSize(long size) {
         long decremented = storageSize.addAndGet(-size);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Decremeted storage size of store %s to %s", config.getName(), decremented));
+            log.debug(String.format("Decremented storage size of store %s to %s", config.getName(), decremented));
         }
         return decremented;
     }

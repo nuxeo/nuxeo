@@ -413,7 +413,7 @@ public class RedisTransientStore extends AbstractTransientStore {
         return redisExecutor.execute((RedisCallable<Long>) jedis -> {
             Long incremented = jedis.incrBy(sizeKey, size);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Incremeted Redis key %s to %d", sizeKey, incremented));
+                log.debug(String.format("Incremented Redis key %s to %d", sizeKey, incremented));
             }
             return incremented;
         });
@@ -424,7 +424,7 @@ public class RedisTransientStore extends AbstractTransientStore {
         return redisExecutor.execute((RedisCallable<Long>) jedis -> {
             Long decremented = jedis.decrBy(sizeKey, size);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Decremeted Redis key %s to %d", sizeKey, decremented));
+                log.debug(String.format("Decremented Redis key %s to %d", sizeKey, decremented));
             }
             return decremented;
         });
