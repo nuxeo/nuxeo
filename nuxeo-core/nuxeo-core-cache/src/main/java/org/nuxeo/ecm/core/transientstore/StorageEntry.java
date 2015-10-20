@@ -50,7 +50,6 @@ public class StorageEntry implements Serializable {
     }
 
     public StorageEntry(long size, boolean completed) {
-        log.debug("Creating new StorageEntry");
         params = null;
         blobInfos = null;
         this.size = size;

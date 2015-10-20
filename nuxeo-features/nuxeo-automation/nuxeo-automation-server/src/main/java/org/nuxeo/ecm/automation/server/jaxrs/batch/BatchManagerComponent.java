@@ -88,6 +88,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         }
 
         // That's the way of storing an empty entry
+        log.debug("Initializing batch with id " + batchId);
         getTransientStore().setCompleted(batchId, false);
         return new Batch(batchId);
     }
