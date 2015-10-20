@@ -5,6 +5,8 @@
     target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent"
     point="store">
 
+    <store name="testStore" />
+
     <store name="microStore">
       <!--  a store that can not store anything  -->
       <targetMaxSizeMB>0</targetMaxSizeMB>
