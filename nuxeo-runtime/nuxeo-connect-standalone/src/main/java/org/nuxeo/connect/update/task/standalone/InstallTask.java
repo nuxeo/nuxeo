@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.connect.update.task.standalone;
 
@@ -46,11 +46,14 @@ public class InstallTask extends CommandsTask {
 
     @Override
     protected void doRun(Map<String, String> params) throws PackageException {
-        super.doRun(params);
-        // generate the uninstall.xml file
-        File file = pkg.getData().getEntry(LocalPackage.UNINSTALL);
-        writeLog(file);
-        // No reload of components in standalone mode
+        try {
+            super.doRun(params);
+        } finally {
+            // generate the uninstall.xml file
+            File file = pkg.getData().getEntry(LocalPackage.UNINSTALL);
+            writeLog(file);
+            // No reload of components in standalone mode
+        }
     }
 
     @Override
