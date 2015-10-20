@@ -10,6 +10,7 @@
 
 .userClipboard .tabsContent {
   border: medium none;
+  border-radius: 0 0 $common-radius $common-radius;
   margin-top: 0;
   padding: 1.2em .5em 1.5em;
 }
@@ -26,7 +27,7 @@
 
 .serverChoice a {
   border: 1px solid $shade-medium-10;
-  border-radius: 5px;
+  border-radius: $common-radius;
   box-shadow: 0 -5px 5px $shade-light-30 inset;
   color: $font-color;
   display: block;
