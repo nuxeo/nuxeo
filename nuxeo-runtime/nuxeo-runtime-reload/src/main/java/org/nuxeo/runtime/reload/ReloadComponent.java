@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
 import java.util.jar.Manifest;
+
+import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,12 +34,15 @@ import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.api.DefaultServiceProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.ServiceProvider;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.services.event.Event;
 import org.nuxeo.runtime.services.event.EventService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -84,11 +90,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         } catch (IOException e) {
             throw new RuntimeServiceException(e);
         }
-        EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.sendEvent(new Event(RELOAD_TOPIC, RELOAD_EVENT_ID, this, null));
-        if (log.isDebugEnabled()) {
-            log.debug("Reload done");
-        }
+        triggerReloadWithNewTransaction(RELOAD_EVENT_ID);
     }
 
     @Override
@@ -100,46 +102,33 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void reloadRepository() {
         log.info("Reload repository");
-        Framework.getLocalService(EventService.class).sendEvent(
-                new Event(RELOAD_TOPIC, RELOAD_REPOSITORIES_ID, this, null));
+        triggerReloadWithNewTransaction(RELOAD_REPOSITORIES_ID);
     }
 
     @Override
     public void reloadSeamComponents() {
         log.info("Reload Seam components");
-        Framework.getLocalService(EventService.class).sendEvent(
-                new Event(RELOAD_TOPIC, RELOAD_SEAM_EVENT_ID, this, null));
+        triggerReload(RELOAD_SEAM_EVENT_ID);
     }
 
     @Override
     public void flush() {
-        if (log.isDebugEnabled()) {
-            log.debug("Starting flush");
-        }
-        flushJaasCache();
-        EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this, null));
-        setFlushedNow();
-        if (log.isDebugEnabled()) {
-            log.debug("Flush done");
-        }
+        log.info("Flush caches");
+        triggerReloadWithNewTransaction(FLUSH_EVENT_ID);
     }
 
     @Override
     public void flushJaasCache() {
         log.info("Flush the JAAS cache");
-        EventService eventService = Framework.getLocalService(EventService.class);
-        eventService.sendEvent(new Event("usermanager", "user_changed", this, "Deployer")); // the data argument is
-                                                                                            // optional
+        Framework.getLocalService(EventService.class).sendEvent(
+                new Event("usermanager", "user_changed", this, "Deployer"));
         setFlushedNow();
     }
 
     @Override
     public void flushSeamComponents() {
         log.info("Flush Seam components");
-        Framework.getLocalService(EventService.class).sendEvent(
-                new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
-        setFlushedNow();
+        triggerReload(FLUSH_SEAM_EVENT_ID);
     }
 
     @Override
@@ -151,7 +140,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     public String deployBundle(File file, boolean reloadResourceClasspath) throws BundleException {
         String name = getOSGIBundleName(file);
         if (name == null) {
-            log.error(String.format("No Bundle-SymbolicName found in MANIFEST for jar at '%s'", file.getAbsolutePath()));
+            log.error(
+                    String.format("No Bundle-SymbolicName found in MANIFEST for jar at '%s'", file.getAbsolutePath()));
             return null;
         }
 
@@ -174,7 +164,12 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         if (newBundle == null) {
             throw new IllegalArgumentException("Could not find a valid bundle at path: " + path);
         }
-        newBundle.start();
+        Transaction tx = TransactionHelper.suspendTransaction();
+        try {
+            newBundle.start();
+        } finally {
+            TransactionHelper.resumeTransaction(tx);
+        }
 
         log.info(String.format("Deploy done for bundle with name '%s'.\n" + "%s", newBundle.getSymbolicName(),
                 getRuntimeStatus()));
@@ -217,8 +212,13 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         try {
             for (Bundle b : srv.getBundles(bundleName, null)) {
                 if (b != null && b.getState() == Bundle.ACTIVE) {
-                    b.stop();
-                    b.uninstall();
+                    Transaction tx = TransactionHelper.suspendTransaction();
+                    try {
+                        b.stop();
+                        b.uninstall();
+                    } finally {
+                        TransactionHelper.resumeTransaction(tx);
+                    }
                 }
             }
         } finally {
@@ -244,6 +244,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     /**
      * @deprecated since 5.6, use {@link #runDeploymentPreprocessor()} instead
      */
+    @Override
     @Deprecated
     public void installWebResources(File file) throws IOException {
         log.info("Install web resources");
@@ -267,6 +268,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         }
     }
 
+    @Override
     public void runDeploymentPreprocessor() throws IOException {
         if (log.isDebugEnabled()) {
             log.debug("Start running deployment preprocessor");
@@ -315,4 +317,69 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         return msg.toString();
     }
 
+    protected void triggerReload(String id) {
+        final CountDownLatch reloadAchieved = new CountDownLatch(1);
+        final Thread ownerThread = Thread.currentThread();
+        try {
+            ServiceProvider next = DefaultServiceProvider.getProvider();
+            DefaultServiceProvider.setProvider(new ServiceProvider() {
+
+                @Override
+                public <T> T getService(Class<T> serviceClass) {
+                    if (Thread.currentThread() != ownerThread) {
+                        try {
+                            reloadAchieved.await();
+                        } catch (InterruptedException cause) {
+                            Thread.currentThread().interrupt();
+                            throw new AssertionError(serviceClass + "was interruped while waiting for reloading",
+                                    cause);
+                        }
+                    }
+                    if (next != null) {
+                        return next.getService(serviceClass);
+                    }
+                    return  Framework.getRuntime().getService(serviceClass);
+                }
+            });
+            try {
+                if (log.isDebugEnabled()) {
+                    log.debug("triggering reload("+id+")");
+                }
+                Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
+                if (id.startsWith(FLUSH_EVENT_ID) || FLUSH_SEAM_EVENT_ID.equals(id)) {
+                    setFlushedNow();
+                }
+            } finally {
+                DefaultServiceProvider.setProvider(next);
+            }
+        } finally {
+            reloadAchieved.countDown();
+        }
+    }
+
+    protected void triggerReloadWithNewTransaction(String id) {
+        if (TransactionHelper.isTransactionMarkedRollback()) {
+            throw new AssertionError("The calling transaction is marked rollback=");
+        } else if (TransactionHelper.isTransactionActive()) { // should flush the calling transaction
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+        try {
+            try {
+                triggerReload(id);
+            } catch (RuntimeException cause) {
+                TransactionHelper.setTransactionRollbackOnly();
+                throw cause;
+            }
+        } finally {
+            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                boolean wasRollbacked = TransactionHelper.isTransactionMarkedRollback();
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
+                if (wasRollbacked) {
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+            }
+        }
+    }
 }
