@@ -56,10 +56,15 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
     }
 
     protected TransientStore registerDefaultStore() {
-        TransientStoreConfig defaultConfig = new TransientStoreConfig(DEFAULT_STORE_NAME);
-        TransientStore store = defaultConfig.getStore();
-        stores.put(defaultConfig.getName(), store);
-        return store;
+        synchronized (this) {
+            TransientStore defaultStore = stores.get(DEFAULT_STORE_NAME);
+            if (defaultStore == null) {
+                TransientStoreConfig defaultConfig = new TransientStoreConfig(DEFAULT_STORE_NAME);
+                defaultStore = defaultConfig.getStore();
+                stores.put(defaultConfig.getName(), defaultStore);
+            }
+            return defaultStore;
+        }
     }
 
     public void doGC() {

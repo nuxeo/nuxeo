@@ -17,9 +17,10 @@
 package org.nuxeo.ecm.core.transientstore;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +37,7 @@ public class StorageEntry implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Map<String, Serializable> params;
+    protected ConcurrentMap<String, Serializable> params;
 
     protected List<Map<String, String>> blobInfos;
 
@@ -58,14 +59,14 @@ public class StorageEntry implements Serializable {
 
     public Map<String, Serializable> getParams() {
         if (params == null) {
-            params = new HashMap<>();
+            params = new ConcurrentHashMap<>();
         }
         return params;
     }
 
     public void putParams(Map<String, Serializable> params) {
         if (this.params == null) {
-            this.params = new HashMap<>();
+            this.params = new ConcurrentHashMap<>();
         }
         this.params.putAll(params);
     }
@@ -79,7 +80,7 @@ public class StorageEntry implements Serializable {
 
     public void putParam(String param, Serializable value) {
         if (params == null) {
-            params = new HashMap<>();
+            params = new ConcurrentHashMap<>();
         }
         params.put(param, value);
     }

@@ -22,14 +22,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.ListUtils;
 import org.junit.Assert;
@@ -232,7 +239,7 @@ public class BatchManagerFixture {
     public void testBatchCleanup() throws IOException {
         BatchManager bm = Framework.getService(BatchManager.class);
 
-        String batchId = bm.initBatch(null, null);
+        String batchId = bm.initBatch();
         assertNotNull(batchId);
 
         // Add non chunked files
@@ -291,4 +298,172 @@ public class BatchManagerFixture {
         assertEquals(0, bm.getTransientStore().getStorageSizeMB());
     }
 
+    @Test
+    public void testBatchConcurrency() throws Exception {
+
+        BatchManager bm = Framework.getService(BatchManager.class);
+
+        // Initialize batches with one file concurrently
+        int nbBatches = 100;
+        String[] batchIds = new String[nbBatches];
+        ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 500L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(nbBatches + 1));
+
+        for (int i = 0; i < nbBatches; i++) {
+            final int batchIndex = i;
+            tpe.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        String batchId = bm.initBatch();
+                        bm.addStream(batchId, "0",
+                                new ByteArrayInputStream(("SomeContent_" + batchId).getBytes(StandardCharsets.UTF_8)),
+                                "MyBatchFile.txt", "text/plain");
+                        batchIds[batchIndex] = batchId;
+                    } catch (IOException e) {
+                        fail(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        tpe.shutdown();
+        boolean finish = tpe.awaitTermination(20, TimeUnit.SECONDS);
+        assertTrue("timeout", finish);
+
+        // Check batches
+        for (String batchId : batchIds) {
+            assertNotNull(batchId);
+        }
+        // Test indexes 0, 9, 99, ..., nbFiles - 1
+        int nbDigits = (int) (Math.log10(nbBatches) + 1);
+        int divisor = nbBatches;
+        for (int i = 0; i < nbDigits; i++) {
+            int batchIndex = nbBatches / divisor - 1;
+            String batchId = batchIds[batchIndex];
+            Blob blob = bm.getBlob(batchId, "0");
+            assertNotNull(blob);
+            assertEquals("MyBatchFile.txt", blob.getFilename());
+            assertEquals("SomeContent_" + batchId, blob.getString());
+            divisor = divisor / 10;
+        }
+
+        // Check storage size
+        assertTrue(((AbstractTransientStore) bm.getTransientStore()).getStorageSize() > 12 * nbBatches);
+
+        // Clean batches
+        for (String batchId : batchIds) {
+            bm.clean(batchId);
+        }
+        assertEquals(bm.getTransientStore().getStorageSizeMB(), 0);
+    }
+
+    @Test
+    public void testFileConcurrency() throws Exception {
+
+        // Initialize a batch
+        BatchManager bm = Framework.getService(BatchManager.class);
+        String batchId = bm.initBatch();
+
+        // Add files concurrently
+        int nbFiles = 100;
+        ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 500L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(nbFiles + 1));
+
+        for (int i = 0; i < nbFiles; i++) {
+            final String fileIndex = String.valueOf(i);
+            tpe.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        bm.addStream(
+                                batchId,
+                                fileIndex,
+                                new ByteArrayInputStream(("SomeContent_" + fileIndex).getBytes(StandardCharsets.UTF_8)),
+                                fileIndex + ".txt", "text/plain");
+                    } catch (IOException e) {
+                        fail(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        tpe.shutdown();
+        boolean finish = tpe.awaitTermination(20, TimeUnit.SECONDS);
+        assertTrue("timeout", finish);
+
+        // Check blobs
+        List<Blob> blobs = bm.getBlobs(batchId);
+        assertEquals(nbFiles, blobs.size());
+        // Test indexes 0, 9, 99, ..., nbFiles - 1
+        int nbDigits = (int) (Math.log10(nbFiles) + 1);
+        int divisor = nbFiles;
+        for (int i = 0; i < nbDigits; i++) {
+            int fileIndex = nbFiles / divisor - 1;
+            assertEquals(fileIndex + ".txt", blobs.get(fileIndex).getFilename());
+            assertEquals("SomeContent_" + fileIndex, blobs.get(fileIndex).getString());
+            divisor = divisor / 10;
+        }
+
+        // Check storage size
+        assertTrue(((AbstractTransientStore) bm.getTransientStore()).getStorageSize() > 12 * nbFiles);
+
+        // Clean batch
+        bm.clean(batchId);
+        assertEquals(bm.getTransientStore().getStorageSizeMB(), 0);
+    }
+
+    @Test
+    public void testChunkConcurrency() throws Exception {
+
+        // Initialize a batch
+        BatchManager bm = Framework.getService(BatchManager.class);
+        String batchId = bm.initBatch();
+
+        // Add chunks concurrently
+        int nbChunks = 100;
+        ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 500L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(nbChunks + 1));
+
+        for (int i = 0; i < nbChunks; i++) {
+            final int chunkIndex = i;
+            tpe.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        bm.addStream(
+                                batchId,
+                                "0",
+                                new ByteArrayInputStream(
+                                        ("SomeChunkContent_" + chunkIndex + " ").getBytes(StandardCharsets.UTF_8)),
+                                nbChunks, chunkIndex, "MyChunkedFile.txt", "text/plain", 0);
+                    } catch (IOException e) {
+                        fail(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        tpe.shutdown();
+        boolean finish = tpe.awaitTermination(20, TimeUnit.SECONDS);
+        assertTrue("timeout", finish);
+
+        // Check chunked file
+        Blob blob = bm.getBlob(batchId, "0");
+        assertNotNull(blob);
+        int nbOccurrences = 0;
+        Pattern p = Pattern.compile("SomeChunkContent_");
+        Matcher m = p.matcher(blob.getString());
+        while (m.find()) {
+            nbOccurrences++;
+        }
+        assertEquals(nbChunks, nbOccurrences);
+
+        // Check storage size
+        assertTrue(((AbstractTransientStore) bm.getTransientStore()).getStorageSize() > 17 * nbChunks);
+
+        // Clean batch
+        bm.clean(batchId);
+        assertEquals(bm.getTransientStore().getStorageSizeMB(), 0);
+    }
 }
