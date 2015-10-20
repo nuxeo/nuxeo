@@ -558,34 +558,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public ExtendedInfo newExtendedInfo(Serializable value) {
-        return new ExtendedInfo() {
-
-            /**
-             *
-             */
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Long getId() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void setId(Long id) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public Serializable getSerializableValue() {
-                return value;
-            }
-
-            @Override
-            public <T> T getValue(Class<T> clazz) {
-                return clazz.cast(getSerializableValue());
-            }
-
-        };
+        return new ESExtendedInfo(value);
     }
 
     protected String getESIndexName() {
