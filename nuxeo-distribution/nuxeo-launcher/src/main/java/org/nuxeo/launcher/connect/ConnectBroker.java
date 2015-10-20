@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +85,6 @@ import org.nuxeo.launcher.info.PackageInfo;
 public class ConnectBroker {
 
     private static final Log log = LogFactory.getLog(ConnectBroker.class);
-
-    private static final int PACKAGES_DOWNLOAD_TIMEOUT_SECONDS = 300;
 
     public static final String PARAM_MP_DIR = "nuxeo.distribution.marketplace.dir";
 
@@ -1093,10 +1090,17 @@ public class ConnectBroker {
                         String.format("Download failed for %s. %s", pkg, e.getMessage()));
             }
         }
-        // Check progress
-        long startTime = new Date().getTime();
-        long deltaTime = 0;
+        // Check and display progress
+        final String progress = "|/-\\";
+        int x = 0;
+        boolean stopDownload = false;
         do {
+            System.out.print(progress.charAt(x++ % progress.length()) + "\r");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                stopDownload = true;
+            }
             List<DownloadingPackage> pkgsCompleted = new ArrayList<DownloadingPackage>();
             for (DownloadingPackage pkg : pkgs) {
                 if (pkg.isCompleted()) {
@@ -1115,21 +1119,22 @@ public class ConnectBroker {
                         cmdInfo.exitCode = 1;
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR,
                                 String.format("Download failed for %s. %s", pkg, pkg.getErrorMessage()));
+                        if (pkg.isServerError()) { // Wasted effort to continue other downloads
+                            stopDownload = true;
+                        }
                     }
                 }
             }
             pkgs.removeAll(pkgsCompleted);
-            deltaTime = (new Date().getTime() - startTime) / 1000;
-        } while (deltaTime < PACKAGES_DOWNLOAD_TIMEOUT_SECONDS && pkgs.size() > 0);
-        // Timeout (not everything get downloaded)?
+        } while (!stopDownload && pkgs.size() > 0);
         if (pkgs.size() > 0) {
             downloadOk = false;
-            log.error("Timeout while trying to download packages");
+            log.error("Packages download was interrupted");
             for (DownloadingPackage pkg : pkgs) {
                 CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
                 cmdInfo.param = pkg.getId();
                 cmdInfo.exitCode = 1;
-                cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download timeout for " + pkg);
+                cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Interrupted download for " + pkg);
             }
         }
         return downloadOk;
