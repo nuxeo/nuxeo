@@ -75,8 +75,14 @@ public class SuggestUserEntries {
     @Param(name = "searchType", required = false)
     protected String searchType;
 
-    @Param(name = "groupRestriction", required = false)
+    @Param(name = "groupRestriction", required = false, description = "Enter the id of a group to suggest only user from this group.")
     protected String groupRestriction;
+
+    /**
+     * @since 7.10
+     */
+    @Param(name = "hideAdminGroups", required = false, description = "If set, remove all administrator groups from the suggestions")
+    protected boolean hideAdminGroups;
 
     @Param(name = "userSuggestionMaxSearchResults", required = false)
     protected Integer userSuggestionMaxSearchResults;
@@ -171,7 +177,15 @@ public class SuggestUserEntries {
             if (!userOnly) {
                 Schema schema = schemaManager.getSchema(userManager.getGroupSchemaName());
                 groupList = userManager.searchGroups(prefix);
+                groupLoop:
                 for (DocumentModel group : groupList) {
+                    if (hideAdminGroups) {
+                        for (String adminGroupName : userManager.getAdministratorsGroups()) {
+                            if (adminGroupName.equals(group.getId())) {
+                                break groupLoop;
+                            }
+                        }
+                    }
                     JSONObject obj = new JSONObject();
                     for (Field field : schema.getFields()) {
                         QName fieldName = field.getName();
