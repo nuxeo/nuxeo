@@ -108,15 +108,15 @@ public class Batch {
     }
 
     public List<BatchFileEntry> getFileEntries() {
-        List<BatchFileEntry> fileEntries = new ArrayList<BatchFileEntry>();
+        List<BatchFileEntry> batchFileEntries = new ArrayList<BatchFileEntry>();
         List<String> sortedFileIndexes = getOrderedFileIndexes();
         for (String index : sortedFileIndexes) {
             BatchFileEntry fileEntry = getFileEntry(index);
             if (fileEntry != null) {
-                fileEntries.add(fileEntry);
+                batchFileEntries.add(fileEntry);
             }
         }
-        return fileEntries;
+        return batchFileEntries;
     }
 
     public BatchFileEntry getFileEntry(String index) {
