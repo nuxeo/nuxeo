@@ -19,6 +19,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -484,6 +485,35 @@ public class TestDocumentModelResolver {
         pathdmrr.configure(groupParams);
         checkMessage(pathdmrr);
 
+    }
+
+    @Test
+    public void testSerialization() throws Exception {
+        // create it
+        DocumentModelResolver resolver = new DocumentModelResolver();
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put(PARAM_STORE, STORE_ID_REF);
+        resolver.configure(parameters);
+        // write it
+        byte[] buffer = SerializationUtils.serialize(resolver);
+        // forget the resolver
+        resolver = null;
+        // read it
+        Object readObject = SerializationUtils.deserialize(buffer);
+        // check it's a dir resolver
+        assertTrue(readObject instanceof DocumentModelResolver);
+        DocumentModelResolver readResolver = (DocumentModelResolver) readObject;
+        // check the configuration
+        Map<String, Serializable> outputParameters = readResolver.getParameters();
+        assertEquals(STORE_ID_REF, outputParameters.get(PARAM_STORE));
+        // test it works: validate
+        assertTrue(readResolver.validate(idRef));
+        // test it works: fetch
+        Object entity = readResolver.fetch(idRef);
+        assertTrue(entity instanceof DocumentModel);
+        assertEquals(doc.getPathAsString(), ((DocumentModel) entity).getPathAsString());
+        // test it works: getReference
+        assertEquals(idRef, readResolver.getReference(doc));
     }
 
     private void checkMessage(DocumentModelResolver dmrr) {

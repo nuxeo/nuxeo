@@ -80,6 +80,8 @@ import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
  */
 public class DocumentModelResolver implements ObjectResolver {
 
+    private static final long serialVersionUID = 1L;
+
     private static final String DEFAULT_REPO_NAME = "default";
 
     public static final String NAME = "documentResolver";

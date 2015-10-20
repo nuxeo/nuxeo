@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -569,6 +570,37 @@ public class TestUserManagerResolver extends UserManagerTestCase {
         groupUMR.configure(groupParams);
         checkMessage(groupUMR);
 
+    }
+
+    @Test
+    public void testSerialization() throws Exception {
+        // create it
+        UserManagerResolver resolver = new UserManagerResolver();
+        resolver.configure(new HashMap<String, String>());
+        // write it
+        byte[] buffer = SerializationUtils.serialize(resolver);
+        // forget the resolver
+        resolver = null;
+        // read it
+        Object readObject = SerializationUtils.deserialize(buffer);
+        // check it's a dir resolver
+        assertTrue(readObject instanceof UserManagerResolver);
+        UserManagerResolver readResolver = (UserManagerResolver) readObject;
+        // check the configuration
+        assertTrue(readResolver.isIncludingGroups());
+        assertTrue(readResolver.isIncludingUsers());
+        Map<String, Serializable> outputParameters = readResolver.getParameters();
+        assertEquals(true, outputParameters.get(UserManagerResolver.PARAM_INCLUDE_GROUPS));
+        assertEquals(true, outputParameters.get(UserManagerResolver.PARAM_INCLUDE_USERS));
+        // test it works: validate
+        assertTrue(readResolver.validate("user:Administrator"));
+        // test it works: fetch
+        Object entity = readResolver.fetch("user:Administrator");
+        assertTrue(entity instanceof NuxeoPrincipal);
+        assertEquals("Administrator", ((NuxeoPrincipal) entity).getName());
+        // test it works: getReference
+        NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
+        assertEquals("user:Administrator", readResolver.getReference(principal));
     }
 
     private void checkMessage(UserManagerResolver umr) {

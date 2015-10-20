@@ -36,6 +36,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -279,12 +280,10 @@ public class TestDirectoryEntryResolver {
 
     @Test
     public void testConfigurationIsLoaded() {
-        DirectoryEntryResolver idResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF1_XPATH)
-                                                                                      .getType()).getObjectResolver();
+        DirectoryEntryResolver idResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF1_XPATH).getType()).getObjectResolver();
         assertEquals(REFERENCED_DIRECTORY1, idResolver.getDirectory().getName());
         assertEquals(REFERENCED_DIRECTORY1, idResolver.getParameters().get(PARAM_DIRECTORY));
-        DirectoryEntryResolver pathResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF2_XPATH)
-                                                                                        .getType()).getObjectResolver();
+        DirectoryEntryResolver pathResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF2_XPATH).getType()).getObjectResolver();
         assertEquals(REFERENCED_DIRECTORY2, pathResolver.getDirectory().getName());
         assertEquals(REFERENCED_DIRECTORY2, pathResolver.getParameters().get(PARAM_DIRECTORY));
     }
@@ -359,6 +358,36 @@ public class TestDirectoryEntryResolver {
         pathderr.configure(groupParams);
         checkMessage(pathderr);
 
+    }
+
+    @Test
+    public void testSerialization() throws Exception {
+        // create it
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put(PARAM_DIRECTORY, REFERENCED_DIRECTORY1);
+        derr.configure(parameters);
+        // write it
+        byte[] buffer = SerializationUtils.serialize(derr);
+        // forget the resolver
+        derr = null;
+        // read it
+        Object readObject = SerializationUtils.deserialize(buffer);
+        // check it's a dir resolver
+        assertTrue(readObject instanceof DirectoryEntryResolver);
+        DirectoryEntryResolver readDerr = (DirectoryEntryResolver) readObject;
+        // check the configuration
+        assertEquals(REFERENCED_DIRECTORY1, readDerr.getDirectory().getName());
+        Map<String, Serializable> outputParameters = readDerr.getParameters();
+        assertEquals(REFERENCED_DIRECTORY1, outputParameters.get(PARAM_DIRECTORY));
+        // test it works: validate
+        assertTrue(readDerr.validate(ENTRY_ID));
+        // test it works: fetch
+        Object entity = readDerr.fetch(ENTRY_ID);
+        assertTrue(entity instanceof DirectoryEntry);
+        assertEquals(ENTRY_LABEL, ((DirectoryEntry) entity).getDocumentModel().getPropertyValue("drs:label"));
+        // test it works: getReference
+        assertEquals(ENTRY_ID, readDerr.getReference(entry1));
     }
 
     private void checkMessage(DirectoryEntryResolver derr) {

@@ -68,6 +68,8 @@ import org.nuxeo.runtime.api.login.LoginComponent;
  */
 public class UserManagerResolver implements ObjectResolver {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String INPUT_PARAM_FILTER = "type";
 
     public static final String FILTER_GROUP = "group";
@@ -86,7 +88,7 @@ public class UserManagerResolver implements ObjectResolver {
 
     private boolean includingGroups = true;
 
-    private UserManager userManager;
+    private transient UserManager userManager;
 
     public UserManager getUserManager() {
         if (userManager == null) {

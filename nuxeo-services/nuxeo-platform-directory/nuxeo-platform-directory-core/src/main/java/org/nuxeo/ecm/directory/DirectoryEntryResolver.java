@@ -17,6 +17,7 @@
 
 package org.nuxeo.ecm.directory;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,6 +72,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DirectoryEntryResolver implements ObjectResolver {
 
+    private static final long serialVersionUID = 1L;
+
     public static final String NAME = "directoryResolver";
 
     public static final String PARAM_DIRECTORY = "directory";
@@ -83,11 +86,7 @@ public class DirectoryEntryResolver implements ObjectResolver {
 
     private String schema;
 
-    private Directory directory;
-
     private Map<String, Serializable> parameters;
-
-    private DirectoryService directoryService;
 
     private boolean hierarchical = false;
 
@@ -95,48 +94,30 @@ public class DirectoryEntryResolver implements ObjectResolver {
 
     private String separator = null;
 
-    public DirectoryService getDirectoryService() {
-        if (directoryService == null) {
-            directoryService = Framework.getService(DirectoryService.class);
-        }
-        return directoryService;
-    }
-
-    public Directory getDirectory() {
-        return directory;
-    }
-
-    public void setDirectory(Directory directory) {
-        this.directory = directory;
-    }
-
     private List<Class<?>> managedClasses = null;
 
-    @Override
-    public List<Class<?>> getManagedClasses() {
-        if (managedClasses == null) {
-            managedClasses = new ArrayList<Class<?>>();
-            managedClasses.add(DirectoryEntry.class);
-        }
-        return managedClasses;
-    }
+    private String directoryName;
+
+    /**
+     * the directory is transient - it's refetched on read object - see {@link #readObject(java.io.ObjectInputStream)}
+     */
+    private transient Directory directory;
+
+    private transient DirectoryService directoryService;
 
     @Override
     public void configure(Map<String, String> parameters) throws IllegalArgumentException, IllegalStateException {
         if (this.parameters != null) {
             throw new IllegalStateException("cannot change configuration, may be already in use somewhere");
         }
-        String directoryName = parameters.get(PARAM_DIRECTORY);
+        directoryName = parameters.get(PARAM_DIRECTORY);
         if (directoryName != null) {
             directoryName = directoryName.trim();
         }
         if (directoryName == null || directoryName.isEmpty()) {
             throw new IllegalArgumentException("missing directory parameter. A directory name is necessary");
         }
-        directory = getDirectoryService().getDirectory(directoryName);
-        if (directory == null) {
-            throw new IllegalArgumentException(String.format("the directory \"%s\" was not found", directoryName));
-        }
+        fetchDirectory();
         idField = directory.getIdField();
         schema = directory.getSchema();
         if (schema.endsWith("xvocabulary")) {
@@ -153,6 +134,37 @@ public class DirectoryEntryResolver implements ObjectResolver {
         }
         this.parameters = new HashMap<String, Serializable>();
         this.parameters.put(PARAM_DIRECTORY, directory.getName());
+    }
+
+    @Override
+    public List<Class<?>> getManagedClasses() {
+        if (managedClasses == null) {
+            managedClasses = new ArrayList<Class<?>>();
+            managedClasses.add(DirectoryEntry.class);
+        }
+        return managedClasses;
+    }
+
+    private void fetchDirectory() {
+        directory = getDirectoryService().getDirectory(directoryName);
+        if (directory == null) {
+            throw new IllegalArgumentException(String.format("the directory \"%s\" was not found", directoryName));
+        }
+    }
+
+    public DirectoryService getDirectoryService() {
+        if (directoryService == null) {
+            directoryService = Framework.getService(DirectoryService.class);
+        }
+        return directoryService;
+    }
+
+    public Directory getDirectory() {
+        return directory;
+    }
+
+    public void setDirectory(Directory directory) {
+        this.directory = directory;
     }
 
     @Override
@@ -257,6 +269,16 @@ public class DirectoryEntryResolver implements ObjectResolver {
             throw new IllegalStateException(
                     "you should call #configure(Map<String, String>) before. Please get this resolver throught ExternalReferenceService which is in charge of resolver configuration.");
         }
+    }
+
+    /**
+     * Refetch the directory which is transient.
+     *
+     * @since 7.10
+     */
+    private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        stream.defaultReadObject();
+        fetchDirectory();
     }
 
 }

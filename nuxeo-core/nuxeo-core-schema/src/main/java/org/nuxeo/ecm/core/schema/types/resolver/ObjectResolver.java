@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
  *
  * @since 7.1
  */
-public interface ObjectResolver {
+public interface ObjectResolver extends Serializable {
 
     /**
      * Configure this resolver.
