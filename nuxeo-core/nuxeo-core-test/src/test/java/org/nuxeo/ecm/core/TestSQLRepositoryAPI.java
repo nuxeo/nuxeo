@@ -3683,6 +3683,7 @@ public class TestSQLRepositoryAPI {
         ((SchemaManagerImpl) schemaManager).unregisterDocumentType(dtd);
 
         reopenSession();
+        assertFalse(session.hasChildren(rootRef));
         assertEquals(0, session.getChildren(rootRef).size());
         try {
             session.getDocument(docRef);

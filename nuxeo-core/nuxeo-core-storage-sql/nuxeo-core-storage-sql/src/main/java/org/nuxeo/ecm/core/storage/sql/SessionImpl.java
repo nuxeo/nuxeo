@@ -49,6 +49,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
@@ -965,7 +967,38 @@ public class SessionImpl implements Session, XAResource {
     public boolean hasChildren(Node parent, boolean complexProp) {
         checkLive();
         List<SimpleFragment> children = context.getChildren(parent.getId(), null, complexProp);
-        return children.size() > 0;
+        if (complexProp) {
+            return !children.isEmpty();
+        }
+        if (children.isEmpty()) {
+            return false;
+        }
+        // we have to check that type names are not obsolete, as they wouldn't be returned
+        // by getChildren and we must be consistent
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        for (SimpleFragment simpleFragment : children) {
+            String primaryType = simpleFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY);
+            if (primaryType.equals(Model.PROXY_TYPE)) {
+                Node node = getNodeById(simpleFragment.getId(), false);
+                Serializable targetId = node.getSimpleProperty(Model.PROXY_TARGET_PROP).getValue();
+                if (targetId == null) {
+                    // missing target, should not happen, ignore
+                    continue;
+                }
+                Node target = getNodeById(targetId, false);
+                if (target == null) {
+                    continue;
+                }
+                primaryType = target.getPrimaryType();
+            }
+            DocumentType type = schemaManager.getDocumentType(primaryType);
+            if (type == null) {
+                // obsolete type, ignored in getChildren
+                continue;
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
