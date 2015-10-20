@@ -120,6 +120,10 @@ public class Batch {
     }
 
     public BatchFileEntry getFileEntry(String index) {
+        return getFileEntry(index, true);
+    }
+
+    public BatchFileEntry getFileEntry(String index, boolean fetchBlobs) {
         BatchManager bm = Framework.getService(BatchManager.class);
         String fileEntryKey = (String) fileEntries.get(index);
         if (fileEntryKey == null) {
@@ -133,13 +137,15 @@ public class Batch {
         if (chunked) {
             return new BatchFileEntry(fileEntryKey, fileEntryParams);
         } else {
-            List<Blob> fileEntryBlobs = bm.getTransientStore().getBlobs(fileEntryKey);
-            if (fileEntryBlobs == null) {
-                return null;
-            }
             Blob blob = null;
-            if (!fileEntryBlobs.isEmpty()) {
-                blob = fileEntryBlobs.get(0);
+            if (fetchBlobs) {
+                List<Blob> fileEntryBlobs = bm.getTransientStore().getBlobs(fileEntryKey);
+                if (fileEntryBlobs == null) {
+                    return null;
+                }
+                if (!fileEntryBlobs.isEmpty()) {
+                    blob = fileEntryBlobs.get(0);
+                }
             }
             return new BatchFileEntry(fileEntryKey, blob);
         }
@@ -200,7 +206,7 @@ public class Batch {
         TransientStore ts = bm.getTransientStore();
         for (String fileIndex : fileEntries.keySet()) {
             // Check for chunk entries to remove
-            BatchFileEntry fileEntry = (BatchFileEntry) getFileEntry(fileIndex);
+            BatchFileEntry fileEntry = (BatchFileEntry) getFileEntry(fileIndex, false);
             if (fileEntry != null) {
                 if (fileEntry.isChunked()) {
                     for (String chunkEntryKey : fileEntry.getChunkEntryKeys()) {
