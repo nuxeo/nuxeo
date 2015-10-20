@@ -368,8 +368,8 @@
         <mode value="editPassword">hidden</mode>
       </widgetModes>
       <properties widgetMode="any">
-        <property name="hideVirtualGroups">true</property>
         <property name="userSuggestionSearchType">GROUP_TYPE</property>
+        <property name="hideAdminGroups">true</property>
       </properties>
     </widget>
 
