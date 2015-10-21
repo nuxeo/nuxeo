@@ -703,4 +703,23 @@ public class TestTargetPlatformService {
         assertEquals(0, tps.size());
     }
 
+    @Test
+    public void testIsAfterVersion() {
+        TargetImpl tp5_8 = new TargetImpl("nuxeo-cap-5.8", "cap", "5.8", null, null);
+        TargetImpl tp5_9_3 = new TargetImpl("nuxeo-cap-5.9.3", "cap", "5.9.3", null, null);
+        TargetImpl tp6_0 = new TargetImpl("nuxeo-cap-6.0", "cap", "6.0", null, null);
+        TargetImpl tp6_0_10 = new TargetImpl("nuxeo-cap-6.0.10", "cap", "6.0.10", null, null);
+        TargetImpl tp7_2 = new TargetImpl("nuxeo-cap-7.2", "cap", "7.2", null, null);
+        TargetImpl tp7_10 = new TargetImpl("nuxeo-cap-7.10", "cap", "7.10", null, null);
+        TargetImpl tp8_1 = new TargetImpl("nuxeo-cap-8.1", "cap", "8.1", null, null);
+        assertTrue(tp5_9_3.isAfterVersion(tp5_8.getVersion()));
+        assertTrue(tp6_0_10.isAfterVersion(tp6_0.getVersion()));
+        assertFalse(tp6_0.isAfterVersion(tp6_0_10.getVersion()));
+        assertTrue(tp7_2.isAfterVersion(tp6_0.getVersion()));
+        assertTrue(tp7_10.isAfterVersion(tp7_2.getVersion()));
+        assertTrue(tp7_10.isAfterVersion(tp6_0.getVersion()));
+        assertTrue(tp8_1.isAfterVersion(tp7_10.getVersion()));
+        assertTrue(tp8_1.isAfterVersion(tp8_1));
+    }
+
 }
