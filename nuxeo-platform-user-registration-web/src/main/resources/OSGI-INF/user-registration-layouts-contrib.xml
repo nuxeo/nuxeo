@@ -74,6 +74,36 @@
           <widget>listing_creation_date</widget>
         </column>
 
+        <column name="ace_begin">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">docinfo:begin</property>
+            <property name="label">label.permissions.from</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_ace_begin</widget>
+        </column>
+
+        <column name="ace_end">
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">docinfo:end</property>
+            <property name="label">label.permissions.to</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <widget>listing_ace_end</widget>
+        </column>
+
         <column name="lifecycle">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
@@ -185,6 +215,40 @@
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
              point="widgets">
+
+    <widget name="listing_ace_begin" type="datetime">
+      <labels>
+        <label mode="any">label.permissions.from</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.docinfo.begin</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
+      </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+        <property name="csv_forceType">date</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_ace_end" type="datetime">
+      <labels>
+        <label mode="any">label.permissions.to</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.docinfo.end</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
+      </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+        <property name="csv_forceType">date</property>
+      </properties>
+    </widget>
 
     <widget name="request_config_allowUserCreation" type="checkbox">
       <labels>
