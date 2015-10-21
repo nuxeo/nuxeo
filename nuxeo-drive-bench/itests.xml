@@ -27,8 +27,20 @@
     </exec>
   </target>
 
+  <target name="tune-nuxeo">
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.db.max-pool-size" />
+      <param name="value" value="52" />
+    </antcall>
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.vcs.max-pool-size" />
+      <param name="value" value="50" />
+    </antcall>
+  </target>
+
   <!-- TODO: patch to remove clid on mp-install until NXBT-902 is fixed -->
   <target name="start-unix" if="osfamily-unix">
+    <antcall target="tune-nuxeo" />
     <if>
       <available file="${nuxeo.data}/installAfterRestart.log" />
       <then>
