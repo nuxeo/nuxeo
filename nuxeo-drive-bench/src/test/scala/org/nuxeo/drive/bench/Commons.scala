@@ -101,14 +101,15 @@ object Actions {
   }
 
   val createFileDocument = (parent: String, name: String) => {
-    val batchId = name
     val filename = name + ".txt"
     exec(
+      http("Initialize upload batch")
+        .post("/api/v1/upload")
+        .asJSON.check(jsonPath("$.batchId").saveAs("batchId"))
+    ).exec(
       http("Create server file Upload")
-        .post("/api/v1/automation/batch/upload")
+        .post("/api/v1/upload/${batchId}/0")
         .headers(Headers.base)
-        .header("X-Batch-Id", batchId)
-        .header("X-File-Idx", "0")
         .header("X-File-Name", filename)
         .basicAuth("${user}", "${password}")
         .body(StringBody("You know content file"))
@@ -121,20 +122,21 @@ object Actions {
           .body(StringBody(
           """{ "entity-type": "document", "name":"""" + name + """", "type": "File","properties": {"dc:title":"""" +
             name +
-            """", "dc:description": "Gatling bench file", "file:content": {"upload-batch":"""" + batchId +
-            """","upload-fileId":"0"}}}""".stripMargin))
+            """", "dc:description": "Gatling bench file", "file:content": {"upload-batch":"${batchId}"""" +
+            ""","upload-fileId":"0"}}}""".stripMargin))
           .check(status.in(201)))
   }
 
   val updateFileDocument = (parent: String, name: String) => {
-    val batchId = name
     val filename = name + "txt"
     exec(
+      http("Initialize upload batch")
+        .post("/api/v1/upload")
+         .asJSON.check(jsonPath("$.batchId").saveAs("batchId"))
+    ).exec(
       http("Update server file Upload")
-        .post("/api/v1/automation/batch/upload")
+        .post("/api/v1/upload/${batchId}/0")
         .headers(Headers.base)
-        .header("X-Batch-Id", batchId)
-        .header("X-File-Idx", "0")
         .header("X-File-Name", filename)
         .basicAuth("${user}", "${password}")
         .body(StringBody("You know content file " + Random.alphanumeric.take(2)))
@@ -145,8 +147,8 @@ object Actions {
           .header("Content-Type", "application/json")
           .basicAuth("${user}", "${password}")
           .body(StringBody(
-          """{ "entity-type": "document", "name":"""" + name + """", "type": "File","properties": {"file:content": {"upload-batch":"""" + batchId +
-            """","upload-fileId":"0"}}}""".stripMargin))
+          """{ "entity-type": "document", "name":"""" + name + """", "type": "File","properties": {"file:content": {"upload-batch":"${batchId}"""" +
+            ""","upload-fileId":"0"}}}""".stripMargin))
           .check(status.in(200)))
   }
 
