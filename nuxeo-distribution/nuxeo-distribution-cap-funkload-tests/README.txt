@@ -92,6 +92,9 @@ Layout
 
 * test_drive.py, Drive.conf
 
+  Deprecated since 7.4, replaced by a dedicated Gatling bench.
+  See https://github.com/nuxeo/nuxeo-drive-server/tree/master/nuxeo-drive-bench
+
   A test suite for Nuxeo Drive, you must have a Nuxeo DM (not a CAP), Nuxeo
   Drive and token auth installed.
 
@@ -130,8 +133,7 @@ Running test
 Using a Makefile
 ~~~~~~~~~~~~~~~~~
 
-You need a Nuxeo DM (not CAP) running instance and Nuxeo Drive if you
-intend to run the drive test.
+You need a Nuxeo DM (not CAP) running instance.
 
 
 * make
@@ -156,6 +158,9 @@ intend to run the drive test.
 
 * make init drive
   Run the Nuxeo Drive test (you need to run init once to create the test accounts).
+
+  Deprecated since 7.4, replaced by a dedicated Gatling bench.
+  See https://github.com/nuxeo/nuxeo-drive-server/tree/master/nuxeo-drive-bench
 
 To run test on remote site use the URL option:
 

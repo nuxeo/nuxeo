@@ -17,6 +17,9 @@
 #
 """
 Simulate a Nuxeo Drive client
+
+Deprecated since 7.4, replaced by a dedicated Gatling bench.
+See https://github.com/nuxeo/nuxeo-drive-server/tree/master/nuxeo-drive-bench
 """
 import os
 import time

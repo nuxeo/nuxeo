@@ -18,6 +18,9 @@
 """This test suite contains scnerii to test nuxeo/rest module.
 
 This suite is configured using the Rest.conf file.
+
+Deprecated since 7.4, replaced by a dedicated Gatling bench.
+See https://github.com/nuxeo/nuxeo-drive-server/tree/master/nuxeo-drive-bench
 """
 import os
 from time import sleep
