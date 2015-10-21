@@ -7,19 +7,12 @@
 
 .nxMainContainer .nxSearchForm {
   background-color: $shade-light-0;
-  box-shadow: 1px 0 1px rgba(0, 0, 0, .18);
   font-size: .8em;
   padding: 4.7em 1.5em 5em;
-  width: 19%;
 }
 
 .nxSearchForm .containerSubWidget {
   margin: 0;
-}
-
-.nxSearchResults {
-  padding: 1em 3em 3em;
-  width: 81%;
 }
 
 .nxSearchResults .containerWidgetPanel {
