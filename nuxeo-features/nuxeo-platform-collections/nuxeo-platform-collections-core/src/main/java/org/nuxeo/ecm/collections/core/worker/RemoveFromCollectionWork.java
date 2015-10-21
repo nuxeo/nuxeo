@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.collections.core.worker;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionManager;
@@ -46,9 +48,9 @@ public class RemoveFromCollectionWork extends AbstractWork {
     public RemoveFromCollectionWork(final String repoName, String collectionId, List<String> collectionMemberIds,
             final int offset) {
         super(CATEGORY + ":" + repoName + ":" + collectionId + ":" + offset);
-        this.repositoryName = repoName;
+        repositoryName = repoName;
         this.collectionId = collectionId;
-        this.collectionMemberIds = collectionMemberIds;
+        this.collectionMemberIds = new ArrayList<>(collectionMemberIds);
     }
 
     @Override
