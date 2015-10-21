@@ -48,7 +48,6 @@ import freemarker.template.TemplateException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -63,6 +62,9 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -252,6 +254,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     protected class RegistrationApprover extends UnrestrictedSessionRunner {
 
+        private final UserManager userManager;
+
         protected String uuid;
 
         protected Map<String, Serializable> additionnalInfo;
@@ -260,6 +264,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             super(getTargetRepositoryName());
             uuid = registrationUuid;
             this.additionnalInfo = additionnalInfo;
+            this.userManager = Framework.getLocalService(UserManager.class);
         }
 
         @Override
@@ -268,8 +273,25 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             DocumentModel doc = session.getDocument(new IdRef(uuid));
             String validationMethod = (String) doc.getPropertyValue("registration:validationMethod");
 
-            // test Validation Method
-            if (StringUtils.equals(EMAIL.toString(), validationMethod)) {
+            NuxeoPrincipal targetPrincipal = userManager.getPrincipal((String) doc.getPropertyValue("userinfo:login"));
+            if (targetPrincipal == null) {
+                targetPrincipal = userManager.getPrincipal((String) doc.getPropertyValue("userinfo:email"));
+            }
+            if (targetPrincipal != null) {
+                DocumentModel target = session.getDocument(new IdRef(
+                        (String) doc.getPropertyValue("docinfo:documentId")));
+                ACP acp = target.getACP();
+                Map<String, Serializable> contextData = new HashMap<>();
+                contextData.put("notify", true);
+                contextData.put("comment", doc.getPropertyValue("registration:comment"));
+                acp.addACE(ACL.LOCAL_ACL,
+                        ACE.builder(targetPrincipal.getName(), (String) doc.getPropertyValue("docinfo:permission"))
+                           .creator((String) doc.getPropertyValue("docinfo:creator"))
+                           .contextData(contextData)
+                           .build());
+                target.setACP(acp, true);
+                // test Validation Method
+            } else if (StringUtils.equals(EMAIL.toString(), validationMethod)) {
                 sendValidationEmail(additionnalInfo, doc);
             }
 
