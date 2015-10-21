@@ -156,16 +156,13 @@ AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureC
   if (!voidOp) {
     voidOp=false;
   }
-  this.addParameter("operationId", this.operationId);
-  this.addParameter("batchId", batchId);
 
-  var targetUrl = this.opts.url;
   var targetUrl = this.opts.url;
   if (targetUrl.indexOf("/", targetUrl.length - 1)==-1) {
     targetUrl = targetUrl + "/";
   }
-  if (targetUrl.indexOf('/batch/execute')<0) {
-    targetUrl = targetUrl + 'batch/execute';
+  if (targetUrl.indexOf('/upload/' + batchId + '/execute/' + this.operationId)<0) {
+    targetUrl = targetUrl + 'upload/' + batchId + '/execute/' + this.operationId;
   }
   var timeout = 5+ (this.opts.execTimeout/1000)|0;
   var documentSchemas = this.opts.documentSchemas;
