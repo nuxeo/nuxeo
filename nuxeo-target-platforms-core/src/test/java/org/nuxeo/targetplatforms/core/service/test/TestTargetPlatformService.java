@@ -722,4 +722,18 @@ public class TestTargetPlatformService {
         assertTrue(tp8_1.isAfterVersion(tp8_1));
     }
 
+    @Test
+    public void isStrictlyBeforeVersion() {
+        TargetImpl tp6_0 = new TargetImpl("nuxeo-cap-6.0", "cap", "6.0", null, null);
+        TargetImpl tp6_0_10 = new TargetImpl("nuxeo-cap-6.0.10", "cap", "6.0.10", null, null);
+        TargetImpl tp7_2 = new TargetImpl("nuxeo-cap-7.2", "cap", "7.2", null, null);
+        TargetImpl tp7_10 = new TargetImpl("nuxeo-cap-7.10", "cap", "7.10", null, null);
+        TargetImpl tp8_1 = new TargetImpl("nuxeo-cap-8.1", "cap", "8.1", null, null);
+        assertTrue(tp7_2.isStrictlyBeforeVersion(tp8_1.getVersion()));
+        assertTrue(tp7_2.isStrictlyBeforeVersion(tp7_10.getVersion()));
+        assertTrue(tp6_0.isStrictlyBeforeVersion(tp6_0_10.getVersion()));
+        assertTrue(tp6_0_10.isStrictlyBeforeVersion(tp7_10.getVersion()));
+        assertFalse(tp7_2.isStrictlyBeforeVersion(tp7_2.getVersion()));
+        assertFalse(tp7_10.isStrictlyBeforeVersion(tp7_2.getVersion()));
+    }
 }

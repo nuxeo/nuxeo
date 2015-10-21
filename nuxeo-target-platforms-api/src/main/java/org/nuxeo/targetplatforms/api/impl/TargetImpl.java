@@ -64,7 +64,17 @@ public class TargetImpl extends TargetInfoImpl implements Target {
         if (version == null || version.trim().length() == 0) {
             return true;
         }
-        return version.compareTo(getRefVersion()) > 0;
+
+        String[] components1 = getRefVersion().split("\\.");
+        String[] components2 = version.split("\\.");
+        int length = Math.min(components1.length, components2.length);
+        for(int i = 0; i < length; i++) {
+            int result = Integer.compare(Integer.valueOf(components1[i]), Integer.valueOf(components2[i]));
+            if (result != 0) {
+                return result < 0;
+            }
+        }
+        return components1.length < components2.length;
     }
 
     @Override
