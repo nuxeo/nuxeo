@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.collections.core.worker;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -41,10 +42,10 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
     public DuplicateCollectionMemberWork(final String repoName, final String newCollectionId,
             final List<String> collectionMemberIds, final int offset) {
         super(CATEGORY + ":" + repoName + ":" + newCollectionId + ":" + offset);
-        this.repositoryName = repoName;
+        repositoryName = repoName;
         this.newCollectionId = newCollectionId;
-        this.repositoryName = repoName;
-        this.collectionMemberIds = collectionMemberIds;
+        repositoryName = repoName;
+        this.collectionMemberIds = new ArrayList<>(collectionMemberIds);
     }
 
     public static final String CATEGORY = "duplicateCollectionMember";
