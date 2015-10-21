@@ -23,7 +23,6 @@
   position: fixed;
   top: 0;
   transition: width .1s ease .5ms;
-  width: 19%;
 }
 
 .nxMainContainer .column > div:last-child,
@@ -53,7 +52,6 @@
     margin-left: 235px;
     padding: 2em 2.5em 3em;
     width: calc(100% - 235px);
-}
   }
 }
 
