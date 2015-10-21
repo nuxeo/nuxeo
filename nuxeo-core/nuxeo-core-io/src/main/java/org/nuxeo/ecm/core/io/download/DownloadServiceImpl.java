@@ -186,7 +186,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
 
         // check blob permissions
-        if (doc != null && xpath != null && !checkPermission(doc, xpath, blob, reason, extendedInfos)) {
+        if (!checkPermission(doc, xpath, blob, reason, extendedInfos)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Permission denied");
             return;
         }
@@ -291,7 +291,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     protected String fixXPath(String xpath) {
         // Hack for Flash Url wich doesn't support ':' char
-        return xpath.replace(';', ':');
+        return xpath == null ? null : xpath.replace(';', ':');
     }
 
     @Override

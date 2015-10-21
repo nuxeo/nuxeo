@@ -227,6 +227,12 @@ public class ConversionActionBean implements ConversionAction {
             log.error("Transform service didn't return any resulting documents which is not normal.");
             return "pdf_generation_error";
         }
+        String xpath;
+        if (bh instanceof DocumentBlobHolder) {
+            xpath = ((DocumentBlobHolder) bh).getXpath();
+        } else {
+            xpath = null;
+        }
         String origFilename = new Path(bh.getFilePath()).lastSegment();
         String filename = FileUtils.getCleanFileName(origFilename);
         if (StringUtils.isBlank(filename)) {
@@ -238,7 +244,7 @@ public class ConversionActionBean implements ConversionAction {
             filename = filename.substring(0, pos);
         }
         filename += ".pdf";
-        ComponentUtils.download(doc, null, result.getBlob(), filename, "pdfConversion");
+        ComponentUtils.download(doc, xpath, result.getBlob(), filename, "pdfConversion");
         return null;
     }
 
