@@ -14,17 +14,20 @@
 
 package org.nuxeo.ecm.core.api;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Collections;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
+
+import org.apache.commons.lang.SerializationUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.Prefetch;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -37,7 +40,6 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
     }
 
-    @SuppressWarnings({ "ObjectEqualsNull", "SimplifiableJUnitAssertion" })
     @Test
     public void testDocumentModelImpl() throws Exception {
         DocumentModel model = new DocumentModelImpl("my type");
@@ -51,12 +53,18 @@ public class TestDocumentModel extends NXRuntimeTestCase {
         assertTrue(model.getDataModels().isEmpty());
         assertTrue(model.getDataModelsCollection().isEmpty());
 
-        assertEquals(Collections.emptySet(), model.getDeclaredFacets());
-        assertEquals(0, model.getDeclaredSchemas().length);
+        @SuppressWarnings("deprecation")
+        Set<String> declaredFacets = model.getDeclaredFacets();
+        assertEquals(Collections.emptySet(), declaredFacets);
+        @SuppressWarnings("deprecation")
+        String[] declaredSchemas = model.getDeclaredSchemas();
+        assertEquals(0, declaredSchemas.length);
         assertEquals(Collections.emptySet(), model.getFacets());
         assertEquals(0, model.getSchemas().length);
         assertNull(model.getId());
-        assertNull(model.getLock()); // old
+        @SuppressWarnings("deprecation")
+        String lock = model.getLock();
+        assertNull(lock); // old
         assertNull(model.getLockInfo());
         assertNull(model.getName());
         assertNull(model.getParentRef());
@@ -85,12 +93,34 @@ public class TestDocumentModel extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testSerialize() throws IOException, ClassNotFoundException {
+    public void testSerialization() throws IOException, ClassNotFoundException {
         DocumentModelImpl original = new DocumentModelImpl("my type");
         original.setPrefetch(new Prefetch());
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        new ObjectOutputStream(bos).writeObject(original);
-        DocumentModel rehydrated = (DocumentModel) new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray())).readObject();
+        original.attach("somesessionid");
+        // check it's attached
+        checkAttached(original, true);
+        // write it
+        byte[] buffer = SerializationUtils.serialize(original);
+        original = null;
+        // read it
+        Object rehydrated = SerializationUtils.deserialize(buffer);
+        // check it's a document and it's detached
         assertNotNull(rehydrated);
+        assertTrue(rehydrated instanceof DocumentModelImpl);
+        checkAttached((DocumentModelImpl) rehydrated, false);
+    }
+
+    private void checkAttached(DocumentModelImpl original, boolean expectAttached) {
+        try {
+            original.attach("someother");
+            if (expectAttached) {
+                Assert.fail();
+            }
+            original.detach(false);
+        } catch (NuxeoException ne) {
+            if (!expectAttached) {
+                Assert.fail();
+            }
+        }
     }
 }

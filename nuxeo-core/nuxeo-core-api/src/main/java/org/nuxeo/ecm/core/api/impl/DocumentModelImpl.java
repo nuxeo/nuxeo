@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.api.impl;
 import static org.apache.commons.lang.ObjectUtils.NULL;
 import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.text.DateFormat;
@@ -1298,8 +1299,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     @Override
-    public <T extends Serializable> T getSystemProp(final String systemProperty, final Class<T> type)
-            {
+    public <T extends Serializable> T getSystemProp(final String systemProperty, final Class<T> type) {
         return new RunWithCoreSession<T>() {
             @Override
             public T run() {
@@ -1614,6 +1614,17 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public PropertyObjectResolver getObjectResolver(String xpath) {
         return DocumentPropertyObjectResolverImpl.create(this, xpath);
+    }
+
+    /**
+     * Legacy code: Explicitly detach the document to send the document as an event context parameter.
+     *
+     * @see org.nuxeo.ecm.core.event.EventContext
+     * @since 7.10
+     */
+    private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
+        detach(false);
+        stream.defaultWriteObject();
     }
 
 }
