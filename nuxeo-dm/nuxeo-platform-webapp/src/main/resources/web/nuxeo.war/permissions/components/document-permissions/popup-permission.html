@@ -15,6 +15,11 @@
 <link rel="import" href="../../../bower_components/nuxeo-elements/nuxeo-operation.html">
 <link rel="import" href="../../../bower_components/nuxeo-elements/widgets/nuxeo-user-suggestion.html">
 
+<script src="../../../bower_components/better-dom/dist/better-dom.js"></script>
+<script src="../../../bower_components/better-i18n-plugin/dist/better-i18n-plugin.js"></script>
+<script src="../../../bower_components/better-dateinput-polyfill/dist/better-dateinput-polyfill.js"></script>
+
+
 <dom-module id="popup-permission">
     <template>
         <nuxeo-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}} on-response="handleResponse"></nuxeo-operation>
@@ -62,15 +67,15 @@
                         <paper-radio-button name="permanent" on-change="toggleTimeFrame">[[i18n('label.permissions.permanent', 'Permanent')]]</paper-radio-button>
                         <paper-radio-button name="datebased" on-change="toggleTimeFrame">[[i18n('label.permissions.dateBased', 'Date based')]]</paper-radio-button>
                     </paper-radio-group>
-                    <div class="timeFrameLabel disabled">[[i18n('label.permissions.from', 'From')]]</div>
+                    <div class="timeFrameLabel">[[i18n('label.permissions.from', 'From')]]</div>
                     <div>
-                        <paper-input id="begin" type="date" value="{{params.begin}}"
-                          disabled="{{disableTimeFrame}}" placeholder="mm/dd/yyyy" />
+                        <input id="begin" class="jsDate" type="date" data-native="mobile" data-format="MM/dd/yyyy"
+                          value="{{params.begin::change}}" />
                     </div>
-                    <div class="timeFrameLabel disabled">[[i18n('label.permissions.to', 'To')]]</div>
+                    <div class="timeFrameLabel">[[i18n('label.permissions.to', 'To')]]</div>
                     <div>
-                        <paper-input id="end" type="date" value="{{params.end}}"
-                          disabled="{{disableTimeFrame}}" placeholder="mm/dd/yyyy" />
+                        <input id="end" class="jsDate" type="date" data-native="mobile" data-format="MM/dd/yyyy"
+                          value="{{params.end::change}}" />
                     </div>
                 </div>
                 <div id="notification">
@@ -122,10 +127,6 @@
                 type: Boolean,
                 computed: 'isUpdatingACE(ace)'
             },
-            disableTimeFrame: {
-                type: Boolean,
-                value: true
-            },
             selectedTimeFrame: {
                 type: String,
                 value: 'permanent'
@@ -144,6 +145,10 @@
 
         togglePopup: function() {
             this.$.popupRight.toggle();
+            if (this.selectedTimeFrame === 'permanent') {
+                jQuery(this).find('.jsDate').attr('disabled', true);
+                jQuery(this).find('.timeFrameLabel').addClass('disabled');
+            }
         },
 
         doCreate: function() {
@@ -193,14 +198,17 @@
                 this.fire('aceupdated');
             } else {
                 this.fire('acecreated');
-            }
 
-            this.set('params.username', null);
-            this.set('params.permission', 'Read');
-            this.set('params.begin', '');
-            this.set('params.end', '');
-            this.set('params.notify', true);
-            this.set('params.comment', '');
+                this.set('params.username', null);
+                this.set('params.permission', 'Read');
+                this.set('params.begin', '');
+                this.set('params.end', '');
+                this.set('params.notify', true);
+                this.set('params.comment', '');
+                this.set('selectedTimeFrame', 'permanent');
+                // 'hack' to hide the old selected date
+                jQuery(this).find('.btr-dateinput-value').text('');
+            }
         },
 
         toggleCommentText: function(event) {
@@ -215,7 +223,7 @@
             var name = event.target.name;
             this.set('selectedTimeFrame', name);
             var disabled = name === 'datebased' ? false : true;
-            this.set('disableTimeFrame', disabled);
+            jQuery(this).find('.jsDate').attr('disabled', disabled);
             jQuery(this).find('.timeFrameLabel').each(function(i, ele) {
                 if (disabled) {
                     jQuery(ele).addClass('disabled');
@@ -239,7 +247,7 @@
 
             if (ace !== null) {
                 params.id = ace.id;
-                params.username = ace.username;
+                params.username = typeof ace.username === 'object' ? (ace.username['entity-type'] === 'user' ? ace.username.id : ace.username.groupname) : ace.username;
                 params.permission = ace.permission;
                 params.notify = ace.notify;
                 params.comment = ace.comment;
@@ -254,11 +262,7 @@
                 }
 
                 if (dateBased) {
-                    this.set('disableTimeFrame', false);
                     this.set('selectedTimeFrame', 'datebased');
-                    jQuery(this).find('.timeFrameLabel').each(function(i, ele) {
-                        jQuery(ele).removeClass('disabled');
-                    });
                 }
             }
             return params;
