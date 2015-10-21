@@ -105,6 +105,8 @@ object Actions {
     exec(
       http("Initialize upload batch")
         .post("/api/v1/upload")
+        .headers(Headers.base)
+        .basicAuth("${user}", "${password}")
         .asJSON.check(jsonPath("$.batchId").saveAs("batchId"))
     ).exec(
       http("Create server file Upload")
@@ -132,6 +134,8 @@ object Actions {
     exec(
       http("Initialize upload batch")
         .post("/api/v1/upload")
+        .headers(Headers.base)
+        .basicAuth("${user}", "${password}")
          .asJSON.check(jsonPath("$.batchId").saveAs("batchId"))
     ).exec(
       http("Update server file Upload")
