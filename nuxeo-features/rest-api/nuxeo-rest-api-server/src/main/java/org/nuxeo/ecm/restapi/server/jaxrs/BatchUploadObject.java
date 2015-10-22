@@ -166,6 +166,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
         StatusType status = Status.CREATED;
         Map<String, String> result = new HashMap<String, String>();
+        result.put("uploaded", "true");
         result.put("batchId", batchId);
         result.put("fileIdx", fileIdx);
         result.put("uploadType", uploadType);
