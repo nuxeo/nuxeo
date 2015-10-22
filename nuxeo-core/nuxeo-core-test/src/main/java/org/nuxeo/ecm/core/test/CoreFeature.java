@@ -47,6 +47,7 @@ import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.ServiceProvider;
@@ -75,6 +76,7 @@ import com.google.inject.Scope;
         "org.nuxeo.ecm.core.storage.sql.test" //
 })
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
+@LocalDeploy("org.nuxeo.ecm.core.event:test-queuing.xml")
 public class CoreFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(CoreFeature.class);
