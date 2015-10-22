@@ -18,16 +18,17 @@
 package org.nuxeo.ecm.diff.content.restlet;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,16 +43,18 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseNuxeoRestlet;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.OutputRepresentation;
+import org.restlet.data.Status;
 
 /**
  * Restlet to retrieve the content diff of a given property between two documents.
@@ -79,6 +82,8 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
 
     @Override
     public void handle(Request req, Response res) {
+        HttpServletResponse response = getHttpResponse(res);
+        HttpServletRequest request = getHttpRequest(req);
 
         String repo = (String) req.getAttributes().get("repo");
         String leftDocId = (String) req.getAttributes().get("leftDocId");
@@ -139,26 +144,46 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             // Response was already handled by initCachedContentDiffBlobs
             return;
         }
-        HttpServletResponse response = getHttpResponse(res);
+
+        // find blob
+        Blob blob = null;
+        if (StringUtils.isEmpty(subPath)) {
+            blob = contentDiffBlobs.get(0);
+            blob.setMimeType("text/html");
+        } else {
+            for (Blob b : contentDiffBlobs) {
+                if (subPath.equals(b.getFilename())) {
+                    blob = b;
+                    break;
+                }
+            }
+        }
+        if (blob == null) {
+            res.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            return;
+        }
+
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragma", "no-cache");
 
+        String reason = "contentDiff";
+        final Blob fblob = blob;
+        Boolean inline = Boolean.TRUE;
+        Map<String, Serializable> extendedInfos = new HashMap<>();
+        extendedInfos.put("subPath", subPath);
+        extendedInfos.put("leftDocId", leftDocId);
+        extendedInfos.put("rightDocId", rightDocId);
+        // check permission on right doc (downloadBlob will check on the left one)
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        if (!downloadService.checkPermission(rightDoc, xpath, blob, reason, extendedInfos)) {
+            res.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+            return;
+        }
         try {
-            if (StringUtils.isEmpty(subPath)) {
-                handleContentDiff(res, contentDiffBlobs.get(0), "text/html");
-                return;
-            } else {
-                for (Blob blob : contentDiffBlobs) {
-                    if (subPath.equals(blob.getFilename())) {
-                        handleContentDiff(res, blob, blob.getMimeType());
-                        return;
-                    }
-
-                }
-            }
-        } catch (IOException ioe) {
-            log.error(ioe.getMessage(), ioe);
-            handleError(res, ioe);
+            downloadService.downloadBlob(request, response, leftDoc, xpath, blob, blob.getFilename(), reason,
+                    extendedInfos, inline, byteRange -> setEntityToBlobOutput(fblob, byteRange, res));
+        } catch (IOException e) {
+            handleError(res, e);
         }
     }
 
@@ -221,19 +246,4 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         response.setHeader("Content-Disposition", "inline");
     }
 
-    protected void handleContentDiff(Response res, final Blob blob, String mimeType) throws IOException {
-        // blobs are always persistent, and temporary blobs are GCed only when not referenced anymore
-        res.setEntity(new OutputRepresentation(null) {
-            @Override
-            public void write(OutputStream outputStream) throws IOException {
-                try (InputStream stream = blob.getStream()) {
-                    IOUtils.copy(stream, outputStream);
-                }
-            }
-        });
-        HttpServletResponse response = getHttpResponse(res);
-
-        response.setHeader("Content-Disposition", "inline");
-        response.setContentType(mimeType);
-    }
 }
