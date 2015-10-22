@@ -38,11 +38,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 import org.apache.commons.collections.ListUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.transientstore.AbstractTransientStore;
@@ -51,6 +54,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
@@ -60,6 +64,9 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 @Features({ CoreFeature.class, TransientStoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
 public class BatchManagerFixture {
+
+    @Inject
+    protected RuntimeHarness harness;
 
     @Test
     public void testServiceRegistred() {
@@ -74,8 +81,7 @@ public class BatchManagerFixture {
     }
 
     @Test
-    public void testBatchInit() {
-        // Init with no batch id
+    public void testBatchInit() throws Exception {
         BatchManager bm = Framework.getService(BatchManager.class);
         String batchId = bm.initBatch();
         assertNotNull(batchId);
@@ -84,16 +90,28 @@ public class BatchManagerFixture {
         assertNotNull(batch);
         assertEquals(batchId, batch.getKey());
 
-        // Init with a batch id
-        batchId = bm.initBatch("testBatchId", null);
-        assertEquals("testBatchId", batchId);
-        assertTrue(bm.hasBatch("testBatchId"));
-        batch = ((BatchManagerComponent) bm).getBatch("testBatchId");
-        assertNotNull(batch);
-        assertEquals("testBatchId", batch.getKey());
-
         // Check TransientStore storage size
         assertEquals(0, bm.getTransientStore().getStorageSizeMB());
+    }
+
+    @Test(expected = NuxeoException.class)
+    public void testBatchInitClientGeneratedIdNotAllowed() throws Exception {
+        ((BatchManagerComponent) Framework.getService(BatchManager.class)).initBatchInternal("testBatchId");
+    }
+
+    @Test
+    public void testBatchInitClientGeneratedIdAllowed() throws Exception {
+        harness.deployContrib("org.nuxeo.ecm.automation.test.test",
+                "test-batchmanager-client-generated-id-allowed-contrib.xml");
+        BatchManager bm = Framework.getService(BatchManager.class);
+        String batchId = ((BatchManagerComponent) bm).initBatchInternal("testBatchId").getKey();
+        assertEquals("testBatchId", batchId);
+        assertTrue(bm.hasBatch("testBatchId"));
+        Batch batch = ((BatchManagerComponent) bm).getBatch("testBatchId");
+        assertNotNull(batch);
+        assertEquals("testBatchId", batch.getKey());
+        harness.undeployContrib("org.nuxeo.ecm.automation.test.test",
+                "test-batchmanager-client-generated-id-allowed-contrib.xml");
     }
 
     @Test

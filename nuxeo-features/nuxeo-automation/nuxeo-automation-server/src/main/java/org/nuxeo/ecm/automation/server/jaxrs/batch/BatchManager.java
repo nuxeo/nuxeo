@@ -118,7 +118,9 @@ public interface BatchManager {
      * @param batchId
      * @param contextName
      * @return the batchId
+     * @deprecated since 7.10
      */
+    @Deprecated
     String initBatch(String batchId, String contextName);
 
     /**

@@ -80,20 +80,18 @@ public class BatchUploadFixture extends BaseTest {
     @Deprecated
     @Test
     public void itCanUseBatchResource() throws Exception {
-        String batchId = "batch_" + Math.random();
         String filename = "testfile";
         String data = "batchUploadedData";
 
         // upload the file in automation
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put("X-Batch-Id", batchId);
         headers.put("X-File-Idx", "0");
         headers.put("X-File-Name", filename);
-        FormDataMultiPart form = new FormDataMultiPart();
-        BodyPart fdp = new StreamDataBodyPart(filename, new ByteArrayInputStream(data.getBytes()));
-        form.bodyPart(fdp);
-        getResponse(RequestType.POST, "automation/batch/upload", form, headers);
-        form.close();
+        ClientResponse response = getResponse(RequestType.POST, "automation/batch/upload", data, headers);
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        String batchId = node.get("batchId").getValueAsText();
+        assertNotNull(batchId);
 
         // create the doc which references the given blob
         String json = "{";
@@ -105,7 +103,7 @@ public class BatchUploadFixture extends BaseTest {
         json += "{ \"filename\" : \"" + filename + "\" , \"content\" : { \"upload-batch\": \"" + batchId
                 + "\", \"upload-fileId\": \"0\" } }";
         json += "]}}";
-        ClientResponse response = getResponse(RequestType.POST, "path/", json);
+        response = getResponse(RequestType.POST, "path/", json);
         assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
 
         DocumentModel doc = session.getDocument(new PathRef("/testBatchUploadDoc"));

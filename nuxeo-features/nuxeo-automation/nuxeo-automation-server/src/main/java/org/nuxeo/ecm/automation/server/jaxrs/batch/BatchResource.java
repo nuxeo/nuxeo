@@ -58,12 +58,12 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Exposes {@link Batch} as a JAX-RS resource
  *
  * @deprecated Use {@link org.nuxeo.ecm.restapi.server.jaxrs.BatchUploadObject} instead.
- *
  * @author Tiry (tdelprat@nuxeo.com)
  * @author Antoine Taillefer
  */
@@ -162,8 +162,21 @@ public class BatchResource extends AbstractResource<ResourceTypeImpl> {
 
         log.debug("Uploading " + fileName + " (" + fileSize + "b)");
         BatchManager bm = Framework.getLocalService(BatchManager.class);
-        // TODO https://jira.nuxeo.com/browse/NXP-16953
-        // Use flag to allow or not providing a client-side generated batch id
+        if (StringUtils.isEmpty(batchId)) {
+            batchId = bm.initBatch();
+        } else if (!bm.hasBatch(batchId)) {
+            if (!Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
+                    BatchManagerComponent.CLIENT_BATCH_ID_FLAG)) {
+                String errorMsg = String.format(
+                        "Cannot upload a file with a client-side generated batch id, please use new upload API or set configuration property %s to true (not recommended)",
+                        BatchManagerComponent.CLIENT_BATCH_ID_FLAG);
+                return Response.status(Status.INTERNAL_SERVER_ERROR).entity("{\"error\" : \"" + errorMsg + "\"}").build();
+            } else {
+                log.warn(String.format(
+                        "Allowing to initialize upload batch with a client-side generated id since configuration property %s is set to true but this is not recommended, please use new upload API instead",
+                        BatchManagerComponent.CLIENT_BATCH_ID_FLAG));
+            }
+        }
         bm.addStream(batchId, idx, is, fileName, mimeType);
 
         Map<String, String> result = new HashMap<String, String>();

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.server.BatchManager.configuration.test">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="allowClientGeneratedBatchId">true</property>
+  </extension>
+
+</component>

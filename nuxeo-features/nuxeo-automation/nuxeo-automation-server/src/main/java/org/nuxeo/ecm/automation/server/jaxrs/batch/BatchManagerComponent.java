@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Runtime Component implementing the {@link BatchManager} service with the {@link TransientStore}.
@@ -50,11 +52,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class BatchManagerComponent extends DefaultComponent implements BatchManager {
 
-    protected static final String DEFAULT_CONTEXT = "None";
-
     protected static final Log log = LogFactory.getLog(BatchManagerComponent.class);
 
     protected static final String TRANSIENT_STORE_NAME = "BatchManagerCache";
+
+    protected static final String CLIENT_BATCH_ID_FLAG = "allowClientGeneratedBatchId";
 
     protected final AtomicInteger uploadInProgress = new AtomicInteger(0);
 
@@ -70,21 +72,25 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     @Override
     public String initBatch() {
-        return initBatch(null, null);
-    }
-
-    @Override
-    public String initBatch(String batchId, String contextName) {
-        Batch batch = initBatchInternal(batchId, contextName);
+        Batch batch = initBatchInternal(null);
         return batch.getKey();
     }
 
-    protected Batch initBatchInternal(String batchId, String contextName) {
-        if (batchId == null || batchId.isEmpty()) {
+    @Override
+    @Deprecated
+    public String initBatch(String batchId, String contextName) {
+        Batch batch = initBatchInternal(batchId);
+        return batch.getKey();
+    }
+
+    protected Batch initBatchInternal(String batchId) {
+        if (StringUtils.isEmpty(batchId)) {
             batchId = "batchId-" + UUID.randomUUID().toString();
-        }
-        if (contextName == null || contextName.isEmpty()) {
-            contextName = DEFAULT_CONTEXT;
+        } else if (!Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(CLIENT_BATCH_ID_FLAG)) {
+            throw new NuxeoException(
+                    String.format(
+                            "Cannot initialize upload batch with a given id since configuration property %s is not set to true",
+                            CLIENT_BATCH_ID_FLAG));
         }
 
         // That's the way of storing an empty entry
@@ -110,7 +116,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         try {
             Batch batch = getBatch(batchId);
             if (batch == null) {
-                batch = initBatchInternal(batchId, null);
+                batch = initBatchInternal(batchId);
             }
             batch.addFile(index, is, name, mime);
             log.debug(String.format("Added file %s [%s] to batch %s", index, name, batch.getKey()));
@@ -126,7 +132,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         try {
             Batch batch = getBatch(batchId);
             if (batch == null) {
-                batch = initBatchInternal(batchId, null);
+                batch = initBatchInternal(batchId);
             }
             batch.addChunk(index, is, chunkCount, chunkIndex, name, mime, fileSize);
             log.debug(String.format("Added chunk %s to file %s [%s] in batch %s", chunkIndex, index, name,
