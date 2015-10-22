@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.transientstore.AbstractTransientStore;
-import org.nuxeo.ecm.core.transientstore.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -49,7 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Redis implementation (i.e. cluster aware) of the {@link TransientStore}.
  * <p>
- * Since hashes cannot be nested, a {@link StorageEntry} is flattened as follows:
+ * Since hashes cannot be nested, a storage entry is flattened as follows:
  *
  * <pre>
  *  - Entry summary:
