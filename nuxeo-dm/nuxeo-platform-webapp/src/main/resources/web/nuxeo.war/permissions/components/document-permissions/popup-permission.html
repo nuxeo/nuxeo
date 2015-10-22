@@ -12,13 +12,13 @@
 <link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../../bower_components/iron-icons/editor-icons.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
-<link rel="import" href="../../../bower_components/nuxeo-elements/nx-operation.html">
-<link rel="import" href="../../../bower_components/nuxeo-elements/widgets/nx-user-suggestion.html">
+<link rel="import" href="../../../bower_components/nuxeo-elements/nuxeo-operation.html">
+<link rel="import" href="../../../bower_components/nuxeo-elements/widgets/nuxeo-user-suggestion.html">
 
 <dom-module id="popup-permission">
     <template>
-        <nx-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
-        <nx-operation id="replaceOp" op="Document.ReplacePermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
+        <nuxeo-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}} on-response="handleResponse"></nuxeo-operation>
+        <nuxeo-operation id="replaceOp" op="Document.ReplacePermission" input={{docId}} params={{params}} on-response="handleResponse"></nuxeo-operation>
 
         <template is="dom-if" if="{{!updatingACE}}">
             <paper-button on-click="togglePopup">[[i18n('label.permissions.newPermission', 'New Permission')]]</paper-button>
@@ -41,7 +41,7 @@
                     <div>
                         <div><span class="required">[[i18n('label.permissions.userGroup', 'User / Group')]]</span></div>
                         <div>
-                            <nx-user-suggestion value="{{params.username}}"></nx-user-suggestion>
+                            <nuxeo-user-suggestion value="{{params.username}}"></nuxeo-user-suggestion>
                         </div>
                     </div>
                 </template>

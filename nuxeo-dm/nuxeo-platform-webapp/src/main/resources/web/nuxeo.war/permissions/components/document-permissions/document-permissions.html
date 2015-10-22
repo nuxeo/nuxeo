@@ -1,7 +1,7 @@
 <link rel="import" href="../../../bower_components/paper-styles/paper-styles.html"></link>
-<link rel="import" href="../../../bower_components/nuxeo-elements/nx-connection.html"></link>
-<link rel="import" href="../../../bower_components/nuxeo-elements/nx-resource.html"></link>
-<link rel="import" href="../../../bower_components/nuxeo-elements/nx-document.html"></link>
+<link rel="import" href="../../../bower_components/nuxeo-elements/nuxeo-connection.html"></link>
+<link rel="import" href="../../../bower_components/nuxeo-elements/nuxeo-resource.html"></link>
+<link rel="import" href="../../../bower_components/nuxeo-elements/nuxeo-document.html"></link>
 <link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html"></link>
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html"></link>
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html"></link>
@@ -42,8 +42,8 @@
         font-weight: bold;
       }
     </style>
-    <nx-document id="doc" auto doc-id="{{docId}}" doc-path="{{docPath}}" response="{{doc}}"
-      enrichers="acls, permissions, userVisiblePermissions" params="{{params}}"></nx-document>
+    <nuxeo-document id="doc" auto doc-id="{{docId}}" doc-path="{{docPath}}" response="{{doc}}"
+      enrichers="acls, permissions, userVisiblePermissions" params="{{params}}"></nuxeo-document>
 
     <div class="bubbleBox">
       <div class="bubbleHeader">
@@ -150,12 +150,12 @@
       </div>
     </div>
 
-    <nx-operation id="rmPermission" op="Document.RemovePermission" input="{{doc.uid}}"
-      on-response="refresh"></nx-operation>
-    <nx-operation id="blockOp" op="Document.BlockPermissionInheritance" input={{docId}}
-      on-response="refresh"></nx-operation>
-    <nx-operation id="unblockOp" op="Document.UnblockPermissionInheritance" input={{docId}}
-      on-response="refresh"></nx-operation>
+    <nuxeo-operation id="rmPermission" op="Document.RemovePermission" input="{{doc.uid}}"
+      on-response="refresh"></nuxeo-operation>
+    <nuxeo-operation id="blockOp" op="Document.BlockPermissionInheritance" input={{docId}}
+      on-response="refresh"></nuxeo-operation>
+    <nuxeo-operation id="unblockOp" op="Document.UnblockPermissionInheritance" input={{docId}}
+      on-response="refresh"></nuxeo-operation>
   </template>
 </dom-module>
 
