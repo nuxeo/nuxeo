@@ -20,10 +20,12 @@ import static org.nuxeo.ecm.platform.rendition.Constants.FILES_SCHEMA;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_NAME_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -158,8 +160,18 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
             existingRenditions = userSession.query(query.toString());
         }
         DocumentModel rendition;
+        String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
+        Calendar sourceLastModified = (Calendar) sourceDocument.getPropertyValue(modificationDatePropertyName);
         if (existingRenditions.size() > 0) {
             rendition = session.getDocument(existingRenditions.get(0).getRef());
+            if (!isVersionable) {
+                Calendar renditionSourceLastModified = (Calendar) rendition.getPropertyValue(
+                        RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY);
+                if (renditionSourceLastModified != null && !renditionSourceLastModified.before(sourceLastModified)) {
+                    this.renditionBlob = (Blob) rendition.getPropertyValue("file:content");
+                    return rendition;
+                }
+            }
             if (rendition.isVersion()) {
                 String sid = rendition.getVersionSeriesId();
                 rendition = session.getDocument(new IdRef(sid));
@@ -176,6 +188,9 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         rendition.setPropertyValue(RENDITION_SOURCE_ID_PROPERTY, sourceDocument.getId());
         if (isVersionable) {
             rendition.setPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY, liveDocumentId);
+        }
+        if (sourceLastModified != null) {
+            rendition.setPropertyValue(RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY, sourceLastModified);
         }
         rendition.setPropertyValue(RENDITION_NAME_PROPERTY, renditionName);
 
@@ -224,6 +239,12 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         Long minorVersion = (Long) versionDocument.getPropertyValue("uid:minor_version");
         rendition.setPropertyValue("uid:minor_version", minorVersion);
         rendition.setPropertyValue("uid:major_version", versionDocument.getPropertyValue("uid:major_version"));
+    }
+
+    protected String getSourceDocumentModificationDatePropertyName() {
+        RenditionService rs = Framework.getService(RenditionService.class);
+        RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
+        return def.getSourceDocumentModificationDatePropertyName();
     }
 
 }
