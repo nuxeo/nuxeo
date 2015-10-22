@@ -21,31 +21,32 @@ package org.nuxeo.ecm.platform.pictures.tiles.restlets;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter;
 import org.nuxeo.ecm.platform.pictures.tiles.serializer.JSONPictureTilesSerializer;
 import org.nuxeo.ecm.platform.pictures.tiles.serializer.PictureTilesSerializer;
 import org.nuxeo.ecm.platform.pictures.tiles.serializer.XMLPictureTilesSerializer;
 import org.nuxeo.ecm.platform.ui.web.restAPI.BaseStatelessNuxeoRestlet;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.OutputRepresentation;
 
 /**
  * Restlet to provide a REST API on top of the PictureTilingService.
@@ -61,6 +62,8 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
 
     @Override
     public void handle(Request req, Response res) {
+        HttpServletRequest request = getHttpRequest(req);
+        HttpServletResponse response = getHttpResponse(res);
 
         String repo = (String) req.getAttributes().get("repoId");
         String docid = (String) req.getAttributes().get("docId");
@@ -129,8 +132,28 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
 
         if ((x == null) || (y == null)) {
             handleSendInfo(res, tiles, format);
-        } else {
-            handleSendImage(res, tiles, Integer.decode(x), Integer.decode(y));
+            return;
+        }
+
+        final Blob image;
+        try {
+            image = tiles.getTile(Integer.decode(x), Integer.decode(y));
+        } catch (NuxeoException | IOException e) {
+            handleError(res, e);
+            return;
+        }
+
+        String reason = "tile";
+        Boolean inline = Boolean.TRUE;
+        Map<String, Serializable> extendedInfos = new HashMap<>();
+        extendedInfos.put("x", x);
+        extendedInfos.put("y", y);
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        try {
+            downloadService.downloadBlob(request, response, targetDocument, xpath, image, image.getFilename(), reason,
+                    extendedInfos, inline, byteRange -> setEntityToBlobOutput(image, byteRange, res));
+        } catch (IOException e) {
+            handleError(res, e);
         }
     }
 
@@ -172,27 +195,6 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         HttpServletResponse response = getHttpResponse(res);
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragma", "no-cache");
-    }
-
-    protected void handleSendImage(Response res, PictureTiles tiles, Integer x, Integer y) {
-
-        final Blob image;
-        try {
-            image = tiles.getTile(x, y);
-        } catch (NuxeoException | IOException e) {
-            handleError(res, e);
-            return;
-        }
-
-        // blobs are always persistent, and temporary blobs are GCed only when not referenced anymore
-        res.setEntity(new OutputRepresentation(null) {
-            @Override
-            public void write(OutputStream outputStream) throws IOException {
-                try (InputStream stream = image.getStream()) {
-                    IOUtils.copy(stream, outputStream);
-                }
-            }
-        });
     }
 
     protected void handleNoTiles(Response res, Exception e) {

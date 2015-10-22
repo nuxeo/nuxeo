@@ -22,13 +22,13 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 import static org.jboss.seam.ScopeType.EVENT;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -44,7 +44,6 @@ import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.OutputRepresentation;
 
 /**
  * Restlet to help LiveEdit clients download the blob content of a document
@@ -65,6 +64,8 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
 
     @Override
     public void handle(Request req, Response res) {
+        HttpServletRequest request = getHttpRequest(req);
+        HttpServletResponse response = getHttpResponse(res);
 
         String repo = (String) req.getAttributes().get("repo");
         if (repo == null || repo.equals("*")) {
@@ -89,12 +90,11 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
         }
 
         try {
-            final String filename;
-            final Blob blob;
-
             String blobPropertyName = getQueryParamValue(req, BLOB_PROPERTY_NAME, null);
             String filenamePropertyName = getQueryParamValue(req, FILENAME_PROPERTY_NAME, null);
+            Blob blob;
             String xpath;
+            String filename;
             if (blobPropertyName != null && filenamePropertyName != null) {
                 filename = (String) dm.getPropertyValue(filenamePropertyName);
                 blob = (Blob) dm.getPropertyValue(blobPropertyName);
@@ -107,24 +107,17 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
                 blob = (Blob) dm.getProperty(schemaName, blobFieldName);
                 xpath = schemaName + ':' + blobFieldName;
             }
+            if (StringUtils.isBlank(filename)) {
+                filename = StringUtils.defaultIfBlank(blob.getFilename(), "file");
+            }
 
-            // blobs are always persistent, and temporary blobs are GCed only when not referenced anymore
-            res.setEntity(new OutputRepresentation(null) {
-                @Override
-                public void write(OutputStream outputStream) throws IOException {
-                    DownloadService downloadService = Framework.getService(DownloadService.class);
-                    downloadService.logDownload(dm, xpath, filename, "restlet", null);
-                    try (InputStream stream = blob.getStream()) {
-                        IOUtils.copy(stream, outputStream);
-                    }
-                }
-            });
-            HttpServletResponse response = getHttpResponse(res);
-
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\";");
-            // TODO: add mimetype here too
-
-        } catch (NuxeoException e) {
+            // trigger download
+            String reason = "download";
+            Map<String, Serializable> extendedInfos = null;
+            DownloadService downloadService = Framework.getService(DownloadService.class);
+            downloadService.downloadBlob(request, response, dm, xpath, blob, filename, reason, extendedInfos, null,
+                    byteRange -> setEntityToBlobOutput(blob, byteRange, res));
+        } catch (IOException | NuxeoException e) {
             handleError(res, e);
         }
     }

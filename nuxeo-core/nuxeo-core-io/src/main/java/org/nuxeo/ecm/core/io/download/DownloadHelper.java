@@ -34,6 +34,8 @@ public class DownloadHelper {
 
     private static final Log log = LogFactory.getLog(DownloadHelper.class);
 
+    public static final String INLINE = "inline";
+
     // tomcat catalina
     private static final String CLIENT_ABORT_EXCEPTION = "ClientAbortException";
 
@@ -98,16 +100,34 @@ public class DownloadHelper {
      * @return a full string to set as value of a {@code Content-Disposition} header
      */
     public static String getRFC2231ContentDisposition(HttpServletRequest request, String filename) {
+        return getRFC2231ContentDisposition(request, filename, null);
+    }
 
-        String inline = request.getParameter("inline");
-        if (inline == null) {
-            inline = (String) request.getAttribute("inline");
-        }
-        boolean inlineFlag = (inline == null || "false".equals(inline)) ? false : true;
-
+    /**
+     * Generates a {@code Content-Disposition} string for a given filename.
+     * <p>
+     * The value follows RFC2231.
+     *
+     * @param request the http servlet request
+     * @param filename the filename
+     * @param inline how to set the content disposition; {@code TRUE} for {@code inline}, {@code FALSE} for
+     *            {@code attachment}, or {@code null} to detect from {@code inline} request parameter or attribute
+     * @return a full string to set as value of a {@code Content-Disposition} header
+     * @since 7.10
+     */
+    public static String getRFC2231ContentDisposition(HttpServletRequest request, String filename, Boolean inline) {
         String userAgent = request.getHeader("User-Agent");
-        return RFC2231.encodeContentDisposition(filename, inlineFlag, userAgent);
-
+        boolean binline;
+        if (inline == null) {
+            String inlineParam = request.getParameter(INLINE);
+            if (inlineParam == null) {
+                inlineParam = (String) request.getAttribute(INLINE);
+            }
+            binline = inlineParam != null && !"false".equals(inlineParam);
+        } else {
+            binline = inline.booleanValue();
+        }
+        return RFC2231.encodeContentDisposition(filename, binline, userAgent);
     }
 
     public static boolean isClientAbortError(Throwable t) {

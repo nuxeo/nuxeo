@@ -16,8 +16,7 @@
 package org.nuxeo.ecm.platform.preview.restlet;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -25,10 +24,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
@@ -58,7 +60,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.OutputRepresentation;
+import org.restlet.data.Status;
 
 /**
  * Provides a REST API to retrieve the preview of a document.
@@ -94,6 +96,8 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
 
     @Override
     public void handle(Request req, Response res) {
+        HttpServletRequest request = getHttpRequest(req);
+        HttpServletResponse response = getHttpResponse(res);
 
         String repo = (String) req.getAttributes().get("repo");
         String docid = (String) req.getAttributes().get("docid");
@@ -134,7 +138,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             return;
         }
 
-        // if it's a managed blob try to use the embed uri
+        // if it's a managed blob try to use the embed uri for preview
         Blob blobToPreview = getBlobToPreview(xpath);
         BlobManager blobManager = Framework.getService(BlobManager.class);
         try {
@@ -145,6 +149,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             }
         } catch (IOException e) {
             handleError(res, e);
+            return;
         }
 
         localeSetup(req);
@@ -154,23 +159,39 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             // response was already handled by initCachedBlob
             return;
         }
-        HttpServletResponse response = getHttpResponse(res);
+
+        // find blob
+        Blob blob = null;
+        if (StringUtils.isEmpty(subPath)) {
+            blob = previewBlobs.get(0);
+            blob.setMimeType("text/html");
+        } else {
+            for (Blob b : previewBlobs) {
+                if (subPath.equals(b.getFilename())) {
+                    blob = b;
+                    break;
+                }
+            }
+        }
+        if (blob == null) {
+            res.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            return;
+        }
+
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragma", "no-cache");
 
+        String reason = "preview";
+        final Blob fblob = blob;
+        if (xpath == null || "default".equals(xpath)) {
+            xpath = DownloadService.BLOBHOLDER_0;
+        }
+        Boolean inline = Boolean.TRUE;
+        Map<String, Serializable> extendedInfos = Collections.singletonMap("subPath", subPath);
+        DownloadService downloadService = Framework.getService(DownloadService.class);
         try {
-            if (subPath == null || "".equals(subPath)) {
-                handlePreview(res, previewBlobs.get(0), "text/html");
-                return;
-            } else {
-                for (Blob blob : previewBlobs) {
-                    if (subPath.equals(blob.getFilename())) {
-                        handlePreview(res, blob, blob.getMimeType());
-                        return;
-                    }
-
-                }
-            }
+            downloadService.downloadBlob(request, response, targetDocument, xpath, blob, blob.getFilename(), reason,
+                    extendedInfos, inline, byteRange -> setEntityToBlobOutput(fblob, byteRange, res));
         } catch (IOException e) {
             handleError(res, e);
         }
@@ -267,38 +288,5 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
 
         response.setHeader("Content-Disposition", "inline");
     }
-
-    protected void handlePreview(Response res, final Blob blob, String mimeType) throws IOException {
-        // blobs are always persistent, and temporary blobs are GCed only when not referenced anymore
-        res.setEntity(new OutputRepresentation(null) {
-            @Override
-            public void write(OutputStream outputStream) throws IOException {
-                try (InputStream stream = blob.getStream()) {
-                    IOUtils.copy(stream, outputStream);
-                }
-            }
-        });
-        HttpServletResponse response = getHttpResponse(res);
-
-        response.setHeader("Content-Disposition", "inline");
-        response.setContentType(mimeType);
-    }
-
-    /*
-     * protected void updateCache(DocumentModel doc, HtmlPreviewAdapter adapter, String xpath) {
-     * String docKey = doc.getId(); try { Calendar modified = (Calendar) doc.getProperty("dublincore", "modified");
-     * PreviewCacheEntry entry = new PreviewCacheEntry(modified, adapter, xpath); synchronized (cachedAdapters) {
-     * cachedAdapters.put(docKey, entry); } cacheGC(); } finally { previewInProcessing.remove(docKey); } } protected
-     * void removeFromCache(String key) { PreviewCacheEntry entry = cachedAdapters.get(key); if (entry != null) {
-     * entry.getAdapter().cleanup(); } synchronized (cachedAdapters) { cachedAdapters.remove(key); } } protected
-     * HtmlPreviewAdapter getFromCache(DocumentModel doc, String xpath) { String docKey =
-     * doc.getId(); while (previewInProcessing.contains(docKey)) { try { Thread.sleep(200); } catch
-     * (InterruptedException e) { log.error(e, e); } } if (cachedAdapters.containsKey(docKey)) { Calendar modified =
-     * (Calendar) doc.getProperty("dublincore", "modified"); PreviewCacheEntry entry = cachedAdapters.get(doc.getId());
-     * if (!entry.getModified().equals(modified) || !xpath.equals(entry.getXpath())) { removeFromCache(docKey); return
-     * null; } else { return entry.getAdapter(); } } else { return null; } } protected void cacheGC() { for (String key
-     * : cachedAdapters.keySet()) { long now = System.currentTimeMillis(); PreviewCacheEntry entry =
-     * cachedAdapters.get(key); if ((now - entry.getTimeStamp()) > MAX_CACHE_LIFE * 1000) { removeFromCache(key); } } }
-     */
 
 }

@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.restAPI;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,11 +28,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.io.download.DownloadService.ByteRange;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.Restlet;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.OutputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.w3c.dom.Element;
@@ -132,6 +139,24 @@ public class BaseNuxeoRestlet extends Restlet {
 
     protected static String getQueryParamValue(Request req, String paramName, String defaultValue) {
         return req.getResourceRef().getQueryAsForm().getFirstValue(paramName, defaultValue);
+    }
+
+    /**
+     * Sets the response entity to a representation that will write the blob.
+     *
+     * @param blob the blob
+     * @param byteRange the byte range
+     * @param res the response
+     * @since 7.10
+     */
+    public void setEntityToBlobOutput(Blob blob, ByteRange byteRange, Response res) {
+        res.setEntity(new OutputRepresentation(null) {
+            @Override
+            public void write(OutputStream out) throws IOException {
+                DownloadService downloadService = Framework.getService(DownloadService.class);
+                downloadService.transferBlobWithByteRange(blob, byteRange, () -> out);
+            }
+        });
     }
 
 }

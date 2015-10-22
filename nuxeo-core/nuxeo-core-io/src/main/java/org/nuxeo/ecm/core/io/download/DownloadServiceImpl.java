@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.script.Invocable;
 import javax.script.ScriptContext;
@@ -174,6 +177,14 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos) throws IOException {
+        downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos, null,
+                byteRange -> transferBlobWithByteRange(blob, byteRange, response));
+    }
+
+    @Override
+    public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
+            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline,
+            Consumer<ByteRange> blobTransferer) throws IOException {
         if (blob == null) {
             if (doc == null || xpath == null) {
                 throw new NuxeoException("No blob or doc xpath");
@@ -209,7 +220,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             return;
         }
 
-        try (InputStream in = blob.getStream()) {
+        try {
             String etag = '"' + blob.getDigest() + '"'; // with quotes per RFC7232 2.3
             response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
             addCacheControlHeaders(request, response);
@@ -244,7 +255,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             if (StringUtils.isBlank(filename)) {
                 filename = StringUtils.defaultIfBlank(blob.getFilename(), "file");
             }
-            response.setHeader("Content-Disposition", DownloadHelper.getRFC2231ContentDisposition(request, filename));
+            String contentDisposition = DownloadHelper.getRFC2231ContentDisposition(request, filename, inline);
+            response.setHeader("Content-Disposition", contentDisposition);
             response.setContentType(blob.getMimeType());
             if (blob.getEncoding() != null) {
                 response.setCharacterEncoding(blob.getEncoding());
@@ -260,6 +272,10 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 byteRange = DownloadHelper.parseRange(range, length);
                 if (byteRange == null) {
                     log.error("Invalid byte range received: " + range);
+                } else {
+                    response.setHeader("Content-Range",
+                            "bytes " + byteRange.getStart() + "-" + byteRange.getEnd() + "/" + length);
+                    response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                 }
             }
             long contentLength = byteRange == null ? length : byteRange.getLength();
@@ -267,25 +283,48 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 response.setContentLength((int) contentLength);
             }
 
-            // (not ours to close)
-            @SuppressWarnings("resource")
-            OutputStream out = response.getOutputStream();
-
             logDownload(doc, xpath, filename, reason, extendedInfos);
 
+            // execute the final download
+            blobTransferer.accept(byteRange);
+        } catch (UncheckedIOException e) {
+            DownloadHelper.handleClientDisconnect(e.getCause());
+        } catch (IOException ioe) {
+            DownloadHelper.handleClientDisconnect(ioe);
+        }
+    }
+
+    protected void transferBlobWithByteRange(Blob blob, ByteRange byteRange, HttpServletResponse response)
+            throws UncheckedIOException {
+        transferBlobWithByteRange(blob, byteRange, () -> {
+            try {
+                return response.getOutputStream();
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        });
+        try {
+            response.flushBuffer();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @Override
+    public void transferBlobWithByteRange(Blob blob, ByteRange byteRange, Supplier<OutputStream> outputStreamSupplier)
+            throws UncheckedIOException {
+        try (InputStream in = blob.getStream()) {
+            @SuppressWarnings("resource")
+            OutputStream out = outputStreamSupplier.get(); // not ours to close
             BufferingServletOutputStream.stopBuffering(out);
             if (byteRange == null) {
                 IOUtils.copy(in, out);
             } else {
-                response.setHeader("Content-Range", "bytes " + byteRange.getStart() + "-" + byteRange.getEnd() + "/"
-                        + length);
-                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                 IOUtils.copyLarge(in, out, byteRange.getStart(), byteRange.getLength());
             }
             out.flush();
-            response.flushBuffer();
-        } catch (IOException ioe) {
-            DownloadHelper.handleClientDisconnect(ioe);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -340,10 +379,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         return blob;
     }
 
-    /**
-     * Checks if the download is allowed based on the permissions configured.
-     */
-    protected boolean checkPermission(DocumentModel doc, String xpath, Blob blob, String reason,
+    @Override
+    public boolean checkPermission(DocumentModel doc, String xpath, Blob blob, String reason,
             Map<String, Serializable> extendedInfos) {
         List<DownloadPermissionDescriptor> descriptors = registry.getDownloadPermissionDescriptors();
         if (descriptors.isEmpty()) {
