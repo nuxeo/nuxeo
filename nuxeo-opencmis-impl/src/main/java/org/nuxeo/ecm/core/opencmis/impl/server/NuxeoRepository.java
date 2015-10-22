@@ -138,6 +138,8 @@ public class NuxeoRepository {
 
     protected TypeManagerImpl typeManager;
 
+    protected CmisVersion cmisVersion;
+
     public NuxeoRepository(String repositoryId, String rootFolderId) {
         this.repositoryId = repositoryId;
         this.rootFolderId = rootFolderId;
@@ -177,7 +179,7 @@ public class NuxeoRepository {
         return typeManager;
     }
 
-    protected static TypeManagerImpl initializeTypes() {
+    protected TypeManagerImpl initializeTypes() {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         // scan the types to find super/inherited relationships
         Map<String, List<String>> typesChildren = new HashMap<String, List<String>>();
@@ -197,18 +199,22 @@ public class NuxeoRepository {
         // convert the transitive closure for Folder and Document subtypes
         Set<String> done = new HashSet<String>();
         TypeManagerImpl typeManager = new TypeManagerImpl();
-        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_DOCUMENT, schemaManager));
-        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_FOLDER, schemaManager));
-        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_RELATIONSHIP, schemaManager));
-        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_SECONDARY, schemaManager));
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_DOCUMENT, schemaManager, cmisVersion));
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_FOLDER, schemaManager, cmisVersion));
+        typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_RELATIONSHIP, schemaManager, cmisVersion));
+        if (cmisVersion != CmisVersion.CMIS_1_0) {
+            typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_SECONDARY, schemaManager, cmisVersion));
+        }
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_DOCUMENT, typesChildren, done, schemaManager);
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER, typesChildren, done, schemaManager);
         addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_RELATION, typesChildren, done, schemaManager);
-        addSecondaryTypes(typeManager, schemaManager);
+        if (cmisVersion != CmisVersion.CMIS_1_0) {
+            addSecondaryTypes(typeManager, schemaManager);
+        }
         return typeManager;
     }
 
-    protected static void addTypesRecursively(TypeManagerImpl typeManager, String name,
+    protected void addTypesRecursively(TypeManagerImpl typeManager, String name,
             Map<String, List<String>> typesChildren, Set<String> done, SchemaManager schemaManager) {
         if (done.contains(name)) {
             return;
@@ -228,7 +234,7 @@ public class NuxeoRepository {
                     parentTypeId = BaseTypeId.CMIS_FOLDER.value();
                 }
             }
-            typeManager.addTypeDefinition(NuxeoTypeHelper.constructDocumentType(dt, parentTypeId));
+            typeManager.addTypeDefinition(NuxeoTypeHelper.constructDocumentType(dt, parentTypeId, cmisVersion));
         }
         // recurse in children
         List<String> children = typesChildren.get(name);
@@ -240,9 +246,9 @@ public class NuxeoRepository {
         }
     }
 
-    protected static void addSecondaryTypes(TypeManagerImpl typeManager, SchemaManager schemaManager) {
+    protected void addSecondaryTypes(TypeManagerImpl typeManager, SchemaManager schemaManager) {
         for (CompositeType type : schemaManager.getFacets()) {
-            typeManager.addTypeDefinition(NuxeoTypeHelper.constructSecondaryType(type), false);
+            typeManager.addTypeDefinition(NuxeoTypeHelper.constructSecondaryType(type, cmisVersion), false);
         }
     }
 
@@ -251,11 +257,13 @@ public class NuxeoRepository {
     }
 
     public RepositoryInfo getRepositoryInfo(String latestChangeLogToken, CallContext callContext) {
+        cmisVersion = callContext.getCmisVersion();
+
         RepositoryInfoImpl repositoryInfo = new RepositoryInfoImpl();
         repositoryInfo.setId(repositoryId);
         repositoryInfo.setName("Nuxeo Repository " + repositoryId);
         repositoryInfo.setDescription("Nuxeo Repository " + repositoryId);
-        repositoryInfo.setCmisVersionSupported(CmisVersion.CMIS_1_1.value());
+        repositoryInfo.setCmisVersionSupported(cmisVersion.value());
         repositoryInfo.setPrincipalAnonymous("Guest"); // TODO
         repositoryInfo.setPrincipalAnyone(SecurityConstants.EVERYONE);
         repositoryInfo.setThinClientUri(getBaseURL(callContext));

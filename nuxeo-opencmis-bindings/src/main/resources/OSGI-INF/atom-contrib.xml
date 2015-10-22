@@ -9,6 +9,9 @@
     <filterConfig name="cmis-atom" transactional="true">
       <pattern>${org.nuxeo.ecm.contextPath}/atom/cmis(/.*)?</pattern>
     </filterConfig>
+    <filterConfig name="cmis10-atom" transactional="true">
+      <pattern>${org.nuxeo.ecm.contextPath}/atom/cmis10(/.*)?</pattern>
+    </filterConfig>
   </extension>
 
   <!-- make sure no redirect for authentication happens -->
@@ -20,6 +23,7 @@
       class="org.nuxeo.ecm.platform.ui.web.auth.plugins.BasicAuthenticator">
       <parameters>
         <parameter name="ForcePromptURL_CMISAtomPub">atom/cmis</parameter>
+        <parameter name="ForcePromptURL_CMIS10AtomPub">atom/cmis10</parameter>
       </parameters>
     </authenticationPlugin>
   </extension>

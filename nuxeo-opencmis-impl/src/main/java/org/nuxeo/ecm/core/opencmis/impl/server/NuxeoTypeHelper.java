@@ -18,6 +18,7 @@ import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.enums.ContentStreamAllowed;
 import org.apache.chemistry.opencmis.commons.enums.PropertyType;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
@@ -139,20 +140,24 @@ public class NuxeoTypeHelper {
     // used to track down and log duplicates
     protected Map<String, String> propertyToSchema;
 
+    protected CmisVersion cmisVersion;
+
     /**
      * Helper to construct one CMIS type from a {@link DocumentType}.
      */
     protected NuxeoTypeHelper(String id, String parentId, BaseTypeId baseTypeId, DocumentType documentType,
-            String nuxeoTypeId, boolean creatable) {
+            String nuxeoTypeId, boolean creatable, CmisVersion cmisVersion) {
         propertyToSchema = new HashMap<String, String>();
+        this.cmisVersion = cmisVersion;
         constructBaseDocumentType(id, parentId, baseTypeId, documentType, nuxeoTypeId, creatable);
     }
 
     /**
      * Helper to construct one CMIS type from a secondary type.
      */
-    protected NuxeoTypeHelper(String id, String nuxeoTypeId) {
+    protected NuxeoTypeHelper(String id, String nuxeoTypeId, CmisVersion cmisVersion) {
         propertyToSchema = new HashMap<String, String>();
+        this.cmisVersion = cmisVersion;
         constructBaseSecondaryType(id, nuxeoTypeId);
     }
 
@@ -200,11 +205,12 @@ public class NuxeoTypeHelper {
         return parentId;
     }
 
-    public static TypeDefinition constructDocumentType(DocumentType documentType, String parentId) {
+    public static TypeDefinition constructDocumentType(DocumentType documentType, String parentId,
+            CmisVersion cmisVersion) {
         String nuxeoTypeId = documentType.getName();
         String id = mappedId(nuxeoTypeId);
         NuxeoTypeHelper h = new NuxeoTypeHelper(id, parentId, getBaseTypeId(documentType), documentType, nuxeoTypeId,
-                true);
+                true, cmisVersion);
         // Nuxeo Property Definitions
         for (Schema schema : documentType.getSchemas()) {
             h.addSchemaPropertyDefinitions(schema);
@@ -212,10 +218,10 @@ public class NuxeoTypeHelper {
         return h.t;
     }
 
-    public static TypeDefinition constructSecondaryType(CompositeType type) {
+    public static TypeDefinition constructSecondaryType(CompositeType type, CmisVersion cmisVersion) {
         String nuxeoTypeId = type.getName();
         String id = "facet:" + nuxeoTypeId;
-        NuxeoTypeHelper h = new NuxeoTypeHelper(id, nuxeoTypeId);
+        NuxeoTypeHelper h = new NuxeoTypeHelper(id, nuxeoTypeId, cmisVersion);
         // Nuxeo Property Definitions
         for (Schema schema : type.getSchemas()) {
             h.addSchemaPropertyDefinitions(schema);
@@ -226,14 +232,15 @@ public class NuxeoTypeHelper {
     /**
      * Constructs a base type, not mapped to a Nuxeo type. If not a secondary, it has the dublincore schema.
      */
-    public static TypeDefinition constructCmisBase(BaseTypeId baseTypeId, SchemaManager schemaManager) {
+    public static TypeDefinition constructCmisBase(BaseTypeId baseTypeId, SchemaManager schemaManager,
+            CmisVersion cmisVersion) {
         NuxeoTypeHelper h;
         if (baseTypeId != BaseTypeId.CMIS_SECONDARY) {
-            h = new NuxeoTypeHelper(baseTypeId.value(), null, baseTypeId, null, null, true);
+            h = new NuxeoTypeHelper(baseTypeId.value(), null, baseTypeId, null, null, true, cmisVersion);
             DocumentType dt = schemaManager.getDocumentType(NUXEO_FOLDER); // has dc
             h.addSchemaPropertyDefinitions(dt.getSchema(NX_DUBLINCORE));
         } else {
-            h = new NuxeoTypeHelper(baseTypeId.value(), null);
+            h = new NuxeoTypeHelper(baseTypeId.value(), null, cmisVersion);
         }
         return h.t;
     }
@@ -389,12 +396,16 @@ public class NuxeoTypeHelper {
                 Cardinality.SINGLE, Updatability.ONCREATE, false, true, false, false));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.BASE_TYPE_ID, "Base Type ID", PropertyType.ID,
                 Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.SECONDARY_OBJECT_TYPE_IDS, "Secondary Type IDs",
-                PropertyType.ID, Cardinality.MULTI, Updatability.READONLY, false, false, false, false));
+        if (cmisVersion != CmisVersion.CMIS_1_0) {
+            t.addPropertyDefinition(newPropertyDefinition(PropertyIds.SECONDARY_OBJECT_TYPE_IDS, "Secondary Type IDs",
+                    PropertyType.ID, Cardinality.MULTI, Updatability.READONLY, false, false, false, false));
+        }
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.NAME, "Name", PropertyType.STRING,
                 Cardinality.SINGLE, Updatability.READWRITE, false, true, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.DESCRIPTION, "Description", PropertyType.STRING,
-                Cardinality.SINGLE, Updatability.READWRITE, false, false, true, true));
+        if (cmisVersion != CmisVersion.CMIS_1_0) {
+            t.addPropertyDefinition(newPropertyDefinition(PropertyIds.DESCRIPTION, "Description", PropertyType.STRING,
+                    Cardinality.SINGLE, Updatability.READWRITE, false, false, true, true));
+        }
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CREATED_BY, "Created By", PropertyType.STRING,
                 Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.CREATION_DATE, "Creation Date",
@@ -436,7 +447,7 @@ public class NuxeoTypeHelper {
                 Cardinality.SINGLE, Updatability.READWRITE, false, true, true, true));
     }
 
-    protected static void addDocumentPropertyDefinitions(DocumentTypeDefinitionImpl t) {
+    protected void addDocumentPropertyDefinitions(DocumentTypeDefinitionImpl t) {
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_IMMUTABLE, "Is Immutable", PropertyType.BOOLEAN,
                 Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
         t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_LATEST_VERSION, "Is Latest Version",
@@ -479,8 +490,10 @@ public class NuxeoTypeHelper {
                 Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
         t.addPropertyDefinition(newPropertyDefinition(NX_ISCHECKEDIN, "Is Checked In PWC", PropertyType.BOOLEAN,
                 Cardinality.SINGLE, Updatability.READONLY, false, false, true, true));
-        t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_PRIVATE_WORKING_COPY, "Is PWC",
-                PropertyType.BOOLEAN, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        if (cmisVersion != CmisVersion.CMIS_1_0) {
+            t.addPropertyDefinition(newPropertyDefinition(PropertyIds.IS_PRIVATE_WORKING_COPY, "Is PWC",
+                    PropertyType.BOOLEAN, Cardinality.SINGLE, Updatability.READONLY, false, false, false, false));
+        }
     }
 
     protected static PropertyDefinition<?> newPropertyDefinition(String id, String displayName,
