@@ -22,6 +22,7 @@
       <label>label.rendition.pdf</label>
       <operationChain>Dummy</operationChain>
       <allowEmptyBlob>true</allowEmptyBlob>
+      <sourceDocumentModificationDatePropertyName>dc:issued</sourceDocumentModificationDatePropertyName>
     </renditionDefinition>
 
     <renditionDefinition name="renditionDefinitionWithUnknownOperationChain" enabled="true">
