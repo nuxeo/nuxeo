@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -177,14 +178,6 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos) throws IOException {
-        downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos, null,
-                byteRange -> transferBlobWithByteRange(blob, byteRange, response));
-    }
-
-    @Override
-    public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
-            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline,
-            Consumer<ByteRange> blobTransferer) throws IOException {
         if (blob == null) {
             if (doc == null || xpath == null) {
                 throw new NuxeoException("No blob or doc xpath");
@@ -195,7 +188,16 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 return;
             }
         }
+        final Blob fblob = blob;
+        downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos, null,
+                byteRange -> transferBlobWithByteRange(fblob, byteRange, response));
+    }
 
+    @Override
+    public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
+            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline,
+            Consumer<ByteRange> blobTransferer) throws IOException {
+        Objects.requireNonNull(blob);
         // check blob permissions
         if (!checkPermission(doc, xpath, blob, reason, extendedInfos)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Permission denied");
