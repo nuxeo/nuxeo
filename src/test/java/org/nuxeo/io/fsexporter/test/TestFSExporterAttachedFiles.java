@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -27,7 +27,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -36,7 +35,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.io.fsexporter.FSExporter;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -57,23 +55,22 @@ public class TestFSExporterAttachedFiles {
 
     @Test
     public void shouldExportFile() throws Exception {
-
         // creation of folders
         DocumentModel folder = session.createDocumentModel("/default-domain/", "myfolder1", "Folder");
         folder.setPropertyValue("dc:title", "Mon premier repertoire");
         session.createDocument(folder);
 
         // attached blob for myfile
-        ArrayList<Map<String, Serializable>> listblobs = new ArrayList<Map<String, Serializable>>();
+        ArrayList<Map<String, Serializable>> listblobs = new ArrayList<>();
 
-        Map<String, Serializable> mapBlob = new HashMap<String, Serializable>();
+        Map<String, Serializable> mapBlob = new HashMap<>();
         Blob blob1 = new StringBlob("blob1");
         blob1.setFilename("blob1.txt");
         mapBlob.put("file", (Serializable) blob1);
         mapBlob.put("filename", "blob1.txt");
         listblobs.add(mapBlob);
 
-        Map<String, Serializable> mapBlob2 = new HashMap<String, Serializable>();
+        Map<String, Serializable> mapBlob2 = new HashMap<>();
         Blob blob2 = new StringBlob("blob2");
         blob2.setFilename("blob2.txt");
         mapBlob2.put("file", (Serializable) blob2);
@@ -91,25 +88,19 @@ public class TestFSExporterAttachedFiles {
         file.setPropertyValue("files:files", listblobs);
 
         session.createDocument(file);
-
         session.save();
 
         String tmp = System.getProperty("java.io.tmpdir");
-
-        Framework.getLocalService(FSExporter.class);
         service.export(session, "/default-domain/", tmp, "");
-        
-        // Remove last "/"in the path
-        String pathPrefix = StringUtils.removeEnd(tmp, "/");
 
+        String pathPrefix = StringUtils.removeEnd(tmp, "/");
         String targetPath = pathPrefix + folder.getPathAsString() + "/" + blob.getFilename();
         Assert.assertTrue(new File(targetPath).exists());
 
-        // verify that the blobs exist
         // The code has added the name as prefix: "myfile-"
         String targetPathBlob1 = pathPrefix + folder.getPathAsString() + "/myfile-" + blob1.getFilename();
-        Assert.assertTrue(new File(targetPathBlob1).exists());
+        Assert.assertTrue("blob must exist", new File(targetPathBlob1).exists());
         String targetPathBlob2 = pathPrefix + folder.getPathAsString() + "/myfile-" + blob2.getFilename();
-        Assert.assertTrue(new File(targetPathBlob2).exists());
+        Assert.assertTrue("blob must exist", new File(targetPathBlob2).exists());
     }
 }

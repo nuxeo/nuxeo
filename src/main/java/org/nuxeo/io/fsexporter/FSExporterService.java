@@ -23,9 +23,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface FSExporterService {
 
-    void export(CoreSession session, String rootPath, String fsPath, String PageProvider) throws
-            IOException, Exception;
+    void export(CoreSession session, String rootPath, String fsPath, String PageProvider) throws IOException;
 
-    void exportXML(CoreSession session, String rootName, String fileSystemTarget) throws Exception;
+    void exportXML(CoreSession session, String rootName, String fileSystemTarget);
 
 }

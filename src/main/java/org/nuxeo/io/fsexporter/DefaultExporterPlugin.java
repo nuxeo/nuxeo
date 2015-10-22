@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,14 +17,15 @@
 package org.nuxeo.io.fsexporter;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,24 +41,12 @@ import org.nuxeo.runtime.api.Framework;
 public class DefaultExporterPlugin implements FSExporterPlugin {
 
     @Override
-    public DocumentModelList getChildren(CoreSession session, DocumentModel doc, String customQuery)
-            throws Exception {
-
-        PageProviderService ppService = null;
-        try {
-            ppService = Framework.getService(PageProviderService.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+    public DocumentModelList getChildren(CoreSession session, DocumentModel doc, String customQuery) {
+        Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<DocumentModel> pp = null;
         String query = "";
-
-        // if the user gives a query, we build a new Page Provider with the
-        // query provided
+        // if the user gives a query, we build a new Page Provider with the query provided
         if (StringUtils.isNotBlank(customQuery)) {
             if (customQuery.toLowerCase().contains(" where")) {
                 query = customQuery + " AND ecm:parentId = ?";
@@ -69,22 +58,20 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
         }
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setPattern(query);
-        
-        pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc, null, null, null, null, props,
-                new Object[] { doc.getId() });
+
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        @SuppressWarnings("unchecked")
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider("customPP", desc,
+                null, null, null, null, props, new Object[] { doc.getId() });
 
         int countPages = 1;
         // get all the documents of the first page
         DocumentModelList children = new DocumentModelListImpl(pp.getCurrentPage());
-
-        // if there is more than one page, get the children of all the other
-        // pages and put into one list
-        List<DocumentModel> childrenTemp = new ArrayList<DocumentModel>();
-
+        // if there is more than one page, get the children of all the other pages and put into one list
         if (pp.getNumberOfPages() > 1) {
             while (countPages < pp.getNumberOfPages()) {
                 pp.nextPage();
-                childrenTemp = pp.getCurrentPage();
+                List<DocumentModel> childrenTemp = pp.getCurrentPage();
                 for (DocumentModel childTemp : childrenTemp) {
                     children.add(childTemp);
                 }
@@ -96,7 +83,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
     }
 
     @Override
-    public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception {
+    public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws IOException {
         File folder = null;
         File newFolder = null;
         folder = new File(fsPath);
@@ -111,7 +98,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
             newFolder.mkdir();
         }
 
-        // get all the blobs of the blobholder
+        // get all the blobs of the blob holder
         BlobHolder myblobholder = docfrom.getAdapter(BlobHolder.class);
         if (myblobholder != null) {
             java.util.List<Blob> listblobs = myblobholder.getBlobs();
@@ -121,8 +108,6 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
                 String FileNameToExport = getFileName(blob, docfrom, folder, i);
                 // export the file to the target file system
                 File target = new File(folder, FileNameToExport);
-                // exportFileInXML(session, docfrom, fsPath + "/" +
-                // FileNameToExport);
                 blob.transferTo(target);
                 i++;
             }
@@ -135,8 +120,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
 
     protected String getFileName(Blob blob, DocumentModel docfrom, File folder, int i) {
         String prefix = "";
-        // if not principal file, prefix = name of the file which contains
-        // the blobs
+        // if not principal file, prefix = name of the file which contains the blobs
         if (i != 1) {
             prefix = docfrom.getName() + "-";
         }

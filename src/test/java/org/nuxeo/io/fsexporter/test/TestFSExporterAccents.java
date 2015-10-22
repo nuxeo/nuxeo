@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.io.fsexporter.FSExporter;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,7 +52,6 @@ public class TestFSExporterAccents {
 
     @Test
     public void shouldExportFileTest() throws Exception {
-
         // creation of subfolders in sections, templates and workspaces
         DocumentModel mySection = session.createDocumentModel("/default-domain/sections", "ma premiere Section - 1",
                 "Folder");
@@ -130,28 +128,22 @@ public class TestFSExporterAccents {
         session.save();
 
         String tmp = System.getProperty("java.io.tmpdir");
-
-        Framework.getLocalService(FSExporter.class);
         service.export(session, "/default-domain/", tmp, "");
-        
-        // Remove last "/"in the path
+
         String pathPrefix = StringUtils.removeEnd(tmp, "/");
 
-        // verify that My File In Section.txt exists
         String targetPathSection = pathPrefix + mySection.getPathAsString() + "/" + blobSection.getFilename();
-        Assert.assertTrue(new File(targetPathSection).exists());
+        Assert.assertTrue("My File In Section.txt must exist", new File(targetPathSection).exists());
 
-        // verify that My File In Workspace.txt exists
         String targetPathWorkspace = pathPrefix + myWorkspace.getPathAsString() + "/" + blobWorkspace.getFilename();
-        Assert.assertTrue(new File(targetPathWorkspace).exists());
+        Assert.assertTrue("My File In Workspace.txt must exist", new File(targetPathWorkspace).exists());
 
-        // verify that My File In Template.txt exists
         String targetPathTemplate = pathPrefix + myTemplate.getPathAsString() + "/" + blobTemplate.getFilename();
-        Assert.assertTrue(new File(targetPathTemplate).exists());
+        Assert.assertTrue("My File In Template.txt must exist", new File(targetPathTemplate).exists());
 
-        // verify that file in a workspace with empty name.txt exists s
         String targetPathFileEmptyWorkspace = pathPrefix + myWorkspaceEmptyName.getPathAsString() + "/"
                 + blobWorkspaceEmptyName.getFilename();
-        Assert.assertTrue(new File(targetPathFileEmptyWorkspace).exists());
+        Assert.assertTrue("file in a workspace with empty name.txt must exist",
+                new File(targetPathFileEmptyWorkspace).exists());
     }
 }

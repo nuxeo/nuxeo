@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.io.fsexporter.FSExporter;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,7 +52,6 @@ public class TestFSExporterCase2 {
 
     @Test
     public void shouldExportFile() throws Exception {
-
         // creation of folders
         DocumentModel folder = session.createDocumentModel("/default-domain/", "myfolder1", "Folder");
         folder.setPropertyValue("dc:title", "Mon premier repertoire");
@@ -98,22 +96,12 @@ public class TestFSExporterCase2 {
         session.save();
 
         String tmp = System.getProperty("java.io.tmpdir");
-        
-        Framework.getLocalService(FSExporter.class);
         service.export(session, "/default-domain/", tmp, "");
-        
-        // Remove last "/"in the path
+
         String pathPrefix = StringUtils.removeEnd(tmp, "/");
-
-        // verify that myfile.txt exists
         String targetPath = pathPrefix + folder.getPathAsString() + "/" + blob.getFilename();
-        Assert.assertTrue(new File(targetPath).exists());
-
-        // verify that MyFileSubFolder.txt exists
+        Assert.assertTrue("myfile.txt must exist", new File(targetPath).exists());
         String targetPathSubFolder = pathPrefix + subFolder.getPathAsString() + "/" + blobSubFolder.getFilename();
-        Assert.assertTrue(new File(targetPathSubFolder).exists());
-
-        // verify that
-
+        Assert.assertTrue("MyFileSubFolder.txt must exist", new File(targetPathSubFolder).exists());
     }
 }

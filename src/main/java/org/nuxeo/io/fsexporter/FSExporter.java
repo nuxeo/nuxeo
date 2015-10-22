@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -35,34 +36,28 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
         ExportLogicDescriptor exportLogicDesc = (ExportLogicDescriptor) contribution;
         if (exportLogicDesc.plugin != null) {
             try {
                 exporter = exportLogicDesc.plugin.newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
+            } catch (IllegalAccessException | InstantiationException e) {
+                throw new NuxeoException("Failed to instantiate " + exportLogicDesc.plugin, e);
             }
         }
     }
 
     @Override
-    public void export(CoreSession session, String rootPath, String fspath, String PageProvider)
-            throws IOException, Exception {
+    public void export(CoreSession session, String rootPath, String fspath, String PageProvider) throws IOException {
         DocumentModel root = session.getDocument(new PathRef(rootPath));
         serializeStructure(session, fspath, root, PageProvider);
     }
 
     private void serializeStructure(CoreSession session, String fsPath, DocumentModel doc, String PageProvider)
-            throws IOException, Exception {
-
+            throws IOException {
         exporter.serialize(session, doc, fsPath);
 
         if (doc.isFolder()) {
-
             DocumentModelList children = exporter.getChildren(session, doc, PageProvider);
-
-            // getChildrenIterator
             for (DocumentModel child : children) {
                 serializeStructure(session, fsPath + "/" + doc.getName(), child, PageProvider);
             }
@@ -70,10 +65,7 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
     }
 
     @Override
-    public void exportXML(CoreSession session, String rootName, String fileSystemTarget) throws
-            Exception {
-        // TODO Auto-generated method stub
-        //
+    public void exportXML(CoreSession session, String rootName, String fileSystemTarget) {
         throw new UnsupportedOperationException();
     }
 

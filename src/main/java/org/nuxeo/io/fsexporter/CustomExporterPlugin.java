@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -18,6 +18,7 @@
 package org.nuxeo.io.fsexporter;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,8 +32,7 @@ import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentWriter;
 public class CustomExporterPlugin extends DefaultExporterPlugin {
 
     @Override
-    public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception {
-
+    public File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws IOException {
         // code to export XML
         BlobHolder myblobholder = docfrom.getAdapter(BlobHolder.class);
         String FileXMLNameToExport = "";
@@ -53,7 +53,7 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
         return null;
     }
 
-    protected void exportFileInXML(CoreSession session, DocumentModel docfrom, String pathtoexport) throws Exception {
+    protected void exportFileInXML(CoreSession session, DocumentModel docfrom, String pathtoexport) throws IOException {
         DocumentPipe pipe = new DocumentPipeImpl(10);
         SingleDocumentReader reader = new SingleDocumentReader(session, docfrom);
         pipe.setReader(reader);
