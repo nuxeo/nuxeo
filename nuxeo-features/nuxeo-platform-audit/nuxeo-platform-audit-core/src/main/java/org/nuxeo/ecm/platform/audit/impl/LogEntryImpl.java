@@ -41,6 +41,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -196,10 +197,16 @@ public class LogEntryImpl implements LogEntry {
 
     @Override
     public void setDocUUID(DocumentRef docRef) {
-        if (docRef.type() != DocumentRef.ID) {
+        switch (docRef.type()) {
+        case DocumentRef.ID:
+            docUUID = (String) docRef.reference();
+            break;
+        case DocumentRef.INSTANCE:
+            docUUID = ((DocumentModel) docRef.reference()).getId();
+            break;
+        default:
             throw new IllegalArgumentException("not an id reference " + docRef);
         }
-        docUUID = (String) docRef.reference();
     }
 
     /**
@@ -316,7 +323,8 @@ public class LogEntryImpl implements LogEntry {
 
     @Override
     @OneToMany(cascade = CascadeType.ALL, targetEntity = ExtendedInfoImpl.class)
-    @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") }, inverseJoinColumns = { @JoinColumn(name = "INFO_FK") })
+    @JoinTable(name = "NXP_LOGS_MAPEXTINFOS", joinColumns = { @JoinColumn(name = "LOG_FK") }, inverseJoinColumns = {
+            @JoinColumn(name = "INFO_FK") })
     @org.hibernate.annotations.MapKey(columns = { @Column(name = "mapkey", nullable = false) })
     public Map<String, ExtendedInfo> getExtendedInfos() {
         return (Map) extendedInfos;

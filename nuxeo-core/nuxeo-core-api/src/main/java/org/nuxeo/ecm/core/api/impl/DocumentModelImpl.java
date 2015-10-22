@@ -16,6 +16,8 @@ import static org.apache.commons.lang.ObjectUtils.NULL;
 import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.text.DateFormat;
@@ -45,6 +47,7 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DataModelMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.InstanceRef;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -408,23 +411,26 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (sid == null) {
             return;
         }
-        if (loadAll) {
-            for (String schema : schemas) {
-                if (!isSchemaLoaded(schema)) {
-                    loadDataModel(schema);
+        try {
+            if (loadAll) {
+                for (String schema : schemas) {
+                    if (!isSchemaLoaded(schema)) {
+                        loadDataModel(schema);
+                    }
                 }
+                // fetch ACP too if possible
+                if (ref != null) {
+                    getACP();
+                }
+                detachedVersionLabel = getVersionLabel();
+                // load some system info
+                isCheckedOut();
+                getCurrentLifeCycleState();
+                getLockInfo();
             }
-            // fetch ACP too if possible
-            if (ref != null) {
-                getACP();
-            }
-            detachedVersionLabel = getVersionLabel();
-            // load some system info
-            isCheckedOut();
-            getCurrentLifeCycleState();
-            getLockInfo();
+        } finally {
+            sid = null;
         }
-        sid = null;
     }
 
     @Override
@@ -438,7 +444,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     /**
      * Lazily loads the given data model.
      */
-    protected final DataModel loadDataModel(String schema) {
+    protected DataModel loadDataModel(String schema) {
 
         if (log.isTraceEnabled()) {
             log.trace("lazy loading of schema " + schema + " for doc " + toString());
@@ -1617,14 +1623,34 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     /**
+     * Replace the content by it's the reference if the document is live and not dirty.
+     *
+     * @see org.nuxeo.ecm.core.event.EventContext
+     * @since 7.10
+     */
+    private Object writeReplace() throws ObjectStreamException {
+        if (isDirty()) {
+            return this;
+        }
+        CoreSession session = getCoreSession();
+        if (session == null) {
+            return this;
+        }
+        if (!session.exists(ref)) {
+            return this;
+        }
+        return new InstanceRef(this, session.getPrincipal());
+    }
+
+    /**
      * Legacy code: Explicitly detach the document to send the document as an event context parameter.
      *
      * @see org.nuxeo.ecm.core.event.EventContext
      * @since 7.10
      */
-    private void writeObject(java.io.ObjectOutputStream stream) throws IOException {
-        detach(false);
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+        CoreSession session = getCoreSession();
+        detach(session != null && ref != null && session.exists(ref));
         stream.defaultWriteObject();
     }
-
 }

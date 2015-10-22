@@ -35,6 +35,8 @@ public interface DocumentRef extends Serializable {
     // the document is specified by its path
     int PATH = 2;
 
+    // the document is referenced by it's repository, principal and UUID
+    int INSTANCE = 3;
     /**
      * Gets the type of the reference.
      *

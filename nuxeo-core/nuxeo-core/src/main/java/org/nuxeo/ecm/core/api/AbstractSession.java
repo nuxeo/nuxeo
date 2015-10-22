@@ -326,6 +326,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             return getSession().getDocumentByUUID((String) ref);
         case DocumentRef.PATH:
             return getSession().resolvePath((String) ref);
+        case DocumentRef.INSTANCE:
+            return getSession().getDocumentByUUID(((DocumentModel)ref).getId());
         default:
             throw new IllegalArgumentException("Invalid type: " + type);
         }

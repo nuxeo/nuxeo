@@ -1,0 +1,105 @@
+package org.nuxeo.ecm.core.api;
+
+import java.io.InvalidObjectException;
+import java.io.ObjectStreamException;
+import java.security.Principal;
+
+/**
+ * Document repository reference including the principal owner of the session.
+ *
+ * @since 7.10
+ * @author Stephane Lacoin at Nuxeo (aka matic)
+ */
+public class InstanceRef implements DocumentRef {
+
+    private static final long serialVersionUID = 1L;
+
+    final String repositoryName;
+
+    final Principal principal;
+
+    final DocumentRef ref;
+
+    transient DocumentModel referent;
+
+    public InstanceRef(DocumentModel doc, Principal principal) {
+        if (doc.getRef() == null) {
+            throw new NullPointerException("document as no reference yet");
+        }
+        referent = doc;
+        repositoryName = doc.getRepositoryName();
+        this.principal = principal;
+        ref = doc.getRef();
+    }
+
+    @Override
+    public int type() {
+        return -1;
+    }
+
+    @Override
+    public Object reference() {
+        return referent;
+    }
+
+    private Object readResolve() throws ObjectStreamException {
+        try {
+            try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+                referent = session.getDocument(ref);
+                referent.detach(true);
+                return referent;
+            }
+        } catch (RuntimeException cause) {
+            InvalidObjectException error = new InvalidObjectException(
+                    "Cannot refetch " + ref + " from " + repositoryName);
+            error.initCause(cause);
+            throw error;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((repositoryName == null) ? 0 : repositoryName.hashCode());
+        result = prime * result + ((ref == null) ? 0 : ref.hashCode());
+        result = prime * result + ((principal == null) ? 0 : principal.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        InstanceRef other = (InstanceRef) obj;
+        if (repositoryName == null) {
+            if (other.repositoryName != null) {
+                return false;
+            }
+        } else if (!repositoryName.equals(other.repositoryName)) {
+            return false;
+        }
+        if (ref == null) {
+            if (other.ref != null) {
+                return false;
+            }
+        } else if (!ref.equals(other.ref)) {
+            return false;
+        }
+        if (principal == null) {
+            if (other.principal != null) {
+                return false;
+            }
+        } else if (!principal.equals(other.principal)) {
+            return false;
+        }
+        return true;
+    }
+}

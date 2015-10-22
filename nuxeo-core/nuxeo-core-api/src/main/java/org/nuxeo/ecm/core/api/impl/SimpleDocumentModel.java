@@ -685,4 +685,5 @@ public class SimpleDocumentModel implements DocumentModel {
     public PropertyObjectResolver getObjectResolver(String xpath) {
         return DocumentPropertyObjectResolverImpl.create(this, xpath);
     }
+
 }

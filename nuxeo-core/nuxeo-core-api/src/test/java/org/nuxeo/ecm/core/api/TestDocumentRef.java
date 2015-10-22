@@ -51,7 +51,6 @@ public class TestDocumentRef {
         assertEquals("some_uid", idref.reference());
     }
 
-    @SuppressWarnings({ "SimplifiableJUnitAssertion" })
     @Test
     public void testEqualsObject() {
         assertTrue(idref.equals(idref));

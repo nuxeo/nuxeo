@@ -30,19 +30,19 @@ public class SleepWork extends AbstractWork {
     protected String category;
 
     /** used for debug. */
-    protected transient boolean debug;
+    protected static transient boolean debug;
 
     /** used for debug. */
-    protected transient CountDownLatch readyLatch = new CountDownLatch(1);
+    protected static CountDownLatch readyLatch = new CountDownLatch(1);
 
     /** used for debug. */
-    protected transient CountDownLatch doneLatch = new CountDownLatch(1);
+    protected static CountDownLatch doneLatch = new CountDownLatch(1);
 
     /** used for debug. */
-    protected transient CountDownLatch startLatch = new CountDownLatch(1);
+    protected static CountDownLatch startLatch = new CountDownLatch(1);
 
     /** used for debug. */
-    protected transient CountDownLatch finishLatch = new CountDownLatch(1);
+    protected static CountDownLatch finishLatch = new CountDownLatch(1);
 
     /**
      * Creates a work instance that does nothing but sleep.
@@ -81,7 +81,7 @@ public class SleepWork extends AbstractWork {
     private void init(long durationMillis, String category, boolean debug) {
         this.durationMillis = durationMillis;
         this.category = category;
-        this.debug = debug;
+        SleepWork.debug = debug;
         setProgress(Progress.PROGRESS_0_PC);
     }
 

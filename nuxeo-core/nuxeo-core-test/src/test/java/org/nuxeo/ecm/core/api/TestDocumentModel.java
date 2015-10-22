@@ -25,6 +25,8 @@ import static org.junit.Assert.fail;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.SerializationUtils;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -32,6 +34,8 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import static org.assertj.core.api.Assertions.*;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -120,6 +124,72 @@ public class TestDocumentModel {
         assertTrue(doc.isCheckedOut());
         assertEquals("project", doc.getCurrentLifeCycleState());
         assertNotNull(doc.getLockInfo());
+    }
+
+    @Test
+    public void testDocumentLiveSerialization() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        doc.getProperty("common:icon").setValue("prefetched");
+        doc.getProperty("dublincore:language").setValue("not-prefetch");
+        doc = session.saveDocument(doc);
+
+        Assertions.assertThat(doc.getCoreSession()).isNotNull();
+
+        doc = SerializationUtils.clone(doc);
+
+        assertThat(doc.getCoreSession()).isNull();
+        assertThat(doc.getName()).isEqualTo("doc");
+        assertThat(doc.getProperty("common:icon").getValue(String.class)).isEqualTo("prefetched");
+        assertThat(doc.getProperty("dublincore:language").getValue(String.class)).isEqualTo("not-prefetch");
+    }
+
+    @Test
+    public void testDocumentDirtySerialization() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        doc.getProperty("common:size").setValue(10L);
+
+        assertThat(doc.isDirty()).isTrue();
+
+        doc = SerializationUtils.clone(doc);
+
+        assertThat(doc.getCoreSession()).isNull();
+        assertThat(doc.getProperty("common:size").getValue(Long.class)).isEqualTo(10L);
+    }
+
+    @Test
+    public void testDocumentDeletedSerialization() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        doc.getProperty("dublincore:title").setValue("doc"); // prefetch
+        doc.getProperty("common:size").setValue(10L); // not prefetch
+
+        session.removeDocument(doc.getRef());
+
+        assertThat(session.exists(doc.getRef())).isFalse();
+
+        doc = SerializationUtils.clone(doc);
+
+        assertThat(doc.getCoreSession()).isNull();
+        assertThat(doc.getProperty("common:size").getValue(Long.class)).isEqualTo(10L);
+        assertThat(doc.getProperty("dublincore:title").getValue(String.class)).isEqualTo("doc");
+    }
+
+    @Test
+    public void testDetachedDocumentSerialization() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        doc.getProperty("common:size").setValue(10L);
+        doc.detach(false);
+
+        assertThat(doc.getCoreSession()).isNull();
+
+        doc = SerializationUtils.clone(doc);
+
+        assertThat(doc.getCoreSession()).isNull();
+        assertThat(doc.getName()).isEqualTo("doc");
+        assertThat(doc.getProperty("common:size").getValue(Long.class)).isEqualTo(10L);
     }
 
     @Test(expected = IllegalArgumentException.class)

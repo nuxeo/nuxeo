@@ -52,7 +52,7 @@ public class UserPrincipal implements NuxeoPrincipal, Serializable {
 
     protected String company;
 
-    protected String password;
+    protected transient String password;
 
     protected DocumentModel model;
 
