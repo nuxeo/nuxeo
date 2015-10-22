@@ -21,7 +21,6 @@
     <module>nuxeo-platform-intuition</module>
     <module>nuxeo-platform-semantic-entities</module>
     <module>nuxeo-platform-sync</module>
-    <module>nuxeo-fsexporter</module>
     <module>nuxeo-platform-smart-search</module>
     <module>nuxeo-platform-classification</module>
     <module>nuxeo-indesign-connector</module>

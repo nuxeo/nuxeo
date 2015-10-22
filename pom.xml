@@ -63,13 +63,13 @@
     <nuxeo.review.workflows.dashboards.version>7.10-SNAPSHOT</nuxeo.review.workflows.dashboards.version>
     <nuxeo.salesforce.version>7.10-SNAPSHOT</nuxeo.salesforce.version>
     <nuxeo.playground.version>7.10-SNAPSHOT</nuxeo.playground.version>
+    <nuxeo.fsexporter.version>7.10-SNAPSHOT</nuxeo.fsexporter.version>
+    <nuxeo.javaagent.version>7.10-SNAPSHOT</nuxeo.javaagent.version>
 
     <!-- optional addons -->
     <nuxeo.jbpm.version>7.10-SNAPSHOT</nuxeo.jbpm.version>
     <nuxeo.semantic.entities.version>7.10-SNAPSHOT</nuxeo.semantic.entities.version>
     <nuxeo.sync.version>7.10-SNAPSHOT</nuxeo.sync.version>
-    <nuxeo.javaagent.version>7.10-SNAPSHOT</nuxeo.javaagent.version>
-    <nuxeo.fsexporter.version>7.10-SNAPSHOT</nuxeo.fsexporter.version>
     <!-- end of optional addons -->
   </properties>
 
@@ -133,6 +133,7 @@
     <module>nuxeo-review-workflows-dashboards</module>
     <module>nuxeo-shibboleth-invitation</module>
     <module>nuxeo-salesforce</module>
+    <module>nuxeo-fsexporter</module>
   </modules>
 
   <dependencyManagement>
