@@ -35,9 +35,13 @@ class DirectoryEditor extends Select2Editor {
     if (!entity) {
       return;
     }
-    if (entity['entity-type'] !== 'directoryEntry') {
+
+    // remember if we are handling directoryEntries or just strings
+    this._isDirectoryEntry = entity['entity-type'] === 'directoryEntry';
+    if (!this._isDirectoryEntry) {
       return entity;
     }
+
     var id;
     if (entity.properties.parent) {
       id = `${entity.properties.parent.properties.id}/${entity.properties.id}`;
@@ -53,20 +57,23 @@ class DirectoryEditor extends Select2Editor {
     var value = val[0][0];
 
     if (value) {
-      value = value.split(',').map(function (id) {
-        return {
-          'entity-type': 'directoryEntry',
-          directoryName: this.directoryName,
-          properties: {
-            id: id
-            // TOOD: store label to use in renderer
-            // label: this._labels[id]
-          }
-        };
-      }.bind(this));
-      // unwrap the map result if not multiple
-      if (!this.column.multiple) {
-        value = value[0];
+      // if we are working with directoryEntries lets build them for saving
+      if (this._isDirectoryEntry) {
+        value = value.split(',').map(function (id) {
+          return {
+            'entity-type': 'directoryEntry',
+            directoryName: this.directoryName,
+            properties: {
+              id: id
+              // TOOD: store label to use in renderer
+              // label: this._labels[id]
+            }
+          };
+        }.bind(this));
+        // unwrap the map result if not multiple
+        if (!this.column.multiple) {
+          value = value[0];
+        }
       }
     } else {
       value = this.column.multiple ? [] : null;
