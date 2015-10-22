@@ -66,19 +66,15 @@ public interface BatchManager {
     boolean hasBatch(String batchId);
 
     /**
-     * Get Blobs associated to a given batch. Returns null if batch does not exist
-     *
-     * @param batchId
-     * @return
+     * Gets Blobs associated to a given batch. Returns null if batch does not exist.
      */
     List<Blob> getBlobs(String batchId);
 
     /**
-     * Get Blobs associated to a given batch. Returns null if batch does not exist Wait for upload in progress if needed
+     * Gets Blobs associated to a given batch. Returns null if batch does not exist. Waits for upload in progress if
+     * needed.
      *
      * @since 5.7
-     * @param batchId
-     * @return
      */
     List<Blob> getBlobs(String batchId, int timeoutS);
 
@@ -97,14 +93,12 @@ public interface BatchManager {
     BatchFileEntry getFileEntry(String batchId, String fileIndex);
 
     /**
-     * Cleanup the temporary storage associated to the batch
-     *
-     * @param batchId
+     * Cleans up the temporary storage associated to the batch.
      */
     void clean(String batchId);
 
     /**
-     * Initialize a batch by with an automatically generated id.
+     * Initializes a batch by with an automatically generated id.
      *
      * @return the batch id
      * @since 7.4
@@ -112,13 +106,11 @@ public interface BatchManager {
     String initBatch();
 
     /**
-     * Initialize a batch with a given batchId and Context Name If batchId is not provided, it will be automatically
-     * generated
+     * Initializes a batch with a given batchId and Context Name. If batchId is not provided, it will be automatically
+     * generated.
      *
-     * @param batchId
-     * @param contextName
      * @return the batchId
-     * @deprecated since 7.10
+     * @deprecated since 7.10, use {@link BatchManager#initBatch()} instead.
      */
     @Deprecated
     String initBatch(String batchId, String contextName);
@@ -146,7 +138,7 @@ public interface BatchManager {
     /**
      * Executes the chain or operation on the {@code Blobs} from the given {@code batchId}.
      * <p>
-     * This method clean the temporary storage associated to the {@code batchId} after the execution.
+     * This method cleans the temporary storage associated to the {@code batchId} after the execution.
      *
      * @since 5.7
      */
