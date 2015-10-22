@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo.utils</groupId>
   <artifactId>nuxeo-target-platforms-parent</artifactId>
   <name>Nuxeo Target Platforms - Parent Pom</name>
   <packaging>pom</packaging>
-  <version>1.5.6018-SNAPSHOT</version>
+  <version>1.5.6018</version>
   <properties>
     <nuxeo.base.version>6.0</nuxeo.base.version>
     <nuxeo.distribution.version>${nuxeo.base.version}-HF18</nuxeo.distribution.version>
