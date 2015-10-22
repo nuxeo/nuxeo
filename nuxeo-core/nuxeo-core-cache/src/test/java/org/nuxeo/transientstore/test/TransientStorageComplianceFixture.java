@@ -24,8 +24,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
@@ -150,6 +152,7 @@ public class TransientStorageComplianceFixture {
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
 
+        // Non existing entry
         assertFalse(ts.exists("fakeEntry"));
         assertNull(ts.getParameters("fakeEntry"));
         assertNull(ts.getParameter("fakeEntry", "fakeParameter"));
@@ -157,9 +160,27 @@ public class TransientStorageComplianceFixture {
         assertEquals(-1, ts.getSize("fakeEntry"));
         assertFalse(ts.isCompleted("fakeEntry"));
 
+        // Entry with parameters only
         ts.putParameter("testEntry", "param1", "value");
+        assertTrue(ts.exists("testEntry"));
+        Map<String, Serializable> params = ts.getParameters("testEntry");
+        assertNotNull(params);
+        assertEquals(1, params.size());
+        assertNotNull(ts.getParameter("testEntry", "param1"));
         assertNull(ts.getParameter("testEntry", "param2"));
-        assertTrue(ts.getBlobs("testEntry").isEmpty());
+        List<Blob> blobs = ts.getBlobs("testEntry");
+        assertNotNull(blobs);
+        assertTrue(blobs.isEmpty());
+
+        // Entry with blobs only
+        ts.putBlobs("otherEntry", Collections.singletonList(new StringBlob("joe")));
+        assertTrue(ts.exists("otherEntry"));
+        params = ts.getParameters("otherEntry");
+        assertNotNull(params);
+        assertTrue(params.isEmpty());
+        blobs = ts.getBlobs("otherEntry");
+        assertNotNull(blobs);
+        assertEquals(1, blobs.size());
     }
 
     @Test(expected = MaximumTransientSpaceExceeded.class)

@@ -166,18 +166,22 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     public Map<String, Serializable> getParameters(String key) {
-        return redisExecutor.execute((RedisCallable<Map<String, Serializable>>) jedis -> {
-            String paramsKey = namespace + join(key, "params");
-            Map<byte[], byte[]> paramBytes = jedis.hgetAll(getBytes(paramsKey));
-            if (paramBytes.isEmpty()) {
-                return null;
-            }
-            Map<String, Serializable> res = deserialize(paramBytes);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Fetched fields from Redis hash stored at key %s -> %s", paramsKey, res));
-            }
-            return res;
+        String paramsKey = namespace + join(key, "params");
+        Map<byte[], byte[]> paramBytes = redisExecutor.execute((RedisCallable<Map<byte[], byte[]>>) jedis -> {
+            return jedis.hgetAll(getBytes(paramsKey));
         });
+        if (paramBytes.isEmpty()) {
+            if (getSummary(key) == null) {
+                return null;
+            } else {
+                return new HashMap<>();
+            }
+        }
+        Map<String, Serializable> res = deserialize(paramBytes);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Fetched fields from Redis hash stored at key %s -> %s", paramsKey, res));
+        }
+        return res;
     }
 
     @Override
