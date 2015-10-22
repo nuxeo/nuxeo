@@ -133,7 +133,7 @@
 
             <nxh:commandButton value="#{messages['command.import']}"
               action="#{importActions.importDocuments()}"
-              styleClass="button jsDocumentsImportButton #{disabledButtonStyleClass}"
+              styleClass="button primary jsDocumentsImportButton #{disabledButtonStyleClass}"
               data-selectedimportfolder="#{!empty importActions.selectedImportFolderId}">
               <f:param name="fancyboxFormId" value="#{nxu:componentAbsoluteId(component, fancyboxFormId)}"/>
             </nxh:commandButton>
