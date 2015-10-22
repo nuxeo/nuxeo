@@ -91,16 +91,10 @@
   </h:commandLink>
 </div>
 
-<table class="dataOutput">
+<table class="dataTable">
   <tbody>
     <nxu:repeat var="entry"
       value="#{bean.entries}" index="index">
-      <c:if test="#{index%2 == 0}">
-        <c:set var="directoryEntryClass" value="dataRowOdd" />
-      </c:if>
-      <c:if test="#{index%2 != 0}">
-        <c:set var="directoryEntryClass" value="dataRowEven" />
-      </c:if>
       <c:if test="#{index == 0}">
         <nxl:layout name="#{entryLayoutName}" mode="view_list_and_header"
           value="#{entry}" />
