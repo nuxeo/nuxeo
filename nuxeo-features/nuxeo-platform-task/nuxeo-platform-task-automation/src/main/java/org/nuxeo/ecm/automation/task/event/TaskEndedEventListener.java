@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.automation.task.event;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,13 +45,10 @@ public class TaskEndedEventListener implements EventListener {
     @Override
     public void handleEvent(Event event) {
         EventContext eventContext = event.getContext();
-        Serializable property = eventContext.getProperty(TaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY);
-        if (property == null || !(property instanceof Task)) {
-            // do nothing
-            return;
-        }
-        Task task = (Task) property;
+        Task.optionalTask(eventContext).ifPresent(task -> handleTask(eventContext, task));
+    }
 
+    private void handleTask(EventContext eventContext, Task task) {
         Boolean validated = Boolean.valueOf(task.getVariable(TaskService.VariableName.validated.name()));
 
         String chain;

@@ -22,9 +22,12 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.InstanceRef;
+import org.nuxeo.ecm.core.event.EventContext;
 
 /**
  * @since 5.5
@@ -44,6 +47,7 @@ public interface Task extends Serializable {
      * @deprecated
      * @since 5.8, getTargetDocumentsIds() should be used instead
      */
+    @Deprecated
     String getTargetDocumentId();
 
     List<String> getActors();
@@ -97,6 +101,7 @@ public interface Task extends Serializable {
      * @deprecated
      * @since 5.8, setTargetDocumentsIds(List<String> ids) should be used instead
      */
+    @Deprecated
     void setTargetDocumentId(String targetDocumentId);
 
     void setName(String name);
@@ -161,4 +166,19 @@ public interface Task extends Serializable {
      * @since 5.8
      */
     void setTargetDocumentsIds(List<String> ids);
+
+    /**
+     * Tasks instance is transmitted as an instance reference which prevent to serialize
+     * the document content as part of the listener work.
+     *
+     * @since 7.10
+     */
+    public static Optional<Task> optionalTask(EventContext context) {
+        InstanceRef ref = (InstanceRef) context.getProperty(TaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY);
+        if (ref == null) {
+            return Optional.empty();
+        }
+        Task task = ((DocumentModel) ref.reference()).getAdapter(Task.class);
+        return Optional.of(task);
+    }
 }
