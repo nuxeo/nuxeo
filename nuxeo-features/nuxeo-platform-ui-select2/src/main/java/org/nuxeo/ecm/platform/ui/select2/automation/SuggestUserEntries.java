@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.ui.select2.automation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -177,10 +178,14 @@ public class SuggestUserEntries {
             if (!userOnly) {
                 Schema schema = schemaManager.getSchema(userManager.getGroupSchemaName());
                 groupList = userManager.searchGroups(prefix);
+                List<String> admins = new ArrayList<>();
+                if (hideAdminGroups) {
+                    admins = userManager.getAdministratorsGroups();
+                }
                 groupLoop:
                 for (DocumentModel group : groupList) {
                     if (hideAdminGroups) {
-                        for (String adminGroupName : userManager.getAdministratorsGroups()) {
+                        for (String adminGroupName : admins) {
                             if (adminGroupName.equals(group.getId())) {
                                 break groupLoop;
                             }
