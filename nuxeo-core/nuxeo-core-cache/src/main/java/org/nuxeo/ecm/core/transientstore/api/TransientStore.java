@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
@@ -32,7 +31,6 @@ import org.nuxeo.ecm.core.api.Blob;
  *
  * @since 7.2
  */
-@Experimental(comment = "https://jira.nuxeo.com/browse/NXP-16577")
 public interface TransientStore {
 
     /**

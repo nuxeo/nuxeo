@@ -17,15 +17,12 @@
 
 package org.nuxeo.ecm.core.transientstore.api;
 
-import org.nuxeo.common.annotation.Experimental;
-
 /**
  * Service to expose access to {@link TransientStore}
  *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
-@Experimental(comment = "https://jira.nuxeo.com/browse/NXP-16577")
 public interface TransientStoreService {
 
     /**
