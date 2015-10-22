@@ -51,10 +51,10 @@ public class RoutingTaskSecurityUpdaterListener implements EventListener {
             return;
         }
         DocumentEventContext docEventCtx = (DocumentEventContext) eventCtx;
-        Task task = (Task) docEventCtx.getProperties().get("taskInstance");
-        if (task == null) {
-            return;
-        }
+        Task.optionalTask(docEventCtx).ifPresent(task -> handleTask(event, docEventCtx, task));
+    }
+
+    protected void handleTask(Event event, EventContext eventCtx, Task task) {
         CoreSession session = eventCtx.getCoreSession();
         List<String> actors = null;
 
