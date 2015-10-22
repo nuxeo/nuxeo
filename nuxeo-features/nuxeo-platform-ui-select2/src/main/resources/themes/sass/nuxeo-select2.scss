@@ -106,9 +106,10 @@
   border-radius: 16px;
   box-shadow: none;
   display: inline-block;
-  height: 24px;
+  line-height: inherit;
   margin: .2em .3em .3em 0;
-  padding: .4em 1.7em .4em 1em;
+  min-height: 24px;
+  padding: .4em 2em .4em 1em;
 }
 
 .nx-page .select2-container.select2-container-disabled .select2-choice > .select2-chosen {
