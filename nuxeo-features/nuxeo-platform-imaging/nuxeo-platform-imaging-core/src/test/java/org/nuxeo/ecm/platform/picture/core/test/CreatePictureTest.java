@@ -26,13 +26,14 @@ import org.nuxeo.ecm.platform.picture.operation.CreatePicture;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, TransientStoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.automation.server",
         "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.picture.api",
         "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.core.cache" })
+        "org.nuxeo.ecm.platform.picture.convert" })
 public class CreatePictureTest {
 
     @Inject
@@ -51,7 +52,8 @@ public class CreatePictureTest {
         String fileName = "MyTest.jpg";
         String mimeType = "image/jpeg";
 
-        batchManager.addStream("BID", "1", source.getStream(), fileName, mimeType);
+        String batchId = batchManager.initBatch();
+        batchManager.addStream(batchId, "1", source.getStream(), fileName, mimeType);
 
         StringBuilder fakeJSON = new StringBuilder("{ ");
         fakeJSON.append(" \"type\" : \"blob\"");
@@ -59,7 +61,7 @@ public class CreatePictureTest {
         fakeJSON.append(", \"mime-type\" : \"" + mimeType + "\"");
         fakeJSON.append(", \"name\" : \"" + fileName + "\"");
 
-        fakeJSON.append(", \"upload-batch\" : " + "\"BID\"");
+        fakeJSON.append(", \"upload-batch\" : \"" + batchId + "\"");
         fakeJSON.append(", \"upload-fileId\" : \"1\" ");
         fakeJSON.append("}");
 
