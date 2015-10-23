@@ -2137,7 +2137,7 @@
       <dependency>
         <groupId>javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.9.0.GA</version>
+        <version>3.20.0.GA</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
