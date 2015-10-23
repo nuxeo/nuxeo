@@ -1,23 +1,31 @@
+# Nuxeo Azure Blob Storage
+
 This addon implements a BinaryManager that stores binaries in an Azure container.
 For efficiency, a local disk cache (with limited size) is also used.
 
-Be sure to protect your user id and token using the [configuration data encryption](https://doc.nuxeo.com/x/4YeRAQ).
+## Prerequisites
 
-# Configuration
+You should be familiar with Azure and their Management Portal. Alos, you have to create a dedicated Azure blob Container; and be in possession of your Storage access keys.
 
-Configuration you have to add in your `nuxeo.conf` file:
+## Configuration
 
-## Enable default Azure Binary Manager
+Be sure to protect your access keys using the [configuration data encryption](https://doc.nuxeo.com/x/4YeRAQ).
+
+Configuration properties you have to set in your `nuxeo.conf` file:
+
+### Enable Azure Binary Manager
+
+Setting up the default BinaryManager that stores all your blobs in Azure:
 
 `nuxeo.core.binarymanager=org.nuxeo.ecm.blob.azure.AzureBinaryManager`
 
-## Enable CDN Azure Binary Manager
+### Enable CDN Azure Binary Manager
 
-See the [Microsoft Azure documentation page](https://azure.microsoft.com/en-us/documentation/articles/cdn-overview/) about how you can enable the CDN feature.
+If you want to use Azure CDN as a front instead of Storage; you should read  [Microsoft Azure documentation page](https://azure.microsoft.com/en-us/documentation/articles/cdn-overview/) and create a CDN that is binding to your container. Then, setting the corresponding BinaryManager:
 
 `nuxeo.core.binarymanager=org.nuxeo.ecm.blob.azure.AzureCDNBinaryManager`
 
-## Mandatory parameters
+### Mandatory parameters
 
 - nuxeo.storage.azure.container : the name of the Azure container
 
@@ -25,7 +33,7 @@ See the [Microsoft Azure documentation page](https://azure.microsoft.com/en-us/d
 
 - nuxeo.storage.azure.account.key : your Azure storage access key (Do not forget to use [data encryption](https://doc.nuxeo.com/x/4YeRAQ))
 
-## Optional parameters
+### Optional parameters
 
 - nuxeo.storage.azure.endpointProtocol : the url protocol (default is `HTTPS`)
 
@@ -35,14 +43,15 @@ See the [Microsoft Azure documentation page](https://azure.microsoft.com/en-us/d
 
 - nuxeo.storage.azure.cdn.host : *(only if you enable direct download and use the Azure CDN)* your Azure CDN host where your blobs are available.
 
-# Building
+## Install Marketplace Package
+
+Look at the `microsoft-azure-online-storage` package from the Admin Center, or download [the Microsoft Azure Storage Marketplace Package](https://connect.nuxeo.com/nuxeo/site/marketplace/package/microsoft-azure-online-storage).
+
+## Building from sources
 
     mvn clean install
 
-## Deploying
-
-Install [the Amazon Azure Storage Marketplace Package](https://connect.nuxeo.com/nuxeo/site/marketplace/package/azure-storage).
-Or manually copy the built artifacts into `$NUXEO_HOME/templates/custom/bundles/` and activate the "custom" template with .
+Then, manually copy the `azure-storage-*.jar` lib into `$NUXEO_HOME/lib/`, `nuxeo-core-binarymanager-azure-*.jar` and `nuxeo-core-binarymanager-common-*.jar` built artifacts into `$NUXEO_HOME/nxserver/bundles/`.
 
 # About Nuxeo
 
