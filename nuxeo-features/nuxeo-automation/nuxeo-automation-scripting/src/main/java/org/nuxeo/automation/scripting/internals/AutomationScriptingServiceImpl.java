@@ -182,10 +182,9 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         // Helpers injection
         ContextService contextService = Framework.getService(ContextService.class);
         Map<String, ContextHelper> helperFunctions = contextService.getHelperFunctions();
-        for(String helperFunctionsId: helperFunctions.keySet()){
-            engine.put(helperFunctionsId,helperFunctions.get(helperFunctionsId));
+        for (String helperFunctionsId : helperFunctions.keySet()) {
+            engine.put(helperFunctionsId, helperFunctions.get(helperFunctionsId));
         }
-
         engine.eval(script);
     }
 
