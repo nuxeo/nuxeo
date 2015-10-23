@@ -28,6 +28,8 @@ import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.SimpleType;
+import org.nuxeo.ecm.core.schema.types.Type;
 
 public class AbstractTypeDefWriter {
 
@@ -92,9 +94,10 @@ public class AbstractTypeDefWriter {
     }
 
     protected void writeField(JsonGenerator jg, Field field) throws IOException {
-        if (!field.getType().isComplexType()) {
-            if (field.getType().isListType()) {
-                ListType lt = (ListType) field.getType();
+        Type type = field.getType();
+        if (!type.isComplexType()) {
+            if (type.isListType()) {
+                ListType lt = (ListType) type;
                 if (lt.getFieldType().isComplexType()) {
                     if (lt.getFieldType().getName().equals("content")) {
                         jg.writeStringField(field.getName().getLocalName(), "blob[]");
@@ -106,14 +109,22 @@ public class AbstractTypeDefWriter {
                         jg.writeEndObject();
                     }
                 } else {
-
-                    jg.writeStringField(field.getName().getLocalName(), lt.getFieldType().getName() + "[]");
+                    Type fieldType = lt.getFieldType();
+                    if (fieldType instanceof SimpleType) {
+                        SimpleType stype = (SimpleType) fieldType;
+                        fieldType = stype.getPrimitiveType();
+                    }
+                    jg.writeStringField(field.getName().getLocalName(), fieldType.getName() + "[]");
                 }
             } else {
-                jg.writeStringField(field.getName().getLocalName(), field.getType().getName());
+                if (type instanceof SimpleType) {
+                    SimpleType stype = (SimpleType) type;
+                    type = stype.getPrimitiveType();
+                }
+                jg.writeStringField(field.getName().getLocalName(), type.getName());
             }
         } else {
-            if (field.getType().getName().equals("content")) {
+            if (type.getName().equals("content")) {
                 jg.writeStringField(field.getName().getLocalName(), "blob");
             } else {
 
