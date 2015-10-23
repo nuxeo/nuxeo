@@ -160,6 +160,12 @@ CREATE TABLE qrtz_locks
     PRIMARY KEY (SCHED_NAME,LOCK_NAME)
 );
 
+INSERT INTO QRTZ_LOCKS values('nuxeo', 'TRIGGER_ACCESS'); 
+INSERT INTO QRTZ_LOCKS values('nuxeo', 'JOB_ACCESS'); 
+INSERT INTO QRTZ_LOCKS values('nuxeo', 'CALENDAR_ACCESS'); 
+INSERT INTO QRTZ_LOCKS values('nuxeo', 'STATE_ACCESS'); 
+INSERT INTO QRTZ_LOCKS values('nuxeo', 'MISFIRE_ACCESS');
+
 create index idx_qrtz_j_req_recovery on qrtz_job_details(SCHED_NAME,REQUESTS_RECOVERY);
 create index idx_qrtz_j_grp on qrtz_job_details(SCHED_NAME,JOB_GROUP);
 
@@ -182,6 +188,5 @@ create index idx_qrtz_ft_j_g on qrtz_fired_triggers(SCHED_NAME,JOB_NAME,JOB_GROU
 create index idx_qrtz_ft_jg on qrtz_fired_triggers(SCHED_NAME,JOB_GROUP);
 create index idx_qrtz_ft_t_g on qrtz_fired_triggers(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP);
 create index idx_qrtz_ft_tg on qrtz_fired_triggers(SCHED_NAME,TRIGGER_GROUP);
-
 
 commit;
