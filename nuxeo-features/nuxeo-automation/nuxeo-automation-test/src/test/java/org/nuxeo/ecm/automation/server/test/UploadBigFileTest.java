@@ -25,6 +25,7 @@ import java.lang.management.MemoryUsage;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.client.Session;
@@ -40,6 +41,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
 @Jetty(port = 18080)
+@Ignore("NXP-18232")
 public class UploadBigFileTest {
 
     @Inject
