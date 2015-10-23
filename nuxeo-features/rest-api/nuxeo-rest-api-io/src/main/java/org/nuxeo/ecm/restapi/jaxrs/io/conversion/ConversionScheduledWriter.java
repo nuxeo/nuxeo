@@ -25,7 +25,6 @@ import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
-import org.nuxeo.ecm.core.convert.api.ConversionStatus;
 
 /**
  * @since 7.4

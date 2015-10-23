@@ -18,13 +18,11 @@
 package org.nuxeo.ecm.restapi.test;
 
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.convert.api.ConversionService;
 
 /**
  * @since 7.2

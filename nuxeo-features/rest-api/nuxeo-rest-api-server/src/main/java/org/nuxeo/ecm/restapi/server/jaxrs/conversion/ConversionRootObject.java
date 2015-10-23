@@ -19,8 +19,6 @@ package org.nuxeo.ecm.restapi.server.jaxrs.conversion;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

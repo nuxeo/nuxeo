@@ -16,7 +16,28 @@
  */
 package org.nuxeo.automation.scripting.test;
 
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -36,25 +57,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-import javax.inject.Inject;
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertEquals;
-
 /**
  * @since 7.2
  */
@@ -62,8 +64,7 @@ import static org.junit.Assert.assertEquals;
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.automation" +
-        ".scripting:OSGI-INF/automation-scripting-service.xml" })
+@LocalDeploy({ "org.nuxeo.ecm.automation" + ".scripting:OSGI-INF/automation-scripting-service.xml" })
 public class TestCompileAndContext {
 
     @Inject
@@ -91,12 +92,10 @@ public class TestCompileAndContext {
     @Test
     public void serviceShouldBeDeclared() throws Exception {
         ScriptEngineManager engineManager = new ScriptEngineManager();
-        ScriptEngine engine = engineManager.getEngineByName
-                (AutomationScriptingConstants.NASHORN_ENGINE);
+        ScriptEngine engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
         assertNotNull(engine);
 
-        InputStream stream = this.getClass().getResourceAsStream
-                ("/checkWrapper.js");
+        InputStream stream = this.getClass().getResourceAsStream("/checkWrapper.js");
         assertNotNull(stream);
         engine.eval(scriptingService.getJSWrapper());
         engine.eval(IOUtils.toString(stream));
@@ -106,15 +105,13 @@ public class TestCompileAndContext {
     @Test
     public void testNashornWithCompile() throws Exception {
         ScriptEngineManager engineManager = new ScriptEngineManager();
-        ScriptEngine engine = engineManager.getEngineByName
-                (AutomationScriptingConstants.NASHORN_ENGINE);
+        ScriptEngine engine = engineManager.getEngineByName(AutomationScriptingConstants.NASHORN_ENGINE);
         assertNotNull(engine);
 
         Compilable compiler = (Compilable) engine;
         assertNotNull(compiler);
 
-        InputStream stream = this.getClass().getResourceAsStream("/testScript" +
-                ".js");
+        InputStream stream = this.getClass().getResourceAsStream("/testScript" + ".js");
         assertNotNull(stream);
         String js = IOUtils.toString(stream);
 
@@ -123,16 +120,12 @@ public class TestCompileAndContext {
         engine.put("mapper", new Mapper());
 
         compiled.eval(engine.getContext());
-        assertEquals("1" + System.lineSeparator() +
-                "str" + System.lineSeparator() +
-                "[1, 2, {a=1, b=2}]" + System.lineSeparator() +
-                "{a=1, b=2}" + System.lineSeparator() +
-                "This is a string" + System.lineSeparator() +
-                "This is a string" + System.lineSeparator() +
-                "2" + System.lineSeparator() +
-                "[A, B, C]" + System.lineSeparator() +
-                "{a=salut, b=from java}" + System.lineSeparator() +
-                "done" + System.lineSeparator(), outContent.toString());
+        assertEquals(
+                "1" + System.lineSeparator() + "str" + System.lineSeparator() + "[1, 2, {a=1, b=2}]"
+                        + System.lineSeparator() + "{a=1, b=2}" + System.lineSeparator() + "This is a string"
+                        + System.lineSeparator() + "This is a string" + System.lineSeparator() + "2"
+                        + System.lineSeparator() + "[A, B, C]" + System.lineSeparator() + "{a=salut, b=from java}"
+                        + System.lineSeparator() + "done" + System.lineSeparator(), outContent.toString());
     }
 
     @Ignore("for performance testing purpose")
@@ -143,8 +136,7 @@ public class TestCompileAndContext {
             scriptingService.run(scriptingService.getJSWrapper(), session);
         }
         long end = System.currentTimeMillis();
-        System.err.println("DEBUG: Logic A toke " + (end - start) + " " +
-                "MilliSeconds");
+        System.err.println("DEBUG: Logic A toke " + (end - start) + " " + "MilliSeconds");
     }
 
     protected String getScriptWithRandomContent(String content) {
@@ -156,33 +148,32 @@ public class TestCompileAndContext {
     @Test
     public void checkScriptingEngineCostAndIsolation() throws Exception {
 
-        InputStream stream = this.getClass().getResourceAsStream
-                ("/QuickScript.js");
+        InputStream stream = this.getClass().getResourceAsStream("/QuickScript.js");
         assertNotNull(stream);
         String js = IOUtils.toString(stream);
 
-        long t0 = System.currentTimeMillis();
+        // long t0 = System.currentTimeMillis();
         scriptingService.run(getScriptWithRandomContent(js), session);
-        long t1 = System.currentTimeMillis();
-        //System.err.println("Initial Exec = " + (t1-t0));
+        // long t1 = System.currentTimeMillis();
+        // System.err.println("Initial Exec = " + (t1-t0));
 
-        t0 = System.currentTimeMillis();
+        // t0 = System.currentTimeMillis();
         scriptingService.run(getScriptWithRandomContent(js), session);
-        t1 = System.currentTimeMillis();
-        //System.err.println("Second Exec = " + (t1-t0));
+        // t1 = System.currentTimeMillis();
+        // System.err.println("Second Exec = " + (t1-t0));
 
         int nbIter = 50;
 
-        long t = t1 - t0;
+        // long t = t1 - t0;
         for (int i = 0; i < nbIter; i++) {
-            t0 = System.currentTimeMillis();
+            // t0 = System.currentTimeMillis();
             scriptingService.run(getScriptWithRandomContent(js), session);
-            t1 = System.currentTimeMillis();
-            //System.err.println("Exec = " + (t1-t0));
-            t += t1 - t0;
+            // t1 = System.currentTimeMillis();
+            // System.err.println("Exec = " + (t1-t0));
+            // t += t1 - t0;
         }
 
-        //System.err.println("AvgExec = " + (t/(nbIter + 1.0)));
+        // System.err.println("AvgExec = " + (t/(nbIter + 1.0)));
 
         // now we check isolation
 
@@ -199,19 +190,20 @@ public class TestCompileAndContext {
         scriptingService.run(check, session);
     }
 
-
     public class Mapper {
 
         public Object callMe(ScriptObjectMirror params) {
 
-            Map<String, Object> map = (Map<String, Object>) MarshalingHelper
-                    .unwrap(params);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) MarshalingHelper.unwrap(params);
 
             Integer p1 = (Integer) map.get("p1");
             String p2 = (String) map.get("p2");
+            @SuppressWarnings("unchecked")
             List<Object> p3 = (List<Object>) map.get("p3");
 
             assertEquals(3, p3.size());
+            @SuppressWarnings("unchecked")
             Map<String, Object> nested = (Map<String, Object>) p3.get(2);
 
             System.out.println(p1);
@@ -242,8 +234,7 @@ public class TestCompileAndContext {
     public void testIsolationScriptCtx() throws Exception {
         org.junit.Assert.assertNotNull(scriptingService);
 
-        InputStream stream = this.getClass().getResourceAsStream
-                ("/scriptCtxIsolation.js");
+        InputStream stream = this.getClass().getResourceAsStream("/scriptCtxIsolation.js");
         org.junit.Assert.assertNotNull(stream);
         scriptingService.run(stream, session);
         assertEquals("[object Object]" + System.lineSeparator(), outContent.toString());
@@ -252,21 +243,18 @@ public class TestCompileAndContext {
         org.junit.Assert.assertNotNull(stream);
         scriptingService.run(stream, session);
         // Failing returning "[object Object]\n" + "toto\n"
-        assertEquals("[object Object]" + System.lineSeparator() + "[object " +
-                "Object]" + System.lineSeparator(), outContent.toString());
+        assertEquals("[object Object]" + System.lineSeparator() + "[object " + "Object]" + System.lineSeparator(),
+                outContent.toString());
     }
-
 
     @Test
     public void testAutomationCtxSharing() throws Exception {
         org.junit.Assert.assertNotNull(scriptingService);
 
-        InputStream stream = this.getClass().getResourceAsStream
-                ("/shareAutomationContext.js");
+        InputStream stream = this.getClass().getResourceAsStream("/shareAutomationContext.js");
         org.junit.Assert.assertNotNull(stream);
         scriptingService.run(stream, session);
         assertEquals("OK" + System.lineSeparator(), outContent.toString());
     }
-
 
 }

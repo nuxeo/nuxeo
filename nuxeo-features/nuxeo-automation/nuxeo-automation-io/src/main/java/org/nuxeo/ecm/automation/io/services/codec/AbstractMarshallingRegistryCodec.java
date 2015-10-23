@@ -17,18 +17,16 @@
  */
 package org.nuxeo.ecm.automation.io.services.codec;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonReader;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
-import org.nuxeo.ecm.core.io.registry.Reader;
-import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.runtime.api.Framework;
-
-import java.io.IOException;
 
 /**
  * @since 7.3

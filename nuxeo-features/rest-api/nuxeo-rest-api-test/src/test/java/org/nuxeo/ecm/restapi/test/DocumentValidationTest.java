@@ -18,7 +18,8 @@ package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_PROPERTIES;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.WILDCARD_VALUE;
 
 import java.io.IOException;
 
@@ -139,8 +140,8 @@ public class DocumentValidationTest extends BaseTest {
         doc.getProperty("userRefs").addValue("user:Administrator");
         doc = session.createDocument(doc);
         fetchInvalidations();
-        ClientResponse response = service.path("path/doc1").queryParam("embed", "*").header(DOCUMENT_PROPERTIES_HEADER,
-                "*").get(ClientResponse.class);
+        ClientResponse response = service.path("path/doc1").queryParam("embed", "*").header(EMBED_PROPERTIES,
+                WILDCARD_VALUE).get(ClientResponse.class);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         IOUtils.copy(response.getEntityInputStream(), System.out);
     }

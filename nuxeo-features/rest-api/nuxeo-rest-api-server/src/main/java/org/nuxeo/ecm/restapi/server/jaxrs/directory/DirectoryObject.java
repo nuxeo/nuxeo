@@ -19,6 +19,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs.directory;
 import static org.nuxeo.ecm.restapi.server.jaxrs.directory.DirectorySessionRunner.withDirectorySession;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -77,7 +78,7 @@ public class DirectoryObject extends DefaultObject {
 
             @Override
             List<DirectoryEntry> run(Session session) {
-                DocumentModelList entries = session.getEntries();
+                DocumentModelList entries = session.query(Collections.emptyMap());
                 List<DirectoryEntry> dirEntries = new ArrayList<>();
                 for (DocumentModel doc : entries) {
                     dirEntries.add(new DirectoryEntry(directory.getName(), doc));

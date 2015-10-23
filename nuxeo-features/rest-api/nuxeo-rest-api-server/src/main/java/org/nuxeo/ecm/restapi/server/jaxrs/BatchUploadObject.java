@@ -50,7 +50,6 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchFileEntry;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
-import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -67,12 +66,12 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * Replaces the deprecated endpoints listed below:
  * <ul>
- * <li>POST /batch/upload, see {@link BatchResource#doPost(HttpServletRequest)}, use POST /upload/{batchId}/{fileIdx}
- * instead, see {@link #upload(HttpServletRequest, String, String)}</li>
- * <li>GET /batch/files/{batchId}, see {@link BatchResource#getFilesBatch(String)}, use GET /upload/{batchId} instead,
- * see {@link #getBatchInfo(String)} instead</li>
- * <li>GET /batch/drop/{batchId}, see {@link BatchResource#dropBatch(String)}, use DELETE /upload/{batchId} instead, see
- * {@link #dropBatch(String)}</li>
+ * <li>POST /batch/upload, see org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource#doPost(HttpServletRequest), use
+ * POST /upload/{batchId}/{fileIdx} instead, see {@link #upload(HttpServletRequest, String, String)}</li>
+ * <li>GET /batch/files/{batchId}, see org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource#getFilesBatch(String),
+ * use GET /upload/{batchId} instead, see {@link #getBatchInfo(String)} instead</li>
+ * <li>GET /batch/drop/{batchId}, see org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource#dropBatch(String), use
+ * DELETE /upload/{batchId} instead, see {@link #dropBatch(String)}</li>
  * </ul>
  * Also provides new endpoints:
  * <ul>

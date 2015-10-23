@@ -33,8 +33,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -121,12 +119,6 @@ public class RestServerInit implements RepositoryInit {
             createUsersAndGroups(um);
         }
 
-    }
-
-    private void clearRepositoryCaches(String repositoryName) {
-        SQLRepositoryService repoService = Framework.getService(SQLRepositoryService.class);
-        RepositoryManagement repo = repoService.getRepository(repositoryName);
-        repo.clearCaches();
     }
 
     private void createUsersAndGroups(UserManager um) throws UserAlreadyExistsException,

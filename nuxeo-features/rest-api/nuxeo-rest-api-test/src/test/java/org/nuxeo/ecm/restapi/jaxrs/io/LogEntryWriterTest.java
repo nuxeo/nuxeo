@@ -18,7 +18,6 @@ package org.nuxeo.ecm.restapi.jaxrs.io;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,7 +26,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
@@ -35,10 +33,11 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.jaxrs.io.audit.LogEntryWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -46,6 +45,7 @@ import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -56,6 +56,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.platform.audit" })
 public class LogEntryWriterTest {
 
     @Inject
@@ -98,17 +99,13 @@ public class LogEntryWriterTest {
         extendedInfo.put("extInfo3", ExtendedInfoImpl.createExtendedInfo(testDate));
 
         entry.setExtendedInfos(extendedInfo);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = factory.createJsonGenerator(out);
 
         // When it is written as Json
-        LogEntryWriter logEntryWriter = new LogEntryWriter();
-        logEntryWriter.writeEntity(jg, entry);
-        jg.flush();
+        String json = MarshallerHelper.objectToJson(entry, CtxBuilder.get());
 
         // Then it contains
         ObjectMapper m = new ObjectMapper();
-        JsonNode node = m.readTree(out.toString());
+        JsonNode node = m.readTree(json);
         assertEquals("Workflow", node.get("category").getTextValue());
         Iterator<Map.Entry<String, JsonNode>> infos = node.get("extended").getFields();
         int count = 0;

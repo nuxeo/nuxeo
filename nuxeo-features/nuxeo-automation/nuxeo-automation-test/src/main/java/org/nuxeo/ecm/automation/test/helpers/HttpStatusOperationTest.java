@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.automation.test.helpers;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -25,8 +27,6 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.RestOperationContext;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @since 7.1

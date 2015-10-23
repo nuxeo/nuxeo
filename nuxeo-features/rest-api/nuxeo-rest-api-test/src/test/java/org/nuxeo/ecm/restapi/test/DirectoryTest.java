@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -103,7 +104,7 @@ public class DirectoryTest extends BaseTest {
     @Test
     public void itCanQueryDirectoryEntries() throws Exception {
         // Given a directory
-        DocumentModelList entries = dirSession.getEntries();
+        DocumentModelList entries = dirSession.query(Collections.emptyMap());
 
         // When i do a request on the directory endpoint
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + TESTDIRNAME);

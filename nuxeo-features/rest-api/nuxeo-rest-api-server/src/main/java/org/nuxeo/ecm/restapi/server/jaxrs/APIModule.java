@@ -23,7 +23,6 @@ import org.nuxeo.ecm.automation.jaxrs.io.documents.BusinessAdapterListWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartFormRequestReader;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartRequestReader;
-import org.nuxeo.ecm.restapi.jaxrs.io.conversion.ConversionScheduled;
 import org.nuxeo.ecm.restapi.jaxrs.io.conversion.ConversionScheduledWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.conversion.ConversionStatusWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.types.DocumentTypeWriter;

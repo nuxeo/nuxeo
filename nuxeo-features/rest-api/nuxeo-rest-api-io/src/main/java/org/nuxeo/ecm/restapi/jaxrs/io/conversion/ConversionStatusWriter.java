@@ -20,14 +20,12 @@ package org.nuxeo.ecm.restapi.jaxrs.io.conversion;
 import java.io.IOException;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.convert.api.ConversionStatus;
-import org.nuxeo.ecm.webengine.model.WebContext;
 
 /**
  * @since 7.4

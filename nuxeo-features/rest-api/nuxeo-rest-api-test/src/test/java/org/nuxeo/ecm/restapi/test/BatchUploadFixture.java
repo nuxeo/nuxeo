@@ -37,7 +37,6 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
-import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -74,7 +73,7 @@ public class BatchUploadFixture extends BaseTest {
      * Tests the deprecated /batch/upload endpoint.
      *
      * @deprecated since 7.4
-     * @see BatchResource#doPost(HttpServletRequest)
+     * @see org.nuxeo.ecm.automation.server.jaxrs.batch.BatchResource#doPost(HttpServletRequest)
      * @see #itCanUseBatchUpload()
      */
     @Deprecated

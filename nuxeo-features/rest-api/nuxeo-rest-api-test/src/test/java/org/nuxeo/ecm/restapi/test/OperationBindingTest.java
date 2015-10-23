@@ -95,7 +95,7 @@ public class OperationBindingTest extends BaseTest {
         Trace trace = factory.getTrace("testOp");
         assertEquals(1, trace.getCalls().size());
 
-        Map parameters = (Map) trace.getCalls().get(0).getVariables().get(Constants.VAR_RUNTIME_CHAIN);
+        Map<?, ?> parameters = (Map<?, ?>) trace.getCalls().get(0).getVariables().get(Constants.VAR_RUNTIME_CHAIN);
 
         assertEquals("1", parameters.get("one"));
         assertEquals(2, parameters.get("two"));
@@ -118,7 +118,7 @@ public class OperationBindingTest extends BaseTest {
         Trace trace = factory.getTrace("testChain");
         assertEquals(2, trace.getCalls().size());
 
-        Map parameters = trace.getCalls().get(0).getParmeters();
+        Map<?, ?> parameters = trace.getCalls().get(0).getParmeters();
 
         assertEquals("One", parameters.get("one"));
         assertEquals(2L, parameters.get("two"));

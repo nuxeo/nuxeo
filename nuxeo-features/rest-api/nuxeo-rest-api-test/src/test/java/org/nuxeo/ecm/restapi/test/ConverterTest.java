@@ -26,8 +26,6 @@ import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import com.google.inject.Inject;
-import com.sun.jersey.api.client.WebResource;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +41,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import com.google.inject.Inject;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**

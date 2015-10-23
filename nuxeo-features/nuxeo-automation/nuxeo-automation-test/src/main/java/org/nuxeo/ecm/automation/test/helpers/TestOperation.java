@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ecm.automation.test.helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;

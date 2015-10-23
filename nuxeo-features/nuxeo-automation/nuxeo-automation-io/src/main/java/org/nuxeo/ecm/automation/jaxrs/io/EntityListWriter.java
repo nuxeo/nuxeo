@@ -81,6 +81,7 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
 
     protected void writePaginableHeader(JsonGenerator jg, List<T> list) throws IOException {
         if (list instanceof Paginable) {
+            @SuppressWarnings("rawtypes")
             Paginable paginable = (Paginable) list;
             jg.writeBooleanField("isPaginable", true);
             jg.writeNumberField("resultsCount", paginable.getResultsCount());

@@ -16,7 +16,10 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import com.sun.jersey.api.client.ClientResponse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
 
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
@@ -32,10 +35,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import com.sun.jersey.api.client.ClientResponse;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })

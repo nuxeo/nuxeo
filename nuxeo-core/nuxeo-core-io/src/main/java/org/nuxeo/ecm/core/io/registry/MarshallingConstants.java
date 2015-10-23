@@ -72,14 +72,13 @@ public interface MarshallingConstants {
     String WILDCARD_VALUE = "*";
 
     /**
-     * @deprecated use {@value #EMBED_PARAM} concatenated with {@link #EMBED_PROPERTIES} (example:
-     *             embed:props=dublincore)
+     * @deprecated use {@value #EMBED_PROPERTIES} instead
      */
     @Deprecated
     String DOCUMENT_PROPERTIES_HEADER = "X-NXDocumentProperties";
 
     /**
-     * @deprecated use {@value #EMBED_PARAM} concatenated with {@link #EMBED_ENRICHERS} (example: embed:adds=acls)
+     * @deprecated use {@value #EMBED_ENRICHERS} concatenated with "document" (example: enrichers:document=acls)
      */
     @Deprecated
     String NXCONTENT_CATEGORY_HEADER = "X-NXContext-Category";

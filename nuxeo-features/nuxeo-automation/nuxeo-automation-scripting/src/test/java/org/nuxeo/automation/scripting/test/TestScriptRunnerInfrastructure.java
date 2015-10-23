@@ -40,8 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
-import org.nuxeo.automation.scripting.internals.operation
-        .ScriptingOperationTypeImpl;
+import org.nuxeo.automation.scripting.internals.operation.ScriptingOperationTypeImpl;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -282,7 +281,8 @@ public class TestScriptRunnerInfrastructure {
         params.put("type", "DataSet");
         params.put("name", "testDoc");
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestComplexProperties", params);
-        assertEquals("whatever", ((Map) ((List) result.getPropertyValue("ds:fields")).get(0)).get("sqlTypeHint"));
+        assertEquals("whatever",
+                ((Map<?, ?>) ((List<?>) result.getPropertyValue("ds:fields")).get(0)).get("sqlTypeHint"));
     }
 
     @Test
@@ -330,7 +330,8 @@ public class TestScriptRunnerInfrastructure {
     @Test
     public void handleDocumentListAsInput() throws OperationException {
         OperationContext ctx = new OperationContext(session);
-        DocumentModelList result = (DocumentModelList) automationService.run(ctx, "Scripting.TestInputDocumentList", null);
+        DocumentModelList result = (DocumentModelList) automationService.run(ctx, "Scripting.TestInputDocumentList",
+                null);
         assertNotNull(result);
     }
 
@@ -368,16 +369,10 @@ public class TestScriptRunnerInfrastructure {
         Map<String, Object> params = new HashMap<>();
         params.put("doc", root);
         Object result = automationService.run(ctx, "Scripting.TestWrappers", params);
-        assertEquals("Root input title:New Title\n" +
-                "Root input title:New Title\n" +
-                "Root ctx title:New Title\n" +
-                "Root ctx title:New Title\n" +
-                "Root params title:New Title\n" +
-                "Root params title:New Title\n" +
-                "Root result title:New Title\n" +
-                "Root result title:New Title\n" +
-                "Root ctx title:New Title\n" +
-                "Root ctx title:New Title\n", outContent.toString());
+        assertEquals("Root input title:New Title\n" + "Root input title:New Title\n" + "Root ctx title:New Title\n"
+                + "Root ctx title:New Title\n" + "Root params title:New Title\n" + "Root params title:New Title\n"
+                + "Root result title:New Title\n" + "Root result title:New Title\n" + "Root ctx title:New Title\n"
+                + "Root ctx title:New Title\n", outContent.toString());
         assertTrue(result instanceof DocumentModel);
         Object doc = ctx.get("doc");
         assertNotNull(doc);
@@ -403,6 +398,6 @@ public class TestScriptRunnerInfrastructure {
         assertEquals("att1\n" + "att2\n" + "att3\n" + "newValue\n" + "att2\n" + "att3\n" + "vlad\n" + "desc\n",
                 outContent.toString());
         assertEquals("newValue", ((String[]) result.getPropertyValue("list:items"))[0]);
-        assertEquals("vlad", ((Map) result.getPropertyValue("list:complexItem")).get("name"));
+        assertEquals("vlad", ((Map<?, ?>) result.getPropertyValue("list:complexItem")).get("name"));
     }
 }

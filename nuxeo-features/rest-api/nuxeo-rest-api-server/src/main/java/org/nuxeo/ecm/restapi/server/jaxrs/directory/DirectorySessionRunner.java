@@ -18,7 +18,6 @@ package org.nuxeo.ecm.restapi.server.jaxrs.directory;
 
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.webengine.WebException;
 
 /**
  * @since 5.7.3

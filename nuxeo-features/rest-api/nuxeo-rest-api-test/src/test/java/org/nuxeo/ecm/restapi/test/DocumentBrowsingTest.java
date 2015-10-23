@@ -37,17 +37,17 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.io.services.enricher.ACLContentEnricher;
-import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherServiceImpl;
-import org.nuxeo.ecm.automation.io.services.enricher.PreviewContentEnricher;
-import org.nuxeo.ecm.automation.io.services.enricher.ThumbnailContentEnricher;
-import org.nuxeo.ecm.automation.io.services.enricher.UserPermissionsContentEnricher;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.io.marshallers.json.document.ACPJsonWriter;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BasePermissionsJsonEnricher;
+import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.permissions.ACLJsonEnricher;
+import org.nuxeo.ecm.platform.preview.io.PreviewJsonEnricher;
+import org.nuxeo.ecm.platform.ui.web.io.ThumbnailJsonEnricher;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.DocumentModelJsonReaderLegacy;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -280,7 +280,6 @@ public class DocumentBrowsingTest extends BaseTest {
     @Test
     public void iCanDeleteADocument() throws Exception {
         // Given a document
-        DocumentModel folder = RestServerInit.getFolder(1, session);
         DocumentModel doc = RestServerInit.getNote(0, session);
 
         // When I do a DELETE request
@@ -335,7 +334,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
         Map<String, String> headers = new HashMap<>();
-        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER, ACLContentEnricher.ACLS_CONTENT_ID);
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", ACLJsonEnricher.NAME);
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(RequestType.GET,
@@ -344,11 +343,8 @@ public class DocumentBrowsingTest extends BaseTest {
         // Then i get a the ACL
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals("inherited", node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
-                                      .get("acls")
-                                      .get(0)
-                                      .get("name")
-                                      .getTextValue());
+        assertEquals("inherited",
+                node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("acls").get(0).get("name").getTextValue());
 
     }
 
@@ -375,7 +371,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // ("thumbnailUrl").getTextValue());
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER, ThumbnailContentEnricher.THUMBNAIL_CONTENT_ID);
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", ThumbnailJsonEnricher.NAME);
 
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
@@ -388,10 +384,8 @@ public class DocumentBrowsingTest extends BaseTest {
         // thumbnail entry from the contributor
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(null, node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
-                               .get("thumbnail")
-                               .get("url")
-                               .getTextValue());
+        assertEquals(null,
+                node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").getTextValue());
     }
 
     @Test
@@ -399,8 +393,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
         Map<String, String> headers = new HashMap<>();
-        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER,
-                UserPermissionsContentEnricher.PERMISSIONS_CONTENT_ID);
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", BasePermissionsJsonEnricher.NAME);
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(RequestType.GET,
@@ -419,7 +412,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // Given an existing document
         DocumentModel note = RestServerInit.getNote(0, session);
         Map<String, String> headers = new HashMap<>();
-        headers.put(ContentEnricherServiceImpl.NXCONTENT_CATEGORY_HEADER, PreviewContentEnricher.PREVIEW_CONTENT_ID);
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", PreviewJsonEnricher.NAME);
 
         // When i do a GET Request on the note repository
         ClientResponse response = getResponse(RequestType.GET,
@@ -430,7 +423,7 @@ public class DocumentBrowsingTest extends BaseTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         JsonNode preview = node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("preview");
         assertNotNull(preview);
-        StringUtils.endsWith(preview.get(PreviewContentEnricher.PREVIEW_URL_LABEL).getTextValue(), "/default/");
+        StringUtils.endsWith(preview.get("url").getTextValue(), "/default/");
     }
 
     @Test

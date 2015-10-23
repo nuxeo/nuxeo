@@ -16,16 +16,16 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 /**
  * @since 5.7.3

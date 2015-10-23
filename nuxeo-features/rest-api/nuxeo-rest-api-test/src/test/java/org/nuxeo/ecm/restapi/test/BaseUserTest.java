@@ -18,21 +18,16 @@ package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import javax.inject.Inject;
 
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
-import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
-import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoGroupWriter;
 
 /**
  * @since 5.7.3
@@ -50,11 +45,7 @@ public class BaseUserTest extends BaseTest {
      * @throws IOException
      */
     protected String getGroupAsJson(NuxeoGroup group) throws IOException {
-        OutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = JsonHelper.createJsonGenerator(factory, out);
-        NuxeoGroupWriter ngw = new NuxeoGroupWriter();
-        ngw.writeEntity(jg, group);
-        return out.toString();
+        return MarshallerHelper.objectToJson(group, CtxBuilder.get());
     }
 
     /**
