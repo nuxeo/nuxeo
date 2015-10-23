@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -213,13 +214,34 @@ public class Batch {
             if (fileEntry != null) {
                 if (fileEntry.isChunked()) {
                     for (String chunkEntryKey : fileEntry.getChunkEntryKeys()) {
-                        // Remove chunk entry
+                        // Remove chunk entry from the store and delete blobs from the file system
+                        List<Blob> chunkBlobs = ts.getBlobs(chunkEntryKey);
+                        if (chunkBlobs != null) {
+                            for (Blob blob : chunkBlobs) {
+                                try {
+                                    FileUtils.deleteDirectory(blob.getFile().getParentFile());
+                                } catch (IOException e) {
+                                    log.error("Error while deleting chunk parent directory", e);
+                                }
+                            }
+                        }
                         ts.remove(chunkEntryKey);
                     }
                     fileEntry.beforeRemove();
                 }
-                // Remove file entry
-                ts.remove(fileEntry.getKey());
+                // Remove file entry from the store and delete blobs from the file system
+                String fileEntryKey = fileEntry.getKey();
+                List<Blob> fileBlobs = ts.getBlobs(fileEntryKey);
+                if (fileBlobs != null) {
+                    for (Blob blob : fileBlobs) {
+                        try {
+                            FileUtils.deleteDirectory(blob.getFile().getParentFile());
+                        } catch (IOException e) {
+                            log.error("Error while deleting file parent directory", e);
+                        }
+                    }
+                }
+                ts.remove(fileEntryKey);
             }
         }
         // Remove batch entry
