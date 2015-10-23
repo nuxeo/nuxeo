@@ -14,16 +14,7 @@
     <directory name="userDirectory">
 
       <schema>user</schema>
-
-      <!-- Do not use the regular datasource but a in memory setup instead
-        <dataSource>java:/nxsqldirectory</dataSource>
-      -->
-
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
-
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>users</table>
       <idField>username</idField>
       <passwordField>password</passwordField>
@@ -44,12 +35,7 @@
     <directory name="groupDirectory">
 
       <schema>group</schema>
-
-      <dbDriver>org.hsqldb.jdbcDriver</dbDriver>
-      <dbUrl>jdbc:hsqldb:mem:memid</dbUrl>
-      <dbUser>sa</dbUser>
-      <dbPassword></dbPassword>
-
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>groups</table>
       <idField>groupname</idField>
       <autoincrementIdField>false</autoincrementIdField>
