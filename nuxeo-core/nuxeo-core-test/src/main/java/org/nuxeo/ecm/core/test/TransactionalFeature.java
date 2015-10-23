@@ -18,11 +18,14 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.runtime.test.runner.ContainerFeature;
+import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
-public class TransactionalFeature extends ContainerFeature {
+@Features(ContainerFeature.class)
+public class TransactionalFeature extends SimpleFeature {
 
     protected TransactionalConfig config;
 
