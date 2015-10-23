@@ -51,6 +51,7 @@ public class OpenIDProviderFragmentRegistry extends ContributionFragmentRegistry
         copy.userResolverClass = source.userResolverClass;
         copy.accessTokenKey = source.accessTokenKey;
         copy.userInfoClass = source.userInfoClass;
+        copy.userMapper = source.userMapper;
         return copy;
     }
 
@@ -113,17 +114,13 @@ public class OpenIDProviderFragmentRegistry extends ContributionFragmentRegistry
         if (src.redirectUriResolver != OpenIDConnectProviderDescriptor.DEFAULT_REDIRECT_URI_RESOLVER_CLASS) {
             dst.redirectUriResolver = src.redirectUriResolver;
         }
-        if (src.userResolverClass != OpenIDConnectProviderDescriptor.DEFAULT_USER_RESOLVER_CLASS) {
+        if (src.getUserResolverClass() != OpenIDConnectProviderDescriptor.DEFAULT_USER_RESOLVER_CLASS) {
             dst.userResolverClass = src.userResolverClass;
         }
 
-        dst.accessTokenKey = src.accessTokenKey;
-
-        dst.userInfoClass = src.userInfoClass;
-
-        dst.redirectUriResolver = src.redirectUriResolver;
-
-        dst.userResolverClass = src.userResolverClass;
+        if (src.userMapper!=null && src.userMapper.length()>0) {
+            dst.userMapper = src.userMapper;
+        }
 
         dst.enabled = src.enabled;
     }
