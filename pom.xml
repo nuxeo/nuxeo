@@ -2135,9 +2135,9 @@
         <version>2.5.1</version>
       </dependency>
       <dependency>
-        <groupId>javassist</groupId>
+        <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.20.0.GA</version>
+        <version>3.20.0-GA</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.seam</groupId>
@@ -2374,6 +2374,11 @@
           <exclusion>
             <groupId>org.hibernate</groupId>
             <artifactId>ejb3-persistence</artifactId>
+          </exclusion>
+          <!-- use org.javassist:javassist instead -->
+          <exclusion>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -5127,6 +5132,12 @@
                   <exclude>javax.xml.stream:stax-api</exclude> <!-- defined in the J2SE -->
                 </excludes>
                 <message>javax.xml.stream:stax-api must not be used, it's already defined in J2SE</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>javassist:javassist</exclude> <!-- use org.javassist:javassist instead, more recent and supports Java 8 -->
+                </excludes>
+                <message>javassist:javassist must not be used, use org.javassist:javassist instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>

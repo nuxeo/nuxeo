@@ -53,6 +53,12 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
+    <!-- needed by org.hibernate:hibernate-entitymanager because we exclude the old javassist:javassist -->
+    <dependency>
+      <groupId>org.javassist</groupId>
+      <artifactId>javassist</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
