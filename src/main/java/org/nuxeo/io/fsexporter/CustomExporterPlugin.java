@@ -49,8 +49,7 @@ public class CustomExporterPlugin extends DefaultExporterPlugin {
             exportFileInXML(session, docfrom, fsPath + "/" + FileXMLNameToExport);
         }
         // export with default exporter all the documents
-        super.serialize(session, docfrom, fsPath);
-        return null;
+        return super.serialize(session, docfrom, fsPath);
     }
 
     protected void exportFileInXML(CoreSession session, DocumentModel docfrom, String pathtoexport) throws IOException {
