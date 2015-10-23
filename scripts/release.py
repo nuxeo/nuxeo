@@ -505,13 +505,13 @@ given the path parameter.
                 " update versions, commit and tag as release-{2}..."
                 .format(self.branch, self.maintenance_branch, self.tag))
             msg_commit = "Release %s, update %s to %s" % (self.branch, self.snapshot, self.tag)
-            self.repo.git_recurse("checkout -b %s" % self.maintenance_branch)
+            self.repo.git_recurse("checkout -b %s" % self.maintenance_branch, with_optionals=True)
             self.update_versions(self.snapshot, self.tag)
             for other_version in self.other_versions:
                 if len(other_version) > 0:
                     self.update_versions(other_version[0], other_version[1])
                     msg_commit += ", update %s to %s" % (other_version[0], other_version[1])
-            self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)))
+            self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
             msg_tag = "Release release-%s from %s on %s" % (self.tag, self.snapshot, self.branch)
             self.repo.git_recurse("tag -a release-%s -m'%s'" % (self.tag, self.get_tag_message(msg_tag)))
 
@@ -521,7 +521,7 @@ given the path parameter.
                 log("\n[INFO] Maintenance branch...")
                 msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
                 self.update_versions(self.tag, self.maintenance_version)
-                self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)))
+                self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
 
         log("\n[INFO] Released branch %s (update version and commit)..." % self.branch)
         self.repo.git_recurse("checkout -f %s" % self.branch, with_optionals=True)
@@ -544,7 +544,7 @@ given the path parameter.
 
         if not upgrade_only and self.maintenance_version == "auto":
             log("\n[INFO] Delete maintenance branch %s..." % self.maintenance_branch)
-            self.repo.git_recurse("branch -D %s" % self.maintenance_branch)
+            self.repo.git_recurse("branch -D %s" % self.maintenance_branch, with_optionals=True)
 
         if upgrade_only and doperform:
             self.perform(skip_tests=self.skipTests, skip_ITs=self.skipITs, dryrun=dryrun, upgrade_only=True)
@@ -626,7 +626,8 @@ given the path parameter.
         self.repo.git_recurse("push %s %s %s" % (dry_option, self.repo.alias, self.branch), with_optionals=True)
         if not upgrade_only:
             if self.maintenance_version != "auto":
-                self.repo.git_recurse("push %s %s %s" % (dry_option, self.repo.alias, self.maintenance_branch))
+                self.repo.git_recurse("push %s %s %s" % (dry_option, self.repo.alias, self.maintenance_branch),
+                                      with_optionals=True)
             self.repo.git_recurse("push %s %s release-%s" % (dry_option, self.repo.alias, self.tag))
             self.repo.git_recurse("checkout release-%s" % self.tag)
             self.repo.mvn("clean deploy", skip_tests=skip_tests, skip_ITs=skip_ITs,
