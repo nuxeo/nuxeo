@@ -118,7 +118,7 @@ public class OpenIDProviderFragmentRegistry extends ContributionFragmentRegistry
             dst.userResolverClass = src.userResolverClass;
         }
 
-        if (src.userMapper!=null && src.userMapper.length()>0) {
+        if (src.userMapper != null && src.userMapper.length() > 0) {
             dst.userMapper = src.userMapper;
         }
 

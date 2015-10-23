@@ -41,9 +41,9 @@ public class UserMapperResolver extends UserResolver {
 
     @Override
     public String findOrCreateNuxeoUser(OpenIDUserInfo userInfo) {
-        NuxeoPrincipal principal =
-                Framework.getService(UserMapperService.class).
-                        getMapper(mapperName).getOrCreateAndUpdateNuxeoPrincipal(userInfo);
+        NuxeoPrincipal principal = Framework.getService(UserMapperService.class)
+                                            .getMapper(mapperName)
+                                            .getOrCreateAndUpdateNuxeoPrincipal(userInfo);
         if (principal != null) {
             return principal.getName();
         } else {
