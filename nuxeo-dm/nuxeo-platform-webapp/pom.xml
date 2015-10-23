@@ -29,7 +29,7 @@
             <phase>process-resources</phase>
             <configuration>
               <target>
-                <ant antfile="${basedir}/build.xml" dir="${basedir}" target="bower"></ant>
+                <ant antfile="${basedir}/build.xml" dir="${basedir}" target="build"></ant>
               </target>
             </configuration>
             <goals>

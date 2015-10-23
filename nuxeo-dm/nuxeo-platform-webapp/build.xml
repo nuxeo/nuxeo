@@ -8,11 +8,24 @@
   <condition property="cmd.bower" value="bower.cmd" else="bower">
     <os family="windows"/>
   </condition>
+  <condition property="cmd.npm" value="npm.cmd" else="npm">
+    <os family="windows"/>
+  </condition>
+  <condition property="cmd.grunt" value="grunt.cmd" else="grunt">
+    <os family="windows"/>
+  </condition>
 
-  <target name="bower" description="Download all bower dependencies">
+  <target name="init" description="Download all node and bower dependencies">
+    <exec executable="${cmd.npm}" failonerror="true">
+      <arg value="install" />
+    </exec>
     <exec executable="${cmd.bower}" failonerror="true">
       <arg value="install" />
     </exec>
+  </target>
+
+  <target name="build" depends="init">
+    <exec executable="grunt" failonerror="true" />
   </target>
 
 </project>
