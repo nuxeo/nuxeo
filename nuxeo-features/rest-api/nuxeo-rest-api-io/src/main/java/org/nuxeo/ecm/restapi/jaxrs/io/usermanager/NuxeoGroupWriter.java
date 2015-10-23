@@ -25,10 +25,16 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonWriter;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 
 /**
  * @since 5.7.3
+ * @deprecated since 7.10 The Nuxeo JSON marshalling was migrated to nuxeo-core-io. This class is replaced by
+ *             {@link NuxeoGroupJsonWriter} which is registered by default and available to marshal {@link NuxeoGroup}
+ *             from the Nuxeo Rest API thanks to the JAX-RS marshaller {@link JsonCoreIODelegate}
  */
+@Deprecated
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
 public class NuxeoGroupWriter extends EntityWriter<NuxeoGroup> {

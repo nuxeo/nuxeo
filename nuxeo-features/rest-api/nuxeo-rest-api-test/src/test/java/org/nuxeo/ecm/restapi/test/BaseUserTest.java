@@ -30,9 +30,9 @@ import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoGroupWriter;
-import org.nuxeo.ecm.restapi.jaxrs.io.usermanager.NuxeoPrincipalWriter;
-import org.nuxeo.ecm.restapi.test.BaseTest;
 
 /**
  * @since 5.7.3
@@ -78,12 +78,7 @@ public class BaseUserTest extends BaseTest {
      * @throws IOException
      */
     protected String getPrincipalAsJson(NuxeoPrincipal user) throws IOException {
-        OutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = JsonHelper.createJsonGenerator(factory, out);
-        NuxeoPrincipalWriter npw = new NuxeoPrincipalWriter();
-        npw.writeEntity(jg, user);
-        String userJson = out.toString();
-        return userJson;
+        return MarshallerHelper.objectToJson(user, CtxBuilder.get());
     }
 
     /**

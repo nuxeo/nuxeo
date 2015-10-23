@@ -33,11 +33,17 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7.3
+ * @deprecated since 7.10 The Nuxeo JSON marshalling was migrated to nuxeo-core-io. This class is replaced by
+ *             org.nuxeo.ecm.directory.io.DirectoryEntrysonWriter which is registered by default and available to
+ *             marshal {@link DirectoryEntry} from the Nuxeo Rest API thanks to the JAX-RS marshaller
+ *             {@link JsonCoreIODelegate}.
  */
+@Deprecated
 @Provider
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class DirectoryEntryWriter extends EntityWriter<DirectoryEntry> {

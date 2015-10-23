@@ -38,6 +38,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Provider
 @Produces({ JsonESDocumentWriter.MIME_TYPE })
+// TODO: remove the use of JsonDocumentWriter - refactor the ES marshalling and use nuxeo-core-io marshalling instead
+@SuppressWarnings("deprecation")
 public class JsonESDocumentWriter extends JsonDocumentWriter {
 
     public static final String MIME_TYPE = "application/json+esentity";

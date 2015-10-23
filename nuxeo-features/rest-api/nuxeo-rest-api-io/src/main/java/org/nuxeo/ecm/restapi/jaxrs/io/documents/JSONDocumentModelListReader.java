@@ -37,11 +37,18 @@ import org.nuxeo.ecm.automation.jaxrs.io.documents.JSONDocumentModelReader;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelListJsonReader;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 
 /**
  * @since 5.7.3
+ * @deprecated since 7.10 The Nuxeo JSON marshalling was migrated to nuxeo-core-io. This class is replaced by
+ *             {@link DocumentModelListJsonReader} which is registered by default and available to marshal
+ *             {@link DocumentModel}'s list from the Nuxeo Rest API thanks to the JAX-RS marshaller
+ *             {@link JsonCoreIODelegate}
  */
+@Deprecated
 public class JSONDocumentModelListReader implements MessageBodyReader<DocumentModelList> {
 
     @Context

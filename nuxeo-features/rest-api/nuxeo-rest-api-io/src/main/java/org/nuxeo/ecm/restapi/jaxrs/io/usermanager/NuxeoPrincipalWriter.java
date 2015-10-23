@@ -35,13 +35,19 @@ import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Serialization for a Nuxeo principal.
  *
  * @since 5.7.3
+ * @deprecated since 7.10 The Nuxeo JSON marshalling was migrated to nuxeo-core-io. This class is replaced by
+ *             {@link NuxeoPrincipalJsonWriter} which is registered by default and available to marshal
+ *             {@link NuxeoPrincipal} from the Nuxeo Rest API thanks to the JAX-RS marshaller {@link JsonCoreIODelegate}
  */
+@Deprecated
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
 public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {

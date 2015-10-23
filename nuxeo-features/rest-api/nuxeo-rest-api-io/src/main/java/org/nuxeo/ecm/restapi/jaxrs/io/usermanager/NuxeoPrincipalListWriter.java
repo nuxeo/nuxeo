@@ -24,10 +24,17 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalListJsonWriter;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 
 /**
  * @since 5.7.3
+ * @deprecated since 7.10 The Nuxeo JSON marshalling was migrated to nuxeo-core-io. This class is replaced by
+ *             {@link NuxeoPrincipalListJsonWriter} which is registered by default and available to marshal
+ *             {@link NuxeoPrincipal}'s list from the Nuxeo Rest API thanks to the JAX-RS marshaller
+ *             {@link JsonCoreIODelegate}
  */
+@Deprecated
 @Provider
 @Produces({ "application/json+nxentity", "application/json" })
 public class NuxeoPrincipalListWriter extends EntityListWriter<NuxeoPrincipal> {

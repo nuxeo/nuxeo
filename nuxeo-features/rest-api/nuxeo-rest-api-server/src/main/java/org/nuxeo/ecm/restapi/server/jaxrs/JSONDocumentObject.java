@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -32,20 +34,18 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JSONDocumentModelReader;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader;
 import org.nuxeo.ecm.core.rest.DocumentObject;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
-
-import java.util.List;
 
 /**
  * This object basically overrides the default DocumentObject that doesn't know how to produce/consume JSON
@@ -75,7 +75,7 @@ public class JSONDocumentObject extends DocumentObject {
     @PUT
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
     public DocumentModel doPut(DocumentModel inputDoc, @Context HttpHeaders headers) {
-        JSONDocumentModelReader.applyPropertyValues(inputDoc, doc);
+        DocumentModelJsonReader.applyPropertyValues(inputDoc, doc);
         CoreSession session = ctx.getCoreSession();
         versioningDocFromHeaderIfExists(headers);
         doc = session.saveDocument(doc);
@@ -94,7 +94,7 @@ public class JSONDocumentObject extends DocumentObject {
 
         DocumentModel createdDoc = session.createDocumentModel(doc.getPathAsString(), inputDoc.getName(),
                 inputDoc.getType());
-        JSONDocumentModelReader.applyPropertyValues(inputDoc, createdDoc);
+        DocumentModelJsonReader.applyPropertyValues(inputDoc, createdDoc);
         createdDoc = session.createDocument(createdDoc);
         session.save();
         return Response.ok(createdDoc).status(Status.CREATED).build();

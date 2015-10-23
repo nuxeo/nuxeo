@@ -28,7 +28,8 @@ import org.nuxeo.ecm.core.api.security.ACP;
  * This enricher adds a document ACLs
  *
  * @since 5.9.5
- * @deprecated This enricher was migrated to {@link org.nuxeo.ecm.permissions.ACLJsonEnricher}
+ * @deprecated This enricher was migrated to {@link org.nuxeo.ecm.permissions.ACLJsonEnricher}. The content enricher
+ *             service doesn't work anymore.
  */
 @Deprecated
 public class ACLContentEnricher extends AbstractContentEnricher {

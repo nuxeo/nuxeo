@@ -40,7 +40,8 @@ import org.nuxeo.runtime.api.Framework;
  * This enricher adds the labels for each value of a property referencing dbl10n vocabularies.
  *
  * @since 6.0
- * @deprecated This enricher was migrated to org.nuxeo.ecm.platform.spreadsheet.DCVocabulariesJsonEnricher
+ * @deprecated This enricher was migrated to org.nuxeo.ecm.platform.spreadsheet.DCVocabulariesJsonEnricher. The content
+ *             enricher service doesn't work anymore.
  */
 @Deprecated
 public class VocabularyEnricher extends AbstractContentEnricher {

@@ -28,7 +28,8 @@ import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BreadcrumbJsonEnricher;
 
 /**
  * @since 5.7.3
- * @deprecated This enricher was migrated to {@link BreadcrumbJsonEnricher}
+ * @deprecated This enricher was migrated to {@link BreadcrumbJsonEnricher}. The content enricher service doesn't work
+ *             anymore.
  */
 @Deprecated
 public class BreadcrumbEnricher extends AbstractContentEnricher {

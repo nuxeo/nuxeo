@@ -30,7 +30,8 @@ import org.nuxeo.runtime.api.Framework;
  * This contributor adds a document Thumbnail Download URL
  *
  * @since 5.9.5
- * @deprecated This enricher was migrated to {@link ThumbnailJsonEnricher}
+ * @deprecated This enricher was migrated to {@link ThumbnailJsonEnricher}. The content enricher service doesn't work
+ *             anymore.
  */
 @Deprecated
 public class ThumbnailContentEnricher extends AbstractContentEnricher {

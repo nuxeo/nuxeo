@@ -32,7 +32,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7.3
+ * @deprecated since 7.10 see {@link JSONDocumentModelListReader} - do not use it for anything else
  */
+@Deprecated
 public class JSONDocumentHelper {
 
     private static final String[] DEFAULT_SCHEMAS = new String[] {};

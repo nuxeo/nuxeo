@@ -48,7 +48,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @since 5.7.3
+ * @deprecated since 7.2 see {@link DirectoryEntriesWriter}
  */
+@Deprecated
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.test", "org.nuxeo.ecm.webengine.core" })

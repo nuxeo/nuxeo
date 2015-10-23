@@ -33,8 +33,8 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -166,7 +166,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
                 // td
                 String documentProperties = jp.getText();
                 if (documentProperties != null) {
-                    headers.putSingle(JsonDocumentWriter.DOCUMENT_PROPERTIES_HEADER, documentProperties);
+                    headers.putSingle(MarshallingConstants.EMBED_PROPERTIES, documentProperties);
                 }
             }
             tok = jp.nextToken();

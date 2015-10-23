@@ -20,31 +20,30 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
+import org.nuxeo.ecm.directory.io.DirectoryEntryListJsonWriter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntriesWriter;
-import org.nuxeo.ecm.restapi.jaxrs.io.directory.DirectoryEntryWriter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -94,7 +93,7 @@ public class DirectoryTest extends BaseTest {
         // When I call the Rest endpoint
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + TESTDIRNAME + "/test1");
 
-        assertEquals(DirectoryEntryWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryEntryJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         assertEquals(TESTDIRNAME, node.get("directoryName").getValueAsText());
         assertEquals(docEntry.getPropertyValue("vocabulary:label"),
                 node.get("properties").get("label").getValueAsText());
@@ -110,7 +109,7 @@ public class DirectoryTest extends BaseTest {
         JsonNode node = getResponseAsJson(RequestType.GET, "/directory/" + TESTDIRNAME);
 
         // Then i receive the response as json
-        assertEquals(DirectoryEntriesWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(DirectoryEntryListJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
         ArrayNode jsonEntries = (ArrayNode) node.get("entries");
         assertEquals(entries.size(), jsonEntries.size());
 
@@ -259,11 +258,7 @@ public class DirectoryTest extends BaseTest {
 
     private String getDirectoryEntryAsJson(String dirName, DocumentModel dirEntry) throws IOException,
             JsonGenerationException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = JsonHelper.createJsonGenerator(out);
-        DirectoryEntryWriter dew = new DirectoryEntryWriter();
-        dew.writeEntity(jg, new DirectoryEntry(dirName, dirEntry));
-        return out.toString();
+        return MarshallerHelper.objectToJson(new DirectoryEntry(dirName, dirEntry), CtxBuilder.get());
     }
 
 }

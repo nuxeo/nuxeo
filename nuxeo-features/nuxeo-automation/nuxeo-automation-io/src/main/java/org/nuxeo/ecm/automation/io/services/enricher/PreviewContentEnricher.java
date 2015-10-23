@@ -28,7 +28,8 @@ import org.nuxeo.runtime.api.Framework;
  * This content enricher adds a document Preview URL.
  *
  * @since 6.0
- * @deprecated This enricher was migrated to {@link PreviewJsonEnricher}
+ * @deprecated This enricher was migrated to {@link PreviewJsonEnricher}. The content enricher service doesn't work
+ *             anymore.
  */
 @Deprecated
 public class PreviewContentEnricher extends AbstractContentEnricher {

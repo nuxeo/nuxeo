@@ -52,12 +52,18 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7.3
+ * @deprecated since 7.10 The Nuxeo JSON marshalling was migrated to nuxeo-core-io. This class is replaced by
+ *             org.nuxeo.ecm.directory.io.DirectoryEntryJsonReader which is registered by default and available to
+ *             marshal {@link DirectoryEntry} from the Nuxeo Rest API thanks to the JAX-RS marshaller
+ *             {@link JsonCoreIODelegate}.
  */
+@Deprecated
 @Provider
 @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
 public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
@@ -104,8 +110,7 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
         return readJson(jp, httpHeaders);
     }
 
-    public static DirectoryEntry readJson(JsonParser jp, MultivaluedMap<String, String> httpHeaders)
-            throws IOException {
+    public static DirectoryEntry readJson(JsonParser jp, MultivaluedMap<String, String> httpHeaders) throws IOException {
 
         JsonToken tok = jp.nextToken();
 

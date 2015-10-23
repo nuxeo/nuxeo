@@ -51,7 +51,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @since 5.7.3
+ * @deprecated since 7.10 see {@link JSONDocumentModelListReader}
  */
+@Deprecated
 @RunWith(FeaturesRunner.class)
 @Features({ RestServerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)

@@ -50,7 +50,10 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.DocumentModelJsonReaderLegacy;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 /**
@@ -58,7 +61,13 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
  * creates a ready to create DocumentModel filled with the properties found.
  *
  * @since 5.7.2
+ * @deprecated since 7.10 The Nuxeo JSON marshalling was migrated to nuxeo-core-io. This class is replaced by
+ *             {@link DocumentModelJsonReader} which is registered by default and available to marshal
+ *             {@link DocumentModel} from the Nuxeo Rest API thanks to the JAX-RS marshaller {@link JsonCoreIODelegate}
+ *             . On removal, need to remove also {@link DocumentModelJsonReaderLegacy} because it uses it using
+ *             reflexion.
  */
+@Deprecated
 @Provider
 @Consumes({ "application/json+nxentity", "application/json" })
 public class JSONDocumentModelReader implements MessageBodyReader<DocumentModel> {

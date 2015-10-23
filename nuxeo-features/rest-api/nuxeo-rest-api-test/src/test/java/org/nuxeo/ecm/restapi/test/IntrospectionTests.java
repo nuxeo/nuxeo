@@ -4,10 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -42,12 +44,14 @@ public class IntrospectionTests extends BaseTest {
     public void itCanFetchASchema() throws Exception {
         ClientResponse response = getResponse(RequestType.GET, "/config/schemas/dublincore");
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        Assert.assertEquals("dublincore", node.get("name").getValueAsText());
-        Assert.assertEquals("dc", node.get("@prefix").getValueAsText());
-        Assert.assertEquals("string", node.get("fields").get("creator").getValueAsText());
-        Assert.assertEquals("string[]", node.get("fields").get("contributors").getValueAsText());
+        String json = IOUtils.toString(response.getEntityInputStream());
+        JsonAssert jsonAssert = JsonAssert.on(json);
+
+        jsonAssert.has("name").isEquals("dublincore");
+        jsonAssert.has("@prefix").isEquals("dc");
+        jsonAssert.has("fields.creator").isEquals("string");
+        jsonAssert.has("fields.contributors").isEquals("string[]");
     }
 
     @Test

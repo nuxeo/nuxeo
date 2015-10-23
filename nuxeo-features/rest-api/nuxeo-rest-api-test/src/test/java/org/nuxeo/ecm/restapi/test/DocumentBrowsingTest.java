@@ -45,10 +45,10 @@ import org.nuxeo.ecm.automation.io.services.enricher.UserPermissionsContentEnric
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.io.marshallers.json.document.ACPJsonWriter;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
-import org.nuxeo.ecm.restapi.jaxrs.io.documents.ACPWriter;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.DocumentModelJsonReaderLegacy;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -326,7 +326,7 @@ public class DocumentBrowsingTest extends BaseTest {
         // Then i get a the ACL
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(ACPWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
+        assertEquals(ACPJsonWriter.ENTITY_TYPE, node.get("entity-type").getValueAsText());
 
     }
 

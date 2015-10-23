@@ -16,21 +16,20 @@
  */
 package org.nuxeo.ecm.automation.test.service;
 
-import org.codehaus.jackson.JsonGenerator;
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricher;
-import org.nuxeo.ecm.automation.io.services.enricher.HeaderDocEvaluationContext;
-import org.nuxeo.ecm.automation.io.services.enricher.RestEvaluationContext;
-import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonDocumentWriter;
-import org.nuxeo.ecm.automation.test.service.enrichers.MockEnricher;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -38,17 +37,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * @since 5.7.3
@@ -96,88 +84,6 @@ public class RestServiceTest extends BaseRestTest {
     }
 
     @Test
-    public void itCanGetTheContentEnricherService() throws Exception {
-        assertNotNull(rcs);
-    }
-
-    @Test
-    public void itCanGetEnrichersFromTheService() throws Exception {
-        List<ContentEnricher> cts = rcs.getEnrichers("test", null);
-        assertEquals(1, cts.size());
-    }
-
-    @Test
-    public void enrichersCanHaveParameters() throws Exception {
-        // Given a content enricher
-        List<ContentEnricher> cts = rcs.getEnrichers("parameters", null);
-        assertEquals(1, cts.size());
-
-        // When it has parameters
-        MockEnricher mock = (MockEnricher) cts.get(0);
-        Map<String, String> params = mock.getParameters();
-        assertNotNull(params);
-        assertFalse(params.isEmpty());
-
-        // Then these should be made available to the enricher
-        assertEquals("value1", params.get("param1"));
-    }
-
-    @Test
-    public void itCanFilterEnrichersByCategory() throws Exception {
-        List<ContentEnricher> cts = rcs.getEnrichers("anothertest", null);
-        assertEquals(2, cts.size());
-    }
-
-    @Test
-    public void itCanWriteToContext() throws Exception {
-
-        // Given some input context (header + doc)
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = getJsonGenerator(out);
-        DocumentModel folder = session.getDocument(new PathRef("/folder1"));
-        RestEvaluationContext ec = new HeaderDocEvaluationContext(folder, getFakeHeaders(), null);
-
-        // When the service write to the context
-        jg.writeStartObject();
-        rcs.writeContext(jg, ec);
-        jg.writeEndObject();
-        jg.flush();
-
-        // Then it is filled with children enricher
-        String jsonFolder = out.toString();
-        JsonNode node = parseJson(jsonFolder);
-        assertEquals("documents", node.get("children").get("entity-type").getValueAsText());
-
-    }
-
-    @Test
-    public void documentWriterUsesTheRestConributorService() throws Exception {
-        // Given a document
-        DocumentModel folder = session.getDocument(new PathRef("/folder1"));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        JsonGenerator jg = getJsonGenerator(out);
-
-        // When it is written as Json with appropriate headers
-        JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA, new HashMap<String, String>(), getFakeHeaders(), null);
-        jg.flush();
-
-        // Then it contains contextParameters with contributor
-        JsonNode node = parseJson(out);
-        assertNotNull(node.get("contextParameters").get("children"));
-
-        // When it is written as Json with empty headers
-        out = new ByteArrayOutputStream();
-        jg = getJsonGenerator(out);
-        JsonDocumentWriter.writeDocument(jg, folder, NO_SCHEMA, new HashMap<String, String>(), null, null);
-        jg.flush();
-
-        // Then it contains contextParameters with contributor
-        node = parseJson(out);
-        assertNull(node.get("contextParameters").get("children"));
-
-    }
-
-    @Test
     public void itCanContributeWithBreadcrumb() throws Exception {
         // Given a document
         DocumentModel folder = session.getDocument(new PathRef("/folder1/doc0"));
@@ -220,14 +126,11 @@ public class RestServiceTest extends BaseRestTest {
         String jsonNote = getDocumentAsJson(note);
 
         // Then it contains the children in contextParameters if folderish
-        JsonNode node = parseJson(jsonFolder);
-        JsonNode children = node.get("contextParameters").get("children");
-        assertNotNull(children);
+        JsonAssert jsonAssert = JsonAssert.on(jsonNote);
+        jsonAssert.has("contextParameters.children.entries").length(0);
 
-        node = parseJson(jsonNote);
-        children = node.get("contextParameters").get("children");
-        assertNull(children);
-
+        jsonAssert = JsonAssert.on(jsonFolder);
+        jsonAssert.has("contextParameters.children.entries").length(3);
     }
 
 }

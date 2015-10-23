@@ -16,16 +16,19 @@
  */
 package org.nuxeo.ecm.automation.test.service.enrichers;
 
-import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.io.services.enricher.AbstractContentEnricher;
-import org.nuxeo.ecm.automation.io.services.enricher.RestEvaluationContext;
-
 import java.io.IOException;
 import java.util.Map;
 
+import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.automation.io.services.enricher.AbstractContentEnricher;
+import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService;
+import org.nuxeo.ecm.automation.io.services.enricher.RestEvaluationContext;
+
 /**
  * @since 6.0
+ * @deprecated since 7.10 see {@link ContentEnricherService}
  */
+@Deprecated
 public class MockEnricher extends AbstractContentEnricher {
 
     Map<String, String> parameters;

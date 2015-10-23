@@ -45,8 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelListJsonWriter;
-import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
-import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
+import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -57,9 +56,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * @deprecated this JAX-RS marshaller was migrated to {@link DocumentModelListJsonWriter}. To use it in JAX-RS, use
- *             {@link JsonCoreIODelegate} to forward JAX-RS marshalling to core io. To use it your code, please refer to
- *             {@link MarshallerRegistry} service or use {@link MarshallerHelper}.
+ * @deprecated since 7.10 The Nuxeo JSON marshalling was migrated to nuxeo-core-io. This class is replaced by
+ *             {@link DocumentModelListJsonWriter} which is registered by default and available to marshal
+ *             {@link DirectoryEntry} from the Nuxeo Rest API thanks to the JAX-RS marshaller {@link JsonCoreIODelegate}
  */
 @Deprecated
 @Provider

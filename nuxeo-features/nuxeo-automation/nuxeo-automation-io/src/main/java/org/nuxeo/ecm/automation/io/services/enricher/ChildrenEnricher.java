@@ -33,7 +33,8 @@ import org.nuxeo.ecm.core.io.marshallers.json.enrichers.ChildrenJsonEnricher;
  * not be used directly. For instance if you have millions of children, it will get all of them.
  *
  * @since 5.7.3
- * @deprecated This enricher was migrated to {@link ChildrenJsonEnricher}
+ * @deprecated This enricher was migrated to {@link ChildrenJsonEnricher}. The content enricher service doesn't work
+ *             anymore.
  */
 @Deprecated
 public class ChildrenEnricher extends AbstractContentEnricher {

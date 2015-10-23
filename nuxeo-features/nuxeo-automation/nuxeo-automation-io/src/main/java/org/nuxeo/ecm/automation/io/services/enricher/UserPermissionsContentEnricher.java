@@ -35,7 +35,8 @@ import com.google.common.collect.Iterables;
  * This enricher adds a list of the permissions granted to the user on the document
  *
  * @since 6.0
- * @deprecated This enricher was migrated to {@link BasePermissionsJsonEnricher}
+ * @deprecated This enricher was migrated to {@link BasePermissionsJsonEnricher}. The content enricher service doesn't
+ *             work anymore.
  */
 @Deprecated
 public class UserPermissionsContentEnricher extends AbstractContentEnricher {

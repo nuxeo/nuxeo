@@ -46,14 +46,19 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonReader;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Class that knows how to read NuxeoPrincipal from JSON
  *
- * @since 5.7.3
+ * @since 5.7.3 @deprecated since 7.10 The Nuxeo JSON marshalling was migrated to nuxeo-core-io. This class is replaced
+ *        by {@link NuxeoPrincipalJsonReader} which is registered by default and available to marshal
+ *        {@link NuxeoPrincipal} from the Nuxeo Rest API thanks to the JAX-RS marshaller {@link JsonCoreIODelegate}
  */
+@Deprecated
 @Provider
 @Consumes({ "application/json+nxentity", "application/json" })
 public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {

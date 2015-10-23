@@ -39,12 +39,18 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoGroupJsonReader;
 import org.nuxeo.ecm.webengine.WebException;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 5.7.3
+ * @deprecated since 7.10 The Nuxeo JSON marshalling was migrated to nuxeo-core-io. This class is replaced by
+ *             {@link NuxeoGroupJsonReader} which is registered by default and available to marshal {@link NuxeoGroup}
+ *             from the Nuxeo Rest API thanks to the JAX-RS marshaller {@link JsonCoreIODelegate}
  */
+@Deprecated
 public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
 
     @Context
