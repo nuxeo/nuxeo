@@ -19,9 +19,12 @@ package org.nuxeo.ecm.automation.io.services.enricher;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -34,11 +37,13 @@ import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -63,13 +68,46 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements Cont
 
     public static final String ENRICHER = "enricher";
 
+    public static List<Class<?>> DEPRECATED_KNOWN_ENRICHERS = Arrays.asList(ACLContentEnricher.class,
+            PreviewContentEnricher.class, ThumbnailContentEnricher.class, UserPermissionsContentEnricher.class);
+
     private Map<String, ContentEnricherDescriptor> descriptorRegistry = new ConcurrentHashMap<>();
+
+    private Set<Class<?>> customEnrichers = Collections.synchronizedSet(new HashSet<>());
+
+    @Override
+    public void activate(ComponentContext context) {
+        super.activate(context);
+        List<String> customDeprecated = new ArrayList<>();
+        List<Class<?>> deprecatedKnown = Arrays.asList(ACLContentEnricher.class, PreviewContentEnricher.class,
+                ThumbnailContentEnricher.class, UserPermissionsContentEnricher.class);
+        for (ContentEnricherDescriptor descriptor : descriptorRegistry.values()) {
+            if (!deprecatedKnown.contains(descriptor.klass)) {
+                customDeprecated.add(descriptor.klass.getSimpleName());
+            }
+        }
+        if (!customDeprecated.isEmpty()) {
+            log.warn("The ContentEnricherService is deprecated since 7.10. The contributed enrichers are still available through the deprecated JAX-RS document's marshallers but won't be available through the REST API or automation. You should migrate the following classes and implement "
+                    + AbstractJsonEnricher.class.getName() + ": " + StringUtils.join(customDeprecated, ','));
+        }
+    }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
 
         if (ENRICHER.equals(extensionPoint)) {
             ContentEnricherDescriptor cd = (ContentEnricherDescriptor) contribution;
+            if (!DEPRECATED_KNOWN_ENRICHERS.contains(cd.klass)) {
+                if (customEnrichers.isEmpty()) {
+                    log.warn("The ContentEnricherService is deprecated since 7.10. The contributed enrichers are still available for use through the deprecated JAX-RS document's marshallers but won't be available through the default Nuxeo REST API or Nuxeo Automation. You should migrate your enrichers and implement "
+                            + AbstractJsonEnricher.class.getName());
+                }
+                if (!customEnrichers.contains(cd.klass)) {
+                    customEnrichers.add(cd.klass);
+                    log.warn("Enrichers registered and not available for use in Nuxeo Rest API and Nuxeo Automation: "
+                            + cd.klass.getName());
+                }
+            }
             descriptorRegistry.put(cd.name, cd);
         }
 
@@ -81,6 +119,9 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements Cont
             ContentEnricherDescriptor cd = (ContentEnricherDescriptor) contribution;
             if (descriptorRegistry.containsKey(cd.name)) {
                 descriptorRegistry.remove(cd.name);
+                if (!DEPRECATED_KNOWN_ENRICHERS.contains(cd.klass)) {
+                    customEnrichers.remove(cd.name);
+                }
             }
         }
     }
