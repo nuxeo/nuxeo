@@ -148,6 +148,7 @@ public interface SignatureService {
      * Signs a PDF document with a user certificate. Requires a password to retrieve the certificate from the user
      * keystore.
      *
+     * @param doc Document model beign signed
      * @param pdfBlob the blob containing the PDF to sign
      * @param user the signing user
      * @param userKeyPassword the password for the user's signing certificate
@@ -155,7 +156,7 @@ public interface SignatureService {
      * @return a blob containing the signed PDF
      * @throws SignException
      */
-    Blob signPDF(Blob pdfBlob, DocumentModel user, String userKeyPassword, String reason) throws SignException;
+    Blob signPDF(Blob pdfBlob, DocumentModel doc, DocumentModel user, String userKeyPassword, String reason) throws SignException;
 
     /**
      * Returns a list of certificates associated with a given document.
@@ -165,4 +166,5 @@ public interface SignatureService {
      */
     List<X509Certificate> getCertificates(DocumentModel doc);
 
+    SignatureLayout getSignatureLayout();
 }

@@ -5,6 +5,7 @@
              point="operations">
     <operation
             class="org.nuxeo.ecm.platform.signature.core.operations.SignPDF"/>
+    <operation class="org.nuxeo.ecm.platform.signature.core.operations.SignPDFDocument"/>
   </extension>
 
 </component>

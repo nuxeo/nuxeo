@@ -24,14 +24,19 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
+import org.nuxeo.ecm.platform.signature.api.sign.SignatureService.SigningDisposition;
+import org.nuxeo.ecm.platform.signature.core.sign.SignatureHelper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
-@Operation(id = SignPDF.ID, category = Constants.CAT_SERVICES, label = "Sign PDF", description = "Applies a digital signature to the"
-        + " input PDF.")
-public class SignPDF {
+@Operation(id = SignPDFDocument.ID, category = Constants.CAT_SERVICES, label = "Sign PDF", description = "Applies a digital signature to the"
+        + " PDF blob of the input document.")
+public class SignPDFDocument {
 
-    public static final String ID = "Services.SignPDF";
+    public static final String ID = "Services.SignPDFDocument";
+
+    private static final String MIME_TYPE_PDF = "application/pdf";
 
     @Context
     protected UserManager userManager;
@@ -48,12 +53,18 @@ public class SignPDF {
     @Param(name = "reason", required = true, description = "Signature reason.")
     protected String reason;
 
-    @Param(name = "document", required = false, description = "Document reference.")
-    protected DocumentModel doc = null;
-
     @OperationMethod
-    public Blob run(Blob blob) {
+    public Blob run(DocumentModel doc) {
         DocumentModel user = userManager.getUserModel(username);
-        return signatureService.signPDF(blob, doc, user, password, reason);
+        Blob originalBlob = doc.getAdapter(BlobHolder.class).getBlob();
+        boolean originalIsPdf = MIME_TYPE_PDF.equals(originalBlob.getMimeType());
+        // decide if we want PDF/A
+        boolean pdfa = SignatureHelper.getPDFA();
+        // decide disposition
+        SigningDisposition disposition = SignatureHelper.getDisposition(originalIsPdf);
+        // decide archive filename
+        String filename = originalBlob.getFilename();
+        String archiveFilename = SignatureHelper.getArchiveFilename(filename);
+        return signatureService.signDocument(doc, user, password, reason, pdfa, disposition, archiveFilename);
     }
 }
