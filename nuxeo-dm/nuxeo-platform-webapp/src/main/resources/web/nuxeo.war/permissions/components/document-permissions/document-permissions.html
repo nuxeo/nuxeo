@@ -274,25 +274,11 @@
     },
 
     computeHasLocalAces: function (doc) {
-      if (this.acls) {
-        for (var i = 0; i < this.acls.length; i++) {
-          if (this.acls[i].name !== 'inherited' && this.acls.length >= 1) {
-            return true;
-          }
-        }
-      }
-      return false;
+      return this.computeLocalAces(doc).length > 0;
     },
 
     computeHasInheritedAces: function (doc) {
-      if (this.acls) {
-        for (var i = 0; i < this.acls.length; i++) {
-          if (this.acls[i].name === 'inherited') {
-            return true;
-          }
-        }
-      }
-      return false;
+      return this.computeInheritedAces(doc).length > 0;
     },
 
     computeLocalAces: function (doc) {
