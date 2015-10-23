@@ -11,7 +11,7 @@
   </script>
 
   <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html"></link>
-  <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-connection.html"></link>
+  <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nuxeo-connection.html"></link>
   <link rel="import" href="#{baseURL}permissions/components/document-permissions/document-permissions.html"></link>
 
 
@@ -72,7 +72,7 @@
 
   <template is="dom-bind">
 
-    <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
+    <nuxeo-connection id="nx_connection" url="#{baseURL}"></nuxeo-connection>
     <document-permissions doc-id="#{currentDocument.id}"></document-permissions>
 
   </template>
