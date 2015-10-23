@@ -184,6 +184,12 @@
 
     var paramId = (elid + "_params").split(":").join("\\:");
     var paramsHolder = jQuery("#" + paramId);
+    var val = paramsHolder.val();
+    // make sure we don't initialize a non-jsf select2 widget
+    if (!val) {
+      return;
+    }
+
     params = JSON.parse(paramsHolder.val());
 
     var readonly = params.readonly == 'true';
