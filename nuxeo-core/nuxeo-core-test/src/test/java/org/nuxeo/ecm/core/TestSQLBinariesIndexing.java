@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core;
 import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -79,6 +80,10 @@ public class TestSQLBinariesIndexing {
         docRef = new IdRef(docId);
     }
 
+    protected static CountDownLatch readyLatch;
+
+    protected static CountDownLatch startLatch;
+
     /**
      * Work that waits in the fulltext updater queue, blocking other indexing work, until the main thread tells it to go
      * ahead.
@@ -86,10 +91,6 @@ public class TestSQLBinariesIndexing {
     public static class BlockingWork extends AbstractWork {
 
         private static final long serialVersionUID = 1L;
-
-        protected transient CountDownLatch readyLatch = new CountDownLatch(1);
-
-        protected transient CountDownLatch startLatch = new CountDownLatch(1);
 
         @Override
         public String getCategory() {
@@ -106,24 +107,32 @@ public class TestSQLBinariesIndexing {
             setStatus("Blocking");
             readyLatch.countDown();
             try {
-                startLatch.await();
+                startLatch.await(1, TimeUnit.MINUTES);
             } catch (InterruptedException e) {
                 // restore interrupted status
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
+            } finally {
+                startLatch = null;
             }
             setStatus("Released");
         }
     }
 
     protected void blockFulltextUpdating() throws InterruptedException {
+        startLatch = new CountDownLatch(1);
+        readyLatch = new CountDownLatch(1);
         blockingWork = new BlockingWork();
         Framework.getLocalService(WorkManager.class).schedule(blockingWork);
-        blockingWork.readyLatch.await();
+        try {
+            readyLatch.await(1, TimeUnit.MINUTES);
+        } finally {
+            readyLatch = null;
+        }
     }
 
     protected void allowFulltextUpdating() {
-        blockingWork.startLatch.countDown();
+        startLatch.countDown();
         blockingWork = null;
         waitForFulltextIndexing();
     }
