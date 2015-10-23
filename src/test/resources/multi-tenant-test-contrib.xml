@@ -40,10 +40,7 @@
 
     <directory name="tenants">
       <schema>tenant</schema>
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>tenants</table>
@@ -54,12 +51,7 @@
     <directory name="userDirectory">
 
       <schema>user</schema>
-
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
-
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>users</table>
       <idField>username</idField>
       <passwordField>password</passwordField>
@@ -106,7 +98,7 @@
     </domain>
 
   </extension>
-  
+
   <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
     point="userManager">
 
@@ -118,6 +110,6 @@
     </userManager>
 
   </extension>
-  
-  
+
+
 </component>
