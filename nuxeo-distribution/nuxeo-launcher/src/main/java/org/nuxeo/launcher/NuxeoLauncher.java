@@ -581,6 +581,8 @@ public abstract class NuxeoLauncher {
 
     private CommandLine cmdLine;
 
+    private boolean ignoreMissing = false;
+
     /**
      * @since 5.5
      * @return true if quiet mode is active
@@ -1661,7 +1663,16 @@ public abstract class NuxeoLauncher {
 
             log.debug("Check if install in progress...");
             if (configurationGenerator.isInstallInProgress()) {
-                getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true);
+                if (!getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true,
+                        ignoreMissing)) {
+                    errorValue = EXIT_CODE_ERROR;
+                    log.error(String.format(
+                            "Start interrupted due to failure on pending actions. You can resume with a new start;"
+                                    + " or you can restore the file '%s', optionally using the '--%s' option.",
+                            configurationGenerator.getInstallFile().getName(), OPTION_IGNORE_MISSING));
+                    return false;
+                }
+
                 // configuration will be reloaded, keep wizard value
                 System.setProperty(
                         ConfigurationGenerator.PARAM_WIZARD_DONE,
@@ -2044,6 +2055,9 @@ public abstract class NuxeoLauncher {
                 throw new ConfigurationException(e);
             }
         }
+        if (cmdLine.hasOption(OPTION_IGNORE_MISSING)) {
+            ignoreMissing = true;
+        }
     }
 
     private void extractCommandAndParams(String[] args) {
@@ -2257,7 +2271,7 @@ public abstract class NuxeoLauncher {
     }
 
     protected boolean pkgAdd(String[] pkgNames) throws IOException, PackageException {
-        boolean cmdOK = getConnectBroker().pkgAdd(Arrays.asList(pkgNames), cmdLine.hasOption(OPTION_IGNORE_MISSING));
+        boolean cmdOK = getConnectBroker().pkgAdd(Arrays.asList(pkgNames), ignoreMissing);
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
@@ -2268,9 +2282,9 @@ public abstract class NuxeoLauncher {
         boolean cmdOK = true;
         if (configurationGenerator.isInstallInProgress()) {
             cmdOK = getConnectBroker().executePending(configurationGenerator.getInstallFile(), true,
-                    !cmdLine.hasOption(OPTION_NODEPS));
+                    !cmdLine.hasOption(OPTION_NODEPS), ignoreMissing);
         }
-        cmdOK = cmdOK && getConnectBroker().pkgInstall(Arrays.asList(pkgIDs), cmdLine.hasOption(OPTION_IGNORE_MISSING));
+        cmdOK = cmdOK && getConnectBroker().pkgInstall(Arrays.asList(pkgIDs), ignoreMissing);
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
@@ -2460,11 +2474,12 @@ public abstract class NuxeoLauncher {
             List<String> pkgsToRemove) throws IOException, PackageException {
         boolean cmdOK = true;
         if (configurationGenerator.isInstallInProgress()) {
-            cmdOK = getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true);
+            cmdOK = getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true,
+                    ignoreMissing);
         }
         cmdOK = cmdOK
                 && getConnectBroker().pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, true,
-                        cmdLine.hasOption(OPTION_IGNORE_MISSING));
+                        ignoreMissing);
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
@@ -2560,10 +2575,9 @@ public abstract class NuxeoLauncher {
     protected boolean pkgSetRequest(List<String> request, boolean nodeps) throws IOException, PackageException {
         boolean cmdOK;
         if (nodeps) {
-            cmdOK = getConnectBroker().pkgSet(request, cmdLine.hasOption(OPTION_IGNORE_MISSING));
+            cmdOK = getConnectBroker().pkgSet(request, ignoreMissing);
         } else {
-            cmdOK = getConnectBroker().pkgRequest(null, request, null, null, false,
-                    cmdLine.hasOption(OPTION_IGNORE_MISSING));
+            cmdOK = getConnectBroker().pkgRequest(null, request, null, null, false, ignoreMissing);
         }
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;

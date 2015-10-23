@@ -376,7 +376,7 @@ public class ConnectBroker {
         File distributionFile = new File(distributionMPDir, md5);
         if (distributionFile.exists()) {
             try {
-                ret = pkgAdd(distributionFile.getCanonicalPath()) != null;
+                ret = pkgAdd(distributionFile.getCanonicalPath(), false) != null;
             } catch (IOException e) {
                 log.warn("Could not add distribution file " + md5);
                 ret = false;
@@ -527,7 +527,7 @@ public class ConnectBroker {
         for (LocalPackage pkg : service.getPackages()) {
             localNames.add(pkg.getName());
         }
-        return pkgRequest(null, null, null, localNames);
+        return pkgRequest(null, null, null, localNames, true, false);
     }
 
     /**
@@ -670,8 +670,11 @@ public class ConnectBroker {
      *
      * @param pkgsToAdd
      * @return true if command succeeded
-     * @see #pkgAdd(String)
+     * @see #pkgAdd(List, boolean)
+     * @see #pkgAdd(String, boolean)
+     * @deprecated Since 7.10. Use a method with an explicit value for {@code ignoreMissing}.
      */
+    @Deprecated
     public boolean pkgAdd(List<String> pkgsToAdd) {
         return pkgAdd(pkgsToAdd, false);
     }
@@ -683,7 +686,7 @@ public class ConnectBroker {
      * @param pkgsToAdd
      * @param ignoreMissing
      * @return true if command succeeded
-     * @see #pkgAdd(String)
+     * @see #pkgAdd(String, boolean)
      */
     public boolean pkgAdd(List<String> pkgsToAdd, boolean ignoreMissing) {
         boolean cmdOk = true;
@@ -730,7 +733,11 @@ public class ConnectBroker {
      *
      * @param packageFileName
      * @return The added LocalPackage or null if failed
+     * @see #pkgAdd(List, boolean)
+     * @see #pkgAdd(String, boolean)
+     * @deprecated Since 7.10. Use a method with an explicit value for {@code ignoreMissing}.
      */
+    @Deprecated
     public LocalPackage pkgAdd(String packageFileName) {
         return pkgAdd(packageFileName, false);
     }
@@ -742,6 +749,7 @@ public class ConnectBroker {
      * @param packageFileName
      * @param ignoreMissing
      * @return The added LocalPackage or null if failed
+     * @see #pkgAdd(List, boolean)
      */
     public LocalPackage pkgAdd(String packageFileName, boolean ignoreMissing) {
         CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
@@ -784,8 +792,11 @@ public class ConnectBroker {
      * matching package is installed.
      *
      * @param packageIdsToInstall The list can contain package IDs and names
-     * @see #pkgInstall(String)
+     * @see #pkgInstall(List, boolean)
+     * @see #pkgInstall(String, boolean)
+     * @deprecated Since 7.10. Use a method with an explicit value for {@code ignoreMissing}.
      */
+    @Deprecated
     public boolean pkgInstall(List<String> packageIdsToInstall) {
         return pkgInstall(packageIdsToInstall, false);
     }
@@ -797,7 +808,7 @@ public class ConnectBroker {
      * @since 6.0
      * @param packageIdsToInstall The list can contain package IDs and names
      * @param ignoreMissing If true, doesn't throw an exception on unknown packages
-     * @see #pkgInstall(String)
+     * @see #pkgInstall(String, boolean)
      */
     public boolean pkgInstall(List<String> packageIdsToInstall, boolean ignoreMissing) {
         log.debug("Installing: " + packageIdsToInstall);
@@ -814,7 +825,11 @@ public class ConnectBroker {
      *
      * @param pkgId Package ID or Name
      * @return The installed LocalPackage or null if failed
+     * @see #pkgInstall(List, boolean)
+     * @see #pkgInstall(String, boolean)
+     * @deprecated Since 7.10. Use a method with an explicit value for {@code ignoreMissing}.
      */
+    @Deprecated
     public LocalPackage pkgInstall(String pkgId) {
         return pkgInstall(pkgId, false);
     }
@@ -826,6 +841,7 @@ public class ConnectBroker {
      * @param pkgId Package ID or Name
      * @param ignoreMissing If true, doesn't throw an exception on unknown packages
      * @return The installed LocalPackage or null if failed
+     * @see #pkgInstall(List, boolean)
      */
     public LocalPackage pkgInstall(String pkgId, boolean ignoreMissing) {
         if (env.getProperty(LAUNCHER_CHANGED_PROPERTY, "false").equals("true")) {
@@ -883,7 +899,7 @@ public class ConnectBroker {
     }
 
     public boolean listPending(File commandsFile) {
-        return executePending(commandsFile, false, false);
+        return executePending(commandsFile, false, false, false);
     }
 
     /**
@@ -892,7 +908,7 @@ public class ConnectBroker {
      * @param doExecute Whether to execute or list the actions
      * @param useResolver Whether to use full resolution or just execute individual actions
      */
-    public boolean executePending(File commandsFile, boolean doExecute, boolean useResolver) {
+    public boolean executePending(File commandsFile, boolean doExecute, boolean useResolver, boolean ignoreMissing) {
         int errorValue = 0;
         if (!commandsFile.isFile()) {
             return false;
@@ -913,7 +929,7 @@ public class ConnectBroker {
                             if (useResolver) {
                                 pkgsToInstall.add(split[1]);
                             } else {
-                                pkgInstall(split[1]);
+                                pkgInstall(split[1], ignoreMissing);
                             }
                         } else {
                             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_INSTALL);
@@ -925,7 +941,7 @@ public class ConnectBroker {
                             if (useResolver) {
                                 pkgsToAdd.add(split[1]);
                             } else {
-                                pkgAdd(split[1]);
+                                pkgAdd(split[1], ignoreMissing);
                             }
                         } else {
                             CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_ADD);
@@ -970,7 +986,7 @@ public class ConnectBroker {
                                 if (useResolver) {
                                     pkgsToInstall.add(line);
                                 } else {
-                                    pkgInstall(line);
+                                    pkgInstall(line, ignoreMissing);
                                 }
                             }
                         } else {
@@ -998,7 +1014,8 @@ public class ConnectBroker {
                         log.info("Relax mode changed from 'ask' to 'false' for executing the pending actions.");
                         relax = "false";
                     }
-                    boolean success = pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove);
+                    boolean success = pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, true,
+                            ignoreMissing);
                     accept = oldAccept;
                     relax = oldRelax;
                     if (!success) {
@@ -1009,6 +1026,7 @@ public class ConnectBroker {
                     File bak = new File(commandsFile.getPath() + ".bak");
                     bak.delete();
                     commandsFile.renameTo(bak);
+                    log.error("Pending actions execution failed. The commands file has been moved to: " + bak);
                 } else {
                     commandsFile.delete();
                 }
@@ -1152,6 +1170,10 @@ public class ConnectBroker {
         return downloadOk;
     }
 
+    /**
+     * @deprecated Since 7.10. Use {@link #pkgRequest(List, List, List, List, boolean, boolean)} instead.
+     */
+    @Deprecated
     public boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) {
         return pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, true, false);
@@ -1160,7 +1182,9 @@ public class ConnectBroker {
     /**
      * @param keepExisting If false, the request will remove existing packages that are not part of the resolution
      * @since 5.9.2
+     * @deprecated Since 7.10. Use {@link #pkgRequest(List, List, List, List, boolean, boolean)} instead.
      */
+    @Deprecated
     public boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove, boolean keepExisting) {
         return pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, keepExisting, false);
@@ -1187,7 +1211,7 @@ public class ConnectBroker {
                 List<String> namesOrIdsToInstall = new ArrayList<>();
                 for (String pkgToInstall : pkgsToInstall) {
                     if (isLocalPackageFile(pkgToInstall)) {
-                        LocalPackage addedPkg = pkgAdd(pkgToInstall);
+                        LocalPackage addedPkg = pkgAdd(pkgToInstall, ignoreMissing);
                         if (addedPkg != null) {
                             namesOrIdsToInstall.add(addedPkg.getId());
                         } else {
@@ -1341,7 +1365,7 @@ public class ConnectBroker {
                     }
                     packageIdsToInstall = installResolution.getOrderedPackageIdsToInstall();
                 }
-                if (!pkgInstall(packageIdsToInstall)) {
+                if (!pkgInstall(packageIdsToInstall, ignoreMissing)) {
                     return false;
                 }
 
@@ -1359,7 +1383,9 @@ public class ConnectBroker {
      * Installs a list of packages and uninstalls the rest (no dependency check)
      *
      * @since 5.9.2
+     * @deprecated Since 7.10. Use #pkgSet(List, boolean) instead.
      */
+    @Deprecated
     public boolean pkgSet(List<String> pkgList) {
         return pkgSet(pkgList, false);
     }
@@ -1430,7 +1456,7 @@ public class ConnectBroker {
         for (DownloadablePackage upgrade : upgrades) {
             upgradeIds.add(upgrade.getId());
         }
-        return pkgRequest(null, upgradeIds, null, null);
+        return pkgRequest(null, upgradeIds, null, null, true, false);
 
     }
 
