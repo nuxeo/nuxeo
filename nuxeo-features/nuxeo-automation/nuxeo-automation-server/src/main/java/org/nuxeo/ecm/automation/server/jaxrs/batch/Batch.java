@@ -129,7 +129,8 @@ public class Batch {
         if (fileEntryKey == null) {
             return null;
         }
-        Map<String, Serializable> fileEntryParams = bm.getTransientStore().getParameters(fileEntryKey);
+        TransientStore ts = bm.getTransientStore();
+        Map<String, Serializable> fileEntryParams = ts.getParameters(fileEntryKey);
         if (fileEntryParams == null) {
             return null;
         }
@@ -139,7 +140,7 @@ public class Batch {
         } else {
             Blob blob = null;
             if (fetchBlobs) {
-                List<Blob> fileEntryBlobs = bm.getTransientStore().getBlobs(fileEntryKey);
+                List<Blob> fileEntryBlobs = ts.getBlobs(fileEntryKey);
                 if (fileEntryBlobs == null) {
                     return null;
                 }
@@ -166,9 +167,10 @@ public class Batch {
 
         String fileEntryKey = key + "_" + index;
         BatchManager bm = Framework.getService(BatchManager.class);
-        bm.getTransientStore().putBlobs(fileEntryKey, Collections.singletonList(blob));
-        bm.getTransientStore().putParameter(fileEntryKey, CHUNKED_PARAM_NAME, String.valueOf(false));
-        bm.getTransientStore().putParameter(key, index, fileEntryKey);
+        TransientStore ts = bm.getTransientStore();
+        ts.putBlobs(fileEntryKey, Collections.singletonList(blob));
+        ts.putParameter(fileEntryKey, CHUNKED_PARAM_NAME, String.valueOf(false));
+        ts.putParameter(key, index, fileEntryKey);
 
         return fileEntryKey;
     }
@@ -188,8 +190,9 @@ public class Batch {
         BatchFileEntry fileEntry = getFileEntry(index);
         if (fileEntry == null) {
             fileEntry = new BatchFileEntry(fileEntryKey, chunkCount, fileName, mimeType, fileSize);
-            bm.getTransientStore().putParameters(fileEntryKey, fileEntry.getParams());
-            bm.getTransientStore().putParameter(key, index, fileEntryKey);
+            TransientStore ts = bm.getTransientStore();
+            ts.putParameters(fileEntryKey, fileEntry.getParams());
+            ts.putParameter(key, index, fileEntryKey);
         }
         fileEntry.addChunk(chunkIndex, blob);
 

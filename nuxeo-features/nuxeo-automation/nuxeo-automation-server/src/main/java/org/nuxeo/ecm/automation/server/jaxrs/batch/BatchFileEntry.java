@@ -214,16 +214,17 @@ public class BatchFileEntry {
                 // Temporary file made from concatenated chunks
                 tmpChunkedFile = chunkedBlob.getFile();
                 BatchManager bm = Framework.getService(BatchManager.class);
+                TransientStore ts = bm.getTransientStore();
                 // Sort chunk indexes and concatenate them to build the entire blob
                 List<Integer> sortedChunkIndexes = getOrderedChunkIndexes();
                 for (int index : sortedChunkIndexes) {
-                    Blob chunk = getChunk(bm.getTransientStore(), chunks.get(index));
+                    Blob chunk = getChunk(ts, chunks.get(index));
                     if (chunk != null) {
                         transferTo(chunk, tmpChunkedFile);
                     }
                 }
                 // Store tmpChunkedFile as a parameter for later deletion
-                bm.getTransientStore().putParameter(key, "tmpChunkedFilePath", tmpChunkedFile.getAbsolutePath());
+                ts.putParameter(key, "tmpChunkedFilePath", tmpChunkedFile.getAbsolutePath());
                 chunkedBlob.setMimeType(getMimeType());
                 chunkedBlob.setFilename(getFileName());
                 return chunkedBlob;
@@ -277,8 +278,9 @@ public class BatchFileEntry {
 
         String chunkEntryKey = key + "_" + index;
         BatchManager bm = Framework.getService(BatchManager.class);
-        bm.getTransientStore().putBlobs(chunkEntryKey, Collections.singletonList(blob));
-        bm.getTransientStore().putParameter(key, String.valueOf(index), chunkEntryKey);
+        TransientStore ts = bm.getTransientStore();
+        ts.putBlobs(chunkEntryKey, Collections.singletonList(blob));
+        ts.putParameter(key, String.valueOf(index), chunkEntryKey);
 
         return chunkEntryKey;
     }

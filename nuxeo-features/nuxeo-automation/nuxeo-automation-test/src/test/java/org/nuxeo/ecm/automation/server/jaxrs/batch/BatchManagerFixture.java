@@ -223,7 +223,8 @@ public class BatchManagerFixture {
 
         String chunkEntryKey1 = batchId + "_0_0";
         assertTrue(chunkEntryKeys.contains(chunkEntryKey1));
-        List<Blob> chunkEntryBlobs = bm.getTransientStore().getBlobs(chunkEntryKey1);
+        TransientStore ts = bm.getTransientStore();
+        List<Blob> chunkEntryBlobs = ts.getBlobs(chunkEntryKey1);
         assertEquals(1, chunkEntryBlobs.size());
         Blob blob1 = chunkEntryBlobs.get(0);
         assertEquals(chunk1, blob1.getString());
@@ -231,7 +232,7 @@ public class BatchManagerFixture {
 
         String chunkEntryKey2 = batchId + "_0_1";
         assertTrue(chunkEntryKeys.contains(chunkEntryKey2));
-        chunkEntryBlobs = bm.getTransientStore().getBlobs(chunkEntryKey2);
+        chunkEntryBlobs = ts.getBlobs(chunkEntryKey2);
         assertEquals(1, chunkEntryBlobs.size());
         Blob blob2 = chunkEntryBlobs.get(0);
         assertEquals(chunk2, blob2.getString());
@@ -239,18 +240,18 @@ public class BatchManagerFixture {
 
         String chunkEntryKey3 = batchId + "_0_2";
         assertTrue(chunkEntryKeys.contains(chunkEntryKey3));
-        chunkEntryBlobs = bm.getTransientStore().getBlobs(chunkEntryKey3);
+        chunkEntryBlobs = ts.getBlobs(chunkEntryKey3);
         assertEquals(1, chunkEntryBlobs.size());
         Blob blob3 = chunkEntryBlobs.get(0);
         assertEquals(chunk3, blob3.getString());
         assertEquals(8, blob3.getLength());
 
         // Check TransientStore storage size
-        assertEquals(38, ((AbstractTransientStore) bm.getTransientStore()).getStorageSize());
+        assertEquals(38, ((AbstractTransientStore) ts).getStorageSize());
 
         // Clean batch
         bm.clean(batchId);
-        assertEquals(0, bm.getTransientStore().getStorageSizeMB());
+        assertEquals(0, ts.getStorageSizeMB());
     }
 
     @Test
@@ -280,11 +281,12 @@ public class BatchManagerFixture {
         Assert.assertEquals("Chunk 1 Chunk 2 ", blobs.get(10).getString());
 
         // Batch data
-        assertTrue(bm.getTransientStore().exists(batchId));
-        assertTrue(bm.getTransientStore().exists(batchId + "_5"));
-        assertTrue(bm.getTransientStore().exists(batchId + "_10"));
-        assertTrue(bm.getTransientStore().exists(batchId + "_10_0"));
-        assertTrue(bm.getTransientStore().exists(batchId + "_10_1"));
+        TransientStore ts = bm.getTransientStore();
+        assertTrue(ts.exists(batchId));
+        assertTrue(ts.exists(batchId + "_5"));
+        assertTrue(ts.exists(batchId + "_10"));
+        assertTrue(ts.exists(batchId + "_10_0"));
+        assertTrue(ts.exists(batchId + "_10_1"));
 
         // Batch non chunked file
         FileBlob fileBlob = (FileBlob) blobs.get(9);
@@ -301,19 +303,18 @@ public class BatchManagerFixture {
         bm.clean(batchId);
         // Batch data has been removed from cache as well as temporary chunked file, but non chunked file is still there
         // while transient store GC is not called
-        assertFalse(bm.getTransientStore().exists(batchId));
-        assertFalse(bm.getTransientStore().exists(batchId + "_5"));
-        assertFalse(bm.getTransientStore().exists(batchId + "_10"));
-        assertFalse(bm.getTransientStore().exists(batchId + "_10_0"));
-        assertFalse(bm.getTransientStore().exists(batchId + "_10_1"));
+        assertFalse(ts.exists(batchId));
+        assertFalse(ts.exists(batchId + "_5"));
+        assertFalse(ts.exists(batchId + "_10"));
+        assertFalse(ts.exists(batchId + "_10_0"));
+        assertFalse(ts.exists(batchId + "_10_1"));
         assertFalse(tmpChunkedFile.exists());
         assertTrue(tmpFile.exists());
-        assertEquals(0, bm.getTransientStore().getStorageSizeMB());
+        assertEquals(0, ts.getStorageSizeMB());
 
-        TransientStore ts = bm.getTransientStore();
         ts.doGC();
         assertFalse(tmpFile.exists());
-        assertEquals(0, bm.getTransientStore().getStorageSizeMB());
+        assertEquals(0, ts.getStorageSizeMB());
     }
 
     @Test
@@ -367,13 +368,14 @@ public class BatchManagerFixture {
         }
 
         // Check storage size
-        assertTrue(((AbstractTransientStore) bm.getTransientStore()).getStorageSize() > 12 * nbBatches);
+        TransientStore ts = bm.getTransientStore();
+        assertTrue(((AbstractTransientStore) ts).getStorageSize() > 12 * nbBatches);
 
         // Clean batches
         for (String batchId : batchIds) {
             bm.clean(batchId);
         }
-        assertEquals(bm.getTransientStore().getStorageSizeMB(), 0);
+        assertEquals(ts.getStorageSizeMB(), 0);
     }
 
     @Test
@@ -424,11 +426,12 @@ public class BatchManagerFixture {
         }
 
         // Check storage size
-        assertTrue(((AbstractTransientStore) bm.getTransientStore()).getStorageSize() > 12 * nbFiles);
+        TransientStore ts = bm.getTransientStore();
+        assertTrue(((AbstractTransientStore) ts).getStorageSize() > 12 * nbFiles);
 
         // Clean batch
         bm.clean(batchId);
-        assertEquals(bm.getTransientStore().getStorageSizeMB(), 0);
+        assertEquals(ts.getStorageSizeMB(), 0);
     }
 
     @Test
@@ -478,10 +481,11 @@ public class BatchManagerFixture {
         assertEquals(nbChunks, nbOccurrences);
 
         // Check storage size
-        assertTrue(((AbstractTransientStore) bm.getTransientStore()).getStorageSize() > 17 * nbChunks);
+        TransientStore ts = bm.getTransientStore();
+        assertTrue(((AbstractTransientStore) ts).getStorageSize() > 17 * nbChunks);
 
         // Clean batch
         bm.clean(batchId);
-        assertEquals(bm.getTransientStore().getStorageSizeMB(), 0);
+        assertEquals(ts.getStorageSizeMB(), 0);
     }
 }
