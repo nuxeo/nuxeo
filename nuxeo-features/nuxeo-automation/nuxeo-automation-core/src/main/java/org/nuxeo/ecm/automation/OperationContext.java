@@ -99,6 +99,21 @@ public class OperationContext implements Map<String, Object> {
         this(null, null);
     }
 
+    public OperationContext(OperationContext ctx) {
+        if (ctx.loginStack == null) {
+            this.loginStack = new LoginStack(ctx.getCoreSession());
+        } else {
+            this.loginStack = ctx.loginStack;
+        }
+        this.vars = ctx.vars;
+        this.cleanupHandlers = ctx.cleanupHandlers;
+        this.stacks = ctx.stacks;
+        this.commit = ctx.commit;
+        this.input = ctx.input;
+        this.trace = ctx.trace;
+        this.chainCallback = ctx.chainCallback;
+    }
+
     public OperationContext(CoreSession session) {
         this(session, null);
     }

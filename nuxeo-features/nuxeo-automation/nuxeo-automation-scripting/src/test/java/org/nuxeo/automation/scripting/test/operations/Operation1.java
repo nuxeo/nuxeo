@@ -16,6 +16,8 @@
  */
 package org.nuxeo.automation.scripting.test.operations;
 
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -23,9 +25,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 @Operation(id = "o1")
 public class Operation1 {
 
+    @Context
+    OperationContext context;
+
     @OperationMethod
     public DocumentModel run(DocumentModel doc) throws Exception {
         return doc;
+    }
+
+    @OperationMethod
+    public String run() throws Exception {
+        return context.getPrincipal().getName();
     }
 
 }

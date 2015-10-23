@@ -35,7 +35,6 @@ import org.apache.commons.io.IOUtils;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.context.ContextHelper;
@@ -58,7 +57,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
 
     protected String jsWrapper = null;
 
-    protected OperationContext operationContext;
+    protected ScriptOperationContext operationContext;
 
     protected String getJSWrapper(boolean refresh) throws OperationException {
         if (jsWrapper == null || refresh) {
@@ -93,12 +92,12 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     @Override
-    public void setOperationContext(OperationContext ctx) {
+    public void setOperationContext(ScriptOperationContext ctx) {
         this.operationContext = operationContexts.get();
         this.operationContext = wrapContext(ctx);
     }
 
-    protected OperationContext wrapContext(OperationContext ctx) {
+    protected ScriptOperationContext wrapContext(ScriptOperationContext ctx) {
         for (String entryId : ctx.keySet()) {
             Object entry = ctx.get(entryId);
             if (entry instanceof DocumentModel) {
@@ -128,10 +127,10 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         }
     };
 
-    protected final ThreadLocal<OperationContext> operationContexts = new ThreadLocal<OperationContext>() {
+    protected final ThreadLocal<ScriptOperationContext> operationContexts = new ThreadLocal<ScriptOperationContext>() {
         @Override
-        protected OperationContext initialValue() {
-            return new OperationContext();
+        protected ScriptOperationContext initialValue() {
+            return new ScriptOperationContext();
         }
     };
 

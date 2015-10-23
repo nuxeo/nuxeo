@@ -27,8 +27,9 @@ import jdk.nashorn.internal.objects.NativeArray;
 
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.MarshalingHelper;
-import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.automation.scripting.internals.ScriptOperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.scripting.DocumentWrapper;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
@@ -42,13 +43,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ScriptingOperationImpl {
 
-    protected final OperationContext ctx;
+    protected final ScriptOperationContext ctx;
 
     protected final Map<String, Object> args;
 
     protected final String source;
 
-    public ScriptingOperationImpl(String source, OperationContext ctx, Map<String, Object> args) throws ScriptException {
+    public ScriptingOperationImpl(String source, ScriptOperationContext ctx, Map<String, Object> args) throws ScriptException {
         this.ctx = ctx;
         this.args = args;
         this.source = source;
@@ -64,6 +65,10 @@ public class ScriptingOperationImpl {
             return unwrapResult(itf.run(input, args));
         } catch (ScriptException e) {
             throw new OperationException(e);
+        } finally {
+            if (ctx.get(Constants.VAR_IS_CHAIN) != null && !(Boolean) ctx.get(Constants.VAR_IS_CHAIN)) {
+                ctx.deferredDispose();
+            }
         }
     }
 

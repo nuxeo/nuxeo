@@ -334,6 +334,37 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestLoginAsContext">
+      <inputType>void</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <param name="document" type="string"/>
+
+      <script><![CDATA[
+        function run(input, params) {
+          var username = o1(null, {});
+          print(username);
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="Scripting.TestLoginAsOperation">
+      <inputType>void</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <param name="document" type="string"/>
+
+      <script><![CDATA[
+        function run(input, params) {
+          Auth.LoginAs(input, {
+            'name': "Administrator"
+          });
+          var username = o1(null, {});
+          print(username);
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
@@ -350,7 +381,21 @@
 
     <chain id="my-chain-with-dashes">
       <operation id="o1">
-        <param type="string" name="message">Hello 1!</param>
+      </operation>
+    </chain>
+
+    <chain id="my-chain-with-loginasctx">
+      <operation id="Auth.LoginAs">
+        <param type="string" name="name">Administrator</param>
+      </operation>
+      <operation id="Scripting.TestLoginAsContext">
+      </operation>
+    </chain>
+
+    <chain id="my-chain-with-loginasop">
+      <operation id="Scripting.TestLoginAsOperation">
+      </operation>
+      <operation id="o1">
       </operation>
     </chain>
 

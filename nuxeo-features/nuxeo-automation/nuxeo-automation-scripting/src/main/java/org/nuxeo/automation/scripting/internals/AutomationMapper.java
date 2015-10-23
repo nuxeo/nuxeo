@@ -26,7 +26,6 @@ import java.util.Map;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.scripting.DocumentWrapper;
 import org.nuxeo.ecm.automation.core.util.DataModelProperties;
 import org.nuxeo.ecm.automation.core.util.Properties;
@@ -45,9 +44,9 @@ public class AutomationMapper {
 
     protected final CoreSession session;
 
-    public OperationContext ctx;
+    public final ScriptOperationContext ctx;
 
-    public AutomationMapper(CoreSession session, OperationContext operationContext) {
+    public AutomationMapper(CoreSession session, ScriptOperationContext operationContext) {
         this.session = session;
         ctx = operationContext;
     }
@@ -60,7 +59,7 @@ public class AutomationMapper {
         return wrapContextAndOutput(output);
     }
 
-    public void unwrapContext(OperationContext ctx, Object inputOutput) {
+    public void unwrapContext(ScriptOperationContext ctx, Object inputOutput) {
         if (inputOutput instanceof ScriptObjectMirror) {
             ctx.setInput(extractProperties((ScriptObjectMirror) inputOutput));
         } else if (inputOutput instanceof DocumentWrapper) {

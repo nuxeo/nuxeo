@@ -162,6 +162,13 @@ public class Constants {
     public static final String VAR_RUNTIME_CHAIN = "ChainParameters";
 
     /**
+     * Key to define if we are in a chain or not on the Operation Context
+     *
+     * @since 7.10
+     */
+    public static final String VAR_IS_CHAIN = "isChainExecution";
+
+    /**
      * Key for setting mvel expression result to keep when trace mode enabled
      *
      * @since 7.3

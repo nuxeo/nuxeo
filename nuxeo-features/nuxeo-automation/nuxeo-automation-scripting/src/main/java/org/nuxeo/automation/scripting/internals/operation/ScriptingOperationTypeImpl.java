@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
+import org.nuxeo.automation.scripting.internals.ScriptOperationContext;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -115,8 +116,9 @@ public class ScriptingOperationTypeImpl extends OperationTypeImpl {
             args.putAll((Map<String, Object>) ctx.getVars().get(Constants.VAR_RUNTIME_CHAIN));
         }
         ScriptingOperationImpl impl;
+        ScriptOperationContext sctx = new ScriptOperationContext(ctx);
         try {
-            impl = new ScriptingOperationImpl(desc.getScript(), ctx, args);
+            impl = new ScriptingOperationImpl(desc.getScript(), sctx, args);
         } catch (ScriptException e) {
             throw new NuxeoException(e);
         }

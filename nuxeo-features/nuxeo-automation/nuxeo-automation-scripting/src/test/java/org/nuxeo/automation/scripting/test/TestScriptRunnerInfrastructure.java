@@ -34,6 +34,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.script.ScriptException;
+import javax.security.auth.login.LoginException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.automation.OperationType;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -57,6 +59,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -70,7 +73,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
-        "org.nuxeo.ecm.automation.scripting" })
+        "org.nuxeo.ecm.automation.scripting", "org.nuxeo.ecm.platform.web.common" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.scripting.tests:automation-scripting-contrib.xml",
         "org.nuxeo.ecm.automation.scripting.tests:core-types-contrib.xml" })
 public class TestScriptRunnerInfrastructure {
@@ -399,5 +402,22 @@ public class TestScriptRunnerInfrastructure {
                 outContent.toString());
         assertEquals("newValue", ((String[]) result.getPropertyValue("list:items"))[0]);
         assertEquals("vlad", ((Map<?, ?>) result.getPropertyValue("list:complexItem")).get("name"));
+    }
+
+    @Test
+    public void canHandleLoginAsCtx() throws OperationException, LoginException {
+        session = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe");
+        OperationContext ctx = new OperationContext(session);
+        automationService.run(ctx, "my-chain-with-loginasctx", null);
+        assertEquals("Administrator\n", outContent.toString());
+    }
+
+    @Test
+    public void canHandleLoginAsOp() throws OperationException, LoginException {
+        session = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe");
+        OperationContext ctx = new OperationContext(session);
+        String principal = (String) automationService.run(ctx, "my-chain-with-loginasop", null);
+        assertEquals("Administrator\n", outContent.toString());
+        assertEquals("Administrator", principal);
     }
 }
