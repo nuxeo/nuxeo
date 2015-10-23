@@ -6,7 +6,6 @@
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
     <version>7.10-SNAPSHOT</version>
-    <relativePath />
   </parent>
   <groupId>org.nuxeo.io</groupId>
   <artifactId>nuxeo-fsexporter</artifactId>
