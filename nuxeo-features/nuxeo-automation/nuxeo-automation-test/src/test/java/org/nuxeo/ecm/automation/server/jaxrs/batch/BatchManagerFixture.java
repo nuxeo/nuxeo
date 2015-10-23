@@ -301,18 +301,13 @@ public class BatchManagerFixture {
         assertTrue(tmpChunkedFile.exists());
 
         bm.clean(batchId);
-        // Batch data has been removed from cache as well as temporary chunked file, but non chunked file is still there
-        // while transient store GC is not called
+        // Batch data has been removed from cache as well as temporary chunked file, and non chunked file
         assertFalse(ts.exists(batchId));
         assertFalse(ts.exists(batchId + "_5"));
         assertFalse(ts.exists(batchId + "_10"));
         assertFalse(ts.exists(batchId + "_10_0"));
         assertFalse(ts.exists(batchId + "_10_1"));
         assertFalse(tmpChunkedFile.exists());
-        assertTrue(tmpFile.exists());
-        assertEquals(0, ts.getStorageSizeMB());
-
-        ts.doGC();
         assertFalse(tmpFile.exists());
         assertEquals(0, ts.getStorageSizeMB());
     }

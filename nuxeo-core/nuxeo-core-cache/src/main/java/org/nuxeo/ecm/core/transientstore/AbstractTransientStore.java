@@ -145,7 +145,9 @@ public abstract class AbstractTransientStore implements TransientStore {
         List<Map<String, String>> blobInfos = new ArrayList<>();
         for (Blob blob : blobs) {
             Map<String, String> blobInfo = new HashMap<>();
-            File cachedFile = new File(getCachingDirectory(key), UUID.randomUUID().toString());
+            File cachingDir = getCachingDirectory(key);
+            String uuid = UUID.randomUUID().toString();
+            File cachedFile = new File(cachingDir, uuid);
             try {
                 if (blob instanceof FileBlob && ((FileBlob) blob).isTemporary()) {
                     ((FileBlob) blob).moveTo(cachedFile);
@@ -155,10 +157,9 @@ public abstract class AbstractTransientStore implements TransientStore {
             } catch (IOException e) {
                 throw new NuxeoException(e);
             }
+            Path cachedFileRelativePath = Paths.get(cachingDir.getName(), uuid);
+            blobInfo.put("file", cachedFileRelativePath.toString());
             // Redis doesn't support null values
-            if (cachedFile.getAbsolutePath() != null) {
-                blobInfo.put("file", cachedFile.getAbsolutePath());
-            }
             if (blob.getFilename() != null) {
                 blobInfo.put("filename", blob.getFilename());
             }
@@ -217,7 +218,7 @@ public abstract class AbstractTransientStore implements TransientStore {
         log.debug("Loading blobs from the file system: " + blobInfos);
         List<Blob> blobs = new ArrayList<>();
         for (Map<String, String> info : blobInfos) {
-            File blobFile = new File(info.get("file"));
+            File blobFile = new File(cacheDir, info.get("file"));
             Blob blob = new FileBlob(blobFile);
             blob.setEncoding(info.get("encoding"));
             blob.setMimeType(info.get("mimetype"));
