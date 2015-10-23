@@ -52,6 +52,9 @@ import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -174,14 +177,14 @@ final public class NxqlQueryConverter {
                     }
                     // add expression to the last builder
                     EsHint hint = (ref != null) ? ref.esHint : null;
-                    builders.getLast().add(makeQueryFromSimpleExpression(op.toString(), name, value, values, hint));
+                    builders.getLast().add(makeQueryFromSimpleExpression(op.toString(), name, value, values, hint, session));
                 }
             }
         });
         QueryBuilder queryBuilder = ret.get();
         if (!fromList.isEmpty()) {
             return QueryBuilders.filteredQuery(queryBuilder,
-                    makeQueryFromSimpleExpression("IN", NXQL.ECM_PRIMARYTYPE, null, fromList.toArray(), null).filter);
+                    makeQueryFromSimpleExpression("IN", NXQL.ECM_PRIMARYTYPE, null, fromList.toArray(), null, null).filter);
         }
         return queryBuilder;
     }
@@ -220,7 +223,7 @@ final public class NxqlQueryConverter {
     }
 
     public static QueryAndFilter makeQueryFromSimpleExpression(String op, String nxqlName, Object value,
-            Object[] values, EsHint hint) {
+            Object[] values, EsHint hint, CoreSession session) {
         QueryBuilder query = null;
         FilterBuilder filter = null;
         String name = getFieldName(nxqlName, hint);
@@ -236,6 +239,11 @@ final public class NxqlQueryConverter {
             if ("!=".equals(op) || "<>".equals(op) || "NOT LIKE".equals(op)) {
                 filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
                 query = null;
+            }
+        } else if (nxqlName.startsWith(NXQL.ECM_ANCESTORID)) {
+            filter = makeAncestorIdFilter((String) value, session);
+            if ("!=".equals(op) || "<>".equals(op)) {
+                filter = FilterBuilders.notFilter(filter);
             }
         } else
             switch (op) {
@@ -462,19 +470,36 @@ final public class NxqlQueryConverter {
 
     private static FilterBuilder makeStartsWithQuery(String name, Object value) {
         FilterBuilder filter;
-        if (!name.equals(NXQL.ECM_PATH)) {
-            filter = FilterBuilders.prefixFilter(name, (String) value);
-        } else if ("/".equals(value)) {
+        String indexName = name + ".children";
+        if ("/".equals(value)) {
             // match all document with a path
-            filter = FilterBuilders.existsFilter(name + ".children");
+            filter = FilterBuilders.existsFilter(indexName);
         } else {
             String v = String.valueOf(value);
             if (v.endsWith("/")) {
                 v = v.replaceAll("/$", "");
             }
-            filter = FilterBuilders.termFilter(name + ".children", v);
+            // we don't want to return the parent
+            filter = FilterBuilders.andFilter(
+                    FilterBuilders.termFilter(indexName, v),
+                    FilterBuilders.notFilter(FilterBuilders.termFilter(name, value)));
         }
         return filter;
+    }
+
+    private static FilterBuilder makeAncestorIdFilter(String value, CoreSession session) {
+        String path;
+        if (session == null) {
+            return FilterBuilders.existsFilter("ancestorid-without-session");
+        } else {
+            try {
+                DocumentModel doc = session.getDocument(new IdRef(value));
+                path = doc.getPathAsString();
+            } catch (DocumentNotFoundException e) {
+                return FilterBuilders.existsFilter("ancestorid-not-found");
+            }
+        }
+        return makeStartsWithQuery(NXQL.ECM_PATH, path);
     }
 
     private static QueryBuilder makeLikeQuery(String op, String name, String value, EsHint hint) {

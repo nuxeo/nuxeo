@@ -210,4 +210,17 @@ public class TestCompareCoreWithES {
                 "SELECT * FROM Document WHERE ecm:path STARTSWITH '/' AND ecm:isVersion = 0 ORDER BY dc:title",
         });
     }
+
+    @Test
+    public void testSearchWithAncestorId() throws Exception {
+        DocumentModel folder = session.getDocument(new PathRef("/folder"));
+        Assert.assertNotNull(folder);
+        String fid = folder.getId();
+        testQueries(new String[]{
+                "SELECT * from Document WHERE ecm:ancestorId = 'non-esisting-id' ORDER BY dc:title",
+                "SELECT * from Document WHERE ecm:ancestorId != 'non-existing-id' ORDER BY dc:title",
+                "SELECT * FROM Document WHERE ecm:ancestorId = '" + fid + "' ORDER BY dc:title",
+        });
+    }
+
 }

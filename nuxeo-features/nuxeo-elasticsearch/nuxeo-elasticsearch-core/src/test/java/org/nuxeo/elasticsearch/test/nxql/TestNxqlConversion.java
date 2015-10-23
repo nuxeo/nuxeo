@@ -322,14 +322,27 @@ public class TestNxqlConversion {
     @Test
     public void testConverterSTARTSWITH() throws Exception {
         String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:path STARTSWITH '/the/path'").toString();
-        assertEqualsEvenUnderWindows("{\n" //
-                + "  \"constant_score\" : {\n" //
-                + "    \"filter\" : {\n" //
-                + "      \"term\" : {\n" //
-                + "        \"ecm:path.children\" : \"/the/path\"\n" //
-                + "      }\n" + "    }\n" //
-                + "  }\n" //
-                + "}", es);
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"and\" : {\n" + //
+                "        \"filters\" : [ {\n" + //
+                "          \"term\" : {\n" + //
+                "            \"ecm:path.children\" : \"/the/path\"\n" + //
+                "          }\n" + //
+                "        }, {\n" + //
+                "          \"not\" : {\n" + //
+                "            \"filter\" : {\n" + //
+                "              \"term\" : {\n" + //
+                "                \"ecm:path\" : \"/the/path\"\n" + //
+                "              }\n" + //
+                "            }\n" + //
+                "          }\n" + //
+                "        } ]\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:path STARTSWITH '/'").toString();
         assertEqualsEvenUnderWindows("{\n" + //
                 "  \"constant_score\" : {\n" + //
@@ -341,14 +354,55 @@ public class TestNxqlConversion {
                 "  }\n" + //
                 "}", es);
         es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:path STARTSWITH '/the/path/'").toString();
-        assertEqualsEvenUnderWindows("{\n" //
-                + "  \"constant_score\" : {\n" //
-                + "    \"filter\" : {\n" //
-                + "      \"term\" : {\n" //
-                + "        \"ecm:path.children\" : \"/the/path\"\n" //
-                + "      }\n" + "    }\n" //
-                + "  }\n" //
-                + "}", es);
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"and\" : {\n" + //
+                "        \"filters\" : [ {\n" + //
+                "          \"term\" : {\n" + //
+                "            \"ecm:path.children\" : \"/the/path\"\n" + //
+                "          }\n" + //
+                "        }, {\n" + //
+                "          \"not\" : {\n" + //
+                "            \"filter\" : {\n" + //
+                "              \"term\" : {\n" + //
+                "                \"ecm:path\" : \"/the/path/\"\n" + //
+                "              }\n" + //
+                "            }\n" + //
+                "          }\n" + //
+                "        } ]\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+    }
+
+    @Test
+    public void testConverterAncestorId() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:ancestorId = 'c5904f77-299a-411e-8477-81d3102a81f9'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"exists\" : {\n" + //
+                "        \"field\" : \"ancestorid-without-session\"\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:ancestorId != 'c5904f77-299a-411e-8477-81d3102a81f9'", session).toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"not\" : {\n" + //
+                "        \"filter\" : {\n" + //
+                "          \"exists\" : {\n" + //
+                "            \"field\" : \"ancestorid-not-found\"\n" + //
+                "          }\n" + //
+                "        }\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
     }
 
     @Test

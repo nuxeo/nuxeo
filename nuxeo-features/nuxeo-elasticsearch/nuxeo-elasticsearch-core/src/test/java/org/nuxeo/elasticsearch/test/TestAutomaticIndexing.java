@@ -346,7 +346,7 @@ public class TestAutomaticIndexing {
         waitForCompletion();
 
         startTransaction();
-        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:source STARTSWITH 'search'"));
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:source LIKE 'search*'"));
         Assert.assertEquals(1, ret.totalSize());
     }
 
