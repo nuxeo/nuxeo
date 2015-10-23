@@ -138,7 +138,7 @@ class Repository(object):
         os.chdir(cwd)
 
     def system_recurse(self, command, with_optionals=False):
-        """Execute the given command on current and sub-repositories.
+        """Execute the given command on current and sub-modules.
 
         'command': the command to execute.
         If 'with_optionals', also recurse on "optional" addons."""
@@ -154,16 +154,14 @@ class Repository(object):
             system(command)
         if not self.addons and self.is_nuxeoecm:
             self.eval_addons()
-        for addon in self.addons + (self.optional_addons
-                                    if with_optionals else []):
+        for addon in self.addons + (self.optional_addons if with_optionals else []):
             os.chdir(os.path.join(self.basedir, "addons", addon))
             log("[%s]" % addon)
             system(command)
         os.chdir(cwd)
 
     def git_recurse(self, command, with_optionals=False):
-        """Execute the given Git command on current and sub-repositories. It
-        ignores non Git repositories.
+        """Execute the given Git command on current and sub-modules. It ignores non Git repositories.
 
         'command': the command to execute.
         If 'with_optionals', also recurse on "optional" addons."""
@@ -183,8 +181,7 @@ class Repository(object):
             system(command)
         if not self.addons and self.is_nuxeoecm:
             self.eval_addons()
-        for addon in self.addons + (self.optional_addons
-                                    if with_optionals else []):
+        for addon in self.addons + (self.optional_addons if with_optionals else []):
             module_path = os.path.join(self.basedir, "addons", addon)
             if not os.path.isdir(os.path.join(module_path, ".git")):
                 continue
