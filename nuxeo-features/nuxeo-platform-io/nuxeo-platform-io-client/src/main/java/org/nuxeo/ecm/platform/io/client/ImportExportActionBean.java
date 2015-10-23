@@ -35,6 +35,8 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
@@ -45,6 +47,7 @@ import org.nuxeo.ecm.platform.io.selectionReader.DocumentModelListReader;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.clipboard.ClipboardActions;
 
 @Name("importExportAction")
@@ -207,28 +210,17 @@ public class ImportExportActionBean implements Serializable {
     }
 
     public static void export(List<DocumentModel> docList) {
-        HttpServletResponse response = getHttpServletResponse();
-        if (response == null) {
-            return;
-        }
         DocumentReader reader = null;
         DocumentWriter writer = null;
+        Blob blob = null;
         try {
             reader = new DocumentModelListReader(docList);
-
-            response.reset();
-            writer = new NuxeoArchiveWriter(response.getOutputStream());
-
+            blob = Blobs.createBlobWithExtension("zip");
+            writer = new NuxeoArchiveWriter(blob.getFile());
             DocumentPipe pipe = new DocumentPipeImpl(10);
             pipe.setReader(reader);
             pipe.setWriter(writer);
-
             pipe.run();
-
-            String filename = "export.zip";
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\";");
-            response.setHeader("Content-Type", "application/zip");
-            FacesContext.getCurrentInstance().responseComplete();
         } catch (IOException e) {
             log.error("Error during XML export " + e.getMessage());
         } finally {
@@ -239,6 +231,14 @@ public class ImportExportActionBean implements Serializable {
                 writer.close();
             }
         }
+
+        if (blob != null) {
+            ComponentUtils.download(null, null, blob, "export.zip", "workListXML");
+            if (blob.getFile() != null) {
+                blob.getFile().delete();
+            }
+        }
+
     }
 
 }
