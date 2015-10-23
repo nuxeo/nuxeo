@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -121,7 +121,7 @@ public class ColoredTextPane extends JTextPane {
     }
 
     /**
-     * Calls {@link #append(String, Color, Color, Boolean)} with foreground color given as parameter, background color
+     * Calls {@link #append(String, Color, Color, boolean)} with foreground color given as parameter, background color
      * equal to component background and isBold equal to false.
      *
      * @see #append(String, Color, Color, boolean)
@@ -131,7 +131,7 @@ public class ColoredTextPane extends JTextPane {
     }
 
     /**
-     * Calls {@link #append(String, Color, Color, Boolean)} with background color equal to component background.
+     * Calls {@link #append(String, Color, Color, boolean)} with background color equal to component background.
      *
      * @see #append(String, Color, Color, boolean)
      */

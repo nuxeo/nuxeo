@@ -367,7 +367,7 @@ public class NuxeoFrame extends JFrame {
      * Called by buildLogsTab to know if a log file should be display. Can be overridden. Return false by default.
      *
      * @param logFile
-     * @return
+     * @return false
      */
     protected boolean hideLogTab(String logFile) {
         return false;
@@ -375,7 +375,6 @@ public class NuxeoFrame extends JFrame {
 
     /**
      * @param logFile
-     * @return
      */
     protected JComponent buildLogPanel(String logFile) {
         ColoredTextPane textArea = new ColoredTextPane();

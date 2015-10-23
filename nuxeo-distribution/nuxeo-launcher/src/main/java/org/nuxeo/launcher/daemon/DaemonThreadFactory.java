@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -37,14 +37,14 @@ public class DaemonThreadFactory implements ThreadFactory {
     private boolean isDaemon;
 
     /**
-     * @param basemane String to use in thread name
+     * @param basename String to use in thread name
      */
     public DaemonThreadFactory(String basename) {
         this(basename, true);
     }
 
     /**
-     * @param basemane String to use in thread name
+     * @param basename String to use in thread name
      * @param isDaemon Will created threads be set as daemon ?
      */
     public DaemonThreadFactory(String basename, boolean isDaemon) {

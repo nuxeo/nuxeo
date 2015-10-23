@@ -1019,7 +1019,6 @@ public class ConnectBroker {
             log.error(e.getMessage());
         }
         return errorValue == 0;
-
     }
 
     @SuppressWarnings("unused")
