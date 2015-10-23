@@ -58,7 +58,7 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
         @SuppressWarnings("unchecked")
         List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
         JsonAssert json = jsonAssert(entries.get(0));
-        json.properties(13);
+        json.properties(14);
         json.has("entity-type").isEquals("logEntry");
         json.has("id").isInt();
         json.has("category").isEquals("eventDocumentCategory");
@@ -80,6 +80,7 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
         } catch (AssertionError e) {
             json.has("docLifeCycle").isNull();
         }
+        json.has("extended").properties(0);
     }
 
 }
