@@ -9,10 +9,7 @@
 
     <directory name="oauthConsumers">
       <schema>oauthConsumer</schema>
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>oauthConsumers</table>
@@ -26,10 +23,7 @@
 
    <directory name="oauthTokens">
       <schema>oauthToken</schema>
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>oauthTokens</table>
@@ -43,10 +37,7 @@
 
     <directory name="oauth2Tokens">
       <schema>oauth2Token</schema>
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>oauth2Tokens</table>
@@ -60,10 +51,7 @@
 
     <directory name="oauthServiceProviders">
       <schema>oauthServiceProvider</schema>
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>oauthServiceProviders</table>
@@ -78,10 +66,7 @@
 
     <directory name="oauth2Clients">
       <schema>oauth2Client</schema>
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <cacheTimeout>3600</cacheTimeout>
       <cacheMaxSize>1000</cacheMaxSize>
       <table>oauth2Clients</table>

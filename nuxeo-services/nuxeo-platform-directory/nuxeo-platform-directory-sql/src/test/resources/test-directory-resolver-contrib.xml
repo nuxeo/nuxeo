@@ -10,10 +10,7 @@
 
     <directory name="referencedDirectory1">
       <schema>directoryResolverSchema</schema>
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>referencedDirectory1</table>
       <idField>id</idField>
       <createTablePolicy>always</createTablePolicy>
@@ -22,10 +19,7 @@
 
     <directory name="referencedDirectory2">
       <schema>directoryResolverSchema</schema>
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>referencedDirectory2</table>
       <idField>id</idField>
       <createTablePolicy>always</createTablePolicy>
@@ -35,10 +29,7 @@
     <directory name="hierarchicalDirectory">
       <schema>hierarchicalDirectorySchema</schema>
       <parentDirectory>hierarchicalDirectory</parentDirectory>
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>hierarchicalDirectory</table>
       <idField>id</idField>
       <createTablePolicy>always</createTablePolicy>

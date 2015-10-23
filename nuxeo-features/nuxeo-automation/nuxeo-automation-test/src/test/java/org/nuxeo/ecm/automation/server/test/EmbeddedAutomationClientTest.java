@@ -104,6 +104,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -395,6 +396,10 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             user.setPropertyValue("user:username", testUserName);
             user.setPropertyValue("user:password", "secret");
             userManager.createUser(user);
+
+            // commit directory changes
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
 
             // check invalid credentials
             try {

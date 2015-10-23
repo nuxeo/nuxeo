@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -264,6 +265,10 @@ public class UserGroupTest extends BaseUserTest {
         um.updateUser(principal.getModel());
         principal = um.getPrincipal("user1");
         assertTrue(principal.isMemberOf(group.getName()));
+
+        // commit directory changes
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         // When i POST this group
         ClientResponse response = getResponse(RequestType.DELETE,

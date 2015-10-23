@@ -4,10 +4,7 @@
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
     point="directories">
     <directory name="userDirectory">
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <schema>user</schema>
       <table>users</table>
       <idField>username</idField>
@@ -35,10 +32,7 @@
 
 
     <directory name="otherGroupDirectory">
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <dataSource>java:/nxsqldirectory</dataSource>
       <schema>group</schema>
       <table>othergroups</table>
       <idField>groupname</idField>

@@ -10,12 +10,7 @@
     <directory name="profileDirectory">
 
       <schema>user_profile</schema>
-
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
-
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>profiles</table>
       <idField>id</idField>
       <passwordField>password</passwordField>

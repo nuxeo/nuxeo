@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<!-- This is a test setup for SQL directories that is similar to the default-sql-directories-bundles.xml 
+<!-- This is a test setup for SQL directories that is similar to the default-sql-directories-bundles.xml
   setup except that the datasource is set to a in memory backend -->
 
 <component name="org.nuxeo.ecm.directory.sql.storage">
@@ -15,14 +15,7 @@
     <directory name="userDirectory">
 
       <schema>user</schema>
-
-      <!-- Do not use the regular datasource but a in memory setup instead <dataSource>java:/nxsqldirectory</dataSource> -->
-
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
-
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>users</table>
       <idField>username</idField>
       <passwordField>password</passwordField>
@@ -43,7 +36,7 @@
           <user>readerUser</user>
         </permission>
         <permission name="Write">
-          <user>superUser</user> 
+          <user>superUser</user>
         </permission>
       </permissions>
     </directory>
@@ -52,12 +45,7 @@
     <directory name="groupDirectory">
 
       <schema>group</schema>
-
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
-
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>groups</table>
       <idField>groupname</idField>
       <autoincrementIdField>false</autoincrementIdField>
@@ -74,7 +62,7 @@
       </references>
       <permissions>
         <permission name="Write">
-          <group>Everyone</group> 
+          <group>Everyone</group>
         </permission>
       </permissions>
     </directory>

@@ -50,6 +50,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -78,6 +79,9 @@ public class DirectoryTest extends BaseTest {
     public void doBefore() throws Exception {
         super.doBefore();
         dirSession = ds.open(TESTDIRNAME);
+        // see committed directory changes (init)
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
     @After

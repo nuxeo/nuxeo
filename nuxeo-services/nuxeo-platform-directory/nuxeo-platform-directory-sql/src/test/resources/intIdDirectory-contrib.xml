@@ -11,12 +11,7 @@
         <directory name="testIdDirectory">
 
             <schema>intIdSchema</schema>
-
-            <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-            <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-            <dbUser>${nuxeo.test.vcs.user}</dbUser>
-            <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
-
+            <dataSource>java:/nxsqldirectory</dataSource>
             <table>users</table>
             <idField>id</idField>
             <autoincrementIdField>false</autoincrementIdField>

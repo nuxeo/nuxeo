@@ -14,12 +14,7 @@
     <directory name="tmpdirectory1">
 
       <schema>tmpschema1</schema>
-
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
-
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>tablealteration</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
@@ -30,12 +25,7 @@
     <directory name="tmpdirectory2">
 
       <schema>tmpschema2</schema>
-
-      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
-      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
-      <dbUser>${nuxeo.test.vcs.user}</dbUser>
-      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
-
+      <dataSource>java:/nxsqldirectory</dataSource>
       <table>tablealteration</table>
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
