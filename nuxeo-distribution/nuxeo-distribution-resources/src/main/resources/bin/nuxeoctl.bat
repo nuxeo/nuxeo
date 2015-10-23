@@ -144,7 +144,6 @@ set PROG=java.exe
 for %%D in (%PROG%) do (set FOUND=%%~$PATH:D)
 
 if "%FOUND%" == "" goto JAVA_NOT_IN_PATH
-echo Found in path : %FOUND%
 set JAVA=%FOUND%
 goto HAS_JAVA
 
@@ -196,9 +195,10 @@ if "%JAVA_VERSION%" lss "%REQUIRED_JAVA_VERSION%" (
 )
 
 if "%JAVA_OPTS%" == "" set JAVA_OPTS=-Xms512m -Xmx1024m -Djava.net.preferIPv4Stack=true -Dsun.rmi.dgc.client.gcInterval=3600000 -Dsun.rmi.dgc.server.gcInterval=3600000 -Dfile.encoding=UTF-8
+set JAVA_OPTS=%JAVA_OPTS:"=""%
+
 REM ***** Add third-party packages from the installer to the path *****
 set PATH=%NUXEO_HOME%\3rdparty\ffmpeg\bin;%NUXEO_HOME%\3rdparty\ImageMagick;%PATH%;%NUXEO_HOME%\3rdparty\pdftohtml;%NUXEO_HOME%\3rdparty\gs\bin;%NUXEO_HOME%\3rdparty\misc\bin
-
 
 echo [%DATE%] Command: %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
 
@@ -218,6 +218,7 @@ if exist "%TMPLAUNCHER%" GOTO GETTMPLAUNCHER
 COPY /V "%NUXEO_LAUNCHER%" "%TMPLAUNCHER%"
 echo [%DATE%] Launcher command: "%JAVA%" -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9 >> "%NUXEO_LOG_DIR%\nuxeoctl.log"
 echo on
+
 "%JAVA%" %LAUNCHER_DEBUG% -Dlauncher.java.opts="%JAVA_OPTS%" -Dnuxeo.home="%NUXEO_HOME%" -Dnuxeo.conf="%NUXEO_CONF%" -Dnuxeo.log.dir="%NUXEO_LOG_DIR%" -Dlog.id="-%LOGTIME%" -jar "%TMPLAUNCHER%" %1 %2 %3 %4 %5 %6 %7 %8 %9
 @set exitcode=%ERRORLEVEL%
 @echo off
