@@ -166,6 +166,7 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     public Map<String, Serializable> getParameters(String key) {
+        // TODO NXP-18236: use a transaction?
         String paramsKey = namespace + join(key, "params");
         Map<byte[], byte[]> paramBytes = redisExecutor.execute((RedisCallable<Map<byte[], byte[]>>) jedis -> {
             return jedis.hgetAll(getBytes(paramsKey));
@@ -186,8 +187,7 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     public List<Blob> getBlobs(String key) {
-        // TODO https://jira.nuxeo.com/browse/NXP-18050
-        // Use a transaction
+        // TODO NXP-18236: use a transaction?
 
         // Get blob count
         String blobCount = redisExecutor.execute((RedisCallable<String>) jedis -> {
@@ -277,8 +277,7 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     public void remove(String key) {
-        // TODO https://jira.nuxeo.com/browse/NXP-18050
-        // Use a transaction
+        // TODO NXP-18236: use a transaction?
 
         Map<String, String> summary = getSummary(key);
         if (summary != null) {
@@ -325,8 +324,7 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     protected void persistBlobs(String key, long sizeOfBlobs, List<Map<String, String>> blobInfos) {
-        // TODO https://jira.nuxeo.com/browse/NXP-18050
-        // Use a transaction
+        // TODO NXP-18236: use a transaction?
 
         Map<String, String> oldSummary = getSummary(key);
 
@@ -435,6 +433,7 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     protected void removeAllEntries() {
+        // TODO NXP-18236: use a transaction?
         Set<String> keys = redisExecutor.execute((RedisCallable<Set<String>>) jedis -> {
             return jedis.keys(namespace + "*");
         });
