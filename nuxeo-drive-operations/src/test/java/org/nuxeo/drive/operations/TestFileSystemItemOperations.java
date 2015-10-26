@@ -802,6 +802,9 @@ public class TestFileSystemItemOperations {
             user.put("lastName", lastName);
             userDir.createEntry(user);
         }
+        // commit directory changes
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         UserManager userManager = Framework.getLocalService(UserManager.class);
         return userManager.getPrincipal(userName);
     }
