@@ -35,7 +35,7 @@
      <ul>
          <li>targetMaxSizeMB : target size that ideally should never be exceeded</li>
          <li>absoluteMaxSizeMB : size that must never be exceeded</li>
-         <li>fistLevelTTL : TTL in minutes of the first level cache</li>
+         <li>firstLevelTTL : TTL in minutes of the first level cache</li>
          <li>secondLevelTTL : TTL in minutes of the first level cache</li>
      </ul>
 

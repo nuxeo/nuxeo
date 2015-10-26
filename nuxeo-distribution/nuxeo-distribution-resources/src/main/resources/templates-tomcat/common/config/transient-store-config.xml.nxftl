@@ -13,7 +13,7 @@
     <store name="default" class="${className}">
       <targetMaxSizeMB>-1</targetMaxSizeMB>
       <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
-      <fistLevelTTL>120</fistLevelTTL>
+      <firstLevelTTL>120</firstLevelTTL>
       <secondLevelTTL>10</secondLevelTTL>
       <minimalRetention>10</minimalRetention>
     </store>

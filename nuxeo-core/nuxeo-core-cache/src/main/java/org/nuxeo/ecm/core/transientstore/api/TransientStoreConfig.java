@@ -43,8 +43,8 @@ public class TransientStoreConfig {
     @XNode("absoluteMaxSizeMB")
     protected int absoluteMaxSizeMB = -1;
 
-    @XNode("fistLevelTTL")
-    protected int fistLevelTTL = 60 * 2;
+    @XNode("firstLevelTTL")
+    protected int firstLevelTTL = 60 * 2;
 
     @XNode("secondLevelTTL")
     protected int secondLevelTTL = 10;
@@ -84,12 +84,12 @@ public class TransientStoreConfig {
         this.absoluteMaxSizeMB = absoluteMaxSizeMB;
     }
 
-    public int getFistLevelTTL() {
-        return fistLevelTTL;
+    public int getFirstLevelTTL() {
+        return firstLevelTTL;
     }
 
-    public void setFistLevelTTL(int fistLevelTTL) {
-        this.fistLevelTTL = fistLevelTTL;
+    public void setFirstLevelTTL(int firstLevelTTL) {
+        this.firstLevelTTL = firstLevelTTL;
     }
 
     public int getSecondLevelTTL() {

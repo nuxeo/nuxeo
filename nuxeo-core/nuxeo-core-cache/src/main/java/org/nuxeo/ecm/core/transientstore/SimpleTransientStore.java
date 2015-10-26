@@ -328,7 +328,7 @@ public class SimpleTransientStore extends AbstractTransientStore {
     }
 
     protected CacheDescriptor getL1CacheConfig() {
-        return new TransientCacheConfig(config.getName() + "L1", config.getFistLevelTTL());
+        return new TransientCacheConfig(config.getName() + "L1", config.getFirstLevelTTL());
     }
 
     protected CacheDescriptor getL2CacheConfig() {
