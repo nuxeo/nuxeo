@@ -11,6 +11,7 @@
       <description></description>
       <default-view>view_documents</default-view>
       <icon>/icons/pin.png</icon>
+      <bigIcon>/icons/pin_100.png</bigIcon>
       <description>Folder.description</description>
       <default-view>view_documents</default-view>
       <layouts mode="any">
