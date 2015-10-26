@@ -19,7 +19,7 @@ module.exports = function (grunt) {
         },
         files: {
           '<%= config.target %>/permissions/components/elements.vulcanized.html': [
-            '<%= config.source %>/permissions/components/elements.html'
+            '<%= config.target %>/permissions/components/elements.html'
           ]
         },
       },
