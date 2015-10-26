@@ -17,11 +17,7 @@
  */
 package org.nuxeo.ecm.platform.signature.core.sign;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.SIGNED_CURRENT;
 import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.SIGNED_OTHER;
 import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.UNSIGNABLE;
@@ -179,7 +175,7 @@ public class SignatureServiceTest {
         // first user signs
         FileBlob origBlob = new FileBlob(origPdfFile);
         assertEquals(UNSIGNED, ssi.getSigningStatus(origBlob, user));
-        Blob signedBlob = signatureService.signPDF(origBlob, user,
+        Blob signedBlob = signatureService.signPDF(origBlob, null, user,
                 USER_KEY_PASSWORD, "test reason");
         assertNotNull(signedBlob);
         assertEquals(SIGNED_CURRENT, ssi.getSigningStatus(signedBlob, user));
@@ -188,7 +184,7 @@ public class SignatureServiceTest {
         // try for the same user to sign the certificate again
         Blob signedBlobTwice = null;
         try {
-            signedBlobTwice = signatureService.signPDF(signedBlob, user,
+            signedBlobTwice = signatureService.signPDF(signedBlob, null, user,
                     USER_KEY_PASSWORD, "test reason");
             fail("Should raise AlreadySignedException");
         } catch (AlreadySignedException e) {
@@ -196,7 +192,7 @@ public class SignatureServiceTest {
         }
 
         // try for the second user to sign the certificate
-        signedBlobTwice = signatureService.signPDF(signedBlob, user2,
+        signedBlobTwice = signatureService.signPDF(signedBlob, null, user2,
                 USER_KEY_PASSWORD, "test reason");
         assertNotNull(signedBlobTwice);
         assertEquals(SIGNED_CURRENT,
@@ -226,7 +222,7 @@ public class SignatureServiceTest {
         SignatureServiceImpl ssi = (SignatureServiceImpl) signatureService;
 
         // sign the original PDF file
-        Blob signedBlob = signatureService.signPDF(new FileBlob(origPdfFile),
+        Blob signedBlob = signatureService.signPDF(new FileBlob(origPdfFile), null,
                 user, USER_KEY_PASSWORD, "test reason");
         assertNotNull(signedBlob);
         // verify there are certificates in the signed file
@@ -452,6 +448,11 @@ public class SignatureServiceTest {
         assertEquals("foo.pdf", signedBlob.getFilename());
         assertEquals(Arrays.asList("Signature2", "Signature1"),
                 getSignatureNames(signedBlob));
+    }
+    
+    @Test public void testGetDefaultSignatureAppearance() throws Exception {
+        SignatureServiceImpl ssi = (SignatureServiceImpl) signatureService;
+        assertNotNull(ssi.getSignatureAppearanceFactory());
     }
 
 }

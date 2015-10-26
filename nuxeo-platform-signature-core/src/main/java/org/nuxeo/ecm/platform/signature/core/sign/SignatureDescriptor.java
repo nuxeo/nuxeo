@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.signature.core.sign;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.signature.api.sign.SignatureAppearanceFactory;
 
 /**
  * Provides default values for signing services.
@@ -38,11 +39,27 @@ public class SignatureDescriptor {
     @XNode("layout")
     protected SignatureLayout signatureLayout;
 
+    @XNode("appearanceFactory")
+    protected SignatureAppearance signatureAppearance = null;
+
+    /**
+     * @since 6.0-HF22
+     */
+    @XObject("appearanceFactory")
+    public static class SignatureAppearance {
+        @XNode("@class")
+        protected Class<? extends SignatureAppearanceFactory> appearanceClass;
+
+        public Class<? extends SignatureAppearanceFactory> getAppearanceClass() {
+            return appearanceClass;
+        }
+    }
+    
     /**
      * @since 5.8 Definition of the layout applied on signatures.
      */
     @XObject("layout")
-    public static class SignatureLayout {
+    public static class SignatureLayout implements org.nuxeo.ecm.platform.signature.api.sign.SignatureLayout {
 
         @XNode("@lines")
         protected Integer lines = 5;
@@ -59,22 +76,27 @@ public class SignatureDescriptor {
         @XNode("@textSize")
         protected Integer textSize = 9;
 
+        @Override
         public Integer getLines() {
             return lines;
         }
 
+        @Override
         public Integer getColumns() {
             return columns;
         }
 
+        @Override
         public Integer getStartLine() {
             return startLine;
         }
 
+        @Override
         public Integer getStartColumn() {
             return startColumn;
         }
 
+        @Override
         public Integer getTextSize() {
             return textSize;
         }
@@ -90,6 +112,17 @@ public class SignatureDescriptor {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public SignatureAppearanceFactory getAppearanceFatory() throws InstantiationException, IllegalAccessException {
+        Class<? extends SignatureAppearanceFactory> appearanceClass = null;
+        if (signatureAppearance != null) {
+            appearanceClass = signatureAppearance.getAppearanceClass();
+        }
+        if (appearanceClass == null) {
+            return new DefaultSignatureAppearanceFactory();
+        }
+        return appearanceClass.newInstance();
     }
 
     public String getId() {

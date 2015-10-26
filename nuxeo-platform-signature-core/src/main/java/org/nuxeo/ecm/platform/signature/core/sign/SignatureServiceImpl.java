@@ -24,7 +24,6 @@ import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusW
 import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.UNSIGNABLE;
 import static org.nuxeo.ecm.platform.signature.api.sign.SignatureService.StatusWithBlob.UNSIGNED;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -57,6 +56,8 @@ import org.nuxeo.ecm.platform.signature.api.exception.AlreadySignedException;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 import org.nuxeo.ecm.platform.signature.api.exception.SignException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
+import org.nuxeo.ecm.platform.signature.api.sign.SignatureAppearanceFactory;
+import org.nuxeo.ecm.platform.signature.api.sign.SignatureLayout;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.ecm.platform.signature.api.user.AliasType;
 import org.nuxeo.ecm.platform.signature.api.user.AliasWrapper;
@@ -66,8 +67,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.AcroFields;
 import com.lowagie.text.pdf.PdfPKCS7;
@@ -121,7 +120,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
     protected static final String USER_EMAIL = "user:email";
 
     protected final Map<String, SignatureDescriptor> signatureRegistryMap;
-
+    
     public SignatureServiceImpl() {
         signatureRegistryMap = new HashMap<String, SignatureDescriptor>();
     }
@@ -134,6 +133,8 @@ public class SignatureServiceImpl extends DefaultComponent implements
             if (!signatureDescriptor.getRemoveExtension()) {
                 signatureRegistryMap.put(signatureDescriptor.getId(),
                         signatureDescriptor);
+            } else {
+                signatureRegistryMap.remove(signatureDescriptor.getId());
             }
         }
     }
@@ -248,7 +249,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
         StatusWithBlob blobAndStatus = getSignedPdfBlobAndStatus(doc, user);
         if (blobAndStatus != null) {
             // re-sign it
-            Blob signedBlob = signPDF(blobAndStatus.blob, user, keyPassword,
+            Blob signedBlob = signPDF(blobAndStatus.blob, doc, user, keyPassword,
                     reason);
             signedBlob.setFilename(blobAndStatus.blob.getFilename());
             // replace the previous blob with a new one
@@ -281,7 +282,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
             }
         }
 
-        Blob signedBlob = signPDF(pdfBlob, user, keyPassword, reason);
+        Blob signedBlob = signPDF(pdfBlob, doc, user, keyPassword, reason);
         signedBlob.setFilename(FilenameUtils.getBaseName(originalBlob.getFilename())
                 + ".pdf");
 
@@ -319,7 +320,7 @@ public class SignatureServiceImpl extends DefaultComponent implements
     }
 
     @Override
-    public Blob signPDF(Blob pdfBlob, DocumentModel user, String keyPassword,
+    public Blob signPDF(Blob pdfBlob, DocumentModel doc, DocumentModel user, String keyPassword,
             String reason) throws SignException, ClientException {
         CertService certService = Framework.getLocalService(CertService.class);
         CUserService cUserService = Framework.getLocalService(CUserService.class);
@@ -341,7 +342,6 @@ public class SignatureServiceImpl extends DefaultComponent implements
             PdfStamper pdfStamper = PdfStamper.createSignature(pdfReader,
                     new FileOutputStream(outputFile), '\0', null, true);
 
-            PdfSignatureAppearance pdfSignatureAppearance = pdfStamper.getSignatureAppearance();
             String userID = (String) user.getPropertyValue("user:username");
             AliasWrapper alias = new AliasWrapper(userID);
             KeyStore keystore = cUserService.getUserKeystore(userID,
@@ -364,22 +364,16 @@ public class SignatureServiceImpl extends DefaultComponent implements
             certificates.add(certificate);
 
             Certificate[] certChain = certificates.toArray(new Certificate[0]);
+            PdfSignatureAppearance pdfSignatureAppearance = pdfStamper.getSignatureAppearance();
             pdfSignatureAppearance.setCrypto(keyPair.getPrivate(), certChain,
                     null, PdfSignatureAppearance.SELF_SIGNED);
             if (StringUtils.isBlank(reason)) {
                 reason = getSigningReason();
             }
-            pdfSignatureAppearance.setReason(reason);
-            pdfSignatureAppearance.setAcro6Layers(true);
-            Font layer2Font = FontFactory.getFont(FontFactory.TIMES,
-                    getSignatureLayout().getTextSize(), Font.NORMAL, new Color(
-                            0x00, 0x00, 0x00));
-            pdfSignatureAppearance.setLayer2Font(layer2Font);
-            pdfSignatureAppearance.setRender(PdfSignatureAppearance.SignatureRenderDescription);
-
             pdfSignatureAppearance.setVisibleSignature(
                     getNextCertificatePosition(pdfReader, pdfCertificates), 1,
                     null);
+            getSignatureAppearanceFactory().format(pdfSignatureAppearance, doc, userID, reason);
 
             pdfStamper.close(); // closes the file
 
@@ -399,6 +393,10 @@ public class SignatureServiceImpl extends DefaultComponent implements
                 throw new SignException("PDF is password-protected");
             }
             throw new SignException(e);
+        } catch (InstantiationException e) {
+            throw new SignException(e);
+        } catch (IllegalAccessException e) {
+            throw new SignException(e);
         }
     }
 
@@ -406,14 +404,22 @@ public class SignatureServiceImpl extends DefaultComponent implements
      * @since 5.8
      * @return the signature layout. Default one if no contribution.
      */
-    protected SignatureDescriptor.SignatureLayout getSignatureLayout() {
+    @Override
+    public SignatureLayout getSignatureLayout() {
         for (SignatureDescriptor signatureDescriptor : signatureRegistryMap.values()) {
-            SignatureDescriptor.SignatureLayout signatureLayout = signatureDescriptor.getSignatureLayout();
+            SignatureLayout signatureLayout = signatureDescriptor.getSignatureLayout();
             if (signatureLayout != null) {
                 return signatureLayout;
             }
         }
         return new SignatureDescriptor.SignatureLayout();
+    }
+    
+    protected SignatureAppearanceFactory getSignatureAppearanceFactory() throws InstantiationException, IllegalAccessException {
+        for (SignatureDescriptor signatureDescriptor : signatureRegistryMap.values()) {
+            return signatureDescriptor.getAppearanceFatory();
+        }
+        return new DefaultSignatureAppearanceFactory();
     }
 
     protected String getSigningReason() throws SignException {
