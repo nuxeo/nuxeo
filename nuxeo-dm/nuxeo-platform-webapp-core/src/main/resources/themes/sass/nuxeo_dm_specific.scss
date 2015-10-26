@@ -83,7 +83,7 @@
 }
 
 .userClipboardContent .rf-ulst-itm a {
-  display: inline-block;
+  display: block;
   line-height: 1.7em;
   white-space: normal;
   word-break: break-all;
@@ -109,10 +109,6 @@
 
 #clipboardCopy li {
   margin-bottom: .35em;
-}
-
-.column:hover .clipboardFunction a {
-  color: $link;
 }
 
 .column:hover .clipboardFunction a:hover {
