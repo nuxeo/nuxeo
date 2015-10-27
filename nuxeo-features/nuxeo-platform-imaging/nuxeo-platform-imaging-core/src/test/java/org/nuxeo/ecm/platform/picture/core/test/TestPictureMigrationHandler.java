@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.PictureMigrationHandler;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
@@ -55,6 +56,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.convert",
         "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.commandline.executor" })
 public class TestPictureMigrationHandler {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -113,7 +117,14 @@ public class TestPictureMigrationHandler {
         assertNotNull(bh);
         Blob blob = bh.getBlob();
         assertNotNull(blob);
-        assertEquals(expected, blob.getFilename());
+        String blobFilename = blob.getFilename();
+        if ("".equals(expected) && !expected.equals(blobFilename)
+                && coreFeature.getStorageConfiguration().isVCSOracle()) {
+            // Oracle confuses "" and null
+            assertNull(blobFilename);
+        } else {
+            assertEquals(expected, blobFilename);
+        }
         assertNotNull(picture.getPropertyValue("file:content"));
         multiviewPicture = picture.getAdapter(MultiviewPicture.class);
         pictureViews = multiviewPicture.getViews();
