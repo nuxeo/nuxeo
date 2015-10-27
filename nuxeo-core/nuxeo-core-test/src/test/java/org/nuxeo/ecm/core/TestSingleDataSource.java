@@ -568,6 +568,12 @@ public class TestSingleDataSource {
         TransactionHelper.commitOrRollbackTransaction();
         // tx synchronizer removes the shared connection
         assertSharedConnectionCount(0);
+
+        try (Connection c = ConnectionHelper.getConnection(null, true)) {
+            try (Statement st = c.createStatement()) {
+                st.execute("DROP TABLE foo");
+            }
+        }
     }
 
     /*
@@ -623,6 +629,12 @@ public class TestSingleDataSource {
         TransactionHelper.commitOrRollbackTransaction();
         // tx synchronizer removes the shared connection
         assertSharedConnectionCount(0);
+
+        try (Connection c = ConnectionHelper.getConnection(null, true)) {
+            try (Statement st = c.createStatement()) {
+                st.execute("DROP TABLE foo");
+            }
+        }
     }
 
 }

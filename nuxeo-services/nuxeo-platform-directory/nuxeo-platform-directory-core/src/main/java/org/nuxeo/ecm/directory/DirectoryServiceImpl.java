@@ -37,6 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class DirectoryServiceImpl extends DefaultComponent implements DirectoryService {
 
@@ -58,7 +59,13 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         // open all directories at application startup, so that
         // their tables are created (outside a transaction) if needed
         for (Directory dir : getDirectories()) {
-            dir.getName(); // enough to create tables for SQL directories
+            // open directory to init its resources (tables for SQLDirectory)
+            dir.getSession().close();
+        }
+        // commit the transaction so that tables are committed
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
     }
 

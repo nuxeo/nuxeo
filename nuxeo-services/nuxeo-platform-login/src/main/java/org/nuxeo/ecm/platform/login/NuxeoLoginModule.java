@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.api.login.RestrictedLoginHelper;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallback;
@@ -285,7 +286,13 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
         String loginPluginName = userIdent.getLoginPluginName();
         if (loginPluginName == null) {
             // we don't use a specific plugin
-            if (manager.checkUsernamePassword(userIdent.getUserName(), userIdent.getPassword())) {
+            boolean authenticated;
+            try {
+                authenticated = manager.checkUsernamePassword(userIdent.getUserName(), userIdent.getPassword());
+            } catch (DirectoryException e) {
+                throw (LoginException) new LoginException("Unable to validate identity").initCause(e);
+            }
+            if (authenticated) {
                 return (NuxeoPrincipal) createIdentity(userIdent.getUserName());
             } else {
                 return null;

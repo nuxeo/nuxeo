@@ -39,6 +39,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Binder;
 import com.google.inject.Provider;
@@ -104,6 +105,11 @@ public class SQLDirectoryFeature extends SimpleFeature {
                 }
                 allDirectoryData.put(dir.getName(), data);
             }
+        }
+        // commit the transaction so that lazily-created relation tables are committed
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
     }
 
