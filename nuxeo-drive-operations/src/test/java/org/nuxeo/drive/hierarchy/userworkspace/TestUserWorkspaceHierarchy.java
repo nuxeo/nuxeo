@@ -147,7 +147,7 @@ public class TestUserWorkspaceHierarchy {
      * <pre>
      * Server side for user1
      * ==============================
-     *
+     * 
      * /user1 (user workspace)
      *   |-- user1Folder1
      *   |     |-- user1File1
@@ -226,7 +226,7 @@ public class TestUserWorkspaceHierarchy {
      * <pre>
      * Expected client side for user1
      * ==============================
-     *
+     * 
      * Nuxeo Drive
      *   |-- My synchronized folders
      *   |     |-- user1Folder3

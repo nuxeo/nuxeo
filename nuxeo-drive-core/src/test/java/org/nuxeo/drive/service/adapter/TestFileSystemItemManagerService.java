@@ -441,8 +441,7 @@ public class TestFileSystemItemManagerService {
         Blob updatedFileBlob = (Blob) updatedFile.getPropertyValue("file:content");
         assertEquals("New file.odt", updatedFileBlob.getFilename());
         assertEquals("Modified content of an existing file.", updatedFileBlob.getString());
-        assertEquals("nxfile/test/" + updatedFile.getId() + "/blobholder:0/New%20file.odt",
-                fileItem.getDownloadURL());
+        assertEquals("nxfile/test/" + updatedFile.getId() + "/blobholder:0/New%20file.odt", fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(updatedFileBlob.getDigest(), fileItem.getDigest());
 
@@ -484,8 +483,7 @@ public class TestFileSystemItemManagerService {
         Blob fileBlob = (Blob) file.getPropertyValue("file:content");
         assertEquals("File new name.odt", fileBlob.getFilename());
         fileItem = (FileItem) fsItem;
-        assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/File%20new%20name.odt",
-                fileItem.getDownloadURL());
+        assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/File%20new%20name.odt", fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(fileBlob.getDigest(), fileItem.getDigest());
 

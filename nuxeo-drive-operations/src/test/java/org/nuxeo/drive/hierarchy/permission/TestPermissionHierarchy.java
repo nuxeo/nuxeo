@@ -93,7 +93,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.ecm.core.cache", "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 @Jetty(port = 18080)
-@RepositoryConfig(cleanup=Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS)
 @TransactionalConfig(autoStart = true)
 public class TestPermissionHierarchy {
 
@@ -155,7 +155,7 @@ public class TestPermissionHierarchy {
      * <pre>
      * Server side for user1
      * ==============================
-     *
+     * 
      * /user1 (user workspace)
      *   |-- user1Folder1
      *   |     |-- user1File1
@@ -164,10 +164,10 @@ public class TestPermissionHierarchy {
      *   |-- user1Folder3
      *   |     |-- user1File3
      *   |-- user1Folder4
-     *
+     * 
      * Server side for user2
      * ==============================
-     *
+     * 
      * /user2 (user workspace)
      *   |-- user2Folder1       (registered as a synchronization root with ReadWrite permission for user1)
      *   |     |-- user2File1
@@ -293,7 +293,7 @@ public class TestPermissionHierarchy {
          * User workspace registered as a synchronization root
          * ===================================================
          * => Expected client side for user1:
-         *
+         * 
          * Nuxeo Drive
          *   |-- My Docs
          *   |     |-- user1File2
@@ -484,7 +484,7 @@ public class TestPermissionHierarchy {
          * User workspace NOT registered as a synchronization root
          * =======================================================
          * => Expected client side for user1:
-         *
+         * 
          * Nuxeo Drive
          *   |-- My Docs
          *   |
@@ -541,7 +541,7 @@ public class TestPermissionHierarchy {
          * but specific folders yes: user1Folder3, user1Folder4
          * =======================================================
          * => Expected client side for user1:
-         *
+         * 
          * Nuxeo Drive
          *   |-- My Docs
          *   |     |-- user1Folder3
@@ -598,7 +598,7 @@ public class TestPermissionHierarchy {
          * Unregister a shared folder: user2Folder1
          * =======================================================
          * => Expected client side for user1:
-         *
+         * 
          * Nuxeo Drive
          *   |-- My Docs (unchanged)
          *   |     |-- user1Folder3
@@ -651,7 +651,7 @@ public class TestPermissionHierarchy {
          * Remove permission on a shared folder: user2Folder3
          * =======================================================
          * => Expected client side for user1:
-         *
+         * 
          * Nuxeo Drive
          *   |-- My Docs (unchanged)
          *   |     |-- user1Folder3
