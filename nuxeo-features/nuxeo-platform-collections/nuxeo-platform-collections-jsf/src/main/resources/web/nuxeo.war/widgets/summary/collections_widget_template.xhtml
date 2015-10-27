@@ -37,7 +37,8 @@
           <span class="tag tagLink"> <nxu:graphicImage
               value="#{nxd:iconPath(collection)}"
               rendered="#{!empty nxd:iconPath(collection)}"
-              styleClass="smallIcon" /> <nxd:restDocumentLink
+              styleClass="smallIcon"
+              width="16px" height="16px" /> <nxd:restDocumentLink
               document="#{collection}" tab="#{widgetProperty_tab}"
               subTab="#{widgetProperty_subTab}">
               <h:outputText value=" #{nxd:titleOrId(collection)} " />

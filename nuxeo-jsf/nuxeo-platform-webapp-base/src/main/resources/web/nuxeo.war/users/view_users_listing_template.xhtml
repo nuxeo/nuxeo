@@ -24,7 +24,8 @@
                 <li class="selected">
                   <h:commandLink action="#{userManagementActions.toggleShowCreateForm}"
                     immediate="true" id="createUserButton">
-                    <h:graphicImage value="/icons/action_add_user.png" />
+                    <h:graphicImage value="/icons/action_add_user.png" styleClass="smallIcon"
+                    width="16px" height="16px"/>
                     <h:outputText value="#{messages['command.createUser']}"  />
                     <f:ajax execute="@this" render="usersPanel" />
                   </h:commandLink>

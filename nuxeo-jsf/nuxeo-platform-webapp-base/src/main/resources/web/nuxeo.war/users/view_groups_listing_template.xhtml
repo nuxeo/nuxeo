@@ -24,7 +24,7 @@
                 <li class="selected">
                   <h:commandLink action="#{groupManagementActions.toggleShowCreateForm}"
                     immediate="true" id="createGroupButton">
-                    <h:graphicImage value="/icons/action_add_group.png" />
+                    <h:graphicImage value="/icons/action_add_group.png" styleClass="smallIcon" width="16px" height="16px"/>
                     <h:outputText value="#{messages['command.createGroup']}" />
                     <f:ajax execute="@this" render="groupsPanel" />
                   </h:commandLink>

@@ -47,7 +47,8 @@
                     class="cell nxDraggable">
                     <nxu:graphicImage
                       value="#{nxd:iconPath(copiedDocument)}"
-                      styleClass="icon smallIcon" />
+                      styleClass="icon smallIcon"
+                      width="16px" height="16px" />
                   </span>
                   <c:choose>
                     <c:when test="#{clipboardActions.exists(copiedDocument.ref)}">
@@ -90,7 +91,8 @@
                 immediate="#{cb_action.immediate}">
                 <nxu:graphicImage value="#{cb_action.icon}"
                   rendered="#{not empty cb_action.icon}"
-                  styleClass="icon smallIcon" />
+                  styleClass="icon smallIcon"
+                  width="16px" height="16px" />
                 <h:outputText value=" #{messages[cb_action.label]}" />
               </nxh:commandLink>
             </div>
