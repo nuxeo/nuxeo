@@ -28,9 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -65,9 +62,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
 /**
  * Tests for {@link NuxeoDriveManager}
  *
@@ -78,7 +72,8 @@ import com.google.common.cache.CacheBuilder;
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core",
-        "org.nuxeo.ecm.platform.web.common" })
+        "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 public class TestNuxeoDriveManager {
 
     private static final Log log = LogFactory.getLog(TestNuxeoDriveManager.class);
@@ -175,21 +170,6 @@ public class TestNuxeoDriveManager {
         }
         // Simulate root deletion to cleanup the cache between the tests
         nuxeoDriveManager.handleFolderDeletion((IdRef) doc("/").getRef());
-    }
-
-    @Test
-    public void cacheEquivalence() throws ExecutionException {
-        Cache<String, Object> cache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(10000).expireAfterWrite(
-                1, TimeUnit.MINUTES).build();
-        cache.put(new String("pfouh"), "zoo");
-        cache.get(new String("pfouh"), new Callable<Object>() {
-
-            @Override
-            public Object call() throws Exception {
-                throw new Error("not found");
-            }
-        });
-
     }
 
     @Test

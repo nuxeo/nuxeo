@@ -79,7 +79,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 // several consecutive transactions in a test method
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.core.io",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-types-contrib.xml" })
+        "org.nuxeo.ecm.core.cache", "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-types-contrib.xml",
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 public abstract class AbstractChangeFinderTestCase {
 
     private static final Log log = LogFactory.getLog(AbstractChangeFinderTestCase.class);

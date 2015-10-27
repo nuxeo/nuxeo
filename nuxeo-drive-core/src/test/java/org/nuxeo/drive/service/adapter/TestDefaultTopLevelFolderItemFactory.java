@@ -58,7 +58,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.core.io" })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.core.io",
+        "org.nuxeo.ecm.core.cache", "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 public class TestDefaultTopLevelFolderItemFactory {
 
     @Inject

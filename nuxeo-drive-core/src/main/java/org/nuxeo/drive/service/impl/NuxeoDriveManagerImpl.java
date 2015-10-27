@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,6 +59,8 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -73,9 +74,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 /**
  * Manage list of NuxeoDrive synchronization roots and devices for a given nuxeo user.
@@ -94,34 +92,50 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
+    public static final String DRIVE_SYNC_ROOT_CACHE = "driveSyncRoot";
+
+    public static final String DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE = "driveCollectionSyncRootMember";
+
     protected static final long COLLECTION_CONTENT_PAGE_SIZE = 1000L;
 
     /**
      * Cache holding the synchronization roots for a given user (first map key) and repository (second map key).
      */
-    protected Cache<String, Map<String, SynchronizationRoots>> syncRootCache;
+    protected Cache syncRootCache;
 
     /**
      * Cache holding the collection sync root member ids for a given user (first map key) and repository (second map
      * key).
      */
-    protected Cache<String, Map<String, Set<String>>> collectionSyncRootMemberCache;
+    protected Cache collectionSyncRootMemberCache;
 
     protected static ChangeFinderRegistry changeFinderRegistry;
 
     protected FileSystemChangeFinder changeFinder;
 
-    public NuxeoDriveManagerImpl() {
-        syncRootCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(10000).expireAfterWrite(1,
-                TimeUnit.MINUTES).build();
-        collectionSyncRootMemberCache = CacheBuilder.newBuilder().concurrencyLevel(4).maximumSize(10000).expireAfterWrite(
-                1, TimeUnit.MINUTES).build();
+    protected Cache getSyncRootCache() {
+        if (syncRootCache == null) {
+            syncRootCache = Framework.getService(CacheService.class).getCache(DRIVE_SYNC_ROOT_CACHE);
+        }
+        return syncRootCache;
+    }
+
+    protected Cache getCollectionSyncRootMemberCache() {
+        if (collectionSyncRootMemberCache == null) {
+            collectionSyncRootMemberCache = Framework.getService(CacheService.class).getCache(
+                    DRIVE_COLLECTION_SYNC_ROOT__MEMBER_CACHE);
+        }
+        return collectionSyncRootMemberCache;
     }
 
     protected void clearCache() {
         log.debug("Invalidating synchronization root cache and collection sync root member cache for all users");
-        syncRootCache.invalidateAll();
-        collectionSyncRootMemberCache.invalidateAll();
+        if (getSyncRootCache() != null) {
+            syncRootCache.invalidateAll();
+        }
+        if (getCollectionSyncRootMemberCache() != null) {
+            collectionSyncRootMemberCache.invalidateAll();
+        }
     }
 
     @Override
@@ -129,7 +143,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         if (log.isDebugEnabled()) {
             log.debug("Invalidating synchronization root cache for user: " + userName);
         }
-        syncRootCache.invalidate(userName);
+        getSyncRootCache().invalidate(userName);
     }
 
     @Override
@@ -137,13 +151,13 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         if (log.isDebugEnabled()) {
             log.debug("Invalidating collection sync root member cache for user: " + userName);
         }
-        collectionSyncRootMemberCache.invalidate(userName);
+        getCollectionSyncRootMemberCache().invalidate(userName);
     }
 
     @Override
     public void invalidateCollectionSyncRootMemberCache() {
         log.debug("Invalidating collection sync root member cache for all users");
-        collectionSyncRootMemberCache.invalidateAll();
+        getCollectionSyncRootMemberCache().invalidateAll();
     }
 
     @Override
@@ -409,23 +423,27 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Map<String, SynchronizationRoots> getSynchronizationRoots(Principal principal) {
         String userName = principal.getName();
-        Map<String, SynchronizationRoots> syncRoots = syncRootCache.getIfPresent(userName);
+        Map<String, SynchronizationRoots> syncRoots = (Map<String, SynchronizationRoots>) getSyncRootCache().get(
+                userName);
         if (syncRoots == null) {
             syncRoots = computeSynchronizationRoots(computeSyncRootsQuery(userName), principal);
-            syncRootCache.put(userName, syncRoots);
+            getSyncRootCache().put(userName, (Serializable) syncRoots);
         }
         return syncRoots;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Map<String, Set<String>> getCollectionSyncRootMemberIds(Principal principal) {
         String userName = principal.getName();
-        Map<String, Set<String>> collSyncRootMemberIds = collectionSyncRootMemberCache.getIfPresent(userName);
+        Map<String, Set<String>> collSyncRootMemberIds = (Map<String, Set<String>>) getCollectionSyncRootMemberCache().get(
+                userName);
         if (collSyncRootMemberIds == null) {
             collSyncRootMemberIds = computeCollectionSyncRootMemberIds(principal);
-            collectionSyncRootMemberCache.put(userName, collSyncRootMemberIds);
+            getCollectionSyncRootMemberCache().put(userName, (Serializable) collSyncRootMemberIds);
         }
         return collSyncRootMemberIds;
     }

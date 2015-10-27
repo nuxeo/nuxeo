@@ -16,6 +16,7 @@
  */
 package org.nuxeo.drive.service;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
@@ -24,7 +25,9 @@ import org.nuxeo.ecm.core.api.IdRef;
 /**
  * Data transfer object to fetch the list of references of synchronization roots for a given repo and user.
  */
-public class SynchronizationRoots {
+public class SynchronizationRoots implements Serializable {
+
+    private static final long serialVersionUID = 5975197559729672670L;
 
     protected final String repositoryName;
 
