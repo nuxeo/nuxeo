@@ -42,19 +42,19 @@ public class LoginScreenConfig implements Serializable {
     /**
      * @since 7.10
      */
-    @XNodeList(value = "loginVideos/loginVideo", type = ArrayList.class, componentType = LoginVideo.class)
+    @XNodeList(value = "videos/video", type = ArrayList.class, componentType = LoginVideo.class)
     protected List<LoginVideo> videos;
 
     /**
      * @since 7.10
      */
-    @XNode("loginVideos@muted")
+    @XNode("videos@muted")
     protected Boolean muted;
 
     /**
      * @since 7.10
      */
-    @XNode("loginVideos@loop")
+    @XNode("videos@loop")
     protected Boolean loop;
 
     protected String headerStyle;

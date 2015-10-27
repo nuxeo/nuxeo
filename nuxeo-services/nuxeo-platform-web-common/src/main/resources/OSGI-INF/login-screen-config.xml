@@ -3,10 +3,10 @@
     target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
     point="loginScreen">
     <loginScreenConfig>
-      <loginVideos loop="false">
-        <loginVideo src="//media.nuxeo.com/videos/login_7_10.webm" type="video/webm" />
-        <loginVideo src="//media.nuxeo.com/videos/login_7_10.mp4" type="video/mp4" />
-      </loginVideos>
+      <videos loop="false">
+        <video src="//media.nuxeo.com/videos/login_7_10.webm" type="video/webm" />
+        <video src="//media.nuxeo.com/videos/login_7_10.mp4" type="video/mp4" />
+      </videos>
     </loginScreenConfig>
   </extension>
 </component>
