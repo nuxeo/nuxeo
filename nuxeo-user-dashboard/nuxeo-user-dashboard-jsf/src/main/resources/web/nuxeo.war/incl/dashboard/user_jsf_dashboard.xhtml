@@ -8,9 +8,9 @@
 
   <c:if test="#{userDomains.size() > 1}">
 
-    <h:panelGrid columns="1">
+    <h:panelGrid columns="1" styleClass="fullWidth">
       <div class="dashboardDomainSelection">
-        <h:form id="selectDashboardDomain">
+        <h:form id="selectDashboardDomain" class="grayBox">
           <h:outputText value="#{messages['label.selectDashboardDomain']}" />
           <h:selectOneMenu value="#{jsfDashboardActions.selectedDomainId}"
             id="selectDashboardDomainMenu">
