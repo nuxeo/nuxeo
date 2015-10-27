@@ -11,6 +11,14 @@
   font-family: $default-font;
   font-size: inherit;
 }
+// Replace calendar icon in forms
+img.rf-cal-btn {
+  background: transparent url('/nuxeo/icons/calendar.png') no-repeat scroll 0 0 / 16px 16px;
+  height: 25px;
+  margin-right: 1em;
+  padding-left: 25px;
+  width: 25px;
+}
 
 // =Tree
 .nx-page .menu {
@@ -350,6 +358,7 @@ a.documentTypeLink {
 }
 
 .nx-page table.rf-cal-extr tr td {
+  border: 0;
   padding: .15em !important;
   vertical-align: middle;
 }
@@ -360,6 +369,7 @@ a.documentTypeLink {
 .nx-page .rf-cal-tl-ftr,
 .nx-page table.rf-cal-extr td.rf-cal-hdr {
   background: none repeat scroll 0 0 $shade-light-0;
+  border: 0;
   font-weight: bold;
   padding: 0;
 }
@@ -367,6 +377,7 @@ a.documentTypeLink {
 .nx-page .rf-cal-day-lbl,
 .nx-page .rf-cal-week {
   background: none repeat scroll 0 0 $shade-light-10;
+  border: 0;
   color: $shade-strong-20;
   text-transform: capitalize;
 }

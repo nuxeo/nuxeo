@@ -132,12 +132,12 @@ input[type="checkbox"]:focus {
 
 // =Forms elements
 .required {
-  background: transparent url('${basePath}/icons/required.gif') top right no-repeat;
+  background: transparent url('${basePath}/icons/required.gif') top right no-repeat / 7px;
   padding: 0 1em 0 0;
 }
 
 .widgetHelpLabel .widgetLabel.required {
-  background: url('${basePath}/icons/required.gif') no-repeat scroll right top, url('${basePath}/icons/help.png') no-repeat scroll right 15px top transparent;
+  background: url('${basePath}/icons/required.gif') no-repeat scroll right top / 7px, url('${basePath}/icons/help.png') no-repeat scroll right 11px top transparent / 11px;
   padding-right: 2.3em;
 }
 
@@ -187,7 +187,7 @@ option {
 }
 
 .nx-page label {
-  padding-right: .4em;
+  padding-right: .7em;
 }
 
 .nx-page .dataInputText {

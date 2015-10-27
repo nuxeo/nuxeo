@@ -78,7 +78,7 @@
 }
 
 .userSearchBlock .directoryFilter {
-  background: $shade-light-30 url('${basePath}/icons/search.png') no-repeat 95% center;
+  background: $shade-light-30 url('${basePath}/icons/search.png') no-repeat 95% center / 16px;
   border: 1px solid $shade-light-30;
   border-radius: 1em;
   box-shadow: none;
@@ -115,7 +115,7 @@
 
 .userSearchBlock .select2-container-multi .select2-choices,
 .userSearchBlock .select2-container-multi.select2-container-active .select2-choices:hover {
-  background: $shade-light-0 url('${basePath}/icons/search.png') no-repeat 98% center;
+  background: $shade-light-0 url('${basePath}/icons/search.png') no-repeat 98% center / 16px;
   border-color: transparent;
   box-shadow: none;
   transition: background-color .2s ease .1s;
@@ -188,6 +188,7 @@
   border-top: 3px solid transparent;
   float: right;
   font-size: 1.1em;
+  margin-left: 1em;
   padding: 0;
 }
 
@@ -199,14 +200,14 @@
 // Override default dropdown button styles
 .userMenuActions .actionList .dropdown,
 .userMenuActions .actionList .dropdown:hover {
-  background: url("${basePath}/icons/user_menu.png") no-repeat scroll 4px center $shade-light-0;
+  background: url("${basePath}/icons/user_menu.png") no-repeat scroll 7px 6px / 16px;
   border: 0;
   border-radius: 20px;
   box-shadow: none;
   display: inline-block;
   height: 2.3em;
   line-height: 2em;
-  padding: .4em 1em .43em 2.2em !important;
+  padding: .2em 1em .43em 2.2em !important;
 }
 
 .userMenuActions .actionList .dropdown:hover {
