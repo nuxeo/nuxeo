@@ -55,12 +55,7 @@
 <!--Déboquer l'héritage des droits-->
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Manage</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Access Rights</td>
+	<td>link=Permissions</td>
 	<td></td>
 </tr>
 <tr>
@@ -69,13 +64,18 @@
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//form[@id=&quot;block_inherit&quot;]/input[@type=&quot;checkbox&quot;]</td>
+	<td>waitForElementPresent</td>
+	<td>//paper-button[text()="Unblock"]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyNotChecked</td>
-	<td>//form[@id=&quot;block_inherit&quot;]/input[@type=&quot;checkbox&quot;]</td>
+	<td>click</td>
+	<td>//paper-button[text()="Unblock"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//paper-button[text()="Block"]</td>
 	<td></td>
 </tr>
 <tr>

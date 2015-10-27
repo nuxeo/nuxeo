@@ -51,28 +51,28 @@
 </tr>
 <!--Bloquer l'héritage des droits-->
 <tr>
-        <td>clickAndWait</td>
-        <td>link=Manage</td>
-        <td></td>
-</tr>
-<tr>
 	<td>clickAndWait</td>
-	<td>link=Access Rights</td>
+	<td>link=Permissions</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//form[@id="block_inherit"]/input[@type="checkbox"]</td>
+	<td>waitForElementPresent</td>
+	<td>//paper-button[text()="Block"]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyChecked</td>
-	<td>//form[@id="block_inherit"]/input[@type="checkbox"]</td>
+	<td>click</td>
+	<td>//paper-button[text()="Block"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//paper-button[text()="Unblock"]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>verifyTextNotPresent</td>
-	<td>No local right</td>
+	<td>No local permission.</td>
 	<td></td>
 </tr>
 <tr>

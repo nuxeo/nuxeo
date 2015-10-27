@@ -37,6 +37,11 @@ public class ManageTabSubPage extends DocumentBasePage {
         super(driver);
     }
 
+    /**
+     * @deprecated since 7.10. Use {@link PermissionsSubPage} instead.
+     * @return
+     */
+    @Deprecated
     public AccessRightsSubPage getAccessRightsSubTab() {
         clickOnLinkIfNotSelected(accessRightsLink);
         return asPage(AccessRightsSubPage.class);

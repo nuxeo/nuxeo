@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -32,9 +31,8 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
-
+import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -63,8 +61,10 @@ public class ITSelect2Test extends AbstractTest {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
-        DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
+        DocumentBasePage documentBasePage = usersTab.exitAdminCenter()
+                                                    .getHeaderLinks()
+                                                    .getNavigationSubPage()
+                                                    .goToDocument("Workspaces");
         deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
         logout();
     }
@@ -94,20 +94,25 @@ public class ITSelect2Test extends AbstractTest {
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // create a new wokspace and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
+        documentBasePage = usersTab.exitAdminCenter()
+                                   .getHeaderLinks()
+                                   .getNavigationSubPage()
+                                   .goToDocument("Workspaces");
         DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
-        AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
+        PermissionsSubPage permissionsSubPage = workspacePage.getPermissionsTab();
         // Need WriteSecurity (so in practice Manage everything) to edit a
         // Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
+        if (!permissionsSubPage.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+            permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
         }
 
         logout();
 
         // Log as test user and edit the created workdspace
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces").getContentTab().goToDocument(
-                WORKSPACE_TITLE);
+        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab()
+                                                              .goToDocument("Workspaces")
+                                                              .getContentTab()
+                                                              .goToDocument(WORKSPACE_TITLE);
 
         // Create test File
         FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false, null,

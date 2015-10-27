@@ -26,15 +26,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
-
+import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -68,21 +66,24 @@ public class ITCopyPasteTest extends AbstractTest {
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // create a wokspace1 and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
+        documentBasePage = usersTab.exitAdminCenter()
+                                   .getHeaderLinks()
+                                   .getNavigationSubPage()
+                                   .goToDocument("Workspaces");
         DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE1_TITLE, null);
-        AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
+        PermissionsSubPage permissionsSubPage = workspacePage.getPermissionsTab();
         // Need Read
-        if (!accessRightSubTab.hasPermissionForUser("Read", TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Read", TEST_USERNAME);
+        if (!permissionsSubPage.hasPermissionForUser("Read", TEST_USERNAME)) {
+            permissionsSubPage.grantPermissionForUser("Read", TEST_USERNAME);
         }
         // Create test File 1
         createFile(workspacePage, FILE1_NAME, null, false, null, null, null);
 
         workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
         workspacePage = createWorkspace(documentBasePage, WORKSPACE2_TITLE, null);
-        accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
+        permissionsSubPage = workspacePage.getPermissionsTab();
+        if (!permissionsSubPage.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+            permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
         }
 
         logout();
@@ -100,8 +101,10 @@ public class ITCopyPasteTest extends AbstractTest {
         DocumentBasePage documentBasePage;
 
         // Log as test user and edit the created workspace
-        documentBasePage = loginAsTestUser().getContentTab().goToDocument("Workspaces").getContentTab().goToDocument(
-                WORKSPACE1_TITLE);
+        documentBasePage = loginAsTestUser().getContentTab()
+                                            .goToDocument("Workspaces")
+                                            .getContentTab()
+                                            .goToDocument(WORKSPACE1_TITLE);
 
         ContentTabSubPage contentTabSubPage = documentBasePage.getContentTab();
 
@@ -126,8 +129,10 @@ public class ITCopyPasteTest extends AbstractTest {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
-        DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
+        DocumentBasePage documentBasePage = usersTab.exitAdminCenter()
+                                                    .getHeaderLinks()
+                                                    .getNavigationSubPage()
+                                                    .goToDocument("Workspaces");
         deleteWorkspace(documentBasePage, WORKSPACE1_TITLE);
         deleteWorkspace(documentBasePage, WORKSPACE2_TITLE);
         logout();

@@ -34,7 +34,9 @@ import org.openqa.selenium.support.ui.Select;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
+ * @deprecated since 7.10. Use {@link PermissionsSubPage} instead.
  */
+@Deprecated
 public class AccessRightsSubPage extends AbstractPage {
 
     private static final Log log = LogFactory.getLog(AccessRightsSubPage.class);

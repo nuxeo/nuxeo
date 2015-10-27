@@ -97,12 +97,10 @@
     <div class="bubbleBox">
       <div class="bubbleHeader">
         <template is="dom-if" if="{{canBlockInheritance}}">
-          <paper-button id="block" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]
-          </paper-button>
+          <paper-button id="block" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]</paper-button>
         </template>
         <template is="dom-if" if="{{canUnblockInheritance}}">
-          <paper-button id="unblock" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]
-          </paper-button>
+          <paper-button id="unblock" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]</paper-button>
         </template>
         <h3>[[i18n('label.permissions.inherited', 'Permissions inherited from upper levels')]]</h3>
         <template is="dom-if" if="{{!hasInheritedAces}}">

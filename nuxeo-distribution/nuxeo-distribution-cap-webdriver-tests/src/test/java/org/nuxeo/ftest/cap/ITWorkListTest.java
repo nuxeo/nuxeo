@@ -23,7 +23,7 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
+import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.openqa.selenium.By;
 
 /**
@@ -39,7 +39,6 @@ import org.openqa.selenium.By;
  * <li>addToWorklist the workspace</li>
  * <li>logout</li>
  * </ol>
- * 
  */
 public class ITWorkListTest extends AbstractTest {
 
@@ -56,13 +55,15 @@ public class ITWorkListTest extends AbstractTest {
                     "jsmith@nuxeo.com", TEST_PASSWORD, "members");
         }
 
-        DocumentBasePage documentBasePage = usergroupPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
-        AccessRightsSubPage accessRightSubTab = documentBasePage.getManageTab().getAccessRightsSubTab();
+        DocumentBasePage documentBasePage = usergroupPage.exitAdminCenter()
+                                                         .getHeaderLinks()
+                                                         .getNavigationSubPage()
+                                                         .goToDocument("Workspaces");
+        PermissionsSubPage permissionsSubPage = documentBasePage.getPermissionsTab();
         // Need WriteSecurity (so in practice Manage everything) to edit a
         // Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
+        if (!permissionsSubPage.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+            permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
         }
 
         logout();
@@ -75,14 +76,15 @@ public class ITWorkListTest extends AbstractTest {
         DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, "A workspace description");
 
         workspacePage = workspacePage.goToDocumentByBreadcrumb("Workspaces");
-        
+
         workspacePage.getContentTab().addToWorkList(WORKSPACE_TITLE);
-        
+
         logout();
-        
+
         documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces");
-        
-        DocumentBasePage.findElementWithTimeout(By.xpath("//div[@id='clipboardCopy']//a[text()='"+ WORKSPACE_TITLE+"']"));
+
+        DocumentBasePage.findElementWithTimeout(By.xpath("//div[@id='clipboardCopy']//a[text()='" + WORKSPACE_TITLE
+                + "']"));
 
         // Clean up repository
         restoreState();
@@ -99,8 +101,10 @@ public class ITWorkListTest extends AbstractTest {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
-        DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
+        DocumentBasePage documentBasePage = usersTab.exitAdminCenter()
+                                                    .getHeaderLinks()
+                                                    .getNavigationSubPage()
+                                                    .goToDocument("Workspaces");
         deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
         logout();
     }

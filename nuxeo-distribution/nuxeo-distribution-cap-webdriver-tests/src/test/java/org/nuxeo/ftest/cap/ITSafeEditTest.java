@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
@@ -34,9 +33,8 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
-
+import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -134,13 +132,16 @@ public class ITSafeEditTest extends AbstractTest {
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // create a new wokspace and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
+        documentBasePage = usersTab.exitAdminCenter()
+                                   .getHeaderLinks()
+                                   .getNavigationSubPage()
+                                   .goToDocument("Workspaces");
         DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, INITIAL_DESCRIPTION);
-        AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
+        PermissionsSubPage permissionsSubPage = workspacePage.getPermissionsTab();
         // Need WriteSecurity (so in practice Manage everything) to edit a
         // Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
+        if (!permissionsSubPage.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+            permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
         }
         logout();
     }
@@ -159,8 +160,9 @@ public class ITSafeEditTest extends AbstractTest {
     private void checkSafeEditRestoreProvided() {
         // We must find the status message asking if we want to restore
         // previous unchanged data, and make sure it is visible
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5, TimeUnit.SECONDS).pollingEvery(100,
-                TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5, TimeUnit.SECONDS)
+                                                                .pollingEvery(100, TimeUnit.MILLISECONDS)
+                                                                .ignoring(NoSuchElementException.class);
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.className("ambiance-title"),
                 "A draft of this document has been saved"));
     }
@@ -175,8 +177,10 @@ public class ITSafeEditTest extends AbstractTest {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
-        DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
+        DocumentBasePage documentBasePage = usersTab.exitAdminCenter()
+                                                    .getHeaderLinks()
+                                                    .getNavigationSubPage()
+                                                    .goToDocument("Workspaces");
         deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
         logout();
     }
@@ -228,8 +232,10 @@ public class ITSafeEditTest extends AbstractTest {
         WebElement descriptionElt, titleElt;
 
         // Log as test user and edit the created workdspace
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces").getContentTab().goToDocument(
-                WORKSPACE_TITLE);
+        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab()
+                                                              .goToDocument("Workspaces")
+                                                              .getContentTab()
+                                                              .goToDocument(WORKSPACE_TITLE);
         documentBasePage.getEditTab();
 
         LocalStorage localStorage = new LocalStorage(driver);
@@ -325,8 +331,10 @@ public class ITSafeEditTest extends AbstractTest {
 
         DocumentBasePage documentBasePage;
         // Log as test user and edit the created workdspace
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces").getContentTab().goToDocument(
-                WORKSPACE_TITLE);
+        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab()
+                                                              .goToDocument("Workspaces")
+                                                              .getContentTab()
+                                                              .goToDocument(WORKSPACE_TITLE);
 
         // Create test File
         FileDocumentBasePage filePage = createFile(documentBasePage, "Test file", "Test File description", false, null,
@@ -363,8 +371,9 @@ public class ITSafeEditTest extends AbstractTest {
     }
 
     private void waitForSavedNotification() {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5, TimeUnit.SECONDS).pollingEvery(100,
-                TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5, TimeUnit.SECONDS)
+                                                                .pollingEvery(100, TimeUnit.MILLISECONDS)
+                                                                .ignoring(NoSuchElementException.class);
         try {
             wait.until(new Function<WebDriver, WebElement>() {
                 @Override

@@ -217,7 +217,8 @@
     </action>
 
     <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml"
-      order="50" label="action.view.rights" icon="/icons/file.gif">
+      order="50" label="action.view.rights" icon="/icons/file.gif"
+      enabled="false">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>rights</filter-id>
       <properties>
@@ -902,7 +903,6 @@
       <rule grant="true">
         <permission>WriteSecurity</permission>
         <facet>Folderish</facet>
-        <condition>#{frameworkPropertyActions.getProperty("org.nuxeo.ecm.tester.name") == 'Nuxeo-Selenium-Tester'}</condition>
       </rule>
     </filter>
 

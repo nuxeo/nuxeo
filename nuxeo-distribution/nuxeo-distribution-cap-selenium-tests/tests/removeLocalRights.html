@@ -55,43 +55,52 @@
 <!--Déboquer l'héritage des droits-->
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Manage</td>
+	<td>link=Permissions</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Access Rights</td>
+	<td>waitForElementPresent</td>
+	<td>//paper-button[text()="New Permission"]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>click</td>
-	<td>//table[@id=&quot;dataTable_local_rights&quot;]//th[1]/input</td>
+	<td>//paper-icon-button[@icon='delete']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('rights_content:security_button_remove').getAttribute('disabled') == null</td>
-	<td>15000</td>
-</tr>
-<!-- reclick: ajax messes with DOM structure -->
-<tr>
-	<td>clickAndWait</td>
-	<td>link=Access Rights</td>
+	<td>waitForTextPresent</td>
+	<td>The following permission will be deleted</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyChecked</td>
-	<td>//table[@id=&quot;dataTable_local_rights&quot;]//th[1]/input</td>
+	<td>click</td>
+	<td>//paper-button[text()="Delete"]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value=&quot;Remove Permission(s)&quot;]</td>
+	<td>waitForTextNotPresent</td>
+	<td>The following permission will be deleted</td>
 	<td></td>
 </tr>
 <tr>
-	<td>verifyTextPresent</td>
-	<td>No local right</td>
+	<td>click</td>
+	<td>//paper-icon-button[@icon='delete']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>The following permission will be deleted</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//paper-button[text()="Delete"]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextNotPresent</td>
+	<td>No local permission.</td>
 	<td></td>
 </tr>
 <tr>

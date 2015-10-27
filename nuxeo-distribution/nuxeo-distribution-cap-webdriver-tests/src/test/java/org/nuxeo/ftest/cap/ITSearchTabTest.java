@@ -37,8 +37,8 @@ import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPag
 import org.nuxeo.functionaltests.pages.search.DefaultSearchSubPage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.nuxeo.functionaltests.pages.search.SearchResultsSubPage;
-import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.openqa.selenium.By;
 
 /**
@@ -81,7 +81,10 @@ public class ITSearchTabTest extends AbstractTest {
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // create 2 workspaces and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
+        documentBasePage = usersTab.exitAdminCenter()
+                                   .getHeaderLinks()
+                                   .getNavigationSubPage()
+                                   .goToDocument("Workspaces");
         createTestWorkspace(documentBasePage, WORKSPACE1_TITLE, true);
         createTestWorkspace(documentBasePage, WORKSPACE2_TITLE, false);
         logout();
@@ -91,11 +94,11 @@ public class ITSearchTabTest extends AbstractTest {
             throws IOException {
         DocumentBasePage workspacePage = createWorkspace(documentBasePage, title, null);
         if (createTestFile) {
-            AccessRightsSubPage accessRightSubTab = workspacePage.getManageTab().getAccessRightsSubTab();
+            PermissionsSubPage permissionsSubPage = workspacePage.getPermissionsTab();
             // Need WriteSecurity (so in practice Manage everything) to edit a
             // Workspace
-            if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
-                accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
+            if (!permissionsSubPage.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+                permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
             }
             // Create test File
             FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false,
@@ -158,7 +161,7 @@ public class ITSearchTabTest extends AbstractTest {
         // Test Collections Widget
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         searchLayoutSubPage = searchPage.getDefaultSearch();
-        searchLayoutSubPage.selectCollections(new String[] {MY_FAVORITES_COLLECTION});
+        searchLayoutSubPage.selectCollections(new String[] { MY_FAVORITES_COLLECTION });
         searchPage = searchLayoutSubPage.filter();
         searchLayoutSubPage = searchPage.getDefaultSearch();
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
@@ -189,8 +192,10 @@ public class ITSearchTabTest extends AbstractTest {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
-        DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
+        DocumentBasePage documentBasePage = usersTab.exitAdminCenter()
+                                                    .getHeaderLinks()
+                                                    .getNavigationSubPage()
+                                                    .goToDocument("Workspaces");
         deleteWorkspace(documentBasePage, WORKSPACE1_TITLE);
         deleteWorkspace(documentBasePage, WORKSPACE2_TITLE);
         logout();

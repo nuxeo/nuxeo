@@ -32,6 +32,7 @@ import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
@@ -93,6 +94,9 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Edit']")
     public WebElement editTabLink;
+
+    @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Permissions']")
+    public WebElement permissionsTabLink;
 
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='History']")
     public WebElement historyTabLink;
@@ -224,6 +228,11 @@ public class DocumentBasePage extends AbstractPage {
     public EditTabSubPage getEditTab() {
         clickOnLinkIfNotSelected(editTabLink);
         return asPage(EditTabSubPage.class);
+    }
+
+    public PermissionsSubPage getPermissionsTab() {
+        clickOnLinkIfNotSelected(permissionsTabLink);
+        return asPage(PermissionsSubPage.class);
     }
 
     public HistoryTabSubPage getHistoryTab() {

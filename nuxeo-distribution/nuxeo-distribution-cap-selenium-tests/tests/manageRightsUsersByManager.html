@@ -70,19 +70,29 @@
 </tr>
 <tr>
 	<td>clickAndWait</td>
-	<td>link=Manage</td>
+	<td>link=Permissions</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>link=Access Rights</td>
+	<td>waitForTextPresent</td>
+	<td>New Permission</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//paper-button[text()='New Permission']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Add a Permission</td>
 	<td></td>
 </tr>
 <!--jsmith donne a jdoe droits d'ecriture-->
 <!-- Since 5.7.3 rights is a select2 widget-->
 <tr>
 	<td>select2Type</td>
-	<td>css=div[id$='nxw_selection_select2']</td>
+	<td>css=div[id$='s2id_select2']</td>
 	<td>jdoe</td>
 </tr>
 <tr>
@@ -96,38 +106,35 @@
 	<td></td>
 </tr>
 <tr>
-	<td>select</td>
-	<td>id=add_rights_form:rights_permission_select</td>
-	<td>label=Edit</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>id=add_rights_form:rights_add_button</td>
+	<td>click</td>
+	<td>//h2[text()='Add a Permission']/..//paper-item[text()='Edit']</td>
 	<td></td>
 </tr>
-<!--verify that the button to save local rights modification is displayed-->
-<tr>
-	<td>verifyElementPresent</td>
-	<td>//input[@value='Save Local Rights']</td>
-	<td></td>
-</tr>
-<!--Empty user selection to set new local rights-->
 <tr>
 	<td>click</td>
-	<td>//li[@class='select2-search-choice'][1]/a</td>
+	<td>//h2[text()='Add a Permission']/..//paper-button[text()='Create']</td>
 	<td></td>
 </tr>
-<!-- wait for table to disappear -->
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') == null</td>
-	<td>10000</td>
+	<td>waitForTextNotPresent</td>
+	<td>Add a Permission</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//paper-button[text()='New Permission']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Add a Permission</td>
+	<td></td>
 </tr>
 <!--jsmith donne a bree droits de lecture-->
 <!-- Since 5.7.3 rights is a select2 widget-->
 <tr>
 	<td>select2Type</td>
-	<td>css=div[id$='nxw_selection_select2']</td>
+	<td>css=div[id$='s2id_select2']</td>
 	<td>bree</td>
 </tr>
 <tr>
@@ -141,32 +148,35 @@
 	<td></td>
 </tr>
 <tr>
-	<td>select</td>
-	<td>id=add_rights_form:rights_permission_select</td>
-	<td>label=Read</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>id=add_rights_form:rights_add_button</td>
+	<td>click</td>
+	<td>//h2[text()='Add a Permission']/..//paper-item[text()='Read']</td>
 	<td></td>
 </tr>
-<!--Empty user selection to set new local rights-->
 <tr>
 	<td>click</td>
-	<td>//li[@class='select2-search-choice'][1]/a</td>
+	<td>//h2[text()='Add a Permission']/..//paper-button[text()='Create']</td>
 	<td></td>
 </tr>
-<!-- wait for table to disappear -->
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') == null</td>
-	<td>10000</td>
+	<td>waitForTextNotPresent</td>
+	<td>Add a Permission</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//paper-button[text()='New Permission']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Add a Permission</td>
+	<td></td>
 </tr>
 <!--jsmith donne a lbramard droits de lecture-->
 <!-- Since 5.7.3 rights is a select2 widget-->
 <tr>
 	<td>select2Type</td>
-	<td>css=div[id$='nxw_selection_select2']</td>
+	<td>css=div[id$='s2id_select2']</td>
 	<td>lbramard</td>
 </tr>
 <tr>
@@ -180,32 +190,35 @@
 	<td></td>
 </tr>
 <tr>
-	<td>select</td>
-	<td>id=add_rights_form:rights_permission_select</td>
-	<td>label=Read</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>id=add_rights_form:rights_add_button</td>
+	<td>click</td>
+	<td>//h2[text()='Add a Permission']/..//paper-item[text()='Read']</td>
 	<td></td>
 </tr>
-<!--Empty user selection to set new local rights-->
 <tr>
 	<td>click</td>
-	<td>//li[@class='select2-search-choice'][1]/a</td>
+	<td>//h2[text()='Add a Permission']/..//paper-button[text()='Create']</td>
 	<td></td>
 </tr>
-<!-- wait for table to disappear -->
 <tr>
-	<td>waitForCondition</td>
-	<td>selenium.browserbot.getCurrentWindow().document.getElementById('add_rights_form:nxl_user_group_suggestion:nxw_selection_list:0:nxw_selection_listItem') == null</td>
-	<td>10000</td>
+	<td>waitForTextNotPresent</td>
+	<td>Add a Permission</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//paper-button[text()='New Permission']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForTextPresent</td>
+	<td>Add a Permission</td>
+	<td></td>
 </tr>
 <!--jsmith donne a linnet droits d'ecriture-->
 <!-- Since 5.7.3 rights is a select2 widget-->
 <tr>
 	<td>select2Type</td>
-	<td>css=div[id$='nxw_selection_select2']</td>
+	<td>css=div[id$='s2id_select2']</td>
 	<td>linnet</td>
 </tr>
 <tr>
@@ -219,23 +232,13 @@
 	<td></td>
 </tr>
 <tr>
-	<td>select</td>
-	<td>id=add_rights_form:rights_permission_select</td>
-	<td>label=Edit</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>id=add_rights_form:rights_add_button</td>
+	<td>click</td>
+	<td>//h2[text()='Add a Permission']/..//paper-item[text()='Edit']</td>
 	<td></td>
 </tr>
 <tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Save Local Rights']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>verifyElementNotPresent</td>
-	<td>//input[@value='Save Local Rights']</td>
+	<td>click</td>
+	<td>//h2[text()='Add a Permission']/..//paper-button[text()='Create']</td>
 	<td></td>
 </tr>
 <tr>

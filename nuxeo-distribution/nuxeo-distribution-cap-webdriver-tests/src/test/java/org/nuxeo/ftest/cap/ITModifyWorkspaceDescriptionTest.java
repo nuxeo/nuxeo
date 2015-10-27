@@ -28,7 +28,7 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
+import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 
 /**
  * <p>
@@ -61,11 +61,11 @@ public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
 
         DocumentBasePage documentBasePage = usergroupPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
                 "Workspaces");
-        AccessRightsSubPage accessRightSubTab = documentBasePage.getManageTab().getAccessRightsSubTab();
+        PermissionsSubPage permissionsSubPage = documentBasePage.getPermissionsTab();
         // Need WriteSecurity (so in practice Manage everything) to edit a
         // Workspace
-        if (!accessRightSubTab.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
-            accessRightSubTab.grantPermissionForUser("Manage everything", TEST_USERNAME);
+        if (!permissionsSubPage.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
+            permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
         }
 
         logout();
