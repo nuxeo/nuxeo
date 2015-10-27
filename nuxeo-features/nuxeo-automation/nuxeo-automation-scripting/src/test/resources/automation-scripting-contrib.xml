@@ -365,6 +365,19 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.UseConsoleHelper">
+      <inputType>void</inputType>
+      <outputType>void</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+          Console.info("Informations");
+          Console.warn("Warnings");
+          Console.error("Errors");
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
