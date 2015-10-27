@@ -18,17 +18,19 @@
 package org.nuxeo.ecm.platform.groups.audit.service.rendering.tests;
 
 import java.io.File;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -51,6 +53,26 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
         "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
 public class TestAclProcessingWork extends AbstractAclLayoutTest {
+
+    private static class ResultAuditPublisher implements IResultPublisher {
+        static CountDownLatch published;
+
+        private static final long serialVersionUID = 1L;
+
+        public ResultAuditPublisher() {
+            published = new CountDownLatch(1);
+        }
+
+        @Override
+        public void publish(Blob blob) {
+            published.countDown();
+        }
+
+        private static boolean await(int delay) throws InterruptedException {
+            return published.await(delay, TimeUnit.MINUTES);
+        }
+    }
+
     @Inject
     CoreSession session;
 
@@ -80,25 +102,22 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
         DocumentModel root = makeDocumentTree(session, depth, width, groups);
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         eventService.waitForAsyncCompletion(60 * 1000);
         log.debug("done building test data");
 
         // --------------------
-        IResultPublisher publisher = new IResultPublisher() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void publish(Blob blob) {
-                log.debug("audit done");
-            }
-        };
+        ResultAuditPublisher publisher = new ResultAuditPublisher();
         Work work = new AclAuditWork("test-work", session.getRepositoryName(), root.getId(), testFile, publisher);
-
-        // Go!
         workManager.schedule(work, true);
 
-        eventService.waitForAsyncCompletion(60 * 1000);
+        // Go!
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
+
+        if (!ResultAuditPublisher.await(1)) {
+            Assert.fail("audit was not published");
+        }
     }
 
 }

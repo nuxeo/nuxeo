@@ -17,11 +17,10 @@
 
 package org.nuxeo.ecm.platform.groups.audit.service.rendering.tests;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -29,12 +28,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -69,6 +68,46 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreLongRunning.class)
 public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
 
+    private static class AssertProcessInterruptStatusInOutputFile implements IResultPublisher {
+        private static final long serialVersionUID = 1L;
+
+        private static CountDownLatch published = new CountDownLatch(1);
+
+        private static boolean failed;
+
+        AssertProcessInterruptStatusInOutputFile() {
+            published = new CountDownLatch(1);
+        }
+
+        @Override
+        public void publish(Blob blob) {
+            // verify
+            try {
+                assertProcessInterruptStatusInOutputFile();
+            } catch (InvalidFormatException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        protected void assertProcessInterruptStatusInOutputFile() throws InvalidFormatException, IOException {
+            // reload and assert we have the expected error message
+            try {
+                IExcelBuilder v = new ExcelBuilder();
+                Workbook workbook = v.load(testFile);
+                String txt = get(workbook, 1, AclExcelLayoutBuilder.STATUS_ROW, AclExcelLayoutBuilder.STATUS_COL);
+                failed = txt == null || txt.contains(ProcessorStatus.ERROR_TOO_LONG_PROCESS.toString());
+            } finally {
+                published.countDown();
+            }
+        }
+
+        private static boolean await(int delay) throws InterruptedException {
+            return published.await(delay, TimeUnit.MINUTES);
+        }
+    }
+
     @Inject
     CoreSession session;
 
@@ -83,7 +122,8 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
 
     private final static Log log = LogFactory.getLog(TestAclProcessingExceedingTimeout.class);
 
-    protected static File testFile = new File(folder + TestAclProcessingExceedingTimeout.class.getSimpleName() + ".xls");
+    protected static File testFile = new File(
+            folder + TestAclProcessingExceedingTimeout.class.getSimpleName() + ".xls");
 
     @Test
     public void testTimeout() throws Exception {
@@ -99,6 +139,7 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
         session.save();
         log.debug("done building test data");
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         // cancel lots of fulltext work
         eventService.waitForAsyncCompletion(60 * 1000); // 1min
         log.debug("done initial async work");
@@ -108,40 +149,16 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
         String wname = "test-process-too-long";
         int testTimeout = DataProcessorPaginated.EXCEL_RENDERING_RESERVED_TIME + 1;// s
 
-        IResultPublisher publisher = new IResultPublisher() {
-            private static final long serialVersionUID = 1L;
+        AssertProcessInterruptStatusInOutputFile publisher = new AssertProcessInterruptStatusInOutputFile();
+        Work work = new AclAuditWork(wname, session.getRepositoryName(), root.getId(), testFile, publisher,
+                testTimeout);
 
-            @Override
-            public void publish(Blob blob) {
-                // verify
-                try {
-                    assertProcessInterruptStatusInOutputFile();
-                } catch (InvalidFormatException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
-        Work work = new AclAuditWork(wname, session.getRepositoryName(), root.getId(), testFile, publisher, testTimeout);
-
-        // Go!
         workManager.schedule(work, true);
-
-        eventService.waitForAsyncCompletion(2 * 60 * 1000);
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
+
+        AssertProcessInterruptStatusInOutputFile.await(2);
+        Assertions.assertThat(AssertProcessInterruptStatusInOutputFile.failed).isFalse();
     }
 
-    protected void assertProcessInterruptStatusInOutputFile() throws InvalidFormatException, IOException {
-        // reload and assert we have the expected error message
-        IExcelBuilder v = new ExcelBuilder();
-        Workbook workbook = v.load(testFile);
-        String txt = get(workbook, 1, AclExcelLayoutBuilder.STATUS_ROW, AclExcelLayoutBuilder.STATUS_COL);
-        if (txt != null) {
-            assertTrue("assert we found an error message",
-                    txt.contains(ProcessorStatus.ERROR_TOO_LONG_PROCESS.toString()));
-        } else {
-            fail("no text string available at expected cell");
-        }
-    }
 }

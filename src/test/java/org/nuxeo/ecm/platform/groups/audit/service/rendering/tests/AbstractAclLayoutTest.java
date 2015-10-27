@@ -29,13 +29,11 @@ public class AbstractAclLayoutTest {
         return makeItem(session, path, name, "Folder", save);
     }
 
-    protected DocumentModel makeFolder(CoreSession session, String path, String name) throws
-            PropertyException {
+    protected DocumentModel makeFolder(CoreSession session, String path, String name) throws PropertyException {
         return makeItem(session, path, name, "Folder", true);
     }
 
-    protected DocumentModel makeDoc(CoreSession session, String path, String name) throws
-            PropertyException {
+    protected DocumentModel makeDoc(CoreSession session, String path, String name) throws PropertyException {
         return makeItem(session, path, name, "Document", true);
     }
 
@@ -43,8 +41,9 @@ public class AbstractAclLayoutTest {
             throws PropertyException {
         DocumentModel folder = session.createDocumentModel(path, name, type);
         folder = session.createDocument(folder);
-        if (save)
+        if (save) {
             session.saveDocument(folder);
+        }
         return folder;
     }
 
@@ -60,8 +59,7 @@ public class AbstractAclLayoutTest {
         return newUser;
     }
 
-    protected void addAcl(CoreSession session, DocumentModel doc, String userOrGroup, String right, boolean allow)
-            {
+    protected void addAcl(CoreSession session, DocumentModel doc, String userOrGroup, String right, boolean allow) {
         addAcl(session, doc, userOrGroup, right, allow, false);
     }
 
@@ -74,14 +72,14 @@ public class AbstractAclLayoutTest {
         session.saveDocument(doc);
     }
 
-    protected void addAclLockInheritance(CoreSession session, DocumentModel doc, String userOrGroup, boolean save)
-            {
+    protected void addAclLockInheritance(CoreSession session, DocumentModel doc, String userOrGroup, boolean save) {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();// local
         acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
         doc.setACP(acp, true);
-        if (save)
+        if (save) {
             session.saveDocument(doc);
+        }
     }
 
     /* BUILD DOC TREE */
@@ -117,8 +115,9 @@ public class AbstractAclLayoutTest {
             addAcl(session, folder, group, SecurityConstants.WRITE_SECURITY, true, save);
 
             // final rule with lock inherit
-            if (currentDepth != 0 && currentDepth % MOD == 0)
+            if (currentDepth != 0 && currentDepth % MOD == 0) {
                 addAclLockInheritance(session, folder, group, save);
+            }
         }
 
         // generate children folders
@@ -154,13 +153,14 @@ public class AbstractAclLayoutTest {
             return folder;
         }
         // or end recursion
-        else
+        else {
             return folder;
+        }
     }
 
     /* */
 
-    protected String get(Workbook w, int s, int r, int c) {
+    protected static String get(Workbook w, int s, int r, int c) {
         Sheet sheet = w.getSheetAt(s);
         if (sheet != null) {
             Row row = sheet.getRow(r);
