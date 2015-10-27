@@ -127,17 +127,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         return defs;
     }
 
-    protected boolean canUseRenditionDefinition(RenditionDefinition renditionDefinition, DocumentModel doc) {
-        ActionManager actionService = Framework.getService(ActionManager.class);
-        return actionService.checkFilters(renditionDefinition.getFilterIds(), createActionContext(doc));
-    }
-
-    protected ActionContext createActionContext(DocumentModel doc) {
-        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
-        actionContext.setCurrentDocument(doc);
-        return actionContext;
-    }
-
     @Override
     public DocumentRef storeRendition(DocumentModel source, String renditionDefinitionName) {
         Rendition rendition = getRendition(source, renditionDefinitionName, true);

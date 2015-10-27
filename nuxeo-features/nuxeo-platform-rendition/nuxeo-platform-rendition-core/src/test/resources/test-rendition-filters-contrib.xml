@@ -25,6 +25,15 @@
       </filters>
     </renditionDefinition>
 
+    <renditionDefinition name="renditionOnlyForFolder">
+      <label>label.rendition.for.note</label>
+      <operationChain>Dummy</operationChain>
+      <allowEmptyBlob>true</allowEmptyBlob>
+      <filters>
+        <filter-id>view_content</filter-id>
+      </filters>
+    </renditionDefinition>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -45,6 +54,13 @@
     <filter id="unauthorized">
       <rule grant="false">
         <condition>#{currentDocument.dc.rights == "Unauthorized"}</condition>
+      </rule>
+    </filter>
+
+    <filter id="view_content">
+      <rule grant="true">
+        <permission>ReadChildren</permission>
+        <facet>Folderish</facet>
       </rule>
     </filter>
 

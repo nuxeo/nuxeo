@@ -722,6 +722,11 @@ public class TestRenditionService {
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
         assertEquals(6, availableRenditionDefinitions.size());
 
+        doc = session.createDocumentModel("/", "folder", "Folder");
+        doc = session.createDocument(doc);
+        availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertEquals(7, availableRenditionDefinitions.size());
+
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_FILTERS_COMPONENT_LOCATION);
     }
 
@@ -743,6 +748,11 @@ public class TestRenditionService {
         session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
         assertEquals(6, availableRenditionDefinitions.size());
+
+        doc = session.createDocumentModel("/", "folder", "Folder");
+        doc = session.createDocument(doc);
+        availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertEquals(8, availableRenditionDefinitions.size());
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION);
     }
