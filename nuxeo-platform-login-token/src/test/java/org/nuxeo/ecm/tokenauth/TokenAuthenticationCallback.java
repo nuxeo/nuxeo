@@ -22,6 +22,7 @@ import java.util.Map;
 import org.nuxeo.ecm.automation.client.TokenCallback;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Callback for token authentication.
@@ -82,8 +83,14 @@ public class TokenAuthenticationCallback implements TokenCallback {
 
         try {
             TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
-            return tokenAuthenticationService.acquireToken(userName, applicationName, deviceId, deviceDescription,
-                    permission);
+            String remoteToken = tokenAuthenticationService.acquireToken(userName, applicationName, deviceId,
+                    deviceDescription, permission);
+            // commit transaction so that token is committed in remote directory
+            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
+            }
+            return remoteToken;
         } catch (TokenAuthenticationException e) {
             e.addInfo("Error while trying to get remote token");
             throw e;
