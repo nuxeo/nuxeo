@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -31,10 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.platform.actions.ActionContext;
-import org.nuxeo.ecm.platform.actions.ELActionContext;
-import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
-import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
@@ -125,17 +120,6 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
 
         // XXX what about "lost renditions" ?
         return defs;
-    }
-
-    protected boolean canUseRenditionDefinition(RenditionDefinition renditionDefinition, DocumentModel doc) {
-        ActionManager actionService = Framework.getService(ActionManager.class);
-        return actionService.checkFilters(renditionDefinition.getFilterIds(), createActionContext(doc));
-    }
-
-    protected ActionContext createActionContext(DocumentModel doc) {
-        ActionContext actionContext = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
-        actionContext.setCurrentDocument(doc);
-        return actionContext;
     }
 
     @Override

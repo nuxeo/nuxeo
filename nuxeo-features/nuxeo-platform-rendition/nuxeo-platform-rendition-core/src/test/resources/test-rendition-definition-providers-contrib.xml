@@ -21,6 +21,13 @@
       </filters>
     </renditionDefinitionProvider>
 
+    <renditionDefinitionProvider name="dummyRenditionDefinitionProviderForFolder"
+      class="org.nuxeo.ecm.platform.rendition.service.DummyRenditionDefinitionProvider">
+      <filters>
+        <filter-id>view_content</filter-id>
+      </filters>
+    </renditionDefinitionProvider>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -41,6 +48,13 @@
     <filter id="unauthorized">
       <rule grant="false">
         <condition>#{currentDocument.dc.rights == "Unauthorized"}</condition>
+      </rule>
+    </filter>
+
+    <filter id="view_content">
+      <rule grant="true">
+        <permission>ReadChildren</permission>
+        <facet>Folderish</facet>
       </rule>
     </filter>
 

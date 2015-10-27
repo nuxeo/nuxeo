@@ -74,8 +74,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RenditionFeature.class)
-@LocalDeploy({
-        "org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml",
+@LocalDeploy({ "org.nuxeo.ecm.platform.rendition.core:test-rendition-contrib.xml",
         "org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml" })
 public class TestRenditionService {
 
@@ -115,16 +114,20 @@ public class TestRenditionService {
         assertFalse(renditionDefinitions.isEmpty());
         assertEquals(8, renditionDefinitions.size());
 
-        RenditionDefinition rd = renditionDefinitions.stream().filter(
-                renditionDefinition -> PDF_RENDITION_DEFINITION.equals(renditionDefinition.getName())).findFirst().get();
+        RenditionDefinition rd = renditionDefinitions.stream()
+                                                     .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(renditionDefinition.getName()))
+                                                     .findFirst()
+                                                     .get();
         assertNotNull(rd);
         assertEquals(PDF_RENDITION_DEFINITION, rd.getName());
         assertEquals("blobToPDF", rd.getOperationChain());
         assertEquals("label.rendition.pdf", rd.getLabel());
         assertTrue(rd.isEnabled());
 
-        rd = renditionDefinitions.stream().filter(
-                renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(renditionDefinition.getName())).findFirst().get();
+        rd = renditionDefinitions.stream()
+                                 .filter(renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(renditionDefinition.getName()))
+                                 .findFirst()
+                                 .get();
         assertNotNull(rd);
         assertEquals("renditionDefinitionWithCustomOperationChain", rd.getName());
         assertEquals("Dummy", rd.getOperationChain());
@@ -407,7 +410,6 @@ public class TestRenditionService {
         return folder;
     }
 
-
     @Test
     public void testRenderAProxyDocument() {
         DocumentModel file = createBlobFile();
@@ -526,8 +528,7 @@ public class TestRenditionService {
             renditionService.storeRendition(folder, PDF_RENDITION_DEFINITION);
             fail();
         } catch (NuxeoException e) {
-            assertTrue(e.getMessage(),
-                    e.getMessage().startsWith("Rendition pdf not available"));
+            assertTrue(e.getMessage(), e.getMessage().startsWith("Rendition pdf not available"));
         }
     }
 
@@ -620,8 +621,8 @@ public class TestRenditionService {
         assertTrue(rendition.getBlob().getString().contains(desc));
 
         // verify the thread renditions
-        List<Rendition> renditions = Arrays.asList(
-                new Rendition[] { t1.getDetachedRendition(), t2.getDetachedRendition() });
+        List<Rendition> renditions = Arrays.asList(new Rendition[] { t1.getDetachedRendition(),
+                t2.getDetachedRendition() });
         for (Rendition rend : renditions) {
             assertNotNull(rend);
             assertTrue(rend.isStored());
@@ -722,6 +723,11 @@ public class TestRenditionService {
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
         assertEquals(6, availableRenditionDefinitions.size());
 
+        doc = session.createDocumentModel("/", "folder", "Folder");
+        doc = session.createDocument(doc);
+        availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertEquals(7, availableRenditionDefinitions.size());
+
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_FILTERS_COMPONENT_LOCATION);
     }
 
@@ -743,6 +749,11 @@ public class TestRenditionService {
         session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
         assertEquals(6, availableRenditionDefinitions.size());
+
+        doc = session.createDocumentModel("/", "folder", "Folder");
+        doc = session.createDocument(doc);
+        availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertEquals(8, availableRenditionDefinitions.size());
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION);
     }
