@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -36,6 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 public class LoginScreenConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
     @XNodeList(value = "loginProviders/loginProvider", type = ArrayList.class, componentType = LoginProviderLink.class)
     protected List<LoginProviderLink> providers;
 
@@ -56,6 +58,9 @@ public class LoginScreenConfig implements Serializable {
      */
     @XNode("videos@loop")
     protected Boolean loop;
+
+    @XNode("removeNews")
+    protected Boolean removeNews = false;
 
     protected String headerStyle;
 
@@ -169,6 +174,9 @@ public class LoginScreenConfig implements Serializable {
         if (newConfig.loop != null) {
             loop = newConfig.loop;
         }
+        if (newConfig.removeNews) {
+            removeNews = newConfig.removeNews;
+        }
         if (newConfig.muted != null) {
             muted = newConfig.muted;
         }
@@ -272,10 +280,7 @@ public class LoginScreenConfig implements Serializable {
     }
 
     public boolean getDisplayNews() {
-        if (newsIframeUrl == null || newsIframeUrl.isEmpty()) {
-            return false;
-        }
-        return true;
+        return !(removeNews || StringUtils.isBlank(newsIframeUrl));
     }
 
     public Boolean getFieldAutocomplete() {
