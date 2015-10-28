@@ -48,10 +48,6 @@ public class MockDropboxBlobProvider extends DropboxBlobProvider {
     public static final Pattern DOWNLOAD_PAT = Pattern.compile("http://example.com/download/(.*)");
 
     @Override
-    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
-    }
-
-    @Override
     protected InputStream doGet(URI uri) throws IOException {
         Matcher m = DOWNLOAD_PAT.matcher(uri.toString());
         if (m.matches()) {

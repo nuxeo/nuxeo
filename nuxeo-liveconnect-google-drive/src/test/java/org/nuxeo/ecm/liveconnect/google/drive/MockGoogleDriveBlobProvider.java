@@ -49,10 +49,6 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
     public static final Pattern DOWNLOAD_PAT = Pattern.compile("http://example.com/download/(.*)");
 
     @Override
-    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
-    }
-
-    @Override
     protected App getApp(String user, String appId) throws IOException {
         return getData(String.format(APP_FMT, appId), App.class);
     }

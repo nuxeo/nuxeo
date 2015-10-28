@@ -32,9 +32,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
-import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.cache.Cache;
@@ -64,11 +64,9 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @since 7.3
  */
-public class DropboxBlobProvider implements BlobProvider, BatchUpdateBlobProvider {
+public class DropboxBlobProvider extends AbstractBlobProvider implements BatchUpdateBlobProvider {
 
     private static final Log log = LogFactory.getLog(DropboxBlobProvider.class);
-
-    public static final String PREFIX = "dropbox";
 
     private static final String APPLICATION_NAME = "Nuxeo/0";
 
@@ -82,10 +80,6 @@ public class DropboxBlobProvider implements BlobProvider, BatchUpdateBlobProvide
     private Cache fileCache;
 
     @Override
-    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
-    }
-
-    @Override
     public void close() {
     }
 
@@ -95,8 +89,8 @@ public class DropboxBlobProvider implements BlobProvider, BatchUpdateBlobProvide
     }
 
     @Override
-    public boolean supportsWrite() {
-        return false;
+    public boolean supportsUserUpdate() {
+        return supportsUserUpdateDefaultTrue();
     }
 
     @Override
@@ -188,7 +182,7 @@ public class DropboxBlobProvider implements BlobProvider, BatchUpdateBlobProvide
         String user = getUser(fileInfo);
         String filePath = getFilePath(fileInfo);
         DbxEntry.File file = getFile(user, filePath);
-        String key = String.format("%s:%s:%s", PREFIX, user, filePath);
+        String key = String.format("%s:%s:%s", blobProviderId, user, filePath);
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = key;
         blobInfo.filename = file.name;
@@ -303,7 +297,7 @@ public class DropboxBlobProvider implements BlobProvider, BatchUpdateBlobProvide
 
     protected DropboxOAuth2ServiceProvider getOAuth2Provider() {
         return (DropboxOAuth2ServiceProvider) Framework.getLocalService(
-            OAuth2ServiceProviderRegistry.class).getProvider(PREFIX);
+            OAuth2ServiceProviderRegistry.class).getProvider(blobProviderId);
     }
 
     private String getMimetypeFromFilename(String filename) {
@@ -357,8 +351,8 @@ public class DropboxBlobProvider implements BlobProvider, BatchUpdateBlobProvide
     }
 
     @Override
-    public String getBlobPrefix() {
-        return PREFIX;
+    public String getBlobProviderId() {
+        return blobProviderId;
     }
 
 }

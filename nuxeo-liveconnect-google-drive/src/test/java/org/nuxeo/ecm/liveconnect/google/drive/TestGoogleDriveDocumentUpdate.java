@@ -21,7 +21,6 @@ package org.nuxeo.ecm.liveconnect.google.drive;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobProvider.PREFIX;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +40,9 @@ import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestGoogleDriveDocumentUpdate extends GoogleDriveTestCase {
+
+    // same as in test XML contrib
+    private static final String PREFIX = "googledrive";
 
     private static final String TEST_FILE_NAME = "GoogleDriveFile";
 

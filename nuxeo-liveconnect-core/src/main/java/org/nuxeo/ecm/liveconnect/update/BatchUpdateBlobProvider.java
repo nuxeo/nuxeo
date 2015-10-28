@@ -68,7 +68,7 @@ public interface BatchUpdateBlobProvider {
 
     String getPageProviderNameForUpdate();
 
-    String getBlobPrefix();
+    String getBlobProviderId();
 
     /**
      * Trigger the documents update for the implementing providers.
@@ -103,7 +103,7 @@ public interface BatchUpdateBlobProvider {
                         docIds.add(doc.getId());
                     }
                     BlobProviderDocumentsUpdateWork work = new BlobProviderDocumentsUpdateWork(
-                            getBlobPrefix() + ":" + repositoryName + ":" + offset, getBlobPrefix());
+                            getBlobProviderId() + ":" + repositoryName + ":" + offset, getBlobProviderId());
                     work.setDocuments(repositoryName, docIds);
                     workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
                     offset += maxResult;

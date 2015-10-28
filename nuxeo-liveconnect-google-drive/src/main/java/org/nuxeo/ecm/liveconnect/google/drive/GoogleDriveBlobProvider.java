@@ -42,9 +42,9 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
-import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
@@ -81,7 +81,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @since 7.3
  */
-public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobProvider {
+public class GoogleDriveBlobProvider extends AbstractBlobProvider implements BatchUpdateBlobProvider {
 
     private static final String GOOGLEDRIVE_DOCUMENT_TO_BE_UPDATED_PP = "googledrive_document_to_be_updated";
 
@@ -105,8 +105,6 @@ public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobPro
             this.revisionId = revisionId;
         }
     }
-
-    public static final String PREFIX = "googledrive";
 
     private static final String APPLICATION_NAME = "Nuxeo/0";
 
@@ -144,10 +142,7 @@ public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobPro
 
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
-        if (!PREFIX.equals(blobProviderId)) {
-            // TODO avoid this by passing a parameter to the GoogleDriveBlobUploader when constructed
-            throw new IllegalArgumentException("Must be registered for name: " + PREFIX + ", not: " + blobProviderId);
-        }
+        super.initialize(blobProviderId, properties);
         // Validate service account configuration
         serviceAccountId = properties.get(SERVICE_ACCOUNT_ID_PROP);
         if (StringUtils.isBlank(serviceAccountId)) {
@@ -178,8 +173,8 @@ public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobPro
     }
 
     @Override
-    public boolean supportsWrite() {
-        return false;
+    public boolean supportsUserUpdate() {
+        return supportsUserUpdateDefaultTrue();
     }
 
     @Override
@@ -564,7 +559,7 @@ public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobPro
 
     /** Adds the prefix to the key. */
     protected String getKey(FileInfo fileInfo) {
-        return PREFIX + ':' + fileInfo.user + ':' + fileInfo.fileId
+        return blobProviderId + ':' + fileInfo.user + ':' + fileInfo.fileId
                 + (fileInfo.revisionId == null ? "" : ':' + fileInfo.revisionId);
     }
 
@@ -589,7 +584,7 @@ public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobPro
 
     protected CredentialFactory getCredentialFactory() {
         OAuth2ServiceProvider provider = Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(
-                PREFIX);
+                blobProviderId);
         if (provider != null && provider.isEnabled()) {
             // Web application configuration
             return new OAuth2CredentialFactory(provider);
@@ -719,7 +714,7 @@ public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobPro
     }
 
     protected OAuth2ServiceProvider getOAuth2Provider() {
-        return Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(PREFIX);
+        return Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(blobProviderId);
     }
 
     @Override
@@ -755,8 +750,8 @@ public class GoogleDriveBlobProvider implements BlobProvider, BatchUpdateBlobPro
     }
 
     @Override
-    public String getBlobPrefix() {
-        return PREFIX;
+    public String getBlobProviderId() {
+        return blobProviderId;
     }
 
     @Override

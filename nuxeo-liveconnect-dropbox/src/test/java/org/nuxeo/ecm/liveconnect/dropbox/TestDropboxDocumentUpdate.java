@@ -40,6 +40,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestDropboxDocumentUpdate extends DropboxTestCase {
 
+    // same as in test XML contrib
+    private static final String PREFIX = "dropbox";
+
     private static final String TEST_FILE_NAME = "DropboxDriveFile";
 
     @Inject
@@ -60,7 +63,7 @@ public class TestDropboxDocumentUpdate extends DropboxTestCase {
         for (int i = 0; i < DropboxBlobProvider.MAX_RESULT + 10; i++) {
             DocumentModel testFile = session.createDocumentModel("/testWorkspace", TEST_FILE_NAME + i, "File");
             BlobInfo blobInfo = new BlobInfo();
-            blobInfo.key = DropboxBlobProvider.PREFIX + ":" + USERID + ":" + FILENAME_PDF;
+            blobInfo.key = PREFIX + ":" + USERID + ":" + FILENAME_PDF;
             blobInfo.digest = "pouet";
             SimpleManagedBlob blob = new SimpleManagedBlob(blobInfo);
             testFile.setPropertyValue("content", blob);

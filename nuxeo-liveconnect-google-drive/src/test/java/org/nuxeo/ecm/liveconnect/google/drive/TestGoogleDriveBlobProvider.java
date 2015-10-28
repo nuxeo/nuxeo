@@ -17,10 +17,10 @@
 package org.nuxeo.ecm.liveconnect.google.drive;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobProvider.PREFIX;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,8 +45,15 @@ import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
+
+    // same as in test XML contrib
+    private static final String PREFIX = "googledrive";
+
+    @Inject
+    protected RuntimeHarness harness;
 
     @Inject
     protected BlobManager blobManager;
@@ -60,6 +67,21 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         // linked to the blob (native Google documents)
         blobInfo.digest = UUID.randomUUID().toString();
         return blobInfo;
+    }
+
+    @Test
+    public void testSupportsUserUpdate() throws Exception {
+        BlobProvider blobProvider = blobManager.getBlobProvider(PREFIX);
+        assertTrue(blobProvider.supportsUserUpdate());
+
+        // check that we can prevent user updates of blobs by configuration
+        harness.deployContrib("org.nuxeo.ecm.liveconnect.google.drive.test", "OSGI-INF/test-googledrive-config2.xml");
+        try {
+            blobProvider = blobManager.getBlobProvider(PREFIX);
+            assertFalse(blobProvider.supportsUserUpdate());
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.liveconnect.google.drive.test", "OSGI-INF/test-googledrive-config2.xml");
+        }
     }
 
     @Test
@@ -130,7 +152,7 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         blobInfo.key = PREFIX + ":" + USERID + ":" + JPEG_FILEID;
         ManagedBlob blob = new SimpleManagedBlob(blobInfo);
 
-        BlobProvider provider = blobManager.getBlobProvider(GoogleDriveBlobProvider.PREFIX);
+        BlobProvider provider = blobManager.getBlobProvider(PREFIX);
         List<AppLink> appLinks = provider.getAppLinks(USERNAME, blob);
 
         assertEquals(2, appLinks.size());

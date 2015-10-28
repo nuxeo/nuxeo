@@ -60,9 +60,10 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     // restrict sign-in to accounts at this domain
     public static final String GOOGLE_DOMAIN_PROP = "nuxeo.google.domain";
 
-    protected String clientId;
+    protected final String id;
 
-    public GoogleDriveBlobUploader() {
+    public GoogleDriveBlobUploader(String id) {
+        this.id = id;
         try {
             getGoogleDriveBlobProvider();
         } catch (NuxeoException e) {
@@ -228,7 +229,7 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
 
     protected GoogleDriveBlobProvider getGoogleDriveBlobProvider() {
         return (GoogleDriveBlobProvider) Framework.getService(BlobManager.class)
-            .getBlobProvider(GoogleDriveBlobProvider.PREFIX);
+            .getBlobProvider(id);
     }
 
     protected String getGoogleDomain() {

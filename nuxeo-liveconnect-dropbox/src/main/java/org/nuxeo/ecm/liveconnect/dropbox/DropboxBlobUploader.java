@@ -61,7 +61,10 @@ public class DropboxBlobUploader implements JSFBlobUploader {
 
     public static final String UPLOAD_DROPBOX_FACET_NAME = "uploadDropbox";
 
-    public DropboxBlobUploader() {
+    protected final String id;
+
+    public DropboxBlobUploader(String id) {
+        this.id = id;
         try {
             getDropboxBlobProvider();
         } catch (NuxeoException e) {
@@ -234,8 +237,7 @@ public class DropboxBlobUploader implements JSFBlobUploader {
     }
 
     protected DropboxBlobProvider getDropboxBlobProvider() {
-        return (DropboxBlobProvider) Framework.getService(BlobManager.class).getBlobProvider(
-            DropboxBlobProvider.PREFIX);
+        return (DropboxBlobProvider) Framework.getService(BlobManager.class).getBlobProvider(id);
     }
 
     /**
