@@ -27,6 +27,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
@@ -37,6 +39,8 @@ import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
 public class UIDirectorySelectItems extends UISelectItems {
+
+    private static final Log log = LogFactory.getLog(UIDirectorySelectItems.class);
 
     public static final String COMPONENT_TYPE = UIDirectorySelectItems.class.getName();
 
@@ -260,10 +264,13 @@ public class UIDirectorySelectItems extends UISelectItems {
                 // now
                 String defaultPattern = "label_en";
                 String pattern = "label_" + locale.getLanguage();
-                if (docEntry.getProperties(schema).containsKey(pattern)) {
-                    label = (String) docEntry.getProperties(schema).get(pattern);
-                } else {
-                    label = (String) docEntry.getProperties(schema).get(defaultPattern);
+                label = (String) docEntry.getProperty(schema, pattern);
+                if (StringUtils.isBlank(label)) {
+                    label = (String) docEntry.getProperty(schema, defaultPattern);
+                }
+                if (StringUtils.isBlank(label)) {
+                    label = docEntry.getId();
+                    log.warn("Could not find label column for entry " + label + " (falling back on entry id)");
                 }
             } else {
                 label = (String) docEntry.getProperties(schema).get("label");
