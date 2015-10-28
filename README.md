@@ -11,8 +11,7 @@ page.
 
 The rest of this README is for developers that are maintaining this
 module according to Crowdin translation files. Note there is some
-[tooling used to handle this
-module](https://github.com/nuxeo/tools-nuxeo-crowdin/).
+[tooling used to handle this module](https://github.com/nuxeo/tools-nuxeo-crowdin/).
 
 ## WARNING
 
@@ -71,7 +70,7 @@ codename for your language, and reference it in the crowdin.ini file.
 Here's the resolving order when looking for a label in Brazilian for
 instance.
 
-messages_pt_BR.properties -> messages_pt_PT.properties -> messages_en.properties -> messages.properties
+    messages_pt_BR.properties -> messages_pt_PT.properties -> messages_en.properties -> messages.properties
 
 Brazilian is a 'dialect' of Portuguese, so there is first a fallback
 on Portuguese, then a fallback to the default language of the
@@ -79,16 +78,13 @@ application ("en" for Nuxeo) then to messages.properties.
 
 Most of the fallback is actually handled directly by Crowdin, the tool
 we use for translations. When downloading a file from Crowdin, like
-messages_pt_BR.properties for instance, the missing labels will be
-replaced by the ones from file messages_pt_PT.properties (if it
+`messages_pt_BR.properties` for instance, the missing labels will be
+replaced by the ones from file `messages_pt_PT.properties` (if it
 exists), then by the reference English file used by Crowdin. This is
 why you'll see English translations by default in some non-English
 files.
 
-What's with these 2 letter files like messages_pt.properties? Well
-those are actually an automatic copy of the four letter version. It's
-only here to have a two letter fallback when browsers language are set
-to a two letter format. So you are not suppose to modify them, ever.
+What's with these two letter files like `messages_pt.properties`? Those are actually an automatic copy of the four letter version, purposed to provide a fallback when browser language is set to a two letter format. So you are not supposed to modify them, ever.
 
 
 ## How to add custom translations to an existing language?
