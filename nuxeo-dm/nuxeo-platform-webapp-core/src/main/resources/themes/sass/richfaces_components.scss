@@ -111,13 +111,10 @@ img.rf-cal-btn {
 }
 
 .nx-page .menu a.treeLink {
-  // Fix Chrome bug on word-break
   word-break: break-word;
 }
 
 .nx-page .rf-trn a.treeLink {
-  // standard word-break rule
-  word-break: keep-all;
   margin-left: -.3em;
 }
 
