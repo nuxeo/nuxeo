@@ -91,6 +91,11 @@ public class DirectoryTest extends BaseTest {
         }
     }
 
+    protected void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+    }
+
     @Test
     public void itCanQueryDirectoryEntry() throws Exception {
         // Given a directoryEntry
@@ -134,6 +139,7 @@ public class DirectoryTest extends BaseTest {
         // Then the entry is updated
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
+        nextTransaction(); // see committed changes
         docEntry = dirSession.getEntry("test1");
         assertEquals("newlabel", docEntry.getPropertyValue("vocabulary:label"));
 
@@ -154,6 +160,7 @@ public class DirectoryTest extends BaseTest {
         // Then the entry is updated
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
+        nextTransaction(); // see committed changes
         docEntry = dirSession.getEntry("newtest");
         assertEquals("newlabel", docEntry.getPropertyValue("vocabulary:label"));
 
@@ -169,6 +176,7 @@ public class DirectoryTest extends BaseTest {
         getResponse(RequestType.DELETE, "/directory/" + TESTDIRNAME + "/" + docEntry.getId());
 
         // Then the entry is deleted
+        nextTransaction(); // see committed changes
         assertNull(dirSession.getEntry("test2"));
 
     }

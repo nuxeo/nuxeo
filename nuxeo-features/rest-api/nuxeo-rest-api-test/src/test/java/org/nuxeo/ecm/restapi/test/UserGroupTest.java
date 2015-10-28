@@ -60,6 +60,11 @@ public class UserGroupTest extends BaseUserTest {
     @Inject
     UserManager um;
 
+    protected void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+    }
+
     @Test
     public void itCanFetchAUser() throws Exception {
         // Given the user1
@@ -105,6 +110,7 @@ public class UserGroupTest extends BaseUserTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEqualsUser("user1", "Paul", "McCartney", node);
 
+        nextTransaction(); // see committed changes
         user = um.getPrincipal("user1");
         assertEquals("Paul", user.getFirstName());
         assertEquals("McCartney", user.getLastName());
@@ -122,6 +128,7 @@ public class UserGroupTest extends BaseUserTest {
         // Then the user is deleted
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
+        nextTransaction(); // see committed changes
         user = um.getPrincipal("user1");
         assertNull(user);
 
@@ -182,6 +189,7 @@ public class UserGroupTest extends BaseUserTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Then the group is modified server side
+        nextTransaction(); // see committed changes
         group = um.getGroup("group1");
         assertEquals("modifiedGroup", group.getLabel());
         assertEquals(2, group.getMemberUsers().size());
@@ -234,6 +242,7 @@ public class UserGroupTest extends BaseUserTest {
 
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
+        nextTransaction(); // see committed changes
         principal = um.getPrincipal(principal.getName());
         assertTrue(principal.isMemberOf(group.getName()));
 
@@ -252,6 +261,7 @@ public class UserGroupTest extends BaseUserTest {
 
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
+        nextTransaction(); // see committed changes
         principal = um.getPrincipal(principal.getName());
         assertTrue(principal.isMemberOf(group.getName()));
     }
