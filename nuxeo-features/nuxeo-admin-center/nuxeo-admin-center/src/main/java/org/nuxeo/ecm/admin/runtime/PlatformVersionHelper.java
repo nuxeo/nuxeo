@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,9 +17,7 @@
  */
 package org.nuxeo.ecm.admin.runtime;
 
-import org.nuxeo.connect.connector.fake.FakeDownloadablePackage;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
-import org.nuxeo.connect.update.Version;
 import org.nuxeo.runtime.api.Framework;
 
 public class PlatformVersionHelper {
@@ -58,20 +56,19 @@ public class PlatformVersionHelper {
     }
 
     /**
-     * @deprecated Since 6.0. Badly duplicates
-     *             {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(org.nuxeo.connect.update.Package, String)}
+     * @deprecated Since 6.0. Use {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(String[], String)}
+     * @see TargetPlatformFilterHelper
      */
     @Deprecated
-    public static boolean isCompatible(final String[] targetPlatforms2, String currentPlatform) {
-        return TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(new FakeDownloadablePackage("wrapper",
-                Version.ZERO) {
-            @Override
-            public String[] getTargetPlatforms() {
-                return targetPlatforms2;
-            }
-        }, currentPlatform);
+    public static boolean isCompatible(final String[] targetPlatforms, String currentPlatform) {
+        return TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(targetPlatforms, currentPlatform);
     }
 
+    /**
+     * @deprecated Since 6.0. Use {@link TargetPlatformFilterHelper#isCompatibleWithTargetPlatform(String[], String)}
+     * @see #getPlatformFilter()
+     * @see TargetPlatformFilterHelper
+     */
     @Deprecated
     public static boolean isCompatible(String[] targetPlatforms) {
         return isCompatible(targetPlatforms, getPlatformFilter());
