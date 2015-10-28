@@ -70,6 +70,8 @@ public class WorkTest {
         }
     }
 
+    static Monitor monitor;
+
     public void doTestWorkConcurrencyException(boolean explicitSave) throws Exception {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
@@ -79,20 +81,20 @@ public class WorkTest {
 
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
 
-        // the addChildWork gets retried so must pass the latches the second
-        // time, which is why we don't use a CyclicBarrier
-        CountDownLatch ready = new CountDownLatch(2);
-        CountDownLatch proceed = new CountDownLatch(2);
+        monitor = new Monitor();
+        try {
+            RemoveFolderWork removeFolderWork = new RemoveFolderWork();
+            AddChildWork addChildWork = new AddChildWork();
+            removeFolderWork.init(folder, explicitSave);
+            addChildWork.init(folder, explicitSave);
+            workManager.schedule(removeFolderWork);
+            workManager.schedule(addChildWork);
 
-        RemoveFolderWork removeFolderWork = new RemoveFolderWork();
-        AddChildWork addChildWork = new AddChildWork();
-        removeFolderWork.init(folder, ready, proceed, explicitSave);
-        addChildWork.init(folder, ready, proceed, explicitSave);
-        workManager.schedule(removeFolderWork);
-        workManager.schedule(addChildWork);
-
-        waitForAsyncCompletion();
-        assertEquals(Arrays.asList(Boolean.TRUE, Boolean.FALSE), addChildWork.existList);
+            waitForAsyncCompletion();
+            assertEquals(Arrays.asList(Boolean.TRUE, Boolean.FALSE), monitor.existList);
+        } finally {
+            monitor = null;
+        }
     }
 
     @Test
@@ -105,36 +107,23 @@ public class WorkTest {
         doTestWorkConcurrencyException(false);
     }
 
-    public static abstract class BaseWork extends AbstractWork {
-        private static final long serialVersionUID = 1L;
+    class Monitor {
 
-        protected CountDownLatch ready;
+        final CountDownLatch ready = new CountDownLatch(2);
 
-        protected CountDownLatch proceed;
+        final CountDownLatch proceed = new CountDownLatch(2);
 
-        protected boolean explicitSave;
+        List<Boolean> existList = new ArrayList<Boolean>();
 
-        public void init(DocumentModel folder, CountDownLatch ready, CountDownLatch proceed, boolean explicitSave) {
-            setDocument(folder.getRepositoryName(), folder.getId());
-            this.ready = ready;
-            this.proceed = proceed;
-            this.explicitSave = explicitSave;
-        }
-
-        @Override
-        public String getTitle() {
-            return getClass().getName();
-        }
-
-        protected void ready() {
+        void ready() {
             countDownAndAwait(ready);
         }
 
-        protected void proceed() {
+        void proceed() {
             countDownAndAwait(proceed);
         }
 
-        protected static void countDownAndAwait(CountDownLatch latch) {
+        void countDownAndAwait(CountDownLatch latch) {
             latch.countDown();
             try {
                 latch.await();
@@ -144,6 +133,24 @@ public class WorkTest {
                 throw new RuntimeException(e);
             }
         }
+
+    };
+
+    public static abstract class BaseWork extends AbstractWork {
+        private static final long serialVersionUID = 1L;
+
+        protected boolean explicitSave;
+
+        public void init(DocumentModel folder, boolean explicitSave) {
+            setDocument(folder.getRepositoryName(), folder.getId());
+            this.explicitSave = explicitSave;
+        }
+
+        @Override
+        public String getTitle() {
+            return getClass().getName();
+        }
+
     }
 
     /*
@@ -159,12 +166,12 @@ public class WorkTest {
         @Override
         public void work() {
             initSession();
-            ready();
+            monitor.ready();
             try {
                 DocumentRef ref = new IdRef(docId);
                 session.removeDocument(ref);
 
-                proceed();
+                monitor.proceed();
 
                 if (explicitSave) {
                     session.save();
@@ -181,8 +188,6 @@ public class WorkTest {
     public static class AddChildWork extends BaseWork {
         private static final long serialVersionUID = 1L;
 
-        public List<Boolean> existList = new ArrayList<Boolean>();
-
         @Override
         public int getRetryCount() {
             return 1;
@@ -191,16 +196,16 @@ public class WorkTest {
         @Override
         public void work() {
             initSession();
-            ready();
+            monitor.ready();
             try {
                 boolean exists = session.exists(new IdRef(docId));
-                existList.add(Boolean.valueOf(exists));
+                monitor.existList.add(Boolean.valueOf(exists));
                 if (!exists) {
                     // after a retry, the folder is really gone
                     return;
                 }
 
-                proceed();
+                monitor.proceed();
 
                 DocumentModel doc = session.createDocumentModel("/folder", "doc", "File");
                 doc = session.createDocument(doc);
