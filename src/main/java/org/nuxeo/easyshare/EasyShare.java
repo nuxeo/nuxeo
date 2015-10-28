@@ -17,6 +17,17 @@
 
 package org.nuxeo.easyshare;
 
+
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -38,16 +49,9 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
+
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 
 /**
  * The root entry for the WebEngine module.
@@ -109,7 +113,7 @@ public class EasyShare extends ModuleRoot {
             ctx.setInput(docShare);
 
             // Audit Log
-            Map<String, Object> params = new HashMap();
+            Map<String, Object> params = new HashMap<>();
             params.put("event", "Access");
             params.put("category", "Document");
             params.put("comment", "IP: " + request.getRemoteAddr());
@@ -146,15 +150,16 @@ public class EasyShare extends ModuleRoot {
           "ecm:mixinType != 'HiddenInNavigation' AND " +
           "ecm:mixinType != 'NotCollectionMember' AND " +
           "ecm:isCheckedInVersion = 0 AND " +
-          "ecm:currentLifeCycleState != 'deleted'";
+          "ecm:currentLifeCycleState != 'deleted'"
+          + "ORDER BY dc:title";
 
     } else if (SHARE_DOC_TYPE.equals(documentModel.getType())) {
       return "SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND " +
           "ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' " +
           "AND collectionMember:collectionIds/* = '" + documentModel.getId() + "'" +
-          "OR ecm:parentId = '" + documentModel.getId() + "'";
+          "OR ecm:parentId = '" + documentModel.getId() + "'"
+                  + "ORDER BY dc:title";
     }
-
     return null;
   }
 
@@ -163,11 +168,10 @@ public class EasyShare extends ModuleRoot {
     if (today.after(docShare.getProperty("dc:expired").getValue(Date.class))) {
 
       //Email notification
-      Map mail = new HashMap<>();
+      Map<String, Object> mail = new HashMap<>();
       sendNotification("easyShareExpired", docShare, mail);
 
       return false;
-
     }
     return true;
   }
@@ -237,10 +241,11 @@ public class EasyShare extends ModuleRoot {
               DocumentModel liveDoc = session.getSourceDocument(docRef);
               ctx.setInput(liveDoc);
               service.run(ctx, "Audit.Log", params);
+
             }
 
             // Email notification
-            Map mail = new HashMap<>();
+            Map<String, Object> mail = new HashMap<>();
             mail.put("filename", blob.getFilename());
             sendNotification("easyShareDownload", docShare, mail);
 
@@ -269,10 +274,10 @@ public class EasyShare extends ModuleRoot {
       try {
         log.debug("Easyshare: starting email");
         EmailHelper emailHelper = new EmailHelper();
-        Map<String, Object> mailProps = new Hashtable();
+        Map<String, Object> mailProps = new Hashtable<>();
         mailProps.put("mail.from", Framework.getProperty("mail.from", "system@nuxeo.com"));
         mailProps.put("mail.to", email);
-        mailProps.put("ip", this.request.getRemoteAddr());
+        mailProps.put("ip", request.getRemoteAddr());
         mailProps.put("docShare", docShare);
 
         try {
