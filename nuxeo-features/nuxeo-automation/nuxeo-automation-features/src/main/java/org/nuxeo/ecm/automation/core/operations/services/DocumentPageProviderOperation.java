@@ -143,6 +143,18 @@ public class DocumentPageProviderOperation {
     protected String sortBy;
 
     /**
+     * @since 7.10
+     */
+    @Param(name = "quotePatternParameters", required = false, description = "Quote query parameters if the query is specified")
+    protected boolean quotePatternParameters = true;
+
+    /**
+     * @since 7.10
+     */
+    @Param(name = "escapePatternParameters", required = false, description = "Escape query parameters if the query is specified")
+    protected boolean escapePatternParameters = true;
+
+    /**
      * @since 6.0
      */
     @Param(name = "sortOrder", required = false, description = "Sort order, " + "ASC or DESC", widget = Constants.W_OPTION, values = {
@@ -224,6 +236,8 @@ public class DocumentPageProviderOperation {
         if (query != null) {
             CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
             desc.setPattern(query);
+            desc.setQuotePatternParameters(quotePatternParameters);
+            desc.setEscapePatternParameters(escapePatternParameters);
             if (maxResults != null && !maxResults.isEmpty() && !maxResults.equals("-1")) {
                 // set the maxResults to avoid slowing down queries
                 desc.getProperties().put("maxResults", maxResults);

@@ -204,6 +204,20 @@ public abstract class BasePageProviderDescriptor {
     }
 
     /**
+     * @since 7.10
+     */
+    public void setQuotePatternParameters(boolean quotePatternParameters) {
+        this.quotePatternParameters = quotePatternParameters;
+    }
+
+    /**
+     * @since 7.10
+     */
+    public void setEscapePatternParameters(boolean escapePatternParameters) {
+        this.escapePatternParameters = escapePatternParameters;
+    }
+
+    /**
      * @since 6.0
      */
     @SuppressWarnings("unchecked")
