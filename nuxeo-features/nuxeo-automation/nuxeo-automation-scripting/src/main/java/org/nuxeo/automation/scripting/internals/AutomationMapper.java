@@ -86,7 +86,7 @@ public class AutomationMapper {
                 DocumentModelList docs = new DocumentModelListImpl();
                 List<?> l = (List<?>) entry;
                 for (Object item : l) {
-                    if (ctx.get(entryId) instanceof DocumentWrapper) {
+                    if (item instanceof DocumentWrapper) {
                         docs.add(((DocumentWrapper) item).getDoc());
                     }
                 }
