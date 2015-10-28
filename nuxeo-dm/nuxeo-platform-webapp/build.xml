@@ -25,7 +25,7 @@
   </target>
 
   <target name="build" depends="init">
-    <exec executable="grunt" failonerror="true" />
+    <exec executable="${cmd.grunt}" failonerror="true" />
   </target>
 
 </project>
