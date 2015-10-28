@@ -569,11 +569,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     }
 
     @Override
-    public boolean supportsWrite() {
-        return true;
-    }
-
-    @Override
     protected boolean isDirectDownload() {
         return directDownload;
     }

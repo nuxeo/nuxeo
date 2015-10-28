@@ -19,6 +19,7 @@ package org.nuxeo.ecm.blob;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,6 +35,7 @@ import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
@@ -121,6 +123,15 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     }
 
     @Override
+    public boolean supportsUserUpdate() {
+        return supportsUserUpdateDefaultTrue();
+    }
+
+    protected boolean supportsUserUpdateDefaultTrue() {
+        return !Boolean.parseBoolean(properties.get(PREVENT_USER_UPDATE));
+    }
+
+    @Override
     public URI getURI(ManagedBlob blob, BlobManager.UsageHint hint, HttpServletRequest servletRequest)
             throws IOException {
         if (hint != BlobManager.UsageHint.DOWNLOAD || !isDirectDownload()) {
@@ -142,11 +153,6 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
     protected URI getRemoteUri(String digest, ManagedBlob blob, HttpServletRequest servletRequest) throws IOException {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean supportsWrite() {
-        return true;
     }
 
     protected String getProperty(String propertyName) {
