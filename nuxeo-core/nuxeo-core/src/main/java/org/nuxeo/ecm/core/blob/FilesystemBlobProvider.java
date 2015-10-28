@@ -52,18 +52,16 @@ import org.nuxeo.ecm.core.model.Document;
  *
  * @since 7.10
  */
-public class FilesystemBlobProvider implements BlobProvider {
+public class FilesystemBlobProvider extends AbstractBlobProvider {
 
     public static final String ROOT_PROP = "root";
-
-    protected String blobProviderId;
 
     /** The root ending with /, or an empty string. */
     protected String root;
 
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
-        this.blobProviderId = blobProviderId;
+        super.initialize(blobProviderId, properties);
         root = properties.get(ROOT_PROP);
         if (StringUtils.isBlank(root)) {
             throw new NuxeoException(
@@ -101,8 +99,8 @@ public class FilesystemBlobProvider implements BlobProvider {
     }
 
     @Override
-    public boolean supportsWrite() {
-        return false;
+    public boolean supportsUserUpdate() {
+        return supportsUserUpdateDefaultFalse();
     }
 
     @Override

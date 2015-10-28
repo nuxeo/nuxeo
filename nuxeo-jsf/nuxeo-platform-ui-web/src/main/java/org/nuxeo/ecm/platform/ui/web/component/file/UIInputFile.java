@@ -45,6 +45,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.platform.ui.web.application.NuxeoResponseStateManagerImpl;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -442,20 +444,29 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     // rendering methods
 
-    protected List<String> getAvailableChoices(Object value, boolean temp) {
+    protected List<String> getAvailableChoices(Blob blob, boolean temp) {
         List<String> choices = new ArrayList<String>(3);
-        boolean hasFile = value != null;
         boolean isRequired = isRequired();
-        if (hasFile) {
+        if (blob != null) {
             choices.add(temp ? InputFileChoice.KEEP_TEMP : InputFileChoice.KEEP);
         } else if (!isRequired) {
             choices.add(InputFileChoice.NONE);
         }
-        for (JSFBlobUploader uploader : uploaderService.getJSFBlobUploaders()) {
-            choices.add(uploader.getChoice());
+        boolean allowUpdate = true;
+        if (blob != null) {
+            BlobManager blobManager = Framework.getService(BlobManager.class);
+            BlobProvider blobProvider = blobManager.getBlobProvider(blob);
+            if (blobProvider != null && !blobProvider.supportsUserUpdate()) {
+                allowUpdate = false;
+            }
         }
-        if (hasFile && !isRequired) {
-            choices.add(InputFileChoice.DELETE);
+        if (allowUpdate) {
+            for (JSFBlobUploader uploader : uploaderService.getJSFBlobUploaders()) {
+                choices.add(uploader.getChoice());
+            }
+            if (blob != null && !isRequired) {
+                choices.add(InputFileChoice.DELETE);
+            }
         }
         return choices;
     }

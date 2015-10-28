@@ -29,6 +29,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject(value = "blobprovider")
 public class BlobProviderDescriptor {
 
+    public static final String PREVENT_USER_UPDATE = "preventUserUpdate";
+
     @XNode("@name")
     public String name = "";
 

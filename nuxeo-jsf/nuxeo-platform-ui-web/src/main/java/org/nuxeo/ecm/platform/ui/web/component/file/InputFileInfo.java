@@ -47,7 +47,7 @@ public class InputFileInfo implements Serializable {
 
     protected Object choice;
 
-    protected Object blob;
+    protected Blob blob;
 
     protected Object filename;
 
@@ -58,18 +58,18 @@ public class InputFileInfo implements Serializable {
         super();
     }
 
-    public InputFileInfo(Object choice, Object blob, Object filename, Object mimeType) {
+    public InputFileInfo(Object choice, Blob blob, Object filename, Object mimeType) {
         this.choice = choice;
         this.blob = blob;
         this.filename = filename;
         this.mimeType = mimeType;
     }
 
-    public Object getBlob() {
+    public Blob getBlob() {
         return blob;
     }
 
-    public void setBlob(Object blob) {
+    public void setBlob(Blob blob) {
         this.blob = blob;
     }
 

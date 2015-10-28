@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component.file;
 
+import java.lang.reflect.Constructor;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -57,7 +59,8 @@ public class JSFBlobUploaderDescriptor implements Comparable<JSFBlobUploaderDesc
             return null;
         }
         try {
-            instance = klass.newInstance();
+            Constructor<JSFBlobUploader> ctor = klass.getDeclaredConstructor(String.class);
+            instance = ctor.newInstance(id);
             return instance;
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Cannot instantiate class: " + klass, e);

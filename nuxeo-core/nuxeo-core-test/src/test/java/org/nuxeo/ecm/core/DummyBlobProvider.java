@@ -26,21 +26,22 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
-import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
  * Dummy storage in memory.
  */
-public class DummyBlobProvider implements BlobProvider {
+public class DummyBlobProvider extends AbstractBlobProvider {
 
     protected Map<String, byte[]> blobs;
 
     protected AtomicLong counter;
 
     @Override
-    public void initialize(String blobProviderId, Map<String, String> properties) {
+    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
+        super.initialize(blobProviderId, properties);
         blobs = new HashMap<>();
         counter = new AtomicLong();
     }
@@ -63,11 +64,6 @@ public class DummyBlobProvider implements BlobProvider {
                 return new ByteArrayInputStream(bytes);
             }
         };
-    }
-
-    @Override
-    public boolean supportsWrite() {
-        return true;
     }
 
     @Override

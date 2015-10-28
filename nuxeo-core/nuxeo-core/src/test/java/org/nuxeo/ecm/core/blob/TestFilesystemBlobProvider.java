@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.blob;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
@@ -49,6 +50,7 @@ import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
 @Features({ BlobManagerFeature.class, MockitoFeature.class })
@@ -66,6 +68,9 @@ public class TestFilesystemBlobProvider {
     @Mock
     @RuntimeService
     RepositoryManager repositoryManager;
+
+    @Inject
+    protected RuntimeHarness harness;
 
     @Inject
     protected BlobManager blobManager;
@@ -93,6 +98,21 @@ public class TestFilesystemBlobProvider {
     public void tearDown() throws Exception {
         if (tmpFile != null && Files.exists(tmpFile)) {
             Files.delete(tmpFile);
+        }
+    }
+
+    @Test
+    public void testSupportsUserUpdate() throws Exception {
+        BlobProvider blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
+        assertFalse(blobProvider.supportsUserUpdate());
+
+        // check that we can allow user updates of blobs by configuration
+        harness.deployContrib("org.nuxeo.ecm.core.tests", "OSGI-INF/test-fs-blobprovider-override.xml");
+        try {
+            blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
+            assertTrue(blobProvider.supportsUserUpdate());
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.core.tests", "OSGI-INF/test-fs-blobprovider-override.xml");
         }
     }
 
@@ -195,4 +215,5 @@ public class TestFilesystemBlobProvider {
             ((BlobManagerComponent) blobManager).unregisterBlobProvider(descr);
         }
     }
+
 }

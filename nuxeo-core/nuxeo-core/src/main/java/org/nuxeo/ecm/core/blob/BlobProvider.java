@@ -78,12 +78,15 @@ public interface BlobProvider {
     String writeBlob(Blob blob, Document doc) throws IOException;
 
     /**
-     * Checks if write is supported
+     * Checks if user update is supported.
+     * <p>
+     * A user update refers to the fact that a blob from this provider may be overwritten with another blob, wherever
+     * the original blob may occur (usually in a document property).
      *
-     * @return {@code true} if write is supported
-     * @since 7.4
+     * @return {@code true} if user update is supported
+     * @since 7.10
      */
-    boolean supportsWrite();
+    boolean supportsUserUpdate();
 
     /**
      * Gets an {@link InputStream} for the data of a managed blob.

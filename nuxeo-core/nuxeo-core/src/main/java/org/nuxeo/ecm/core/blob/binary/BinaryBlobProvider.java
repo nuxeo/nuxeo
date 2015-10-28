@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.blob.binary;
 
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -23,6 +25,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -36,6 +39,8 @@ public class BinaryBlobProvider implements BlobProvider {
 
     protected final BinaryManager binaryManager;
 
+    protected boolean supportsUserUpdate;
+
     public BinaryBlobProvider(BinaryManager binaryManager) {
         this.binaryManager = binaryManager;
     }
@@ -43,6 +48,16 @@ public class BinaryBlobProvider implements BlobProvider {
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         binaryManager.initialize(blobProviderId, properties);
+        supportsUserUpdate = supportsUserUpdateDefaultTrue(properties);
+    }
+
+    @Override
+    public boolean supportsUserUpdate() {
+        return supportsUserUpdate;
+    }
+
+    protected boolean supportsUserUpdateDefaultTrue(Map<String, String> properties) {
+        return !Boolean.parseBoolean(properties.get(PREVENT_USER_UPDATE));
     }
 
     /**
@@ -72,11 +87,6 @@ public class BinaryBlobProvider implements BlobProvider {
         }
         return new BinaryBlob(binary, blobInfo.key, blobInfo.filename, blobInfo.mimeType, blobInfo.encoding,
                 blobInfo.digest, binary.getLength()); // use binary length, authoritative
-    }
-
-    @Override
-    public boolean supportsWrite() {
-        return true;
     }
 
     @Override

@@ -42,6 +42,9 @@ public class HTMLBlobUploader implements JSFBlobUploader {
 
     protected static final String UPLOAD_FACET_NAME = "upload";
 
+    public HTMLBlobUploader(String id) {
+    }
+
     @Override
     public String getChoice() {
         return InputFileChoice.UPLOAD;
