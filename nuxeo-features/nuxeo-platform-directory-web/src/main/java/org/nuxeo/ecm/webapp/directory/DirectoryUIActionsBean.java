@@ -31,7 +31,9 @@ import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
@@ -41,7 +43,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.directory.BaseSession;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
@@ -182,9 +183,8 @@ public class DirectoryUIActionsBean implements Serializable {
     public void resetSelectedDirectoryData() {
         currentDirectoryInfo = null;
         currentDirectoryEntries = null;
-        selectedDirectoryEntry = null;
-        showAddForm = false;
-        creationDirectoryEntry = null;
+        resetSelectedDirectoryEntry();
+        resetCreateDirectoryEntry();
     }
 
     public boolean getShowAddForm() {
@@ -328,6 +328,13 @@ public class DirectoryUIActionsBean implements Serializable {
      */
     public boolean checkContextualDirectoryFilter(String filterName, String directoryName) {
         return actionManager.checkFilter(filterName, createDirectoryActionContext(directoryName));
+    }
+
+    @Observer(value = { EventNames.FLUSH_EVENT }, create = false)
+    @BypassInterceptors
+    public void onHotReloadFlush() {
+        directoryNames = null;
+        resetSelectedDirectoryData();
     }
 
 }
