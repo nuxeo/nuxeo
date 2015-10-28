@@ -37,6 +37,7 @@ import org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Tests the {@link TokenAuthenticationServlet}.
@@ -47,6 +48,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(TokenAuthenticationJettyFeature.class)
 public class TestTokenAuthenticationServlet {
+
+    protected void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+    }
 
     @Test
     public void testServlet() throws Exception {
@@ -112,6 +118,7 @@ public class TestTokenAuthenticationServlet {
             response = getMethod.getResponseBodyAsString();
             assertEquals(String.format("Token revoked for userName %s, applicationName %s and deviceId %s.",
                     "Administrator", "Nuxeo Drive", "dead-beaf-cafe-babe"), response);
+            nextTransaction(); // see committed changes
             assertNull(getTokenAuthenticationService().getUserName(token));
             assertTrue(getTokenAuthenticationService().getTokenBindings("Administrator").isEmpty());
         } finally {
