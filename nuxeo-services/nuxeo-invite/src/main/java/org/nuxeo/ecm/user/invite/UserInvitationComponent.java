@@ -379,9 +379,9 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                 } else {
                     if (registrationDoc.getCurrentLifeCycleState().equals("accepted")) {
                         throw new AlreadyProcessedRegistrationException(
-                                "Registration request has already been processed.");
+                                "Registration request has already been processed");
                     } else {
-                        throw new UserRegistrationException("Registration request has not been accepted yet.");
+                        throw new UserRegistrationException("Registration request has not been accepted yet");
                     }
                 }
             }
@@ -417,7 +417,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             // Check if the request has not been already validated
             DocumentModel registrationDoc = session.getDocument(idRef);
             if (registrationDoc.getCurrentLifeCycleState().equals("accepted")) {
-                throw new AlreadyProcessedRegistrationException("Registration request has already been processed.");
+                throw new AlreadyProcessedRegistrationException("Registration request has already been processed");
             }
         }
     }
