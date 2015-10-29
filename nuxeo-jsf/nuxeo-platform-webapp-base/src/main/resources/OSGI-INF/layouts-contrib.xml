@@ -4563,9 +4563,6 @@
                   <widget category="widgetTypeConf">datetime_format</widget>
                 </row>
                 <row>
-                  <widget category="widgetTypeConf">datetime_showsTime</widget>
-                </row>
-                <row>
                   <widget category="widgetTypeConf">datetime_locale</widget>
                 </row>
                 <row>
