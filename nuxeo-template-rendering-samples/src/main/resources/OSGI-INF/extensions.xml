@@ -36,12 +36,7 @@
         <layout>layout@CustomerReference-view</layout>
       </layouts>
     </type>
-    <type id="Folder">
-      <subtypes>
-        <type>CustomerReference</type>
-      </subtypes>
-    </type>
-    <type id="Workspace">
+    <type id="Document">
       <subtypes>
         <type>CustomerReference</type>
       </subtypes>
@@ -60,12 +55,7 @@
         <layout>layout@InterventionStatement-view</layout>
       </layouts>
     </type>
-    <type id="Folder">
-      <subtypes>
-        <type>InterventionStatement</type>
-      </subtypes>
-    </type>
-    <type id="Workspace">
+    <type id="Document">
       <subtypes>
         <type>InterventionStatement</type>
       </subtypes>
