@@ -42,8 +42,8 @@
   <div class="ui segment">
     <h4 class="ui header nxdiff_imageLabel">Differences</h4>
     <div class="ui grid">
-      <div class="four wide column nxdiff_imageContainer"
-        style="padding-left: 35px;">
+      <div id="diffToolsContainer" class="four wide column nxdiff_imageContainer"
+        style="padding-left: 35px; {{HIDE_TOOLS_INLINE_CSS}}">
         <div class="ui center aligned segment">
           <!--
               <select name="resultSize" onchange="NxDiffPictures.changeResultSize(this);">
@@ -111,8 +111,8 @@
           </div>
         </div>
       </div>
-      <div class="twelve wide column nxdiff_imageContainer"
-        style="padding-right: 35px;">
+      <div id="resultImgContainer" class="{{IMG_RESULT_NB_COLUMNS}} wide column nxdiff_imageContainer"
+        style="padding-right: 35px; {{IMG_RESULT_INLINE_CSS}}">
         <div class="ui segment">
           <img id="diff-pict-resultImg" src="" alt=""
             class="ui centered large image nxdiff_resultImage" />
@@ -130,7 +130,9 @@
         fuzz: 0,
         highlightColor: "Default",
         lowlightColor: "Default",
-        xpath: "{{XPATH}}"
+        xpath: "{{XPATH}}",
+        hideTuning: {{HIDE_TUNING}},
+        forcedCommand: "{{FORCED_COMMAND}}"
       }
       NxDiffPictures.init(params);
     </script>

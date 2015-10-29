@@ -3,16 +3,21 @@
  */
 var NxDiffPictures;
 (function scope_NxDiffPictures() {
+    
+  var gParams;
 
-  var leftDocId, rightDocId, xpath, resultImgObj, fuzzLabelObj, fuzzObj,
+  var resultImgObj, fuzzLabelObj, fuzzObj,
     highlightColorObj, lowlightColorObj, highlightColorDropdownObj,
-    contextPath,
     lowlightColorDropdownObj,
     resultImgSizeClass = "large"; // WARNING: Must match the original declaration in nuxeo-diff-pictures.xhtml
 
   NxDiffPictures = this;
 
   init = function(inParams) {
+      
+    var diffToolsContainerObj, resultImgContainerObj;
+    
+    gParams = inParams;
 
     // We are in a iFrame opened by nuxeo-diff-content. We can detect
     // the fancybox was closed by using the onunload Window's event.
@@ -23,7 +28,7 @@ var NxDiffPictures;
       // tell server to cleanup temp files
       // The call must be synchronous in this context
       jQuery.ajax({
-        url: contextPath + "/diffPictures?action=cleanup&leftDocId=" + leftDocId + "&rightDocId=" + rightDocId,
+        url: gParams.contextPath + "/diffPictures?action=cleanup&leftDocId=" + gParams.leftDocId + "&rightDocId=" + gParams.rightDocId,
         async: false
       });
 
@@ -31,13 +36,26 @@ var NxDiffPictures;
         previousUnloadFunction(p1, p2, p3);
       }
     }
+    
+    // Setup UI
+    /*
+    if(gParams.hideTuning) {
+        diffToolsContainerObj = jQuery("#diffToolsContainer");
+        diffToolsContainerObj.hide();
+        
+        resultImgContainerObj = jQuery("#resultImgContainer");
+        resultImgContainerObj.removeClass("twelve");
+        resultImgContainerObj.removeClass("wide");
+        resultImgContainerObj.removeClass("column");
 
-    contextPath = inParams.contextPath;
-    leftDocId = inParams.leftDocId;
-    rightDocId = inParams.rightDocId;
-    xpath = inParams.xpath;
+        resultImgContainerObj.removeClass("siwteen");
+        resultImgContainerObj.removeClass("wide");
+        resultImgContainerObj.removeClass("column");
+        resultImgContainerObj.css("padding-left", "35px");
+    }
+    */
 
-    var resultImgId = inParams.resultImgId
+    var resultImgId = gParams.resultImgId
 
     // Get the jQuery objects once
     fuzzLabelObj = jQuery("#fuzzLabel");
@@ -49,11 +67,11 @@ var NxDiffPictures;
     lowlightColorObj = jQuery("#lowlightColor");
     lowlightColorDropdownObj = jQuery("#lowlightColor_dropdown");
 
-    fuzzObj.val(inParams.fuzz);
+    fuzzObj.val(gParams.fuzz);
     updateFuzzLabel();
 
-    highlightColorObj.val(inParams.highlightColor);
-    lowlightColorObj.val(inParams.lowlightColor);
+    highlightColorObj.val(gParams.highlightColor);
+    lowlightColorObj.val(gParams.lowlightColor);
 
     resultImgObj = jQuery(document.getElementById(resultImgId));
     updateResultImage();
@@ -64,12 +82,16 @@ var NxDiffPictures;
   // private
   function buildUrl() {
     var url, lowLight, commandLine;
-    url = contextPath + "/diffPictures?leftDocId=" + leftDocId + "&rightDocId=" + rightDocId;
-    lowLight = lowlightColorObj.val();
-    if(lowLight === "" || lowLight.toLowerCase() === "default") {
-      commandLine = "diff-pictures-default";
+    url = gParams.contextPath + "/diffPictures?leftDocId=" + gParams.leftDocId + "&rightDocId=" + gParams.rightDocId;
+    if(UTILS_stringIsNotBlank(gParams.forcedCommand)) {
+        commandLine = gParams.forcedCommand;
     } else {
-      commandLine = "diff-pictures-default-with-params";
+        lowLight = lowlightColorObj.val();
+        if(lowLight === "" || lowLight.toLowerCase() === "default") {
+          commandLine = "diff-pictures-default";
+        } else {
+          commandLine = "diff-pictures-default-with-params";
+        }
     }
 
     url += "&commandLine=" + encodeURIComponent(commandLine);
@@ -123,3 +145,8 @@ var NxDiffPictures;
   }
 
 }());
+
+function UTILS_stringIsNotBlank(str) {
+    
+    return typeof str === "string" && str !== "";
+}

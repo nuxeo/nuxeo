@@ -38,6 +38,8 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
+import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -47,6 +49,8 @@ import org.nuxeo.runtime.api.Framework;
 public class DiffPictures {
 
     public static final String DEFAULT_COMMAND = "diff-pictures-default";
+
+    public static final String COMPARE_PRO_COMMAND = "diff-pictures-pro";
 
     public static final String DEFAULT_XPATH = "file:content";
 
@@ -79,6 +83,16 @@ public class DiffPictures {
 
     protected static final String TMPL_TIME_STAMP = buildTemplateKey("TIME_STAMP");
 
+    protected static final String TMPL_HIDE_TUNING = buildTemplateKey("HIDE_TUNING");
+
+    protected static final String TMPL_FORCED_COMMAND = buildTemplateKey("FORCED_COMMAND");
+
+    protected static final String TMPL_HIDE_TOOLS_INLINE_CSS = buildTemplateKey("HIDE_TOOLS_INLINE_CSS");
+    
+    protected static final String TMPL_IMG_RESULT_NB_COLUMNS = buildTemplateKey("IMG_RESULT_NB_COLUMNS");
+    
+    protected static final String TMPL_IMG_RESULT_INLINE_CSS = buildTemplateKey("IMG_RESULT_INLINE_CSS");
+
     Blob b1;
 
     Blob b2;
@@ -110,13 +124,8 @@ public class DiffPictures {
 
         Blob leftB, rightB;
 
-        if (StringUtils.isBlank(inXPath) || "null".equals(inXPath)) {
-            leftB = (Blob) inLeft.getPropertyValue(DEFAULT_XPATH);
-            rightB = (Blob) inRight.getPropertyValue(DEFAULT_XPATH);
-        } else {
-            leftB = (Blob) inLeft.getPropertyValue(inXPath);
-            rightB = (Blob) inRight.getPropertyValue(inXPath);
-        }
+        leftB = DiffPicturesUtils.getDocumentBlob(inLeft, inXPath);
+        rightB = DiffPicturesUtils.getDocumentBlob(inRight, inXPath);
 
         init(leftB, rightB, inLeft.getId(), inRight.getId());
     }
@@ -132,6 +141,7 @@ public class DiffPictures {
         b2 = inB2;
         leftDocId = inLeftDocId;
         rightDocId = inRightDocId;
+
     }
 
     public Blob compare(String inCommandLine, Map<String, Serializable> inParams) throws CommandNotAvailable,
@@ -140,6 +150,12 @@ public class DiffPictures {
         String finalName;
 
         commandLine = StringUtils.isBlank(inCommandLine) ? DEFAULT_COMMAND : inCommandLine;
+        // Being generic, if in the future we add more command lines in the xml.
+        // We know than "compare" can't work with pictures of different format or size, so let's force another command
+        CommandLineDescriptor cld = CommandLineExecutorComponent.getCommandDescriptor(commandLine);
+        if (cld.getCommand().equals("compare") && !DiffPicturesUtils.sameFormatAndDimensions(b1, b2)) {
+            commandLine = COMPARE_PRO_COMMAND;
+        }
 
         clParameters = inParams == null ? new HashMap<>() : inParams;
 
@@ -272,6 +288,33 @@ public class DiffPictures {
             if (rightDoc.isVersion()) {
                 rightLabel = "Version " + rightDoc.getVersionLabel();
             }
+        }
+
+        // Append info to the labels
+        String leftFormat = (String) leftDoc.getPropertyValue("picture:info/format");
+        String rightFormat = (String) rightDoc.getPropertyValue("picture:info/format");
+        Long leftW = (Long) leftDoc.getPropertyValue("picture:info/width");
+        Long rightW = (Long) rightDoc.getPropertyValue("picture:info/width");
+        Long leftH = (Long) leftDoc.getPropertyValue("picture:info/height");
+        Long rightH = (Long) rightDoc.getPropertyValue("picture:info/height");
+        leftLabel += " (" + leftFormat + ", " + leftW + "x" + leftH + ")";
+        rightLabel += " (" + rightFormat + ", " + rightW + "x" + rightH + ")";
+
+        // Update UI and command line to use, if needed
+        if (leftFormat.toLowerCase().equals(rightFormat.toLowerCase()) && leftW.longValue() == rightW.longValue()
+                && leftH.longValue() == rightH.longValue()) {
+            html = html.replace(TMPL_HIDE_TUNING, "false");
+            html = html.replace(TMPL_HIDE_TOOLS_INLINE_CSS, "");
+            html = html.replace(TMPL_IMG_RESULT_NB_COLUMNS, "twelve");
+            html = html.replace(TMPL_IMG_RESULT_INLINE_CSS, "");
+            html = html.replace(TMPL_FORCED_COMMAND, "");
+            
+        } else {
+            html = html.replace(TMPL_HIDE_TUNING, "true");
+            html = html.replace(TMPL_HIDE_TOOLS_INLINE_CSS, "display:none;");
+            html = html.replace(TMPL_IMG_RESULT_NB_COLUMNS, "sixteen");
+            html = html.replace(TMPL_IMG_RESULT_INLINE_CSS, "padding-left: 35px;");
+            html = html.replace(TMPL_FORCED_COMMAND, COMPARE_PRO_COMMAND);
         }
 
         html = html.replace(TMPL_CONTEXT_PATH, VirtualHostHelper.getContextPathProperty());
