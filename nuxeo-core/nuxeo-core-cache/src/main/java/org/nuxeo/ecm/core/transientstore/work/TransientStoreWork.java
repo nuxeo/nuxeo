@@ -18,8 +18,10 @@
 package org.nuxeo.ecm.core.transientstore.work;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
@@ -59,11 +61,12 @@ public abstract class TransientStoreWork extends AbstractWork {
      * {@code TransientStoreWork} or null if the entry doesn't exist.
      */
     public static BlobHolder getBlobHolder(String key) {
+        List<Blob> blobs = getStore().getBlobs(key);
         Map<String, Serializable> params = getStore().getParameters(key);
-        if (params == null) {
+        if (blobs == null && params == null) {
             return null;
         }
-        return new SimpleBlobHolderWithProperties(getStore().getBlobs(key), params);
+        return new SimpleBlobHolderWithProperties(blobs, params);
     }
 
     public static void removeBlobHolder(String key) {
