@@ -370,6 +370,7 @@ public class UserRegistrationActions implements Serializable {
             log.info("Unable to register user: " + e.getMessage());
             log.debug(e, e);
             facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.invite"), userinfo.getLogin());
+            facesMessages.add(ERROR, e.getMessage());
         }
     }
 
