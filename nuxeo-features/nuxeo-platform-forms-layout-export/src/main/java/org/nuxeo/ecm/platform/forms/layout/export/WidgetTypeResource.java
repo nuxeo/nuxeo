@@ -134,7 +134,7 @@ public class WidgetTypeResource {
             }
             if (version != null && conf != null) {
                 String confVersion = conf.getSinceVersion();
-                if (confVersion != null && version.compareTo(confVersion) < 0) {
+                if (isStriclyBeforeVersion(version, confVersion)) {
                     continue;
                 }
             }
@@ -161,6 +161,23 @@ public class WidgetTypeResource {
             }
         }
         return res;
+    }
+
+    protected boolean isStriclyBeforeVersion(String ref, String version) {
+        if (version == null || version.trim().length() == 0) {
+            return true;
+        }
+
+        String[] components1 = ref.split("\\.");
+        String[] components2 = version.split("\\.");
+        int length = Math.min(components1.length, components2.length);
+        for(int i = 0; i < length; i++) {
+            int result = Integer.compare(Integer.valueOf(components1[i]), Integer.valueOf(components2[i]));
+            if (result != 0) {
+                return result < 0;
+            }
+        }
+        return components1.length < components2.length;
     }
 
     /**
@@ -201,10 +218,8 @@ public class WidgetTypeResource {
     }
 
     protected List<String> getNuxeoVersions() {
-        if ("jsf".equals(category)) {
-            return Arrays.asList("5.6", "5.8", "6.0");
-        } else if ("jsfAction".equals(category)) {
-            return Arrays.asList("5.8", "6.0");
+        if ("jsf".equals(category) || "jsfAction".equals(category)) {
+            return Arrays.asList("5.8", "6.0", "7.10");
         }
         return Collections.emptyList();
     }
