@@ -35,7 +35,7 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -78,7 +78,7 @@ public class EasyShare extends ModuleRoot {
 
     return new EasyShareUnrestrictedRunner() {
       @Override
-      public Object run(CoreSession session, IdRef docRef) throws ClientException {
+      public Object run(CoreSession session, IdRef docRef) throws NuxeoException {
         if (session.exists(docRef)) {
           DocumentModel docShare = session.getDocument(docRef);
 
@@ -116,7 +116,7 @@ public class EasyShare extends ModuleRoot {
             Map<String, Object> params = new HashMap<>();
             params.put("event", "Access");
             params.put("category", "Document");
-            params.put("comment", "IP: " + request.getRemoteAddr());
+            params.put("comment", "IP: " + getIpAddr());
             getAutomationService().run(ctx, "Audit.Log", params);
 
             return getView("folderList")
@@ -199,7 +199,7 @@ public class EasyShare extends ModuleRoot {
     return buildUnrestrictedRunner(shareId, pageIndex).runUnrestricted(shareId);
   }
 
-  public String getFileName(DocumentModel doc) throws ClientException {
+  public String getFileName(DocumentModel doc) throws NuxeoException {
     BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
     if (blobHolder != null && blobHolder.getBlob() != null) {
       return blobHolder.getBlob().getFilename();
@@ -209,11 +209,11 @@ public class EasyShare extends ModuleRoot {
 
   @GET
   @Path("{shareId}/{fileId}/{fileName}")
-  public Response getFileStream(@PathParam("shareId") final String shareId, @PathParam("fileId") String fileId) throws ClientException {
+  public Response getFileStream(@PathParam("shareId") final String shareId, @PathParam("fileId") String fileId) throws NuxeoException {
 
     return (Response) new EasyShareUnrestrictedRunner() {
       @Override
-      public Object run(CoreSession session, IdRef docRef) throws ClientException {
+      public Object run(CoreSession session, IdRef docRef) throws NuxeoException {
         if (session.exists(docRef)) {
           try {
             DocumentModel doc = session.getDocument(docRef);
@@ -233,7 +233,7 @@ public class EasyShare extends ModuleRoot {
             Map<String, Object> params = new HashMap<>();
             params.put("event", "Download");
             params.put("category", "Document");
-            params.put("comment", "IP: " + request.getRemoteAddr());
+            params.put("comment", "IP: " + getIpAddr());
             AutomationService service = Framework.getLocalService(AutomationService.class);
             service.run(ctx, "Audit.Log", params);
 
@@ -277,7 +277,7 @@ public class EasyShare extends ModuleRoot {
         Map<String, Object> mailProps = new Hashtable<>();
         mailProps.put("mail.from", Framework.getProperty("mail.from", "system@nuxeo.com"));
         mailProps.put("mail.to", email);
-        mailProps.put("ip", request.getRemoteAddr());
+        mailProps.put("ip", getIpAddr());
         mailProps.put("docShare", docShare);
 
         try {
@@ -294,7 +294,7 @@ public class EasyShare extends ModuleRoot {
 
           emailHelper.sendmail(mailProps);
 
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
           log.warn(e.getMessage());
         }
 
@@ -305,4 +305,15 @@ public class EasyShare extends ModuleRoot {
     }
   }
 
+
+  protected String getIpAddr() {
+      String ip = request.getHeader("X-FORWARDED-FOR");
+      if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+          ip = request.getHeader("Proxy-Client-IP");
+      }
+      if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+          ip = request.getRemoteAddr();
+      }
+      return ip;
+   }
 }

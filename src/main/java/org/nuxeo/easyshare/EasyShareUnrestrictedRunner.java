@@ -23,10 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.repository.Repository;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.runtime.api.Framework;
@@ -47,8 +46,7 @@ public abstract class EasyShareUnrestrictedRunner {
         }
         CoreSession coreSession = null;
         try {
-            RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            coreSession = rm.getDefaultRepository().open();
+            coreSession = CoreInstance.openCoreSession(null);
 
             // Run unrestricted operation
             IdRef docRef = new IdRef(docId);
@@ -61,7 +59,7 @@ public abstract class EasyShareUnrestrictedRunner {
                 @Override
                 public void cleanup(HttpServletRequest req) {
                     try {
-                        Repository.close(session2close);
+                        session2close.close();
                         lc.logout();
                     } catch (LoginException e) {
                         log.error("Error during request context cleanup", e);
