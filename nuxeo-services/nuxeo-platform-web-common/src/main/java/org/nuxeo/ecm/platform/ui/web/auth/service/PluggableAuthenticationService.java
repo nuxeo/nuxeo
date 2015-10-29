@@ -100,7 +100,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     private final List<String> startupURLs = new ArrayList<String>();
 
-    private final LoginScreenConfig loginScreenConfig = new LoginScreenConfig();
+    private LoginScreenConfigRegistry loginScreenConfigRegistry;
 
     @Override
     public void activate(ComponentContext context) {
@@ -109,6 +109,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
         authenticators = new HashMap<String, NuxeoAuthenticationPlugin>();
         sessionManagers = new HashMap<String, NuxeoAuthenticationSessionManager>();
         defaultSessionManager = new DefaultSessionManager();
+        loginScreenConfigRegistry = new LoginScreenConfigRegistry();
     }
 
     @Override
@@ -118,6 +119,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
         authChain = null;
         sessionManagers = null;
         defaultSessionManager = null;
+        loginScreenConfigRegistry = null;
     }
 
     @Override
@@ -205,7 +207,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
             preFiltersDesc.put(desc.getName(), desc);
         } else if (extensionPoint.equals(EP_LOGINSCREEN)) {
             LoginScreenConfig newConfig = (LoginScreenConfig) contribution;
-            loginScreenConfig.merge(newConfig);
+            loginScreenConfigRegistry.addContribution(newConfig);
         }
     }
 
@@ -216,6 +218,9 @@ public class PluggableAuthenticationService extends DefaultComponent {
             AuthenticationPluginDescriptor descriptor = (AuthenticationPluginDescriptor) contribution;
             authenticatorsDescriptors.remove(descriptor.getName());
             log.debug("unregistered AuthenticationPlugin: " + descriptor.getName());
+        } else if (extensionPoint.equals(EP_LOGINSCREEN)) {
+            LoginScreenConfig newConfig = (LoginScreenConfig) contribution;
+            loginScreenConfigRegistry.removeContribution(newConfig);
         }
     }
 
@@ -466,7 +471,7 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public LoginScreenConfig getLoginScreenConfig() {
-        return loginScreenConfig;
+        return loginScreenConfigRegistry.getConfig();
     }
 
 }

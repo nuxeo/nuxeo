@@ -106,6 +106,9 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertEquals("XXXX", config.getProvider("google").getLink(null, null));
         deployContrib(WEB_BUNDLE_TEST, "OSGI-INF/test-loginscreenconfig-merge.xml");
 
+        config = authService.getLoginScreenConfig();
+        assertNotNull(config);
+
         assertEquals("#DDDDDD", config.getHeaderStyle());
         assertEquals("Something", config.getFooterStyle());
         assertFalse(config.getDisplayNews());
@@ -120,6 +123,20 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
         assertTrue(config.getVideoMuted());
         assertFalse(config.getVideoLoop());
+    }
+
+    @Test
+    public void testUndeployConfig() throws Exception {
+        PluggableAuthenticationService authService = getAuthService();
+        assertNotNull(authService);
+
+        LoginScreenConfig config = authService.getLoginScreenConfig();
+        assertNotNull(config);
+
+        undeployContrib(WEB_BUNDLE_TEST, "OSGI-INF/test-loginscreenconfig.xml");
+
+        config = authService.getLoginScreenConfig();
+        assertNull(config);
     }
 
     @Test

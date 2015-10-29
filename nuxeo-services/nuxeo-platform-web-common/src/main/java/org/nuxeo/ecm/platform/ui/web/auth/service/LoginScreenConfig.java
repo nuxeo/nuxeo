@@ -131,78 +131,6 @@ public class LoginScreenConfig implements Serializable {
         return null;
     }
 
-    protected void merge(LoginScreenConfig newConfig) {
-        if (newConfig.newsIframeUrl != null) {
-            this.newsIframeUrl = newConfig.newsIframeUrl;
-        }
-        if (newConfig.headerStyle != null) {
-            this.headerStyle = newConfig.headerStyle;
-        }
-        if (newConfig.footerStyle != null) {
-            this.footerStyle = newConfig.footerStyle;
-        }
-        if (newConfig.bodyBackgroundStyle != null) {
-            this.bodyBackgroundStyle = newConfig.bodyBackgroundStyle;
-        }
-        if (newConfig.loginBoxBackgroundStyle != null) {
-            this.loginBoxBackgroundStyle = newConfig.loginBoxBackgroundStyle;
-        }
-        if (newConfig.loginBoxWidth != null) {
-            this.loginBoxWidth = newConfig.loginBoxWidth;
-        }
-        if (newConfig.disableBackgroundSizeCover != null) {
-            this.disableBackgroundSizeCover = newConfig.disableBackgroundSizeCover;
-        }
-        if (newConfig.logoAlt != null) {
-            this.logoAlt = newConfig.logoAlt;
-        }
-        if (newConfig.logoHeight != null) {
-            this.logoHeight = newConfig.logoHeight;
-        }
-        if (newConfig.logoUrl != null) {
-            this.logoUrl = newConfig.logoUrl;
-        }
-        if (newConfig.logoWidth != null) {
-            this.logoWidth = newConfig.logoWidth;
-        }
-        if (newConfig.fieldAutocomplete != null) {
-            this.fieldAutocomplete = newConfig.fieldAutocomplete;
-        }
-        if (newConfig.videos != null) {
-            videos = newConfig.videos;
-        }
-        if (newConfig.loop != null) {
-            loop = newConfig.loop;
-        }
-        if (newConfig.removeNews) {
-            removeNews = newConfig.removeNews;
-        }
-        if (newConfig.muted != null) {
-            muted = newConfig.muted;
-        }
-        if (newConfig.loginButtonBackgroundColor != null) {
-            loginButtonBackgroundColor = newConfig.loginButtonBackgroundColor;
-        }
-
-        if (providers == null) {
-            providers = newConfig.providers;
-        } else if (newConfig.providers != null && newConfig.providers.size() > 0) {
-            for (LoginProviderLink link : newConfig.providers) {
-
-                int idx = providers.indexOf(link);
-                if (idx >= 0) {
-                    if (link.remove) {
-                        providers.remove(idx);
-                    } else {
-                        providers.get(idx).merge(link);
-                    }
-                } else {
-                    providers.add(link);
-                }
-            }
-        }
-    }
-
     public void registerLoginProvider(String name, String iconUrl, String link, String label, String description,
             LoginProviderLinkComputer computer) {
 
@@ -326,6 +254,115 @@ public class LoginScreenConfig implements Serializable {
      */
     public Boolean getDisableBackgroundSizeCover() {
         return disableBackgroundSizeCover;
+    }
+
+    protected void merge(LoginScreenConfig newConfig) {
+        if (newConfig.newsIframeUrl != null) {
+            this.newsIframeUrl = newConfig.newsIframeUrl;
+        }
+        if (newConfig.headerStyle != null) {
+            this.headerStyle = newConfig.headerStyle;
+        }
+        if (newConfig.footerStyle != null) {
+            this.footerStyle = newConfig.footerStyle;
+        }
+        if (newConfig.bodyBackgroundStyle != null) {
+            this.bodyBackgroundStyle = newConfig.bodyBackgroundStyle;
+        }
+        if (newConfig.loginBoxBackgroundStyle != null) {
+            this.loginBoxBackgroundStyle = newConfig.loginBoxBackgroundStyle;
+        }
+        if (newConfig.loginBoxWidth != null) {
+            this.loginBoxWidth = newConfig.loginBoxWidth;
+        }
+        if (newConfig.disableBackgroundSizeCover != null) {
+            this.disableBackgroundSizeCover = newConfig.disableBackgroundSizeCover;
+        }
+        if (newConfig.logoAlt != null) {
+            this.logoAlt = newConfig.logoAlt;
+        }
+        if (newConfig.logoHeight != null) {
+            this.logoHeight = newConfig.logoHeight;
+        }
+        if (newConfig.logoUrl != null) {
+            this.logoUrl = newConfig.logoUrl;
+        }
+        if (newConfig.logoWidth != null) {
+            this.logoWidth = newConfig.logoWidth;
+        }
+        if (newConfig.fieldAutocomplete != null) {
+            this.fieldAutocomplete = newConfig.fieldAutocomplete;
+        }
+        if (newConfig.videos != null) {
+            videos = newConfig.videos;
+        }
+        if (newConfig.loop != null) {
+            loop = newConfig.loop;
+        }
+        if (newConfig.removeNews) {
+            removeNews = newConfig.removeNews;
+        }
+        if (newConfig.muted != null) {
+            muted = newConfig.muted;
+        }
+        if (newConfig.loginButtonBackgroundColor != null) {
+            loginButtonBackgroundColor = newConfig.loginButtonBackgroundColor;
+        }
+
+        if (providers == null) {
+            providers = newConfig.providers;
+        } else if (newConfig.providers != null && newConfig.providers.size() > 0) {
+            for (LoginProviderLink link : newConfig.providers) {
+
+                int idx = providers.indexOf(link);
+                if (idx >= 0) {
+                    if (link.remove) {
+                        providers.remove(idx);
+                    } else {
+                        providers.get(idx).merge(link);
+                    }
+                } else {
+                    providers.add(link);
+                }
+            }
+        }
+    }
+
+    /**
+     * @since 7.10
+     */
+    @Override
+    public LoginScreenConfig clone() {
+        LoginScreenConfig clone = new LoginScreenConfig();
+        clone.bodyBackgroundStyle = bodyBackgroundStyle;
+        clone.disableBackgroundSizeCover = disableBackgroundSizeCover;
+        clone.fieldAutocomplete = fieldAutocomplete;
+        clone.footerStyle = footerStyle;
+        clone.headerStyle = headerStyle;
+        clone.loginBoxBackgroundStyle = loginBoxBackgroundStyle;
+        clone.loginBoxWidth = loginBoxWidth;
+        clone.loginButtonBackgroundColor = loginButtonBackgroundColor;
+        clone.logoAlt = logoAlt;
+        clone.logoHeight = logoHeight;
+        clone.logoUrl = logoUrl;
+        clone.logoWidth = logoWidth;
+        clone.loop = loop;
+        clone.muted = muted;
+        clone.newsIframeUrl = newsIframeUrl;
+        if (providers != null) {
+            clone.providers = new ArrayList<LoginProviderLink>();
+            for (LoginProviderLink l : providers) {
+                clone.providers.add(l.clone());
+            }
+        }
+        clone.removeNews = removeNews;
+        if (videos != null) {
+            clone.videos = new ArrayList<LoginVideo>();
+            for (LoginVideo v : videos) {
+                clone.videos.add(v.clone());
+            }
+        }
+        return clone;
     }
 
 }

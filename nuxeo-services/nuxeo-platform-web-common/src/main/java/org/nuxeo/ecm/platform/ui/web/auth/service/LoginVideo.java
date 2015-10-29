@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
+import java.io.Serializable;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
@@ -26,7 +28,10 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.10
  */
 @XObject("loginVideo")
-public class LoginVideo {
+public class LoginVideo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @XNode("@src")
     protected String src;
 
@@ -51,15 +56,18 @@ public class LoginVideo {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         LoginVideo that = (LoginVideo) o;
 
-        if (src != null ? !src.equals(that.src) : that.src != null)
+        if (src != null ? !src.equals(that.src) : that.src != null) {
             return false;
+        }
         return !(type != null ? !type.equals(that.type) : that.type != null);
     }
 
@@ -69,4 +77,13 @@ public class LoginVideo {
         result = 31 * result + (type != null ? type.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public LoginVideo clone() {
+        LoginVideo clone = new LoginVideo();
+        clone.src = src;
+        clone.type = type;
+        return clone;
+    }
+
 }

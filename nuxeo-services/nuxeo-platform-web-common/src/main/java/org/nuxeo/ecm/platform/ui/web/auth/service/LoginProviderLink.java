@@ -116,6 +116,17 @@ public class LoginProviderLink implements Serializable {
         this.description = description;
     }
 
+    public String getLabel() {
+        if (label == null) {
+            return getName();
+        }
+        return label;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
     public void merge(LoginProviderLink newLink) {
         if (newLink.link != null) {
             link = newLink.link;
@@ -128,15 +139,20 @@ public class LoginProviderLink implements Serializable {
         }
     }
 
-    public String getLabel() {
-        if (label == null) {
-            return getName();
-        }
-        return label;
-    }
-
-    public String getLink() {
-        return link;
+    /**
+     * @since 7.10
+     */
+    @Override
+    protected LoginProviderLink clone() {
+        LoginProviderLink clone = new LoginProviderLink();
+        clone.description = description;
+        clone.iconPath = iconPath;
+        clone.label = label;
+        clone.link = link;
+        clone.name = name;
+        clone.remove = remove;
+        clone.urlComputerClass = urlComputerClass;
+        return clone;
     }
 
 }
