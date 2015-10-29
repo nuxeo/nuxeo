@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -503,6 +504,31 @@ public class DocumentActionsBean extends InputController implements DocumentActi
             log.error("Failed to retrieve application links", e);
         }
         return null;
+    }
+
+    /**
+     * Checks if the main blob can be updated by a user-initiated action.
+     *
+     * @since 7.10
+     */
+    public boolean getCanUpdateMainBlob() {
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        if (doc == null) {
+            return false;
+        }
+        BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+        if (blobHolder == null) {
+            return false;
+        }
+        Blob blob = blobHolder.getBlob();
+        if (blob == null) {
+            return true;
+        }
+        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob);
+        if (blobProvider == null) {
+            return true;
+        }
+        return blobProvider.supportsUserUpdate();
     }
 
 }

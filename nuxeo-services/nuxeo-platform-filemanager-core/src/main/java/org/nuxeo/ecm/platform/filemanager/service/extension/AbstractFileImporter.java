@@ -32,6 +32,8 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.filemanager.service.FileManagerService;
 import org.nuxeo.ecm.platform.filemanager.utils.FileManagerUtils;
@@ -190,8 +192,16 @@ public abstract class AbstractFileImporter implements FileImporter {
         }
         boolean skipCheckInAfterAdd = false;
         if (overwrite && doc != null) {
+            Blob previousBlob = getBlob(doc);
+            // check that previous blob allows overwrite
+            if (previousBlob != null) {
+                BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(previousBlob);
+                if (blobProvider != null && !blobProvider.supportsUserUpdate()) {
+                    throw new NuxeoException("Cannot overwrite blob");
+                }
+            }
             // make sure we save any existing data
-            if (!skipCheckInForBlob(getBlob(doc))) {
+            if (!skipCheckInForBlob(previousBlob)) {
                 checkIn(doc);
             }
             // update data

@@ -885,6 +885,12 @@
       </rule>
     </filter>
 
+    <filter id="updatable_main_blob">
+      <rule grant="true">
+        <condition>#{documentActions.canUpdateMainBlob}</condition>
+      </rule>
+    </filter>
+
     <filter id="delete_content">
       <rule grant="true">
         <permission>RemoveChildren</permission>

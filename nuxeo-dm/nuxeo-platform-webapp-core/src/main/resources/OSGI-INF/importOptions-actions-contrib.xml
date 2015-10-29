@@ -57,6 +57,7 @@
       <category>mainBlob</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>user_canedit</filter-id>
+      <filter-id>updatable_main_blob</filter-id>
       <properties>
         <property name="operationId">BlobHolder.AttachOnCurrentDocument</property>
       </properties>
@@ -68,6 +69,7 @@
       <category>mainBlob</category>
       <filter-id>mutable_document</filter-id>
       <filter-id>user_canedit</filter-id>
+      <filter-id>updatable_main_blob</filter-id>
       <properties>
         <property name="chainId">VersionAndAttachFile</property>
       </properties>
