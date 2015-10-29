@@ -197,7 +197,7 @@ public abstract class AbstractFileImporter implements FileImporter {
             if (previousBlob != null) {
                 BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(previousBlob);
                 if (blobProvider != null && !blobProvider.supportsUserUpdate()) {
-                    throw new NuxeoException("Cannot overwrite blob");
+                    throw new DocumentSecurityException("Cannot overwrite blob");
                 }
             }
             // make sure we save any existing data
