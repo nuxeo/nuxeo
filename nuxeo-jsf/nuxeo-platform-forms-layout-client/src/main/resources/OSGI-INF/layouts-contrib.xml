@@ -334,7 +334,7 @@
         <label mode="any">
           String pattern for the date and time, as described by
           the java.text.SimpleDateFormat class, and as used in the standard
-          DateTimeConverter. Default value is "dd/MM/yyyy HH:mm". Sample value:
+          DateTimeConverter. Default value is "MMM d, yyyy". Sample value:
           "#{nxu:basicDateFormatter()}" or "#{nxu:basicDateAndTimeFormatter()}".
         </label>
       </helpLabels>
@@ -373,7 +373,7 @@
         <label mode="any">
           String format for the date and time, as described by
           the java.text.SimpleDateFormat class, and as used in the standard
-          DateTimeConverter. Default value is "dd/MM/yyyy HH:mm". Sample value:
+          DateTimeConverter. Default value is "MMM d, yyyy". Sample value:
           "#{nxu:basicDateFormatter()}" or "#{nxu:basicDateAndTimeFormatter()}".
         </label>
       </helpLabels>
@@ -417,28 +417,6 @@
         <option itemLabel="Russian" itemValue="ru" />
         <option itemLabel="svenska" itemValue="sv" />
       </selectOptions>
-    </widget>
-
-    <widget name="datetime_showsTime" type="checkbox">
-      <categories>
-        <category>widgetTypeConf</category>
-      </categories>
-      <labels>
-        <label mode="any">Shows time</label>
-      </labels>
-      <helpLabels>
-        <label mode="any">
-          Flag indicating that the calendar must show
-          a time
-          choice.
-          Since 5.4.2, this property is ignored and time
-          is shown
-          depending on the date format.
-        </label>
-      </helpLabels>
-      <fields>
-        <field>showsTime</field>
-      </fields>
     </widget>
 
     <widget name="datetime_timeZone" type="text">
@@ -1786,9 +1764,6 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">datetime_format</widget>
-                </row>
-                <row>
-                  <widget category="widgetTypeConf">datetime_showsTime</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">datetime_locale</widget>
