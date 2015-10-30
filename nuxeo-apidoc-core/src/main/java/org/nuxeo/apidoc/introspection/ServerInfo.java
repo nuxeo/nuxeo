@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,6 +58,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
+
 import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -127,9 +128,9 @@ public class ServerInfo {
 
     protected final String version;
 
-    protected final Map<String, BundleInfoImpl> bundles = new HashMap<String, BundleInfoImpl>();
+    protected final Map<String, BundleInfoImpl> bundles = new HashMap<>();
 
-    protected final List<Class<?>> allSpi = new ArrayList<Class<?>>();
+    protected final List<Class<?>> allSpi = new ArrayList<>();
 
     public ServerInfo(String name, String version) {
         this.name = name;
@@ -152,9 +153,9 @@ public class ServerInfo {
         bundles.put(bundle.getId(), bundle);
     }
 
-    public void addBundle(Collection<BundleInfoImpl> bundles) {
-        for (BundleInfoImpl bundle : bundles) {
-            this.bundles.put(bundle.getId(), bundle);
+    public void addBundle(Collection<BundleInfoImpl> someBundles) {
+        for (BundleInfoImpl bundle : someBundles) {
+            bundles.put(bundle.getId(), bundle);
         }
     }
 
@@ -257,7 +258,7 @@ public class ServerInfo {
     }
 
     protected static List<Class<?>> getSPI(Class<?> klass) {
-        List<Class<?>> spi = new ArrayList<Class<?>>();
+        List<Class<?>> spi = new ArrayList<>();
         for (Field field : klass.getDeclaredFields()) {
             String cName = field.getType().getCanonicalName();
             if (cName.startsWith("org.nuxeo")) {
@@ -278,8 +279,8 @@ public class ServerInfo {
         BundleInfoImpl configVirtualBundle = new BundleInfoImpl("org.nuxeo.ecm.config");
         server.addBundle(configVirtualBundle);
 
-        Map<String, ExtensionPointInfoImpl> xpRegistry = new HashMap<String, ExtensionPointInfoImpl>();
-        List<ExtensionInfoImpl> contribRegistry = new ArrayList<ExtensionInfoImpl>();
+        Map<String, ExtensionPointInfoImpl> xpRegistry = new HashMap<>();
+        List<ExtensionInfoImpl> contribRegistry = new ArrayList<>();
 
         Collection<RegistrationInfo> registrations = runtime.getComponentManager().getRegistrations();
 
