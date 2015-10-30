@@ -26,6 +26,7 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -274,14 +275,16 @@ public class RouterServlet extends HttpServlet {
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
 
+        String templateDbName = collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
         if ("true".equals(req.getParameter("refresh"))) {
-            String templateName = collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
+            String templateName = templateDbName;
             collector.changeDBTemplate(templateName);
             currentPage.dispatchToJSP(req, resp);
             return;
         }
 
-        if (!collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME).equals("default")) {
+        // Check relational database
+        if (!Arrays.asList("default", "mongodb").contains(templateDbName)) {
             if (collector.getConfigurationParam("nuxeo.db.name").isEmpty()) {
                 ctx.trackError("nuxeo.db.name", "error.dbname.required");
             }
@@ -309,7 +312,7 @@ public class RouterServlet extends HttpServlet {
             ConfigurationGenerator cg = collector.getConfigurationGenerator();
             try {
                 cg.checkDatabaseConnection(
-                        collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME),
+                        templateDbName,
                         collector.getConfigurationParam("nuxeo.db.name"),
                         collector.getConfigurationParam("nuxeo.db.user"),
                         collector.getConfigurationParam("nuxeo.db.password"),
@@ -321,6 +324,16 @@ public class RouterServlet extends HttpServlet {
             } catch (SQLException e) {
                 ctx.trackError("nuxeo.db.name", "error.db.connection");
                 log.warn(e);
+            }
+        }
+
+        // Check mongodb database
+        if (templateDbName.equals("mongodb")) {
+            if (collector.getConfigurationParam("nuxeo.mongodb.dbname").isEmpty()) {
+                ctx.trackError("nuxeo.mongodb.dbname", "error.dbname.required");
+            }
+            if (collector.getConfigurationParam("nuxeo.mongodb.server").isEmpty()) {
+                ctx.trackError("nuxeo.mongodb.server", "error.dbhost.required");
             }
         }
 

@@ -153,7 +153,9 @@ public class ConfigurationGenerator {
 
     public static final String BOUNDARY_END = "### END - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
-    public static final List<String> DB_LIST = Arrays.asList("default", "postgresql", "oracle", "mysql", "mssql", "db2");
+    public static final List<String> DB_LIST = Arrays.asList("default", "postgresql", "oracle", "mysql", "mssql", "db2", "mongodb");
+
+    public static final List<String> DB_EXCLUDE_CHECK_LIST = Arrays.asList("default", "mongodb");
 
     public static final String PARAM_WIZARD_DONE = "nuxeo.wizard.done";
 
@@ -1205,14 +1207,12 @@ public class ConfigurationGenerator {
         ifNotExistsAndIsDirectoryThenCreate(getPackagesDir());
         checkAddressesAndPorts();
         serverConfigurator.verifyInstallation();
-        if (!"default".equals(userConfig.getProperty(PARAM_TEMPLATE_DBTYPE))) {
+        if (!DB_EXCLUDE_CHECK_LIST.contains(userConfig.getProperty(PARAM_TEMPLATE_DBTYPE))) {
             try {
                 checkDatabaseConnection(userConfig.getProperty(PARAM_TEMPLATE_DBNAME),
                         userConfig.getProperty(PARAM_DB_NAME), userConfig.getProperty(PARAM_DB_USER),
                         userConfig.getProperty(PARAM_DB_PWD), userConfig.getProperty(PARAM_DB_HOST),
                         userConfig.getProperty(PARAM_DB_PORT));
-            } catch (FileNotFoundException e) {
-                throw new ConfigurationException(e);
             } catch (IOException e) {
                 throw new ConfigurationException(e);
             } catch (DatabaseDriverException e) {
