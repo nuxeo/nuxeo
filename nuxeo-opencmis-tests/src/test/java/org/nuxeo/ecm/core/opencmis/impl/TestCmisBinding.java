@@ -791,6 +791,41 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
+    public void testPropertyFromSecondaryType() throws Exception {
+        DocumentModel doc = coreSession.getDocument(new PathRef("/testfolder1/testfile1"));
+        doc.addFacet("CustomFacetWithMySchema2");
+        doc.setPropertyValue("my2:string", "foo");
+        coreSession.saveDocument(doc);
+        coreSession.save();
+        nextTransaction();
+        waitForIndexing();
+
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+
+        Properties p = objService.getProperties(repositoryId, ob.getId(), null, null);
+        Map<String, PropertyData<?>> properties = p.getProperties();
+        PropertyData<?> pd = properties.get("cmis:secondaryObjectTypeIds");
+        assertNotNull(pd);
+        @SuppressWarnings("unchecked")
+        List<String> stl = (List<String>) pd.getValues();
+        assertNotNull(stl);
+        assertTrue(stl.contains("facet:CustomFacetWithMySchema2"));
+        pd = properties.get("my2:string");
+        assertNotNull(pd);
+        assertEquals("foo", pd.getFirstValue());
+
+        // change secondary prop
+        Properties props = createProperties("my2:string", "bar");
+        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        objService.updateProperties(repositoryId, objectIdHolder, null, props, null);
+
+        // re-fetch
+        p = objService.getProperties(repositoryId, ob.getId(), null, null);
+        pd = p.getProperties().get("my2:string");
+        assertEquals("bar", pd.getFirstValue());
+    }
+
+    @Test
     public void testContentStream() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, PropertyIds.NAME));

@@ -591,7 +591,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
 
     protected <T> void updateProperties(NuxeoObjectData object, String changeToken, Properties properties,
             boolean creation) {
-        TypeDefinition type = object.getTypeDefinition();
+        List<TypeDefinition> types = object.getTypeDefinitions();
         // TODO changeToken
         Map<String, PropertyData<?>> p;
         if (properties == null || (p = properties.getProperties()) == null) {
@@ -600,7 +600,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         for (Entry<String, PropertyData<?>> en : p.entrySet()) {
             String key = en.getKey();
             PropertyData<?> d = en.getValue();
-            setObjectProperty(object, key, d, type, creation);
+            setObjectProperty(object, key, d, types, creation);
         }
     }
 
@@ -622,10 +622,15 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         }
     }
 
-    protected <T> void setObjectProperty(NuxeoObjectData object, String key, PropertyData<T> d, TypeDefinition type,
-            boolean creation) {
-        @SuppressWarnings("unchecked")
-        PropertyDefinition<T> pd = (PropertyDefinition<T>) type.getPropertyDefinitions().get(key);
+    protected <T> void setObjectProperty(NuxeoObjectData object, String key, PropertyData<T> d,
+            List<TypeDefinition> types, boolean creation) {
+        PropertyDefinition<T> pd = null;
+        for (TypeDefinition type : types) {
+            pd = (PropertyDefinition<T>) type.getPropertyDefinitions().get(key);
+            if (pd != null) {
+                break;
+            }
+        }
         if (pd == null) {
             throw new CmisRuntimeException("Unknown property: " + key);
         }
@@ -1807,29 +1812,6 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         doc.removeLock();
         save();
         objectIdHolder.setValue(getIdFromDocumentRef(ver));
-    }
-
-    public String checkIn(String objectId, boolean major, Map<String, ?> properties, ObjectType type,
-            ContentStream contentStream, String checkinComment) {
-        VersioningOption option = major ? VersioningOption.MAJOR : VersioningOption.MINOR;
-        DocumentModel doc = getDocumentModel(objectId);
-        if (doc.isVersion() || doc.isProxy()) {
-            throw new CmisInvalidArgumentException("Cannot check in non-PWC: " + doc);
-        }
-        NuxeoObjectData object = new NuxeoObjectData(this, doc);
-        updateProperties(object, null, properties, type, false);
-        if (contentStream != null) {
-            try {
-                NuxeoPropertyData.setContentStream(doc, contentStream, true);
-            } catch (IOException e) {
-                throw new CmisRuntimeException(e.toString(), e);
-            }
-        }
-        coreSession.saveDocument(doc);
-        DocumentRef ver = doc.checkIn(option, checkinComment);
-        doc.removeLock();
-        save();
-        return getIdFromDocumentRef(ver);
     }
 
     @Override

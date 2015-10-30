@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,6 +71,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -208,15 +210,10 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } else if (PropertyIds.POLICY_TEXT.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyStringDataFixed((PropertyDefinition<String>) pd, null);
         } else if (PropertyIds.SECONDARY_OBJECT_TYPE_IDS.equals(name)) {
-            // secondary object types require that the types be
-            // actually registered through the type service
-            // -> return empty for now
-            return (PropertyData<U>) new NuxeoPropertyIdMultiDataFixed((PropertyDefinition<String>) pd,
-                    Collections.<String> emptyList());
+            List<String> facets = getSecondaryTypeIds(doc);
+            return (PropertyData<U>) new NuxeoPropertyIdMultiDataFixed((PropertyDefinition<String>) pd, facets);
         } else if (NuxeoTypeHelper.NX_FACETS.equals(name)) {
-            List<String> facets = new ArrayList<String>(doc.getFacets());
-            facets.remove(FacetNames.IMMUTABLE); // not actually stored or registered
-            Collections.sort(facets);
+            List<String> facets = getFacets(doc);
             return (PropertyData<U>) new NuxeoPropertyIdMultiDataFixed((PropertyDefinition<String>) pd, facets);
         } else if (NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(name)) {
             String state = doc.getCurrentLifeCycleState();
@@ -254,6 +251,31 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                 throw new AssertionError(pd.getPropertyType().toString());
             }
         }
+    }
+
+    /** Gets the doc's relevant facets. */
+    public static List<String> getFacets(DocumentModel doc) {
+        List<String> facets = new ArrayList<String>(doc.getFacets());
+        facets.remove(FacetNames.IMMUTABLE); // not actually stored or registered
+        Collections.sort(facets);
+        return facets;
+    }
+
+    /** Gets the doc's secondary type ids. */
+    public static List<String> getSecondaryTypeIds(DocumentModel doc) {
+        List<String> facets = getFacets(doc);
+        DocumentType type = doc.getDocumentType();
+        for (ListIterator<String> it = facets.listIterator(); it.hasNext();) {
+            // remove those already in the doc type
+            String facet = it.next();
+            if (type.hasFacet(facet)) {
+                it.remove();
+                continue;
+            }
+            // add prefix
+            it.set(NuxeoTypeHelper.FACET_TYPE_PREFIX + facet);
+        }
+        return facets;
     }
 
     public static ContentStream getContentStream(DocumentModel doc, HttpServletRequest request)

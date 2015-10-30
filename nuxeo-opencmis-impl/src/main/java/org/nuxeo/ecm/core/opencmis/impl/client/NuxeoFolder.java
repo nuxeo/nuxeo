@@ -25,6 +25,7 @@ import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
+import org.apache.chemistry.opencmis.client.api.SecondaryType;
 import org.apache.chemistry.opencmis.client.api.Tree;
 import org.apache.chemistry.opencmis.client.runtime.ObjectIdImpl;
 import org.apache.chemistry.opencmis.client.runtime.util.AbstractPageFetcher;
@@ -48,8 +49,9 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
  */
 public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
-    public NuxeoFolder(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
-        super(session, data, type);
+    public NuxeoFolder(NuxeoSession session, NuxeoObjectData data, ObjectType type,
+            List<SecondaryType> secondaryTypes) {
+        super(session, data, type, secondaryTypes);
     }
 
     @Override

@@ -71,29 +71,40 @@ public abstract class NuxeoObject implements CmisObject {
 
     protected final ObjectType type;
 
-    public static NuxeoObject construct(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
+    protected final List<SecondaryType> secondaryTypes;
+
+    /** type + secondaryTypes */
+    protected final List<ObjectType> allTypes;
+
+    public static NuxeoObject construct(NuxeoSession session, NuxeoObjectData data, ObjectType type,
+            List<SecondaryType> secondaryTypes) {
         BaseTypeId baseTypeId = type.getBaseTypeId();
         switch (baseTypeId) {
         case CMIS_FOLDER:
-            return new NuxeoFolder(session, data, type);
+            return new NuxeoFolder(session, data, type, secondaryTypes);
         case CMIS_DOCUMENT:
-            return new NuxeoDocument(session, data, type);
+            return new NuxeoDocument(session, data, type, secondaryTypes);
         case CMIS_POLICY:
             throw new UnsupportedOperationException(baseTypeId.toString());
         case CMIS_RELATIONSHIP:
-            return new NuxeoRelationship(session, data, type);
+            return new NuxeoRelationship(session, data, type, secondaryTypes);
         default:
             throw new RuntimeException(baseTypeId.toString());
         }
     }
 
-    public NuxeoObject(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
+    public NuxeoObject(NuxeoSession session, NuxeoObjectData data, ObjectType type,
+            List<SecondaryType> secondaryTypes) {
         this.session = session;
         service = session.getService();
         nuxeoCmisService = NuxeoCmisService.extractFromCmisService(service);
         objectFactory = session.getObjectFactory();
         this.data = data;
         this.type = type;
+        this.secondaryTypes = secondaryTypes;
+        allTypes = new ArrayList<>(1 + secondaryTypes.size());
+        allTypes.add(type);
+        allTypes.addAll(secondaryTypes);
     }
 
     @SuppressWarnings("unchecked")
@@ -128,17 +139,18 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public List<SecondaryType> getSecondaryTypes() {
-        // TODO secondary types
-        return Collections.emptyList();
+        return secondaryTypes;
     }
 
     @Override
     public List<ObjectType> findObjectType(String id) {
-        if (type.getPropertyDefinitions().containsKey(id)) {
-            return Collections.singletonList(type);
+        List<ObjectType> types = new ArrayList<>(1);
+        for (ObjectType t : allTypes) {
+            if (t.getPropertyDefinitions().containsKey(id)) {
+                types.add(t);
+            }
         }
-        // TODO secondary types
-        return null;
+        return types;
     }
 
     @Override
@@ -235,15 +247,17 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public <T> Property<T> getProperty(String id) {
-        return new NuxeoProperty<T>(this, type, id);
+        return new NuxeoProperty<T>(this, id);
     }
 
     @Override
     public List<Property<?>> getProperties() {
-        Collection<PropertyDefinition<?>> defs = type.getPropertyDefinitions().values();
-        List<Property<?>> list = new ArrayList<Property<?>>(defs.size());
-        for (PropertyDefinition<?> pd : defs) {
-            list.add(new NuxeoProperty<Object>(this, type, pd.getId()));
+        List<Property<?>> list = new ArrayList<Property<?>>();
+        for (ObjectType t : allTypes) {
+            Collection<PropertyDefinition<?>> defs = t.getPropertyDefinitions().values();
+            for (PropertyDefinition<?> pd : defs) {
+                list.add(new NuxeoProperty<Object>(this, pd.getId()));
+            }
         }
         return list;
     }

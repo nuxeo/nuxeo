@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -31,7 +31,7 @@ public class NuxeoProperty<T> implements Property<T> {
     private final NuxeoPropertyDataBase<T> prop;
 
     @SuppressWarnings("unchecked")
-    public NuxeoProperty(NuxeoObject object, ObjectType type, String id) {
+    public NuxeoProperty(NuxeoObject object, String id) {
         prop = (NuxeoPropertyDataBase<T>) object.data.getProperty(id);
     }
 

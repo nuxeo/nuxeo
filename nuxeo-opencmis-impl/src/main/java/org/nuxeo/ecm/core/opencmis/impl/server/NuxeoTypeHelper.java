@@ -88,6 +88,8 @@ public class NuxeoTypeHelper {
 
     public static final String NUXEO_ORDERED_FOLDER = "OrderedFolder";
 
+    public static final String FACET_TYPE_PREFIX = "facet:";
+
     public static final String NX_DUBLINCORE = "dublincore";
 
     public static final String NX_DC_TITLE = "dc:title";
@@ -220,7 +222,7 @@ public class NuxeoTypeHelper {
 
     public static TypeDefinition constructSecondaryType(CompositeType type, CmisVersion cmisVersion) {
         String nuxeoTypeId = type.getName();
-        String id = "facet:" + nuxeoTypeId;
+        String id = FACET_TYPE_PREFIX + nuxeoTypeId;
         NuxeoTypeHelper h = new NuxeoTypeHelper(id, nuxeoTypeId, cmisVersion);
         // Nuxeo Property Definitions
         for (Schema schema : type.getSchemas()) {

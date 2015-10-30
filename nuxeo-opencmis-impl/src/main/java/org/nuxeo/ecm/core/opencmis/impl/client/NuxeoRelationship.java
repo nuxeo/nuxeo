@@ -11,11 +11,14 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
+import java.util.List;
+
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Relationship;
+import org.apache.chemistry.opencmis.client.api.SecondaryType;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
 
@@ -24,8 +27,9 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
  */
 public class NuxeoRelationship extends NuxeoObject implements Relationship {
 
-    public NuxeoRelationship(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
-        super(session, data, type);
+    public NuxeoRelationship(NuxeoSession session, NuxeoObjectData data, ObjectType type,
+            List<SecondaryType> secondaryTypes) {
+        super(session, data, type, secondaryTypes);
     }
 
     @Override

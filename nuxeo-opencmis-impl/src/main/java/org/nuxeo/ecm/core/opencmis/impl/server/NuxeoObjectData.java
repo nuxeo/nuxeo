@@ -130,6 +130,11 @@ public class NuxeoObjectData implements ObjectData {
 
     private TypeDefinition type;
 
+    private List<TypeDefinition> secondaryTypes;
+
+    /** type + secondaryTypes */
+    private List<TypeDefinition> allTypes;
+
     private static final int CACHE_MAX_SIZE = 10;
 
     private static final int DEFAULT_MAX_RENDITIONS = 20;
@@ -154,6 +159,16 @@ public class NuxeoObjectData implements ObjectData {
         this.includeAcl = includeAcl;
         nuxeoCmisService = NuxeoCmisService.extractFromCmisService(service);
         type = nuxeoCmisService.repository.getTypeDefinition(NuxeoTypeHelper.mappedId(doc.getType()));
+        secondaryTypes = new ArrayList<>();
+        for (String secondaryTypeId : NuxeoPropertyData.getSecondaryTypeIds(doc)) {
+            TypeDefinition td = nuxeoCmisService.repository.getTypeDefinition(secondaryTypeId);
+            if (td != null) {
+                secondaryTypes.add(td);
+            } // else doc has old facet not declared in types anymore, ignore
+        }
+        allTypes = new ArrayList<>(1 + secondaryTypes.size());
+        allTypes.add(type);
+        allTypes.addAll(secondaryTypes);
         callContext = nuxeoCmisService.callContext;
     }
 
@@ -193,8 +208,8 @@ public class NuxeoObjectData implements ObjectData {
         return NuxeoTypeHelper.getBaseTypeId(doc);
     }
 
-    public TypeDefinition getTypeDefinition() {
-        return type;
+    public List<TypeDefinition> getTypeDefinitions() {
+        return allTypes;
     }
 
     @Override
@@ -207,12 +222,13 @@ public class NuxeoObjectData implements ObjectData {
         String key = StringUtils.join(propertyIds, ',');
         Properties properties = propertiesCache.get(key);
         if (properties == null) {
-            Map<String, PropertyDefinition<?>> propertyDefinitions = type.getPropertyDefinitions();
-            int len = propertyIds == STAR_FILTER ? propertyDefinitions.size() : propertyIds.size();
-            List<PropertyData<?>> props = new ArrayList<PropertyData<?>>(len);
-            for (PropertyDefinition<?> pd : propertyDefinitions.values()) {
-                if (propertyIds == STAR_FILTER || propertyIds.contains(pd.getId())) {
-                    props.add((PropertyData<?>) NuxeoPropertyData.construct(this, pd, callContext));
+            List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
+            for (TypeDefinition t : allTypes) {
+                Map<String, PropertyDefinition<?>> propertyDefinitions = t.getPropertyDefinitions();
+                for (PropertyDefinition<?> pd : propertyDefinitions.values()) {
+                    if (propertyIds == STAR_FILTER || propertyIds.contains(pd.getId())) {
+                        props.add((PropertyData<?>) NuxeoPropertyData.construct(this, pd, callContext));
+                    }
                 }
             }
             properties = objectFactory.createPropertiesData(props);

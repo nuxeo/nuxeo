@@ -19,6 +19,7 @@ import org.apache.chemistry.opencmis.client.api.Folder;
 import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
+import org.apache.chemistry.opencmis.client.api.SecondaryType;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
@@ -32,8 +33,9 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
  */
 public abstract class NuxeoFileableObject extends NuxeoObject implements FileableCmisObject {
 
-    public NuxeoFileableObject(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
-        super(session, data, type);
+    public NuxeoFileableObject(NuxeoSession session, NuxeoObjectData data, ObjectType type,
+            List<SecondaryType> secondaryTypes) {
+        super(session, data, type, secondaryTypes);
     }
 
     @Override

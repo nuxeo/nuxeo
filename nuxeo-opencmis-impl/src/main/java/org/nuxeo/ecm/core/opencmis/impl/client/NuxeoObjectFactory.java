@@ -40,6 +40,7 @@ import org.apache.chemistry.opencmis.client.runtime.objecttype.DocumentTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.FolderTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.PolicyTypeImpl;
 import org.apache.chemistry.opencmis.client.runtime.objecttype.RelationshipTypeImpl;
+import org.apache.chemistry.opencmis.client.runtime.objecttype.SecondaryTypeImpl;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.Acl;
@@ -64,6 +65,7 @@ import org.apache.chemistry.opencmis.commons.definitions.PropertyIntegerDefiniti
 import org.apache.chemistry.opencmis.commons.definitions.PropertyStringDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.PropertyUriDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.RelationshipTypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.SecondaryTypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
@@ -104,14 +106,23 @@ public class NuxeoObjectFactory implements ObjectFactory {
         if (data == null || data.getProperties() == null || data.getProperties().getProperties() == null) {
             return null;
         }
-        ObjectType type;
+        // object type
         PropertyData<?> propData = data.getProperties().getProperties().get(PropertyIds.OBJECT_TYPE_ID);
-        if (!(propData instanceof PropertyId)) {
-            throw new IllegalArgumentException("Property cmis:objectTypeId must be of type PropertyIdData, not: "
-                    + propData.getClass().getName());
+        ObjectType type = session.getTypeDefinition((String) propData.getFirstValue());
+        // secondary types
+        propData = data.getProperties().getProperties().get(PropertyIds.SECONDARY_OBJECT_TYPE_IDS);
+        List<SecondaryType> secondaryTypes;
+        if (propData == null) {
+            secondaryTypes = Collections.emptyList();
+        } else {
+            @SuppressWarnings("unchecked")
+            List<String> sts = (List<String>) propData.getValues();
+            secondaryTypes = new ArrayList<SecondaryType>(sts.size());
+            for (String st : sts) {
+                secondaryTypes.add((SecondaryType) session.getTypeDefinition(st));
+            }
         }
-        type = session.getTypeDefinition((String) propData.getFirstValue());
-        return NuxeoObject.construct(session, (NuxeoObjectData) data, type);
+        return NuxeoObject.construct(session, (NuxeoObjectData) data, type, secondaryTypes);
     }
 
     @Override
@@ -294,6 +305,8 @@ public class NuxeoObjectFactory implements ObjectFactory {
             return new RelationshipTypeImpl(session, (RelationshipTypeDefinition) typeDefinition);
         } else if (typeDefinition instanceof PolicyTypeDefinition) {
             return new PolicyTypeImpl(session, (PolicyTypeDefinition) typeDefinition);
+        } else if (typeDefinition instanceof SecondaryTypeDefinition) {
+            return new SecondaryTypeImpl(session, (SecondaryTypeDefinition) typeDefinition);
         }
         throw new CmisRuntimeException("Unknown base class: " + typeDefinition.getClass().getName());
     }

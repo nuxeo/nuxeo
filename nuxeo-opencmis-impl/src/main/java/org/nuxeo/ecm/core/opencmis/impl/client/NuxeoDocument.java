@@ -21,6 +21,7 @@ import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
+import org.apache.chemistry.opencmis.client.api.SecondaryType;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
@@ -38,8 +39,9 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
  */
 public class NuxeoDocument extends NuxeoFileableObject implements Document {
 
-    public NuxeoDocument(NuxeoSession session, NuxeoObjectData data, ObjectType type) {
-        super(session, data, type);
+    public NuxeoDocument(NuxeoSession session, NuxeoObjectData data, ObjectType type,
+            List<SecondaryType> secondaryTypes) {
+        super(session, data, type, secondaryTypes);
     }
 
     @Override
