@@ -2,6 +2,7 @@
 <!-- Nuxeo Enterprise Platform -->
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
+<%@ page import="org.nuxeo.common.Environment"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ page import="org.nuxeo.ecm.platform.web.common.admin.AdminStatusHelper"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper"%>
@@ -16,8 +17,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%
-    String productName = Framework.getProperty("org.nuxeo.ecm.product.name");
-    String productVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
+    String productName = Framework.getProperty(Environment.PRODUCT_NAME);
+    String productVersion = Framework.getProperty(Environment.PRODUCT_VERSION);
     String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
     String context = request.getContextPath();
 
