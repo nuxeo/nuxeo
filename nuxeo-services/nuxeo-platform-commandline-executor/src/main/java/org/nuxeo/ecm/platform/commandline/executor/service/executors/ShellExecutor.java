@@ -24,7 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -35,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
@@ -107,7 +112,12 @@ public class ShellExecutor implements Executor {
             if (word.equals("|")) {
                 build = true;
             } else {
-                command.add(word);
+                // on Windows, look up the command in the PATH first
+                if (command.isEmpty() && SystemUtils.IS_OS_WINDOWS) {
+                    command.add(getCommandAbsolutePath(word));
+                } else {
+                    command.add(word);
+                }
                 build = !it.hasNext();
             }
             if (!build) {
@@ -217,6 +227,32 @@ public class ShellExecutor implements Executor {
 
         }
         return Collections.singletonList(word);
+    }
+
+    /**
+     * Returns the absolute path of a command looked up on the PATH
+     * or the initial string if not found.
+     *
+     * @since 7.10
+     */
+    public static String getCommandAbsolutePath(String command) {
+        // no lookup if the command is already an absolute path
+        if (Paths.get(command).isAbsolute()) {
+            return command;
+        }
+        List<String> extensions = Arrays.asList("", ".exe");
+        // lookup for "command" or "command.exe" in the PATH
+        String[] systemPaths = System.getenv("PATH").split(File.pathSeparator);
+        for (String ext : extensions) {
+            for (String sp : systemPaths) {
+                Path path = Paths.get(sp);
+                if (Files.exists(path.resolve(command + ext))) {
+                    return path.resolve(command + ext).toString();
+                 }
+            }
+        }
+        // not found : return the initial string
+        return command;
     }
 
 }
