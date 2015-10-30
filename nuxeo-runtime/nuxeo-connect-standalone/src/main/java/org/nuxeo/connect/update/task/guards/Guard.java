@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +34,7 @@ public class Guard {
     protected Expression expr;
 
     public Guard(String expr) {
-        this.value = expr;
+        value = expr;
         try {
             this.expr = ExpressionFactory.createExpression(expr);
         } catch (ParseException e) {
@@ -48,11 +48,13 @@ public class Guard {
         map.put("Version", new VersionHelper());
         map.put("Platform", new PlatformHelper());
         JexlContext ctx = new JexlContext() {
+            @Override
             @SuppressWarnings("rawtypes")
             public void setVars(Map arg0) {
                 // do nothing
             }
 
+            @Override
             @SuppressWarnings("rawtypes")
             public Map getVars() {
                 return map;

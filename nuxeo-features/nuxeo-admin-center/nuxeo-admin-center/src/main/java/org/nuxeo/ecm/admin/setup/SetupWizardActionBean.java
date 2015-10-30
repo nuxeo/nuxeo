@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -193,8 +193,8 @@ public class SetupWizardActionBean implements Serializable {
      */
     protected void setParameters() {
         userConfig = setupConfigGenerator.getUserConfig();
-        parameters = new HashMap<String, String>();
-        advancedParameters = new TreeMap<String, String>();
+        parameters = new HashMap<>();
+        advancedParameters = new TreeMap<>();
         // will remove managed parameters later in setParameter()
         for (String key : userConfig.stringPropertyNames()) {
             if (System.getProperty(key) == null
@@ -277,7 +277,7 @@ public class SetupWizardActionBean implements Serializable {
             }
         }
 
-        Map<String, String> customParameters = new HashMap<String, String>();
+        Map<String, String> customParameters = new HashMap<>();
         customParameters.putAll(parameters);
         customParameters.putAll(advancedParameters);
         try {

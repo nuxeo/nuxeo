@@ -129,15 +129,12 @@ public class Context {
 
     public String getFieldsInErrorAsJson() {
         StringBuffer sb = new StringBuffer("[");
-
         for (String key : errors.keySet()) {
             sb.append("'");
             sb.append(key);
             sb.append("',");
         }
-
         sb.append("END]");
-
         return sb.toString().replace(",END", "");
     }
 
