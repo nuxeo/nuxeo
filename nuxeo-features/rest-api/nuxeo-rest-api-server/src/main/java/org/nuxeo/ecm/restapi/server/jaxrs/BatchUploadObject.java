@@ -233,7 +233,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @Produces("application/json")
     @Path("{batchId}/execute/{operationId}")
     public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(OPERATION_ID) String operationId,
-            @Context HttpServletRequest request, ExecutionRequest xreq) {
+            @Context HttpServletRequest request, ExecutionRequest xreq) throws UnsupportedEncodingException {
         return executeBatch(batchId, null, operationId, request, xreq);
     }
 
@@ -241,12 +241,13 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     @Produces("application/json")
     @Path("{batchId}/{fileIdx}/execute/{operationId}")
     public Object execute(@PathParam(REQUEST_BATCH_ID) String batchId, @PathParam(REQUEST_FILE_IDX) String fileIdx,
-            @PathParam(OPERATION_ID) String operationId, @Context HttpServletRequest request, ExecutionRequest xreq) {
+            @PathParam(OPERATION_ID) String operationId, @Context HttpServletRequest request, ExecutionRequest xreq)
+            throws UnsupportedEncodingException {
         return executeBatch(batchId, fileIdx, operationId, request, xreq);
     }
 
     protected Object executeBatch(String batchId, String fileIdx, String operationId, HttpServletRequest request,
-            ExecutionRequest xreq) {
+            ExecutionRequest xreq) throws UnsupportedEncodingException {
         RequestContext.getActiveContext(request).addRequestCleanupHandler(req -> {
             BatchManager bm = Framework.getService(BatchManager.class);
             bm.clean(batchId);
@@ -289,14 +290,14 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         }
     }
 
-    protected Response buildJSONResponse(StatusType status, String message) {
-        return Response.status(status).header("Content-Length", message.length()).type(
+    protected Response buildJSONResponse(StatusType status, String message) throws UnsupportedEncodingException {
+        return Response.status(status).header("Content-Length", message.getBytes("UTF-8").length).type(
                 MediaType.APPLICATION_JSON + "; charset=UTF-8").entity(message).build();
     }
 
-    protected Response buildHTMLResponse(StatusType status, String message) {
+    protected Response buildHTMLResponse(StatusType status, String message) throws UnsupportedEncodingException {
         message = "<html>" + message + "</html>";
-        return Response.status(status).header("Content-Length", message.length()).type(
+        return Response.status(status).header("Content-Length", message.getBytes("UTF-8").length).type(
                 MediaType.TEXT_HTML_TYPE + "; charset=UTF-8").entity(message).build();
     }
 
