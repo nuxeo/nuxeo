@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -104,6 +104,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     private static final String DRIVE_METADATA_VIEW = "view_drive_metadata";
 
+    @SuppressWarnings("hiding")
     @In(create = true, required = false)
     protected transient NavigationContext navigationContext;
 
@@ -170,6 +171,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      * @see #getDriveEditURL(DocumentModel)
      */
     public String getDriveEditURL() {
+        @SuppressWarnings("hiding")
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getDriveEditURL(currentDocument);
     }
@@ -185,7 +187,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      *         /protocol/server[:port]/webappName/[user/userName/]repo/repoName/nxdocid/docId/filename/fileName[/
      *         downloadUrl/downloadUrl]"
      */
-    public String getDriveEditURL(DocumentModel currentDocument) {
+    public String getDriveEditURL(@SuppressWarnings("hiding") DocumentModel currentDocument) {
         if (currentDocument == null) {
             return null;
         }
@@ -201,7 +203,9 @@ public class NuxeoDriveActions extends InputController implements Serializable {
                     currentDocument.getPathAsString(), currentDocument.getId()));
         }
         String fileName = blob.getFilename();
-        ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance()
+                                                                     .getExternalContext()
+                                                                     .getRequest();
         String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
         StringBuffer sb = new StringBuffer();
         sb.append(NXDRIVE_PROTOCOL).append("://");
@@ -234,6 +238,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "canSynchronizeCurrentDocument")
     public boolean canSynchronizeCurrentDocument() {
+        @SuppressWarnings("hiding")
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -243,6 +248,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "canUnSynchronizeCurrentDocument")
     public boolean canUnSynchronizeCurrentDocument() {
+        @SuppressWarnings("hiding")
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -260,6 +266,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "canNavigateToCurrentSynchronizationRoot")
     public boolean canNavigateToCurrentSynchronizationRoot() {
+        @SuppressWarnings("hiding")
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -277,6 +284,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "currentDocumentUserWorkspace", scope = ScopeType.PAGE)
     public boolean isCurrentDocumentUserWorkspace() {
+        @SuppressWarnings("hiding")
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -331,7 +339,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "nuxeoDriveClientPackages", scope = ScopeType.CONVERSATION)
     public List<DesktopPackageDefinition> getClientPackages() {
-        List<DesktopPackageDefinition> packages = new ArrayList<DesktopPackageDefinition>();
+        List<DesktopPackageDefinition> packages = new ArrayList<>();
         Object desktopPackageBaseURL = Component.getInstance("desktopPackageBaseURL", ScopeType.APPLICATION);
         // Add link to packages from the update site
         if (desktopPackageBaseURL != ObjectUtils.NULL) {
@@ -392,8 +400,8 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     protected FileSystemItem getFileSystemItem(DocumentModel doc) {
         // Force parentItem to null to avoid computing ancestors
-        FileSystemItem fileSystemItem = Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(
-                doc, null);
+        FileSystemItem fileSystemItem = Framework.getLocalService(FileSystemItemAdapterService.class)
+                                                 .getFileSystemItem(doc, null);
         if (fileSystemItem == null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Document %s (%s) is not adaptable as a FileSystemItem.",
