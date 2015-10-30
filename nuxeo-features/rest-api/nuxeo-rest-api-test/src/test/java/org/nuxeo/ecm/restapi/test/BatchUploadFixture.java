@@ -171,35 +171,34 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("normal", node.get("uploadType").getValueAsText());
         assertEquals(fileSize2, node.get("uploadedSize").getValueAsText());
 
-        // TODO NXP-18257: Fix the GET requests generating 2 concurrent POST requests at next call to getResponse...
         // Get batch info
-        // response = getResponse(RequestType.GET, "upload/" + batchId);
-        // assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        // ArrayNode nodes = (ArrayNode) mapper.readTree(response.getEntityInputStream());
-        // assertEquals(2, nodes.size());
-        // node = nodes.get(0);
-        // assertEquals("Fichier accentué 1.txt", node.get("name").getValueAsText());
-        // assertEquals(fileSize1, node.get("size").getValueAsText());
-        // assertEquals("normal", node.get("uploadType").getValueAsText());
-        // node = nodes.get(1);
-        // assertEquals("Fichier accentué 2.txt", node.get("name").getValueAsText());
-        // assertEquals(fileSize2, node.get("size").getValueAsText());
-        // assertEquals("normal", node.get("uploadType").getValueAsText());
+        response = getResponse(RequestType.GET, "upload/" + batchId);
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        ArrayNode nodes = (ArrayNode) mapper.readTree(response.getEntityInputStream());
+        assertEquals(2, nodes.size());
+        node = nodes.get(0);
+        assertEquals("Fichier accentué 1.txt", node.get("name").getValueAsText());
+        assertEquals(fileSize1, node.get("size").getValueAsText());
+        assertEquals("normal", node.get("uploadType").getValueAsText());
+        node = nodes.get(1);
+        assertEquals("Fichier accentué 2.txt", node.get("name").getValueAsText());
+        assertEquals(fileSize2, node.get("size").getValueAsText());
+        assertEquals("normal", node.get("uploadType").getValueAsText());
 
         // Get file info
-        // response = getResponse(RequestType.GET, "upload/" + batchId + "/0");
-        // assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        // node = mapper.readTree(response.getEntityInputStream());
-        // assertEquals("Fichier accentué 1.txt", node.get("name").getValueAsText());
-        // assertEquals(fileSize1, node.get("size").getValueAsText());
-        // assertEquals("normal", node.get("uploadType").getValueAsText());
-        //
-        // response = getResponse(RequestType.GET, "upload/" + batchId + "/1");
-        // assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        // node = mapper.readTree(response.getEntityInputStream());
-        // assertEquals("Fichier accentué 2.txt", node.get("name").getValueAsText());
-        // assertEquals(fileSize2, node.get("size").getValueAsText());
-        // assertEquals("normal", node.get("uploadType").getValueAsText());
+        response = getResponse(RequestType.GET, "upload/" + batchId + "/0");
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals("Fichier accentué 1.txt", node.get("name").getValueAsText());
+        assertEquals(fileSize1, node.get("size").getValueAsText());
+        assertEquals("normal", node.get("uploadType").getValueAsText());
+
+        response = getResponse(RequestType.GET, "upload/" + batchId + "/1");
+        assertEquals(Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals("Fichier accentué 2.txt", node.get("name").getValueAsText());
+        assertEquals(fileSize2, node.get("size").getValueAsText());
+        assertEquals("normal", node.get("uploadType").getValueAsText());
 
         // Create a doc which references the uploaded blobs using the Document path endpoint
         String json = "{";
@@ -323,18 +322,17 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("0", node.get("uploadedChunkId").getValueAsText());
         assertEquals("3", node.get("chunkCount").getValueAsText());
 
-        // TODO NXP-18257: Fix the GET request generating 2 concurrent POST requests at next call to getResponse...
         // Get file info
-        // response = getResponse(RequestType.GET, "upload/" + batchId + "/0");
-        // assertEquals(308, response.getStatus());
-        // node = mapper.readTree(response.getEntityInputStream());
-        // assertEquals("Fichier accentué.txt", node.get("name").getValueAsText());
-        // assertEquals(fileSize, node.get("size").getValueAsText());
-        // assertEquals("chunked", node.get("uploadType").getValueAsText());
-        // ArrayNode chunkIds = (ArrayNode) node.get("uploadedChunkIds");
-        // assertEquals(1, chunkIds.size());
-        // assertEquals("0", chunkIds.get(0).getValueAsText());
-        // assertEquals("3", node.get("chunkCount").getValueAsText());
+        response = getResponse(RequestType.GET, "upload/" + batchId + "/0");
+        assertEquals(200, response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals("Fichier accentué.txt", node.get("name").getValueAsText());
+        assertEquals(fileSize, node.get("size").getValueAsText());
+        assertEquals("chunked", node.get("uploadType").getValueAsText());
+        ArrayNode chunkIds = (ArrayNode) node.get("uploadedChunkIds");
+        assertEquals(1, chunkIds.size());
+        assertEquals("0", chunkIds.get(0).getValueAsText());
+        assertEquals("3", node.get("chunkCount").getValueAsText());
 
         // Chunk 3
         headers.put("Content-Length", chunkLength3);
@@ -350,19 +348,18 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("2", node.get("uploadedChunkId").getValueAsText());
         assertEquals("3", node.get("chunkCount").getValueAsText());
 
-        // TODO NXP-18257: Fix the GET request generating 2 concurrent POST requests at next call to getResponse...
         // Get file info
-        // response = getResponse(RequestType.GET, "upload/" + batchId + "/0");
-        // assertEquals(308, response.getStatus());
-        // node = mapper.readTree(response.getEntityInputStream());
-        // assertEquals("Fichier accentué.txt", node.get("name").getValueAsText());
-        // assertEquals(fileSize, node.get("size").getValueAsText());
-        // assertEquals("chunked", node.get("uploadType").getValueAsText());
-        // ArrayNode chunkIds = (ArrayNode) node.get("uploadedChunkIds");
-        // assertEquals(2, chunkIds.size());
-        // assertEquals("0", chunkIds.get(0).getValueAsText());
-        // assertEquals("2", chunkIds.get(1).getValueAsText());
-        // assertEquals("3", node.get("chunkCount").getValueAsText());
+        response = getResponse(RequestType.GET, "upload/" + batchId + "/0");
+        assertEquals(200, response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals("Fichier accentué.txt", node.get("name").getValueAsText());
+        assertEquals(fileSize, node.get("size").getValueAsText());
+        assertEquals("chunked", node.get("uploadType").getValueAsText());
+        chunkIds = (ArrayNode) node.get("uploadedChunkIds");
+        assertEquals(2, chunkIds.size());
+        assertEquals("0", chunkIds.get(0).getValueAsText());
+        assertEquals("2", chunkIds.get(1).getValueAsText());
+        assertEquals("3", node.get("chunkCount").getValueAsText());
 
         // Chunk 2
         headers.put("Content-Length", chunkLength2);
@@ -385,7 +382,7 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("Fichier accentué.txt", node.get("name").getValueAsText());
         assertEquals(fileSize, node.get("size").getValueAsText());
         assertEquals("chunked", node.get("uploadType").getValueAsText());
-        ArrayNode chunkIds = (ArrayNode) node.get("uploadedChunkIds");
+        chunkIds = (ArrayNode) node.get("uploadedChunkIds");
         assertEquals(3, chunkIds.size());
         assertEquals("0", chunkIds.get(0).getValueAsText());
         assertEquals("1", chunkIds.get(1).getValueAsText());
