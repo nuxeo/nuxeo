@@ -38,7 +38,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.URIUtils;
+import org.nuxeo.drive.NuxeoDriveConstants;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
@@ -84,9 +87,17 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     public static final String PROTOCOL_COMMAND_EDIT = "edit";
 
-    public static final String UPDATE_SITE_URL_PROP_KEY = "org.nuxeo.drive.update.site.url";
+    /**
+     * @deprecated Use {@link NuxeoDriveConstants#UPDATE_SITE_URL_PROP_KEY} instead
+     */
+    @Deprecated
+    public static final String UPDATE_SITE_URL_PROP_KEY = NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY;
 
-    public static final String SERVER_VERSION_PROP_KEY = "org.nuxeo.ecm.product.version";
+    /**
+     * @deprecated Since 7.10. Use {@link Environment} properties
+     */
+    @Deprecated
+    public static final String SERVER_VERSION_PROP_KEY = Environment.PRODUCT_VERSION;
 
     public static final String NEW_DRIVE_EDIT_URL_PROP_KEY = "org.nuxeo.drive.new.edit.url";
 
@@ -368,7 +379,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     @Factory(value = "desktopPackageBaseURL", scope = ScopeType.APPLICATION)
     public Object getDesktopPackageBaseURL() {
-        String URL = Framework.getProperty(UPDATE_SITE_URL_PROP_KEY);
+        String URL = Framework.getProperty(NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY);
         if (URL == null) {
             return ObjectUtils.NULL;
         }
@@ -378,7 +389,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         }
         sb.append(DESKTOP_PACKAGE_URL_LATEST_SEGMENT);
         sb.append("/");
-        String platformVersion = Framework.getProperty(SERVER_VERSION_PROP_KEY);
+        String platformVersion = Framework.getProperty(Environment.DISTRIBUTION_VERSION);
         int indexOfHFSuffix = platformVersion.indexOf("-HF");
         if (indexOfHFSuffix > -1) {
             platformVersion = platformVersion.substring(0, indexOfHFSuffix);

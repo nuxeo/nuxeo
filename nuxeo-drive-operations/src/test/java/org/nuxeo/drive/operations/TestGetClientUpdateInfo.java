@@ -25,6 +25,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.nuxeo.common.Environment;
+import org.nuxeo.drive.NuxeoDriveConstants;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
@@ -52,12 +55,12 @@ public class TestGetClientUpdateInfo {
 
     @Before
     public void init() throws Exception {
-
         mapper = new ObjectMapper();
 
         // Set Framework properties required for the client update
-        Framework.getProperties().put("org.nuxeo.ecm.product.version", "5.9.3");
-        Framework.getProperties().put("org.nuxeo.drive.update.site.url", "http://community.nuxeo.com/static/drive/");
+        Framework.getProperties().put(Environment.DISTRIBUTION_VERSION, "5.9.3");
+        Framework.getProperties().put(NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY,
+                "http://community.nuxeo.com/static/drive/");
     }
 
     @Test

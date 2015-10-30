@@ -18,6 +18,8 @@ package org.nuxeo.drive.operations;
 
 import java.io.IOException;
 
+import org.nuxeo.common.Environment;
+import org.nuxeo.drive.NuxeoDriveConstants;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -41,9 +43,9 @@ public class NuxeoDriveGetClientUpdateInfo {
     @OperationMethod
     public Blob run() throws IOException {
 
-        String serverVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
-        String updateSiteURL = Framework.getProperty("org.nuxeo.drive.update.site.url");
-        String betaUpdateSiteURL = Framework.getProperty("org.nuxeo.drive.beta.update.site.url");
+        String serverVersion = Framework.getProperty(Environment.DISTRIBUTION_VERSION);
+        String updateSiteURL = Framework.getProperty(NuxeoDriveConstants.UPDATE_SITE_URL_PROP_KEY);
+        String betaUpdateSiteURL = Framework.getProperty(NuxeoDriveConstants.BETA_UPDATE_SITE_URL_PROP_KEY);
         NuxeoDriveClientUpdateInfo info = new NuxeoDriveClientUpdateInfo(serverVersion, updateSiteURL,
                 betaUpdateSiteURL);
         return NuxeoDriveOperationHelper.asJSONBlob(info);
