@@ -22,6 +22,7 @@ import java.util.List;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.admincenter.activity.ActivityPage;
 import org.nuxeo.functionaltests.pages.admincenter.monitoring.MonitoringPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.openqa.selenium.By;
@@ -56,6 +57,9 @@ public class AdminCenterBasePage extends AbstractPage {
 
     @FindBy(linkText = "Workflow")
     public WebElement worflowsLink;
+
+    @FindBy(linkText = "Activity")
+    public WebElement activityLink;
 
     public AdminCenterBasePage(WebDriver driver) {
         super(driver);
@@ -94,6 +98,11 @@ public class AdminCenterBasePage extends AbstractPage {
     public WorkflowsPage getWorkflowsPage() {
         worflowsLink.click();
         return asPage(WorkflowsPage.class);
+    }
+
+    public ActivityPage getActivityPage() {
+        activityLink.click();
+        return asPage(ActivityPage.class);
     }
 
     public String getSelectedSubTab() {
