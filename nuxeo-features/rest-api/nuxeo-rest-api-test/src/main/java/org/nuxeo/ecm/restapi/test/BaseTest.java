@@ -134,7 +134,7 @@ public class BaseTest {
         if (requestType == RequestType.GETES) {
             builder = wr.accept("application/json+esentity");
         } else {
-            builder = wr.accept(MediaType.APPLICATION_JSON).header("X-NXDocumentProperties", "dublincore");
+            builder = wr.accept(MediaType.APPLICATION_JSON + "; charset=UTF-8").header("X-NXDocumentProperties", "dublincore");
         }
         if (mp != null) {
             builder = wr.type(MediaType.MULTIPART_FORM_DATA_TYPE);
