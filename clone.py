@@ -50,9 +50,12 @@ remotely (default: %default)""")
 virtual drive on Windows""")
         parser.add_option('-m', "--marketplace-conf", action="store",
                           type="string", dest='marketplace_conf', default=None,
-                          help="""The Marketplace configuration URL
+                          help="""the Marketplace configuration URL
 (default: None)\n
 If set to '' (empty string), it defaults to '%s'""" % (DEFAULT_MP_CONF_URL))
+        parser.add_option('--mp-only', action="store_true",
+                          dest='mp_only', default=False,
+                          help="""clone only package repositories (default: %default)""")
 
         (options, args) = parser.parse_args()
         repo = Repository(os.getcwd(), options.remote_alias,
@@ -64,8 +67,10 @@ If set to '' (empty string), it defaults to '%s'""" % (DEFAULT_MP_CONF_URL))
         else:
             raise ExitException(1, "'version' must be a single argument. "
                                 "See usage with '-h'.")
-        repo.clone(version, options.fallback_branch, options.with_optionals,
-                   options.marketplace_conf)
+        if options.mp_only:
+            repo.clone_mp(options.marketplace_conf if options.marketplace_conf else '')
+        else:
+            repo.clone(version, options.fallback_branch, options.with_optionals, options.marketplace_conf)
     #pylint: disable=C0103
     except ExitException, e:
         if e.message is not None:

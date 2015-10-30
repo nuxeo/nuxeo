@@ -289,6 +289,10 @@ class Repository(object):
         """Clone or update Nuxeo Marketplace package repositories.
 
         Returns the Marketplace packages configuration."""
+        if marketplace_conf == '':
+            marketplace_conf = DEFAULT_MP_CONF_URL
+        if not marketplace_conf:
+            return
         os.chdir(self.mp_dir)
         mp_config = self.get_mp_config(marketplace_conf)
         for marketplace in mp_config.sections():
@@ -334,10 +338,7 @@ class Repository(object):
                 self.url_pattern = self.url_pattern.replace("addons/module",
                                                             "module")
             # Marketplace packages
-            if marketplace_conf == '':
-                marketplace_conf = DEFAULT_MP_CONF_URL
-            if marketplace_conf:
-                self.clone_mp(marketplace_conf)
+            self.clone_mp(marketplace_conf)
             os.chdir(cwd)
 
     def get_current_version(self):
