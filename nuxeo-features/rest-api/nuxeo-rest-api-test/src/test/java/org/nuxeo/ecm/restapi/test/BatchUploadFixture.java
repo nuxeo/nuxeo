@@ -279,7 +279,7 @@ public class BatchUploadFixture extends BaseTest {
      * @since 7.4
      */
     @Test
-    public void textChunkedUpload() throws IOException {
+    public void testChunkedUpload() throws IOException {
 
         // Get batch id, used as a session id
         ClientResponse response = getResponse(RequestType.POST, "upload");
