@@ -290,14 +290,14 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected Response buildJSONResponse(StatusType status, String message) {
-        return Response.status(status).header("Content-Length", message.length()).type(MediaType.APPLICATION_JSON).entity(
-                message).build();
+        return Response.status(status).header("Content-Length", message.length()).type(
+                MediaType.APPLICATION_JSON + "; charset=UTF-8").entity(message).build();
     }
 
     protected Response buildHTMLResponse(StatusType status, String message) {
         message = "<html>" + message + "</html>";
-        return Response.status(status).header("Content-Length", message.length()).type(MediaType.TEXT_HTML_TYPE).entity(
-                message).build();
+        return Response.status(status).header("Content-Length", message.length()).type(
+                MediaType.TEXT_HTML_TYPE + "; charset=UTF-8").entity(message).build();
     }
 
     protected Response buildEmptyResponse(StatusType status) {
