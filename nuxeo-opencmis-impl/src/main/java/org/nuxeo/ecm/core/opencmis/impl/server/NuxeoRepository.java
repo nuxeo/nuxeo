@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -182,7 +182,7 @@ public class NuxeoRepository {
     protected TypeManagerImpl initializeTypes() {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         // scan the types to find super/inherited relationships
-        Map<String, List<String>> typesChildren = new HashMap<String, List<String>>();
+        Map<String, List<String>> typesChildren = new HashMap<>();
         for (DocumentType dt : schemaManager.getDocumentTypes()) {
             org.nuxeo.ecm.core.schema.types.Type st = dt.getSuperType();
             if (st == null) {
@@ -191,13 +191,13 @@ public class NuxeoRepository {
             String name = st.getName();
             List<String> siblings = typesChildren.get(name);
             if (siblings == null) {
-                siblings = new LinkedList<String>();
+                siblings = new LinkedList<>();
                 typesChildren.put(name, siblings);
             }
             siblings.add(dt.getName());
         }
         // convert the transitive closure for Folder and Document subtypes
-        Set<String> done = new HashSet<String>();
+        Set<String> done = new HashSet<>();
         TypeManagerImpl typeManager = new TypeManagerImpl();
         typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_DOCUMENT, schemaManager, cmisVersion));
         typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_FOLDER, schemaManager, cmisVersion));
@@ -304,11 +304,11 @@ public class NuxeoRepository {
         aclCaps.setAclPropagation(AclPropagation.PROPAGATE);
         aclCaps.setSupportedPermissions(SupportedPermissions.REPOSITORY);
 
-        List<PermissionDefinition> permDefs = new ArrayList<PermissionDefinition>();
+        List<PermissionDefinition> permDefs = new ArrayList<>();
         addPermissionDefinitions(permDefs);
         aclCaps.setPermissionDefinitionData(permDefs);
 
-        Map<String, PermissionMapping> permMap = new HashMap<String, PermissionMapping>();
+        Map<String, PermissionMapping> permMap = new HashMap<>();
         addPermissionMapping(permMap, CAN_GET_DESCENDENTS_FOLDER, READ);
         addPermissionMapping(permMap, CAN_GET_CHILDREN_FOLDER, READ);
         addPermissionMapping(permMap, CAN_GET_PARENTS_FOLDER, READ);

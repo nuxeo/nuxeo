@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -215,7 +215,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     protected Properties createBaseDocumentProperties(String name, String typeId) {
-        List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
+        List<PropertyData<?>> props = new ArrayList<>();
         props.add(factory.createPropertyStringData(PropertyIds.NAME, name));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, typeId));
         return factory.createPropertiesData(props);
@@ -277,7 +277,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     protected static Set<String> set(String... strings) {
-        return new HashSet<String>(Arrays.asList(strings));
+        return new HashSet<>(Arrays.asList(strings));
     }
 
     protected void checkInfo(RepositoryInfo info) {
@@ -328,7 +328,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         for (PermissionMapping permissonMapping : aclCaps.getPermissionMapping().values()) {
             String key = permissonMapping.getKey();
             List<String> perms = permissonMapping.getPermissions();
-            permMap.put(key, new HashSet<String>(perms));
+            permMap.put(key, new HashSet<>(perms));
         }
         Map<String, Set<String>> expectedPermMap = new HashMap<>();
         expectedPermMap.put(CAN_GET_DESCENDENTS_FOLDER, set(READ));
@@ -431,7 +431,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     public List<String> getTypeIds(TypeDefinitionList types) {
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         for (TypeDefinition type : types.getList()) {
             ids.add(type.getId());
         }
@@ -622,7 +622,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
                 "HasRelatedText", //
                 "Publishable", //
                 "Versionable" //
-        ), new HashSet<String>(facets));
+        ), new HashSet<>(facets));
         assertEquals(null, getString(data, NuxeoTypeHelper.NX_DIGEST));
         @SuppressWarnings("unchecked")
         List<String> hashes = (List<String>) getValues(data, PropertyIds.CONTENT_STREAM_HASH);
@@ -660,7 +660,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     protected String createDocumentMyDocType() {
-        List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
+        List<PropertyData<?>> props = new ArrayList<>();
         props.add(factory.createPropertyStringData(PropertyIds.NAME, COMPLEX_TITLE));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, "MyDocType"));
         props.add(factory.createPropertyStringData("my:string", "abc"));
@@ -734,7 +734,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     public void testCreateDocumentImplicitType() throws Exception {
-        List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
+        List<PropertyData<?>> props = new ArrayList<>();
         props.add(factory.createPropertyStringData(PropertyIds.NAME, "doc.txt"));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, "cmis:document"));
         props.add(factory.createPropertyStringData("dc:description", "my doc"));
@@ -756,7 +756,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
         Properties props = createProperties("dc:title", "new title");
-        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        Holder<String> objectIdHolder = new Holder<>(ob.getId());
         objService.updateProperties(repositoryId, objectIdHolder, null, props, null);
         assertEquals(ob.getId(), objectIdHolder.getValue());
 
@@ -845,7 +845,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // set stream
 
         cs = new ContentStreamImpl("foo.txt", "text/plain; charset=UTF-8", STREAM_CONTENT);
-        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        Holder<String> objectIdHolder = new Holder<>(ob.getId());
         objService.setContentStream(repositoryId, objectIdHolder, Boolean.TRUE, null, cs, null);
         assertEquals(ob.getId(), objectIdHolder.getValue());
 
@@ -892,7 +892,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         if (tree == null) {
             return null;
         }
-        List<String> r = new LinkedList<String>();
+        List<String> r = new LinkedList<>();
         for (Iterator<ObjectInFolderContainer> it = tree.iterator(); it.hasNext();) {
             ObjectInFolderContainer child = it.next();
             String name = getString(child.getObject().getObject(), PropertyIds.NAME);
@@ -1200,7 +1200,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // checked in doc
 
-        Holder<String> idHolder = new Holder<String>(ob.getId());
+        Holder<String> idHolder = new Holder<>(ob.getId());
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
 
         aa = objService.getAllowableActions(repositoryId, ob.getId(), null);
@@ -1227,7 +1227,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     public void testMoveObject() throws Exception {
         ObjectData fold = getObjectByPath("/testfolder1");
         ObjectData ob = getObjectByPath("/testfolder2/testfolder3/testfile4");
-        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        Holder<String> objectIdHolder = new Holder<>(ob.getId());
         objService.moveObject(repositoryId, objectIdHolder, fold.getId(), null, null);
         assertEquals(ob.getId(), objectIdHolder.getValue());
         try {
@@ -1579,11 +1579,19 @@ public class TestCmisBinding extends TestCmisBindingBase {
         statement = "SELECT cmis:name FROM File" + " WHERE nuxeo:lifecycleState = 'deleted'" + " ORDER BY cmis:name";
         res = query(statement);
         assertEquals(2, res.getNumItems().intValue());
-        assertEquals("testfile1_Title",
-                res.getObjects().get(0).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
+        assertEquals("testfile1_Title", res.getObjects()
+                                           .get(0)
+                                           .getProperties()
+                                           .getProperties()
+                                           .get(PropertyIds.NAME)
+                                           .getFirstValue());
         // file5 was deleted in the setup function of the test case
-        assertEquals("title5",
-                res.getObjects().get(1).getProperties().getProperties().get(PropertyIds.NAME).getFirstValue());
+        assertEquals("title5", res.getObjects()
+                                  .get(1)
+                                  .getProperties()
+                                  .getProperties()
+                                  .get(PropertyIds.NAME)
+                                  .getFirstValue());
 
         statement = "SELECT cmis:name FROM File"
                 + " WHERE nuxeo:lifecycleState IN ('project', 'deleted', 'somethingelse')";
@@ -1652,7 +1660,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // checkin testfile1 as an archived version
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
-        Holder<String> idHolder = new Holder<String>(id);
+        Holder<String> idHolder = new Holder<>(id);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "this is the comment", null, null, null,
                 null);
 
@@ -1713,7 +1721,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // checkin testfile1 as an archived version
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
-        Holder<String> idHolder = new Holder<String>(id);
+        Holder<String> idHolder = new Holder<>(id);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "this is the comment", null, null, null,
                 null);
 
@@ -1751,7 +1759,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
 
         Properties props = createProperties("dc:description", "new description");
-        idHolder = new Holder<String>(ob.getId());
+        idHolder = new Holder<>(ob.getId());
         objService.updateProperties(repositoryId, idHolder, null, props, null);
         assertEquals(ob.getId(), idHolder.getValue());
 
@@ -1907,9 +1915,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds NOT IN ('CustomFacetWithoutSchema', 'CustomFacetWithMySchema2')";
         res = query(statement);
         assertEquals(1, res.getNumItems().intValue());
-        checkValue(NuxeoTypeHelper.NX_FACETS,
-                Arrays.asList("Commentable", "Downloadable", "HasRelatedText", "Publishable", "Versionable"),
-                res.getObjects().get(0));
+        checkValue(NuxeoTypeHelper.NX_FACETS, Arrays.asList("Commentable", "Downloadable", "HasRelatedText",
+                "Publishable", "Versionable"), res.getObjects().get(0));
         statement = "SELECT nuxeo:secondaryObjectTypeIds FROM File WHERE ANY nuxeo:secondaryObjectTypeIds NOT IN ('Versionable', 'CustomFacetWithoutSchema')";
         res = query(statement);
         assertEquals(0, res.getNumItems().intValue());
@@ -2125,7 +2132,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
         Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
 
-        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        Holder<String> objectIdHolder = new Holder<>(ob.getId());
         objService.updateProperties(repositoryId, objectIdHolder, null, properties, null);
 
         sleepForFulltext();
@@ -2181,7 +2188,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
         Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
 
-        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        Holder<String> objectIdHolder = new Holder<>(ob.getId());
         objService.updateProperties(repositoryId, objectIdHolder, null, properties, null);
 
         sleepForFulltext();
@@ -2203,7 +2210,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
         Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
 
-        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        Holder<String> objectIdHolder = new Holder<>(ob.getId());
         objService.updateProperties(repositoryId, objectIdHolder, null, properties, null);
 
         sleepForFulltext();
@@ -2540,7 +2547,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
-        Holder<String> idHolder = new Holder<String>(id);
+        Holder<String> idHolder = new Holder<>(id);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
 
         waitForIndexing();
@@ -2573,7 +2580,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         String id = ob.getId();
 
         // two versions
-        Holder<String> idHolder = new Holder<String>(id);
+        Holder<String> idHolder = new Holder<>(id);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
         verService.checkOut(repositoryId, idHolder, null, null);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
@@ -2643,7 +2650,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // check in major -> version 1.0
 
-        Holder<String> idHolder = new Holder<String>(id);
+        Holder<String> idHolder = new Holder<>(id);
         verService.checkIn(repositoryId, idHolder, Boolean.TRUE, null, null, "comment", null, null, null, null);
 
         waitForIndexing();
@@ -2687,7 +2694,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // check out
 
-        Holder<Boolean> cchold = new Holder<Boolean>();
+        Holder<Boolean> cchold = new Holder<>();
         verService.checkOut(repositoryId, idHolder, null, cchold);
 
         waitForIndexing();
@@ -2812,7 +2819,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         ContentStream cs = new ContentStreamImpl("test.pdf", BigInteger.valueOf(bytes.length), "application/pdf", in);
 
-        Holder<String> idHolder = new Holder<String>(id);
+        Holder<String> idHolder = new Holder<>(id);
         harness.deployContrib("org.nuxeo.ecm.core.opencmis.tests.tests", "OSGI-INF/comment-listener-contrib.xml");
         try {
             CommentListener.clearComments();
@@ -2942,7 +2949,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     protected void doTestGetContentChanges(boolean addHidden) throws Exception {
         List<ObjectData> objects;
-        Holder<String> changeLogTokenHolder = new Holder<String>();
+        Holder<String> changeLogTokenHolder = new Holder<>();
 
         if (addHidden) {
             // add a doc whose type is not known to CMIS
@@ -3001,7 +3008,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
     @Test
     public void testGetContentChangesBatchHiddenType() throws Exception {
-        Holder<String> changeLogTokenHolder = new Holder<String>();
+        Holder<String> changeLogTokenHolder = new Holder<>();
 
         // add docs whose type is not known to CMIS
         for (int i = 0; i < 15; i++) {
@@ -3043,7 +3050,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     protected List<ObjectData> readAllContentChanges(Holder<String> changeLogTokenHolder) {
-        List<ObjectData> allObjects = new ArrayList<ObjectData>();
+        List<ObjectData> allObjects = new ArrayList<>();
         changeLogTokenHolder.setValue(null); // start at beginning
         boolean skipFirst = false;
         ObjectList changes;
@@ -3087,7 +3094,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // create relationship
         String statement;
         ObjectList res;
-        List<PropertyData<?>> props = new ArrayList<PropertyData<?>>();
+        List<PropertyData<?>> props = new ArrayList<>();
         props.add(factory.createPropertyIdData(PropertyIds.NAME, "rel"));
         props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, "Relation"));
         props.add(factory.createPropertyIdData(PropertyIds.SOURCE_ID, id1));
@@ -3221,7 +3228,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     protected static Map<String, Set<String>> getActualAcl(Acl acl) {
         Map<String, Set<String>> actual = new HashMap<>();
         for (Ace ace : acl.getAces()) {
-            actual.put(ace.getPrincipalId() + (ace.isDirect() ? "" : "*"), new HashSet<String>(ace.getPermissions()));
+            actual.put(ace.getPrincipalId() + (ace.isDirect() ? "" : "*"), new HashSet<>(ace.getPermissions()));
         }
         return actual;
     }
