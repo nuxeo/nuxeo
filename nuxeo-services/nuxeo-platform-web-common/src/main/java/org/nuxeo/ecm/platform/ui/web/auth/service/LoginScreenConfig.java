@@ -20,7 +20,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.core.UriBuilder;
+
 import org.apache.commons.lang.StringUtils;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -66,8 +70,9 @@ public class LoginScreenConfig implements Serializable {
 
     protected String footerStyle;
 
-    @XNode("newsIframeUrl")
     protected String newsIframeUrl = "//www.nuxeo.com/standalone-login-page/";
+
+    protected String newsIframeFullUrl = null;
 
     protected String bodyBackgroundStyle;
 
@@ -243,8 +248,26 @@ public class LoginScreenConfig implements Serializable {
         this.logoUrl = Framework.expandVars(logoUrl);
     }
 
+    /**
+     * @since 7.10
+     */
+    @XNode("newsIframeUrl")
+    public void setNewsIframeUrl(String newsIframeUrl) {
+        this.newsIframeUrl = newsIframeUrl;
+        newsIframeFullUrl = null;
+    }
+
     public String getNewsIframeUrl() {
-        return newsIframeUrl;
+        if (newsIframeFullUrl == null) {
+            newsIframeFullUrl = UriBuilder.fromPath(newsIframeUrl)
+                                          .queryParam(Environment.PRODUCT_VERSION,
+                                                  Framework.getProperty(Environment.PRODUCT_VERSION))
+                                          .queryParam(Environment.DISTRIBUTION_VERSION,
+                                                  Framework.getProperty(Environment.DISTRIBUTION_VERSION))
+                                          .build()
+                                          .toString();
+        }
+        return newsIframeFullUrl;
     }
 
     /**
@@ -257,7 +280,7 @@ public class LoginScreenConfig implements Serializable {
 
     protected void merge(LoginScreenConfig newConfig) {
         if (newConfig.newsIframeUrl != null) {
-            this.newsIframeUrl = newConfig.newsIframeUrl;
+            setNewsIframeUrl(newConfig.newsIframeUrl);
         }
         if (newConfig.headerStyle != null) {
             headerStyle = newConfig.headerStyle;

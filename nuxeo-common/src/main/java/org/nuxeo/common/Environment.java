@@ -194,6 +194,31 @@ public class Environment {
 
     public static final String DISTRIBUTION_VERSION = "org.nuxeo.distribution.version";
 
+    /**
+     * @since 7.10
+     */
+    public static final String DISTRIBUTION_SERVER = "org.nuxeo.distribution.server";
+
+    /**
+     * @since 7.10
+     */
+    public static final String DISTRIBUTION_DATE = "org.nuxeo.distribution.date";
+
+    /**
+     * @since 7.10
+     */
+    public static final String DISTRIBUTION_PACKAGE = "org.nuxeo.distribution.package";
+
+    /**
+     * @since 7.10
+     */
+    public static final String PRODUCT_NAME = "org.nuxeo.ecm.product.name";
+
+    /**
+     * @since 7.10
+     */
+    public static final String PRODUCT_VERSION = "org.nuxeo.ecm.product.version";
+
     // proxy
     /**
      * @since 6.0

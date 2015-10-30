@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
@@ -80,22 +81,18 @@ public class Context {
     }
 
     public String getDistributionKey() {
-
         if (distributionKey == null) {
-
             ConfigurationGenerator configurationGenerator = new ConfigurationGenerator();
             configurationGenerator.init();
             try {
                 Properties distribution = new Properties();
                 distribution.load(new FileInputStream(new File(configurationGenerator.getConfigDir(),
                         "distribution.properties")));
-                String name = distribution.getProperty("org.nuxeo.distribution.name", "unknown").toLowerCase();
-                String server = distribution.getProperty("org.nuxeo.distribution.server", "unknown").toLowerCase();
-                String version = distribution.getProperty("org.nuxeo.distribution.version", "unknown").toLowerCase();
-                String pkg = distribution.getProperty("org.nuxeo.distribution.package", "unknown").toLowerCase();
-
+                String name = distribution.getProperty(Environment.DISTRIBUTION_NAME, "unknown").toLowerCase();
+                String server = distribution.getProperty(Environment.DISTRIBUTION_SERVER, "unknown").toLowerCase();
+                String version = distribution.getProperty(Environment.DISTRIBUTION_VERSION, "unknown").toLowerCase();
+                String pkg = distribution.getProperty(Environment.DISTRIBUTION_PACKAGE, "unknown").toLowerCase();
                 distributionKey = name + "-" + server + "-" + version + "-" + pkg;
-
             } catch (Exception e) {
                 distributionKey = "unknown";
             }

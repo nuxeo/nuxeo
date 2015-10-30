@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.admin.runtime;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.connect.packages.dependencies.TargetPlatformFilterHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -25,11 +26,11 @@ public class PlatformVersionHelper {
     public static final String UNKNOWN = "Unknown";
 
     public static String getApplicationName() {
-        return Framework.getProperty("org.nuxeo.ecm.product.name", UNKNOWN);
+        return Framework.getProperty(Environment.PRODUCT_NAME, UNKNOWN);
     }
 
     public static String getApplicationVersion() {
-        return Framework.getProperty("org.nuxeo.ecm.product.version", UNKNOWN);
+        return Framework.getProperty(Environment.PRODUCT_VERSION, UNKNOWN);
     }
 
     public static String getPlatformFilter() {
@@ -40,19 +41,19 @@ public class PlatformVersionHelper {
     }
 
     public static String getDistributionName() {
-        return Framework.getProperty("org.nuxeo.distribution.name", UNKNOWN);
+        return Framework.getProperty(Environment.DISTRIBUTION_NAME, UNKNOWN);
     }
 
     public static String getDistributionVersion() {
-        return Framework.getProperty("org.nuxeo.distribution.version", UNKNOWN);
+        return Framework.getProperty(Environment.DISTRIBUTION_VERSION, UNKNOWN);
     }
 
     public static String getDistributionDate() {
-        return Framework.getProperty("org.nuxeo.distribution.date", UNKNOWN);
+        return Framework.getProperty(Environment.DISTRIBUTION_DATE, UNKNOWN);
     }
 
     public static String getDistributionHost() {
-        return Framework.getProperty("org.nuxeo.distribution.server", UNKNOWN);
+        return Framework.getProperty(Environment.DISTRIBUTION_SERVER, UNKNOWN);
     }
 
     /**

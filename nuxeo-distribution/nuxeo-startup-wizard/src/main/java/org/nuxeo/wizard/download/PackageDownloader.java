@@ -59,6 +59,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
@@ -126,7 +128,7 @@ public class PackageDownloader {
             String base = getConfig().getUserConfig().getProperty(BASE_URL_KEY, "");
             if ("".equals(base)) {
                 base = DEFAULT_BASE_URL + "nuxeo-"
-                        + getConfig().getUserConfig().getProperty("org.nuxeo.ecm.product.version") + "/mp/";
+                        + getConfig().getUserConfig().getProperty(Environment.DISTRIBUTION_VERSION) + "/mp/";
             }
             if (!base.endsWith("/")) {
                 base = base + "/";

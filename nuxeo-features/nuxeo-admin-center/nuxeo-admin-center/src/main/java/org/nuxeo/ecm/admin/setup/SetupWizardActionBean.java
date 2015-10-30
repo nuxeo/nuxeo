@@ -82,8 +82,8 @@ public class SetupWizardActionBean implements Serializable {
      * The list of important parameters that need to be presented first to the user
      */
     private static final String[] managedKeyParameters = { "nuxeo.bind.address", "nuxeo.url",
-            Environment.NUXEO_DATA_DIR, Environment.NUXEO_LOG_DIR, "org.nuxeo.ecm.product.name",
-            "org.nuxeo.ecm.product.version", "nuxeo.conf", PARAM_TEMPLATE_DBNAME, "nuxeo.db.name", "nuxeo.db.user",
+            Environment.NUXEO_DATA_DIR, Environment.NUXEO_LOG_DIR, Environment.PRODUCT_NAME,
+            Environment.PRODUCT_VERSION, "nuxeo.conf", PARAM_TEMPLATE_DBNAME, "nuxeo.db.name", "nuxeo.db.user",
             "nuxeo.db.password", "nuxeo.db.host", "nuxeo.db.port", "nuxeo.db.min-pool-size", "nuxeo.db.min-pool-size",
             "nuxeo.db.max-pool-size", "nuxeo.vcs.min-pool-size", "nuxeo.vcs.max-pool-size",
             "nuxeo.notification.eMailSubjectPrefix", "mailservice.user", "mailservice.password", "mail.store.protocol",

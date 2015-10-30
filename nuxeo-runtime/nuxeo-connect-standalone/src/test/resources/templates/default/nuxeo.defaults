@@ -15,7 +15,6 @@ nuxeo.db.validationQuery=
 nuxeo.db.driver=org.apache.derby.jdbc.EmbeddedDriver
 nuxeo.db.commonds=jdbc/nuxeo
 
-org.nuxeo.ecm.instance.name=Nuxeo 5.4
 org.nuxeo.ecm.instance.description=Nuxeo ECM server
 
 # Mail server protocol

@@ -18,6 +18,7 @@ package org.nuxeo.connect.update.task.guards;
 
 import org.apache.commons.lang3.SystemUtils;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
@@ -37,8 +38,8 @@ public class PlatformHelper {
     public PlatformHelper() {
         cg = new ConfigurationGenerator();
         cg.init();
-        name = cg.getUserConfig().getProperty(ConfigurationGenerator.PARAM_PRODUCT_NAME);
-        version = cg.getUserConfig().getProperty(ConfigurationGenerator.PARAM_PRODUCT_VERSION);
+        name = cg.getUserConfig().getProperty(Environment.DISTRIBUTION_NAME);
+        version = cg.getUserConfig().getProperty(Environment.DISTRIBUTION_VERSION);
     }
 
     public String getName() {

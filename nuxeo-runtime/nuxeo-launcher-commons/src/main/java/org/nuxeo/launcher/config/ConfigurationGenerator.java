@@ -202,9 +202,17 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_DB_PWD = "nuxeo.db.password";
 
-    public static final String PARAM_PRODUCT_NAME = "org.nuxeo.ecm.product.name";
+    /**
+     * @deprecated Since 7.10. Use {@link Environment#PRODUCT_NAME}
+     */
+    @Deprecated
+    public static final String PARAM_PRODUCT_NAME = Environment.PRODUCT_NAME;
 
-    public static final String PARAM_PRODUCT_VERSION = "org.nuxeo.ecm.product.version";
+    /**
+     * @deprecated Since 7.10. Use {@link Environment#PRODUCT_VERSION}
+     */
+    @Deprecated
+    public static final String PARAM_PRODUCT_VERSION = Environment.PRODUCT_VERSION;
 
     /**
      * @since 5.6

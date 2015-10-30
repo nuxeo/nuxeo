@@ -28,7 +28,6 @@ nuxeo.datasources.tomcat=conf/Catalina/localhost/nuxeo.xml
 test.root.nuxeo.defaults = true
 
 nuxeo.url=http://localhost:8080/nuxeo
-org.nuxeo.ecm.instance.name=
 org.nuxeo.ecm.instance.description=
 
 nuxeo.notification.eMailSubjectPrefix=

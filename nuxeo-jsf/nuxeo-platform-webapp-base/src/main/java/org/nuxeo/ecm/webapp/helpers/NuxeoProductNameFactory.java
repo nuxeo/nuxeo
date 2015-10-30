@@ -29,6 +29,8 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.joda.time.DateTime;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 
 @Name("appNameFactory")
@@ -36,20 +38,28 @@ import org.nuxeo.runtime.api.Framework;
 @Install(precedence = FRAMEWORK)
 public class NuxeoProductNameFactory implements Serializable {
 
-    public static String PNAME_KEY = "org.nuxeo.ecm.product.name";
+    /**
+     * @deprecated Since 7.10. Use {@link Environment} constants.
+     */
+    @Deprecated
+    public static String PNAME_KEY = Environment.PRODUCT_NAME;
 
-    public static String PVERSION_KEY = "org.nuxeo.ecm.product.version";
+    /**
+     * @deprecated Since 7.10. Use {@link Environment} constants.
+     */
+    @Deprecated
+    public static String PVERSION_KEY = Environment.PRODUCT_VERSION;
 
     private static final long serialVersionUID = 1L;
 
     @Factory(value = "nuxeoApplicationName", scope = ScopeType.APPLICATION)
     public String getNuxeoProductName() {
-        return Framework.getProperty(PNAME_KEY);
+        return Framework.getProperty(Environment.DISTRIBUTION_NAME);
     }
 
     @Factory(value = "nuxeoApplicationVersion", scope = ScopeType.APPLICATION)
     public String getNuxeoProductVersion() {
-        return Framework.getProperty(PVERSION_KEY);
+        return Framework.getProperty(Environment.DISTRIBUTION_VERSION);
     }
 
     /**
