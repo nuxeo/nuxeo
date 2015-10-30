@@ -4878,34 +4878,6 @@
           <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
           <artifactId>maven-antrun-extended-plugin</artifactId>
           <version>1.43</version>
-          <executions>
-            <execution>
-              <id>assemble-app</id>
-              <phase>package</phase>
-              <goals>
-                <goal>run</goal>
-              </goals>
-              <configuration>
-                <tasks>
-                  <echo>Running ANT assembly in ${basedir}</echo>
-                  <taskdef resource="org/nuxeo/build/ant/antlib.xml"></taskdef>
-                  <antrun file="${basedir}/build.xml" optional="true"></antrun>
-                </tasks>
-              </configuration>
-            </execution>
-          </executions>
-          <dependencies>
-            <dependency>
-              <groupId>org.apache.ant</groupId>
-              <artifactId>ant</artifactId>
-              <version>1.7.0</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-nuxeo-plugin</artifactId>
-              <version>1.0.14</version>
-            </dependency>
-          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

@@ -66,8 +66,7 @@
          basedir="${outdir}/${distribution}" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}-${distribution}.zip"
                      classifier="${distribution}"
-                     type="zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}" />
+                     type="zip" />
   </target>
   <target name="copy-resources-with-jdbc-lib" depends="init" unless="no.alternate.build">
     <antcall target="copy-resources">

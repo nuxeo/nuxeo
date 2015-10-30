@@ -3,7 +3,7 @@
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
 
   <target name="build" description="Build Nuxeo CAP NXR">
-    <echo>Building Nuxeo CAP NXR</echo>
+    <echo level="info">Building Nuxeo CAP NXR</echo>
     <property name="outdir" value="${maven.project.build.directory}" />
     <artifact:nuxeo-expand includeTestScope="true" />
     <artifact:print output="${outdir}/artifacts-cap.properties" mode="sdk" />
