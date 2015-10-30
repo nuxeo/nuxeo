@@ -19,7 +19,6 @@ package org.nuxeo.apidoc.introspection;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,11 +45,14 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
-import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.runtime.RuntimeService;
@@ -73,8 +75,8 @@ import org.xml.sax.SAXException;
  * ServerInfo info = ServerInfo.build();
  * </pre>
  *
- * The server name and version will be fetched form the runtime properties: <code>org.nuxeo.ecm.product.name</code> and
- * <code>org.nuxeo.ecm.product.version</code> If you ant to use another name and version just call
+ * The server name and version will be fetched from the runtime properties: {@link Environment#DISTRIBUTION_NAME} and
+ * {@link Environment#DISTRIBUTION_VERSION} If you want to use another name and version just call
  * {@link #build(String, String)} instead to build your server information.
  * <p>
  * After building a <code>ServerInfo</code> object you can start browsing the bundles deployed on the server by calling
@@ -164,8 +166,8 @@ public class ServerInfo {
     }
 
     public static ServerInfo build() {
-        return build(Framework.getProperty("org.nuxeo.ecm.product.name", "Nuxeo"),
-                Framework.getProperty("org.nuxeo.ecm.product.version", "unknown"));
+        return build(Framework.getProperty(Environment.DISTRIBUTION_NAME, "Nuxeo"),
+                Framework.getProperty(Environment.DISTRIBUTION_VERSION, "unknown"));
     }
 
     protected static BundleInfoImpl computeBundleInfo(Bundle bundle) {
@@ -190,7 +192,7 @@ public class ServerInfo {
                 File manifest = new File(jarFile, META_INF_MANIFEST_MF);
                 if (manifest.exists()) {
                     InputStream is = new FileInputStream(manifest);
-                    String mf = FileUtils.read(is);
+                    String mf = IOUtils.toString(is, Charsets.UTF_8);
                     binfo.setManifest(mf);
                 }
                 // find and parse pom.xml
@@ -223,33 +225,34 @@ public class ServerInfo {
                     binfo.setArtifactVersion(version);
                 }
             } else {
-                ZipFile zFile = new ZipFile(jarFile);
-                ZipEntry mfEntry = zFile.getEntry(META_INF_MANIFEST_MF);
-                if (mfEntry != null) {
-                    InputStream mfStream = zFile.getInputStream(mfEntry);
-                    String mf = FileUtils.read(mfStream);
-                    binfo.setManifest(mf);
-                }
-                Enumeration<? extends ZipEntry> entries = zFile.entries();
-                while (entries.hasMoreElements()) {
-                    ZipEntry entry = entries.nextElement();
-                    if (entry.getName().endsWith(POM_PROPERTIES)) {
-                        InputStream is = zFile.getInputStream(entry);
-                        PropertyResourceBundle prb = new PropertyResourceBundle(is);
-                        String groupId = prb.getString("groupId");
-                        String artifactId = prb.getString("artifactId");
-                        String version = prb.getString("version");
-                        binfo.setArtifactId(artifactId);
-                        binfo.setGroupId(groupId);
-                        binfo.setArtifactVersion(version);
-                        is.close();
-                        break;
+                try (ZipFile zFile = new ZipFile(jarFile)) {
+                    ZipEntry mfEntry = zFile.getEntry(META_INF_MANIFEST_MF);
+                    if (mfEntry != null) {
+                        try (InputStream mfStream = zFile.getInputStream(mfEntry)) {
+                            String mf = IOUtils.toString(mfStream, Charsets.UTF_8);
+                            binfo.setManifest(mf);
+                        }
+                    }
+                    Enumeration<? extends ZipEntry> entries = zFile.entries();
+                    while (entries.hasMoreElements()) {
+                        ZipEntry entry = entries.nextElement();
+                        if (entry.getName().endsWith(POM_PROPERTIES)) {
+                            try (InputStream is = zFile.getInputStream(entry)) {
+                                PropertyResourceBundle prb = new PropertyResourceBundle(is);
+                                String groupId = prb.getString("groupId");
+                                String artifactId = prb.getString("artifactId");
+                                String version = prb.getString("version");
+                                binfo.setArtifactId(artifactId);
+                                binfo.setGroupId(groupId);
+                                binfo.setArtifactVersion(version);
+                            }
+                            break;
+                        }
                     }
                 }
-                zFile.close();
-                zFile = new ZipFile(jarFile);
-                EmbeddedDocExtractor.extractEmbeddedDoc(zFile, binfo);
-                zFile.close();
+                try (ZipFile zFile = new ZipFile(jarFile)) {
+                    EmbeddedDocExtractor.extractEmbeddedDoc(zFile, binfo);
+                }
             }
         } catch (IOException | ParserConfigurationException | SAXException | XPathException | NuxeoException e) {
             log.error(e, e);
