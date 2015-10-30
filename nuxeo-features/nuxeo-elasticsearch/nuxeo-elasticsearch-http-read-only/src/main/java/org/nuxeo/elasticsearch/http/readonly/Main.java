@@ -131,7 +131,7 @@ public class Main extends ModuleRoot {
                 req = new DefaultSearchRequestFilter();
             }
             req.init(getContext().getCoreSession(), indices, types, rawQuery, payload);
-            log.warn(req);
+            log.debug(req);
             return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
         } catch (InstantiationException | IllegalAccessException e) {
             log.error("Error when trying to get Search Request Filter for indice " + indices, e);
@@ -147,7 +147,7 @@ public class Main extends ModuleRoot {
         DefaultSearchRequestFilter req = new DefaultSearchRequestFilter();
         req.init(getContext().getCoreSession(), indices, types,
                 uriInf.getRequestUri().getRawQuery(), null);
-        log.warn(req);
+        log.debug(req);
         return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
     }
 
@@ -163,7 +163,7 @@ public class Main extends ModuleRoot {
         validator.checkValidDocumentId(documentId);
         DocRequestFilter req = new DocRequestFilter(principal, indices, types, documentId,
                 uriInf.getRequestUri().getRawQuery());
-        log.warn(req);
+        log.debug(req);
         if (!principal.isAdministrator()) {
             String docAcl = HttpClient.get(getElasticsearchBaseUrl() + req.getCheckAccessUrl());
             validator.checkAccess(principal, docAcl);
