@@ -50,7 +50,7 @@ public class ITSearchTabTest extends AbstractTest {
 
     private final static String WORKSPACE2_TITLE = "WorkspaceTitle2_" + new Date().getTime();
 
-    private static final String SEARCH_PATH = "/Domain/Workspaces/" + WORKSPACE2_TITLE;
+    private static final String SEARCH_PATH = "/Domain/Workspaces/" + WORKSPACE1_TITLE;
 
     private static final String MY_FAVORITES_COLLECTION = "My Favorites";
 
