@@ -89,6 +89,8 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PermissionMappingD
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryCapabilitiesImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
@@ -104,7 +106,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class NuxeoRepository {
 
-    public static final String NUXEO_VERSION_PROP = "org.nuxeo.distribution.version";
+    /**
+     * @deprecated Since 7.10. Use {@link Environment#DISTRIBUTION_VERSION}
+     */
+    @Deprecated
+    public static final String NUXEO_VERSION_PROP = Environment.DISTRIBUTION_VERSION;
 
     public static final String NUXEO_URL_PROP = "nuxeo.url";
 
@@ -268,7 +274,7 @@ public class NuxeoRepository {
         repositoryInfo.setLatestChangeLogToken(latestChangeLogToken);
         repositoryInfo.setVendorName("Nuxeo");
         repositoryInfo.setProductName("Nuxeo OpenCMIS Connector");
-        String version = Framework.getProperty(NUXEO_VERSION_PROP, "5.5 dev");
+        String version = Framework.getProperty(Environment.DISTRIBUTION_VERSION, "5.5 dev");
         repositoryInfo.setProductVersion(version);
         repositoryInfo.setRootFolder(rootFolderId);
         repositoryInfo.setExtensionFeature(Collections.<ExtensionFeature> emptyList());

@@ -131,6 +131,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -285,7 +287,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals("Nuxeo Repository " + repositoryId, info.getDescription());
         assertEquals("Nuxeo", info.getVendorName());
         assertEquals("Nuxeo OpenCMIS Connector", info.getProductName());
-        String version = Framework.getProperty(NuxeoRepository.NUXEO_VERSION_PROP, "5.5 dev");
+        String version = Framework.getProperty(Environment.DISTRIBUTION_VERSION, "5.5 dev");
         assertEquals(version, info.getProductVersion());
         assertEquals(rootFolderId, info.getRootFolderId());
         assertEquals("Guest", info.getPrincipalIdAnonymous());
