@@ -64,7 +64,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -1405,6 +1404,11 @@ public class ConfigurationGenerator {
         } else {
             // current db template is explicit => replace it
             templatesList.set(dbIdx, dbTemplate);
+        }
+
+        // Hacky due to the need to still have a database configured
+        if (dbTemplate.equals("mongodb") && !templatesList.contains("default")) {
+            templatesList.add(0, "default");
         }
         return StringUtils.join(templatesList, TEMPLATE_SEPARATOR);
     }
