@@ -255,6 +255,26 @@ public class BatchManagerFixture {
     }
 
     @Test
+    public void testAddSameChunkTwice() throws IOException {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        String batchId = bm.initBatch();
+        bm.addStream(batchId, "0", new ByteArrayInputStream("ChunkContent".getBytes("UTF-8")), 3, 0, "Mon doc.txt",
+                "text/plain", 50);
+        bm.addStream(batchId, "0", new ByteArrayInputStream("ChunkContent".getBytes("UTF-8")), 3, 0, "Mon doc.txt",
+                "text/plain", 50);
+    }
+
+    @Test(expected = NuxeoException.class)
+    public void testAddSameChunkTwiceDifferentDigest() throws IOException {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        String batchId = bm.initBatch();
+        bm.addStream(batchId, "0", new ByteArrayInputStream("ChunkContent".getBytes("UTF-8")), 3, 0, "Mon doc.txt",
+                "text/plain", 50);
+        bm.addStream(batchId, "0", new ByteArrayInputStream("DifferentChunkContent".getBytes("UTF-8")), 3, 0,
+                "Mon doc.txt", "text/plain", 50);
+    }
+
+    @Test
     public void testBatchCleanup() throws IOException {
         BatchManager bm = Framework.getService(BatchManager.class);
 

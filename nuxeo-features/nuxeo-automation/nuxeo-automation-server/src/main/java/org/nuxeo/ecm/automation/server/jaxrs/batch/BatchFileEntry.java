@@ -260,6 +260,9 @@ public class BatchFileEntry {
     }
 
     public String addChunk(int index, Blob blob) {
+        BatchManager bm = Framework.getService(BatchManager.class);
+        TransientStore ts = bm.getTransientStore();
+        String chunkEntryKey = key + "_" + index;
         if (!isChunked()) {
             throw new NuxeoException("Cannot add a chunk to a non chunked file entry.");
         }
@@ -272,13 +275,15 @@ public class BatchFileEntry {
                     "Cannot add chunk with index %d to file entry %s as chunk count is %d.", index, key, chunkCount));
         }
         if (getChunks().containsKey(index)) {
-            throw new NuxeoException(String.format(
-                    "Cannot add chunk with index %d to file entry %s as it already exists.", index, key));
+            Blob chunkBlob = getChunk(ts, chunkEntryKey);
+            if (chunkBlob != null && blob.getDigest() != null && !blob.getDigest().equals(chunkBlob.getDigest())) {
+                throw new NuxeoException(
+                        String.format(
+                                "Cannot add chunk with index %d to file entry %s as it already exists with a different digest.",
+                                index, key));
+            }
         }
 
-        String chunkEntryKey = key + "_" + index;
-        BatchManager bm = Framework.getService(BatchManager.class);
-        TransientStore ts = bm.getTransientStore();
         ts.putBlobs(chunkEntryKey, Collections.singletonList(blob));
         ts.putParameter(key, String.valueOf(index), chunkEntryKey);
 
