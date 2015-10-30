@@ -169,9 +169,10 @@ public abstract class ScriptStyleBaseRenderer extends Renderer implements Compon
 
         if (warnOnChildren) {
             Map<String, Object> attributes = component.getAttributes();
-            String name = (String) attributes.get("name");
+            boolean hasName = attributes.get("name") != null;
+            boolean hasSrc = attributes.get("src") != null;
             // If we have no "name" attribute...
-            if (null == name) {
+            if (!hasName && !hasSrc) {
                 // and no child content...
                 if (0 == childCount) {
                     // this is user error, so put up a message if desired
