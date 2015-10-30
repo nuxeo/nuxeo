@@ -227,9 +227,7 @@ public class RoutingTaskActionsBean implements Serializable {
             routing.endTask(documentManager, task, data, button);
             facesMessages.add(StatusMessage.Severity.INFO, messages.get("workflow.feedback.info.taskEnded"));
         } catch (DocumentRouteException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(e, e);
-            }
+            log.error(e, e);
             facesMessages.add(StatusMessage.Severity.ERROR, messages.get("workflow.feedback.error.taskEnded"));
         }
         Events.instance().raiseEvent(TaskEventNames.WORKFLOW_TASK_COMPLETED);
