@@ -151,7 +151,8 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     public void removeFromSelection(final String displayedText) {
         if (!mutliple) {
-            throw new UnsupportedOperationException("The select2 is not multiple and you can't remove a specific value");
+            throw new UnsupportedOperationException(
+                    "The select2 is not multiple and you can't remove a specific value");
         }
         final String submittedValueBefore = getSubmittedValue();
         boolean found = false;
@@ -191,10 +192,17 @@ public class Select2WidgetElement extends WebFragmentImpl {
     }
 
     /**
+     * Select given value, waiting for JSF ajax requests or not, and typing the whole suggestion or not (use false speed
+     * up selection when exactly one suggestion is found, use true when creating new suggestions).
+     *
+     * @param value string typed in the suggest box
+     * @param wait4A4J use true if request is triggering JSF ajax calls
+     * @param typeAll use false speed up selection when exactly one suggestion is found, use true when creating new
+     *            suggestions.
      * @since 7.10
      */
     public void selectValue(final String value, final boolean wait4A4J, final boolean typeAll) {
-        clickOnSelect2Field();
+        clickSelect2Field();
 
         WebElement suggestInput = getSuggestInput();
 
@@ -206,7 +214,8 @@ public class Select2WidgetElement extends WebFragmentImpl {
             waitSelect2();
             if (i >= 2) {
                 if (getSuggestedEntries().size() > nbSuggested) {
-                    throw new IllegalArgumentException("More suggestions than expected for " + element.getAttribute("id"));
+                    throw new IllegalArgumentException(
+                            "More suggestions than expected for " + element.getAttribute("id"));
                 }
                 nbSuggested = getSuggestedEntries().size();
                 if (!typeAll && nbSuggested == 1) {
@@ -219,18 +228,17 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
         List<WebElement> suggestions = getSuggestedEntries();
         if (suggestions == null || suggestions.isEmpty()) {
-            log.warn("Suggestion for element " + element.getAttribute("id")
-                    + " returned no result.");
+            log.warn("Suggestion for element " + element.getAttribute("id") + " returned no result.");
             return;
         }
         WebElement suggestion = suggestions.get(0);
         if (suggestions.size() > 1) {
             log.warn("Suggestion for element " + element.getAttribute("id")
-                    + " returned more than 1 result, the first suggestion will be selected : "
-                    + suggestion.getText());
+                    + " returned more than 1 result, the first suggestion will be selected : " + suggestion.getText());
         }
 
-        AjaxRequestManager arm = new AjaxRequestManager(driver);;
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        ;
         if (wait4A4J) {
             arm.watchAjaxRequests();
         }
@@ -261,7 +269,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     public List<WebElement> typeAndGetResult(final String value) {
 
-        clickOnSelect2Field();
+        clickSelect2Field();
 
         WebElement suggestInput = getSuggestInput();
 
@@ -280,7 +288,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      *
      * @since 6.0
      */
-    protected void clickOnSelect2Field() {
+    public void clickSelect2Field() {
         WebElement select2Field = null;
         if (mutliple) {
             select2Field = element;
@@ -315,7 +323,8 @@ public class Select2WidgetElement extends WebFragmentImpl {
         Wait<WebElement> wait = new FluentWait<WebElement>(
                 !mutliple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
                         : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH))).withTimeout(SELECT2_LOADING_TIMEOUT,
-                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
+                                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
+                                        NoSuchElementException.class);
         Function<WebElement, Boolean> s2WaitFunction = new Select2Wait();
         wait.until(s2WaitFunction);
     }
@@ -339,27 +348,12 @@ public class Select2WidgetElement extends WebFragmentImpl {
     }
 
     /**
-     * Click on the select2 element.
-     *
-     * @since 6.0
-     */
-    public void clickSelect2Field() {
-        WebElement select2Field = null;
-        if (mutliple) {
-            select2Field = element;
-        } else {
-            select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice select2-default')]"));
-        }
-        select2Field.click();
-    }
-
-    /**
      * Type a value in the select2 and then simulate the enter key.
      *
      * @since 6.0
      */
     public SearchPage typeValueAndTypeEnter(String value) {
-        clickOnSelect2Field();
+        clickSelect2Field();
 
         WebElement suggestInput = getSuggestInput();
 
