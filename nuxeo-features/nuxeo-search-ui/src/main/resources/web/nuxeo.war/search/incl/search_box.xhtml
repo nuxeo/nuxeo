@@ -8,8 +8,7 @@
     styleClass="directoryFilter"
     required="true"
     requiredMessage="#{messages['feedback.search.noKeywords']}"
-    validator="#{searchUIActions.validateSimpleSearchKeywords}"
-    onkeydown="if (event.keyCode == 13) {Element.next(Element.next(this)).select();} else return true;" />
+    validator="#{searchUIActions.validateSimpleSearchKeywords}" />
   <h:commandButton action="#{searchUIActions.doSimpleSearch()}"
     value="#{messages['command.search']}"
     styleClass="button" />
