@@ -93,7 +93,7 @@ public class AddToCollectionForm extends WebFragmentImpl {
     public void setCollection(final String collectionName) {
         Select2WidgetElement s2Collection = new Select2WidgetElement(driver, Locator.findElementWithTimeout(
                 By.id(multiple ? S2_CHOOSE_COLLECTION_MULTIPLE_ID : S2_CHOOSE_COLLECTION_ID), getElement()), false);
-        s2Collection.selectValue(collectionName);
+        s2Collection.selectValue(collectionName, false, true);
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {

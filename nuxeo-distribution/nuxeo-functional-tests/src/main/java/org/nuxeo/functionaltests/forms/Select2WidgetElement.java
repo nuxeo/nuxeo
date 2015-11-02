@@ -180,13 +180,20 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 5.7.3
      */
     public void selectValue(final String value) {
-        selectValue(value, false);
+        selectValue(value, false, false);
     }
 
     /**
      * @since 7.1
      */
     public void selectValue(final String value, final boolean wait4A4J) {
+        selectValue(value, wait4A4J, false);
+    }
+
+    /**
+     * @since 7.10
+     */
+    public void selectValue(final String value, final boolean wait4A4J, final boolean typeAll) {
         clickOnSelect2Field();
 
         WebElement suggestInput = getSuggestInput();
@@ -202,18 +209,27 @@ public class Select2WidgetElement extends WebFragmentImpl {
                     throw new IllegalArgumentException("More suggestions than expected for " + element.getAttribute("id"));
                 }
                 nbSuggested = getSuggestedEntries().size();
+                if (!typeAll && nbSuggested == 1) {
+                    break;
+                }
             }
         }
 
         waitSelect2();
 
-        if (getSuggestedEntries() != null && getSuggestedEntries().size() > 1) {
+        List<WebElement> suggestions = getSuggestedEntries();
+        if (suggestions == null || suggestions.isEmpty()) {
+            log.warn("Suggestion for element " + element.getAttribute("id")
+                    + " returned no result.");
+            return;
+        }
+        WebElement suggestion = suggestions.get(0);
+        if (suggestions.size() > 1) {
             log.warn("Suggestion for element " + element.getAttribute("id")
                     + " returned more than 1 result, the first suggestion will be selected : "
-                    + getSuggestedEntries().get(0).getText());
+                    + suggestion.getText());
         }
 
-        WebElement suggestion = driver.findElement(By.xpath(S2_SUGGEST_RESULT_XPATH));
         AjaxRequestManager arm = new AjaxRequestManager(driver);;
         if (wait4A4J) {
             arm.watchAjaxRequests();

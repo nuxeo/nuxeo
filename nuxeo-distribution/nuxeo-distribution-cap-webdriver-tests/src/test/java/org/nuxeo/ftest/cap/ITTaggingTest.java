@@ -58,11 +58,11 @@ public class ITTaggingTest extends AbstractTest {
         assertTrue(tagWidget.getSelectedValues().isEmpty());
         AjaxRequestManager a = new AjaxRequestManager(driver);
         a.watchAjaxRequests();
-        tagWidget.selectValue("first_tag");
+        tagWidget.selectValue("first_tag", false, true);
         a.waitForAjaxRequests();
         assertEquals(1, tagWidget.getSelectedValues().size());
         a.watchAjaxRequests();
-        tagWidget.selectValue("second_tag");
+        tagWidget.selectValue("second_tag", false, true);
         a.waitForAjaxRequests();
         assertEquals(2, tagWidget.getSelectedValues().size());
         fileDocumentBasePage.getEditTab();
