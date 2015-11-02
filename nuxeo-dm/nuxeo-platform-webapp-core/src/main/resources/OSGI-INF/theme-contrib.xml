@@ -183,9 +183,13 @@
     <resource name="default-contextmenu-actions.js" type="js">
       <uri>/scripts/default-contextmenu-actions.js</uri>
     </resource>
+    <resource name="safeEdit.xhtml" type="xhtml">
+      <uri>/incl/safeEdit.xhtml</uri>
+    </resource>
     <resource name="tinymce.xhtml" type="xhtml">
       <uri>/incl/tinymce.xhtml</uri>
       <require>jquery.js</require>
+      <require>safeEdit.xhtml</require>
     </resource>
     <resource name="konami.xhtml" type="xhtml">
       <uri>/incl/konami.xhtml</uri>
@@ -387,6 +391,7 @@
         <resource>tableSelections.js</resource>
         <resource>customSeamRemotingWaiter.js</resource>
         <resource>default-contextmenu-actions.js</resource>
+        <resource>safeEdit.xhtml</resource>
         <resource>tinymce.xhtml</resource>
         <resource>konami.xhtml</resource>
         <resource>doubleClick_shield.xhtml</resource>
