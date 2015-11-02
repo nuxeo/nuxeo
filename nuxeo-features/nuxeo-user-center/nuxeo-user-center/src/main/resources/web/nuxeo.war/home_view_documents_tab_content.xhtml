@@ -1,4 +1,5 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
+<h:panelGroup layout="block"
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
@@ -8,6 +9,7 @@
       includeAnyMode="false" />
   </h:form>
 
-  <nxl:widget name="documentTabs" mode="view" value="#{currentDocument}" />
+  <nxl:widget name="documentTabs" mode="view" value="#{currentDocument}"
+    view="home_view_documents" pattern="home" />
 
-</div>
+</h:panelGroup>
