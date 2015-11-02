@@ -21,12 +21,13 @@ function toggleBox(toggleButton) {
 }
 
 function toggleBoxFor(title, body) {
-  if (Element.hasClassName(title, 'folded')) {
-    Element.removeClassName(title, 'folded');
-    Element.addClassName(title, 'unfolded');
+  var element = jQuery(title);
+  if (element.hasClass('folded')) {
+    element.removeClass('folded');
+    element.addClass('unfolded');
   } else {
-    Element.removeClassName(title, 'unfolded');
-    Element.addClassName(title, 'folded');
+    element.removeClass('unfolded');
+    element.addClass('folded');
   }
 
   jQuery(body).slideToggle('fast');
