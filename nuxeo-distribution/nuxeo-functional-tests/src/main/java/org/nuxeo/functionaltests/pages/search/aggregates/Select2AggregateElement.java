@@ -43,7 +43,7 @@ public class Select2AggregateElement extends Select2WidgetElement implements Agg
 
     public Map<String, Integer> getAggregates() {
         Map<String, Integer> result = new HashMap<String, Integer>();
-        clickOnSelect2Field();
+        clickSelect2Field();
         for (WebElement e : getSuggestedEntries()) {
             String label;
             Integer count;
@@ -60,7 +60,7 @@ public class Select2AggregateElement extends Select2WidgetElement implements Agg
     }
 
     @Override
-    protected void clickOnSelect2Field() {
+    public void clickSelect2Field() {
         WebElement select2Field = null;
         if (mutliple) {
             select2Field = element.findElement(By.xpath("ul/li/input"));
