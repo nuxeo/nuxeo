@@ -1,6 +1,10 @@
 (function($) {
     $.fn.focusFirst = function(){
-        var topElementId=$(this).get(0).getAttribute("id");
+        var topElement=$(this).get(0);
+        if(topElement === undefined){
+          return this;
+        }
+        var topElementId=topElement.getAttribute("id");
         
         /** Compute the absolute offset of a component by recursively climbing the component three.
         If a topElement is given, recursion will stop once reaching a component with that given ID. */
