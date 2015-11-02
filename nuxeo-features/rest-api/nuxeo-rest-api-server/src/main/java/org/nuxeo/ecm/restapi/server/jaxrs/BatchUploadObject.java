@@ -132,7 +132,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
         BatchFileEntry fileEntry = null;
         String uploadedSize = "0";
-        if (request.getContentLength() > 0) {
+        if (request.getContentLength() > -1) {
             uploadedSize = contentLength;
             // Handle multipart case: mainly MSIE with jQueryFileupload
             if (contentType != null && contentType.contains("multipart")) {
