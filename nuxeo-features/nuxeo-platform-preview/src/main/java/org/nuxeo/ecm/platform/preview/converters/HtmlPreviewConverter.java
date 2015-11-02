@@ -116,7 +116,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
             result = getConversionService().convert(converterName, result, parameters);
         }
         Blob blob = result.getBlob();
-        if (blob.getEncoding() == null) {
+        if (blob != null && blob.getEncoding() == null) {
             blob.setEncoding("UTF-8");
         }
         return result;
