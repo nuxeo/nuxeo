@@ -103,7 +103,7 @@ public class ITNoteDocumentTest extends AbstractTest {
 
         String expectedText = CONTENT_NOTE.concat(CONTENT_NOTE_2);
 
-        assertEquals(expectedText, textBlock.getText().replace("\n", ""));
+        assertEquals(expectedText, textBlock.getText().trim().replace("\n", ""));
         assertEquals(CONTENT_NOTE, boldTextContent.getText());
         assertEquals(CONTENT_NOTE_2, italicTextContent.getText());
 
