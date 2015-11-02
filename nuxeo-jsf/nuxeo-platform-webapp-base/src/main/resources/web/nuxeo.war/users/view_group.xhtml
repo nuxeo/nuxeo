@@ -2,6 +2,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j">
 
   <h1>
@@ -55,7 +56,7 @@
           </h:commandLink>
         </li>
 
-        <f:subview rendered="#{groupManagementActions.allowEditGroup and notReadOnly}">
+        <c:if test="#{groupManagementActions.allowEditGroup and notReadOnly}">
           <li class="#{nxu:test(groupManagementActions.detailsMode == 'edit', 'selected', '')}">
             <h:commandLink
               action="#{groupManagementActions.setDetailsMode('edit')}" immediate="true">
@@ -63,7 +64,7 @@
               <f:ajax execute="@this" render=":viewGroupView:groupDetailsPanel" />
             </h:commandLink>
           </li>
-        </f:subview>
+        </c:if>
       </ul>
     </h:form>
   </div>
@@ -71,11 +72,14 @@
 
   <div class="tabsContent">
 
-    <h:form id="viewGroup" rendered="#{groupManagementActions.detailsMode == 'view'}">
+    <c:if test="#{groupManagementActions.detailsMode == 'view'}">
+    <h:form id="viewGroup">
       <nxl:layout name="group" mode="view" value="#{groupManagementActions.selectedGroup}" />
     </h:form>
+    </c:if>
 
-    <h:form id="editGroup" rendered="#{groupManagementActions.detailsMode == 'edit' and groupManagementActions.allowEditGroup and notReadOnly}">
+    <c:if test="#{groupManagementActions.detailsMode == 'edit' and groupManagementActions.allowEditGroup and notReadOnly}">
+    <h:form id="editGroup">
       <h:outputScript target="#{pageJsTarget}">
          jQuery(document).ready(function() {
            jQuery('#viewGroupView\\:editGroup').focusFirst();
@@ -100,6 +104,7 @@
         </tbody>
       </table>
     </h:form>
+    </c:if>
 
   </div>
   </a4j:outputPanel>

@@ -4,6 +4,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:a4j="http://richfaces.org/a4j">
 
   <h1>
@@ -25,11 +26,11 @@
   </h:form>
 
   <h:form id="deleteUserForm" rendered="#{userManagementActions.allowDeleteUser and notReadOnly}">
-    <script type="text/javascript">
+    <h:outputScript target="#{pageJsTarget}">
     function confirmDeleteUser() {
       return confirm("#{messages['label.userManager.confirmDeleteUser']}");
     }
-    </script>
+    </h:outputScript>
     <div class="action_bar">
       <ul>
         <li class="selected">
@@ -58,7 +59,7 @@
           </h:commandLink>
         </li>
 
-        <f:subview rendered="#{userManagementActions.allowEditUser and notReadOnly}">
+        <c:if test="#{userManagementActions.allowEditUser and notReadOnly}">
           <li class="#{nxu:test(userManagementActions.detailsMode == 'edit', 'selected', '')}">
             <h:commandLink
               action="#{userManagementActions.setDetailsMode('edit')}" immediate="true">
@@ -66,9 +67,9 @@
               <f:ajax execute="@this" render=":viewUserView:userDetailsPanel" />
             </h:commandLink>
           </li>
-        </f:subview>
+        </c:if>
 
-        <f:subview rendered="#{userManagementActions.allowChangePassword and notReadOnly}">
+        <c:if test="#{userManagementActions.allowChangePassword and notReadOnly}">
           <li class="#{nxu:test(userManagementActions.detailsMode == 'editPassword', 'selected', '')}">
             <h:commandLink action="#{userManagementActions.setDetailsMode('editPassword')}"
               immediate="true">
@@ -76,7 +77,7 @@
               <f:ajax execute="@this" render=":viewUserView:userDetailsPanel" />
             </h:commandLink>
           </li>
-        </f:subview>
+        </c:if>
 
       </ul>
     </h:form>
@@ -85,17 +86,20 @@
 
   <div class="tabsContent">
     <ui:insert name="view_user_tab_content">
-      <h:form id="viewUser" rendered="#{userManagementActions.detailsMode == 'view'}">
-        <nxl:layout name="gridUserLayout" mode="view" value="#{userManagementActions.selectedUser}" />
-      </h:form>
+      <c:if test="#{userManagementActions.detailsMode == 'view'}">
+        <h:form id="viewUser">
+          <nxl:layout name="gridUserLayout" mode="view" value="#{userManagementActions.selectedUser}" />
+        </h:form>
+      </c:if>
     </ui:insert>
 
     <ui:insert name="edit_user_tab_content">
-      <h:form id="editUser" rendered="#{userManagementActions.detailsMode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
+      <c:if test="#{userManagementActions.detailsMode == 'edit' and userManagementActions.allowEditUser and notReadOnly}">
+      <h:form id="editUser">
         <h:outputScript target="#{pageJsTarget}">
-         jQuery(document).ready(function() {
-           jQuery('#viewUserView\\:editUser').focusFirst();
-         });
+          jQuery(document).ready(function() {
+            jQuery('#viewUserView\\:editUser').focusFirst();
+          });
         </h:outputScript>
         <nxl:layout name="user" mode="edit" value="#{userManagementActions.selectedUser}" />
         <table class="dataInput">
@@ -115,16 +119,17 @@
           </tbody>
         </table>
       </h:form>
+      </c:if>
     </ui:insert>
 
     <ui:insert name="edit_user_password_tab_content">
-      <h:form id="editUserPassword"
-        rendered="#{userManagementActions.detailsMode == 'editPassword' and userManagementActions.allowEditUser and notReadOnly}">
-        <script>
-         jQuery(document).ready(function() {
-           jQuery('#viewUserView\\:editUserPassword').focusFirst();
-         });
-        </script>
+      <c:if test="#{userManagementActions.detailsMode == 'editPassword' and userManagementActions.allowEditUser and notReadOnly}">
+      <h:form id="editUserPassword">
+        <h:outputScript target="#{pageJsTarget}">
+          jQuery(document).ready(function() {
+            jQuery('#viewUserView\\:editUserPassword').focusFirst();
+          });
+        </h:outputScript>
         <nxl:layout name="user" mode="editPassword" value="#{userManagementActions.selectedUser}" />
         <table class="dataInput">
           <tbody>
@@ -143,6 +148,7 @@
           </tbody>
         </table>
       </h:form>
+      </c:if>
     </ui:insert>
 
   </div>
