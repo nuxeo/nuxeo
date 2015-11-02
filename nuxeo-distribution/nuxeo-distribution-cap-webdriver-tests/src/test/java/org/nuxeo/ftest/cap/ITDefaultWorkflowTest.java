@@ -23,7 +23,6 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -36,7 +35,6 @@ import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -68,28 +66,37 @@ public class ITDefaultWorkflowTest extends AbstractTest {
     }
 
     protected void createTestUser(String username, String pswd) throws Exception {
-        UsersGroupsBasePage page;
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        createTestUser(usersTab, username, pswd);
+        logout();
+    }
+
+    protected UsersTabSubPage createTestUser(UsersTabSubPage usersTab, String username, String pswd) throws Exception {
+        UsersGroupsBasePage page;
         usersTab = usersTab.searchUser(username);
         if (!usersTab.isUserFound(username)) {
             page = usersTab.getUserCreatePage().createUser(username, username, "lastname1", "company1", "email1", pswd,
                     "members");
             usersTab = page.getUsersTab(true);
+            // make sure user has been created
+            usersTab = usersTab.searchUser(username);
+            assertTrue(usersTab.isUserFound(username));
         }
-        // search user
-        usersTab = usersTab.searchUser(username);
-        assertTrue(usersTab.isUserFound(username));
-        logout();
+        return usersTab;
     }
 
     protected void deleteTestUser(String username) throws Exception {
-        UsersGroupsBasePage page = login().getAdminCenter().getUsersGroupsHomePage();
-        UsersTabSubPage usersTab = page.getUsersTab();
+        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        deleteTestUser(usersTab, username);
+        logout();
+    }
+
+    protected UsersTabSubPage deleteTestUser(UsersTabSubPage usersTab, String username) throws Exception {
         usersTab = usersTab.searchUser(username);
         usersTab = usersTab.viewUser(username).deleteUser();
         usersTab = usersTab.searchUser(username);
         assertFalse(usersTab.isUserFound(username));
-        logout();
+        return usersTab;
     }
 
     @Test
@@ -144,8 +151,10 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
     @Test
     public void testDefaultParallelWorkflow() throws Exception {
-        createTestUser(USER_JDOE, USER_JDOE);
-        createTestUser(USER_JSMITH, USER_JSMITH);
+        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        usersTab = createTestUser(usersTab, USER_JDOE, USER_JDOE);
+        usersTab = createTestUser(usersTab, USER_JSMITH, USER_JSMITH);
+        logout();
 
         // create a file doc
         DocumentBasePage defaultDomainPage = login();
@@ -243,16 +252,21 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         login();
         cleanRepository(filePage);
         logout();
-        deleteTestUser(USER_JDOE);
-        deleteTestUser(USER_JSMITH);
+
+        usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        usersTab = deleteTestUser(usersTab, USER_JDOE);
+        usersTab = deleteTestUser(usersTab, USER_JSMITH);
+        logout();
     }
 
     @Test
     public void testTaskReassignmentAndDelegation() throws Exception {
-        createTestUser(USER_JDOE, USER_JDOE);
-        createTestUser(USER_BREE, USER_BREE);
-        createTestUser(USER_JSMITH, USER_JSMITH);
-        createTestUser(USER_LINNET, USER_LINNET);
+        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        usersTab = createTestUser(usersTab, USER_JDOE, USER_JDOE);
+        usersTab = createTestUser(usersTab, USER_BREE, USER_BREE);
+        usersTab = createTestUser(usersTab, USER_JSMITH, USER_JSMITH);
+        usersTab = createTestUser(usersTab, USER_LINNET, USER_LINNET);
+        logout();
 
         // create a file doc
         DocumentBasePage defaultDomainPage = login();
@@ -363,10 +377,13 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         login();
         cleanRepository(filePage);
         logout();
-        deleteTestUser(USER_JDOE);
-        deleteTestUser(USER_JSMITH);
-        deleteTestUser(USER_BREE);
-        deleteTestUser(USER_LINNET);
+
+        usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        usersTab = deleteTestUser(usersTab, USER_JDOE);
+        usersTab = deleteTestUser(usersTab, USER_JSMITH);
+        usersTab = deleteTestUser(usersTab, USER_BREE);
+        usersTab = deleteTestUser(usersTab, USER_LINNET);
+        logout();
     }
 
     protected DocumentBasePage startDefaultSerialWorkflow(DocumentBasePage filePage, final String username) {
