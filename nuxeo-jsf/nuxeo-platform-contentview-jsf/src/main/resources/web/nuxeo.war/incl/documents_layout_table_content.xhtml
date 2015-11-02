@@ -35,14 +35,14 @@
   <ui:insert name="error_message" />
 
   <c:if test="#{not hideTopPaginationControls}">
-    <ui:insert name="pageNavigationControls">
-      <c:if test="#{useAjaxPagination}">
+    <c:choose>
+      <c:when test="#{useAjaxPagination == null or useAjaxPagination}">
         <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
-      </c:if>
-      <c:if test="#{not useAjaxPagination}">
+      </c:when>
+      <c:otherwise>
         <ui:include src="/pagination/pageNavigationControls.xhtml" />
-      </c:if>
-    </ui:insert>
+      </c:otherwise>
+    </c:choose>
   </c:if>
 
   <c:if test="#{documents.rowCount != 0}">
@@ -120,12 +120,14 @@
   </c:if>
 
   <ui:insert name="pageNavigationControls">
-    <c:if test="#{useAjaxPagination}">
-      <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
-    </c:if>
-    <c:if test="#{not useAjaxPagination}">
-      <ui:include src="/pagination/pageNavigationControls.xhtml" />
-    </c:if>
+    <c:choose>
+      <c:when test="#{useAjaxPagination == null or useAjaxPagination}">
+        <ui:include src="/pagination/a4jPageNavigationControls.xhtml" />
+      </c:when>
+      <c:otherwise>
+        <ui:include src="/pagination/pageNavigationControls.xhtml" />
+      </c:otherwise>
+    </c:choose>
   </ui:insert>
 
   <ui:insert name="syndication_buttons" />
