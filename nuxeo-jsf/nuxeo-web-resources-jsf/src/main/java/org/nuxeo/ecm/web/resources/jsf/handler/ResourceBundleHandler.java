@@ -97,6 +97,11 @@ public class ResourceBundleHandler extends PageResourceHandler {
             return;
         }
 
+        String flavorValue = null;
+        if (flavor != null) {
+            flavorValue = flavor.getValue(ctx);
+        }
+
         String targetValue = null;
         if (target != null) {
             targetValue = target.getValue(ctx);
@@ -130,26 +135,26 @@ public class ResourceBundleHandler extends PageResourceHandler {
             }
             for (String bundle : bundles) {
                 // first include handlers that match JSF resources
-                applyBundle(ctx, parent, wrm, bundle, ResourceType.jsfcss, cssTarget, leaf);
-                applyBundle(ctx, parent, wrm, bundle, ResourceType.jsfjs, jsTarget, leaf);
+                applyBundle(ctx, parent, wrm, bundle, ResourceType.jsfcss, flavorValue, cssTarget, leaf);
+                applyBundle(ctx, parent, wrm, bundle, ResourceType.jsfjs, flavorValue, jsTarget, leaf);
                 // then include xhtmlfirst templates
-                applyBundle(ctx, parent, wrm, bundle, ResourceType.xhtmlfirst, null, leaf);
+                applyBundle(ctx, parent, wrm, bundle, ResourceType.xhtmlfirst, flavorValue, null, leaf);
                 // then let other resources (css, js, html) be processed by the component at render time
-                applyBundle(ctx, parent, wrm, bundle, ResourceType.css, cssTarget, nextHandler);
-                applyBundle(ctx, parent, wrm, bundle, ResourceType.js, jsTarget, nextHandler);
-                applyBundle(ctx, parent, wrm, bundle, ResourceType.html, htmlTarget, nextHandler);
+                applyBundle(ctx, parent, wrm, bundle, ResourceType.css, flavorValue, cssTarget, nextHandler);
+                applyBundle(ctx, parent, wrm, bundle, ResourceType.js, flavorValue, jsTarget, nextHandler);
+                applyBundle(ctx, parent, wrm, bundle, ResourceType.html, flavorValue, htmlTarget, nextHandler);
                 // then include xhtml templates
-                applyBundle(ctx, parent, wrm, bundle, ResourceType.xhtml, null, leaf);
+                applyBundle(ctx, parent, wrm, bundle, ResourceType.xhtml, flavorValue, null, leaf);
             }
         } else {
             for (String bundle : bundles) {
-                applyBundle(ctx, parent, wrm, bundle, rtype, targetValue, leaf);
+                applyBundle(ctx, parent, wrm, bundle, rtype, flavorValue, targetValue, leaf);
             }
         }
     }
 
     protected void applyBundle(FaceletContext ctx, UIComponent parent, WebResourceManager wrm, String bundle,
-            ResourceType type, String targetValue, FaceletHandler nextHandler) throws IOException {
+            ResourceType type, String flavor, String targetValue, FaceletHandler nextHandler) throws IOException {
         switch (type) {
         case jsfjs:
             for (Resource r : retrieveResources(wrm, bundle, type)) {
@@ -174,13 +179,13 @@ public class ResourceBundleHandler extends PageResourceHandler {
             includeXHTML(ctx, parent, retrieveResources(wrm, bundle, type), nextHandler);
             break;
         case js:
-            includeResourceBundle(ctx, parent, bundle, type, targetValue, nextHandler);
+            includeResourceBundle(ctx, parent, bundle, type, flavor, targetValue, nextHandler);
             break;
         case css:
-            includeResourceBundle(ctx, parent, bundle, type, targetValue, nextHandler);
+            includeResourceBundle(ctx, parent, bundle, type, flavor, targetValue, nextHandler);
             break;
         case html:
-            includeResourceBundle(ctx, parent, bundle, type, targetValue, nextHandler);
+            includeResourceBundle(ctx, parent, bundle, type, flavor, targetValue, nextHandler);
             break;
         default:
             break;

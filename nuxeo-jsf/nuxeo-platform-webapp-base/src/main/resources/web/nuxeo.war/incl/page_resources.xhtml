@@ -11,9 +11,8 @@
         target="#{pageTarget}"
         target_js="#{pageJsTarget}"
         target_css="#{pageCssTarget}"
-        target_html="#{pageHtmlTarget}">
-        <f:param name="flavor" value="#{empty pageFlavor? 'default': pageFlavor}" />
-      </nxr:page>
+        target_html="#{pageHtmlTarget}"
+        flavor="#{empty pageFlavor? 'default': pageFlavor}" />
     </c:when>
     <c:otherwise>
       <nxu:set var="page" value="#{themeStylingService.getPage(pageName)}">
@@ -22,9 +21,8 @@
             target="#{pageTarget}"
             target_js="#{pageJsTarget}"
             target_css="#{pageCssTarget}"
-            target_html="#{pageHtmlTarget}">
-            <f:param name="flavor" value="#{empty pageFlavor? 'default': pageFlavor}" />
-          </nxr:bundle>
+            target_html="#{pageHtmlTarget}"
+            flavor="#{empty pageFlavor? 'default': pageFlavor}" />
         </c:if>
       </nxu:set>
     </c:otherwise>

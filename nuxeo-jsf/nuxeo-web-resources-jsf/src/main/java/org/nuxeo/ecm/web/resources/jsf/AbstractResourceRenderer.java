@@ -29,6 +29,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIParameter;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.runtime.api.Framework;
@@ -212,9 +213,13 @@ public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
     }
 
     protected Param[] getParamList(UIComponent command) {
-        if (command.getChildCount() > 0) {
+        String flavor = (String) command.getAttributes().get("flavor");
+        if (StringUtils.isNotBlank(flavor) || command.getChildCount() > 0) {
             ArrayList<Param> parameterList = new ArrayList<Param>();
-
+            if (StringUtils.isNotBlank(flavor)) {
+                Param param = new Param("flavor", flavor);
+                parameterList.add(param);
+            }
             for (UIComponent kid : command.getChildren()) {
                 if (kid instanceof UIParameter) {
                     UIParameter uiParam = (UIParameter) kid;

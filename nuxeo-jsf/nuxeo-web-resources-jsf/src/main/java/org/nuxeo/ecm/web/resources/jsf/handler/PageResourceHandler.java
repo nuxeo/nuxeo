@@ -69,6 +69,8 @@ public class PageResourceHandler extends MetaTagHandler {
 
     protected final TagAttribute type;
 
+    protected final TagAttribute flavor;
+
     protected final TagAttribute target;
 
     protected final TagAttribute[] vars;
@@ -81,6 +83,7 @@ public class PageResourceHandler extends MetaTagHandler {
         this.config = config;
         name = getAttribute("name");
         type = getAttribute("type");
+        flavor = getAttribute("flavor");
         target = getAttribute("target");
         vars = tag.getAttributes().getAll();
     }
@@ -103,7 +106,6 @@ public class PageResourceHandler extends MetaTagHandler {
             // NO-OP
             return;
         }
-
         String typeValue = null;
         if (type != null) {
             typeValue = type.getValue(ctx);
@@ -113,6 +115,11 @@ public class PageResourceHandler extends MetaTagHandler {
             log.error(String.format("Unsupported type '%s' on tag nxr:resourceBundle at %s", typeValue,
                     tag.getLocation()));
             return;
+        }
+
+        String flavorValue = null;
+        if (flavor != null) {
+            flavorValue = flavor.getValue(ctx);
         }
 
         String targetValue = null;
@@ -147,23 +154,23 @@ public class PageResourceHandler extends MetaTagHandler {
                 }
             }
             // first include handlers that match JSF resources
-            applyPage(ctx, parent, wrm, page, ResourceType.jsfcss, cssTarget, leaf);
-            applyPage(ctx, parent, wrm, page, ResourceType.jsfjs, jsTarget, leaf);
+            applyPage(ctx, parent, wrm, page, ResourceType.jsfcss, flavorValue, cssTarget, leaf);
+            applyPage(ctx, parent, wrm, page, ResourceType.jsfjs, flavorValue, jsTarget, leaf);
             // then include xhtmlfirst templates
-            applyPage(ctx, parent, wrm, page, ResourceType.xhtmlfirst, null, leaf);
+            applyPage(ctx, parent, wrm, page, ResourceType.xhtmlfirst, flavorValue, null, leaf);
             // then let other resources (css, js, html) be processed by the component at render time
-            applyPage(ctx, parent, wrm, page, ResourceType.css, cssTarget, nextHandler);
-            applyPage(ctx, parent, wrm, page, ResourceType.js, jsTarget, nextHandler);
-            applyPage(ctx, parent, wrm, page, ResourceType.html, htmlTarget, nextHandler);
+            applyPage(ctx, parent, wrm, page, ResourceType.css, flavorValue, cssTarget, nextHandler);
+            applyPage(ctx, parent, wrm, page, ResourceType.js, flavorValue, jsTarget, nextHandler);
+            applyPage(ctx, parent, wrm, page, ResourceType.html, flavorValue, htmlTarget, nextHandler);
             // then include xhtml templates
-            applyPage(ctx, parent, wrm, page, ResourceType.xhtml, null, leaf);
+            applyPage(ctx, parent, wrm, page, ResourceType.xhtml, flavorValue, null, leaf);
         } else {
-            applyPage(ctx, parent, wrm, page, rtype, targetValue, leaf);
+            applyPage(ctx, parent, wrm, page, rtype, flavorValue, targetValue, leaf);
         }
     }
 
     protected void applyPage(FaceletContext ctx, UIComponent parent, WebResourceManager wrm, PageDescriptor page,
-            ResourceType type, String targetValue, FaceletHandler nextHandler) throws IOException {
+            ResourceType type, String flavor, String targetValue, FaceletHandler nextHandler) throws IOException {
         switch (type) {
         case jsfjs:
             for (Resource r : retrieveResources(wrm, page, type)) {
@@ -188,14 +195,14 @@ public class PageResourceHandler extends MetaTagHandler {
             includeXHTML(ctx, parent, retrieveResources(wrm, page, type), nextHandler);
             break;
         case js:
-            includePageResource(ctx, parent, page.getName(), type, targetValue, nextHandler);
+            includePageResource(ctx, parent, page.getName(), type, flavor, targetValue, nextHandler);
             break;
         case css:
-            includePageResource(ctx, parent, page.getName(), type, targetValue, nextHandler);
+            includePageResource(ctx, parent, page.getName(), type, flavor, targetValue, nextHandler);
             break;
         case html:
             for (String bundle : page.getResourceBundles()) {
-                includeResourceBundle(ctx, parent, bundle, type, targetValue, nextHandler);
+                includeResourceBundle(ctx, parent, bundle, type, flavor, targetValue, nextHandler);
             }
             break;
         default:
@@ -292,13 +299,16 @@ public class PageResourceHandler extends MetaTagHandler {
     }
 
     protected void includeResourceBundle(FaceletContext ctx, UIComponent parent, String name, ResourceType type,
-            String target, FaceletHandler nextHandler) throws IOException {
+            String flavor, String target, FaceletHandler nextHandler) throws IOException {
         String componentType = UIOutput.COMPONENT_TYPE;
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         attrs.add(getTagAttribute("name", name));
         attrs.add(getTagAttribute("type", type.name()));
         if (!StringUtils.isBlank(target)) {
             attrs.add(getTagAttribute("target", target));
+        }
+        if (!StringUtils.isBlank(flavor)) {
+            attrs.add(getTagAttribute("flavor", flavor));
         }
         TagAttributesImpl attributes = new TagAttributesImpl(attrs.toArray(new TagAttribute[] {}));
         ComponentConfig cconfig = TagConfigFactory.createComponentConfig(config, tagId, attributes, nextHandler,
@@ -307,13 +317,16 @@ public class PageResourceHandler extends MetaTagHandler {
     }
 
     protected void includePageResource(FaceletContext ctx, UIComponent parent, String name, ResourceType type,
-            String target, FaceletHandler nextHandler) throws IOException {
+            String flavor, String target, FaceletHandler nextHandler) throws IOException {
         String componentType = UIOutput.COMPONENT_TYPE;
         List<TagAttribute> attrs = new ArrayList<TagAttribute>();
         attrs.add(getTagAttribute("name", name));
         attrs.add(getTagAttribute("type", type.name()));
         if (!StringUtils.isBlank(target)) {
             attrs.add(getTagAttribute("target", target));
+        }
+        if (!StringUtils.isBlank(flavor)) {
+            attrs.add(getTagAttribute("flavor", flavor));
         }
         TagAttributesImpl attributes = new TagAttributesImpl(attrs.toArray(new TagAttribute[] {}));
         ComponentConfig cconfig = TagConfigFactory.createComponentConfig(config, tagId, attributes, nextHandler,
