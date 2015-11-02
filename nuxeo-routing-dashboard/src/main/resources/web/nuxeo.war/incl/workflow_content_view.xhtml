@@ -79,7 +79,7 @@
             <c:forEach var="action" items="#{actions}">
               <nxu:set var="fancyboxFormId" value="#{action.id}_fancybox_form">
                 <c:if test="#{(clickedActionId == action.id and action.type == 'process_task') or nxu:hasMessages(fancyboxFormId)}">
-                  <script>
+                  <h:outputScript target="#{pageJsTarget}">
                   jQuery(document).ready(function() {
                     openFancyBox('##{action.id}_fancybox_box', {
                       'autoDimensions': true,
@@ -95,7 +95,7 @@
                     });
                     jQuery('form[id$=#{fancyboxFormId}]').focusFirst();
                   });
-                  </script>
+                  </h:outputScript>
                   <div style="display:none;">
                     <div id="#{action.id}_fancybox_box">
                       <h:form id="#{fancyboxFormId}">
@@ -113,11 +113,11 @@
                             styleClass="button">
                             <f:ajax execute="@this" onevent="jQuery.fancybox.close" render="#{elementsToReRender}" />
                           </h:commandButton>
-                          <script>
+                          <h:outputScript>
                            function setClickButton(buttonId) {
                               jQuery("input[name='button']").attr('value', buttonId);
                            }
-                          </script>
+                          </h:outputScript>
                           <input type="hidden" name="button" value="" />
                           <c:forEach var="task_action" items="#{actions}">
                             <c:if test="#{task_action.type == 'fancybox'}">
