@@ -5237,12 +5237,21 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>license-maven-plugin</artifactId>
-          <version>1.5</version>
+          <version>1.8</version>
           <configuration>
             <!-- <generateBundle>true</generateBundle> -->
             <!-- <verbose>true</verbose> -->
             <!-- Default template: https://fisheye.codehaus.org/browse/mojo/trunk/mojo/license-maven-plugin/src/main/resources/org/codehaus/mojo/license/third-party-file.ftl?hb=true -->
             <!-- <fileTemplate>/tmp/template.ftl</fileTemplate> -->
+            <!-- <missingFile>${session.executionRootDirectory}/src/license/THIRD-PARTY.properties</missingFile> -->
+            <excludedScopes>provided,system</excludedScopes>
+            <!-- <excludedLicenses> -->
+            <!-- <excludedLicense>licenseZ</excludedLicense> -->
+            <!-- </excludedLicenses> -->
+            <!-- <includedLicenses> -->
+            <!-- <includedLicense>licenseA</includedLicense> -->
+            <!-- <includedLicense>licenseB</includedLicense> -->
+            <!-- </includedLicenses> -->
             <licenseMerges>
               <!-- WARN: be careful with formatters, there must be no line return within a license name -->
               <licenseMerge>AL 1.0|Apache License, Version 1.0|apache-1.0</licenseMerge>
