@@ -1,20 +1,21 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
+<h:panelGroup layout="block"
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  class="nx-elements">
+  xmlns:nxr="http://nuxeo.org/nxweb/resources"
+  styleClass="nx-elements">
 
-  <script type="text/javascript"
-    src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-
-  <script src="#{baseURL}bower_components/moment/min/moment-with-locales.min.js"></script>
-  <script>
+  <h:outputScript src="/bower_components/webcomponentsjs/webcomponents-lite.js" target="#{pageJsTarget}" />
+  <h:outputScript src="/bower_components/moment/min/moment-with-locales.min.js" target="#{pageJsTarget}" />
+  <h:outputScript target="#{pageJsTarget}">
     var lang = navigator.language || navigator.browserLanguage;
     moment.locale(lang);
-  </script>
+  </h:outputScript>
 
-  <link rel="import" href="#{baseURL}permissions/components/elements.vulcanized.html"></link>
+  <nxr:import src="/permissions/components/elements.vulcanized.html" target="#{pageJsTarget}" />
 
-  <script>
+  <h:outputScript target="#{pageJsTarget}">
     var nuxeo = (function (nuxeo) {
       nuxeo.elements = (function(elements) {
         elements.labels = {
@@ -74,16 +75,16 @@
       })(nuxeo.elements || {});
       return nuxeo;
     })(nuxeo || {});
-  </script>
+  </h:outputScript>
 
   <nxu:set var="testerName" value="#{frameworkPropertyActions.getProperty('org.nuxeo.ecm.tester.name')}">
     <c:if test="#{testerName == 'Nuxeo-Selenium-Tester'}">
-      <script type="text/javascript">
+      <h:outputScript target="#{pageJsTarget}">
         window.onerror = function(msg){
           jQuery("body").attr("JSError", msg);
           jQuery.get("restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- JS error: " + msg);
         }
-      </script>
+      </h:outputScript>
     </c:if>
   </nxu:set>
 
@@ -93,4 +94,5 @@
     <document-permissions doc-id="#{currentDocument.id}"></document-permissions>
 
   </template>
-</div>
+
+</h:panelGroup>

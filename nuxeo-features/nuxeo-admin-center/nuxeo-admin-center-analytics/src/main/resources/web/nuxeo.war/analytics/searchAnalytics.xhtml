@@ -1,9 +1,12 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
-     style="overflow: hidden">
+<h:panelGroup layout="block"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxr="http://nuxeo.org/nxweb/resources"
+  style="overflow: hidden">
 
-  <script src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-
-  <link rel="import" href="#{baseURL}/analytics/elements/elements.vulcanized.html"></link>
+  <h:outputScript src="/bower_components/webcomponentsjs/webcomponents-lite.js" target="#{pageJsTarget}" />
+  <h:outputScript src="/bower_components/moment/min/moment-with-locales.min.js" target="#{pageJsTarget}" />
+  <nxr:import src="/analytics/elements/elements.vulcanized.html" target="#{pageJsTarget}" />
 
   <template is="dom-bind">
 
@@ -17,4 +20,4 @@
 
   </template>
 
-</div>
+</h:panelGroup>
