@@ -1,4 +1,6 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   class="nx-elements">
 
   <script type="text/javascript"
@@ -74,12 +76,16 @@
     })(nuxeo || {});
   </script>
 
-  <script type="text/javascript">
-    window.onerror = function(msg){
-      jQuery("body").attr("JSError", msg);
-      jQuery.get("restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- JS error: " + msg);
-    }
-  </script>
+  <nxu:set var="testerName" value="#{frameworkPropertyActions.getProperty('org.nuxeo.ecm.tester.name')}">
+    <c:if test="#{testerName == 'Nuxeo-Selenium-Tester'}">
+      <script type="text/javascript">
+        window.onerror = function(msg){
+          jQuery("body").attr("JSError", msg);
+          jQuery.get("restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- JS error: " + msg);
+        }
+      </script>
+    </c:if>
+  </nxu:set>
 
   <template is="dom-bind">
 
