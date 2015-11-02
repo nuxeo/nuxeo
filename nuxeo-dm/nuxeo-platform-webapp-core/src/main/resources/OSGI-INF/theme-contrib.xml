@@ -27,6 +27,19 @@
       <uri>org.richfaces:richfaces-queue.js</uri>
       <require>richfaces.js</require>
     </resource>
+    <resource name="richfaces-base-component.js" type="jsfjs" target="bodystart">
+      <uri>org.richfaces:richfaces-base-component.js</uri>
+      <require>richfaces.js</require>
+    </resource>
+    <resource name="richfaces-fileupload.ecss" type="jsfcss" target="bodystart">
+      <uri>org.richfaces:fileupload.ecss</uri>
+      <require>richfaces.js</require>
+    </resource>
+    <resource name="richfaces-fileupload.js" type="jsfjs" target="bodystart">
+      <uri>org.richfaces:fileupload.js</uri>
+      <require>richfaces-fileupload.ecss</require>
+      <require>richfaces.js</require>
+    </resource>
     <resource name="widget-utils.js" type="jsfjs">
       <uri>org.nuxeo:widget-utils.min.js</uri>
       <require>richfaces-queue.js</require>
@@ -356,6 +369,8 @@
         <resource>jquery.js</resource>
         <resource>richfaces.js</resource>
         <resource>richfaces-queue.js</resource>
+        <resource>richfaces-base-component.js</resource>
+        <resource>richfaces-fileupload.js</resource>
         <resource>widget-utils.js</resource>
         <resource>select2.js</resource>
         <resource>seam-remote.js</resource>
