@@ -63,6 +63,11 @@ public class LoginScreenConfig implements Serializable {
     @XNode("videos@loop")
     protected Boolean loop;
 
+    /**
+     * @since 7.10
+     */
+    protected String backgroundImage;
+
     @XNode("removeNews")
     protected Boolean removeNews = false;
 
@@ -234,6 +239,15 @@ public class LoginScreenConfig implements Serializable {
         this.bodyBackgroundStyle = Framework.expandVars(bodyBackgroundStyle);
     }
 
+    @XNode("backgroundImage")
+    public void setBackgroundImage(String backgroundImage) {
+        this.backgroundImage = Framework.expandVars(backgroundImage);
+    }
+
+    public String getBackgroundImage() {
+        return this.backgroundImage;
+    }
+
     public String getLoginButtonBackgroundColor() {
         return loginButtonBackgroundColor;
     }
@@ -329,6 +343,9 @@ public class LoginScreenConfig implements Serializable {
         }
         if (newConfig.loginButtonBackgroundColor != null) {
             loginButtonBackgroundColor = newConfig.loginButtonBackgroundColor;
+        }
+        if (newConfig.backgroundImage != null) {
+            backgroundImage = newConfig.backgroundImage;
         }
 
         if (providers == null) {
