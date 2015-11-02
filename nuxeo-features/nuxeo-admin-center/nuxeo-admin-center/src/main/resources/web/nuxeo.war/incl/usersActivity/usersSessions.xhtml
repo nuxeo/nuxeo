@@ -1,4 +1,6 @@
-<div xmlns:h="http://java.sun.com/jsf/html"
+<h:panelGroup layout="block"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
@@ -20,17 +22,13 @@
   <h:form>
     <h:outputText
       value="#{messages['adminsubtab.usersActivity.userSessions.timerange']}" /> :
-        <h:selectOneListbox class="dataInputText" size="1"
-      value="#{usersActivityInfo.selectedHttpSessionsTimeRange}"
-      onchange="Element.next(this).firstChild.click();">
-
+    <h:selectOneListbox class="dataInputText" size="1"
+      value="#{usersActivityInfo.selectedHttpSessionsTimeRange}">
+      <f:ajax execute="@this" render="usersHttpSessionsListing userSessionsMessages" event="change" />
       <nxu:selectItems value="#{usersActivityInfo.httpSessionsTimeRanges}"
         var="itype" itemValue="#{itype.value}"
         itemLabel="#{messages[itype.label]}" />
     </h:selectOneListbox>
-    <div style="display: none;"><a4j:commandButton value="submit"
-      render="usersHttpSessionsListing userSessionsMessages" /></div>
-
   </h:form>
 
   <h:form>
@@ -92,4 +90,6 @@
     </nxu:dataTable>
 
   </h:form>
-</a4j:outputPanel></div>
+</a4j:outputPanel>
+
+</h:panelGroup>

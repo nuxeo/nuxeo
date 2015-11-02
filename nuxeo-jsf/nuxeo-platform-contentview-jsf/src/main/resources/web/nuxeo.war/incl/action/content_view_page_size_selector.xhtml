@@ -28,23 +28,17 @@ empty:
     </c:if>
 
     <span class="contentViewUpperAction">
-      <h:form id="contentViewGlobalPageSizeFrom_#{contentViewRenderId}"
-        ajaxSubmit="true">
-
+      <h:form id="contentViewGlobalPageSizeFrom_#{contentViewRenderId}">
         <span class="contentViewPageSelectorDesc">
           <h:outputText value="#{messages['label.contentview.pageSize']}" />
         </span>
         <h:selectOneMenu value="#{pageSizeBinding}"
           id="contentViewPageSizeSelector"
-          styleClass="langSelect"
-          onchange="Element.next(this).firstChild.click();">
+          styleClass="langSelect">
           <f:convertNumber />
           <f:selectItems value="#{contentViewActions.getPageSizeOptions(contentView)}" />
+          <f:ajax execute="@this" render="#{ajaxReRender}" event="change" />
         </h:selectOneMenu>
-        <span style="display: none;">
-          <a4j:commandButton value="submit"
-            render="#{ajaxReRender}" />
-        </span>
       </h:form>
     </span>
 
