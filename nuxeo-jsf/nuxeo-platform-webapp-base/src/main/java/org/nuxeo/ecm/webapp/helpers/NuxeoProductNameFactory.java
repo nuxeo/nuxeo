@@ -54,12 +54,12 @@ public class NuxeoProductNameFactory implements Serializable {
 
     @Factory(value = "nuxeoApplicationName", scope = ScopeType.APPLICATION)
     public String getNuxeoProductName() {
-        return Framework.getProperty(Environment.DISTRIBUTION_NAME);
+        return Framework.getProperty(Environment.PRODUCT_NAME);
     }
 
     @Factory(value = "nuxeoApplicationVersion", scope = ScopeType.APPLICATION)
     public String getNuxeoProductVersion() {
-        return Framework.getProperty(Environment.DISTRIBUTION_VERSION);
+        return Framework.getProperty(Environment.PRODUCT_VERSION);
     }
 
     /**
