@@ -182,6 +182,12 @@ public class NXMessagesRenderer extends MessagesRenderer implements ComponentSys
         if (StringUtils.isBlank(toVerify)) {
             return null;
         }
+        FacesContext context = FacesContext.getCurrentInstance();
+        boolean ajaxRequest = context.getPartialViewContext().isAjaxRequest();
+        if (ajaxRequest) {
+            // ease up ajax re-rendering in case of js scripts parsing defer
+            return null;
+        }
         return toVerify;
     }
 
