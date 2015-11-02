@@ -95,6 +95,10 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     protected RedisAdmin redisAdmin;
 
+    protected int firstLevelTTL;
+
+    protected int secondLevelTTL;
+
     protected Log log = LogFactory.getLog(RedisTransientStore.class);
 
     public RedisTransientStore() {
@@ -106,8 +110,13 @@ public class RedisTransientStore extends AbstractTransientStore {
     public void init(TransientStoreConfig config) {
         log.debug("Initializing RedisTransientStore: " + config.getName());
         super.init(config);
+
         namespace = redisAdmin.namespace("transientStore", config.getName());
         sizeKey = namespace + "size";
+
+        // Use seconds for Redis EXPIRE command
+        firstLevelTTL = config.getFirstLevelTTL() * 60;
+        secondLevelTTL = config.getSecondLevelTTL() * 60;
     }
 
     @Override
@@ -133,6 +142,7 @@ public class RedisTransientStore extends AbstractTransientStore {
             jedis.hset(getBytes(paramsKey), getBytes(parameter), serialize(value));
             return null;
         });
+        setTTL(key, firstLevelTTL);
     }
 
     @Override
@@ -162,6 +172,7 @@ public class RedisTransientStore extends AbstractTransientStore {
             jedis.hmset(getBytes(paramsKey), serialize(parameters));
             return null;
         });
+        setTTL(key, firstLevelTTL);
     }
 
     @Override
@@ -273,6 +284,7 @@ public class RedisTransientStore extends AbstractTransientStore {
             jedis.hset(namespace + key, "completed", String.valueOf(completed));
             return null;
         });
+        setTTL(key, firstLevelTTL);
     }
 
     @Override
@@ -317,7 +329,9 @@ public class RedisTransientStore extends AbstractTransientStore {
 
     @Override
     public void release(String key) {
-        if (config.getTargetMaxSizeMB() >= 0 && getStorageSize() > config.getTargetMaxSizeMB() * (1024 * 1024)) {
+        if (getStorageSize() <= config.getTargetMaxSizeMB() * (1024 * 1024) || config.getTargetMaxSizeMB() < 0) {
+            setTTL(key, secondLevelTTL);
+        } else {
             remove(key);
         }
     }
@@ -364,24 +378,35 @@ public class RedisTransientStore extends AbstractTransientStore {
                         + key));
             }
             jedis.hmset(namespace + key, entrySummary);
+            jedis.expire(namespace + key, firstLevelTTL);
             return null;
         });
 
         // Set new blobs
         if (blobInfos != null) {
+            int blobsTimeout = firstLevelTTL + 60;
             for (int i = 0; i < blobInfos.size(); i++) {
                 String blobInfoIndex = String.valueOf(i);
                 Map<String, String> blobInfo = blobInfos.get(i);
-                redisExecutor.execute((RedisCallable<String>) jedis -> {
+                redisExecutor.execute((RedisCallable<Void>) jedis -> {
                     String blobInfoKey = namespace + join(key, "blobs", blobInfoIndex);
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Setting fields %s in Redis hash stored at key %s", blobInfo,
                                 blobInfoKey));
                     }
-                    return jedis.hmset(blobInfoKey, blobInfo);
+                    jedis.hmset(blobInfoKey, blobInfo);
+                    jedis.expire(blobInfoKey, blobsTimeout);
+                    return null;
                 });
             }
         }
+
+        // Set params TTL
+        redisExecutor.execute((RedisCallable<Void>) jedis -> {
+            String paramsKey = namespace + join(key, "params");
+            jedis.expire(getBytes(paramsKey), firstLevelTTL + 60);
+            return null;
+        });
     }
 
     @Override
@@ -528,4 +553,45 @@ public class RedisTransientStore extends AbstractTransientStore {
         }
         return map;
     }
+
+    protected void setTTL(String key, int seconds) {
+
+        Map<String, String> summary = getSummary(key);
+        if (summary != null) {
+            // Summary
+            redisExecutor.execute((RedisCallable<Void>) jedis -> {
+                jedis.expire(namespace + key, seconds);
+                return null;
+            });
+            // Blobs
+            String blobCountStr = summary.get("blobCount");
+            if (blobCountStr != null) {
+                int blobCount = Integer.parseInt(blobCountStr);
+                if (blobCount > 0) {
+                    final int blobsTimeout = seconds + 60;
+                    for (int i = 0; i < blobCount; i++) {
+                        String blobInfoIndex = String.valueOf(i);
+                        redisExecutor.execute((RedisCallable<Void>) jedis -> {
+                            String blobInfoKey = namespace + join(key, "blobs", blobInfoIndex);
+                            jedis.expire(blobInfoKey, blobsTimeout);
+                            return null;
+                        });
+                    }
+                }
+            }
+        }
+        // Parameters
+        final int paramsTimeout;
+        if (summary == null) {
+            paramsTimeout = seconds;
+        } else {
+            paramsTimeout = seconds + 60;
+        }
+        redisExecutor.execute((RedisCallable<Void>) jedis -> {
+            String paramsKey = namespace + join(key, "params");
+            jedis.expire(getBytes(paramsKey), paramsTimeout);
+            return null;
+        });
+    }
+
 }
