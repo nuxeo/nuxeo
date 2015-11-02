@@ -21,6 +21,7 @@
 String productName = Framework.getProperty(Environment.PRODUCT_NAME);
 String productVersion = Framework.getProperty(Environment.PRODUCT_VERSION);
 String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
+boolean isTesting = "Nuxeo-Selenium-Tester".equals(testerName);
 String context = request.getContextPath();
 
 HttpSession httpSession = request.getSession(false);
@@ -300,7 +301,7 @@ video {
 </head>
 
 <body>
-<% if (hasVideos) { %>
+<% if (hasVideos && !isTesting) { %>
 <video autoplay <%= muted + loop %> preload="auto" poster="<%=backgroundPath%>" id="bgvid">
   <% for (LoginVideo video : screenConfig.getVideos()) { %>
   <source src="<%= video.getSrc() %>" type="<%= video.getType() %>">
@@ -419,7 +420,7 @@ video {
         </form>
       </td>
       <td class="news_container" align="right" valign="middle">
-        <% if (showNews && !"Nuxeo-Selenium-Tester".equals(testerName)) { %>
+        <% if (showNews && !isTesting) { %>
           <iframe class="block_container" style="visibility:hidden"
             onload="javascript:this.style.visibility='visible';"
             src="<%=iframeUrl%>"></iframe>
