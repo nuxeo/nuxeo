@@ -74,6 +74,13 @@
     })(nuxeo || {});
   </script>
 
+  <script type="text/javascript">
+    window.onerror = function(msg){
+      jQuery("body").attr("JSError", msg);
+      jQuery.get("restAPI/systemLog?token=dolog&amp;level=WARN&amp;message=----- JS error: " + msg);
+    }
+  </script>
+
   <template is="dom-bind">
 
     <nuxeo-connection id="nx_connection" url="#{baseURL}"></nuxeo-connection>
