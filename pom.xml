@@ -5276,11 +5276,12 @@
                 |GNU Lesser General Public License, 2.1
                 |GNU Lesser GPL 2.1|LGPL, version 2.1</licenseMerge>
               <licenseMerge>LGPL 3
+                |GNU Lesser General Public License, Version 3
+                |GNU Lesser General Public License, Version 3 or later</licenseMerge>
+              <licenseMerge>LGPL Unknown Version
                 |GNU Lesser General Public License (LGPL)|lgpl|LGPL
                 |GNU LESSER GENERAL PUBLIC LICENSE
                 |GNU Lesser General Public License
-                |GNU Lesser General Public License, Version 3
-                |GNU Lesser General Public License, Version 3 or later
                 |Gnu Lesser Public License</licenseMerge>
               <licenseMerge>GPL 2
                 |GNU General Public License v2
