@@ -593,7 +593,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         }
 
         // NXP-14476: Testing lifecycle state is part of the "mutable_document" filter
-        if (documentModel.getCurrentLifeCycleState().equals(LifeCycleConstants.DELETED_STATE)) {
+        if (LifeCycleConstants.DELETED_STATE.equals(documentModel.getCurrentLifeCycleState())) {
             return false;
         }
 
