@@ -470,6 +470,20 @@ public class RedisTransientStore extends AbstractTransientStore {
         }
     }
 
+    public long getTTL(String key) {
+        long summaryTTL = redisExecutor.execute((RedisCallable<Long>) jedis -> {
+            return jedis.ttl(namespace + key);
+        });
+        if (summaryTTL >= 0) {
+            return summaryTTL;
+        } else {
+            return redisExecutor.execute((RedisCallable<Long>) jedis -> {
+                String paramsKey = namespace + join(key, "params");
+                return jedis.ttl(getBytes(paramsKey));
+            });
+        }
+    }
+
     protected Map<String, String> getSummary(String key) {
         return redisExecutor.execute((RedisCallable<Map<String, String>>) jedis -> {
             Map<String, String> summary = jedis.hgetAll(namespace + key);
