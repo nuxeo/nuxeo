@@ -53,9 +53,7 @@ import org.nuxeo.runtime.api.Framework;
  * and the browser can't display them</li>
  * </ul>
  * <p>
- * commandline, xpath, fuzz, highlightColor, lowlightColor and repo are optional Utility to force cleanup of temporary
- * files created on the server: /nuxeo/diffPictures?cleanup=true&leftDocId=123456&rightDocId=456789& WARNING: Why can't
- * I use the public static void downloadBlob() from DownloadServlet?
+ * commandline, xpath, fuzz, highlightColor, lowlightColor and repo are optional
  *
  * @since 7.4
  */

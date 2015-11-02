@@ -19,42 +19,6 @@ var NxDiffPictures;
     
     gParams = inParams;
 
-    // We are in a iFrame opened by nuxeo-diff-content. We can detect
-    // the fancybox was closed by using the onunload Window's event.
-    // In this event, we send a quick synchronous ajax request
-    var windowUnload = window.onunload;
-    window.onunload = function(p1, p2, p3) {
-
-      // tell server to cleanup temp files
-      // The call must be synchronous in this context
-      jQuery.ajax({
-        url: gParams.contextPath + "/diffPictures?action=cleanup&leftDocId=" + gParams.leftDocId + "&rightDocId=" + gParams.rightDocId,
-        async: false
-      });
-
-      if(typeof windowUnload === "function") {
-        previousUnloadFunction(p1, p2, p3);
-      }
-    }
-    
-    // Setup UI
-    /*
-    if(gParams.hideTuning) {
-        diffToolsContainerObj = jQuery("#diffToolsContainer");
-        diffToolsContainerObj.hide();
-        
-        resultImgContainerObj = jQuery("#resultImgContainer");
-        resultImgContainerObj.removeClass("twelve");
-        resultImgContainerObj.removeClass("wide");
-        resultImgContainerObj.removeClass("column");
-
-        resultImgContainerObj.removeClass("siwteen");
-        resultImgContainerObj.removeClass("wide");
-        resultImgContainerObj.removeClass("column");
-        resultImgContainerObj.css("padding-left", "35px");
-    }
-    */
-
     var resultImgId = gParams.resultImgId
 
     // Get the jQuery objects once
