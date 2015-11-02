@@ -65,42 +65,47 @@ public class AdminCenterBasePage extends AbstractPage {
         super(driver);
     }
 
+    protected void clickOnTab(WebElement tab) {
+        clickOnTabIfNotSelected("nxw_adminCenterTabs_panel", tab);
+    }
+
     public UsersGroupsBasePage getUsersGroupsHomePage() {
-        userAndGroupsLink.click();
+        clickOnTab(userAndGroupsLink);
         return asPage(UsersGroupsBasePage.class);
     }
 
     public ConnectHomePage getConnectHomePage() {
-        nuxeoConnectLink.click();
+        clickOnTab(nuxeoConnectLink);
         return asPage(ConnectHomePage.class);
     }
 
     public UpdateCenterPage getUpdateCenterHomePage() {
-        updateCenterLink.click();
+        clickOnTab(updateCenterLink);
         return asPage(UpdateCenterPage.class);
     }
 
     public MonitoringPage getMonitoringPage() {
-        monitoringLink.click();
+        clickOnTab(monitoringLink);
         return asPage(MonitoringPage.class);
     }
 
     public SystemHomePage getSystemHomePage() {
-        systemInformationLink.click();
+        clickOnTab(systemInformationLink);
         return asPage(SystemHomePage.class);
     }
 
     public VocabulariesPage getVocabulariesPage() {
-        vocabulariesLink.click();
+        clickOnTab(vocabulariesLink);
         return asPage(VocabulariesPage.class);
     }
 
     public WorkflowsPage getWorkflowsPage() {
-        worflowsLink.click();
+        clickOnTab(worflowsLink);
         return asPage(WorkflowsPage.class);
     }
 
     public ActivityPage getActivityPage() {
+        // not ajaxified
         activityLink.click();
         return asPage(ActivityPage.class);
     }

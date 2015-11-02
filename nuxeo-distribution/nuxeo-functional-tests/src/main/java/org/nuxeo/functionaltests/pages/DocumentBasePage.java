@@ -17,10 +17,13 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.fragment.AddToCollectionForm;
@@ -45,8 +48,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import com.google.common.base.Function;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * The nuxeo main document base page
@@ -114,7 +115,7 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']")
     public WebElement tabsBar;
 
-    @FindBy(linkText = "Workflow")
+    @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Workflow']")
     public WebElement workflowLink;
 
     @Required
@@ -154,11 +155,15 @@ public class DocumentBasePage extends AbstractPage {
         }
     }
 
+    /**
+     * @since 7.10
+     */
+    public void clickOnDocumentTabLink(WebElement tabLink) {
+        clickOnLinkIfNotSelected(tabLink);
+    }
+
     protected void clickOnLinkIfNotSelected(WebElement tabLink) {
-        WebElement selectedTab = findElementWithTimeout(By.xpath("//div[@id='nxw_documentTabs_panel']//li[@class='selected']/a/span"));
-        if (!selectedTab.equals(tabLink)) {
-            tabLink.click();
-        }
+        clickOnTabIfNotSelected("nxw_documentTabs_panel", tabLink);
     }
 
     public AdminCenterBasePage getAdminCenter() {
@@ -270,7 +275,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public WorkflowTabSubPage getWorkflow() {
-        workflowLink.click();
+        clickOnDocumentTabLink(workflowLink);
         return asPage(WorkflowTabSubPage.class);
     }
 

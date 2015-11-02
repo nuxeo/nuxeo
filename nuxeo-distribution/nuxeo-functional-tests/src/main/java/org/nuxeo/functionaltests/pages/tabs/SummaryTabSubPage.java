@@ -104,7 +104,7 @@ public class SummaryTabSubPage extends AbstractPage {
     }
 
     public WorkflowTabSubPage getWorkflow() {
-        findElementWithTimeout(By.linkText("Workflow")).click();
+        clickOnTabIfNotSelected("nxw_documentTabs_panel", "nxw_TAB_ROUTE_WORKFLOW");
         return asPage(WorkflowTabSubPage.class);
     }
 

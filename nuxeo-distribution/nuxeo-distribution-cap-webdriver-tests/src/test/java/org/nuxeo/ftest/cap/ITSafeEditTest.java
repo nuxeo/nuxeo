@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
@@ -43,7 +44,6 @@ import org.openqa.selenium.Platform;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
@@ -79,8 +79,8 @@ public class ITSafeEditTest extends AbstractTest {
         }
 
         public String getKeyFromLocalStorage(int key) {
-            return (String) js.executeScript(String.format("return window.localStorage.key('%s');",
-                    Integer.valueOf(key)));
+            return (String) js.executeScript(
+                    String.format("return window.localStorage.key('%s');", Integer.valueOf(key)));
         }
 
         public Long getLocalStorageLength() {
@@ -163,8 +163,17 @@ public class ITSafeEditTest extends AbstractTest {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5, TimeUnit.SECONDS)
                                                                 .pollingEvery(100, TimeUnit.MILLISECONDS)
                                                                 .ignoring(NoSuchElementException.class);
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.className("ambiance-title"),
-                "A draft of this document has been saved"));
+        wait.until(new Function<WebDriver, WebElement>() {
+            @Override
+            public WebElement apply(WebDriver driver) {
+                List<WebElement> elts = driver.findElements(
+                        By.xpath("//div[contains(.,'A draft of this document has been saved')]"));
+                if (!elts.isEmpty()) {
+                    return elts.get(0);
+                }
+                return null;
+            }
+        });
     }
 
     /**

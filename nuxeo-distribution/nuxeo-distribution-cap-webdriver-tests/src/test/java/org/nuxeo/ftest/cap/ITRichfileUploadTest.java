@@ -33,6 +33,7 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
@@ -52,7 +53,7 @@ public class ITRichfileUploadTest extends AbstractTest {
 
     private static final Log log = LogFactory.getLog(ITRichfileUploadTest.class);
 
-    protected static final String FILES_TAB_ID = "nxw_TAB_FILES_EDIT";
+    protected static final String FILES_TAB_XPATH = "//a[contains(@id,'nxw_TAB_FILES_EDIT')]/span";
 
     private static final String NX_UPLOADED_FILES_XPATH = "//div[@class='simpleBox']";
 
@@ -81,10 +82,11 @@ public class ITRichfileUploadTest extends AbstractTest {
 
         // Create test File
         DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
+        FileDocumentBasePage filePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null,
+                null, null);
 
         // Go to Files tab
-        Locator.findElementWithTimeoutAndClick(By.id(FILES_TAB_ID));
+        filePage.clickOnDocumentTabLink(Locator.findElementWithTimeout(By.xpath(FILES_TAB_XPATH)));
 
         // check that clear all is not visible
         assertFalse(Locator.findElementWithTimeout(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());

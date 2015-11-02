@@ -20,17 +20,16 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.FindBys;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
  */
 public class ManageTabSubPage extends DocumentBasePage {
 
-    @FindBys({ @FindBy(id = "nxw_documentSubTabs_panel"), @FindBy(linkText = "Access Rights") })
+    @FindBy(xpath = "//a[contains(@id,'nxw_TAB_RIGHTS')]/span")
     WebElement accessRightsLink;
 
-    @FindBy(linkText = "Trash")
+    @FindBy(xpath = "//a[contains(@id,'nxw_TAB_TRASH_CONTENT')]/span")
     WebElement trashLink;
 
     public ManageTabSubPage(WebDriver driver) {

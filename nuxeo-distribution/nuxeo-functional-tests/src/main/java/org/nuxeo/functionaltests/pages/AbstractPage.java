@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Assert;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragment;
@@ -103,7 +104,8 @@ public abstract class AbstractPage {
     public String getErrorFeedbackMessage() {
         String ret = "";
         try {
-            List<WebElement> elements = findElementsWithTimeout(By.xpath("//div[contains(@class, 'errorFeedback')]/div[@class='ambiance-title']"));
+            List<WebElement> elements = findElementsWithTimeout(
+                    By.xpath("//div[contains(@class, 'errorFeedback')]/div[@class='ambiance-title']"));
             if (elements.size() == 1) {
                 ret = elements.get(0).getText();
             } else if (elements.size() > 1) {
@@ -283,4 +285,30 @@ public abstract class AbstractPage {
         // you are now outside both frames
         return driver.switchTo().frame(id);
     }
+
+    public boolean useAjaxTabs() {
+        return true;
+    }
+
+    protected void clickOnTabIfNotSelected(String tabPanelId, WebElement tabElement) {
+        WebElement selectedTab = findElementWithTimeout(
+                By.xpath("//div[@id='" + tabPanelId + "']//li[@class='selected']//a/span"));
+        if (!selectedTab.equals(tabElement)) {
+            if (useAjaxTabs()) {
+                AjaxRequestManager arm = new AjaxRequestManager(driver);
+                arm.begin();
+                tabElement.click();
+                arm.end();
+            } else {
+                tabElement.click();
+            }
+        }
+    }
+
+    protected void clickOnTabIfNotSelected(String tabPanelId, String tabElementId) {
+        WebElement tabElement = findElementWithTimeout(
+                By.xpath("//div[@id='" + tabPanelId + "']//a[contains(@id,'" + tabElementId + "')]/span"));
+        clickOnTabIfNotSelected(tabPanelId, tabElement);
+    }
+
 }

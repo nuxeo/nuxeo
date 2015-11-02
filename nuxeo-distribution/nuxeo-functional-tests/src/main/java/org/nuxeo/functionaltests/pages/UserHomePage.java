@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.fragment.GadgetsContainerFragment;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
@@ -64,18 +65,22 @@ public class UserHomePage extends AbstractPage {
      * @since 5.8
      */
     public WorkflowHomePage getWorkflowHomePage() {
-        findElementWithTimeout(By.linkText("Workflow")).click();
+        goToTab("nxw_WorkflowHome");
         return asPage(WorkflowHomePage.class);
     }
 
     public UserHomePage goToDashboard() {
-        findElementWithTimeout(By.linkText("Dashboard")).click();
+        goToTab("nxw_Dashboard");
         return this;
     }
-    
+
     public ProfilePage goToProfile() {
-    	findElementWithTimeout(By.linkText("Profile")).click();
+        goToTab("nxw_Profile");
         return asPage(ProfilePage.class);
+    }
+
+    protected void goToTab(String id) {
+        clickOnTabIfNotSelected("nxw_homeTabs_panel", id);
     }
 
 }
