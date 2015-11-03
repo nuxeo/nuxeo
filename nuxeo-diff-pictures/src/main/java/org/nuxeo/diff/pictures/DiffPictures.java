@@ -88,9 +88,9 @@ public class DiffPictures {
     protected static final String TMPL_FORCED_COMMAND = buildTemplateKey("FORCED_COMMAND");
 
     protected static final String TMPL_HIDE_TOOLS_INLINE_CSS = buildTemplateKey("HIDE_TOOLS_INLINE_CSS");
-    
+
     protected static final String TMPL_IMG_RESULT_NB_COLUMNS = buildTemplateKey("IMG_RESULT_NB_COLUMNS");
-    
+
     protected static final String TMPL_IMG_RESULT_INLINE_CSS = buildTemplateKey("IMG_RESULT_INLINE_CSS");
 
     Blob b1;
@@ -297,24 +297,38 @@ public class DiffPictures {
         Long rightW = (Long) rightDoc.getPropertyValue("picture:info/width");
         Long leftH = (Long) leftDoc.getPropertyValue("picture:info/height");
         Long rightH = (Long) rightDoc.getPropertyValue("picture:info/height");
-        leftLabel += " (" + leftFormat + ", " + leftW + "x" + leftH + ")";
-        rightLabel += " (" + rightFormat + ", " + rightW + "x" + rightH + ")";
 
-        // Update UI and command line to use, if needed
-        if (leftFormat.toLowerCase().equals(rightFormat.toLowerCase()) && leftW.longValue() == rightW.longValue()
-                && leftH.longValue() == rightH.longValue()) {
-            html = html.replace(TMPL_HIDE_TUNING, "false");
-            html = html.replace(TMPL_HIDE_TOOLS_INLINE_CSS, "");
-            html = html.replace(TMPL_IMG_RESULT_NB_COLUMNS, "twelve");
-            html = html.replace(TMPL_IMG_RESULT_INLINE_CSS, "");
-            html = html.replace(TMPL_FORCED_COMMAND, "");
-            
+        // Update UI and command line to use, if needed.
+        boolean useProCommand;
+        if (leftFormat == null || rightFormat == null || leftW == null || leftH == null || rightW == null
+                || rightH == null) {
+            // If the pictures don't have the infos (pictureViews worker failed, or whatever),
+            // let's use the "pro" command
+            useProCommand = true;
         } else {
+            leftLabel += " (" + leftFormat + ", " + leftW + "x" + leftH + ")";
+            rightLabel += " (" + rightFormat + ", " + rightW + "x" + rightH + ")";
+
+            if (leftFormat.toLowerCase().equals(rightFormat.toLowerCase()) && leftW.longValue() == rightW.longValue()
+                    && leftH.longValue() == rightH.longValue()) {
+                useProCommand = false;
+            } else {
+                useProCommand = true;
+            }
+        }
+
+        if (useProCommand) {
             html = html.replace(TMPL_HIDE_TUNING, "true");
             html = html.replace(TMPL_HIDE_TOOLS_INLINE_CSS, "display:none;");
             html = html.replace(TMPL_IMG_RESULT_NB_COLUMNS, "sixteen");
             html = html.replace(TMPL_IMG_RESULT_INLINE_CSS, "padding-left: 35px;");
             html = html.replace(TMPL_FORCED_COMMAND, COMPARE_PRO_COMMAND);
+        } else {
+            html = html.replace(TMPL_HIDE_TUNING, "false");
+            html = html.replace(TMPL_HIDE_TOOLS_INLINE_CSS, "");
+            html = html.replace(TMPL_IMG_RESULT_NB_COLUMNS, "twelve");
+            html = html.replace(TMPL_IMG_RESULT_INLINE_CSS, "");
+            html = html.replace(TMPL_FORCED_COMMAND, "");
         }
 
         html = html.replace(TMPL_CONTEXT_PATH, VirtualHostHelper.getContextPathProperty());
