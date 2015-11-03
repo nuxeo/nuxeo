@@ -1,7 +1,7 @@
 <html>
 
  <head>
-  <script src="${contextPath}/nxthemes-lib/jquery.js"></script>
+  <script src="${contextPath}/wro/api/v1/resource/bundle/jquery.js"></script>
   <script src="${This.path}/"></script>
  </head>
 
