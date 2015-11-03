@@ -225,8 +225,12 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         if (fileEntry == null) {
             return buildEmptyResponse(Status.NOT_FOUND);
         }
+        StatusType status = Status.OK;
+        if (fileEntry.isChunked() && !fileEntry.isChunksCompleted()) {
+            status = new ResumeIncompleteStatusType();
+        }
         Map<String, Object> result = getFileInfo(fileEntry);
-        return buildResponse(Status.OK, result);
+        return buildResponse(status, result);
     }
 
     @DELETE

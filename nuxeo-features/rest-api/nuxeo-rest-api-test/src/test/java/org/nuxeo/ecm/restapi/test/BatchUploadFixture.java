@@ -362,7 +362,7 @@ public class BatchUploadFixture extends BaseTest {
 
         // Get file info, here just to test the GET method
         response = getResponse(RequestType.GET, "upload/" + batchId + "/0");
-        assertEquals(200, response.getStatus());
+        assertEquals(308, response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals("Fichier accentué.txt", node.get("name").getValueAsText());
         assertEquals(fileSize, node.get("size").getValueAsText());
@@ -407,7 +407,7 @@ public class BatchUploadFixture extends BaseTest {
 
         // Get file info, here just to test the GET method
         response = getResponse(RequestType.GET, "upload/" + batchId + "/0");
-        assertEquals(200, response.getStatus());
+        assertEquals(308, response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals("Fichier accentué.txt", node.get("name").getValueAsText());
         assertEquals(fileSize, node.get("size").getValueAsText());
