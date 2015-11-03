@@ -132,6 +132,7 @@
     <module>nuxeo-shibboleth-invitation</module>
     <module>nuxeo-salesforce</module>
     <module>nuxeo-fsexporter</module>
+    <module>nuxeo-showcase-content-sample</module>
   </modules>
 
   <dependencyManagement>
@@ -1043,6 +1044,13 @@
       <dependency>
         <groupId>org.nuxeo.indesignconnector</groupId>
         <artifactId>nuxeo-indesign-connector-server</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Showcase Sample -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-showcase-content-importer</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
