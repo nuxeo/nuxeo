@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.picture.listener;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CREATE;
+import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.CTX_FORCE_VIEWS_GENERATION;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTUREBOOK_TYPE_NAME;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_FACET;
 
@@ -74,7 +75,8 @@ public class PictureChangedListener implements EventListener {
             Property fileProp = doc.getProperty("file:content");
             Property viewsProp = doc.getProperty(AbstractPictureAdapter.VIEWS_PROPERTY);
 
-            if (!viewsProp.isDirty() && (ABOUT_TO_CREATE.equals(event.getName()) || fileProp.isDirty())) {
+            Boolean forceGeneration = Boolean.TRUE.equals(doc.getContextData(CTX_FORCE_VIEWS_GENERATION));
+            if (forceGeneration || !viewsProp.isDirty() && (ABOUT_TO_CREATE.equals(event.getName()) || fileProp.isDirty())) {
                 preFillPictureViews(docCtx.getCoreSession(), doc);
             } else {
                 docCtx.setProperty(PictureViewsGenerationListener.DISABLE_PICTURE_VIEWS_GENERATION_LISTENER, true);

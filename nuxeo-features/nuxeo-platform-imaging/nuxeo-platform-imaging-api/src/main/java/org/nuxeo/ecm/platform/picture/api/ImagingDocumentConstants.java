@@ -44,6 +44,11 @@ public class ImagingDocumentConstants {
 
     public static final String UPDATE_PICTURE_VIEW_EVENT = "updatePictureView";
 
+    /**
+     * @since 7.10
+     */
+    public static final String CTX_FORCE_VIEWS_GENERATION = "forceViewsGeneration";
+
     private ImagingDocumentConstants() {
         // Constants class
     }
