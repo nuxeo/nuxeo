@@ -40,6 +40,8 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent;
+import org.nuxeo.ecm.platform.picture.api.ImageInfo;
+import org.nuxeo.ecm.platform.picture.api.ImagingService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -289,28 +291,42 @@ public class DiffPictures {
                 rightLabel = "Version " + rightDoc.getVersionLabel();
             }
         }
+        
+        // Assuming the documents each have a valid blob.
+        ImagingService imagingService = Framework.getService(ImagingService.class);
+        String leftFormat = null;
+        int leftW = -1, leftH = -1;
+        String rightFormat = null;
+        int rightW = -1, rightH = -1;
 
-        // Append info to the labels
-        String leftFormat = (String) leftDoc.getPropertyValue("picture:info/format");
-        String rightFormat = (String) rightDoc.getPropertyValue("picture:info/format");
-        Long leftW = (Long) leftDoc.getPropertyValue("picture:info/width");
-        Long rightW = (Long) rightDoc.getPropertyValue("picture:info/width");
-        Long leftH = (Long) leftDoc.getPropertyValue("picture:info/height");
-        Long rightH = (Long) rightDoc.getPropertyValue("picture:info/height");
+        Blob bLeft = DiffPicturesUtils.getDocumentBlob(leftDoc, xpath);
+        ImageInfo imgInfo = imagingService.getImageInfo(bLeft);
+        if(imgInfo != null) {
+            leftFormat = imgInfo.getFormat();
+            leftW = imgInfo.getWidth();
+            leftH = imgInfo.getHeight();
+        }
+
+        Blob bRight = DiffPicturesUtils.getDocumentBlob(rightDoc, xpath);
+        imgInfo = imagingService.getImageInfo(bRight);
+        if(imgInfo != null) {
+            rightFormat = imgInfo.getFormat();
+            rightW = imgInfo.getWidth();
+            rightH = imgInfo.getHeight();
+        }
 
         // Update UI and command line to use, if needed.
         boolean useProCommand;
-        if (leftFormat == null || rightFormat == null || leftW == null || leftH == null || rightW == null
-                || rightH == null) {
-            // If the pictures don't have the infos (pictureViews worker failed, or whatever),
-            // let's use the "pro" command
+        if (StringUtils.isBlank(leftFormat) || StringUtils.isBlank(rightFormat) || leftW < 0 || leftH < 0 || rightW < 0
+                || rightH < 0) {
+            // If the pictures don't have the infos, let's use the "pro" command
             useProCommand = true;
         } else {
             leftLabel += " (" + leftFormat + ", " + leftW + "x" + leftH + ")";
             rightLabel += " (" + rightFormat + ", " + rightW + "x" + rightH + ")";
 
-            if (leftFormat.toLowerCase().equals(rightFormat.toLowerCase()) && leftW.longValue() == rightW.longValue()
-                    && leftH.longValue() == rightH.longValue()) {
+            if (leftFormat.toLowerCase().equals(rightFormat.toLowerCase()) && leftW == rightW
+                    && leftH == rightH) {
                 useProCommand = false;
             } else {
                 useProCommand = true;
