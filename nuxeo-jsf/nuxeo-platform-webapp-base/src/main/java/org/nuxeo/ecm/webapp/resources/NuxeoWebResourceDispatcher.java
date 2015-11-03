@@ -150,7 +150,7 @@ public class NuxeoWebResourceDispatcher implements ComponentSystemEventListener 
     }
 
     public String getHeadStartTarget() {
-        return SLOT_BODY_START;
+        return SLOT_HEAD_START;
     }
 
     public String getBodyStartTarget() {
