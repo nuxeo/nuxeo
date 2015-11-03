@@ -2427,6 +2427,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="useAjaxPagination">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="contentView_widget_type_properties_any">
               <rows>
@@ -2547,7 +2550,7 @@
                   <label mode="any">
                     If set to true, pagination actions (first,
                     previous, next, last) actions will be performed using ajax.
-                    Defaults to false.
+                    Defaults to true since version 7.10.
                   </label>
                 </helpLabels>
                 <fields>
