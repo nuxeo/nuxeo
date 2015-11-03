@@ -153,7 +153,7 @@ public class DiffPictures {
         // Being generic, if in the future we add more command lines in the xml.
         // We know that "compare" can't work with pictures of different format or size, so let's force another command
         CommandLineDescriptor cld = CommandLineExecutorComponent.getCommandDescriptor(commandLine);
-        if (cld.getCommand().equals("compare") && !DiffPicturesUtils.sameFormatAndDimensions(b1, b2)) {
+        if ("compare".equals(cld.getCommand()) && !DiffPicturesUtils.sameFormatAndDimensions(b1, b2)) {
             commandLine = COMPARE_PRO_COMMAND;
         }
 
