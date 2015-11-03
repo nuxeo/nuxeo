@@ -32,7 +32,7 @@
     <ui:insert name="page head resources">
       <nxu:set var="pageCssTarget" value="#{nuxeoWebResourceDispatcher.headStartTarget}">
       <nxu:set var="pageJsBodyStartTarget" value="#{nuxeoWebResourceDispatcher.bodyStartTarget}">
-      <nxu:set var="pageJsTarget" value="#{nuxeoWebResourceDispatcher.bodyJavaScriptTarget}">
+      <nxu:set var="pageJsTarget" value="#{nuxeoWebResourceDispatcher.headJavaScriptTarget}">
         <ui:include src="/incl/page_head.xhtml" />
       </nxu:set>
       </nxu:set>
