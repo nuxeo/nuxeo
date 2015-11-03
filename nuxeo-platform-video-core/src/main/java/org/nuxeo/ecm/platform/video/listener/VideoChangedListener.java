@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.video.listener;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.platform.picture.api.ImagingDocumentConstants.PICTURE_VIEWS_PROPERTY;
+import static org.nuxeo.ecm.platform.video.VideoConstants.CTX_FORCE_INFORMATIONS_GENERATION;
 import static org.nuxeo.ecm.platform.video.VideoConstants.HAS_VIDEO_PREVIEW_FACET;
 import static org.nuxeo.ecm.platform.video.VideoConstants.STORYBOARD_PROPERTY;
 import static org.nuxeo.ecm.platform.video.VideoConstants.TRANSCODED_VIDEOS_PROPERTY;
@@ -61,8 +62,9 @@ public class VideoChangedListener implements EventListener {
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
         if (doc.hasFacet(HAS_VIDEO_PREVIEW_FACET) && !doc.isProxy()) {
+            boolean forceGeneration = Boolean.TRUE.equals(doc.getContextData(CTX_FORCE_INFORMATIONS_GENERATION));
             Property origVideoProperty = doc.getProperty("file:content");
-            if (DOCUMENT_CREATED.equals(event.getName()) || origVideoProperty.isDirty()) {
+            if (forceGeneration || DOCUMENT_CREATED.equals(event.getName()) || origVideoProperty.isDirty()) {
 
                 Blob video = (Blob) origVideoProperty.getValue();
                 updateVideoInfo(doc, video);

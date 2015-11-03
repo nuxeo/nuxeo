@@ -45,6 +45,12 @@ public class VideoConstants {
 
     public static final String VIDEO_CHANGED_EVENT = "videoChanged";
 
+    /**
+     * @since 7.10
+     */
+    public static final String CTX_FORCE_INFORMATIONS_GENERATION = "forceInformationsGeneration";
+
+
     // Constant utility class.
     private VideoConstants() {
     }
