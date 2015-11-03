@@ -60,7 +60,8 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class, AutomationFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.diff.pictures",
+@Deploy({ "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.picture.api",
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.diff.pictures",
         "org.nuxeo.ecm.platform.commandline.executor" })
 public class DiffPicturesOperationsTest {
 
@@ -73,6 +74,8 @@ public class DiffPicturesOperationsTest {
     protected static final int ISLAND_H = 282;
 
     protected static final String ISLAND_MODIF_PNG = "island-modif.png";
+
+    protected static final String PNG_MIME_TYPE = "image/png";
 
     protected File fileImage;
 
@@ -118,7 +121,7 @@ public class DiffPicturesOperationsTest {
         DocumentModel pictDoc = coreSession.createDocumentModel(parentOfTestDocs.getPathAsString(), inFile.getName(),
                 "Picture");
         pictDoc.setPropertyValue("dc:title", inFile.getName());
-        pictDoc.setPropertyValue("file:content", new FileBlob(inFile));
+        pictDoc.setPropertyValue("file:content", new FileBlob(inFile, PNG_MIME_TYPE));
         return coreSession.createDocument(pictDoc);
 
     }
@@ -164,8 +167,8 @@ public class DiffPicturesOperationsTest {
     @Test
     public void testOperationWithBlobs_defaultParameters() throws Exception {
 
-        FileBlob fb1 = new FileBlob(fileImage);
-        FileBlob fb2 = new FileBlob(fileImageModif);
+        FileBlob fb1 = new FileBlob(fileImage, PNG_MIME_TYPE);
+        FileBlob fb2 = new FileBlob(fileImageModif, PNG_MIME_TYPE);
 
         OperationContext ctx = new OperationContext(coreSession);
         assertNotNull(ctx);

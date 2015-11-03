@@ -53,8 +53,8 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.diff.pictures",
-        "org.nuxeo.ecm.platform.commandline.executor" })
+@Deploy({ "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.diff.pictures", "org.nuxeo.ecm.platform.commandline.executor" })
 public class DiffPicturesTest {
 
     protected static final Log log = LogFactory.getLog(DiffPicturesTest.class);
@@ -66,6 +66,8 @@ public class DiffPicturesTest {
     protected static final int ISLAND_H = 282;
 
     protected static final String ISLAND_MODIF_PNG = "island-modif.png";
+
+    protected static final String PNG_MIME_TYPE = "image/png";
 
     @Inject
     CoreSession coreSession;
@@ -86,8 +88,8 @@ public class DiffPicturesTest {
         File img1 = FileUtils.getResourceFileFromContext(ISLAND_PNG);
         File img2 = FileUtils.getResourceFileFromContext(ISLAND_MODIF_PNG);
 
-        FileBlob blob1 = new FileBlob(img1);
-        FileBlob blob2 = new FileBlob(img2);
+        FileBlob blob1 = new FileBlob(img1, PNG_MIME_TYPE);
+        FileBlob blob2 = new FileBlob(img2, PNG_MIME_TYPE);
 
         Blob result;
         DiffPictures dp = new DiffPictures(blob1, blob2);
@@ -110,8 +112,8 @@ public class DiffPicturesTest {
         File img2 = FileUtils.getResourceFileFromContext(ISLAND_MODIF_PNG);
         File aFile;
 
-        FileBlob blob1 = new FileBlob(img1);
-        FileBlob blob2 = new FileBlob(img2);
+        FileBlob blob1 = new FileBlob(img1, PNG_MIME_TYPE);
+        FileBlob blob2 = new FileBlob(img2, PNG_MIME_TYPE);
 
         Blob result;
         HashMap<String, Serializable> params;
@@ -141,8 +143,8 @@ public class DiffPicturesTest {
         File img1 = FileUtils.getResourceFileFromContext(ISLAND_PNG);
         File img2 = FileUtils.getResourceFileFromContext(ISLAND_PNG);
 
-        FileBlob blob1 = new FileBlob(img1);
-        FileBlob blob2 = new FileBlob(img2);
+        FileBlob blob1 = new FileBlob(img1, PNG_MIME_TYPE);
+        FileBlob blob2 = new FileBlob(img2, PNG_MIME_TYPE);
 
         Blob result;
         HashMap<String, Serializable> params;
