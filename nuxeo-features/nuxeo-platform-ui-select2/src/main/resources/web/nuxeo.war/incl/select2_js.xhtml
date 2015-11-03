@@ -10,9 +10,9 @@
   <h:outputScript library="org.nuxeo.select2" name="#{nxDevModeSet?'nuxeo-select2-init.js':'nuxeo-select2-init.min.js'}" target="#{pageJsTarget}" />
 
   <c:if test="#{widgetProperty_inlinejs != null }">
-    <script>
+    <h:outputScript target="#{pageJsTarget}">
       <h:outputText value="#{widgetProperty_inlinejs}" escape="false"/>
-    </script>
+    </h:outputScript>
   </c:if>
 
 </c:if>
