@@ -16,7 +16,7 @@
       <uri>org.nuxeo.jsf:fixmultipartajax.min.js</uri>
       <require>jsf.js</require>
     </resource>
-    <resource name="jquery.js" type="jsfjs" target="bodystart">
+    <resource name="richfaces-jquery.js" type="jsfjs" target="bodystart">
       <uri>org.richfaces:jquery.js</uri>
     </resource>
     <resource name="richfaces.js" type="jsfjs" target="bodystart">
@@ -201,20 +201,20 @@
     </resource>
     <resource name="tinymce.xhtml" type="xhtml">
       <uri>/incl/tinymce.xhtml</uri>
-      <require>jquery.js</require>
+      <require>richfaces-jquery.js</require>
       <require>safeEdit.xhtml</require>
     </resource>
     <resource name="konami.xhtml" type="xhtml">
       <uri>/incl/konami.xhtml</uri>
-      <require>jquery.js</require>
+      <require>richfaces-jquery.js</require>
     </resource>
     <resource name="doubleClick_shield.xhtml" type="xhtml">
       <uri>/incl/doubleClick_shield.xhtml</uri>
-      <require>jquery.js</require>
+      <require>richfaces-jquery.js</require>
     </resource>
     <resource name="layout_dev_init.xhtml" type="xhtml">
       <uri>/widgets/dev/layout_dev_init.xhtml</uri>
-      <require>jquery.js</require>
+      <require>richfaces-jquery.js</require>
     </resource>
     <resource name="seam_remoting.xhtml" type="xhtml">
       <uri>/incl/seam_remoting.xhtml</uri>
@@ -225,6 +225,10 @@
     </resource>
     <resource name="automation.js">
       <uri>/scripts/automation.js</uri>
+    </resource>
+
+    <resource name="jquery-standalone.js">
+      <uri>/scripts/jquery.js</uri>
     </resource>
     <!-- end of "static" resources declaration -->
 
@@ -366,7 +370,7 @@
       <resources>
         <resource>jsf.js</resource>
         <resource>fixjsfviewstate.js</resource>
-        <resource>jquery.js</resource>
+        <resource>richfaces-jquery.js</resource>
         <resource>richfaces.js</resource>
         <resource>richfaces-queue.js</resource>
         <resource>richfaces-base-component.js</resource>
@@ -452,6 +456,13 @@
     <bundle name="nuxeo_dm">
       <resources>
         <resource>nuxeo_dm_specific.scss</resource>
+      </resources>
+    </bundle>
+
+    <!-- isolated jquery dep independent of JSF -->
+    <bundle name="jquery">
+      <resources>
+        <resource>jquery-standalone.js</resource>
       </resources>
     </bundle>
 
