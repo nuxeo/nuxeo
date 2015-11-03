@@ -31,8 +31,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -71,16 +69,6 @@ public class DiffPicturesTest {
 
     @Inject
     CoreSession coreSession;
-
-    @Before
-    public void setUp() {
-        // . . .
-    }
-
-    @After
-    public void cleanup() {
-        // . . .
-    }
 
     @Test
     public void testDefaultValues() throws Exception {

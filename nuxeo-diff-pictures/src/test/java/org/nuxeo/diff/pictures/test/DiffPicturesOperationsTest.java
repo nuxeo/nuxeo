@@ -24,8 +24,6 @@ import static org.junit.Assert.assertTrue;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -36,7 +34,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.diff.pictures.DiffPictures;
 import org.nuxeo.diff.pictures.DiffPicturesWithBlobsOp;
 import org.nuxeo.diff.pictures.DiffPicturesWithDocsOp;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -197,10 +194,8 @@ public class DiffPicturesOperationsTest {
         ctx.setInput(null);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(DiffPicturesWithDocsOp.ID)
-             .set("blob2VarName", "varBlob")
-             .set("leftDoc", docImage.getId())
-             .set("rightDoc", docImageModif.getId());
+        chain.add(DiffPicturesWithDocsOp.ID).set("blob2VarName", "varBlob").set("leftDoc", docImage.getId()).set(
+                "rightDoc", docImageModif.getId());
 
         Blob result = (Blob) automationService.run(ctx, chain);
         assertNotNull(result);
