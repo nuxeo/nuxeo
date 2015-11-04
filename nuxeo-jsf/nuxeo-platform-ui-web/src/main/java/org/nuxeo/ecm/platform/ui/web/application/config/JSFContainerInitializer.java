@@ -35,9 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.HandlesTypes;
 
 /**
- * TODO.
- *
- * @since TODO
+ * @since 6.0
  */
 @HandlesTypes({ FacesBehavior.class, FacesBehaviorRenderer.class, FacesComponent.class, FacesConverter.class,
         FacesValidator.class, FacesRenderer.class, ManagedBean.class, NamedEvent.class })
