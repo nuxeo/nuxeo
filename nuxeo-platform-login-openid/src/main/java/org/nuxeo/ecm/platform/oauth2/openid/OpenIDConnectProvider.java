@@ -26,7 +26,6 @@ import java.security.SecureRandom;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.EmailBasedUserResolver;
@@ -42,9 +41,9 @@ import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpMediaType;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -105,8 +104,8 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
                     userResolver = new EmailBasedUserResolver(this);
                 }
             } else {
-                Constructor<? extends UserResolver> c = userResolverClass.getConstructor(new Class[] { OpenIDConnectProvider.class });
-                userResolver = c.newInstance(new Object[] { this });
+                Constructor<? extends UserResolver> c = userResolverClass.getConstructor(OpenIDConnectProvider.class);
+                userResolver = c.newInstance(this);
             }
         } catch (ReflectiveOperationException e) {
             log.error("Failed to instantiate UserResolver", e);
@@ -121,7 +120,6 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
      * Create a state token to prevent request forgery. Store it in the session for later validation.
      *
      * @param HttpServletRequest request
-     * @return
      */
     public String createStateToken(HttpServletRequest request) {
         String state = new BigInteger(130, new SecureRandom()).toString(32);
@@ -134,11 +132,11 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
      * that was supposed to.
      *
      * @param HttpServletRequest request
-     * @return
      */
     public boolean verifyStateToken(HttpServletRequest request) {
-        return request.getParameter(OpenIDConnectAuthenticator.STATE_URL_PARAM_NAME).equals(
-                request.getSession().getAttribute(OpenIDConnectAuthenticator.STATE_SESSION_ATTRIBUTE + "_" + getName()));
+        return request.getParameter(OpenIDConnectAuthenticator.STATE_URL_PARAM_NAME)
+                      .equals(request.getSession().getAttribute(
+                              OpenIDConnectAuthenticator.STATE_SESSION_ATTRIBUTE + "_" + getName()));
     }
 
     public String getAuthenticationUrl(HttpServletRequest req, String requestedUrl) {
@@ -150,9 +148,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         String state = createStateToken(req);
         authorizationUrl.setState(state);
 
-        String authUrl = authorizationUrl.build();
-
-        return authUrl;
+        return authorizationUrl.build();
     }
 
     public String getName() {
@@ -175,10 +171,11 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
             response = flow.newTokenRequest(code).setRedirectUri(redirectUri).executeUnparsed();
         } catch (IOException e) {
             log.error("Error during OAuth2 Authorization", e);
+            return null;
         }
 
-        if ("application".equals(response.getMediaType().getType())
-                && "json".equals(response.getMediaType().getSubType())) {
+        HttpMediaType mediaType = response.getMediaType();
+        if (mediaType != null && "json".equals(mediaType.getSubType())) {
             // Try to parse as json
             try {
                 TokenResponse tokenResponse = response.parseAs(TokenResponse.class);
@@ -208,12 +205,8 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     public OpenIDUserInfo getUserInfo(String accessToken) {
         OpenIDUserInfo userInfo = null;
 
-        HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(new HttpRequestInitializer() {
-            @Override
-            public void initialize(HttpRequest request) throws IOException {
-                request.setParser(new JsonObjectParser(JSON_FACTORY));
-            }
-        });
+        HttpRequestFactory requestFactory = HTTP_TRANSPORT.createRequestFactory(request -> request.setParser(new JsonObjectParser(
+                JSON_FACTORY)));
 
         GenericUrl url = new GenericUrl(userInfoURL);
         url.set(accessTokenKey, accessToken);
