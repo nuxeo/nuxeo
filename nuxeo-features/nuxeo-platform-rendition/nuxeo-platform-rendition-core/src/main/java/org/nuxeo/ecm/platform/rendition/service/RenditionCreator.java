@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -159,17 +161,24 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
             query.append("'");
             existingRenditions = userSession.query(query.toString());
         }
-        DocumentModel rendition;
         String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
         Calendar sourceLastModified = (Calendar) sourceDocument.getPropertyValue(modificationDatePropertyName);
+        DocumentModel rendition = null;
+        boolean createNewRendition = false;
         if (existingRenditions.size() > 0) {
             rendition = session.getDocument(existingRenditions.get(0).getRef());
+            // If current user is an Administrator, and stored rendition is not versionable and was created
+            // by a non-Administrator, ignore it
             if (!isVersionable) {
-                Calendar renditionSourceLastModified = (Calendar) rendition.getPropertyValue(
-                        RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY);
-                if (renditionSourceLastModified != null && !renditionSourceLastModified.before(sourceLastModified)) {
-                    this.renditionBlob = (Blob) rendition.getPropertyValue("file:content");
-                    return rendition;
+                if (isOriginatingUserAnAdminAndRenditionOriginatorANonAdmin(rendition)) {
+                    createNewRendition = true;
+                } else {
+                    Calendar renditionSourceLastModified = (Calendar) rendition.getPropertyValue(
+                            RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY);
+                    if (renditionSourceLastModified != null && !renditionSourceLastModified.before(sourceLastModified)) {
+                        this.renditionBlob = (Blob) rendition.getPropertyValue("file:content");
+                        return rendition;
+                    }
                 }
             }
             if (rendition.isVersion()) {
@@ -177,6 +186,9 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
                 rendition = session.getDocument(new IdRef(sid));
             }
         } else {
+            createNewRendition = true;
+        }
+        if (createNewRendition) {
             rendition = session.createDocumentModel(null, sourceDocument.getName(), doctype);
         }
 
@@ -245,6 +257,22 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         RenditionService rs = Framework.getService(RenditionService.class);
         RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
         return def.getSourceDocumentModificationDatePropertyName();
+    }
+
+    protected boolean isOriginatingUserAnAdminAndRenditionOriginatorANonAdmin(DocumentModel renditionDoc) {
+        UserManager userManager = Framework.getService(UserManager.class);
+        String originatingUsername = getOriginatingUsername();
+        NuxeoPrincipal originatingPrincipal = userManager.getPrincipal(originatingUsername);
+        if (originatingPrincipal.isAdministrator()) {
+            ACL acl = renditionDoc.getACP().getACL(ACL.LOCAL_ACL);
+            for (ACE ace : acl.getACEs()) {
+                NuxeoPrincipal renditionOriginatorPrincipal = userManager.getPrincipal(ace.getUsername());
+                if (renditionOriginatorPrincipal == null || !renditionOriginatorPrincipal.isAdministrator()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

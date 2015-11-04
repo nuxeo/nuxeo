@@ -1,0 +1,3 @@
+username, password, firstName, lastName, company, email
+"Administrator","Administrator","","","blabla","devnull@nuxeo.com"
+"toto","totopass","totofirst1","totolast1","totocomp1","toto@mail1"
