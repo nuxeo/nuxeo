@@ -70,13 +70,15 @@ if (!log) {
         contentType: 'application/json+nxrequest',
         url: targetUrl,
         timeout: 10000
-      }).done(function (data) {
+      }).done(function (data, textStatus, xhr) {
+        if (xhr.status === 200) {
           for (var i = 0, len = data.length; i < len; i++) {
             opts.handler.uploadStarted(i, data[i]);
             opts.handler.uploadFinished(i, data[i], null);
           }
-          uploadIdx = data.length
-        });
+          uploadIdx = data.length;
+        }
+      });
     }
 
     return this;
