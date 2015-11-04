@@ -117,8 +117,8 @@
       order="50" label="action.view.permissions" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <properties>
-        <!-- NXP-18320: ajax on this tab not working on IE11 -->
-        <property name="ajaxSupport">#{not isMSIEorEdge}</property>
+        <!-- NXP-18320: disable ajax support on Polymer tabs -->
+        <property name="ajaxSupport">false</property>
       </properties>
     </action>
 
