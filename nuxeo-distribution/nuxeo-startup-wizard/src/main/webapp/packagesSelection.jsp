@@ -27,12 +27,15 @@ function getTree() {
 function createCheckBox(pkg) {
   var checkBox = "<input type=\"checkbox\"";
   checkBox += " name=\"" + pkg.id + "\" ";
+  checkBox += " id=\"pkg_" + pkg.id + "\" ";
   checkBox += " pkg=\"" + pkg.package + "\" ";
   checkBox += " exclusive=\"" + pkg.exclusive + "\" ";
   checkBox += " title=\"" + pkg.desc + "\" ";
-  checkBox += ">";
+  checkBox += "/>";
+  checkBox += "<label for=";
+  checkBox += "\"pkg_" + pkg.id + "\">";
   checkBox += pkg.label;
-  checkBox += "</input>";
+  checkBox += "</label>";
 
   checkBox = $(checkBox);
   if (pkg.selected=='true') {

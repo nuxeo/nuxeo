@@ -5,10 +5,14 @@
     <package id="nuxeo-dam" label="Digital Asset Management (DAM)" color="#ffeb6d" textcolor="#333" shortlabel="DAM"
       desc="Digital Asset Management" />
     <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="DRIVE" desc="Drive" />
-    <package id="nuxeo-diff" label="Nuxeo Diff (DIFF)" color="#5e9adf" textcolor="#FFF" shortlabel="DIFF" desc="Nuxeo Diff" />
+    <package id="nuxeo-diff" label="Nuxeo Diff (DIFF)" color="#5e9adf" textcolor="#FFF" shortlabel="DIFF"
+      desc="Nuxeo Diff" />
+    <package id="nuxeo-showcase-content" label="Showcase Content (DOCS)" color="#DB97FF" textcolor="#FFF"
+      shortlabel="DOCS" desc="Showcase Content Sample" />
     <package id="nuxeo-spreadsheet" label="Spreadsheet (GRID)" color="#ff736e" textcolor="#FFF" shortlabel="GRID"
       desc="Spreadsheet" />
-    <package id="nuxeo-web-mobile" label="Mobile (MOB)" color="#faac05" textcolor="#FFF" shortlabel="MOB" desc="Mobile" />
+    <package id="nuxeo-web-mobile" label="Mobile (MOB)" color="#faac05" textcolor="#FFF" shortlabel="MOB"
+      desc="Mobile" />
     <package id="nuxeo-template-rendering-samples" label="Template Rendering (TMPL)" color="#c3c7c9" textcolor="#FFF"
       shortlabel="TMPL" desc="Template Rendering" />
     <package id="nuxeo-liveconnect" label="Live Connect (LIVE)" color="#ff452a" textcolor="#FFF" shortlabel="LIVE"
@@ -22,6 +26,7 @@
         <package ref="nuxeo-dam" exclusive="false" />
         <package ref="nuxeo-drive" exclusive="false" />
         <package ref="nuxeo-diff" exclusive="false" />
+        <package ref="nuxeo-showcase-content" exclusive="false" />
         <package ref="nuxeo-spreadsheet" exclusive="false" />
         <package ref="nuxeo-web-mobile" exclusive="false" />
         <package ref="nuxeo-template-rendering-samples" exclusive="false" />
@@ -31,6 +36,6 @@
     </packageOptions>
   </install>
   <presets>
-    <preset id="nuxeo-cap-preset" label="Nuxeo CAP Preset">nuxeo-cap,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile</preset>
+    <preset id="nuxeo-cap-preset" label="Nuxeo CAP Preset">nuxeo-cap,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile,nuxeo-showcase-content</preset>
   </presets>
 </packages>
