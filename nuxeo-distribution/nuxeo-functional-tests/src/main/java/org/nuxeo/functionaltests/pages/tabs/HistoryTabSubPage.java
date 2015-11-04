@@ -41,7 +41,7 @@ public class HistoryTabSubPage extends DocumentBasePage {
      * @return the archived versions sub tab
      */
     public ArchivedVersionsSubPage getArchivedVersionsSubTab() {
-        clickOnLinkIfNotSelected(archivedVersionsLink);
+        clickOnDocumentTabLink(archivedVersionsLink);
         return asPage(ArchivedVersionsSubPage.class);
     }
 }

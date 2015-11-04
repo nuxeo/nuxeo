@@ -108,7 +108,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
 
     @Override
     public SummaryTabSubPage getSummaryTab() {
-        clickOnLinkIfNotSelected(summaryTabLink);
+        clickOnDocumentTabLink(summaryTabLink);
         return asPage(SummaryTabSubPage.class);
     }
 }

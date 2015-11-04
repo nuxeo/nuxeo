@@ -34,7 +34,7 @@ public class NoteDocumentBasePage extends DocumentBasePage {
     }
 
     public NoteSummaryTabSubPage getNoteSummaryTab() {
-        clickOnLinkIfNotSelected(summaryTabLink);
+        clickOnDocumentTabLink(summaryTabLink);
         return asPage(NoteSummaryTabSubPage.class);
     }
 }

@@ -286,15 +286,24 @@ public abstract class AbstractPage {
         return driver.switchTo().frame(id);
     }
 
+    /**
+     * Helper method to adapt tests behaviour when ajaxifying tabs.
+     *
+     * @since 7.10
+     */
     public boolean useAjaxTabs() {
         return true;
     }
 
     protected void clickOnTabIfNotSelected(String tabPanelId, WebElement tabElement) {
+        clickOnTabIfNotSelected(tabPanelId, tabElement, useAjaxTabs());
+    }
+
+    protected void clickOnTabIfNotSelected(String tabPanelId, WebElement tabElement, boolean useAjax) {
         WebElement selectedTab = findElementWithTimeout(
                 By.xpath("//div[@id='" + tabPanelId + "']//li[@class='selected']//a/span"));
         if (!selectedTab.equals(tabElement)) {
-            if (useAjaxTabs()) {
+            if (useAjax) {
                 AjaxRequestManager arm = new AjaxRequestManager(driver);
                 arm.begin();
                 tabElement.click();

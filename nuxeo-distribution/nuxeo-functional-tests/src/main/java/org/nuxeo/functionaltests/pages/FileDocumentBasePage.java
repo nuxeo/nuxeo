@@ -29,7 +29,7 @@ public class FileDocumentBasePage extends DocumentBasePage {
     }
 
     public FileSummaryTabSubPage getFileSummaryTab() {
-        clickOnLinkIfNotSelected(summaryTabLink);
+        clickOnDocumentTabLink(summaryTabLink);
         return asPage(FileSummaryTabSubPage.class);
     }
 

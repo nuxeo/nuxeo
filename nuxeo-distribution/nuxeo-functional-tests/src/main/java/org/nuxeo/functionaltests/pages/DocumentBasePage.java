@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.fragment.AddToCollectionForm;
@@ -159,11 +158,11 @@ public class DocumentBasePage extends AbstractPage {
      * @since 7.10
      */
     public void clickOnDocumentTabLink(WebElement tabLink) {
-        clickOnLinkIfNotSelected(tabLink);
+        clickOnDocumentTabLink(tabLink, useAjaxTabs());
     }
 
-    protected void clickOnLinkIfNotSelected(WebElement tabLink) {
-        clickOnTabIfNotSelected("nxw_documentTabs_panel", tabLink);
+    protected void clickOnDocumentTabLink(WebElement tabLink, boolean useAjax) {
+        clickOnTabIfNotSelected("nxw_documentTabs_panel", tabLink, useAjax);
     }
 
     public AdminCenterBasePage getAdminCenter() {
@@ -179,7 +178,7 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public <T extends ContentTabSubPage> T getContentTab(Class<T> tabClass) {
-        clickOnLinkIfNotSelected(contentTabLink);
+        clickOnDocumentTabLink(contentTabLink);
         return asPage(tabClass);
     }
 
@@ -231,22 +230,23 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public EditTabSubPage getEditTab() {
-        clickOnLinkIfNotSelected(editTabLink);
+        clickOnDocumentTabLink(editTabLink);
         return asPage(EditTabSubPage.class);
     }
 
     public PermissionsSubPage getPermissionsTab() {
-        clickOnLinkIfNotSelected(permissionsTabLink);
+        // not ajaxified
+        clickOnDocumentTabLink(permissionsTabLink, false);
         return asPage(PermissionsSubPage.class);
     }
 
     public HistoryTabSubPage getHistoryTab() {
-        clickOnLinkIfNotSelected(historyTabLink);
+        clickOnDocumentTabLink(historyTabLink);
         return asPage(HistoryTabSubPage.class);
     }
 
     public ManageTabSubPage getManageTab() {
-        clickOnLinkIfNotSelected(manageTabLink);
+        clickOnDocumentTabLink(manageTabLink);
         return asPage(ManageTabSubPage.class);
     }
 
@@ -255,12 +255,12 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public RelationTabSubPage getRelationTab() {
-        clickOnLinkIfNotSelected(relationTabLink);
+        clickOnDocumentTabLink(relationTabLink);
         return asPage(RelationTabSubPage.class);
     }
 
     public SummaryTabSubPage getSummaryTab() {
-        clickOnLinkIfNotSelected(summaryTabLink);
+        clickOnDocumentTabLink(summaryTabLink);
         return asPage(SummaryTabSubPage.class);
     }
 
@@ -283,7 +283,7 @@ public class DocumentBasePage extends AbstractPage {
      * For workspace type, the content tab is a bit different.
      */
     public WorkspacesContentTabSubPage getWorkspacesContentTab() {
-        clickOnLinkIfNotSelected(contentTabLink);
+        clickOnDocumentTabLink(contentTabLink);
         return asPage(WorkspacesContentTabSubPage.class);
     }
 

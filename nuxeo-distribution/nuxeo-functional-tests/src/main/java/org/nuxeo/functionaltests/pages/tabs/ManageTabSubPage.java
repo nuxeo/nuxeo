@@ -42,12 +42,12 @@ public class ManageTabSubPage extends DocumentBasePage {
      */
     @Deprecated
     public AccessRightsSubPage getAccessRightsSubTab() {
-        clickOnLinkIfNotSelected(accessRightsLink);
+        clickOnDocumentTabLink(accessRightsLink);
         return asPage(AccessRightsSubPage.class);
     }
 
     public TrashSubPage getTrashSubTab() {
-        clickOnLinkIfNotSelected(trashLink);
+        clickOnDocumentTabLink(trashLink);
         return asPage(TrashSubPage.class);
     }
 

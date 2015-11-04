@@ -66,7 +66,11 @@ public class AdminCenterBasePage extends AbstractPage {
     }
 
     protected void clickOnTab(WebElement tab) {
-        clickOnTabIfNotSelected("nxw_adminCenterTabs_panel", tab);
+        clickOnTab(tab, useAjaxTabs());
+    }
+
+    protected void clickOnTab(WebElement tab, boolean useAjax) {
+        clickOnTabIfNotSelected("nxw_adminCenterTabs_panel", tab, useAjax);
     }
 
     public UsersGroupsBasePage getUsersGroupsHomePage() {
@@ -106,7 +110,7 @@ public class AdminCenterBasePage extends AbstractPage {
 
     public ActivityPage getActivityPage() {
         // not ajaxified
-        activityLink.click();
+        clickOnTab(activityLink, false);
         return asPage(ActivityPage.class);
     }
 
