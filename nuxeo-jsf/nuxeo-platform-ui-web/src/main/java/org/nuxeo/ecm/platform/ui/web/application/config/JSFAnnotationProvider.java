@@ -27,6 +27,8 @@ import org.apache.commons.logging.LogFactory;
 import com.sun.faces.spi.AnnotationProvider;
 
 /**
+ * TODO.
+ *
  * @since 6.0
  */
 public class JSFAnnotationProvider extends AnnotationProvider {
