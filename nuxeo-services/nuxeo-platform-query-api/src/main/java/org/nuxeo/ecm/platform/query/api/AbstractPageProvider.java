@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -35,7 +36,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
@@ -1030,7 +1030,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                     if (prop.getValue() != null
                             && !SKIPPED_SCHEMAS_FOR_SEARCHFIELD.contains(prop.getSchema().getNamespace().prefix)) {
                         if (prop.isList()) {
-                            if (((ListProperty) prop).size() > 0) {
+                            if (ArrayUtils.isNotEmpty(prop.getValue(Object[].class))) {
                                 searchFields.add(prop.getPath());
                             }
                         } else {
