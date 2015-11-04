@@ -44,4 +44,11 @@
     <object class="org.nuxeo.ecm.platform.rendition.service.RenditionDefinitionProviderDescriptor" />
   </extension-point>
 
+  <extension-point name="storedRenditionManagers">
+    <documentation>
+      Extension point to register a StoredRenditionManager which overrides the DefaultStoredRenditionManager.
+    </documentation>
+    <object class="org.nuxeo.ecm.platform.rendition.service.StoredRenditionManagerDescriptor" />
+  </extension-point>
+
 </component>

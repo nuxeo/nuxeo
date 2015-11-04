@@ -7,5 +7,6 @@
   <xs:element name="sourceVersionableId" type="xs:string"/> <!-- Live document -->
   <xs:element name="sourceModificationDate" type="xs:dateTime"/> <!-- Modification date -->
   <xs:element name="renditionName" type="xs:string"/> <!-- Rendition name -->
+  <xs:element name="renditionVariant" type="xs:string"/> <!-- Rendition variant -->
 
 </xs:schema>

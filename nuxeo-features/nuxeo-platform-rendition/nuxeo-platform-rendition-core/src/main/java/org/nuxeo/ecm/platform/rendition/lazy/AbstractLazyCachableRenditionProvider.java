@@ -54,11 +54,14 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
     protected static Log log = LogFactory.getLog(AbstractLazyCachableRenditionProvider.class);
 
     /**
-     * Define if rendition caching key should include the user login
-     *
-     * @return
+     * @deprecated since 8.1, use {@link org.nuxeo.ecm.platform.rendition.service.RenditionDefinition}.isPerUser().
      */
+    @Deprecated
     protected abstract boolean perUserRendition();
+
+    protected boolean perUserRendition(RenditionDefinition def) {
+        return perUserRendition() || def.isPerUser();
+    }
 
     @Override
     public List<Blob> render(DocumentModel doc, RenditionDefinition def) {
@@ -107,7 +110,7 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             sb.append(modif.getTimeInMillis());
             sb.append("::");
         }
-        if (perUserRendition()) {
+        if (perUserRendition(def)) {
             sb.append(doc.getCoreSession().getPrincipal().getName());
             sb.append("::");
         }

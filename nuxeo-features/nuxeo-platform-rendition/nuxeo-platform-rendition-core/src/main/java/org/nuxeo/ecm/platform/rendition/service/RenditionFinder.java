@@ -18,13 +18,21 @@ package org.nuxeo.ecm.platform.rendition.service;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_NAME_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPERTY;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -42,22 +50,60 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
 
     protected final String renditionName;
 
+    /**
+     * @since 8.1
+     */
+    protected RenditionDefinition renditionDefinition;
+
+    /**
+     * @since 8.1
+     */
+    protected final NuxeoPrincipal originatingPrincipal;
+
+    /**
+     * @deprecated since 8.1
+     */
+    @Deprecated
     protected RenditionFinder(DocumentModel source, String renditionName) {
+        this(source, ((RenditionServiceImpl) Framework.getService(RenditionService.class)).getRenditionDefinition(
+                renditionName));
+    }
+
+    /**
+     * @since 8.1
+     */
+    protected RenditionFinder(DocumentModel source, RenditionDefinition renditionDefinition) {
         super(source.getCoreSession());
+        originatingPrincipal = (NuxeoPrincipal) source.getCoreSession().getPrincipal();
         this.source = source;
-        this.renditionName = renditionName;
+        this.renditionDefinition = renditionDefinition;
+        this.renditionName = renditionDefinition.getName();
     }
 
     @Override
     public void run() {
+        boolean isPerUser = renditionDefinition.isPerUser();
+        String originatingUsername = getOriginatingUsername();
+        boolean isVersionable = source.isVersionable();
+        String renditionSourceId = source.getId();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ");
         query.append(RENDITION_NAME_PROPERTY);
         query.append(" = '");
         query.append(renditionName);
         query.append("' AND ");
-        boolean isVersionable = source.isVersionable();
-        String renditionSourceId = source.getId();
+        if (isPerUser) {
+            query.append(RENDITION_VARIANT_PROPERTY);
+            if (originatingPrincipal.isAdministrator()) {
+                query.append(" IN (");
+                query.append(DefaultStoredRenditionManager.getAdministratorIdsCommaDelimitedAndSingleQuoted());
+                query.append(") AND ");
+            } else {
+                query.append(" = '");
+                query.append(originatingUsername);
+                query.append("' AND ");
+            }
+        }
         if (isVersionable) {
             if (!source.isVersion() && !source.isCheckedOut()) {
                 DocumentModel lastVersion = session.getLastDocumentVersion(source.getRef());
@@ -86,7 +132,8 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
 
         List<DocumentModel> docs = session.query(query.toString());
         if (docs.size() > 0) {
-            storedRendition = docs.get(0);
+            DocumentModel doc = docs.get(0);
+            storedRendition = doc;
             storedRendition.detach(true);
         }
     }
@@ -96,9 +143,7 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
     }
 
     protected String getSourceDocumentModificationDatePropertyName() {
-        RenditionService rs = Framework.getService(RenditionService.class);
-        RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
-        return def.getSourceDocumentModificationDatePropertyName();
+        return renditionDefinition.getSourceDocumentModificationDatePropertyName();
     }
 
     protected static String formatTimestamp(Calendar cal) {

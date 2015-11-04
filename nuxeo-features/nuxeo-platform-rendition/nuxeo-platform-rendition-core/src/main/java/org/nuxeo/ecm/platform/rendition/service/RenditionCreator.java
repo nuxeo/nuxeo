@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_NAME_PROPERTY
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,13 +32,13 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -72,13 +74,42 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
 
     protected String renditionName;
 
+    /**
+     * @since 8.1
+     */
+    protected RenditionDefinition renditionDefinition;
+
+    /**
+     * @since 8.1
+     */
+    protected final NuxeoPrincipal originatingPrincipal;
+
+    /**
+     * @deprecated since 8.1
+     */
+    @Deprecated
     public RenditionCreator(CoreSession session, DocumentModel liveDocument, DocumentModel versionDocument,
             Blob renditionBlob, String renditionName) {
-        super(session);
+
+        this(liveDocument, versionDocument, renditionBlob,
+                ((RenditionServiceImpl) Framework.getService(RenditionService.class)).getRenditionDefinition(
+                        renditionName));
+    }
+
+    /**
+     * @since 8.1
+     */
+    public RenditionCreator(DocumentModel liveDocument, DocumentModel versionDocument, Blob renditionBlob,
+            RenditionDefinition renditionDefinition) {
+
+        super(liveDocument.getCoreSession());
+        originatingPrincipal = (NuxeoPrincipal) liveDocument.getCoreSession().getPrincipal();
         liveDocumentId = liveDocument.getId();
         versionDocumentId = versionDocument == null ? null : versionDocument.getId();
         this.renditionBlob = renditionBlob;
-        this.renditionName = renditionName;
+        this.renditionDefinition = renditionDefinition;
+        this.renditionName = renditionDefinition.getName();
+
     }
 
     public DocumentModel getDetachedRendition() {
@@ -110,9 +141,6 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         if (sourceDocument.isVersionable()) {
             // be sure to have the same version info
             setCorrectVersion(rendition, sourceDocument);
-        } else {
-            // set ACL
-            giveReadRightToUser(rendition);
         }
         // do not apply default versioning to rendition
         rendition.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
@@ -142,26 +170,36 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
             doctype = FILE;
         }
 
+        boolean isPerUser = renditionDefinition.isPerUser();
+        String originatingUsername = getOriginatingUsername();
         boolean isVersionable = sourceDocument.isVersionable();
         String liveDocProp = isVersionable ? RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY : RENDITION_SOURCE_ID_PROPERTY;
-        DocumentModelList existingRenditions;
-        try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(),
-                getOriginatingUsername())) {
-            StringBuilder query = new StringBuilder();
-            query.append("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ");
-            query.append(RENDITION_NAME_PROPERTY);
-            query.append(" = '");
-            query.append(renditionName);
-            query.append("' AND ");
-            query.append(liveDocProp);
-            query.append(" = '");
-            query.append(liveDocumentId);
-            query.append("'");
-            existingRenditions = userSession.query(query.toString());
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ");
+        query.append(RENDITION_NAME_PROPERTY);
+        query.append(" = '");
+        query.append(renditionName);
+        query.append("' AND ");
+        if (isPerUser) {
+            query.append(RENDITION_VARIANT_PROPERTY);
+            if (originatingPrincipal.isAdministrator()) {
+                query.append(" IN (");
+                query.append(DefaultStoredRenditionManager.getAdministratorIdsCommaDelimitedAndSingleQuoted());
+                query.append(") AND ");
+            } else {
+                query.append(" = '");
+                query.append(originatingUsername);
+                query.append("' AND ");
+            }
         }
-        DocumentModel rendition;
+        query.append(liveDocProp);
+        query.append(" = '");
+        query.append(liveDocumentId);
+        query.append("'");
+        DocumentModelList existingRenditions = session.query(query.toString());
         String modificationDatePropertyName = getSourceDocumentModificationDatePropertyName();
         Calendar sourceLastModified = (Calendar) sourceDocument.getPropertyValue(modificationDatePropertyName);
+        DocumentModel rendition = null;
         if (existingRenditions.size() > 0) {
             rendition = session.getDocument(existingRenditions.get(0).getRef());
             if (!isVersionable) {
@@ -191,6 +229,9 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         }
         if (sourceLastModified != null) {
             rendition.setPropertyValue(RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY, sourceLastModified);
+        }
+        if (isPerUser) {
+            rendition.setPropertyValue(RENDITION_VARIANT_PROPERTY, originatingUsername);
         }
         rendition.setPropertyValue(RENDITION_NAME_PROPERTY, renditionName);
 
@@ -226,6 +267,10 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         rendition.setPropertyValue("common:size", renditionBlob.getLength());
     }
 
+    /**
+     * @deprecated since 8.1, no longer used
+     */
+    @Deprecated
     protected void giveReadRightToUser(DocumentModel rendition) {
         ACP acp = new ACPImpl();
         ACL acl = new ACLImpl();
@@ -242,9 +287,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     }
 
     protected String getSourceDocumentModificationDatePropertyName() {
-        RenditionService rs = Framework.getService(RenditionService.class);
-        RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
-        return def.getSourceDocumentModificationDatePropertyName();
+        return renditionDefinition.getSourceDocumentModificationDatePropertyName();
     }
 
 }

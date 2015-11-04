@@ -258,6 +258,26 @@ public class RenditionDefinition {
         this.storeByDefault = Boolean.valueOf(storeByDefault);
     }
 
+    /**
+     * @since 8.1
+     */
+    @XNode("perUser")
+    protected Boolean perUser;
+
+    /**
+     * @since 8.1
+     */
+    public boolean isPerUser() {
+        return defaultFalse(perUser);
+    }
+
+    /**
+     * @since 8.1
+     */
+    public void setPerUser(boolean perUser) {
+        this.perUser = Boolean.valueOf(perUser);
+    }
+
     /** Empty constructor. */
     public RenditionDefinition() {
     }
@@ -282,6 +302,7 @@ public class RenditionDefinition {
         filterIds = other.filterIds == null ? null : new ArrayList<>(other.filterIds);
         sourceDocumentModificationDatePropertyName = other.sourceDocumentModificationDatePropertyName;
         storeByDefault = other.storeByDefault;
+        perUser = other.perUser;
     }
 
     /** @since 7.10 */
@@ -324,6 +345,9 @@ public class RenditionDefinition {
         }
         if (other.storeByDefault != null) {
             storeByDefault = other.storeByDefault;
+        }
+        if (other.perUser != null) {
+            perUser = other.perUser;
         }
     }
 

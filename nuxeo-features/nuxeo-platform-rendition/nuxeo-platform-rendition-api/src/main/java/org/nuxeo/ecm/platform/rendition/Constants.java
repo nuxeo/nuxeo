@@ -47,4 +47,8 @@ public class Constants {
     public static final String RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY = "rend:sourceModificationDate";
 
     public static final String RENDITION_NAME_PROPERTY = "rend:renditionName";
+
+    // originatingUsername when rendition definition is perUser, otherwise null
+    public static final String RENDITION_VARIANT_PROPERTY = "rend:renditionVariant";
+
 }
