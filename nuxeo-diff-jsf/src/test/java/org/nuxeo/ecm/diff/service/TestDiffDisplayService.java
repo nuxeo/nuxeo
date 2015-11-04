@@ -84,7 +84,6 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
 
     /**
      * Tests diff display block schemas.
-     *
      */
     @Test
     public void testDiffDisplayBlockSchemas() throws ParseException {
@@ -266,7 +265,6 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
 
     /**
      * Tests diff display blocks.
-     *
      */
     @Test
     public void testDiffDisplayBlocks() {
