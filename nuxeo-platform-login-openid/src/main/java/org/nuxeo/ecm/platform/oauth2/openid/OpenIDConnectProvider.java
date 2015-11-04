@@ -177,21 +177,19 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
             log.error("Error during OAuth2 Authorization", e);
         }
 
-        String type = response.getContentType();
-
-        try {
+        if ("application".equals(response.getMediaType().getType())
+                && "json".equals(response.getMediaType().getSubType())) {
             // Try to parse as json
-            TokenResponse tokenResponse = response.parseAs(TokenResponse.class);
-            accessToken = tokenResponse.getAccessToken();
-        } catch (IOException e) {
-            log.debug("Unable to parse accesstoken as JSON", e);
-        }
-
-        if (StringUtils.isBlank(accessToken)) {
+            try {
+                TokenResponse tokenResponse = response.parseAs(TokenResponse.class);
+                accessToken = tokenResponse.getAccessToken();
+            } catch (IOException e) {
+                log.warn("Unable to parse accesstoken as JSON", e);
+            }
+        } else {
             // Fallback as plain text format
             try {
-                String str = response.parseAsString();
-                String[] params = str.split("&");
+                String[] params = response.parseAsString().split("&");
                 for (String param : params) {
                     String[] kv = param.split("=");
                     if (kv[0].equals("access_token")) {
@@ -202,10 +200,6 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
             } catch (IOException e) {
                 log.warn("Unable to parse accesstoken as plain text", e);
             }
-        }
-
-        if (StringUtils.isBlank(accessToken)) {
-            log.error("Unable to parse access token from response.");
         }
 
         return accessToken;
