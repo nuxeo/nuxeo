@@ -1,6 +1,6 @@
 <%@ include file="includes/header.jsp" %>
 
-<h1>12<fmt:message key="label.dbSettings" /></h1>
+<h1><fmt:message key="label.dbSettings" /></h1>
 
 <%
   String dbTemplate = collector.getConfigurationParam("nuxeo.dbtemplate");
