@@ -108,18 +108,18 @@ public class TestDocumentDiff extends DiffTestCase {
         // description => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"), PropertyType.STRING, "description", null);
         // created => different
-        String expectedLeftCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        String expectedLeftCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 29, 11, 24, 25).getTime());
-        String expectedRightCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        String expectedRightCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 29, 11, 24, 50).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"), PropertyType.DATE, expectedLeftCreated,
                 expectedRightCreated);
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
-        String expectedLeftModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        String expectedLeftModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 29, 11, 24, 25).getTime());
-        String expectedRightModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        String expectedRightModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 30, 12, 05, 2).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("modified"), PropertyType.DATE, expectedLeftModified,
                 expectedRightModified);
@@ -235,7 +235,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.TRUE),
                         String.valueOf(Boolean.FALSE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, "10", null));
-        String expectedRightDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        String expectedRightDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 29, 23, 0, 0).getTime());
         expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, null,
                 expectedRightDateItem));
@@ -253,7 +253,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.TRUE),
                         String.valueOf(Boolean.FALSE)));
         item1ExpectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, "12", null));
-        expectedRightDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        expectedRightDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 30, 23, 0, 0).getTime());
         item1ExpectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, null,
                 expectedRightDateItem));
@@ -329,18 +329,18 @@ public class TestDocumentDiff extends DiffTestCase {
         // description => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"), PropertyType.STRING, null, "description");
         // created => different
-        String expectedLeftCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        String expectedLeftCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 29, 11, 24, 50).getTime());
-        String expectedRightCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        String expectedRightCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 29, 11, 24, 25).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"), PropertyType.DATE, expectedLeftCreated,
                 expectedRightCreated);
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
-        String expectedLeftModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        String expectedLeftModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 30, 12, 05, 2).getTime());
-        String expectedRightModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        String expectedRightModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 29, 11, 24, 25).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("modified"), PropertyType.DATE, expectedLeftModified,
                 expectedRightModified);
@@ -457,7 +457,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.FALSE),
                         String.valueOf(Boolean.TRUE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, null, "10"));
-        String expectedLeftDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        String expectedLeftDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 29, 23, 0, 0).getTime());
         expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, expectedLeftDateItem,
                 null));
@@ -475,7 +475,7 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.FALSE),
                         String.valueOf(Boolean.TRUE)));
         item1ExpectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, null, "12"));
-        expectedLeftDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011,
+        expectedLeftDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
                 Calendar.DECEMBER, 30, 23, 0, 0).getTime());
         item1ExpectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE,
                 expectedLeftDateItem, null));
