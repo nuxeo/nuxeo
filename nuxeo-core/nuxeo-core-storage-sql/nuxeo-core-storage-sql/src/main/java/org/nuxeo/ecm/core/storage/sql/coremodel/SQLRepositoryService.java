@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
+import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -134,21 +135,9 @@ public class SQLRepositoryService extends DefaultComponent {
             repositoryManager.removeRepository(repositoryName);
             return;
         }
-        // extract label, isDefault and factory
+        // extract label, isDefault
         // and pass it to high-level registry
-        Class<? extends RepositoryFactory> repositoryFactoryClass = descriptor.getRepositoryFactoryClass();
-        if (repositoryFactoryClass == null) {
-            // not the main contribution, just an override with
-            // much less info
-            repositoryManager.removeRepository(repositoryName);
-            return;
-        }
-        RepositoryFactory repositoryFactory;
-        try {
-            repositoryFactory = repositoryFactoryClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Cannot instantiate repository: " + repositoryName, e);
-        }
+        RepositoryFactory repositoryFactory = new PoolingRepositoryFactory();
         repositoryFactory.init(repositoryName);
         Repository repository = new Repository(repositoryName, descriptor.label, descriptor.isDefault(),
                 repositoryFactory);
@@ -197,10 +186,6 @@ public class SQLRepositoryService extends DefaultComponent {
         if (repository instanceof org.nuxeo.ecm.core.storage.sql.Repository) {
             // (JCA) ConnectionFactoryImpl already implements Repository
             return (org.nuxeo.ecm.core.storage.sql.Repository) repository;
-        } else if (repository instanceof SQLRepository) {
-            // (LocalSession not pooled) SQLRepository
-            // from SQLRepositoryFactory called by descriptor at registration
-            return ((SQLRepository) repository).repository;
         } else {
             throw new RuntimeException("Unknown repository class: " + repository.getClass().getName());
         }

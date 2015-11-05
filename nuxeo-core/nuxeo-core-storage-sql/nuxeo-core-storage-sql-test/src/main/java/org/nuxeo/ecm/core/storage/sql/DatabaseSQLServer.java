@@ -56,7 +56,6 @@ public class DatabaseSQLServer extends DatabaseHelper {
             : "net.sourceforge.jtds.jdbcx.JtdsDataSource";
 
     private void setProperties() {
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(SERVER_PROPERTY, DEF_SERVER);
         setProperty(PORT_PROPERTY, DEF_PORT);
         setProperty(DATABASE_PROPERTY, DEF_DATABASE);
@@ -83,9 +82,13 @@ public class DatabaseSQLServer extends DatabaseHelper {
     }
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
         super.setUp();
-        Class.forName(DRIVER);
+        try {
+            Class.forName(DRIVER);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
         setProperties();
         Connection connection = DriverManager.getConnection(Framework.getProperty(URL_PROPERTY));
         try {

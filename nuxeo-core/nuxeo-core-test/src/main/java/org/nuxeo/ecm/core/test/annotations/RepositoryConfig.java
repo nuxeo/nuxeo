@@ -17,8 +17,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.core.repository.RepositoryFactory;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory;
 import org.nuxeo.ecm.core.test.NoopRepositoryInit;
 
 /**
@@ -28,8 +26,6 @@ import org.nuxeo.ecm.core.test.NoopRepositoryInit;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface RepositoryConfig {
-
-    Class<? extends RepositoryFactory> repositoryFactoryClass() default SQLRepositoryFactory.class;
 
     Class<? extends RepositoryInit> init() default NoopRepositoryInit.class;
 

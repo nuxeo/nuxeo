@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +47,6 @@ public class DatabaseOracle extends DatabaseHelper {
     private static final String DRIVER = "oracle.jdbc.OracleDriver";
 
     private void setProperties() {
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(URL_PROPERTY, DEF_URL);
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
@@ -55,9 +55,13 @@ public class DatabaseOracle extends DatabaseHelper {
     }
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
         super.setUp();
-        Class.forName(DRIVER);
+        try {
+            Class.forName(DRIVER);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
         setProperties();
         Connection connection = getConnection(Framework.getProperty(URL_PROPERTY),
                 Framework.getProperty(USER_PROPERTY), Framework.getProperty(PASSWORD_PROPERTY));
@@ -67,7 +71,7 @@ public class DatabaseOracle extends DatabaseHelper {
         connection.close();
     }
 
-    public void dropSequences(Connection connection) throws Exception {
+    public void dropSequences(Connection connection) throws SQLException {
         List<String> sequenceNames = new ArrayList<String>();
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT SEQUENCE_NAME FROM USER_SEQUENCES");

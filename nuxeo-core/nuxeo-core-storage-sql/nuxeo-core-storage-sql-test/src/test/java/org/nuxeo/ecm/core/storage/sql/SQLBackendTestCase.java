@@ -13,6 +13,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManagerComponent;
@@ -29,16 +31,13 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
 
-    private BlobProviderDescriptor blobProviderDescriptor;
+    private static final String REPOSITORY_NAME = "test";
+
+    private Map<String, BlobProviderDescriptor> blobProviderDescriptors = new HashMap<>();
 
     public Repository repository;
 
     public Repository repository2;
-
-    /** Set to false for client unit tests */
-    public boolean initDatabase() {
-        return true;
-    }
 
     @Override
     public void setUp() throws Exception {
@@ -50,14 +49,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.event");
         deployBundle("org.nuxeo.ecm.core.storage");
         deployBundle("org.nuxeo.ecm.core.storage.sql");
-        if (initDatabase()) {
-            DatabaseHelper.DATABASE.setUp();
-        }
-        blobProviderDescriptor = new BlobProviderDescriptor();
-        blobProviderDescriptor.name = DatabaseHelper.DATABASE.repositoryName;
-        blobProviderDescriptor.klass = DefaultBinaryManager.class;
-        BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
-        blobManager.registerBlobProvider(blobProviderDescriptor);
+        DatabaseHelper.DATABASE.setUp();
         repository = newRepository(-1);
     }
 
@@ -70,12 +62,13 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         RepositoryImpl repo = new RepositoryImpl(descriptor);
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         sqlRepositoryService.registerTestRepository(repo);
+        newBlobProvider(descriptor.name);
         return repo;
     }
 
     protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
         if (name == null) {
-            name = DatabaseHelper.DATABASE.repositoryName;
+            name = REPOSITORY_NAME;
         }
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
         descriptor.name = name;
@@ -94,6 +87,20 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         return descriptor;
     }
 
+    protected void newBlobProvider(String name) {
+        BlobProviderDescriptor blobProviderDescriptor = newBlobProviderDescriptor(name);
+        BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
+        blobManager.registerBlobProvider(blobProviderDescriptor);
+        blobProviderDescriptors.put(name, blobProviderDescriptor);
+    }
+
+    protected BlobProviderDescriptor newBlobProviderDescriptor(String name) {
+        BlobProviderDescriptor descr = new BlobProviderDescriptor();
+        descr.name = name;
+        descr.klass = DefaultBinaryManager.class;
+        return descr;
+    }
+
     @Override
     public void tearDown() throws Exception {
         closeRepository();
@@ -103,7 +110,9 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     protected void closeRepository() throws Exception {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
-        blobManager.unregisterBlobProvider(blobProviderDescriptor);
+        for (BlobProviderDescriptor blobProviderDescriptor : blobProviderDescriptors.values()) {
+            blobManager.unregisterBlobProvider(blobProviderDescriptor);
+        }
         if (repository != null) {
             repository.close();
             repository = null;

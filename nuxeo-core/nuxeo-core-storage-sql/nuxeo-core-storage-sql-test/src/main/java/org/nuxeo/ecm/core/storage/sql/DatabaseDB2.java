@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +51,6 @@ public class DatabaseDB2 extends DatabaseHelper {
 
     protected void setProperties() {
         databaseName = DEFAULT_DATABASE_NAME;
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(DATABASE_PROPERTY, databaseName);
         setProperty(SERVER_PROPERTY, DEF_SERVER);
         setProperty(PORT_PROPERTY, DEF_PORT);
@@ -64,9 +64,13 @@ public class DatabaseDB2 extends DatabaseHelper {
     }
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
         super.setUp();
-        Class.forName(DRIVER);
+        try {
+            Class.forName(DRIVER);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
         setProperties();
         Connection connection = DriverManager.getConnection(Framework.getProperty(URL_PROPERTY),
                 Framework.getProperty(USER_PROPERTY), Framework.getProperty(PASSWORD_PROPERTY));
@@ -75,7 +79,7 @@ public class DatabaseDB2 extends DatabaseHelper {
         connection.close();
     }
 
-    public void dropSequences(Connection connection) throws Exception {
+    public void dropSequences(Connection connection) throws SQLException {
         List<String> sequenceNames = new ArrayList<String>();
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT SEQUENCE_NAME FROM USER_SEQUENCES");

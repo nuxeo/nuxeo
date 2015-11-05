@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -34,8 +33,7 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 /**
  * The connection factory delegates connection requests to the application server {@link ConnectionManager}.
  * <p>
- * An instance of this class is returned to the application when a JNDI lookup is done. This is the datasource
- * equivalent of {@link SQLRepository}.
+ * An instance of this class is returned to the application when a JNDI lookup is done.
  *
  * @author Florent Guillaume
  */

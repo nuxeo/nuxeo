@@ -44,7 +44,6 @@ public class DatabaseDerby extends DatabaseHelper {
     protected String url;
 
     protected void setProperties() {
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(DATABASE_PROPERTY, new File(DIRECTORY).getAbsolutePath());
         setProperty(USER_PROPERTY, DEF_USER);
         setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
@@ -55,11 +54,15 @@ public class DatabaseDerby extends DatabaseHelper {
     }
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
         super.setUp();
         System.setProperty("derby.stream.error.file", new File(LOG).getAbsolutePath());
         // newInstance needed after a previous shutdown
-        Class.forName(DRIVER).newInstance();
+        try {
+            Class.forName(DRIVER).newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
         File dbdir = new File(DIRECTORY);
         File parent = dbdir.getParentFile();
         FileUtils.deleteTree(dbdir);
