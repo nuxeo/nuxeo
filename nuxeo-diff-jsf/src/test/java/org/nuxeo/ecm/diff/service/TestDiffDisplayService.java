@@ -304,7 +304,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         expectedFields.put("subjects", new PropertyDiffDisplayImpl((Serializable) subjects));
         // no diff display for dc:created since it is < 1 minute
         // modified
-        Calendar cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25);
+        Calendar cal = DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 29, 11, 24, 25);
         expectedFields.put("modified", new PropertyDiffDisplayImpl(cal.getTime(),
                 PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         expectedValue.put("dublincore", expectedFields);
@@ -336,7 +336,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         expectedFields.put("subjects", new PropertyDiffDisplayImpl((Serializable) subjects));
         // no diff display for dc:created since it is < 1 minute
         // modified
-        cal = DocumentDiffRepositoryInit.getCalendarUTCNoMillis(2011, Calendar.DECEMBER, 30, 12, 05, 02);
+        cal = DocumentDiffRepositoryInit.getCalendarNoMillis(2011, Calendar.DECEMBER, 30, 12, 05, 02);
         expectedFields.put("modified", new PropertyDiffDisplayImpl(cal.getTime(),
                 PropertyDiffDisplay.DEFAULT_STYLE_CLASS));
         expectedValue.put("dublincore", expectedFields);
