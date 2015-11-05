@@ -36,6 +36,6 @@
     </packageOptions>
   </install>
   <presets>
-    <preset id="nuxeo-cap-preset" label="Nuxeo CAP Preset">nuxeo-cap,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile,nuxeo-showcase-content</preset>
+    <preset id="nuxeo-cap-preset" label="Nuxeo CAP Preset">nuxeo-cap,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile,nuxeo-showcase-content,nuxeo-template-rendering-samples</preset>
   </presets>
 </packages>
