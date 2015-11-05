@@ -62,7 +62,8 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, TransientStoreFeature.class })
-@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.server" })
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.web.common", "org.nuxeo.ecm.webengine.core",
+        "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.automation.server" })
 public class BatchManagerFixture {
 
     @Inject
