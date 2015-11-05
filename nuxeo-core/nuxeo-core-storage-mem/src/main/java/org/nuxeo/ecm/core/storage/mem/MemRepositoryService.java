@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -14,7 +14,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.mongodb;
+package org.nuxeo.ecm.core.storage.mem;
 
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -26,30 +26,30 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
- * Service holding the configuration for MongoDB repositories.
+ * Service holding the configuration for Memory repositories.
  *
- * @since 5.9.4
+ * @since 8.1
  */
-public class MongoDBRepositoryService extends DefaultComponent {
+public class MemRepositoryService extends DefaultComponent {
 
     private static final String XP_REPOSITORY = "repository";
 
-    protected RepositoryDescriptorRegistry registry = new RepositoryDescriptorRegistry();
+    protected MemRepositoryDescriptorRegistry registry = new MemRepositoryDescriptorRegistry();
 
-    protected static class RepositoryDescriptorRegistry extends SimpleContributionRegistry<MongoDBRepositoryDescriptor> {
+    protected static class MemRepositoryDescriptorRegistry extends SimpleContributionRegistry<MemRepositoryDescriptor> {
 
         @Override
-        public String getContributionId(MongoDBRepositoryDescriptor contrib) {
+        public String getContributionId(MemRepositoryDescriptor contrib) {
             return contrib.name;
         }
 
         @Override
-        public MongoDBRepositoryDescriptor clone(MongoDBRepositoryDescriptor orig) {
-            return new MongoDBRepositoryDescriptor(orig);
+        public MemRepositoryDescriptor clone(MemRepositoryDescriptor orig) {
+            return new MemRepositoryDescriptor(orig);
         }
 
         @Override
-        public void merge(MongoDBRepositoryDescriptor src, MongoDBRepositoryDescriptor dst) {
+        public void merge(MemRepositoryDescriptor src, MemRepositoryDescriptor dst) {
             dst.merge(src);
         }
 
@@ -62,7 +62,7 @@ public class MongoDBRepositoryService extends DefaultComponent {
             currentContribs.clear();
         }
 
-        public MongoDBRepositoryDescriptor getRepositoryDescriptor(String id) {
+        public MemRepositoryDescriptor getRepositoryDescriptor(String id) {
             return getCurrentContribution(id);
         }
     }
@@ -80,7 +80,7 @@ public class MongoDBRepositoryService extends DefaultComponent {
     @Override
     public void registerContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
-            addContribution((MongoDBRepositoryDescriptor) contrib);
+            addContribution((MemRepositoryDescriptor) contrib);
         } else {
             throw new RuntimeException("Unknown extension point: " + xpoint);
         }
@@ -89,18 +89,18 @@ public class MongoDBRepositoryService extends DefaultComponent {
     @Override
     public void unregisterContribution(Object contrib, String xpoint, ComponentInstance contributor) {
         if (XP_REPOSITORY.equals(xpoint)) {
-            removeContribution((MongoDBRepositoryDescriptor) contrib);
+            removeContribution((MemRepositoryDescriptor) contrib);
         } else {
             throw new RuntimeException("Unknown extension point: " + xpoint);
         }
     }
 
-    protected void addContribution(MongoDBRepositoryDescriptor descriptor) {
+    protected void addContribution(MemRepositoryDescriptor descriptor) {
         registry.addContribution(descriptor);
         updateRegistration(descriptor.name);
     }
 
-    protected void removeContribution(MongoDBRepositoryDescriptor descriptor) {
+    protected void removeContribution(MemRepositoryDescriptor descriptor) {
         registry.removeContribution(descriptor);
         updateRegistration(descriptor.name);
     }
@@ -110,7 +110,7 @@ public class MongoDBRepositoryService extends DefaultComponent {
      */
     protected void updateRegistration(String repositoryName) {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        MongoDBRepositoryDescriptor descriptor = registry.getRepositoryDescriptor(repositoryName);
+        MemRepositoryDescriptor descriptor = registry.getRepositoryDescriptor(repositoryName);
         if (descriptor == null) {
             // last contribution removed
             repositoryManager.removeRepository(repositoryName);
@@ -118,14 +118,14 @@ public class MongoDBRepositoryService extends DefaultComponent {
         }
         // extract label, isDefault
         // and pass it to high-level registry
-        RepositoryFactory repositoryFactory = new MongoDBRepositoryFactory();
+        RepositoryFactory repositoryFactory = new MemRepositoryFactory();
         repositoryFactory.init(repositoryName);
         Repository repository = new Repository(repositoryName, descriptor.label, descriptor.isDefault(),
                 repositoryFactory);
         repositoryManager.addRepository(repository);
     }
 
-    public MongoDBRepositoryDescriptor getRepositoryDescriptor(String name) {
+    public MemRepositoryDescriptor getRepositoryDescriptor(String name) {
         return registry.getRepositoryDescriptor(name);
     }
 

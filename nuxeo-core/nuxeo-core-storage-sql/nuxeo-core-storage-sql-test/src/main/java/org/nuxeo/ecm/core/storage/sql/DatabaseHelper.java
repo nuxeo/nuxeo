@@ -28,8 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.JDBCUtils;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
-import org.nuxeo.ecm.core.repository.RepositoryFactory;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryFactory;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -51,8 +49,6 @@ public abstract class DatabaseHelper {
 
     public static final String DB_CLASS_NAME_BASE = "org.nuxeo.ecm.core.storage.sql.Database";
 
-    protected static final Class<? extends RepositoryFactory> defaultRepositoryFactory = SQLRepositoryFactory.class;
-
     protected static final Class<? extends BinaryManager> defaultBinaryManager = DefaultBinaryManager.class;
 
     static {
@@ -63,8 +59,6 @@ public abstract class DatabaseHelper {
         }
         setDatabaseForTests(className);
     }
-
-    public static final String REPOSITORY_PROPERTY = "nuxeo.test.vcs.repository";
 
     // available for JDBC tests
     public static final String DRIVER_PROPERTY = "nuxeo.test.vcs.driver";
@@ -117,23 +111,15 @@ public abstract class DatabaseHelper {
         databaseName = name;
     }
 
-    public static final String DEFAULT_REPOSITORY_NAME = "test";
-
-    public String repositoryName = DEFAULT_REPOSITORY_NAME;
-
     /**
      * Sets the database backend used for VCS unit tests.
      */
     public static void setDatabaseForTests(String className) {
         try {
             DATABASE = (DatabaseHelper) Class.forName(className).newInstance();
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError("Database class not found: " + className);
         }
-        String msg = "Database used for VCS tests: " + className;
-        // System.out used on purpose, don't remove
-        System.out.println(DatabaseHelper.class.getSimpleName() + ": " + msg);
-        log.info(msg);
     }
 
     /**
@@ -211,15 +197,9 @@ public abstract class DatabaseHelper {
         st.execute(sql);
     }
 
-    public void setUp(Class<? extends RepositoryFactory> factoryClass) throws Exception {
-        setUp();
-        setRepositoryFactory(factoryClass);
-    }
-
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
         setOwner();
         setDatabaseName(DEFAULT_DATABASE_NAME);
-        setRepositoryFactory(defaultRepositoryFactory);
         setBinaryManager(defaultBinaryManager, "");
         setSingleDataSourceMode();
         Framework.addListener(new RuntimeServiceListener() {
@@ -251,10 +231,6 @@ public abstract class DatabaseHelper {
      */
     public void tearDown() throws SQLException {
         owner = null;
-    }
-
-    public static void setRepositoryFactory(Class<? extends RepositoryFactory> factoryClass) {
-        setProperty("nuxeo.test.vcs.repository-factory", factoryClass.getName());
     }
 
     public static void setBinaryManager(Class<? extends BinaryManager> binaryManagerClass, String key) {

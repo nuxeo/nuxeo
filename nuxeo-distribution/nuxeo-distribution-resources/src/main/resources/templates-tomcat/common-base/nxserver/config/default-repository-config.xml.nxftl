@@ -11,9 +11,7 @@
 <#if "${nuxeo.mongodb.server}" == "">
   <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
     point="repository">
-    <repository name="default"
-      label="label.default.repository"
-      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+    <repository name="default" label="label.default.repository">
       <pool minPoolSize="${nuxeo.vcs["min-pool-size"]}" maxPoolSize="${nuxeo.vcs["max-pool-size"]}"
         blockingTimeoutMillis="${nuxeo.vcs["blocking-timeout-millis"]}" idleTimeoutMinutes="${nuxeo.vcs["idle-timeout-minutes"]}" />
       <clustering id="${repository.clustering.id}" enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />

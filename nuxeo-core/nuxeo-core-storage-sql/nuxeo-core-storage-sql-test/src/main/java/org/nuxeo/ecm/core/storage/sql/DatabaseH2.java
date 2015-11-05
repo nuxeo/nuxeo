@@ -47,8 +47,6 @@ public class DatabaseH2 extends DatabaseHelper {
 
     protected String url;
 
-    protected String url2;
-
     protected String user;
 
     protected String password;
@@ -56,7 +54,6 @@ public class DatabaseH2 extends DatabaseHelper {
     protected void setProperties() {
         url = setProperty(URL_PROPERTY, String.format(URL_FORMAT, databaseName));
 
-        setProperty(REPOSITORY_PROPERTY, repositoryName);
         setProperty(DATABASE_PROPERTY, databaseName);
         user = setProperty(USER_PROPERTY, DEF_USER);
         password = setProperty(PASSWORD_PROPERTY, DEF_PASSWORD);
@@ -64,16 +61,14 @@ public class DatabaseH2 extends DatabaseHelper {
         setProperty(DRIVER_PROPERTY, DRIVER);
     }
 
-    protected void setProperties2() {
-        url2 = String.format(URL_FORMAT, databaseName + "2");
-        setProperty(URL_PROPERTY + "2", url2);
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY + "2", repositoryName + "2");
-    }
-
     @Override
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
         super.setUp();
-        Class.forName(DRIVER);
+        try {
+            Class.forName(DRIVER);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
         setProperties();
         checkDatabaseLive();
     }
@@ -87,10 +82,6 @@ public class DatabaseH2 extends DatabaseHelper {
         }
     }
 
-    public void setUp2() throws Exception {
-        setProperties2();
-    }
-
     protected String getId() {
         return "nuxeo";
     }
@@ -102,9 +93,6 @@ public class DatabaseH2 extends DatabaseHelper {
         }
         try {
             tearDownDatabase(url);
-            if (url2 != null) {
-                tearDownDatabase(url2);
-            }
         } finally {
             super.tearDown();
         }

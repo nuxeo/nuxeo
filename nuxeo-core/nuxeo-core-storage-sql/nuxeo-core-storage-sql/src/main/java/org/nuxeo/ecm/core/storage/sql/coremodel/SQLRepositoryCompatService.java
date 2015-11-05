@@ -74,7 +74,6 @@ public class SQLRepositoryCompatService extends DefaultComponent {
             // without nested repository
             descriptor = cdesc;
         } else {
-            descriptor.setRepositoryFactoryClass(cdesc.getRepositoryFactoryClass());
             if (descriptor.name == null) {
                 descriptor.name = cdesc.name;
             }

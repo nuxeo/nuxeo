@@ -11,7 +11,18 @@
  */
 package org.nuxeo.ecm.core.test;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.sql.SQLException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository;
+import org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDB2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
@@ -21,6 +32,14 @@ import org.nuxeo.ecm.core.storage.sql.DatabaseOracle;
 import org.nuxeo.ecm.core.storage.sql.DatabasePostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.osgi.framework.Bundle;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
 
 /**
  * Description of the specific capabilities of a repository for tests, and helper methods.
@@ -29,32 +48,50 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class StorageConfiguration {
 
+    private static final Log log = LogFactory.getLog(StorageConfiguration.class);
+
     public static final String CORE_PROPERTY = "nuxeo.test.core";
 
     public static final String CORE_VCS = "vcs";
 
-    public static final String CORE_DBS_MEM = "mem";
+    public static final String CORE_MEM = "mem";
 
-    public static final String CORE_DBS_MONGODB = "mongodb";
+    public static final String CORE_MONGODB = "mongodb";
 
-    public static final String CORE_DEFAULT = CORE_VCS;
+    public static final String DEFAULT_CORE = CORE_VCS;
 
-    private DatabaseHelper vcsDatabaseHelper;
+    private static final String MONGODB_SERVER_PROPERTY = "nuxeo.test.mongodb.server";
 
-    private String dbsBackend;
+    private static final String MONGODB_DBNAME_PROPERTY = "nuxeo.test.mongodb.dbname";
+
+    private static final String DEFAULT_MONGODB_SERVER = "localhost:27017";
+
+    private static final String DEFAULT_MONGODB_DBNAME = "unittests";
+
+    private String coreType;
+
+    private boolean isVCS;
+
+    private boolean isDBS;
+
+    private DatabaseHelper databaseHelper;
 
     public StorageConfiguration() {
-        String core = defaultSystemProperty(CORE_PROPERTY, CORE_DEFAULT);
-        switch (core) {
+        initJDBC();
+        coreType = defaultSystemProperty(CORE_PROPERTY, DEFAULT_CORE);
+        switch (coreType) {
         case CORE_VCS:
-            initVCS();
+            isVCS = true;
             break;
-        case CORE_DBS_MEM:
-        case CORE_DBS_MONGODB:
-            dbsBackend = core;
+        case CORE_MEM:
+            isDBS = true;
+            break;
+        case CORE_MONGODB:
+            isDBS = true;
+            initMongoDB();
             break;
         default:
-            throw new ExceptionInInitializerError("Unknown test core mode: " + core);
+            throw new ExceptionInInitializerError("Unknown test core mode: " + coreType);
         }
     }
 
@@ -66,69 +103,107 @@ public class StorageConfiguration {
         return value;
     }
 
-    protected void initVCS() {
-        vcsDatabaseHelper = DatabaseHelper.DATABASE;
+    protected static String defaultProperty(String name, String def) {
+        String value = System.getProperty(name);
+        if (value == null || value.equals("") || value.equals("${" + name + "}")) {
+            value = def;
+        }
+        Framework.getProperties().put(name, value);
+        return value;
     }
 
-    // used only for datasource contrib in TestSQLBinaryManager
-    public String getVCSName() {
-        String db = vcsDatabaseHelper.getClass().getSimpleName();
-        if (db.startsWith("Database")) {
-            db = db.substring("Database".length());
+    protected void initJDBC() {
+        databaseHelper = DatabaseHelper.DATABASE;
+
+        String msg = "Deploying JDBC using " + databaseHelper.getClass().getSimpleName();
+        // System.out used on purpose, don't remove
+        System.out.println(getClass().getSimpleName() + ": " + msg);
+        log.info(msg);
+
+        // setup system properties for generic XML extension points
+        // this is used both for VCS (org.nuxeo.ecm.core.storage.sql.RepositoryService)
+        // and DataSources (org.nuxeo.runtime.datasource) extension points
+        try {
+            databaseHelper.setUp();
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
         }
-        return db;
+    }
+
+    protected void initMongoDB() {
+        String server = defaultProperty(MONGODB_SERVER_PROPERTY, DEFAULT_MONGODB_SERVER);
+        String dbname = defaultProperty(MONGODB_DBNAME_PROPERTY, DEFAULT_MONGODB_DBNAME);
+        MongoDBRepositoryDescriptor descriptor = new MongoDBRepositoryDescriptor();
+        descriptor.name = getRepositoryName();
+        descriptor.server = server;
+        descriptor.dbname = dbname;
+        try {
+            clearMongoDB(descriptor);
+        } catch (UnknownHostException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
+    protected void clearMongoDB(MongoDBRepositoryDescriptor descriptor) throws UnknownHostException {
+        MongoClient mongoClient = MongoDBRepository.newMongoClient(descriptor);
+        try {
+            DBCollection coll = MongoDBRepository.getCollection(descriptor, mongoClient);
+            coll.dropIndexes();
+            coll.remove(new BasicDBObject());
+            coll = MongoDBRepository.getCountersCollection(descriptor, mongoClient);
+            coll.dropIndexes();
+            coll.remove(new BasicDBObject());
+        } finally {
+            mongoClient.close();
+        }
     }
 
     public boolean isVCS() {
-        return vcsDatabaseHelper != null;
+        return isVCS;
     }
 
     public boolean isVCSH2() {
-        return vcsDatabaseHelper instanceof DatabaseH2;
+        return isVCS && databaseHelper instanceof DatabaseH2;
     }
 
     public boolean isVCSDerby() {
-        return vcsDatabaseHelper instanceof DatabaseDerby;
+        return isVCS && databaseHelper instanceof DatabaseDerby;
     }
 
     public boolean isVCSPostgreSQL() {
-        return vcsDatabaseHelper instanceof DatabasePostgreSQL;
+        return isVCS && databaseHelper instanceof DatabasePostgreSQL;
     }
 
     public boolean isVCSMySQL() {
-        return vcsDatabaseHelper instanceof DatabaseMySQL;
+        return isVCS && databaseHelper instanceof DatabaseMySQL;
     }
 
     public boolean isVCSOracle() {
-        return vcsDatabaseHelper instanceof DatabaseOracle;
+        return isVCS && databaseHelper instanceof DatabaseOracle;
     }
 
     public boolean isVCSSQLServer() {
-        return vcsDatabaseHelper instanceof DatabaseSQLServer;
+        return isVCS && databaseHelper instanceof DatabaseSQLServer;
     }
 
     public boolean isVCSDB2() {
-        return vcsDatabaseHelper instanceof DatabaseDB2;
+        return isVCS && databaseHelper instanceof DatabaseDB2;
     }
 
     public boolean isDBS() {
-        return dbsBackend != null;
+        return isDBS;
     }
 
     public boolean isDBSMem() {
-        return CORE_DBS_MEM.equals(dbsBackend);
+        return isDBS && CORE_MEM.equals(coreType);
     }
 
     public boolean isDBSMongoDB() {
-        return CORE_DBS_MONGODB.equals(dbsBackend);
+        return isDBS && CORE_MONGODB.equals(coreType);
     }
 
     public String getRepositoryName() {
-        if (isVCS()) {
-            return vcsDatabaseHelper.repositoryName;
-        } else {
-            return "test"; // DBS
-        }
+        return "test";
     }
 
     /**
@@ -136,7 +211,7 @@ public class StorageConfiguration {
      */
     public void sleepForFulltext() {
         if (isVCS()) {
-            vcsDatabaseHelper.sleepForFulltext();
+            databaseHelper.sleepForFulltext();
         } else {
             // DBS
         }
@@ -147,7 +222,7 @@ public class StorageConfiguration {
      */
     public void maybeSleepToNextSecond() {
         if (isVCS()) {
-            vcsDatabaseHelper.maybeSleepToNextSecond();
+            databaseHelper.maybeSleepToNextSecond();
         } else {
             // DBS
         }
@@ -158,7 +233,7 @@ public class StorageConfiguration {
      */
     public boolean hasSubSecondResolution() {
         if (isVCS()) {
-            return vcsDatabaseHelper.hasSubSecondResolution();
+            return databaseHelper.hasSubSecondResolution();
         } else {
             return true; // DBS
         }
@@ -178,10 +253,55 @@ public class StorageConfiguration {
      */
     public boolean supportsMultipleFulltextIndexes() {
         if (isVCS()) {
-            return vcsDatabaseHelper.supportsMultipleFulltextIndexes();
+            return databaseHelper.supportsMultipleFulltextIndexes();
         } else {
             return false; // DBS
         }
+    }
+
+    public URL getBlobManagerContrib(FeaturesRunner runner) {
+        String bundleName = "org.nuxeo.ecm.core.test";
+        String contribPath = "OSGI-INF/test-storage-blob-contrib.xml";
+        RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
+        Bundle bundle = harness.getOSGiAdapter().getRegistry().getBundle(bundleName);
+        URL contribURL = bundle.getEntry(contribPath);
+        assertNotNull("deployment contrib " + contribPath + " not found", contribURL);
+        return contribURL;
+    }
+
+    public URL getRepositoryContrib(FeaturesRunner runner) {
+        String msg;
+        if (isVCS()) {
+            msg = "Deploying a VCS repository";
+        } else if (isDBS()) {
+            msg = "Deploying a DBS repository using " + coreType;
+        } else {
+            throw new NuxeoException("Unkown test configuration (not vcs/dbs)");
+        }
+        // System.out used on purpose, don't remove
+        System.out.println(getClass().getSimpleName() + ": " + msg);
+        log.info(msg);
+
+        String contribPath;
+        String bundleName;
+        if (isVCS()) {
+            bundleName = "org.nuxeo.ecm.core.storage.sql.test";
+            contribPath = databaseHelper.getDeploymentContrib();
+        } else {
+            bundleName = "org.nuxeo.ecm.core.test";
+            if (isDBSMem()) {
+                contribPath = "OSGI-INF/test-storage-repo-mem-contrib.xml";
+            } else if (isDBSMongoDB()) {
+                contribPath = "OSGI-INF/test-storage-repo-mongodb-contrib.xml";
+            } else {
+                throw new NuxeoException("Unkown DBS test configuration (not mem/mongodb)");
+            }
+        }
+        RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
+        Bundle bundle = harness.getOSGiAdapter().getRegistry().getBundle(bundleName);
+        URL contribURL = bundle.getEntry(contribPath);
+        assertNotNull("deployment contrib " + contribPath + " not found", contribURL);
+        return contribURL;
     }
 
 }

@@ -24,11 +24,7 @@ import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
- * Pooling repository factory.
- * <p>
- * This class is mentioned in the repository extension point defining a given repository.
- * <p>
- * To function properly, it needs the bundle nuxeo-runtime-jtajca to be depoyed.
+ * Repository factory for VCS, the repository implements internally a JCA pool of sessions.
  */
 public class PoolingRepositoryFactory implements RepositoryFactory {
 

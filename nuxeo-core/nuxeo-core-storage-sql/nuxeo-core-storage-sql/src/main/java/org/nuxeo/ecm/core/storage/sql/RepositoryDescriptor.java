@@ -199,17 +199,6 @@ public class RepositoryDescriptor {
         return isDefault;
     }
 
-    @XNode("@factory")
-    private Class<? extends RepositoryFactory> repositoryFactoryClass;
-
-    public Class<? extends RepositoryFactory> getRepositoryFactoryClass() {
-        return repositoryFactoryClass;
-    }
-
-    public void setRepositoryFactoryClass(Class<? extends RepositoryFactory> klass) {
-        repositoryFactoryClass = klass;
-    }
-
     // compat, when used with old-style extension point syntax
     // and nested repository
     @XNode("repository")
@@ -427,7 +416,6 @@ public class RepositoryDescriptor {
         name = other.name;
         label = other.label;
         isDefault = other.isDefault;
-        repositoryFactoryClass = other.repositoryFactoryClass;
         pool = other.pool == null ? null : new NuxeoConnectionManagerConfiguration(other.pool);
         backendClass = other.backendClass;
         clusterInvalidatorClass = other.clusterInvalidatorClass;
@@ -471,9 +459,6 @@ public class RepositoryDescriptor {
         }
         if (other.isDefault != null) {
             isDefault = other.isDefault;
-        }
-        if (other.repositoryFactoryClass != null) {
-            repositoryFactoryClass = other.repositoryFactoryClass;
         }
         if (other.pool != null) {
             pool = new NuxeoConnectionManagerConfiguration(other.pool);

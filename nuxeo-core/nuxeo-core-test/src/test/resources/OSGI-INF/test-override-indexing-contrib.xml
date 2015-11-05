@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.core.storage.sql.test.repo.override.indexing">
   <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
     point="repository">
-    <repository name="${nuxeo.test.vcs.repository}">
+    <repository name="test">
       <indexing>
         <fulltext>
           <index name="binaries">

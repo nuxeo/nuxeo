@@ -12,8 +12,7 @@
  */
 package org.nuxeo.ecm.core.test;
 
-import static org.junit.Assert.assertNotNull;
-
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -32,17 +31,13 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.repository.RepositoryService;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
-import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.model.persistence.Contribution;
-import org.nuxeo.runtime.model.persistence.fs.ContributionLocation;
+import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -53,7 +48,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.ServiceProvider;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.osgi.framework.Bundle;
 
 import com.google.inject.Scope;
 
@@ -68,12 +62,15 @@ import com.google.inject.Scope;
         "org.nuxeo.ecm.core.api", //
         "org.nuxeo.ecm.core.event", //
         "org.nuxeo.ecm.core", //
+        "org.nuxeo.ecm.core.test", //
         "org.nuxeo.ecm.core.mimetype", //
         "org.nuxeo.ecm.core.convert", //
         "org.nuxeo.ecm.core.convert.plugins", //
         "org.nuxeo.ecm.core.storage", //
         "org.nuxeo.ecm.core.storage.sql", //
-        "org.nuxeo.ecm.core.storage.sql.test" //
+        "org.nuxeo.ecm.core.storage.sql.test", //
+        "org.nuxeo.ecm.core.storage.mem", //
+        "org.nuxeo.ecm.core.storage.mongodb", //
 })
 @Features({ RuntimeFeature.class, TransactionalFeature.class })
 @LocalDeploy("org.nuxeo.ecm.core.event:test-queuing.xml")
@@ -81,13 +78,11 @@ public class CoreFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(CoreFeature.class);
 
-    protected StorageConfiguration storageConfiguration = new StorageConfiguration();
+    protected StorageConfiguration storageConfiguration;
 
     protected RepositoryInit repositoryInit;
 
     protected Granularity granularity;
-
-    protected Class<? extends RepositoryFactory> repositoryFactoryClass;
 
     protected int initialOpenSessions;
 
@@ -113,6 +108,9 @@ public class CoreFeature extends SimpleFeature {
     }
 
     public StorageConfiguration getStorageConfiguration() {
+        if (storageConfiguration == null) {
+            storageConfiguration = new StorageConfiguration();
+        }
         return storageConfiguration;
     }
 
@@ -131,7 +129,6 @@ public class CoreFeature extends SimpleFeature {
         }
         Granularity cleanup = repositoryConfig.cleanup();
         granularity = cleanup == Granularity.UNDEFINED ? Granularity.CLASS : cleanup;
-        repositoryFactoryClass = repositoryConfig.repositoryFactoryClass();
     }
 
     public Granularity getGranularity() {
@@ -141,19 +138,12 @@ public class CoreFeature extends SimpleFeature {
     @Override
     public void start(FeaturesRunner runner) {
         try {
-            log.info("Deploying a VCS repo implementation");
-            // setup system properties for generic XML extension points
-            DatabaseHelper dbHelper = DatabaseHelper.DATABASE;
-            dbHelper.setUp(repositoryFactoryClass);
-            String contribPath = dbHelper.getDeploymentContrib();
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
-            OSGiAdapter osgi = harness.getOSGiAdapter();
-            Bundle bundle = osgi.getRegistry().getBundle("org.nuxeo.ecm.core.storage.sql.test");
-            URL contribURL = bundle.getEntry(contribPath);
-            assertNotNull("deployment contrib " + contribPath + " not found", contribURL);
-            Contribution contrib = new ContributionLocation(getRepositoryName(), contribURL);
-            harness.getContext().deploy(contrib);
-        } catch (Exception e) {
+            URL blobContribUrl = getStorageConfiguration().getBlobManagerContrib(runner);
+            harness.getContext().deploy(new URLStreamRef(blobContribUrl));
+            URL repoContribUrl = getStorageConfiguration().getRepositoryContrib(runner);
+            harness.getContext().deploy(new URLStreamRef(repoContribUrl));
+        } catch (IOException e) {
             throw new NuxeoException(e);
         }
     }
@@ -288,7 +278,7 @@ public class CoreFeature extends SimpleFeature {
     }
 
     public String getRepositoryName() {
-        return storageConfiguration.getRepositoryName();
+        return getStorageConfiguration().getRepositoryName();
     }
 
     public CoreSession openCoreSession(String username) {

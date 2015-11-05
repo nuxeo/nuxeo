@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +41,6 @@ public class DatabasePostgreSQL extends DatabaseHelper {
     private static final String DRIVER = "org.postgresql.Driver";
 
     protected void setProperties() {
-        Framework.getProperties().setProperty(REPOSITORY_PROPERTY, repositoryName);
         String db = setProperty(DATABASE_PROPERTY, databaseName);
         String server = setProperty(SERVER_PROPERTY, DEF_SERVER);
         String port = setProperty(PORT_PROPERTY, DEF_PORT);
@@ -54,9 +54,13 @@ public class DatabasePostgreSQL extends DatabaseHelper {
     }
 
     @Override
-    public void setUp() throws Exception {
+    public void setUp() throws SQLException {
         super.setUp();
-        Class.forName(DRIVER);
+        try {
+            Class.forName(DRIVER);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
         setProperties();
         Connection connection = DriverManager.getConnection(Framework.getProperty(URL_PROPERTY),
                 Framework.getProperty(USER_PROPERTY), Framework.getProperty(PASSWORD_PROPERTY));

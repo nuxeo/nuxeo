@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.test.blobmanager">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="test">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+    </blobprovider>
+  </extension>
+</component>

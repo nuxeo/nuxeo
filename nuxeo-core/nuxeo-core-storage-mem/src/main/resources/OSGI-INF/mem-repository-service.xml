@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.mem.MemRepositoryService" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.repository.RepositoryServiceComponent</require>
+
+  <documentation>
+    Manages Memory repositories.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.storage.mem.MemRepositoryService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.storage.mem.MemRepositoryService" />
+  </service>
+
+  <extension-point name="repository">
+    <documentation>
+      Extension points to register Memory repositories. Example:
+      <code>
+        <repository name="default" label="Mem Repository" isDefault="true">
+          <fulltext disabled="false" />
+        </repository>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.core.storage.mem.MemRepositoryDescriptor" />
+  </extension-point>
+
+</component>

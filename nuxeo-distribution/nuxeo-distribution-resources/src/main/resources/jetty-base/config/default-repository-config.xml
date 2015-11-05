@@ -9,8 +9,7 @@
   </extension>
   <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
     point="repository">
-    <repository name="default" label="label.default.repository"
-      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+    <repository name="default" label="label.default.repository">
       <pool minPoolSize="0" maxPoolSize="20" blockingTimeoutMillis="100"
         idleTimeoutMinutes="10" />
       <clustering enabled="false" delay="1000" />
