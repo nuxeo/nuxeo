@@ -16,7 +16,6 @@
   <modules>
     <module>nuxeo-core-storage-sql</module>
     <module>nuxeo-core-storage-sql-extensions</module>
-    <module>nuxeo-core-storage-sql-ra</module>
     <module>nuxeo-core-storage-sql-management</module>
     <module>nuxeo-core-storage-sql-test</module>
   </modules>
