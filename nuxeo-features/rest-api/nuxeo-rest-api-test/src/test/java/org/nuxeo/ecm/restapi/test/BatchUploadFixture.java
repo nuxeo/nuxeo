@@ -621,4 +621,45 @@ public class BatchUploadFixture extends BaseTest {
                 getResponse(RequestType.DELETE, "upload/fakeBatchId").getStatus());
     }
 
+    /**
+     * @since 7.10
+     */
+    @Test
+    public void testBadRequests() throws IOException {
+        ClientResponse response = getResponse(RequestType.POST, "upload");
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        String batchId = node.get("batchId").getValueAsText();
+
+        // Bad file index
+        assertEquals(Status.BAD_REQUEST.getStatusCode(),
+                getResponse(RequestType.POST, "upload/" + batchId + "/a").getStatus());
+
+        // Bad chunk index
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("X-Upload-Type", "chunked");
+        headers.put("X-Upload-Chunk-Count", "2");
+        headers.put("X-Upload-Chunk-Index", "a");
+        headers.put("X-File-Size", "100");
+        assertEquals(Status.BAD_REQUEST.getStatusCode(),
+                getResponse(RequestType.POST, "upload/" + batchId + "/0", "chunkContent", headers).getStatus());
+
+        // Bad chunk count
+        headers = new HashMap<String, String>();
+        headers.put("X-Upload-Type", "chunked");
+        headers.put("X-Upload-Chunk-Count", "a");
+        headers.put("X-Upload-Chunk-Index", "0");
+        headers.put("X-File-Size", "100");
+        assertEquals(Status.BAD_REQUEST.getStatusCode(),
+                getResponse(RequestType.POST, "upload/" + batchId + "/0", "chunkContent", headers).getStatus());
+
+        // Bad file size
+        headers = new HashMap<String, String>();
+        headers.put("X-Upload-Type", "chunked");
+        headers.put("X-Upload-Chunk-Count", "2");
+        headers.put("X-Upload-Chunk-Index", "0");
+        headers.put("X-File-Size", "a");
+        assertEquals(Status.BAD_REQUEST.getStatusCode(),
+                getResponse(RequestType.POST, "upload/" + batchId + "/0", "chunkContent", headers).getStatus());
+    }
+
 }

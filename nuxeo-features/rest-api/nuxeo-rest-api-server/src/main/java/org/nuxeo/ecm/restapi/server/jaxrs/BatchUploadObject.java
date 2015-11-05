@@ -42,6 +42,7 @@ import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -117,6 +118,11 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             return buildEmptyResponse(Status.NOT_FOUND);
         }
 
+        // Check file index parameter
+        if (!NumberUtils.isDigits(fileIdx)) {
+            return buildTextResponse(Status.BAD_REQUEST, "fileIdx request path parameter must be a number");
+        }
+
         boolean isMultipart = false;
 
         // Parameters are passed as request header, the request body is the stream
@@ -155,10 +161,15 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             }
 
             if (UPLOAD_TYPE_CHUNKED.equals(uploadType)) {
-                log.debug(String.format("Uploading chunk [index=%s / total=%s] (%sb) for file %s", uploadChunkIndex,
-                        chunkCount, uploadedSize, fileName));
-                bm.addStream(batchId, fileIdx, is, Integer.valueOf(chunkCount), Integer.valueOf(uploadChunkIndex),
-                        fileName, mimeType, Long.valueOf(fileSize));
+                try {
+                    log.debug(String.format("Uploading chunk [index=%s / total=%s] (%sb) for file %s",
+                            uploadChunkIndex, chunkCount, uploadedSize, fileName));
+                    bm.addStream(batchId, fileIdx, is, Integer.parseInt(chunkCount),
+                            Integer.parseInt(uploadChunkIndex), fileName, mimeType, Long.parseLong(fileSize));
+                } catch (NumberFormatException e) {
+                    return buildTextResponse(Status.BAD_REQUEST,
+                            "X-Upload-Chunk-Index, X-Upload-Chunk-Count and X-File-Size headers must be numbers");
+                }
             } else {
                 // Use non chunked mode by default if X-Upload-Type header is not provided
                 uploadType = UPLOAD_TYPE_NORMAL;
@@ -309,18 +320,26 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected Response buildJSONResponse(StatusType status, String message) throws UnsupportedEncodingException {
-        return Response.status(status).header("Content-Length", message.getBytes("UTF-8").length).type(
-                MediaType.APPLICATION_JSON + "; charset=UTF-8").entity(message).build();
+        return buildResponse(status, MediaType.APPLICATION_JSON, message);
     }
 
     protected Response buildHTMLResponse(StatusType status, String message) throws UnsupportedEncodingException {
         message = "<html>" + message + "</html>";
-        return Response.status(status).header("Content-Length", message.getBytes("UTF-8").length).type(
-                MediaType.TEXT_HTML_TYPE + "; charset=UTF-8").entity(message).build();
+        return buildResponse(status, MediaType.TEXT_HTML, message);
+    }
+
+    protected Response buildTextResponse(StatusType status, String message) throws UnsupportedEncodingException {
+        return buildResponse(status, MediaType.TEXT_PLAIN, message);
     }
 
     protected Response buildEmptyResponse(StatusType status) {
         return Response.status(status).build();
+    }
+
+    protected Response buildResponse(StatusType status, String type, String message)
+            throws UnsupportedEncodingException {
+        return Response.status(status).header("Content-Length", message.getBytes("UTF-8").length).type(
+                type + "; charset=UTF-8").entity(message).build();
     }
 
     protected Map<String, Object> getFileInfo(BatchFileEntry fileEntry) throws UnsupportedEncodingException {
