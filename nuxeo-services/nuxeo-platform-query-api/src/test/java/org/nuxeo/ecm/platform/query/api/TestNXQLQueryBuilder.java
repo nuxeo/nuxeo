@@ -191,10 +191,14 @@ public class TestNXQLQueryBuilder {
         assertNotNull(pps);
         WhereClauseDefinition whereClause = pps.getPageProviderDefinition("PREDICATE_WITH_HINT").getWhereClause();
         DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
-        model.setPropertyValue("search:title", "bar");
-
+        model.setPropertyValue("search:title", "foo");
         String query = NXQLQueryBuilder.getQuery(model, whereClause, null);
-        assertEquals("SELECT * FROM Note WHERE /*+ES: INDEX(my:fulltext) */ dc:title LIKE 'bar'", query);
+        assertEquals("SELECT * FROM Note WHERE " + //
+                "/*+ES: INDEX(dc:title.custom) */ dc:title LIKE 'foo' AND " + //
+                "/*+ES: ANALYZER(fr_analyzer) */ ecm:fulltext.dc:title = 'foo' AND " + //
+                "/*+ES: INDEX(dc:title.fulltext) OPERATOR(fuzzy) */ ecm:fulltext = 'foo' AND " + //
+                "ecm:fulltext.dc:title = 'foo' AND " + //
+                "ecm:fulltext.dc:description = 'foo'" , query);
     }
 
     @Test
