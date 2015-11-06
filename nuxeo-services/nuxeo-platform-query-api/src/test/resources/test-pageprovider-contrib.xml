@@ -154,7 +154,19 @@
     <coreQueryPageProvider name="PREDICATE_WITH_HINT">
       <property name="coreSession">#{documentManager}</property>
       <whereClause docType="AdvancedSearch">
-        <predicate parameter="dc:title" operator="LIKE" hint="ES: INDEX(my:fulltext)">
+        <predicate parameter="dc:title" operator="LIKE" hint="ES: INDEX(dc:title.custom)">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="dc:title" operator="FULLTEXT" hint="ES: ANALYZER(fr_analyzer)">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT" hint="ES: INDEX(dc:title.fulltext) OPERATOR(fuzzy)">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="dc:title" operator="FULLTEXT">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="ecm:fulltext.dc:description" operator="FULLTEXT">
           <field schema="advanced_search" name="title" />
         </predicate>
         <fixedPart statement="SELECT * FROM Note" />
