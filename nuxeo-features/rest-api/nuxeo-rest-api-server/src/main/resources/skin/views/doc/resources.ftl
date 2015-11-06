@@ -11,8 +11,12 @@
             "description": "Access documents by their id"
         },
         {
-        "path": "/query.{format}",
-        "description": "Document Search"
+            "path": "/query.{format}",
+            "description": "Document Search"
+        },
+        {
+            "path": "/blobAdapter.{format}",
+            "description": "Get main document blob"
         },
         {
             "path": "/automation.{format}",
