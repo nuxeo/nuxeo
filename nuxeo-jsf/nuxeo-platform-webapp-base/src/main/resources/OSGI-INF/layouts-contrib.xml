@@ -804,12 +804,12 @@
           NXQL Query to fetch the suggestions. This property is
           ignored if a
           Page Provider name is given.
+          The widget doesn't append a '%'
+          wildcard to the parameter passed to query.
           &lt;p&gt;
           Example: select *
-          from Document where dc:title LIKE ?
+          from Document where dc:title LIKE '?%'
           &lt;/p&gt;
-          The widget appends a '%'
-          wildcard to the parameter passed to query.
         </label>
       </helpLabels>
       <fields>
@@ -832,12 +832,12 @@
           NXQL Query to fetch the suggestions. This property is
           ignored if a
           Page Provider name is given.
+          The widget doesn't append a '%'
+          wildcard to the parameter passed to query.
           &lt;p&gt;
           Example: select *
-          from Document where dc:title LIKE ?
+          from Document where dc:title LIKE '?%'
           &lt;/p&gt;
-          The widget appends a '%'
-          wildcard to the parameter passed to query.
         </label>
       </helpLabels>
       <fields>
