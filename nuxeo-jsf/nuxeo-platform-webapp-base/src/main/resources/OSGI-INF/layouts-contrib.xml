@@ -826,6 +826,7 @@
           Example before 6.0-HF20: select *
           from Document where dc:title LIKE ?
           &lt;/p&gt;
+        </label>
       </helpLabels>
       <fields>
         <field>query</field>
