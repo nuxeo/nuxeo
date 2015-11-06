@@ -343,11 +343,6 @@ public class NXQLQueryBuilder {
         String operator = null;
         String operatorField = predicateDescriptor.getOperatorField();
         String operatorSchema = predicateDescriptor.getOperatorSchema();
-        String parameter = predicateDescriptor.getParameter();
-        String hint = predicateDescriptor.getHint();
-        if (hint != null && !hint.isEmpty()) {
-            parameter = String.format("/*+%s */ %s", hint.trim(), parameter);
-        }
         PredicateFieldDefinition[] values = predicateDescriptor.getValues();
         if (operatorField != null && operatorSchema != null) {
             PredicateFieldDefinition operatorFieldDescriptor = new FieldDescriptor(operatorSchema, operatorField);
@@ -359,6 +354,8 @@ public class NXQLQueryBuilder {
         if (StringUtils.isBlank(operator)) {
             operator = predicateDescriptor.getOperator();
         }
+        String hint = predicateDescriptor.getHint();
+        String parameter = getParameterWithHint(operator, predicateDescriptor.getParameter(), hint);
 
         if (operator.equals("=") || operator.equals("!=") || operator.equals("<") || operator.equals(">")
                 || operator.equals("<=") || operator.equals(">=") || operator.equals("<>") || operator.equals("LIKE")
@@ -451,11 +448,10 @@ public class NXQLQueryBuilder {
                 // value not provided: ignore predicate
                 return "";
             }
-            String lhs = parameter.startsWith(NXQL.ECM_FULLTEXT) ? parameter : NXQL.ECM_FULLTEXT + '.' + parameter;
             if (escaper != null) {
                 value = escaper.escape(value);
             }
-            return lhs + ' ' + serializeFullText(value);
+            return parameter + ' ' + serializeFullText(value);
         } else if (operator.equals("IS NULL")) {
             Boolean value = getBooleanValue(model, values[0]);
             if (value == null) {
@@ -469,6 +465,20 @@ public class NXQLQueryBuilder {
         } else {
             throw new NuxeoException("Unsupported operator: " + operator);
         }
+    }
+
+    protected static String getParameterWithHint(String operator, String parameter, String hint) {
+        String ret = parameter;
+        // add ecm:fulltext. prefix if needed
+        if (operator.equals("FULLTEXT ALL") || operator.equals("FULLTEXT") && !parameter.startsWith(NXQL
+                .ECM_FULLTEXT)) {
+             ret = NXQL.ECM_FULLTEXT + '.' + parameter;
+        }
+        // add the hint
+        if (hint != null && !hint.isEmpty()) {
+            ret = String.format("/*+%s */ %s", hint.trim(), ret);
+        }
+        return ret;
     }
 
     /**
