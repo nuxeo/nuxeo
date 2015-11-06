@@ -1,23 +1,24 @@
 #!/usr/bin/env python
-##
-## (C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
-##
-## All rights reserved. This program and the accompanying materials
-## are made available under the terms of the GNU Lesser General Public License
-## (LGPL) version 2.1 which accompanies this distribution, and is available at
-## http://www.gnu.org/licenses/lgpl-2.1.html
-##
-## This library is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-## Lesser General Public License for more details.
-##
-## Contributors:
-##     Stefane Fermigier
-##     Julien Carsique
-##
-## This script clones or updates Nuxeo addons source code from Git repositories
-##
+"""
+(C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the GNU Lesser General Public License
+(LGPL) version 2.1 which accompanies this distribution, and is available at
+http://www.gnu.org/licenses/lgpl-2.1.html
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
+
+Contributors:
+    Stefane Fermigier
+    Julien Carsique
+
+This script clones or updates Nuxeo addons source code from Git repositories"""
+
+import errno
 import sys
 import os
 import re
@@ -26,8 +27,19 @@ import subprocess
 import platform
 import time
 import optparse
+from distutils.version import LooseVersion
 
-#pylint: disable=C0103
+
+REQUIRED_GIT_VERSION = "1.8.4"
+
+
+class ExitException(Exception):
+    def __init__(self, return_code, message=None):
+        self.return_code = return_code
+        self.message = message
+
+
+# pylint: disable=C0103
 driveletter = None
 basedir = os.getcwd()
 
@@ -37,13 +49,17 @@ def log(message, out=sys.stdout):
     out.flush()
 
 
-#pylint: disable=C0103
+# pylint: disable=C0103
 def system(cmd, failonerror=True):
+    """Shell execution.
+
+    'cmd': the command to execute.
+    If 'failonerror', command execution failure raises an ExitException."""
     log("$> " + cmd)
     cmdargs = shlex.split(cmd)
     p = subprocess.Popen(cmdargs, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    out, err = p.communicate()  # @UnusedVariable
+    out, _ = p.communicate()
     sys.stdout.write(out)
     sys.stdout.flush()
     retcode = p.returncode
@@ -88,18 +104,35 @@ def long_path_workaround_init():
 
 
 def long_path_workaround_cleanup():
+    """Windows only. Cleanup the directory mapping if any."""
     global driveletter
-    if driveletter != None:
+    if driveletter is not None:
         os.chdir(basedir)
-        system("SUBST %s: /D" % (driveletter,), False)
+        system("SUBST %s: /D" % (driveletter,), failonerror=False)
 
 
 def check_output(cmd):
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    """Return Shell command output."""
+    try:
+        p = subprocess.Popen(cmd, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                             shell=platform.system() == "Windows")
+    # pylint: disable=C0103
+    except OSError, e:
+        log("$> " + str(cmd))
+        if e.errno == errno.ENOENT:
+            raise ExitException(1, "Command not found: '%s'" % cmd[0])
+        else:
+            # re-raise unexpected exception
+            raise
     out, err = p.communicate()
-    if err != None:
-        log("[ERROR]: command", str(cmd), " returned an error:", sys.stderr)
-        log(err, sys.stderr)
+    retcode = p.returncode
+    if retcode != 0:
+        if err is None or err == "":
+            err = out
+        raise ExitException(retcode,
+                            "Command '%s' returned non-zero exit code (%s)\n%s"
+                            % (str(cmd), retcode, err))
     return out.strip()
 
 
@@ -112,22 +145,28 @@ def git_fetch(module):
         system("git fetch %s" % (alias))
     else:
         log("Cloning " + module + "...")
-        system("git clone %s" % (repo_url))
+        system("git clone %s --origin %s" % (repo_url, alias))
         os.chdir(module)
-
-    if version in check_output(["git", "tag"]).split():
-        # the version is a tag name
-        system("git checkout -q %s" % version)
-    elif version not in check_output(["git", "branch"]).split():
-        # create the local branch if missing
-        system("git checkout --track -q -b %s %s/%s" %
-               (version, alias, version))
-    else:
-        # reuse local branch
-        system("git checkout -q %s" % version)
-        log("Updating branch")
-        system("git rebase -q %s/%s" % (alias, version))
+    git_update()
     os.chdir(cwd)
+
+
+def git_update():
+    """Git update using checkout, stash (if needed) and rebase."""
+    is_tag = version in check_output(["git", "tag", "--list", version]).split()
+    is_local_branch = version in check_output(["git", "branch", "--list", version]).split()
+    is_remote_branch = "%s/%s" % (alias, version) in check_output([
+                       "git", "branch", "-r", "--list", "%s/%s" % (alias, version)]).split()
+    if is_tag:
+        system("git checkout %s -q" % version)
+    elif is_local_branch:
+        system("git checkout %s -q" % version)
+        if is_remote_branch:
+            system("git rebase -q --autostash %s/%s" % (alias, version))
+    elif is_remote_branch:
+        system("git checkout --track -b %s %s/%s -q" % (version, alias, version))
+    else:
+        log("Branch %s not found" % version)
     log("")
 
 
@@ -137,13 +176,26 @@ def get_current_version():
 
 
 def assert_git_config():
-    t = check_output(["git", "config", "--get", "color.branch"])
+    """Check Git configuration."""
+    t = check_output(["git", "--version"]).split()[-1]
+    if LooseVersion(t) < LooseVersion(REQUIRED_GIT_VERSION):
+        raise ExitException(1, "Requires Git version %s+ (detected %s)" % (REQUIRED_GIT_VERSION, t))
+    try:
+        t = check_output(["git", "config", "--get-all", "color.branch"])
+    except ExitException, e:
+        # Error code 1 is fine (default value)
+        if e.return_code > 1:
+            log("[WARN] %s" % e.message, sys.stderr)
+    try:
+        t += check_output(["git", "config", "--get-all", "color.status"])
+    except ExitException, e:
+        # Error code 1 is fine (default value)
+        if e.return_code > 1:
+            log("[WARN] %s" % e.message, sys.stderr)
     if "always" in t:
-        log("[ERROR]: The git color mode should be auto not always, try:",
-            sys.stderr)
-        log(" git config --global color.branch auto", sys.stderr)
-        log(" git config --global color.status auto", sys.stderr)
-        sys.exit(1)
+        raise ExitException(1, "The git color mode must not be always, try:" +
+                            "\n git config --global color.branch auto" +
+                            "\n git config --global color.status auto")
 
 
 assert_git_config()
@@ -173,18 +225,7 @@ else:
 
 log("Cloning/updating addons parent pom")
 system("git fetch %s" % (alias))
-if version in check_output(["git", "tag"]).split():
-    # the version is a tag name
-    system("git checkout -q %s" % version)
-elif version not in check_output(["git", "branch"]).split():
-    # create the local branch if missing
-    system("git checkout --track -q -b %s %s/%s" % (version, alias, version))
-else:
-    # reuse local branch
-    system("git checkout -q %s" % version)
-    log("Updating branch")
-    system("git rebase -q %s/%s" % (alias, version))
-log("")
+git_update()
 
 # find the remote URL
 remote_lines = check_output(["git", "remote", "-v"]).split("\n")
