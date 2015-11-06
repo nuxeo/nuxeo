@@ -50,11 +50,11 @@ public class PermissionsSubPage extends AbstractPage {
         List<WebElement> elements = driver.findElements(By.className("acl-table-row"));
         boolean hasPermission = false;
         for (WebElement element : elements) {
-            List<WebElement> divs = element.findElements(new ByChained(By.tagName("div")));
-            if (divs.size() > 3) {
-                String aceUsername = divs.get(0).getText();
-                String aceRight = divs.get(1).getText();
-                if (username.equals(aceUsername) && permission.equalsIgnoreCase(aceRight)) {
+            List<WebElement> spans = element.findElements(new ByChained(By.tagName("div"), By.tagName("span")));
+            if (spans.size() > 3) {
+                String aceUsernameTitle = spans.get(0).getAttribute("title");
+                String aceRight = spans.get(1).getText();
+                if (aceUsernameTitle.startsWith(username) && permission.equalsIgnoreCase(aceRight)) {
                     hasPermission = true;
                 }
             }
@@ -93,19 +93,12 @@ public class PermissionsSubPage extends AbstractPage {
 
         // click on Create
         popup.findElement(By.xpath(".//paper-button[text()='Create']")).click();
-        waitForPermissionAdded();
+        waitForPermissionAdded(permission, username);
 
         return asPage(PermissionsSubPage.class);
     }
 
-    protected void waitForPermissionAdded() {
-        Locator.waitUntilGivenFunction(input -> {
-            try {
-                WebElement element = driver.findElement(By.xpath("//h2[text()='Add a Permission']"));
-                return !element.isDisplayed();
-            } catch (NoSuchElementException e) {
-                return true;
-            }
-        });
+    protected void waitForPermissionAdded(String permission, String username) {
+        Locator.waitUntilGivenFunction(input -> hasPermissionForUser(permission, username));
     }
 }
