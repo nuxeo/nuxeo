@@ -1,6 +1,7 @@
 (function($) {
 
-  var check = "tipsyGravity";
+  var nxTipsyGravityClass = "tipsyGravity";
+  var nxTipsyHtmlClass = "tipsyHtml";
 
   $.fn.initTipsy = function(delayIn, resetDelayInTimeout) {
 
@@ -52,9 +53,12 @@
 
       var cls = $(this).attr('class').split(' ');
       var gravity = $.fn.tipsy.auto;
+      var html = false;
       for ( var i = 0; i < cls.length; i++) {
-        if (cls[i].indexOf(check) > -1) {
-          gravity = cls[i].slice(check.length, cls[i].length).toLowerCase();
+        if (cls[i].indexOf(nxTipsyGravityClass) > -1) {
+          gravity = cls[i].slice(nxTipsyGravityClass.length, cls[i].length).toLowerCase();
+        } else if (cls[i].indexOf(nxTipsyHtmlClass) > -1) {
+            html = true;
         }
       }
 
@@ -62,6 +66,7 @@
         title : 'title',
         gravity : gravity,
         live : true,
+        html : html,
         delayIn : delayIn
       });
     });
