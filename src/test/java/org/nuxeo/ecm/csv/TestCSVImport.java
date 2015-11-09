@@ -40,8 +40,12 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,11 +57,23 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.platform.types.api",
-        "org.nuxeo.ecm.platform.types.core" })
-@LocalDeploy({ "org.nuxeo.ecm.csv:OSGI-INF/test-types-contrib.xml",
-        "org.nuxeo.ecm.csv:OSGI-INF/test-ui-types-contrib.xml" })
+@Features({ CoreFeature.class, SQLDirectoryFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.login", //
+        "org.nuxeo.ecm.platform.web.common", //
+        "org.nuxeo.ecm.platform.usermanager.api", //
+        "org.nuxeo.ecm.platform.usermanager:OSGI-INF/UserService.xml", //
+        "org.nuxeo.ecm.core.io", //
+        "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.platform.types.api", //
+        "org.nuxeo.ecm.platform.types.core", //
+        "org.nuxeo.ecm.platform.dublincore", //
+        "org.nuxeo.ecm.csv" //
+})
+@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
+        "org.nuxeo.ecm.csv:OSGI-INF/test-directories-contrib.xml", //
+        "org.nuxeo.ecm.csv:OSGI-INF/test-types-contrib.xml", //
+        "org.nuxeo.ecm.csv:OSGI-INF/test-ui-types-contrib.xml" //
+})
 public class TestCSVImport {
 
     private static final String DOCS_OK_CSV = "docs_ok.csv";
@@ -70,6 +86,10 @@ public class TestCSVImport {
 
     private static final String DOCS_WITH_LIFECYCLE_CSV = "docs_with_lifecycle.csv";
 
+    private static final String DOCS_WITHOUT_CONTRIBUTORS_CSV = "docs_without_contributors.csv";
+
+    private static final String DOCS_WITH_CREATOR_CSV = "docs_with_creator.csv";
+
     @Inject
     protected CoreSession session;
 
@@ -78,6 +98,9 @@ public class TestCSVImport {
 
     @Inject
     protected WorkManager workManager;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Before
     public void clearWorkQueue() {
@@ -112,10 +135,11 @@ public class TestCSVImport {
         assertEquals("My File", doc.getTitle());
         assertEquals("a simple file", doc.getPropertyValue("dc:description"));
         List<String> contributors = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors"));
-        assertEquals(3, contributors.size());
+        assertEquals(4, contributors.size());
         assertTrue(contributors.contains("contributor1"));
         assertTrue(contributors.contains("contributor2"));
         assertTrue(contributors.contains("contributor3"));
+        assertTrue(contributors.contains("Administrator"));
         Calendar issueDate = (Calendar) doc.getPropertyValue("dc:issued");
         assertEquals("10/01/2010", new SimpleDateFormat(options.getDateFormat()).format(issueDate.getTime()));
 
@@ -125,10 +149,11 @@ public class TestCSVImport {
         assertEquals("a simple note", doc.getPropertyValue("dc:description"));
         assertEquals("note content", doc.getPropertyValue("note:note"));
         contributors = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors"));
-        assertEquals(3, contributors.size());
+        assertEquals(4, contributors.size());
         assertTrue(contributors.contains("bender"));
         assertTrue(contributors.contains("leela"));
         assertTrue(contributors.contains("fry"));
+        assertTrue(contributors.contains("Administrator"));
         issueDate = (Calendar) doc.getPropertyValue("dc:issued");
         assertEquals("12/12/2012", new SimpleDateFormat(options.getDateFormat()).format(issueDate.getTime()));
 
@@ -137,8 +162,9 @@ public class TestCSVImport {
         assertEquals("My Complex File", doc.getTitle());
         assertEquals("a complex file", doc.getPropertyValue("dc:description"));
         contributors = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors"));
-        assertEquals(1, contributors.size());
+        assertEquals(2, contributors.size());
         assertTrue(contributors.contains("joe"));
+        assertTrue(contributors.contains("Administrator"));
         issueDate = (Calendar) doc.getPropertyValue("dc:issued");
         assertEquals("12/21/2013", new SimpleDateFormat(options.getDateFormat()).format(issueDate.getTime()));
         HashMap<String, Object> expectedMap = new HashMap<>();
@@ -339,6 +365,75 @@ public class TestCSVImport {
         assertTrue(session.exists(new PathRef("/myfile")));
         DocumentModel doc = session.getDocument(new PathRef("/myfile"));
         assertEquals("obsolete", doc.getCurrentLifeCycleState());
+    }
+
+    @Test
+    public void shouldSetCreatorToTheUserImporting() throws InterruptedException {
+        // give access to leela
+        DocumentModel root = session.getRootDocument();
+        ACP acp = root.getACP();
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("leela", "ReadWrite").build());
+        session.setACP(root.getRef(), acp, true);
+
+        CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+        TransactionHelper.commitOrRollbackTransaction();
+
+        try (CoreSession leelaSession = openSessionAs("leela")) {
+            String importId = csvImporter.launchImport(leelaSession, "/", getCSVFile(DOCS_WITHOUT_CONTRIBUTORS_CSV),
+                    DOCS_WITHOUT_CONTRIBUTORS_CSV, options);
+
+            workManager.awaitCompletion(10000, TimeUnit.SECONDS);
+
+            List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+            assertEquals(2, importLogs.size());
+        }
+
+        TransactionHelper.startTransaction();
+
+        assertTrue(session.exists(new PathRef("/myfile")));
+        DocumentModel doc = session.getDocument(new PathRef("/myfile"));
+        assertEquals("leela", doc.getPropertyValue("dc:creator"));
+        List<String> contributors = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors"));
+        assertEquals(1, contributors.size());
+        assertTrue(contributors.contains("leela"));
+    }
+
+    @Test
+    public void shouldCreateDocumentWithDefinedCreator() throws InterruptedException {
+        CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
+        TransactionHelper.commitOrRollbackTransaction();
+
+        String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_CREATOR_CSV),
+                DOCS_WITH_CREATOR_CSV, options);
+
+        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+        assertEquals(2, importLogs.size());
+        CSVImportLog importLog = importLogs.get(0);
+        assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
+
+        assertTrue(session.exists(new PathRef("/myfile")));
+        DocumentModel doc = session.getDocument(new PathRef("/myfile"));
+        assertEquals("leela", doc.getPropertyValue("dc:creator"));
+        List<String> contributors = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors"));
+        assertEquals(2, contributors.size());
+        assertTrue(contributors.contains("leela"));
+        assertTrue(contributors.contains("Administrator"));
+        assertTrue(session.exists(new PathRef("/myfile2")));
+        doc = session.getDocument(new PathRef("/myfile2"));
+        assertEquals("leela", doc.getPropertyValue("dc:creator"));
+        contributors = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors"));
+        assertEquals(4, contributors.size());
+        assertTrue(contributors.contains("contributor1"));
+        assertTrue(contributors.contains("contributor2"));
+        assertTrue(contributors.contains("leela"));
+        assertTrue(contributors.contains("Administrator"));
+    }
+
+    public CoreSession openSessionAs(String username) {
+        return coreFeature.openCoreSession(username);
     }
 
 }

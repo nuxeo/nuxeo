@@ -84,8 +84,9 @@ public class CSVImportActions implements Serializable {
         if (csvFile != null) {
             CSVImporterOptions options = new CSVImporterOptions.Builder().sendEmail(notifyUserByEmail).build();
             CSVImporter csvImporter = Framework.getLocalService(CSVImporter.class);
-            csvImportId = csvImporter.launchImport(documentManager,
-                    navigationContext.getCurrentDocument().getPathAsString(), csvFile, csvFileName, options);
+            csvImportId = csvImporter.launchImport(documentManager, navigationContext.getCurrentDocument()
+                                                                                     .getPathAsString(), csvFile,
+                    csvFileName, options);
         }
     }
 
