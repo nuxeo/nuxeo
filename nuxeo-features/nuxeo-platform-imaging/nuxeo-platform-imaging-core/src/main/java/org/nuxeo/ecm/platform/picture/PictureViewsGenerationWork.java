@@ -54,7 +54,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
         setProgress(Progress.PROGRESS_INDETERMINATE);
         setStatus("Extracting");
 
-        initSession();
+        openSystemSession();
         if (!session.exists(new IdRef(docId))) {
             setStatus("Nothing to process");
             return;
@@ -80,7 +80,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
         if (!TransactionHelper.isTransactionActive()) {
             startTransaction();
         }
-        initSession();
+        openSystemSession();
         if (!session.exists(new IdRef(docId))) {
             setStatus("Nothing to process");
             return;

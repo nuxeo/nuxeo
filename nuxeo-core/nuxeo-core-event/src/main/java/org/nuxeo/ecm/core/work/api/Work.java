@@ -358,12 +358,11 @@ public interface Work extends Serializable {
 
     /**
      * Gets the user on behalf of which this work is done.
-     * <p>
-     * This is informative only.
      *
-     * @return the user id, or {@code null}
+     * @return the originating username, or {@code null}
+     * @since 8.1
      */
-    String getUserId();
+    String getOriginatingUsername();
 
     /**
      * Gets the document impacted by the work.

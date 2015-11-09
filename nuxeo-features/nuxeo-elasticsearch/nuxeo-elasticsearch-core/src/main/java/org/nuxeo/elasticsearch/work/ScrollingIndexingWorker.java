@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -71,7 +70,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
             log.debug(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s", jobName, nxql,
                     repositoryName));
         }
-        CoreSession session = initSession(repositoryName);
+        openSystemSession();
         IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
         int bucketCount = 0;
         boolean warnAtEnd = false;

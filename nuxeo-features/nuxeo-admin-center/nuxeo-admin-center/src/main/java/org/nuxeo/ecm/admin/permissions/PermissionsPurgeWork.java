@@ -74,7 +74,7 @@ public class PermissionsPurgeWork extends AbstractWork {
     @Override
     public void work() {
         setStatus("Purging");
-        initSession();
+        openSystemSession();
 
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
         PageProviderDefinition def = pageProviderService.getPageProviderDefinition("permissions_purge");

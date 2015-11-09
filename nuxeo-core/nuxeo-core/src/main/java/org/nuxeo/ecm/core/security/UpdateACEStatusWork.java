@@ -66,7 +66,7 @@ public class UpdateACEStatusWork extends AbstractWork {
     @Override
     public void work() {
         setStatus("Updating ACE status");
-        initSession();
+        openSystemSession();
 
         Date now = new Date();
         String formattedDate = FORMATTER.format(now);

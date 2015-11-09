@@ -23,6 +23,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -30,9 +33,11 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
@@ -95,6 +100,13 @@ public abstract class AbstractWork implements Work {
      */
     protected boolean isTree;
 
+    /**
+     * The originating username to use when opening the {@link CoreSession}.
+     *
+     * @since 8.1
+     */
+    protected String originatingUsername;
+
     protected String status;
 
     protected long schedulingTime;
@@ -104,6 +116,8 @@ public abstract class AbstractWork implements Work {
     protected long completionTime;
 
     protected transient CoreSession session;
+
+    protected transient LoginContext loginContext;
 
     protected WorkSchedulePath schedulePath;
 
@@ -154,6 +168,13 @@ public abstract class AbstractWork implements Work {
         this.repositoryName = repositoryName;
         docId = null;
         this.docIds = new ArrayList<String>(docIds);
+    }
+
+    /**
+     * @since 8.1
+     */
+    public void setOriginatingUsername(String originatingUsername) {
+        this.originatingUsername = originatingUsername;
     }
 
     @Override
@@ -226,9 +247,41 @@ public abstract class AbstractWork implements Work {
      * May be called by implementing classes to open a session on the repository.
      *
      * @return the session (also available in {@code session} field)
+     * @deprecated since 8.1. Use {@link #openSystemSession()}.
      */
+    @Deprecated
     public CoreSession initSession() {
         return initSession(repositoryName);
+    }
+
+    /**
+     * May be called by implementing classes to open a System session on the repository.
+     *
+     * @since 8.1
+     */
+    public void openSystemSession() {
+        session = CoreInstance.openCoreSessionSystem(repositoryName, originatingUsername);
+    }
+
+    /**
+     * May be called by implementing classes to open a Use session on the repository.
+     * <p>
+     * It uses the set {@link #originatingUsername} to open the session.
+     *
+     * @since 8.1
+     */
+    public void openUserSession() {
+        if (originatingUsername == null) {
+            throw new IllegalStateException("Cannot open an user session without an originatingUsername");
+        }
+
+        try {
+            loginContext = Framework.loginAsUser(originatingUsername);
+        } catch (LoginException e) {
+            throw new NuxeoException(e);
+        }
+
+        session = CoreInstance.openCoreSession(repositoryName);
     }
 
     /**
@@ -236,14 +289,17 @@ public abstract class AbstractWork implements Work {
      *
      * @param repositoryName the repository name
      * @return the session (also available in {@code session} field)
+     * @deprecated since 8.1. Use {@link #openSystemSession()} to open a session on the configured repository name,
+     *             otherwise use {@link CoreInstance#openCoreSessionSystem(String)}.
      */
+    @Deprecated
     public CoreSession initSession(String repositoryName) {
-        session = CoreInstance.openCoreSessionSystem(repositoryName);
+        session = CoreInstance.openCoreSessionSystem(repositoryName, originatingUsername);
         return session;
     }
 
     /**
-     * Closes the session that was opened by {@link #initSession}.
+     * Closes the session that was opened by {@link #openSystemSession()} or {@link #openUserSession()}.
      *
      * @since 5.8
      */
@@ -403,10 +459,19 @@ public abstract class AbstractWork implements Work {
             }
         }
         closeSession();
+
+        try {
+            // loginContext may be null in tests
+            if (loginContext != null) {
+                loginContext.logout();
+            }
+        } catch (LoginException le) {
+            throw new NuxeoException(le);
+        }
     }
 
     @Override
-    public String getUserId() {
+    public String getOriginatingUsername() {
         // TODO
         return null;
     }

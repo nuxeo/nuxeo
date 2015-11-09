@@ -55,7 +55,7 @@ public abstract class RemovedAbstractWork extends AbstractWork {
     public void work() {
         setStatus("Updating");
         if (docId != null) {
-            initSession();
+            openSystemSession();
             final List<DocumentModel> results = getNextResults();
             final int nbResult = results.size();
             setProgress(new Progress(0, results.size()));

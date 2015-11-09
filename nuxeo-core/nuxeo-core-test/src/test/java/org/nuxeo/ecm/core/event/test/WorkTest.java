@@ -165,7 +165,7 @@ public class WorkTest {
 
         @Override
         public void work() {
-            initSession();
+            openSystemSession();
             monitor.ready();
             try {
                 DocumentRef ref = new IdRef(docId);
@@ -195,7 +195,7 @@ public class WorkTest {
 
         @Override
         public void work() {
-            initSession();
+            openSystemSession();
             monitor.ready();
             try {
                 boolean exists = session.exists(new IdRef(docId));
