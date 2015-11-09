@@ -8,9 +8,7 @@
   </extension>
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
-    <repository name="layoutDemo"
-      label="Layout demo repository (with a memory backend)"
-      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+    <repository name="layoutDemo" label="Layout demo repository (with a memory backend)">
       <schema>
         <field type="largetext">note</field>
         <field type="largetext">relatedtext</field>
