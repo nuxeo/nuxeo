@@ -97,7 +97,7 @@ public class FulltextUpdaterWork extends AbstractWork {
 
     @Override
     public void work() {
-        initSession();
+        openSystemSession();
         // if the runtime has shut down (normally because tests are finished)
         // this can happen, see NXP-4009
         if (session.getPrincipal() == null) {

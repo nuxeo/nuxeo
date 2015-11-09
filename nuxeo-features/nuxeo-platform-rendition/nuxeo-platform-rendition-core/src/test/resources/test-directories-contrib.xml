@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.rendition.test.directories">
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+    <directory name="userDirectory">
+
+      <schema>user</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>users</table>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/users.csv</dataFile>
+      <createTablePolicy>always</createTablePolicy>
+
+      <references>
+        <tableReference field="groups" directory="groupDirectory"
+          table="user2group" sourceColumn="userId"
+          targetColumn="groupId"
+          master="true" />
+      </references>
+
+    </directory>
+
+    <directory name="groupDirectory">
+
+      <schema>group</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <table>groups</table>
+      <idField>groupname</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>always</createTablePolicy>
+
+      <references>
+        <inverseReference field="members" directory="userDirectory"
+          dualReferenceField="groups" />
+        <tableReference field="subGroups" directory="groupDirectory"
+          table="group2group" sourceColumn="childGroupId"
+          targetColumn="parentGroupId" />
+        <inverseReference field="parentGroups"
+          directory="groupDirectory" dualReferenceField="subGroups" />
+      </references>
+
+    </directory>
+
+  </extension>
+</component>

@@ -69,7 +69,7 @@ public class RemoveFromCollectionWork extends AbstractWork {
         if (collectionMemberIds != null) {
             setProgress(new Progress(0, collectionMemberIds.size()));
             if (session == null) {
-                initSession();
+                openSystemSession();
             }
             final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
             for (int i = 0; i < collectionMemberIds.size(); i++) {

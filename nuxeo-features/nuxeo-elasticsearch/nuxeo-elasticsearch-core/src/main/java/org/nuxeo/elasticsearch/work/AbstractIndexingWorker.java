@@ -52,7 +52,7 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
 
     @Override
     public void doWork() {
-        initSession();
+        openSystemSession();
         for (IndexingCommand cmd: cmds) {
             cmd.attach(session);
         }

@@ -107,6 +107,22 @@ public class CoreInstance {
     }
 
     /**
+     * Opens a {@link CoreSession} for a system user with an optional originating username.
+     * <p>
+     * The session must be closed using {@link CoreSession#close}.
+     *
+     * @param repositoryName the repository name, or {@code null} for the default repository
+     * @param originatingUsername the originating username to set on the SystemPrincipal
+     * @return the session
+     * @since 8.1
+     */
+    public static CoreSession openCoreSessionSystem(String repositoryName, String originatingUsername) {
+        NuxeoPrincipal principal = getPrincipal((SecurityConstants.SYSTEM_USERNAME));
+        principal.setOriginatingUser(originatingUsername);
+        return openCoreSession(repositoryName, principal);
+    }
+
+    /**
      * @deprecated since 5.9.3, use {@link #openCoreSession} instead.
      */
     @Deprecated
@@ -123,13 +139,12 @@ public class CoreInstance {
      * @param context the session open context
      * @return the session
      */
-    public static CoreSession openCoreSession(String repositoryName, Map<String, Serializable> context)
-            {
+    public static CoreSession openCoreSession(String repositoryName, Map<String, Serializable> context) {
         return openCoreSession(repositoryName, getPrincipal(context));
     }
 
     /**
-     * Opens a {@link CoreSession} for the given principal.
+     * MUST ONLY BE USED IN UNIT TESTS to open a {@link CoreSession} for the given principal.
      * <p>
      * The session must be closed using {@link CoreSession#close}.
      *
@@ -147,7 +162,7 @@ public class CoreInstance {
     }
 
     /**
-     * Opens a {@link CoreSession} for the given principal.
+     * MUST ONLY BE USED IN UNIT TESTS to open a {@link CoreSession} for the given principal.
      * <p>
      * The session must be closed using {@link CoreSession#close}.
      *
@@ -238,8 +253,8 @@ public class CoreInstance {
                 if (Framework.isTestModeSet()) {
                     return new SystemPrincipal(null);
                 } else {
-                    throw new NuxeoException(
-                            "Cannot create a CoreSession outside a security context, " + " login() missing.");
+                    throw new NuxeoException("Cannot create a CoreSession outside a security context, "
+                            + " login() missing.");
                 }
             }
         }

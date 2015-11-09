@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.lazy.AbstractLazyCachableRenditionProvider;
+import org.nuxeo.ecm.platform.rendition.service.RenditionFeature;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -47,9 +48,8 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 import com.google.inject.Inject;
 
-@Deploy({ "org.nuxeo.ecm.platform.rendition.api", "org.nuxeo.ecm.platform.rendition.core" })
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, TransientStoreFeature.class })
+@Features({ RenditionFeature.class, TransientStoreFeature.class })
 @LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml")
 /**
  *
