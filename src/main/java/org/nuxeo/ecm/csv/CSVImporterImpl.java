@@ -37,8 +37,9 @@ public class CSVImporterImpl implements CSVImporter {
     @Override
     public String launchImport(CoreSession session, String parentPath, File csvFile, String csvFileName,
             CSVImporterOptions options) {
-        CSVImporterWork work = new CSVImporterWork(session.getRepositoryName(), parentPath,
-                session.getPrincipal().getName(), csvFile, csvFileName, options);
+        CSVImporterWork work = new CSVImporterWork(session.getRepositoryName(), parentPath, session.getPrincipal()
+                                                                                                   .getName(), csvFile,
+                csvFileName, options);
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
         return work.getId();

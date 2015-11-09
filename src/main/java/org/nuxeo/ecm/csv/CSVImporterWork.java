@@ -184,6 +184,7 @@ public class CSVImporterWork extends AbstractWork {
             CSVImporterOptions options) {
         super(CSVImportId.create(repositoryName, parentPath, csvFile));
         setDocument(repositoryName, null);
+        setOriginatingUsername(username);
         this.parentPath = parentPath;
         this.username = username;
         this.csvFile = csvFile;
@@ -209,7 +210,7 @@ public class CSVImporterWork extends AbstractWork {
     @Override
     public void work() {
         setStatus("Importing");
-        initSession();
+        openUserSession();
         try (Reader in = newReader(csvFile);
                 CSVParser parser = CSVFormat.DEFAULT.withEscape(options.getEscapeCharacter()).withHeader().parse(in)) {
             doImport(parser);
@@ -542,8 +543,12 @@ public class CSVImporterWork extends AbstractWork {
 
         try {
             OperationChain chain = new OperationChain("SendMail");
-            chain.add(SendMail.ID).set("from", from).set("to", to).set("HTML", true).set("subject", subject).set(
-                    "message", message);
+            chain.add(SendMail.ID)
+                 .set("from", from)
+                 .set("to", to)
+                 .set("HTML", true)
+                 .set("subject", subject)
+                 .set("message", message);
             Framework.getLocalService(AutomationService.class).run(ctx, chain);
         } catch (Exception e) {
             ExceptionUtils.checkInterrupt(e);
