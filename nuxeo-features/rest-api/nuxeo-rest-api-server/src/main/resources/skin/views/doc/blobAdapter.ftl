@@ -9,7 +9,7 @@
   {
   "method":"GET",
   "nickname":"getBlob",
-  <@params names = ["docpath", "fieldPath"]/>,
+  <@params names = ["docpath", "fieldpath"]/>,
   "summary":"Get the main blob of a document by its path",
     <#include "views/doc/errorresponses.ftl"/>
   }
@@ -25,7 +25,7 @@
   {
   "method":"GET",
   "nickname":"getBlob",
-  <@params names = ["docid", "fieldPath"]/>,
+  <@params names = ["docid", "fieldpath"]/>,
   "summary":"Get the main blob of a document by its id",
     <#include "views/doc/errorresponses.ftl"/>
   }
