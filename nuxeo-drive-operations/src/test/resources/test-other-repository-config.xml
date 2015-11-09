@@ -14,8 +14,7 @@
 
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
-    <repository name="other"
-      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
+    <repository name="other">
       <repository>
         <indexing>
           <fulltext disabled="true" />
