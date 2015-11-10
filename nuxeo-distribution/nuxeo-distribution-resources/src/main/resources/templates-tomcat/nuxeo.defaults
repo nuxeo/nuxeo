@@ -38,6 +38,8 @@ nuxeo.vcs.fulltext.disabled=false
 nuxeo.vcs.fulltext.search.disabled=false
 nuxeo.vcs.noddl=false
 nuxeo.vcs.idtype=varchar
+nuxeo.vcs.optimizations.acl.enabled=true
+nuxeo.vcs.optimizations.path.enabled=true
 
 # Database transaction timeout in seconds
 nuxeo.db.transactiontimeout=300
