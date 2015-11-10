@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -57,11 +58,15 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.primitives.ExternalBlobProperty;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.State.StateDiff;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepository;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -137,10 +142,14 @@ public class TestSQLRepositoryProperties {
 
     protected void waitForAsyncCompletion() {
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
+            nextTransaction();
         }
         eventService.waitForAsyncCompletion();
+    }
+
+    protected void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
     protected File createTempFile() throws Exception {
@@ -254,8 +263,7 @@ public class TestSQLRepositoryProperties {
         doc.setPropertyValue("tp:stringArray", values);
         session.saveDocument(doc);
         session.save();
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        nextTransaction();
         coreFeature.reopenCoreSession();
         doc = session.getDocument(doc.getRef());
         assertTrue(Arrays.equals(values, (Object[]) doc.getPropertyValue("tp:stringArray")));
@@ -307,6 +315,8 @@ public class TestSQLRepositoryProperties {
         assertComplexListElements(actual, 0, "foo", 123);
 
         // add to list
+        // (also modifies first element)
+        item1.put("string", "foo2");
 
         item2.put("string", "bar");
         item2.put("int", Long.valueOf(999));
@@ -324,7 +334,7 @@ public class TestSQLRepositoryProperties {
 
         actual = (List<?>) doc.getPropertyValue("tp:complexList");
         assertEquals(3, actual.size());
-        assertComplexListElements(actual, 0, "foo", 123);
+        assertComplexListElements(actual, 0, "foo2", 123);
         assertComplexListElements(actual, 1, "bar", 999);
         assertComplexListElements(actual, 2, "baz", 314);
 
@@ -343,7 +353,7 @@ public class TestSQLRepositoryProperties {
 
         actual = (List<?>) doc.getPropertyValue("tp:complexList");
         assertEquals(3, actual.size());
-        assertComplexListElements(actual, 0, "foo", 111);
+        assertComplexListElements(actual, 0, "foo2", 111);
         assertComplexListElements(actual, 1, "bar", 222);
         assertComplexListElements(actual, 2, "baz", 333);
 
@@ -619,6 +629,8 @@ public class TestSQLRepositoryProperties {
 
     @Test
     public void testExternalBlobDocumentProperty() throws Exception {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
+
         File file = createTempFile();
         HashMap<String, String> map = new HashMap<String, String>();
         String uri = String.format("fs:%s", file.getName());
@@ -640,6 +652,8 @@ public class TestSQLRepositoryProperties {
     // this time only set the uri
     @Test
     public void testExternalBlobDocumentProperty2() throws Exception {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
+
         File file = createTempFile();
         String uri = String.format("fs:%s", file.getName());
         doc.setPropertyValue("tp:externalcontent/uri", uri);
@@ -659,6 +673,8 @@ public class TestSQLRepositoryProperties {
     @Ignore
     @Test
     public void testExternalBlobListValue() throws Exception {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
+
         // not null on list
         String propName = "tp:externalFileList";
         assertTrue(doc.getPropertyValue(propName) instanceof List);
@@ -692,6 +708,8 @@ public class TestSQLRepositoryProperties {
     @Ignore
     @Test
     public void testSubExternalBlobValue() throws Exception {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
+
         String propName = "tp:externalFileComplexList";
         // not null on list
         assertTrue(doc.getPropertyValue(propName) instanceof List);
@@ -848,6 +866,7 @@ public class TestSQLRepositoryProperties {
 
         doc.setPropertyValue("book:author/pJob", "somejob");
         doc.setPropertyValue("dc:subjects", new String[] { "bar" });
+        doc.setPropertyValue("participants", new String[] { "bar" });
         Blob blob = Blobs.createBlob("foo");
         blob.setFilename("fooname");
         LinkedList<Object> blobs = new LinkedList<Object>();
@@ -858,23 +877,22 @@ public class TestSQLRepositoryProperties {
         doc = session.getDocument(doc.getRef());
 
         assertTrue(doc.isPrefetched("dc:title"));
-        assertTrue(doc.isPrefetched("dc:subjects"));
+        // assertTrue(doc.isPrefetched("dc:subjects"));
         // assertTrue(doc.isPrefetched("attachments/0/name"));
         assertTrue(doc.isPrefetched("book:author/pJob"));
         // assertEquals("fooname", doc.getPropertyValue("attachments/0/name"));
         assertEquals("somejob", doc.getPropertyValue("book:author/pJob"));
 
-        Serializable subjects = doc.getPropertyValue("dc:subjects");
-        assertNotNull(subjects);
-        assertTrue(subjects.getClass().getName(), subjects instanceof String[]);
-        String[] array = (String[]) subjects;
+        Serializable participants = doc.getPropertyValue("participants");
+        assertNotNull(participants);
+        assertTrue(participants.getClass().getName(), participants instanceof String[]);
+        String[] array = (String[]) participants;
         assertEquals(Arrays.asList("bar"), Arrays.asList(array));
         // array mutability
         array[0] = "moo";
         // different mutable array returned each time
-        // TODO works because dc: is prefetched
-        subjects = doc.getPropertyValue("dc:subjects");
-        array = (String[]) subjects;
+        participants = doc.getPropertyValue("participants");
+        array = (String[]) participants;
         assertEquals(Arrays.asList("bar"), Arrays.asList(array));
 
         // set another prop in same schema
@@ -1096,6 +1114,39 @@ public class TestSQLRepositoryProperties {
         Serializable value = doc.getPropertyValue("my:integer");
         assertTrue(value.getClass().getName(), value instanceof Long);
         assertEquals(223, ((Long) value).longValue());
+    }
+
+    // DBS-only test for in-db data migration
+    @Test
+    public void testMigrationListVsString() throws Exception {
+        assumeTrue(coreFeature.getStorageConfiguration().isDBS());
+
+        // create a doc
+        DocumentModel doc = session.createDocumentModel("/", "domain", "MyDocType");
+        doc = session.createDocument(doc);
+        String id = doc.getId();
+        session.save();
+
+        nextTransaction();
+
+        // change data
+        StateDiff diff = new StateDiff();
+        diff.put("dc:subjects", "a"); // put a string instead of an array
+        diff.put("dc:title", new String[] { "aa", "bb" }); // put an array instead of a string
+        changeDoc(id, diff);
+
+        // check that we don't crash on read
+        doc = session.getDocument(doc.getRef());
+        assertEquals(Arrays.asList("a"), Arrays.asList((Object[]) doc.getPropertyValue("dc:subjects")));
+        assertEquals("aa", doc.getPropertyValue("dc:title"));
+        assertEquals(Collections.emptyList(), Arrays.asList((Object[]) doc.getPropertyValue("dc:contributors")));
+    }
+
+    // change data in the database to make it like we just migrated the fields from different types
+    protected void changeDoc(String id, StateDiff diff) throws Exception {
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        Repository repository = repositoryService.getRepository(session.getRepositoryName());
+        ((DBSRepository) repository).updateState(id, diff);
     }
 
 }

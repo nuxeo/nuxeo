@@ -1253,6 +1253,24 @@ public class TestSQLRepositoryAPI {
         assertFalse(session.exists(returnedChildDocs.get(1).getRef()));
     }
 
+    @Test
+    public void testRemoveChildren2() {
+        DocumentModel folder1 = session.createDocumentModel("/", "folder1", "Folder");
+        folder1 = session.createDocument(folder1);
+        DocumentModel folder2 = session.createDocumentModel("/folder1", "folder2", "Folder");
+        folder2 = session.createDocument(folder2);
+        DocumentModel doc1 = session.createDocumentModel("/folder1/folder2", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        session.save();
+        // now remove
+        session.removeDocument(folder2.getRef());
+        // don't save
+        // check that we don't get phantom docs when getting children
+        // for instance when updating ACLs recursively
+        session.setACP(folder1.getRef(), new ACPImpl(), true);
+        session.save();
+    }
+
     protected void dumpAllDocuments(CoreSession session) {
         DocumentModelList docs = session.query("select * from Document");
         System.out.println("List all documents");
@@ -2264,30 +2282,30 @@ public class TestSQLRepositoryAPI {
 
         session.save();
 
-        assertTrue(session.exists(new PathRef("folder1/file")));
-        assertFalse(session.exists(new PathRef("folder2/file")));
+        assertTrue(session.exists(new PathRef("/folder1/file")));
+        assertFalse(session.exists(new PathRef("/folder2/file")));
 
         // copy using orig name
         DocumentModel copy1 = session.copy(file.getRef(), folder2.getRef(), null);
 
-        assertTrue(session.exists(new PathRef("folder1/file")));
-        assertTrue(session.exists(new PathRef("folder2/file")));
-        assertFalse(session.exists(new PathRef("folder2/fileCopy")));
+        assertTrue(session.exists(new PathRef("/folder1/file")));
+        assertTrue(session.exists(new PathRef("/folder2/file")));
+        assertFalse(session.exists(new PathRef("/folder2/fileCopy")));
         assertTrue(session.getChildren(folder2.getRef()).contains(copy1));
 
         // copy using another name
         DocumentModel copy2 = session.copy(file.getRef(), folder2.getRef(), "fileCopy");
 
-        assertTrue(session.exists(new PathRef("folder1/file")));
-        assertTrue(session.exists(new PathRef("folder2/file")));
-        assertTrue(session.exists(new PathRef("folder2/fileCopy")));
+        assertTrue(session.exists(new PathRef("/folder1/file")));
+        assertTrue(session.exists(new PathRef("/folder2/file")));
+        assertTrue(session.exists(new PathRef("/folder2/fileCopy")));
         assertTrue(session.getChildren(folder2.getRef()).contains(copy2));
 
         // copy again to same space
         DocumentModel copy3 = session.copy(file.getRef(), folder2.getRef(), null);
 
-        assertTrue(session.exists(new PathRef("folder1/file")));
-        assertTrue(session.exists(new PathRef("folder2/file")));
+        assertTrue(session.exists(new PathRef("/folder1/file")));
+        assertTrue(session.exists(new PathRef("/folder2/file")));
         assertTrue(session.getChildren(folder2.getRef()).contains(copy3));
         assertNotSame(copy1.getName(), copy3.getName());
 
@@ -2298,8 +2316,8 @@ public class TestSQLRepositoryAPI {
         }
         DocumentModel copy4 = session.copy(file.getRef(), folder2.getRef(), null);
 
-        assertTrue(session.exists(new PathRef("folder1/file")));
-        assertTrue(session.exists(new PathRef("folder2/file")));
+        assertTrue(session.exists(new PathRef("/folder1/file")));
+        assertTrue(session.exists(new PathRef("/folder2/file")));
         assertTrue(session.getChildren(folder2.getRef()).contains(copy4));
         assertNotSame(copy1.getName(), copy4.getName());
         assertNotSame(copy3.getName(), copy4.getName());
@@ -2307,8 +2325,8 @@ public class TestSQLRepositoryAPI {
         // copy inplace
         DocumentModel copy5 = session.copy(file.getRef(), folder1.getRef(), null);
 
-        assertTrue(session.exists(new PathRef("folder1/file")));
-        assertTrue(session.exists(new PathRef("folder2/file")));
+        assertTrue(session.exists(new PathRef("/folder1/file")));
+        assertTrue(session.exists(new PathRef("/folder2/file")));
         assertTrue(session.getChildren(folder1.getRef()).contains(copy5));
         assertNotSame(copy1.getName(), copy5.getName());
 
@@ -2360,8 +2378,8 @@ public class TestSQLRepositoryAPI {
         folder = session.createDocument(folder);
         session.save();
 
-        assertTrue(session.exists(new PathRef("note")));
-        assertTrue(session.exists(new PathRef("folder")));
+        assertTrue(session.exists(new PathRef("/note")));
+        assertTrue(session.exists(new PathRef("/folder")));
 
         // no versions at first
         List<DocumentRef> versions = session.getVersionsRefs(note.getRef());
@@ -2439,29 +2457,29 @@ public class TestSQLRepositoryAPI {
         folder2 = createChildDocument(folder2);
         file = createChildDocument(file);
 
-        assertTrue(session.exists(new PathRef("folder1/file")));
-        assertFalse(session.exists(new PathRef("folder2/file")));
-        assertFalse(session.exists(new PathRef("folder1/fileMove")));
+        assertTrue(session.exists(new PathRef("/folder1/file")));
+        assertFalse(session.exists(new PathRef("/folder2/file")));
+        assertFalse(session.exists(new PathRef("/folder1/fileMove")));
 
         // move using orig name
         session.move(file.getRef(), folder2.getRef(), null);
 
-        assertFalse(session.exists(new PathRef("folder1/file")));
-        assertTrue(session.exists(new PathRef("folder2/file")));
+        assertFalse(session.exists(new PathRef("/folder1/file")));
+        assertTrue(session.exists(new PathRef("/folder2/file")));
 
         file = session.getChild(folder2.getRef(), "file");
         session.move(file.getRef(), folder1.getRef(), "fileMove");
 
-        assertTrue(session.exists(new PathRef("folder1/fileMove")));
+        assertTrue(session.exists(new PathRef("/folder1/fileMove")));
 
         DocumentModel file2 = new DocumentModelImpl(folder2.getPathAsString(), "file2", "File");
         file2 = createChildDocument(file2);
-        assertTrue(session.exists(new PathRef("folder2/file2")));
+        assertTrue(session.exists(new PathRef("/folder2/file2")));
         DocumentModel newFile2 = session.move(file.getRef(), folder2.getRef(), "file2"); // collision
         String newName = newFile2.getName();
         assertFalse("file2".equals(newName));
-        assertTrue(session.exists(new PathRef("folder2/file2")));
-        assertTrue(session.exists(new PathRef("folder2/" + newName)));
+        assertTrue(session.exists(new PathRef("/folder2/file2")));
+        assertTrue(session.exists(new PathRef("/folder2/" + newName)));
 
         // move with null dest (rename)
         DocumentModel newFile3 = session.move(file.getRef(), null, "file3");
@@ -2580,8 +2598,8 @@ public class TestSQLRepositoryAPI {
         assertEquals("file ##", file.getProperty("dublincore", "title"));
 
         assertTrue(session.exists(new PathRef("/folder1")));
-        assertTrue(session.exists(new PathRef("folder1/folder2")));
-        assertTrue(session.exists(new PathRef("folder1/folder2/file")));
+        assertTrue(session.exists(new PathRef("/folder1/folder2")));
+        assertTrue(session.exists(new PathRef("/folder1/folder2/file")));
 
         // need to save them before getting properties from schemas...
         session.saveDocument(folder1);
@@ -3227,7 +3245,7 @@ public class TestSQLRepositoryAPI {
 
         // modify proxy
         proxy.setProperty("dublincore", "title", "the title again");
-        doc = session.saveDocument(proxy);
+        proxy = session.saveDocument(proxy);
         session.save();
 
         // check visible from live doc

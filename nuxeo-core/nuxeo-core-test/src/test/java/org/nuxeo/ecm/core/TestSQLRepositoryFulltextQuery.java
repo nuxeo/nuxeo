@@ -87,6 +87,14 @@ public class TestSQLRepositoryFulltextQuery {
     @Inject
     protected CoreSession session;
 
+    protected boolean isDBS() {
+        return coreFeature.getStorageConfiguration().isDBS();
+    }
+
+    protected void reopenSession() {
+        session = coreFeature.reopenCoreSession();
+    }
+
     protected void waitForFulltextIndexing() {
         nextTransaction();
         coreFeature.getStorageConfiguration().waitForFulltextIndexing();
@@ -251,7 +259,8 @@ public class TestSQLRepositoryFulltextQuery {
     public void testFulltext() throws Exception {
         createDocs();
         waitForFulltextIndexing();
-        String query, nquery;
+        String query;
+        String nquery = null;
         DocumentModelList dml;
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         DocumentModel file2 = session.getDocument(new PathRef("/testfolder1/testfile2"));
@@ -263,10 +272,12 @@ public class TestSQLRepositoryFulltextQuery {
         dml = session.query(query);
         assertEquals(0, dml.size());
 
-        // negative query
-        nquery = "SELECT * FROM File WHERE NOT(ecm:fulltext = 'world')";
-        dml = session.query(nquery);
-        assertIdSet(dml, file1.getId(), file2.getId(), file4.getId());
+        // negative query (not possible on DBS)
+        if (!isDBS()) {
+            nquery = "SELECT * FROM File WHERE NOT(ecm:fulltext = 'world')";
+            dml = session.query(nquery);
+            assertIdSet(dml, file1.getId(), file2.getId(), file4.getId());
+        }
 
         file1.setProperty("dublincore", "title", "hello world");
         session.saveDocument(file1);
@@ -277,9 +288,11 @@ public class TestSQLRepositoryFulltextQuery {
         dml = session.query(query);
         assertIdSet(dml, file1.getId());
 
-        // negative query
-        dml = session.query(nquery);
-        assertIdSet(dml, file2.getId(), file4.getId());
+        // negative query (not possible on DBS)
+        if (!isDBS()) {
+            dml = session.query(nquery);
+            assertIdSet(dml, file2.getId(), file4.getId());
+        }
 
         file2.setProperty("dublincore", "description", "the world is my oyster");
         session.saveDocument(file2);
@@ -290,9 +303,11 @@ public class TestSQLRepositoryFulltextQuery {
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), file2.getId());
 
-        // negative query
-        dml = session.query(nquery);
-        assertIdSet(dml, file4.getId());
+        // negative query (not possible on DBS)
+        if (!isDBS()) {
+            dml = session.query(nquery);
+            assertIdSet(dml, file4.getId());
+        }
 
         file3.setProperty("dublincore", "title", "brave new world");
         session.saveDocument(file3);
@@ -303,9 +318,11 @@ public class TestSQLRepositoryFulltextQuery {
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), file2.getId()); // file3 is a Note
 
-        // negative query
-        dml = session.query(nquery);
-        assertIdSet(dml, file4.getId());
+        // negative query (not possible on DBS)
+        if (!isDBS()) {
+            dml = session.query(nquery);
+            assertIdSet(dml, file4.getId());
+        }
 
         query = "SELECT * FROM Note WHERE ecm:fulltext = 'world'";
         dml = session.query(query);
@@ -339,15 +356,20 @@ public class TestSQLRepositoryFulltextQuery {
         query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant'";
         assertEquals(1, session.query(query).size());
 
-        query = "SELECT * FROM File WHERE NOT (ecm:fulltext = 'restaurant')";
-        assertEquals(2, session.query(query).size());
+        // negative query (not possible on DBS)
+        if (!isDBS()) {
+            query = "SELECT * FROM File WHERE NOT (ecm:fulltext = 'restaurant')";
+            assertEquals(2, session.query(query).size());
+        }
 
-        // Test multiple fulltext
-        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' OR ecm:fulltext = 'pete'";
-        assertEquals(2, session.query(query).size());
+        // Test multiple fulltext (not possible on DBS)
+        if (!isDBS()) {
+            query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' OR ecm:fulltext = 'pete'";
+            assertEquals(2, session.query(query).size());
 
-        query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' AND ecm:fulltext = 'pete'";
-        assertEquals(0, session.query(query).size());
+            query = "SELECT * FROM File WHERE ecm:fulltext = 'restaurant' AND ecm:fulltext = 'pete'";
+            assertEquals(0, session.query(query).size());
+        }
 
         // other query generation cases
 
@@ -385,7 +407,7 @@ public class TestSQLRepositoryFulltextQuery {
         assertTrue(map.containsKey(NXQL.ECM_FULLTEXT_SCORE));
         res.close();
 
-        // ORDER BY ecm:fulltextScore added implicitly
+        // ORDER BY ecm:fulltextScore DESC added implicitly
         query = "SELECT ecm:uuid FROM File WHERE ecm:fulltext = 'restaurant'";
         res = session.queryAndFetch(query, "NXQL");
         assertEquals(1, res.size());
@@ -397,19 +419,20 @@ public class TestSQLRepositoryFulltextQuery {
         assertEquals(1, res.size());
         res.close();
 
+        // ORDER BY ecm:fulltextScore must always be DESC for DBS
         // without proxies
-        query = "SELECT ecm:uuid FROM File WHERE ecm:fulltext = 'restaurant' AND ecm:isProxy = 0 ORDER BY ecm:fulltextScore";
+        query = "SELECT ecm:uuid FROM File WHERE ecm:fulltext = 'restaurant' AND ecm:isProxy = 0 ORDER BY ecm:fulltextScore DESC";
         res = session.queryAndFetch(query, "NXQL");
         assertEquals(1, res.size());
         res.close();
 
         // same with proxies
-        query = "SELECT ecm:uuid FROM File WHERE ecm:fulltext = 'restaurant' ORDER BY ecm:fulltextScore";
+        query = "SELECT ecm:uuid FROM File WHERE ecm:fulltext = 'restaurant' ORDER BY ecm:fulltextScore DESC";
         res = session.queryAndFetch(query, "NXQL");
         assertEquals(1, res.size());
         res.close();
 
-        query = "SELECT ecm:uuid, ecm:fulltextScore FROM File WHERE ecm:fulltext = 'restaurant' ORDER BY ecm:fulltextScore";
+        query = "SELECT ecm:uuid, ecm:fulltextScore FROM File WHERE ecm:fulltext = 'restaurant' ORDER BY ecm:fulltextScore DESC";
         res = session.queryAndFetch(query, "NXQL");
         assertEquals(1, res.size());
         res.close();
@@ -424,10 +447,10 @@ public class TestSQLRepositoryFulltextQuery {
         }
         // cannot order by score if there's no search
         try {
-            query = "SELECT ecm:uuid FROM File ORDER BY ecm:fulltextScore";
+            query = "SELECT ecm:uuid FROM File ORDER BY ecm:fulltextScore DESC";
             res = session.queryAndFetch(query, "NXQL");
             fail("query should fail");
-        } catch (Exception e) {
+        } catch (QueryParseException e) {
             assertTrue(e.toString(), e.getMessage().contains("ecm:fulltextScore cannot be used without ecm:fulltext"));
         }
     }
@@ -446,6 +469,8 @@ public class TestSQLRepositoryFulltextQuery {
 
     @Test
     public void testFulltextPrefix() throws Exception {
+        assumeTrue("DBS cannot do prefix fulltext search", !isDBS());
+
         createDocs();
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         file1.setPropertyValue("dc:title", "hello world citizens");
@@ -495,6 +520,8 @@ public class TestSQLRepositoryFulltextQuery {
 
     @Test
     public void testFulltextSpuriousCharacters() throws Exception {
+        assumeTrue("DBS cannot remove spurious characters in fulltext search", !isDBS());
+
         createDocs();
         waitForFulltextIndexing();
 
@@ -654,27 +681,27 @@ public class TestSQLRepositoryFulltextQuery {
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world smurf'";
         dml = session.query(query);
-        assertEquals(1, dml.size());
+        assertEquals(1, dml.size()); // MongoDB has different semantics
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world -smurf'";
         dml = session.query(query);
-        assertEquals(2, dml.size());
+        assertEquals(2, dml.size()); // MongoDB has different semantics
 
         query = "SELECT * FROM File WHERE ecm:fulltext = '-smurf world OR pete'";
         dml = session.query(query);
-        assertEquals(2, dml.size());
+        assertEquals(2, dml.size()); // MongoDB has different semantics
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world oyster'";
         dml = session.query(query);
-        assertEquals(2, dml.size());
+        assertEquals(2, dml.size()); // MongoDB has different semantics
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world -oyster'";
         dml = session.query(query);
-        assertEquals(1, dml.size());
+        assertEquals(1, dml.size()); // MongoDB has different semantics
 
         query = "SELECT * FROM File WHERE ecm:fulltext = '-oyster world OR pete'";
         dml = session.query(query);
-        assertEquals(1, dml.size());
+        assertEquals(1, dml.size()); // MongoDB has different semantics
     }
 
     // don't use small words, they are eliminated by some fulltext engines
@@ -749,11 +776,13 @@ public class TestSQLRepositoryFulltextQuery {
         query = "SELECT * FROM Document WHERE ecm:fulltext = 'world'";
         dml = session.query(query);
         assertIdSet(dml, file1.getId(), file2.getId(), file3.getId());
-        // check secondary fulltext index, just for title field
-        query = "SELECT * FROM Document WHERE ecm:fulltext_title = 'world'";
-        dml = session.query(query);
-        assertIdSet(dml, file1.getId(), file3.getId()); // file2 has it in
-                                                        // descr
+
+        // check secondary fulltext index, just for title field (no secondary indexes on MongoDB)
+        if (!isDBS()) {
+            query = "SELECT * FROM Document WHERE ecm:fulltext_title = 'world'";
+            dml = session.query(query);
+            assertIdSet(dml, file1.getId(), file3.getId()); // file2 has it in descr
+        }
 
         // field-based fulltext
         // index exists
@@ -828,6 +857,7 @@ public class TestSQLRepositoryFulltextQuery {
         doc = session.createDocument(doc);
         DocumentRef docRef = doc.getRef();
         session.save();
+        reopenSession();
         waitForAsyncCompletion();
 
         // test setting and reading a map with an empty list
@@ -839,6 +869,7 @@ public class TestSQLRepositoryFulltextQuery {
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
         session.save();
+        reopenSession();
         waitForFulltextIndexing();
 
         // test fulltext indexing of complex property at level one
@@ -856,6 +887,7 @@ public class TestSQLRepositoryFulltextQuery {
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
         session.saveDocument(doc);
         session.save();
+        reopenSession();
         waitForFulltextIndexing();
 
         // test fulltext indexing of complex property at level 3
@@ -875,6 +907,7 @@ public class TestSQLRepositoryFulltextQuery {
         doc.setPropertyValue("cmpf:attachedFile/vignettes", new ArrayList<Map<String, Object>>());
         session.saveDocument(doc);
         session.save();
+        reopenSession();
         waitForFulltextIndexing();
 
         results = session.query("SELECT * FROM Document" + " WHERE ecm:fulltext = 'vignettelabel'", 2);
