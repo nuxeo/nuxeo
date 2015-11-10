@@ -1,16 +1,21 @@
 package org.nuxeo.ecm.platform.importer.executor.jaxrs;
 
+import org.apache.commons.io.IOUtils;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
+import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
+import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
+import org.nuxeo.runtime.api.Framework;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-
-import org.apache.commons.io.IOUtils;
-import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
-import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
-import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 @Produces("text/plain; charset=UTF-8")
 public abstract class AbstractJaxRSImporterExecutor extends AbstractImporterExecutor {
@@ -67,6 +72,23 @@ public abstract class AbstractJaxRSImporterExecutor extends AbstractImporterExec
     @Path("kill")
     public String kill() {
         return super.kill();
+    }
+
+    @GET
+    @Path("waitForAsyncJobs")
+    public Response waitForAsyncJobs(@QueryParam("timeoutInSeconds") Integer timeoutInSeconds) {
+        WorkManager workManager = Framework.getService(WorkManager.class);
+        if (timeoutInSeconds == null) {
+            timeoutInSeconds = 120;
+        }
+        try {
+            if (workManager.awaitCompletion(timeoutInSeconds, TimeUnit.SECONDS)) {
+                return Response.ok().build();
+            }
+        } catch (InterruptedException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Interrupted").build();
+        }
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Timeout").build();
     }
 
 }
