@@ -46,14 +46,11 @@
   </target>
 
   <target name="add-bench-template" if="osfamily-unix">
-    <echo level="info">Add bench template to nuxeo.conf</echo>
-    <copy todir="${nuxeo.home}/templates">
-      <fileset dir="src/test/resources/templates" />
-    </copy>
+    <echo level="info">Add perf template to nuxeo.conf</echo>
     <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl" />
     <exec executable="sh" failonerror="true">
       <arg value="-c" />
-      <arg value="${nuxeo.home}/bin/nuxeoctl config --set nuxeo.templates  &quot;$(${nuxeo.home}/bin/nuxeoctl config --get nuxeo.templates -q),${bench.template}&quot;" />
+      <arg value="${nuxeo.home}/bin/nuxeoctl config --set nuxeo.templates  &quot;$(${nuxeo.home}/bin/nuxeoctl config --get nuxeo.templates -q),perf&quot;" />
     </exec>
   </target>
 
@@ -62,15 +59,7 @@
       <param name="name" value="JAVA_OPTS" />
       <param name="value" value="$JAVA_OPTS -Xms3g -Xmx3g -XX:SoftRefLRUPolicyMSPerMB=5" />
     </antcall>
-    <antcall target="set-conf">
-      <param name="name" value="nuxeo.db.max-pool-size" />
-      <param name="value" value="52" />
-    </antcall>
-    <antcall target="set-conf">
-      <param name="name" value="nuxeo.vcs.max-pool-size" />
-      <param name="value" value="50" />
-    </antcall>
-  </target>
+ </target>
 
   <target name="prepare-environment"
           depends="_init,prepare-db,prepare-tomcat,prepare-jboss,prepare-ear,prepare-monitor"

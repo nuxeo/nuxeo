@@ -1,0 +1,20 @@
+perf.target=.
+
+# Use a bigger pool size for db/vcs
+nuxeo.db.max-pool-size=52
+nuxeo.vcs.max-pool-size=50
+
+# Use a descent cache size for directories
+nuxeo.cache.maxsize=510
+nuxeo.cache.ttl=20
+nuxeo.cache.concurrencylevel=50
+
+# Use Elasticsearch for all page provider
+elasticsearch.override.pageproviders=default_search,document_content,section_content,document_content,tree_children,default_document_suggestion,simple_search,advanced_search,nxql_search,DEFAULT_DOCUMENT_SUGGESTION
+
+# Disable db fulltext indexing
+nuxeo.vcs.fulltext.search.disabled=true
+
+# Disable db stored procedure
+nuxeo.vcs.optimizations.acl.enabled=false
+nuxeo.vcs.optimizations.path.enabled=false
