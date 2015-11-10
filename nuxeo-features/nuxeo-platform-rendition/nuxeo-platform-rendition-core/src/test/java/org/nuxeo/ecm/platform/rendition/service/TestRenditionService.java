@@ -330,6 +330,13 @@ public class TestRenditionService {
             Rendition totoRendition = getRendition(folder, renditionName, true, isLazy);
             assertTrue(totoRendition.isStored());
             assertNotEquals(renditionDocument.getRef(), totoRendition.getHostDocument().getRef());
+
+            // verify Administrator's rendition is larger than user's rendition
+            assertNotEquals(rendition.getHostDocument().getRef(), totoRendition.getHostDocument().getRef());
+            long adminZipEntryCount = countZipEntries(new ZipInputStream(rendition.getBlob().getStream()));
+            long totoZipEntryCount = countZipEntries(new ZipInputStream(totoRendition.getBlob().getStream()));
+            assertTrue(String.format("Admin rendition entry count %s should be greater than user rendition entry count %s",
+                    adminZipEntryCount, totoZipEntryCount), adminZipEntryCount > totoZipEntryCount);
         }
 
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
