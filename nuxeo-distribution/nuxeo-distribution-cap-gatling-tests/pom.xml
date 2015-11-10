@@ -86,9 +86,6 @@
   <profiles>
     <profile>
       <id>bench</id>
-      <properties>
-        <bench.template>bench</bench.template>
-      </properties>
       <build>
         <plugins>
           <plugin>
@@ -250,13 +247,7 @@
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>perf</id>
-      <properties>
-        <bench.template>perf</bench.template>
-      </properties>
-    </profile>
-    <profile>
+   <profile>
       <id>monitor</id>
     </profile>
     <profile>
