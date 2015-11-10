@@ -90,7 +90,7 @@
       <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
       <cacheSize>10</cacheSize>
       <resultLayouts>
-        <layout name="dashboard_document_listing" showCSVExport="false"
+        <layout name="dashboard_published_documents_listing" showCSVExport="false"
           showPDFExport="false" showSyndicationLinks="false" />
       </resultLayouts>
     </contentView>
