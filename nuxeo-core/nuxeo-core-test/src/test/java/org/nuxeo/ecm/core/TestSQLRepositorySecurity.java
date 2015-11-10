@@ -49,8 +49,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -97,6 +99,10 @@ public class TestSQLRepositorySecurity {
 
     protected CoreSession openSessionAs(String username) {
         return CoreInstance.openCoreSession(session.getRepositoryName(), username);
+    }
+
+    protected CoreSession openSessionAs(NuxeoPrincipal principal) {
+        return CoreInstance.openCoreSession(session.getRepositoryName(), principal);
     }
 
     // overridden to test with allowed negative properties
@@ -604,6 +610,158 @@ public class TestSQLRepositorySecurity {
             // Check that the ACLR has been added to the user cache
             list = bobSession.query("SELECT * FROM Folder");
             assertEquals(1, list.size());
+        }
+    }
+
+    @Test
+    public void testReadAclAfterSetACP() {
+        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = new DocumentModelImpl("/folder", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // nothing can be seen by joe
+        try (CoreSession joeSession = openSessionAs("joe")) {
+            DocumentModelList list = joeSession.query("SELECT * FROM Folder");
+            assertEquals(0, list.size());
+            list = joeSession.query("SELECT * FROM File");
+            assertEquals(0, list.size());
+        }
+
+        // set ACL on folder
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Everyone", "Read", true));
+        ACP acp = new ACPImpl();
+        acp.addACL(acl);
+        folder.setACP(acp, true);
+        session.save();
+
+        // now joe sees things
+        try (CoreSession joeSession = openSessionAs("joe")) {
+            DocumentModelList list = joeSession.query("SELECT * FROM Folder");
+            assertEquals(1, list.size());
+            assertEquals(folder.getId(), list.get(0).getId());
+            list = joeSession.query("SELECT * FROM File");
+            assertEquals(1, list.size());
+            assertEquals(doc.getId(), list.get(0).getId());
+        }
+    }
+
+    @Test
+    public void testReadAclAfterCreate() {
+        DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        session.save();
+
+        // folder can be seen by a member
+        UserPrincipal joeMember = new UserPrincipal("joe", Arrays.asList("Everyone", "members"), false, false);
+        try (CoreSession joeSession = openSessionAs(joeMember)) {
+            DocumentModelList list = joeSession.query("SELECT * FROM Folder");
+            assertEquals(1, list.size());
+            assertEquals(folder.getId(), list.get(0).getId());
+        }
+
+        // but not as a non-member
+        try (CoreSession joeSession = openSessionAs("joe")) {
+            DocumentModelList list = joeSession.query("SELECT * FROM Folder");
+            assertEquals(0, list.size());
+        }
+
+        // set ACL on folder
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Everyone", "Read", true));
+        ACP acp = new ACPImpl();
+        acp.addACL(acl);
+        folder.setACP(acp, true);
+        session.save();
+
+        // the folder can be seen by joe
+        try (CoreSession joeSession = openSessionAs("joe")) {
+            DocumentModelList list = joeSession.query("SELECT * FROM Folder");
+            assertEquals(1, list.size());
+            assertEquals(folder.getId(), list.get(0).getId());
+        }
+
+        // create a doc under the folder
+        DocumentModel doc = new DocumentModelImpl("/folder", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // the doc can be seen by joe
+        try (CoreSession joeSession = openSessionAs("joe")) {
+            DocumentModelList list = joeSession.query("SELECT * FROM File");
+            assertEquals(1, list.size());
+            assertEquals(doc.getId(), list.get(0).getId());
+        }
+    }
+
+    @Test
+    public void testReadAclAfterMove() {
+        DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
+        folder1 = session.createDocument(folder1);
+        DocumentModel folder2 = new DocumentModelImpl("/", "folder2", "Folder");
+        folder2 = session.createDocument(folder2);
+        DocumentModel doc = new DocumentModelImpl("/folder1", "doc", "File");
+        doc = session.createDocument(doc);
+
+        // set ACL on folder2
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Everyone", "Read", true));
+        ACP acp = new ACPImpl();
+        acp.addACL(acl);
+        folder2.setACP(acp, true);
+        session.save();
+
+        // doc under folder1 cannot be read by joe
+        try (CoreSession joeSession = openSessionAs("joe")) {
+            DocumentModelList list = joeSession.query("SELECT * FROM File");
+            assertEquals(0, list.size());
+        }
+
+        // move doc under folder2
+        session.move(doc.getRef(), folder2.getRef(), null);
+        session.save();
+
+        // check doc now readable by joe
+        try (CoreSession joeSession = openSessionAs("joe")) {
+            DocumentModelList list = joeSession.query("SELECT * FROM File");
+            assertEquals(1, list.size());
+        }
+    }
+
+    @Test
+    public void testReadAclAfterCopy() {
+        DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
+        folder1 = session.createDocument(folder1);
+        DocumentModel folder2 = new DocumentModelImpl("/", "folder2", "Folder");
+        folder2 = session.createDocument(folder2);
+        DocumentModel doc = new DocumentModelImpl("/folder1", "doc", "File");
+        doc = session.createDocument(doc);
+
+        // set ACL on folder2
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Everyone", "Read", true));
+        ACP acp = new ACPImpl();
+        acp.addACL(acl);
+        folder2.setACP(acp, true);
+        session.save();
+
+        // doc under folder1 cannot be read by joe
+        try (CoreSession joeSession = openSessionAs("joe")) {
+            DocumentModelList list = joeSession.query("SELECT * FROM File");
+            assertEquals(0, list.size());
+        }
+
+        // copy doc under folder2
+        session.copy(doc.getRef(), folder2.getRef(), "doccopy");
+        session.save();
+
+        // check doc copy now readable by joe
+        try (CoreSession joeSession = openSessionAs("joe")) {
+            DocumentModelList list = joeSession.query("SELECT * FROM File");
+            assertEquals(1, list.size());
+            assertEquals("doccopy", list.get(0).getName());
         }
     }
 

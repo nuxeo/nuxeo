@@ -105,6 +105,10 @@ public class TestSQLRepositoryQuery {
 
     protected boolean proxies;
 
+    protected boolean isDBS() {
+        return coreFeature.getStorageConfiguration().isDBS();
+    }
+
     protected void waitForFulltextIndexing() {
         nextTransaction();
         coreFeature.getStorageConfiguration().waitForFulltextIndexing();
@@ -117,6 +121,13 @@ public class TestSQLRepositoryQuery {
         }
     }
 
+    /**
+     * Query of NOT (something) matches docs where (something) did not match because the field was null.
+     */
+    public boolean notMatchesNull() {
+        return isDBS();
+    }
+
     // ---------------------------------------
 
     protected Calendar getCalendar(int year, int month, int day, int hours, int minutes, int seconds) {
@@ -127,12 +138,14 @@ public class TestSQLRepositoryQuery {
         cal.set(Calendar.HOUR_OF_DAY, hours);
         cal.set(Calendar.MINUTE, minutes);
         cal.set(Calendar.SECOND, seconds);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal;
     }
 
     /**
      * Creates the following structure of documents:
      *
+     * VCS:
      * <pre>
      *  root (UUID_1)
      *  |- testfolder1 (UUID_2)
@@ -142,6 +155,18 @@ public class TestSQLRepositoryQuery {
      *  \- tesfolder2 (UUID_8)
      *     \- testfolder3 (UUID_9)
      *        \- testfile4 (UUID_10) (content UUID_11)
+     * </pre>
+     *
+     * DBS:
+     * <pre>
+     *  root (UUID_0)
+     *  |- testfolder1 (UUID_1)
+     *  |  |- testfile1 (UUID_2)
+     *  |  |- testfile2 (UUID_3)
+     *  |  \- testfile3 (UUID_4) (Note)
+     *  \- tesfolder2 (UUID_5)
+     *     \- testfolder3 (UUID_6)
+     *        \- testfile4 (UUID_7)
      * </pre>
      */
     protected void createDocs() throws Exception {
@@ -200,9 +225,9 @@ public class TestSQLRepositoryQuery {
     /**
      * Publishes testfile4 to testfolder1:
      * <p>
-     * version (UUID_12, content UUID_13)
+     * VCS: version (UUID_12, content UUID_13), proxy (UUID_14)
      * <p>
-     * proxy (UUID_14)
+     * DBS: version (UUID_8), proxy (UUID_9)
      */
     protected DocumentModel publishDoc() throws Exception {
         DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
@@ -317,10 +342,10 @@ public class TestSQLRepositoryQuery {
         assertEquals(5, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:title NOT ILIKE 'foo%'");
-        assertEquals(5, dml.size());
+        assertEquals(notMatchesNull() ? 7 : 5, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:title NOT ILIKE 'Foo%'");
-        assertEquals(5, dml.size());
+        assertEquals(notMatchesNull() ? 7 : 5, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:subjects ILIKE '%oo'");
         assertEquals(1, dml.size());
@@ -826,6 +851,8 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testQueryConstantsLeft() throws Exception {
+        assumeTrue("DBS cannot query const = const", !isDBS());
+
         String sql;
         DocumentModelList dml;
         createDocs();
@@ -2855,7 +2882,10 @@ public class TestSQLRepositoryQuery {
         clause = "tst:subjects/*1 = 'foo' ORDER BY tst:subjects/*1";
         try {
             session.query(SELECT_WHERE + clause);
-            fail();
+            if (coreFeature.getStorageConfiguration().isVCS()) {
+                // ORDER BY tst:subjects works on MongoDB
+                fail();
+            }
         } catch (QueryParseException e) {
             String expected = "Failed to execute query: "
                     + "SELECT * FROM TestDoc WHERE ecm:isProxy = 0 AND tst:subjects/*1 = 'foo' ORDER BY tst:subjects/*1"
@@ -2871,6 +2901,8 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testQueryDistinct() throws Exception {
+        assumeTrue("DBS cannot do DISTINCT", !isDBS());
+
         makeComplexDoc();
 
         String clause;
