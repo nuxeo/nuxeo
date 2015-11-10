@@ -1388,7 +1388,7 @@
           <widget>mail.transport.auth</widget>
         </row>
         <row>
-          <widget>mail.transport.username</widget>
+          <widget>mail.transport.user</widget>
         </row>
         <row>
           <widget>mail.transport.password</widget>
@@ -1548,13 +1548,13 @@
           <property name="ajaxSingle">true</property>
         </properties>
       </widget>
-      <widget name="mail.transport.username" type="text">
+      <widget name="mail.transport.user" type="text">
         <labels>
           <label mode="any">label.setup.mail.transport.user</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>['mail.transport.username']</field>
+          <field>['mail.transport.user']</field>
         </fields>
         <properties widgetMode="any">
           <property name="rendered">
