@@ -27,6 +27,8 @@ nuxeo.vcs.fulltext.search.disabled=false
 nuxeo.vcs.noddl=false
 nuxeo.vcs.idtype=varchar
 nuxeo.vcs.fulltext.analyzer.language=english
+nuxeo.vcs.optimizations.acl.enabled=true
+nuxeo.vcs.optimizations.path.enabled=true
 
 # Mail server
 mail.store.protocol=pop3
