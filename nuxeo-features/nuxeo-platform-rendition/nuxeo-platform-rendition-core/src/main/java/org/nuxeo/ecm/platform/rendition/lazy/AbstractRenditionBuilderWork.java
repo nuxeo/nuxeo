@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -34,6 +35,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.rendition.service.RenditionServiceImpl;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -85,7 +87,7 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
 
     @Override
     public void work() {
-        session = CoreInstance.openCoreSession(repositoryName, originatingUsername);
+        initSession(repositoryName, originatingUsername);
         DocumentModel doc = session.getDocument(docRef);
 
         RenditionService rs = Framework.getService(RenditionService.class);
@@ -101,6 +103,12 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
         }
         ts.putBlobs(key, blobs);
         ts.setCompleted(key, true);
+    }
+
+    protected void initSession(String repositoryName, String username) {
+        UserManager um = Framework.getService(UserManager.class);
+        NuxeoPrincipal principal = um.getPrincipal(username);
+        session = CoreInstance.openCoreSession(repositoryName, principal);
     }
 
     /**
