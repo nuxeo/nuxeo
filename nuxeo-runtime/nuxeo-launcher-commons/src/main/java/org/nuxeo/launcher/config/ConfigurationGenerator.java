@@ -324,6 +324,7 @@ public class ConfigurationGenerator {
             put("mail.smtp.host", "mail.transport.host");
             put("mail.smtp.port", "mail.transport.port");
             put("mail.smtp.username", "mail.transport.username");
+            put("mail.transport.username", "mail.transport.user");
             put("mail.smtp.password", "mail.transport.password");
             put("mail.smtp.usetls", "mail.transport.usetls");
             put("mail.smtp.auth", "mail.transport.auth");
