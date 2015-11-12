@@ -37,6 +37,12 @@ public class LazyBinary extends Binary {
         this.cbm = cbm;
     }
 
+    public LazyBinary(String digest, long length, String repoName, CachingBinaryManager cbm) {
+        this(digest, repoName, cbm);
+        this.length = length;
+        hasLength = true;
+    }
+
     // because the class is Serializable, re-acquire the CachingBinaryManager
     protected CachingBinaryManager getCachingBinaryManager() {
         if (cbm == null) {
@@ -58,16 +64,15 @@ public class LazyBinary extends Binary {
 
     @Override
     public File getFile() {
-        if (file == null) {
-            try {
-                file = getCachingBinaryManager().getFile(digest);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            if (file != null) {
-                length = file.length();
-                hasLength = true;
-            }
+        File file;
+        try {
+            file = getCachingBinaryManager().getFile(digest);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (file != null) {
+            length = file.length();
+            hasLength = true;
         }
         return file;
     }
