@@ -124,6 +124,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
             in.close();
             out.close();
         }
+        long length = tmp.length();
 
         File cachedFile = fileCache.getFile(digest);
         if (cachedFile != null) {
@@ -133,27 +134,18 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
             }
             // delete tmp file, not needed anymore
             tmp.delete();
-            return new Binary(cachedFile, digest, blobProviderId);
+        } else {
+            // send the file to storage
+            fileStorage.storeFile(digest, tmp);
+            // register the file in the file cache
+            fileCache.putFile(digest, tmp);
         }
-
-        // send the file to storage
-        fileStorage.storeFile(digest, tmp);
-
-        // register the file in the file cache if all went well
-        File file = fileCache.putFile(digest, tmp);
-
-        return new Binary(file, digest, blobProviderId);
+        return new LazyBinary(digest, length, blobProviderId, this);
     }
 
     @Override
     public Binary getBinary(String digest) {
-        // Check in the cache
-        File file = fileCache.getFile(digest);
-        if (file == null) {
-            return new LazyBinary(digest, blobProviderId, this);
-        } else {
-            return new Binary(file, digest, blobProviderId);
-        }
+        return new LazyBinary(digest, blobProviderId, this);
     }
 
     /* =============== Methods used by LazyBinary =============== */
