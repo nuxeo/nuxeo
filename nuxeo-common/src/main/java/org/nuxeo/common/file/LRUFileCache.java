@@ -22,61 +22,64 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.map.ReferenceMap;
-import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * A LRU cache of {@link File}s with capped filesystem size.
+ * A LRU cache of {@link File}s with maximum filesystem size.
  * <p>
- * When a new file is put in the cache, if the total size becomes more that the maximum size then least recently access
- * entries are removed until the new file fits.
- * <p>
- * A file will never be actually removed from the filesystem while the File object returned by {@link #getFile} is still
- * referenced.
+ * Cache entries that are old enough and whose size makes the cache bigger than its maximum size are deleted.
  * <p>
  * The cache keys are restricted to a subset of ASCII: letters, digits and dashes. Usually a MD5 or SHA1 hash is used.
  */
 public class LRUFileCache implements FileCache {
 
+    private static final Log log = LogFactory.getLog(LRUFileCache.class);
+
     /** Allowed key pattern, used as file path. */
     public static final Pattern SIMPLE_ASCII = Pattern.compile("[-_a-zA-Z0-9]+");
 
-    protected final File dir;
+    private static final String TMP_PREFIX = "nxbin_";
+
+    private static final String TMP_SUFFIX = ".tmp";
+
+    // not final for tests
+    public static long MIN_AGE_MILLIS = 3600 * 1000; // 1h
+
+    protected static class PathInfo implements Comparable<PathInfo> {
+
+        protected final Path path;
+
+        protected final long time;
+
+        protected final long size;
+
+        public PathInfo(Path path) throws IOException {
+            this.path = path;
+            this.time = Files.getLastModifiedTime(path).toMillis();
+            this.size = Files.size(path);
+        }
+
+        @Override
+        public int compareTo(PathInfo other) {
+            return Long.compare(other.time, time); // compare in reverse order (most recent first)
+        }
+    }
+
+    protected final Path dir;
 
     protected final long maxSize;
-
-    /** Cached files. */
-    protected final Map<String, LRUFileCacheEntry> cache;
-
-    /**
-     * Referenced files on the filesystem. Contains all the cached files, plus all those that have been marked for
-     * deletion but haven't been deleted yet. Because of the latter, this is a weak value map.
-     */
-    protected final Map<String, File> files;
-
-    /** Size of the cached files. */
-    protected long cacheSize;
-
-    /** Most recently used entries from the cache are first. */
-    protected final LinkedList<String> lru;
-
-    // this creates a new thread
-    private static final FileCleaningTracker fileCleaningTracker = new FileCleaningTracker();
-
-    /**
-     * In-memory entry for a cached file.
-     */
-    protected static class LRUFileCacheEntry {
-        public File file;
-
-        public long size;
-    }
 
     /**
      * Constructs a cache in the given directory with the given maximum size (in bytes).
@@ -84,32 +87,118 @@ public class LRUFileCache implements FileCache {
      * @param dir the directory to use to store cached files
      * @param maxSize the maximum size of the cache (in bytes)
      */
-    @SuppressWarnings("unchecked")
     public LRUFileCache(File dir, long maxSize) {
-        this.dir = dir;
+        this.dir = dir.toPath();
         this.maxSize = maxSize;
-        cache = new HashMap<String, LRUFileCacheEntry>();
-        // use a weak reference for the values: don't hold values longer than
-        // they need to be referenced elsewhere
-        files = new ReferenceMap(ReferenceMap.HARD, ReferenceMap.WEAK);
-        lru = new LinkedList<String>();
+    }
+
+    /**
+     * Filter keeping regular files that aren't temporary.
+     */
+    protected static class RegularFileFilter implements DirectoryStream.Filter<Path> {
+
+        protected static final RegularFileFilter INSTANCE = new RegularFileFilter();
+
+        @Override
+        public boolean accept(Path path) {
+            if (!Files.isRegularFile(path)) {
+                return false;
+            }
+            String filename = path.getFileName().toString();
+            if (filename.startsWith(TMP_PREFIX) && filename.endsWith(TMP_SUFFIX)) {
+                return false;
+            }
+            return true;
+        }
     }
 
     @Override
     public long getSize() {
-        return cacheSize;
+        long size = 0;
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir, RegularFileFilter.INSTANCE)) {
+            for (Path path : ds) {
+                size += Files.size(path);
+            }
+        } catch (IOException e) {
+            log.error(e, e);
+        }
+        return size;
     }
 
     @Override
     public int getNumberOfItems() {
-        return lru.size();
+        int count = 0;
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir, RegularFileFilter.INSTANCE)) {
+            for (Path path : ds) {
+                count++;
+            }
+        } catch (IOException e) {
+            log.error(e, e);
+        }
+        return count;
+    }
+
+    @Override
+    public synchronized void clear() {
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir, RegularFileFilter.INSTANCE)) {
+            for (Path path : ds) {
+                try {
+                    Files.delete(path);
+                } catch (IOException e) {
+                    log.error(e, e);
+                }
+            }
+        } catch (IOException e) {
+            log.error(e, e);
+        }
+    }
+
+    /**
+     * Clears cache entries if they are old enough and their size makes the cache bigger than its maximum size.
+     */
+    protected void clearOldEntries() {
+        List<PathInfo> files = new ArrayList<>();
+        try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir, RegularFileFilter.INSTANCE)) {
+            for (Path path : ds) {
+                try {
+                    files.add(new PathInfo(path));
+                } catch (IOException e) {
+                    log.error(e, e);
+                }
+            }
+        } catch (IOException e) {
+            log.error(e, e);
+        }
+        Collections.sort(files); // sort by most recent first
+
+        long size = 0;
+        long threshold = System.currentTimeMillis() - MIN_AGE_MILLIS;
+        for (PathInfo pi : files) {
+            size += pi.size;
+            if (pi.time < threshold) {
+                // old enough to be candidate
+                if (size > maxSize) {
+                    // delete file
+                    try {
+                        Files.delete(pi.path);
+                        size -= pi.size;
+                    } catch (IOException e) {
+                        log.error(e, e);
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public File getTempFile() throws IOException {
-        File tmp = File.createTempFile("nxbin_", null, dir);
-        tmp.deleteOnExit();
-        return tmp;
+        return Files.createTempFile(dir, TMP_PREFIX, TMP_SUFFIX).toFile();
+    }
+
+    protected void checkKey(String key) throws IllegalArgumentException {
+        if (!SIMPLE_ASCII.matcher(key).matches() || ".".equals(key) || "..".equals(key)) {
+            throw new IllegalArgumentException("Invalid key: " + key);
+        }
     }
 
     /**
@@ -119,33 +208,25 @@ public class LRUFileCache implements FileCache {
      */
     @Override
     public synchronized File putFile(String key, InputStream in) throws IOException {
+        File tmp;
         try {
             // check the cache
-            LRUFileCacheEntry entry = cache.get(key);
-            if (entry != null) {
-                return entry.file;
-            }
-
-            // maybe the cache entry was just deleted but the file is still
-            // there?
-            File file = files.get(key);
-            if (file != null) {
-                // use not-yet-deleted file
-                return putFileInCache(key, file);
+            checkKey(key);
+            Path path = dir.resolve(key);
+            if (Files.exists(path)) {
+                recordAccess(path);
+                return path.toFile();
             }
 
             // store the stream in a temporary file
-            file = getTempFile();
-            FileOutputStream out = new FileOutputStream(file);
-            try {
+            tmp = getTempFile();
+            try (FileOutputStream out = new FileOutputStream(tmp)) {
                 IOUtils.copy(in, out);
-            } finally {
-                out.close();
             }
-            return putFile(key, file);
         } finally {
             in.close();
         }
+        return putFile(key, tmp);
     }
 
     /**
@@ -155,102 +236,45 @@ public class LRUFileCache implements FileCache {
      */
     @Override
     public synchronized File putFile(String key, File file) throws IllegalArgumentException, IOException {
-        // check the cache
-        LRUFileCacheEntry entry = cache.get(key);
-        if (entry != null) {
-            file.delete(); // tmp file not used
-            return entry.file;
-        }
+        Path source = file.toPath();
 
-        // maybe the cache entry was just deleted but the file is still
-        // there?
-        File dest = files.get(key);
-        if (dest != null) {
-            // use not-yet-deleted file
-            return putFileInCache(key, dest);
-        }
-
-        // put file in cache with standard name
+        // put file in cache
         checkKey(key);
-        dest = new File(dir, key);
-        if (!file.renameTo(dest)) {
+        Path path = dir.resolve(key);
+        try {
+            Files.move(source, path);
+            recordAccess(path);
+            clearOldEntries();
+        } catch (FileAlreadyExistsException faee) {
             // already something there
-            file.delete();
+            recordAccess(path);
+            // remove unused tmp file
+            try {
+                Files.delete(source);
+            } catch (IOException e) {
+                log.error(e, e);
+            }
         }
-        return putFileInCache(key, dest);
-    }
-
-    /**
-     * Puts a file that's already in the correct filesystem location in the internal cache datastructures.
-     */
-    protected File putFileInCache(String key, File file) {
-        // remove oldest entries until size fits
-        long size = file.length();
-        ensureCapacity(size);
-
-        // put new entry in cache
-        LRUFileCacheEntry entry = new LRUFileCacheEntry();
-        entry.size = size;
-        entry.file = file;
-        add(key, entry);
-
-        return file;
-    }
-
-    protected void checkKey(String key) throws IllegalArgumentException {
-        if (!SIMPLE_ASCII.matcher(key).matches() || ".".equals(key) || "..".equals(key)) {
-            throw new IllegalArgumentException("Invalid key: " + key);
-        }
+        return path.toFile();
     }
 
     @Override
     public synchronized File getFile(String key) {
-        // check the cache
-        LRUFileCacheEntry entry = cache.get(key);
-        if (entry != null) {
-            // note access in most recently used list
-            recordAccess(key);
-            return entry.file;
+        checkKey(key);
+        Path path = dir.resolve(key);
+        if (!Files.exists(path)) {
+            return null;
         }
-
-        // maybe the cache entry was just deleted but the file is still
-        // there?
-        return files.get(key);
+        recordAccess(path);
+        return path.toFile();
     }
 
-    @Override
-    public synchronized void clear() {
-        for (String key : lru) {
-            remove(key);
-        }
-        lru.clear();
-        cache.clear();
-        files.clear();
-    }
-
-    protected void recordAccess(String key) {
-        lru.remove(key); // TODO does a linear scan
-        lru.addFirst(key);
-    }
-
-    protected void add(String key, LRUFileCacheEntry entry) {
-        cache.put(key, entry);
-        files.put(key, entry.file);
-        lru.addFirst(key);
-        cacheSize += entry.size;
-    }
-
-    protected void remove(String key) {
-        LRUFileCacheEntry entry = cache.remove(key);
-        // don't remove from files here, the GC will do it
-        cacheSize -= entry.size;
-        // delete file when not referenced anymore
-        fileCleaningTracker.track(entry.file, entry.file);
-    }
-
-    protected void ensureCapacity(long size) {
-        while (cacheSize + size > maxSize && !lru.isEmpty()) {
-            remove(lru.removeLast());
+    /** Records access to a file by changing its modification time. */
+    protected void recordAccess(Path path) {
+        try {
+            Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
+        } catch (IOException e) {
+            log.error(e, e);
         }
     }
 

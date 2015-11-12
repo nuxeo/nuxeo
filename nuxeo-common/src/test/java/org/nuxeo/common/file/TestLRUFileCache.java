@@ -34,15 +34,20 @@ public class TestLRUFileCache {
 
     public File dir;
 
+    public long oldMinAgeMillis;
+
     @Before
     public void setUp() throws Exception {
         dir = File.createTempFile("nxtestlrufilecache.", "");
         dir.delete();
         dir.mkdir();
+        oldMinAgeMillis = LRUFileCache.MIN_AGE_MILLIS;
+        LRUFileCache.MIN_AGE_MILLIS = 1000; // filesystem timee often has 1s granularity
     }
 
     @After
     public void tearDown() throws Exception {
+        LRUFileCache.MIN_AGE_MILLIS = oldMinAgeMillis;
         FileUtils.deleteTree(dir);
     }
 
@@ -62,117 +67,58 @@ public class TestLRUFileCache {
         assertEquals(0, cache.getNumberOfItems());
 
         byte[] buf = new byte[30];
+
         cache.putFile("1", new ByteArrayInputStream(buf));
         assertEquals(1, cache.getNumberOfItems());
         assertEquals(30, cache.getSize());
         assertEquals(30, getDirSize());
-        File[] held = new File[1];
-        held[0] = cache.putFile("2", new ByteArrayInputStream(buf));
+        assertTrue(new File(dir, "1").exists());
+
+        Thread.sleep(2000);
+        cache.putFile("2", new ByteArrayInputStream(buf));
         assertEquals(2, cache.getNumberOfItems());
         assertEquals(60, cache.getSize());
         assertEquals(60, getDirSize());
+        assertTrue(new File(dir, "1").exists());
+        assertTrue(new File(dir, "2").exists());
+
+        Thread.sleep(2000);
         cache.putFile("3", new ByteArrayInputStream(buf));
         assertEquals(3, cache.getNumberOfItems());
         assertEquals(90, cache.getSize());
         assertEquals(90, getDirSize());
+        assertTrue(new File(dir, "1").exists());
+        assertTrue(new File(dir, "2").exists());
+        assertTrue(new File(dir, "3").exists());
+
+        Thread.sleep(2000);
         cache.putFile("4", new ByteArrayInputStream(buf));
         assertEquals(3, cache.getNumberOfItems());
         assertEquals(90, cache.getSize());
-        System.gc();
-        Thread.sleep(1000);
         assertEquals(90, getDirSize());
         assertFalse(new File(dir, "1").exists());
-
-        // again while keep the "2" referenced
-        cache.putFile("5", new ByteArrayInputStream(buf));
-        assertEquals(3, cache.getNumberOfItems());
-        assertEquals(90, cache.getSize());
-        System.gc();
-        Thread.sleep(1000);
-        assertEquals(120, getDirSize()); // one file non deleted
         assertTrue(new File(dir, "2").exists());
-        // clear reference
-        held[0] = null;
-        System.gc();
-        Thread.sleep(1000);
-        assertEquals(90, getDirSize());
-        assertFalse(new File(dir, "2").exists());
+        assertTrue(new File(dir, "3").exists());
+        assertTrue(new File(dir, "4").exists());
 
         // store something bigger than the whole cache
         buf = new byte[150];
-        cache.putFile("6", new ByteArrayInputStream(buf));
+
+        Thread.sleep(2000);
+        cache.putFile("5", new ByteArrayInputStream(buf));
         assertEquals(1, cache.getNumberOfItems());
         assertEquals(150, cache.getSize());
-        System.gc();
-        Thread.sleep(1000);
         assertEquals(150, getDirSize());
-        assertFalse(new File(dir, "5").exists());
-        assertTrue(new File(dir, "6").exists());
+        assertFalse(new File(dir, "2").exists());
+        assertFalse(new File(dir, "3").exists());
+        assertFalse(new File(dir, "4").exists());
+        assertTrue(new File(dir, "5").exists());
 
         // clear
         cache.clear();
         assertEquals(0, cache.getNumberOfItems());
         assertEquals(0, cache.getSize());
-        System.gc();
-        Thread.sleep(1000);
         assertEquals(0, getDirSize());
-    }
-
-    @Test
-    public void testLRUFileCachePrematureRemoval() throws Exception {
-        LRUFileCache cache = new LRUFileCache(dir, 100);
-
-        File[] held = new File[2];
-        byte[] buf = new byte[80];
-        held[0] = cache.putFile("1", new ByteArrayInputStream(buf));
-        assertEquals(1, cache.getNumberOfItems());
-        assertEquals(80, cache.getSize());
-        assertEquals(80, getDirSize());
-        cache.putFile("2", new ByteArrayInputStream(buf));
-        assertEquals(1, cache.getNumberOfItems());
-        assertEquals(80, cache.getSize());
-        assertEquals(160, getDirSize()); // not GCed because referenced
-        System.gc();
-        Thread.sleep(1000);
-        assertEquals(1, cache.getNumberOfItems());
-        assertEquals(80, cache.getSize());
-        assertEquals(160, getDirSize()); // still not GCed
-        assertTrue(new File(dir, "1").exists());
-        assertTrue(new File(dir, "2").exists());
-
-        // make new reference to "1"
-        held[1] = cache.putFile("1", new ByteArrayInputStream(buf));
-        assertEquals(1, cache.getNumberOfItems());
-        assertEquals(80, cache.getSize());
-        assertEquals(160, getDirSize());
-        assertTrue(new File(dir, "1").exists());
-        assertTrue(new File(dir, "2").exists());
-
-        // clear first reference and make GC run
-        // file "1" should not be deleted as a new reference to it was made
-        held[0] = null;
-        System.gc();
-        Thread.sleep(1000);
-        assertEquals(1, cache.getNumberOfItems());
-        assertEquals(80, cache.getSize());
-        assertEquals(80, getDirSize());
-        assertTrue(new File(dir, "1").exists());
-
-        // new file evicting "1"
-        cache.putFile("2", new ByteArrayInputStream(buf));
-        assertEquals(1, cache.getNumberOfItems());
-        assertEquals(80, cache.getSize());
-        assertEquals(160, getDirSize()); // not GCed because referenced
-
-        // clear second reference and make GC run
-        held[1] = null;
-        System.gc();
-        Thread.sleep(1000);
-        assertEquals(1, cache.getNumberOfItems());
-        assertEquals(80, cache.getSize());
-        assertEquals(80, getDirSize());
-        assertFalse(new File(dir, "1").exists());
-        assertTrue(new File(dir, "2").exists());
     }
 
 }
