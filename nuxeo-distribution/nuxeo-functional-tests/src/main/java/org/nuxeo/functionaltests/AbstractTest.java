@@ -23,6 +23,8 @@
  */
 package org.nuxeo.functionaltests;
 
+import static org.junit.Assume.assumeFalse;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -42,8 +44,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
-
-import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
 
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
@@ -93,6 +93,8 @@ import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+
+import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
 
 /**
  * Base functions for all pages.
@@ -965,6 +967,23 @@ public abstract class AbstractTest {
         NoteDocumentBasePage notePage = noteCreationPage.createNoteDocument(noteTitle, noteDescription, defineNote,
                 noteContent);
         return notePage;
+    }
+
+    /**
+     * Do not run on windows with Firefox 26 (NXP-17848).
+     *
+     * @since 7.10
+     */
+    protected void doNotRunOnWindowsWithFF26() {
+        String browser, browserVersion = null;
+        try {
+            browser = driver.getCapabilities().getBrowserName();
+            browserVersion = driver.getCapabilities().getVersion();
+            Float iBrowserVersion = Float.parseFloat(browserVersion);
+            assumeFalse(SystemUtils.IS_OS_WINDOWS && browser.equals("firefox") && iBrowserVersion <= 28.0);
+        } catch (NumberFormatException e) {
+            log.warn("Could not parse browser version: " + browserVersion);
+        }
     }
 
 }

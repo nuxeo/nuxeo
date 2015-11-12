@@ -36,8 +36,6 @@ import org.openqa.selenium.support.pagefactory.ByChained;
  */
 public class PermissionsSubPage extends AbstractPage {
 
-    private static final Log log = LogFactory.getLog(PermissionsSubPage.class);
-
     @Required
     @FindBy(xpath = "//paper-button[text()='New Permission']")
     WebElement newPermission;

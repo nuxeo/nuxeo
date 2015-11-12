@@ -19,15 +19,11 @@ package org.nuxeo.ftest.cap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeFalse;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
@@ -53,8 +49,6 @@ import org.openqa.selenium.WebElement;
  */
 
 public class ITCollectionsTest extends AbstractTest {
-
-    private static final Log log = LogFactory.getLog(ITCollectionsTest.class);
 
     private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
@@ -219,23 +213,6 @@ public class ITCollectionsTest extends AbstractTest {
         // TODO test collection remove
 
         logout();
-    }
-
-    /**
-     * Do not run on windows with Firefox 26 (NXP-17848).
-     *
-     * @since 7.10
-     */
-    protected void doNotRunOnWindowsWithFF26() {
-        String browser, browserVersion = null;
-        try {
-            browser = driver.getCapabilities().getBrowserName();
-            browserVersion = driver.getCapabilities().getVersion();
-            Float iBrowserVersion = Float.parseFloat(browserVersion);
-            assumeFalse(SystemUtils.IS_OS_WINDOWS && browser.equals("firefox") && iBrowserVersion <= 28.0);
-        } catch (NumberFormatException e) {
-            log.warn("Could not parse browser version: " + browserVersion);
-        }
     }
 
     @Test
