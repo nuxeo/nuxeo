@@ -109,7 +109,7 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         assertEquals(bytes.length, binary.getLength());
         // refetch, now in cache
         binary = binaryManager.getBinary(CONTENT_MD5);
-        assertFalse(binary instanceof LazyBinary);
+        assertTrue(binary instanceof LazyBinary);
         assertEquals(CONTENT, toString(binary.getStream()));
         assertEquals(bytes.length, binary.getLength());
 
