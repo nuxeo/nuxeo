@@ -244,7 +244,8 @@ public class TestScriptRunnerInfrastructure {
         params.put("document", "/newDoc");
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestBlob", params);
         assertEquals("creationFields.json", ((Blob) result.getPropertyValue("file:content")).getFilename());
-        assertEquals("doc title:New Title\ndoc title:New Title\ntitle:creationFields.json\n", outContent.toString());
+        assertEquals("doc title:New Title\ndoc title:New Title\ntitle:creationFields.json" + System.lineSeparator(),
+                outContent.toString());
     }
 
     @Test
@@ -375,7 +376,7 @@ public class TestScriptRunnerInfrastructure {
         assertEquals("Root input title:New Title\n" + "Root input title:New Title\n" + "Root ctx title:New Title\n"
                 + "Root ctx title:New Title\n" + "Root params title:New Title\n" + "Root params title:New Title\n"
                 + "Root result title:New Title\n" + "Root result title:New Title\n" + "Root ctx title:New Title\n"
-                + "Root ctx title:New Title\n", outContent.toString());
+                + "Root ctx title:New Title" + System.lineSeparator(), outContent.toString());
         assertTrue(result instanceof DocumentModel);
         Object doc = ctx.get("doc");
         assertNotNull(doc);
@@ -398,8 +399,9 @@ public class TestScriptRunnerInfrastructure {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(session.createDocument(doc));
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestList", null);
-        assertEquals("att1\n" + "att2\n" + "att3\n" + "newValue\n" + "att2\n" + "att3\n" + "vlad\n" + "desc\n",
-                outContent.toString());
+        assertEquals(
+                "att1\n" + "att2\n" + "att3\n" + "newValue\n" + "att2\n" + "att3\n" + "vlad\n" + "desc"
+                        + System.lineSeparator(), outContent.toString());
         assertEquals("newValue", ((String[]) result.getPropertyValue("list:items"))[0]);
         assertEquals("vlad", ((Map<?, ?>) result.getPropertyValue("list:complexItem")).get("name"));
     }
@@ -409,7 +411,7 @@ public class TestScriptRunnerInfrastructure {
         session = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe");
         OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "my-chain-with-loginasctx", null);
-        assertEquals("Administrator\n", outContent.toString());
+        assertEquals("Administrator" + System.lineSeparator(), outContent.toString());
     }
 
     @Test
@@ -417,7 +419,7 @@ public class TestScriptRunnerInfrastructure {
         session = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe");
         OperationContext ctx = new OperationContext(session);
         String principal = (String) automationService.run(ctx, "my-chain-with-loginasop", null);
-        assertEquals("Administrator\n", outContent.toString());
+        assertEquals("Administrator" + System.lineSeparator(), outContent.toString());
         assertEquals("Administrator", principal);
     }
 }
