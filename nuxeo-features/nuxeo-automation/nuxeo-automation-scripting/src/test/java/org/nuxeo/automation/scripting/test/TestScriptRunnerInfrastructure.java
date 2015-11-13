@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Thierry Delprat <tdelprat@nuxeo.com>
+ *     Thierry Delprat <tdelprat@nuxeo.com>, Ronan DANIELLOU <rdaniellou@nuxeo.com>
  */
 package org.nuxeo.automation.scripting.test;
 
