@@ -891,6 +891,52 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @Test
+    public void testGetChildrenIteratorRestrictedAccess() {
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
+        doc2 = session.createDocument(doc2);
+        DocumentModel doc3 = session.createDocumentModel("/", "doc3", "File");
+        doc3 = session.createDocument(doc3);
+
+        // set ACP on root
+        ACP acp;
+        ACL acl;
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Everything", true));
+        acp.addACL(acl);
+        session.getRootDocument().setACP(acp, true);
+
+        // set ACP on doc2 to block bob
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(ACE.BLOCK);
+        acp.addACL(acl);
+        doc2.setACP(acp, true);
+        session.save();
+
+        // system sees all
+        Set<String> names = new HashSet<>();
+        for (DocumentModel doc : session.getChildrenIterator(new PathRef("/"))) {
+            names.add(doc.getName());
+        }
+        assertEquals(new HashSet<>(Arrays.asList("doc1", "doc2", "doc3")), names);
+
+        // bob doesn't see doc2
+        try (CoreSession bobSession = openSessionAs("bob")) {
+            names.clear();
+            for (DocumentModel doc : bobSession.getChildrenIterator(new PathRef("/"))) {
+                names.add(doc.getName());
+            }
+            // doc2 is not in the returned set
+            assertEquals(new HashSet<>(Arrays.asList("doc1", "doc3")), names);
+        }
+    }
+
+    @Test
     public void testGetChildrenDocumentRefStringFilter() throws ClientException {
         DocumentModel root = session.getRootDocument();
 
