@@ -22,4 +22,9 @@ public interface Expression extends Serializable {
 
     Object eval(OperationContext ctx) throws Exception;
 
+    /**
+     * @since 8.1
+     */
+    String getExpr();
+
 }
