@@ -23,6 +23,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
@@ -31,7 +32,11 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.actions", "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.io.core",
-        "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.core.cache" })
+        "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.core.cache",
+        "org.nuxeo.ecm.platform.usermanager.api", "org.nuxeo.ecm.platform.usermanager",
+        "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
+        "org.nuxeo.ecm.directory.types.contrib" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.rendition.publisher:test-sql-directories-contrib.xml" })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 public class RenditionFeature extends SimpleFeature {
 }

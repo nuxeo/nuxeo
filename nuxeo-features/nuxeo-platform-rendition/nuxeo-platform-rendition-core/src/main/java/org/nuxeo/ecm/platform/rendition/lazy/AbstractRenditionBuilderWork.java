@@ -22,10 +22,12 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -33,6 +35,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.rendition.service.RenditionServiceImpl;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -51,6 +54,8 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
 
     protected final String renditionName;
 
+    protected final String originatingUsername;
+
     protected static Log log = LogFactory.getLog(AbstractRenditionBuilderWork.class);
 
     public AbstractRenditionBuilderWork(String key, DocumentModel doc, RenditionDefinition def) {
@@ -58,6 +63,7 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
         docRef = doc.getRef();
         repositoryName = doc.getRepositoryName();
         renditionName = def.getName();
+        originatingUsername = doc.getCoreSession().getPrincipal().getName();
     }
 
     @Override
@@ -70,13 +76,18 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
         return "Lazy Rendition for " + renditionName + " on " + docRef.toString();
     }
 
+    @Override
+    public String getUserId() {
+        return originatingUsername;
+    }
+
     protected String getTransientStoreName() {
         return AbstractLazyCachableRenditionProvider.CACHE_NAME;
     }
 
     @Override
     public void work() {
-        initSession();
+        initSession(repositoryName, originatingUsername);
         DocumentModel doc = session.getDocument(docRef);
 
         RenditionService rs = Framework.getService(RenditionService.class);
@@ -92,6 +103,12 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
         }
         ts.putBlobs(key, blobs);
         ts.setCompleted(key, true);
+    }
+
+    protected void initSession(String repositoryName, String username) {
+        UserManager um = Framework.getService(UserManager.class);
+        NuxeoPrincipal principal = um.getPrincipal(username);
+        session = CoreInstance.openCoreSession(repositoryName, principal);
     }
 
     /**
