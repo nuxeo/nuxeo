@@ -20,6 +20,7 @@ package org.nuxeo.ecm.automation.server.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.automation.core.operations.execution.RunOperationOnList;
 import org.nuxeo.ecm.automation.core.trace.Call;
 import org.nuxeo.ecm.automation.core.trace.Trace;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.ecm.automation.server.test.operations.ContextTraceOperation;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -158,5 +160,27 @@ public class CanTraceChainsTest {
                 ((Call.ExpressionParameter) trace.getCalls().get(2).getParmeters().get("name")).getParameterValue());
         assertEquals("name",
                 ((Call.ExpressionParameter) trace.getCalls().get(2).getParmeters().get("name")).getParameterId());
+    }
+
+    @Test
+    public void canKeepSubContextValuesWithTraces() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        List<String> users = new ArrayList<>();
+        users.add("foo");
+        users.add("bar");
+        users.add("baz");
+        users.add("bum");
+        ctx.put("users", users);
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("list", "users");
+        parameters.put("id", "mvelSubChain");
+        parameters.put("isolate", "false");
+
+        service.run(ctx,RunOperationOnList.ID, parameters);
+        assertEquals("foo", ctx.get("foo"));
+        assertEquals("bar", ctx.get("bar"));
+        assertEquals("baz", ctx.get("baz"));
+        assertEquals("bum", ctx.get("bum"));
     }
 }

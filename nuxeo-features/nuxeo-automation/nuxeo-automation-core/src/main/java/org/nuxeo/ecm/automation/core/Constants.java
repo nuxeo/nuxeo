@@ -168,13 +168,6 @@ public class Constants {
      */
     public static final String VAR_IS_CHAIN = "isChainExecution";
 
-    /**
-     * Key for setting mvel expression result to keep when trace mode enabled
-     *
-     * @since 7.3
-     */
-    public static final String MVEL_RESULTS = "MvelResults";
-
     private Constants() {
     }
 

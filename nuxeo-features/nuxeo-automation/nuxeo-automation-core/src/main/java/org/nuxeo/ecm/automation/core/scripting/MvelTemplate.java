@@ -41,4 +41,9 @@ public class MvelTemplate implements Expression {
         return obj == null || obj.getClass().isAssignableFrom(BlankLiteral.class) ? "" : obj.toString();
     }
 
+    @Override
+    public String getExpr() {
+        return expr;
+    }
+
 }

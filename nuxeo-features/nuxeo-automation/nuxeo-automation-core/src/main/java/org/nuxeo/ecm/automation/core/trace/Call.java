@@ -65,8 +65,14 @@ public class Call {
                 Object paramValue = parms.get(paramId);
                 if (paramValue instanceof Expression) {
                     try {
-                        ExpressionParameter expressionParameter = new ExpressionParameter(paramId,
-                                ((Expression) paramValue).eval(context));
+                        ExpressionParameter expressionParameter = null;
+                        if (!((Expression) paramValue).getExpr().contains("getNextId")) {
+                            expressionParameter = new ExpressionParameter(paramId,
+                                    ((Expression) paramValue).eval(context));
+                        } else {
+                            expressionParameter = new ExpressionParameter(paramId,
+                                    "Cannot be evaluated in traces when using getNextId function");
+                        }
                         parameters.put(paramId, expressionParameter);
                     } catch (RuntimeException e) {
                         log.warn("Cannot evaluate mvel expression for parameter: " + paramId, e);
