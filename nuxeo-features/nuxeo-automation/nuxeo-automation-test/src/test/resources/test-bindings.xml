@@ -83,6 +83,12 @@
     <chain id="traceSubchains">
       <operation id="Context.FetchDocument" />
     </chain>
+
+    <chain id="mvelSubChain">
+      <operation id="ContextTraceOperation">
+        <param type="string" name="param">expr:Context["item"]</param>
+      </operation>
+    </chain>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
@@ -101,6 +107,8 @@
             class="org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays" />
     <operation
             class="org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest"/>
+    <operation
+            class="org.nuxeo.ecm.automation.server.test.operations.ContextTraceOperation"/>
   </extension>
 
 </component>

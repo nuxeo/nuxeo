@@ -23,4 +23,9 @@ public interface Expression extends Serializable {
 
     Object eval(OperationContext ctx) throws CompileException, RuntimeException;
 
+    /**
+     * @since 8.1
+     */
+    String getExpr();
+
 }
