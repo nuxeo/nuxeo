@@ -34,8 +34,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.script.ScriptException;
-import javax.security.auth.login.LoginException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -384,7 +382,7 @@ public class TestScriptRunnerInfrastructure {
     }
 
     @Test
-    public void canHandleJavaListMap() throws IOException, OperationException {
+    public void canHandleJavaListMap() throws OperationException {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "List");
         List<String> attachments = new ArrayList<>();
         attachments.add("att1");
@@ -406,7 +404,7 @@ public class TestScriptRunnerInfrastructure {
     }
 
     @Test
-    public void canHandleLoginAsCtx() throws OperationException, LoginException {
+    public void canHandleLoginAsCtx() throws OperationException {
         session = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe");
         OperationContext ctx = new OperationContext(session);
         automationService.run(ctx, "my-chain-with-loginasctx", null);
@@ -414,7 +412,7 @@ public class TestScriptRunnerInfrastructure {
     }
 
     @Test
-    public void canHandleLoginAsOp() throws OperationException, LoginException {
+    public void canHandleLoginAsOp() throws OperationException {
         session = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe");
         OperationContext ctx = new OperationContext(session);
         String principal = (String) automationService.run(ctx, "my-chain-with-loginasop", null);
