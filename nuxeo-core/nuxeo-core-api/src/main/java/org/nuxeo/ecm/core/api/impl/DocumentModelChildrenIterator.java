@@ -70,8 +70,12 @@ public class DocumentModelChildrenIterator implements DocumentModelIterator {
                 return false;
             }
             String id = it.next();
+            IdRef idRef = new IdRef(id);
+            if (!session.exists(idRef)) {
+                continue;
+            }
             DocumentModel doc;
-            doc = session.getDocument(new IdRef(id));
+            doc = session.getDocument(idRef);
             if (accept(doc)) {
                 next = doc;
                 return true;
