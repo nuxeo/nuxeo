@@ -35,7 +35,7 @@ import java.util.Arrays;
 /**
  * Returns tasks assigned to current user or one of its groups.
  *
- * @since 5.5
+ * @since 8.1
  */
 @Operation(id = Indexing.ID, category = Constants.CAT_SERVICES, label = "Elasticsearch Indexing", since = "8.1",
         description = "Enable to index Nuxeo documents.")
