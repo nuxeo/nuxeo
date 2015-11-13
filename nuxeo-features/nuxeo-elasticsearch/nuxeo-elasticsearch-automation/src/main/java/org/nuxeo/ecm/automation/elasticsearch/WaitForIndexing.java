@@ -34,7 +34,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Returns tasks assigned to current user or one of its groups.
  *
- * @since 5.5
+ * @since 8.1
  */
 @Operation(id = WaitForIndexing.ID, category = Constants.CAT_SERVICES, label = "Wait for Elasticsearch Indexing",
         since = "8.1",
