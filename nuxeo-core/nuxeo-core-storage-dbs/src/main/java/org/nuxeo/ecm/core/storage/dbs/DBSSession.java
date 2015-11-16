@@ -1621,6 +1621,11 @@ public class DBSSession implements Session {
         }
 
         @Override
+        public boolean mustBeClosed() {
+            return false; // holds no resources
+        }
+
+        @Override
         public long size() {
             return totalSize;
         }

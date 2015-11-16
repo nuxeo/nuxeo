@@ -102,6 +102,11 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
         return rs != null;
     }
 
+    @Override
+    public boolean mustBeClosed() {
+        return rs != null;
+    }
+
     public static class ClosedIteratorException extends IllegalStateException {
 
         private static final long serialVersionUID = 1L;
@@ -115,7 +120,7 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
 
     }
 
-    protected void checkLife() {
+    protected void checkNotClosed() {
         if (rs == null) {
             throw new ClosedIteratorException(q);
         }
@@ -123,7 +128,7 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
 
     @Override
     public long size() {
-        checkLife();
+        checkNotClosed();
         if (size != -1) {
             return size;
         }
@@ -149,13 +154,13 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
 
     @Override
     public long pos() {
-        checkLife();
+        checkNotClosed();
         return pos;
     }
 
     @Override
     public void skipTo(long pos) {
-        checkLife();
+        checkNotClosed();
         try {
             boolean available = rs.absolute((int) pos + 1);
             if (available) {
@@ -175,12 +180,12 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
 
     @Override
     public Iterator<Map<String, Serializable>> iterator() {
-        checkLife();
+        checkNotClosed();
         return this;
     }
 
     protected Map<String, Serializable> fetchNext() throws SQLException {
-        checkLife();
+        checkNotClosed();
         if (!rs.next()) {
             if (logger.isLogEnabled()) {
                 logger.log("  -> END");
@@ -191,7 +196,7 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
     }
 
     protected Map<String, Serializable> fetchCurrent() throws SQLException {
-        checkLife();
+        checkNotClosed();
         Map<String, Serializable> map = q.selectInfo.mapMaker.makeMap(rs);
         if (logger.isLogEnabled()) {
             logger.logMap(map);
@@ -201,7 +206,7 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
 
     @Override
     public boolean hasNext() {
-        checkLife();
+        checkNotClosed();
         if (next != null) {
             return true;
         }
@@ -219,7 +224,7 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
 
     @Override
     public Map<String, Serializable> next() {
-        checkLife();
+        checkNotClosed();
         if (!hasNext()) {
             pos = -1;
             throw new NoSuchElementException();

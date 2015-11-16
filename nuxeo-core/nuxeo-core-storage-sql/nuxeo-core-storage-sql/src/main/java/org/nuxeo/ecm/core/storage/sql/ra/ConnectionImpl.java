@@ -351,7 +351,7 @@ public class ConnectionImpl implements Session {
 
     protected void closeStillOpenQueryResults() {
         for (QueryResultContextException context : queryResults) {
-            if (!context.queryResult.isLife()) {
+            if (!context.queryResult.mustBeClosed()) {
                 continue;
             }
             try {
