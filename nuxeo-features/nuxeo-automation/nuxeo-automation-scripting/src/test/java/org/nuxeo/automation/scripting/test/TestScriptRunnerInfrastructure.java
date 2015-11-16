@@ -241,8 +241,8 @@ public class TestScriptRunnerInfrastructure {
         params.put("document", "/newDoc");
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestBlob", params);
         assertEquals("creationFields.json", ((Blob) result.getPropertyValue("file:content")).getFilename());
-        assertEquals("doc title:New Title\ndoc title:New Title\ntitle:creationFields.json" + System.lineSeparator(),
-                outContent.toString());
+        assertEquals("doc title:New Title" + System.lineSeparator() + "doc title:New Title" + System.lineSeparator()
+                + "title:creationFields.json" + System.lineSeparator(), outContent.toString());
     }
 
     @Test
@@ -370,10 +370,14 @@ public class TestScriptRunnerInfrastructure {
         Map<String, Object> params = new HashMap<>();
         params.put("doc", root);
         Object result = automationService.run(ctx, "Scripting.TestWrappers", params);
-        assertEquals("Root input title:New Title\n" + "Root input title:New Title\n" + "Root ctx title:New Title\n"
-                + "Root ctx title:New Title\n" + "Root params title:New Title\n" + "Root params title:New Title\n"
-                + "Root result title:New Title\n" + "Root result title:New Title\n" + "Root ctx title:New Title\n"
-                + "Root ctx title:New Title" + System.lineSeparator(), outContent.toString());
+        assertEquals(
+                "Root input title:New Title" + System.lineSeparator() + "Root input title:New Title"
+                        + System.lineSeparator() + "Root ctx title:New Title" + System.lineSeparator()
+                        + "Root ctx title:New Title" + System.lineSeparator() + "Root params title:New Title"
+                        + System.lineSeparator() + "Root params title:New Title" + System.lineSeparator()
+                        + "Root result title:New Title" + System.lineSeparator() + "Root result title:New Title"
+                        + System.lineSeparator() + "Root ctx title:New Title" + System.lineSeparator()
+                        + "Root ctx title:New Title" + System.lineSeparator(), outContent.toString());
         assertTrue(result instanceof DocumentModel);
         Object doc = ctx.get("doc");
         assertNotNull(doc);
@@ -397,8 +401,10 @@ public class TestScriptRunnerInfrastructure {
         ctx.setInput(session.createDocument(doc));
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestList", null);
         assertEquals(
-                "att1\n" + "att2\n" + "att3\n" + "newValue\n" + "att2\n" + "att3\n" + "vlad\n" + "desc"
-                        + System.lineSeparator(), outContent.toString());
+                "att1" + System.lineSeparator() + "att2" + System.lineSeparator() + "att3" + System.lineSeparator()
+                        + "newValue" + System.lineSeparator() + "att2" + System.lineSeparator() + "att3"
+                        + System.lineSeparator() + "vlad" + System.lineSeparator() + "desc" + System.lineSeparator(),
+                outContent.toString());
         assertEquals("newValue", ((String[]) result.getPropertyValue("list:items"))[0]);
         assertEquals("vlad", ((Map<?, ?>) result.getPropertyValue("list:complexItem")).get("name"));
     }
