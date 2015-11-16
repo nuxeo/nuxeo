@@ -246,7 +246,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     @Override
     public int getActiveSessionsCount() {
-        return 0;
+        return transactionContexts.size();
     }
 
     @Override
