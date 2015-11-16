@@ -245,7 +245,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                         Class<?> klass = Object.class;
                         for (Object o : list) {
                             if (o != null) {
-                                klass = o.getClass();
+                                klass = scalarToSerializableClass(o.getClass());
                                 break;
                             }
                         }
@@ -423,6 +423,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
             return cal;
         }
         return (Serializable) val;
+    }
+
+    protected Class<?> scalarToSerializableClass(Class<?> klass) {
+        if (Date.class.isAssignableFrom(klass)) {
+            return Calendar.class;
+        }
+        return klass;
     }
 
     protected void initRepository() {
