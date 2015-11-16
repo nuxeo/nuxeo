@@ -116,7 +116,7 @@ public class TestSetupWizardActionBean {
          * default
          */
         capturedLog.assertHasEvent();
-        assertEquals(4, capturedLog.getCaughtEvents().size());
+        assertEquals(6, capturedLog.getCaughtEvents().size());
     }
 
     @Test
