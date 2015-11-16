@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.redis;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.nuxeo.ecm.core.work.WorkManagerTest;
 
 /**
@@ -35,6 +37,13 @@ public class TestRedisWorkManager extends WorkManagerTest {
     protected void doDeploy() throws Exception {
         super.doDeploy();
         RedisFeature.setup(this);
+    }
+
+    @Test
+    @Override
+    @Ignore("NXP-15680")
+    public void testWorkManagerWork() throws Exception {
+        super.testWorkManagerWork();
     }
 
 }
