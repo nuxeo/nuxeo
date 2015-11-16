@@ -132,12 +132,12 @@ input[type="checkbox"]:focus {
 
 // =Forms elements
 .required {
-  background: transparent url('${basePath}/icons/required.gif') top right no-repeat / 7px;
+  background: transparent url('${basePath}/icons/required.gif') top right / 7px no-repeat;
   padding: 0 1em 0 0;
 }
 
 .widgetHelpLabel .widgetLabel.required {
-  background: url('${basePath}/icons/required.gif') no-repeat scroll right top / 7px, url('${basePath}/icons/help.png') no-repeat scroll right 11px top transparent / 11px;
+  background: url('${basePath}/icons/required.gif') no-repeat scroll right top / 7px, url('${basePath}/icons/help.png') no-repeat scroll right 11px top / 11px transparent;
   padding-right: 2.3em;
 }
 
