@@ -37,6 +37,14 @@ public class Call {
 
     private static final Log log = LogFactory.getLog(Call.class);
 
+    /**
+     * Black listing of mvel expressions which should not be evaluated by the Automation traces for debugging
+     * purpose
+     *
+     * @since 8.1
+     */
+    public static final String[] MVEL_BLACK_LIST_EXPR = new String[] { "getNextId" };
+
     protected final String chainId;
 
     protected final String aliases;
@@ -66,14 +74,20 @@ public class Call {
                 if (paramValue instanceof Expression) {
                     try {
                         ExpressionParameter expressionParameter = null;
-                        if (!((Expression) paramValue).getExpr().contains("getNextId")) {
+                        for (String mvelExpr : MVEL_BLACK_LIST_EXPR) {
+                            if (((Expression) paramValue).getExpr().contains(mvelExpr)) {
+                                expressionParameter = new ExpressionParameter(paramId, String.format(
+                                        "Cannot be evaluated in traces when using '%s' expression", mvelExpr));
+                                parameters.put(paramId, expressionParameter);
+                                break;
+                            }
+                        }
+                        if (parameters.get(paramId) == null) {
                             expressionParameter = new ExpressionParameter(paramId,
                                     ((Expression) paramValue).eval(context));
-                        } else {
-                            expressionParameter = new ExpressionParameter(paramId,
-                                    "Cannot be evaluated in traces when using getNextId function");
+                            parameters.put(paramId, expressionParameter);
+
                         }
-                        parameters.put(paramId, expressionParameter);
                     } catch (RuntimeException e) {
                         log.warn("Cannot evaluate mvel expression for parameter: " + paramId, e);
                     }
