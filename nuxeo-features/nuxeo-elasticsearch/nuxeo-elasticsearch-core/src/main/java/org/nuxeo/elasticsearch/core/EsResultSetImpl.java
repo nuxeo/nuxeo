@@ -100,6 +100,11 @@ public class EsResultSetImpl implements IterableQueryResult, Iterator<Map<String
     }
 
     @Override
+    public boolean mustBeClosed() {
+        return false; // holds no resources
+    }
+
+    @Override
     public long size() {
         return response.getHits().getTotalHits();
     }

@@ -53,7 +53,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
             results = session.queryAndFetch("SELECT * from Document", "NXQL");
         }
         TransactionHelper.startTransaction();
-        Assert.assertFalse(results.isLife());
+        Assert.assertFalse(results.mustBeClosed());
         logCaptureResults.assertHasEvent();
     }
 
@@ -65,7 +65,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
             logCaptureResults.assertHasEvent();
-            Assert.assertFalse(results.isLife());
+            Assert.assertFalse(results.mustBeClosed());
         }
     }
 
@@ -91,14 +91,14 @@ public class QueryResultsAreAutomaticallyClosedTest {
             NestedQueryRunner runner = new NestedQueryRunner(main.getRepositoryName());
             mainResults = main.queryAndFetch("SELECT * from Document", "NXQL");
             runner.runUnrestricted();
-            Assert.assertFalse(runner.result.isLife());
-            Assert.assertTrue(mainResults.isLife());
+            Assert.assertFalse(runner.result.mustBeClosed());
+            Assert.assertTrue(mainResults.mustBeClosed());
             logCaptureResults.assertHasEvent();
             logCaptureResults.clear();
         }
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         logCaptureResults.assertHasEvent();
-        Assert.assertFalse(mainResults.isLife());
+        Assert.assertFalse(mainResults.mustBeClosed());
     }
 }
