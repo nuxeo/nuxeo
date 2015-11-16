@@ -17,6 +17,8 @@
 package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -66,6 +68,31 @@ public class ITMiscLittleThingsTest extends AbstractTest {
         // Check that we have at least a form protected against double click
         List<WebElement> forms = driver.findElements(By.xpath("//form[contains(@class,'doubleClickShielded')]"));
         assertTrue(forms.size() > 0);
+    }
+
+    @Test
+    public void testRequiredAsterisk() throws UserNotConnectedException {
+        DocumentBasePage page = asPage(DocumentBasePage.class);
+        page.getEditTab();
+        String labelPattern = "//form[@id='document_edit']//tr[%s]//td[@class='labelColumn']//span";
+        // title is required
+        WebElement title = driver.findElement(By.xpath(String.format(labelPattern, 1)));
+        assertEquals("Title", title.getText());
+        String titleStyleClass = title.getAttribute("class");
+        assertNotNull(titleStyleClass);
+        assertTrue(titleStyleClass.contains("required"));
+        String bgimage = title.getCssValue("background-image");
+        assertNotNull(bgimage);
+        assertTrue(bgimage.contains("required.gif"));
+        // desc is not required
+        WebElement desc = driver.findElement(By.xpath(String.format(labelPattern, 2)));
+        assertEquals("Description", desc.getText());
+        String descStyleClass = desc.getAttribute("class");
+        assertNotNull(descStyleClass);
+        assertFalse(descStyleClass.contains("required"));
+        String descbgimage = desc.getCssValue("background-image");
+        assertNotNull(descbgimage);
+        assertFalse(descbgimage.contains("required.gif"));
     }
 
     @Test
