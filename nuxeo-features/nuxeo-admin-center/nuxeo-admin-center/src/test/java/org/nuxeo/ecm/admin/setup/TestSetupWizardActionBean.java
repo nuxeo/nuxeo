@@ -106,7 +106,7 @@ public class TestSetupWizardActionBean {
          * path (...) WARN [ConfigurationGenerator] Missing value for nuxeo.db.type, using default
          */
         capturedLog.assertHasEvent();
-        assertEquals(4, capturedLog.getCaughtEvents().size());
+        assertEquals(6, capturedLog.getCaughtEvents().size());
     }
 
     @After
