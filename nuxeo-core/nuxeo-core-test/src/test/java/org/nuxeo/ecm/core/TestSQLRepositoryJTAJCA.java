@@ -89,6 +89,7 @@ public class TestSQLRepositoryJTAJCA {
     public void testSessionSharing() throws Exception {
         String repositoryName = session.getRepositoryName();
         Repository repo = repositoryService.getRepository(repositoryName);
+        session.getRootDocument(); // use the session at least once
         assertEquals(1, repo.getActiveSessionsCount());
 
         try (CoreSession session2 = CoreInstance.openCoreSession(repositoryName, ADMINISTRATOR)) {
