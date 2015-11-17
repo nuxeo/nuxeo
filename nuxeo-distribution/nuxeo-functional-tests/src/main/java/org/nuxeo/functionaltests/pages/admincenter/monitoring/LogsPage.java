@@ -1,4 +1,5 @@
 /*
+
  * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -51,6 +52,7 @@ public class LogsPage extends MonitoringPage {
         for (WebElement element : serverLogTabs) {
             if (serverLogFileName.equals(element.getText())) {
                 element.click();
+                break;
             }
         }
         return asPage(LogsPage.class);
