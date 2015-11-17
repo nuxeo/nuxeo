@@ -82,7 +82,7 @@ public class VideoConversionWork extends AbstractWork {
 
         Video originalVideo = null;
         try {
-            initSession();
+            openSystemSession();
             originalVideo = getVideoToConvert();
             commitOrRollbackTransaction();
         } finally {
@@ -102,7 +102,7 @@ public class VideoConversionWork extends AbstractWork {
         // Saving it to the document
         startTransaction();
         setStatus("Saving");
-        initSession();
+        openSystemSession();
         DocumentModel doc = session.getDocument(new IdRef(docId));
         saveNewTranscodedVideo(doc, transcodedVideo);
         fireVideoConversionsDoneEvent(doc);
