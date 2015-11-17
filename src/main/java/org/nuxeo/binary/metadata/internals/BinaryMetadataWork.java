@@ -67,7 +67,7 @@ public class BinaryMetadataWork extends AbstractWork {
     public void work() {
         setProgress(Progress.PROGRESS_INDETERMINATE);
         setStatus("Updating Metadata");
-        initSession();
+        openSystemSession();
         if (!session.exists(new IdRef(docId))) {
             setStatus("Nothing to process");
             return;
