@@ -117,6 +117,11 @@ This simulation initialize the environnement and need to be run first, it is ide
 - create all users in this group
 - grant write access on bench workspace to the group
 
+## Sim10MassImporter: Use nuxeo-platform-importer
+
+This simulation requires a Nuxeo instance with nuxeo-platform-importer.
+
+
 ## Sim10CreateFolders: Create folder layout
 
 Create the folder layout, using the rest API as listed in Redis `imp:folder`.
@@ -126,6 +131,10 @@ Create the folder layout, using the rest API as listed in Redis `imp:folder`.
 
 Create the documents, using the rest API as listed in Redis `imp:doc`
 
+## Sim25WaitForAsync: Wait for the end of background jobs
+
+After a mass import is done, some jobs may be queued and need to be
+exectuted before continuing on other performance tests.
 
 ## Sim30UpdateDocuments: Update documents
 
@@ -150,6 +159,9 @@ To setup the proportion you need to prefix the options with:
 
 For instance: `-Dnav.users=30 -Dnavjsf=10 -Dupd.user=5 -Dnavjsf.pause_ms=5000`
 
+## Sim80ReindexAll: Run an Elasticsearch reindex all
+
+Drop and recreate the repository index.
 
 # Executing bench
 

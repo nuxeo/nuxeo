@@ -22,7 +22,6 @@ import scala.concurrent.duration.{Duration, FiniteDuration}
 
 object Parameters {
 
-
   def getBaseUrl(default: String = "http://localhost:8080/nuxeo"): String = {
     System.getProperty("url", default)
   }
@@ -45,5 +44,10 @@ object Parameters {
     val ramp: Long = 0L + Integer.getInteger(prefix + "ramp", default)
     FiniteDuration(ramp, "second")
   }
+
+  def getNbNodes(default: Integer = 100000): Integer = {
+    Integer.getInteger("nbNodes", default)
+  }
+
 
 }

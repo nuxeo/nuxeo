@@ -122,6 +122,15 @@
                 </configuration>
               </execution>
               <execution>
+                <id>massImport</id>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim10MassImport</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
                 <id>createFolders</id>
                 <goals>
                   <goal>execute</goal>
@@ -140,8 +149,16 @@
                 </configuration>
               </execution>
               <execution>
+                <id>waitForAsync</id>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim25WaitForAsync</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
                 <id>updateDocuments</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
@@ -151,7 +168,6 @@
               </execution>
               <execution>
                 <id>navigation</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
@@ -161,7 +177,6 @@
               </execution>
               <execution>
                 <id>navigation-jsf</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
@@ -171,7 +186,6 @@
               </execution>
               <execution>
                 <id>bench-mix</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
@@ -181,12 +195,29 @@
               </execution>
               <execution>
                 <id>bench-crud</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim50CRUD</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
+                <id>waitForAsyncbis</id>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim25WaitForAsync</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
+                <id>reindex</id>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim80ReindexAll</simulationClass>
                 </configuration>
               </execution>
             </executions>
