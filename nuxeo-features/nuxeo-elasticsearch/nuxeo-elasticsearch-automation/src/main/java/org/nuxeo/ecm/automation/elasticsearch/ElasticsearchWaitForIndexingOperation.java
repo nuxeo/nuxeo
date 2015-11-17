@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -36,10 +36,10 @@ import java.util.concurrent.TimeoutException;
  *
  * @since 8.1
  */
-@Operation(id = WaitForIndexing.ID, category = Constants.CAT_SERVICES, label = "Wait for Elasticsearch Indexing",
+@Operation(id = ElasticsearchWaitForIndexingOperation.ID, category = Constants.CAT_SERVICES, label = "Wait for Elasticsearch Indexing",
         since = "8.1",
         description = "Wait until Elasticsearch indexing is done.")
-public class WaitForIndexing {
+public class ElasticsearchWaitForIndexingOperation {
 
     public static final String ID = "Elasticsearch.WaitForIndexing";
 
