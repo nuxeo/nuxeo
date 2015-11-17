@@ -53,7 +53,7 @@ public abstract class UserResolver {
             userDoc = userManager.getBareUserModel();
             userDoc.setPropertyValue(userManager.getUserIdField(), nuxeoLogin);
 
-            userManager.createUser(userDoc);
+            userDoc = userManager.createUser(userDoc);
 
         } catch (ClientException e) {
             log.error("Error while creating user " + nuxeoLogin + "in UserManager", e);
