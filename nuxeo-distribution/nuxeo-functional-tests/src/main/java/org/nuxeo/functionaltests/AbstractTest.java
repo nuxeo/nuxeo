@@ -278,6 +278,8 @@ public abstract class AbstractTest {
         // misc confs to speed up FF
         profile.setPreference("extensions.ui.dictionary.hidden", true);
         profile.setPreference("layout.spellcheckDefault", 0);
+        // For FF > 40 ?
+        profile.setPreference("startup.homepage_welcome_url.additional", "about:blank");
 
         // webdriver logging
         if (Boolean.TRUE.equals(Boolean.valueOf(System.getenv("nuxeo.log.webriver")))) {
@@ -299,8 +301,8 @@ public abstract class AbstractTest {
             // Workaround: use 127.0.0.2
             proxy.setNoProxy("");
             // setProxyPreferences method does not exist with selenium version 2.43.0
-            profile.setProxyPreferences(proxy);
-            // FIXME Should be dc.setCapability(CapabilityType.PROXY, proxy);
+            //profile.setProxyPreferences(proxy);
+            dc.setCapability(CapabilityType.PROXY, proxy);
         }
         dc.setCapability(FirefoxDriver.PROFILE, profile);
         driver = new FirefoxDriver(dc);
@@ -382,10 +384,21 @@ public abstract class AbstractTest {
         if (driver != null) {
             List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver);
             if (jsErrors != null && !jsErrors.isEmpty()) {
+                StringBuilder msg = new StringBuilder();
+                msg.append(jsErrors.size()).append(" Javascript error(s) detected: ");
+                msg.append("[");
+                int i = 0;
                 for (JavaScriptError jsError : jsErrors) {
-                    log.error(jsError);
+                    if (i != 0) {
+                        msg.append(", ");
+                    }
+                    i++;
+                    msg.append("\"").append(jsError.getErrorMessage()).append("\"");
+                    msg.append(" at ").append(jsError.getSourceName());
+                    msg.append(" line ").append(jsError.getLineNumber());
                 }
-                fail("Javascript errors detected");
+                msg.append("]");
+                log.error(msg.toString());
             }
         }
     }
@@ -545,6 +558,33 @@ public abstract class AbstractTest {
     }
 
     public static <T> T get(String url, Class<T> pageClassToProxy) {
+        if (driver != null) {
+            List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver);
+            if (jsErrors != null && !jsErrors.isEmpty()) {
+                StringBuilder msg = new StringBuilder();
+                msg.append(jsErrors.size()).append(" Javascript error(s) detected: ");
+                msg.append("[");
+                int i = 0;
+                for (JavaScriptError jsError : jsErrors) {
+                    if (i != 0) {
+                        msg.append(", ");
+                    }
+                    i++;
+                    msg.append("\"").append(jsError.getErrorMessage()).append("\"");
+                    msg.append(" at ").append(jsError.getSourceName());
+                    msg.append(" line ").append(jsError.getLineNumber());
+                }
+                msg.append("]");
+                /*if (driver != null) {
+                    ScreenshotTaker taker = new ScreenshotTaker();
+                    taker.takeScreenshot(driver, "NXP-17647-");
+                    taker.dumpPageSource(driver, "NXP-17647-");
+                    driver.get(NUXEO_URL + "/wro/api/v1/resource/bundle/nuxeo_includes.js");
+                    taker.dumpPageSource(driver, "NXP-17647-includes-js");
+                }*/
+                log.error(msg.toString());
+            }
+        }
         driver.get(url);
         return asPage(pageClassToProxy);
     }

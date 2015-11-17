@@ -45,11 +45,11 @@ public class NewVocabularyEntryForm extends WebFragmentImpl {
     @FindBy(id = "nxw_parent_openPopup")
     private WebElement newParentPopup;
 
-    @FindBy(id = "addEntryView:addEntryForm:nxl_l10nsubjects_vocabulary:nxw_l10nxvocabulary_obsolete_checkbox")
+    @FindBy(id = "addEntryView:addEntryForm:nxl_l10nsubjects_vocabulary:nxw_l10nxvocabulary_obsolete_checkbox:0")
     @Required
     private WebElement notObsoleteInput;
 
-    @FindBy(id = "addEntryView:addEntryForm:nxl_l10nsubjects_vocabulary:nxw_l10nxvocabulary_obsolete_checkbox")
+    @FindBy(id = "addEntryView:addEntryForm:nxl_l10nsubjects_vocabulary:nxw_l10nxvocabulary_obsolete_checkbox:1")
     @Required
     private WebElement obsoleteInput;
 
