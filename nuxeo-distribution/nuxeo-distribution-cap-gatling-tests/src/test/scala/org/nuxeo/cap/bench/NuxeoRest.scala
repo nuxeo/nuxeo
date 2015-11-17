@@ -98,9 +98,12 @@ object NuxeoRest {
             .headers(Headers.base)
             .header("Content-Type", "application/json")
             .basicAuth("${user}", "${password}")
-            .body(StringBody( """{ "entity-type": "document", "name":"""" + name + """", "type": """" + docType +
-            """","properties": {"dc:title":"""" + name + """", "dc:description": "Gatling bench """ +
-            docType + """"}}"""))
+            .body(StringBody(
+              """{ "entity-type": "document", "name":"""" + name + """", "type": """" + docType +
+                """","properties": {"dc:title":"""" + name +
+                """", "dc:description": "Gatling bench """ +
+                docType +
+                """"}}"""))
             .check(status.in(201)))
     }
   }
@@ -121,8 +124,9 @@ object NuxeoRest {
             .header("Content-Type", "application/json")
             .basicAuth("${adminId}", "${adminPassword}")
             .body(StringBody(
-            """{ "entity-type": "document", "name":"""" + name + """", "type": """" + docType +
-              """","properties": {"dc:title":"""" + name + """", "dc:description": "Gatling bench folder"}}""".stripMargin))
+              """{ "entity-type": "document", "name":"""" + name + """", "type": """" + docType +
+                """","properties": {"dc:title":"""" + name +
+                """", "dc:description": "Gatling bench folder"}}""".stripMargin))
             .check(status.in(201)))
     }
   }
@@ -143,17 +147,17 @@ object NuxeoRest {
         .basicAuth("${user}", "${password}")
         .body(StringBody("You know content file"))
     ).exec(
-        http("Create server File")
-          .post(Constants.API_PATH + parent)
-          .headers(Headers.base)
-          .header("Content-Type", "application/json")
-          .basicAuth("${user}", "${password}")
-          .body(StringBody(
+      http("Create server File")
+        .post(Constants.API_PATH + parent)
+        .headers(Headers.base)
+        .header("Content-Type", "application/json")
+        .basicAuth("${user}", "${password}")
+        .body(StringBody(
           """{ "entity-type": "document", "name":"""" + name + """", "type": "File","properties": {"dc:title":"""" +
             name +
             """", "dc:description": "Gatling bench file", "file:content": {"upload-batch":"${batchId}"""" +
             ""","upload-fileId":"0"}}}""".stripMargin))
-          .check(status.in(201)))
+        .check(status.in(201)))
   }
 
   def updateFileDocument = (parent: String, name: String) => {
@@ -172,15 +176,15 @@ object NuxeoRest {
         .basicAuth("${user}", "${password}")
         .body(StringBody("You know content file " + Random.alphanumeric.take(2)))
     ).exec(
-        http("Update server File")
-          .put(Constants.API_PATH + parent + "/" + name)
-          .headers(Headers.base)
-          .header("Content-Type", "application/json")
-          .basicAuth("${user}", "${password}")
-          .body(StringBody(
+      http("Update server File")
+        .put(Constants.API_PATH + parent + "/" + name)
+        .headers(Headers.base)
+        .header("Content-Type", "application/json")
+        .basicAuth("${user}", "${password}")
+        .body(StringBody(
           """{ "entity-type": "document", "name":"""" + name + """", "type": "File","properties": {"file:content": {"upload-batch":"${batchId}"""" +
             ""","upload-fileId":"0"}}}""".stripMargin))
-          .check(status.in(200)))
+        .check(status.in(200)))
   }
 
   def deleteFileDocument = (path: String) => {
@@ -217,8 +221,9 @@ object NuxeoRest {
             .header("Content-Type", "application/json")
             .basicAuth("${adminId}", "${adminPassword}")
             .body(StringBody(
-            """{"entity-type":"user","id":"${user}","properties":{"firstName":null,"lastName":null,"password":"${password}","groups":["""" +
-              groupName + """"],"company":null,"email":"devnull@nuxeo.com","username":"${user}"},"extendedGroups":[{"name":"members","label":"Members group","url":"group/members"}],"isAdministrator":false,"isAnonymous":false}"""))
+              """{"entity-type":"user","id":"${user}","properties":{"firstName":null,"lastName":null,"password":"${password}","groups":["""" +
+                groupName +
+                """"],"company":null,"email":"devnull@nuxeo.com","username":"${user}"},"extendedGroups":[{"name":"members","label":"Members group","url":"group/members"}],"isAdministrator":false,"isAnonymous":false}"""))
             .check(status.in(201)))
     }
   }
@@ -248,7 +253,7 @@ object NuxeoRest {
             .header("Content-Type", "application/json")
             .basicAuth("${adminId}", "${adminPassword}")
             .body(StringBody(
-            """{"entity-type":"group","groupname":"""" + groupName + """", "groupLabel": "Gatling group"}"""))
+              """{"entity-type":"group","groupname":"""" + groupName + """", "groupLabel": "Gatling group"}"""))
             .check(status.in(201)))
     }
   }
@@ -273,4 +278,28 @@ object NuxeoRest {
       .body(StringBody( """{"params":{"permission": "ReadWrite", "user": """" + principal + """"}}""".stripMargin))
       .check(status.in(200))
   }
+
+
+  def reindexAll = () => {
+    exitBlockOnFail {
+      exec(
+        http("Reindex All repository")
+          .post(Constants.AUTOMATION_PATH + "/Elasticsearch.Index")
+          .basicAuth("${adminId}", "${adminPassword}")
+          .headers(Headers.base)
+          .header("content-type", "application/json+nxrequest")
+          .body(StringBody( """{"params":{},"context":{}}"""))
+      )
+        .exec(
+          http("Wait For indexing")
+            .post(Constants.AUTOMATION_PATH + "/Elasticsearch.WaitForIndexing")
+            .basicAuth("${adminId}", "${adminPassword}")
+            .headers(Headers.base)
+            .header("content-type", "application/json+nxrequest")
+            .body(StringBody( """{"params":{"timeoutSecond": "3600", "refresh": "true"},"context":{}}"""))
+        )
+    }
+
+  }
+
 }

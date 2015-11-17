@@ -17,20 +17,27 @@ package org.nuxeo.cap.bench
  *     Delbosc Benoit
  */
 
-object Constants {
-  val API_PATH = "/api/v1/path"
-  val AUTOMATION_PATH = "/site/automation"
-  val ROOT_WORKSPACE_PATH = "/default-domain/workspaces"
-  val NX_PATH = "/nxpath/default"
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+
+object ScnWaitForAsync {
+
+  def get = () => {
+    scenario("NuxeoImporter")
+      .feed(Feeders.admins)
+      .exec(NuxeoImporter.waitForAsyncJobs())
+  }
 
 
-  val GAT_WS_NAME = "Bench_Gatling"
-  val GAT_WS_PATH = ROOT_WORKSPACE_PATH + "/Bench_Gatling"
-  val GAT_FOLDER_NAME = "Common"
-  val GAT_USER_FOLDER_NAME = "Folder_${user}"
-  val GAT_GROUP_NAME = "gatling"
-  val GAT_API_PATH = API_PATH + GAT_WS_PATH
+}
 
-  val EMPTY_MARKER = "EMPTY_MARKER"
-  val END_OF_FEED = "END_OF_FEED"
+class Sim25WaitForAsync extends Simulation {
+  val httpProtocol = http
+    .baseURL(Parameters.getBaseUrl())
+    .disableWarmUp
+    .acceptEncodingHeader("gzip, deflate")
+    .connection("keep-alive")
+  val scn = ScnWaitForAsync.get()
+  setUp(scn.inject(atOnceUsers(1)))
+    .protocols(httpProtocol)
 }

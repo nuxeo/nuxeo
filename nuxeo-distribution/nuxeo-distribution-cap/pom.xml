@@ -466,6 +466,11 @@
       <groupId>org.nuxeo.elasticsearch</groupId>
       <artifactId>nuxeo-elasticsearch-http-read-only</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.elasticsearch</groupId>
+      <artifactId>nuxeo-elasticsearch-automation</artifactId>
+    </dependency>
+
 
     <!-- Nuxeo Web Resources -->
     <dependency>
