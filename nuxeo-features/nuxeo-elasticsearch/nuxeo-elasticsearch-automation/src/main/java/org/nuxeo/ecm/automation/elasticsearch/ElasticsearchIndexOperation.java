@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -37,9 +37,9 @@ import java.util.Arrays;
  *
  * @since 8.1
  */
-@Operation(id = Indexing.ID, category = Constants.CAT_SERVICES, label = "Elasticsearch Indexing", since = "8.1",
+@Operation(id = ElasticsearchIndexOperation.ID, category = Constants.CAT_SERVICES, label = "Elasticsearch Indexing", since = "8.1",
         description = "Enable to index Nuxeo documents.")
-public class Indexing {
+public class ElasticsearchIndexOperation {
 
     public static final String ID = "Elasticsearch.Index";
 
@@ -59,17 +59,27 @@ public class Indexing {
 
     @OperationMethod
     public void run() {
+        checkAccess();
         esa.dropAndInitRepositoryIndex(repo.getRepositoryName());
         run("SELECT ecm:uuid FROM Document");
     }
 
+    private void checkAccess() {
+        NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
+        if (principal == null || ! principal.isAdministrator()) {
+            throw new RuntimeException("Unauthorized access: " + principal);
+        }
+    }
+
     @OperationMethod
     public void run(String nxql) {
+        checkAccess();
         esi.runReindexingWorker(repo.getRepositoryName(), nxql);
     }
 
     @OperationMethod
     public void run(DocumentModel doc) {
+        checkAccess();
         // 1. delete existing index
         IndexingCommand cmd = new IndexingCommand(doc, IndexingCommand.Type.DELETE, false, true);
         esi.runIndexingWorker(Arrays.asList(cmd));
