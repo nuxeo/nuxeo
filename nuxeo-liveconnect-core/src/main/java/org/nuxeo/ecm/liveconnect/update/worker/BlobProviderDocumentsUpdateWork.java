@@ -68,7 +68,7 @@ public class BlobProviderDocumentsUpdateWork extends AbstractWork {
                 BlobManager.class).getBlobProvider(providerName);
         setStatus("Updating");
         if (session == null) {
-            initSession();
+            openSystemSession();
         }
         final List<DocumentModel> results = new ArrayList<DocumentModel>();
         for (String docId : docIds) {
