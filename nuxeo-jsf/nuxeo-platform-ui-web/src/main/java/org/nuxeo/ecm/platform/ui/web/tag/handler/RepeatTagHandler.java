@@ -190,20 +190,18 @@ public class RepeatTagHandler extends TagHandler {
                 if (StringUtils.isBlank(varStatusValue)) {
                     // need to create and set it as an attribute for the index
                     // to be exposed
-                    varStatusAttr = createAttribute(config, "varStatus",
-                            getVarName(String.format("%s_%s", indexValue, "varStatus")));
+                    varStatusAttr = createAttribute(config, "varStatus", getVarName(indexValue + "_varStatus"));
                 } else {
                     varStatusAttr = createAttribute(config, "varStatus", varStatusValue);
                 }
-                ComponentConfig indexVarConfig = TagConfigFactory.createAliasTagConfig(config, tagId,
-                        indexValue, String.format("#{%s.index}", varStatusAttr.getValue()), "false", anchor,
-                        this.nextHandler);
+                ComponentConfig indexVarConfig = TagConfigFactory.createAliasTagConfig(config, tagId, indexValue,
+                        "#{" + varStatusAttr.getValue() + ".index}", "false", anchor, this.nextHandler);
                 nextHandler = new SetTagHandler(indexVarConfig);
             }
         }
 
         List<TagAttribute> forEachAttrs = new ArrayList<TagAttribute>();
-        forEachAttrs.add(createAttribute(config, "items", String.format("#{%s}", getVarName("items"))));
+        forEachAttrs.add(createAttribute(config, "items", "#{" + getVarName("items") + "}"));
         forEachAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
         TagConfig forEachConfig = TagConfigFactory.createTagConfig(config, tagId, new TagAttributesImpl(
                 forEachAttrs.toArray(new TagAttribute[] {})), nextHandler);
@@ -220,7 +218,7 @@ public class RepeatTagHandler extends TagHandler {
     }
 
     protected String getVarName(String id) {
-        return String.format("%s%s", ITERATION_VAR_PREFIX, id);
+        return ITERATION_VAR_PREFIX + id;
     }
 
     protected TagAttribute createAttribute(TagConfig tagConfig, String name, String value) {

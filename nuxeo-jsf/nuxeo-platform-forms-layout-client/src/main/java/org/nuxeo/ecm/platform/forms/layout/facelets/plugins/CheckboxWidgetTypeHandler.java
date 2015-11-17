@@ -100,9 +100,9 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
             FieldDefinition field = fields[0];
             String bareExpression = ValueExpressionHelper.createBareExpressionString(widget.getValueName(), field);
             String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
-            String messageYes = String.format("%s['label.yes']", bundleName);
-            String messageNo = String.format("%s['label.no']", bundleName);
-            String expression = String.format("#{%s ? %s : %s}", bareExpression, messageYes, messageNo);
+            String messageYes = bundleName + "['label.yes']";
+            String messageNo = bundleName + "['label.no']";
+            String expression = "#{" + bareExpression + " ? " + messageYes + " : " + messageNo + "}";
             TagAttribute valueAttr = helper.createAttribute("value", expression);
             attrs.add(valueAttr);
         }

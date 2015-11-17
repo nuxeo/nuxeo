@@ -504,14 +504,12 @@ public class SelectionActionsBean implements Serializable {
     protected String getStringAttribute(UIComponent component, String name, boolean required) {
         Object value = component.getAttributes().get(name);
         if (required && value == null) {
-            throw new IllegalArgumentException(String.format("Component attribute with name '%s' cannot be null: %s",
-                    name, value));
+            throw new IllegalArgumentException("Component attribute with name '" + name + "' cannot be null: " + value);
         }
         if (value == null || value instanceof String) {
             return (String) value;
         }
-        throw new IllegalArgumentException(String.format("Component attribute with name '%s' is not a String: %s",
-                name, value));
+        throw new IllegalArgumentException("Component attribute with name '" + name + "' is not a String: " + value);
     }
 
     protected Object retrieveSourceComponentValue(UIComponent base, String targetId) {

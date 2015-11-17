@@ -111,7 +111,7 @@ public class UIMeta extends UIComponentBase {
             }
         } else {
             writer.writeAttribute("http-equiv", "Content-Type", "http-equiv");
-            writer.writeAttribute("content", String.format("text/html;charset=%s", getCharset()), "content");
+            writer.writeAttribute("content", "text/html;charset=" + getCharset(), "content");
         }
         String name = getName();
         if (!StringUtils.isBlank(name)) {

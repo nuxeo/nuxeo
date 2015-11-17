@@ -108,7 +108,7 @@ public class LocalThemeConfigAdapter extends AbstractLocalConfiguration<LocalThe
         if (theme == null || page == null) {
             return null;
         }
-        return String.format("%s/%s", theme, page);
+        return theme + "/" + page;
     }
 
 }

@@ -112,8 +112,7 @@ public class PageResourceHandler extends MetaTagHandler {
         }
         ResourceType rtype = resolveType(typeValue);
         if (rtype == null) {
-            log.error(String.format("Unsupported type '%s' on tag nxr:resourceBundle at %s", typeValue,
-                    tag.getLocation()));
+            log.error("Unsupported type '" + typeValue + "' on tag nxr:resourceBundle at " + tag.getLocation());
             return;
         }
 
@@ -286,8 +285,7 @@ public class PageResourceHandler extends MetaTagHandler {
             for (Resource r : rs) {
                 String uri = r.getURI();
                 if (StringUtils.isBlank(uri)) {
-                    log.error(String.format("Invalid resource '%s': no uri defined at %s", r.getName(),
-                            tag.getLocation()));
+                    log.error("Invalid resource '" + r.getName() + "': no uri defined at " + tag.getLocation());
                     continue;
                 }
                 TagAttributeImpl srcAttr = getTagAttribute("src", uri);

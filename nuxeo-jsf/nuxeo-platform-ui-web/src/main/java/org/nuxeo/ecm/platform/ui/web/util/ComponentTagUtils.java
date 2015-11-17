@@ -81,7 +81,7 @@ public final class ComponentTagUtils {
      */
     public static String getBareValueName(String valueReference) {
         if (!isStrictValueReference(valueReference)) {
-            throw new IllegalArgumentException(String.format("Invalid value reference '%s'", valueReference));
+            throw new IllegalArgumentException("Invalid value reference '" + valueReference + "'");
         }
         return valueReference.substring(2, valueReference.length() - 1);
     }
@@ -122,7 +122,7 @@ public final class ComponentTagUtils {
             return elExpression;
         } else {
             if (context == null) {
-                log.error(String.format("FacesContext is null => cannot resolve el expression '%s'", elExpression));
+                log.error("FacesContext is null => cannot resolve el expression '" + elExpression + "'");
                 return null;
             }
             // expression => evaluate
@@ -130,7 +130,7 @@ public final class ComponentTagUtils {
             try {
                 return app.evaluateExpressionGet(context, elExpression, Object.class);
             } catch (ELException e) {
-                log.error(String.format("Faces context: Error processing expression '%s'", elExpression), e);
+                log.error("Faces context: Error processing expression '" + elExpression + "'", e);
                 return null;
             }
         }
@@ -143,10 +143,10 @@ public final class ComponentTagUtils {
      */
     public static void applyValueExpression(FacesContext context, String elExpression, Object value) {
         if (!isStrictValueReference(elExpression)) {
-            log.warn(String.format("Cannot set value '%s' for expression '%s'", value, elExpression));
+            log.warn("Cannot set value '" + value + "' for expression '" + elExpression + "'");
         } else {
             if (context == null) {
-                log.error(String.format("FacesContext is null => cannot resolve el expression '%s'", elExpression));
+                log.error("FacesContext is null => cannot resolve el expression '" + elExpression + "'");
                 return;
             }
             Application app = context.getApplication();
@@ -156,7 +156,7 @@ public final class ComponentTagUtils {
                 ValueExpression vExpression = eFactory.createValueExpression(elContext, elExpression, Object.class);
                 vExpression.setValue(elContext, value);
             } catch (ELException e) {
-                log.error(String.format("Error setting value '%s' for expression '%s'", value, elExpression), e);
+                log.error("Error setting value '" + value + "' for expression '" + elExpression + "'", e);
             }
         }
     }
@@ -175,7 +175,7 @@ public final class ComponentTagUtils {
             return elExpression;
         } else {
             if (faceletContext == null) {
-                log.error(String.format("FaceletContext is null => cannot resolve el expression '%s'", elExpression));
+                log.error("FaceletContext is null => cannot resolve el expression '" + elExpression + "'");
                 return null;
             }
             // expression => evaluate
@@ -185,7 +185,7 @@ public final class ComponentTagUtils {
             try {
                 return expr.getValue(elContext);
             } catch (ELException e) {
-                log.error(String.format("Facelet context: Error processing expression '%s'", elExpression), e);
+                log.error("Facelet context: Error processing expression '" + elExpression + "'", e);
                 return null;
             }
         }

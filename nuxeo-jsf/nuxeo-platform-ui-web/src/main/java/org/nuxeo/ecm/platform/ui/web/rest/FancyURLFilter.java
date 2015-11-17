@@ -121,7 +121,9 @@ public class FancyURLFilter implements Filter {
             String url = httpRequest.getRequestURL().toString();
             if (DownloadHelper.isClientAbortError(e)) {
                 DownloadHelper.logClientAbort(e);
-                log.debug(String.format("Client disconnected from URL %s : %s", url, e.getMessage()));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Client disconnected from URL %s : %s", url, e.getMessage()));
+                }
             } else {
                 throw new IOException("On requestURL: " + url, e);
             }
@@ -129,7 +131,9 @@ public class FancyURLFilter implements Filter {
             String url = httpRequest.getRequestURL().toString();
             if (DownloadHelper.isClientAbortError(e)) {
                 DownloadHelper.logClientAbort(e);
-                log.debug(String.format("Client disconnected from URL %s : %s", url, e.getMessage()));
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Client disconnected from URL %s : %s", url, e.getMessage()));
+                }
             } else {
                 throw new ServletException("On requestURL: " + url, e);
             }

@@ -75,7 +75,7 @@ public class PaletteParser {
         // optimize #aabbcc to #abc
         if (hexcolor.charAt(1) == hexcolor.charAt(2) && hexcolor.charAt(3) == hexcolor.charAt(4)
                 && hexcolor.charAt(5) == hexcolor.charAt(6)) {
-            return String.format("#%s%s%s", hexcolor.charAt(1), hexcolor.charAt(4), hexcolor.charAt(6));
+            return "#" + hexcolor.charAt(1) + hexcolor.charAt(4) + hexcolor.charAt(6);
         }
         return hexcolor.toString();
     }

@@ -55,13 +55,13 @@ public class NuxeoUnknownResource extends ViewResource {
     public NuxeoUnknownResource(String path) {
         super();
         this.path = path;
-        errorMessage = String.format("ERROR: facelet not found at '%s'", path);
+        errorMessage = "ERROR: facelet not found at '" + path + "'";
     }
 
     @Override
     public URL getURL() {
         try {
-            String urlPath = String.format("%s%s", MARKER, path);
+            String urlPath = MARKER + path;
             return new URL("", "", -1, urlPath, new NuxeoNotFoundResourceHandler());
         } catch (MalformedURLException e) {
             return null;
@@ -92,8 +92,8 @@ public class NuxeoUnknownResource extends ViewResource {
 
             @Override
             public InputStream getInputStream() throws IOException {
-                String msg = String.format("<span><span style=\"color:red;font-weight:bold;\">%s</span><br/></span>",
-                        StringEscapeUtils.escapeHtml(errorMessage));
+                String msg = "<span><span style=\"color:red;font-weight:bold;\">"
+                        + StringEscapeUtils.escapeHtml(errorMessage) + "</span><br/></span>";
                 return new ByteArrayInputStream(msg.getBytes());
             }
         }

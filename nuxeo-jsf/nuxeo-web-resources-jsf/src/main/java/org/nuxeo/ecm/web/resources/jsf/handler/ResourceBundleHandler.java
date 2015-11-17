@@ -67,8 +67,7 @@ public class ResourceBundleHandler extends PageResourceHandler {
         }
         ResourceType rtype = resolveType(typeValue);
         if (rtype == null) {
-            log.error(String.format("Unsupported type '%s' on tag nxr:resourceBundle at %s", typeValue,
-                    tag.getLocation()));
+            log.error("Unsupported type '" + typeValue + "' on tag nxr:resourceBundle at " + tag.getLocation());
             return;
         }
 

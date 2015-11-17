@@ -196,7 +196,7 @@ public class LayoutTagHandler extends TagHandler {
                 // resolve layout instance given as attribute
                 layoutInstance = (Layout) layout.getObject(ctx, Layout.class);
                 if (layoutInstance == null) {
-                    String errMsg = String.format("Layout not found");
+                    String errMsg = "Layout instance not found";
                     applyErrorHandler(ctx, parent, helper, errMsg);
                 } else {
                     Map<String, ValueExpression> vars = getVariablesForLayoutBuild(ctx, layoutInstance.getMode());
@@ -248,7 +248,7 @@ public class LayoutTagHandler extends TagHandler {
                         layoutInstance = layoutService.getLayout(ctx, layoutName, layoutCategory, modeValue, valueName,
                                 selectedRowsValue, selectAllByDefaultValue);
                         if (layoutInstance == null) {
-                            String errMsg = String.format("Layout '%s' not found", layoutName);
+                            String errMsg = "Layout '" + layoutName + "' not found";
                             applyErrorHandler(ctx, parent, helper, errMsg);
                         } else {
                             applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
@@ -379,7 +379,7 @@ public class LayoutTagHandler extends TagHandler {
                 // apply
                 handler.apply(ctx, parent);
             } else {
-                String errMsg = String.format("Missing template property for layout '%s'", layoutInstance.getName());
+                String errMsg = "Missing template property for layout '" + layoutInstance.getName() + "'";
                 applyErrorHandler(ctx, parent, helper, errMsg);
             }
         }
@@ -415,7 +415,7 @@ public class LayoutTagHandler extends TagHandler {
         // expose layout properties too
         for (Map.Entry<String, Serializable> prop : layoutInstance.getProperties().entrySet()) {
             String key = prop.getKey();
-            String name = String.format("%s_%s", RenderVariables.layoutVariables.layoutProperty.name(), key);
+            String name = RenderVariables.layoutVariables.layoutProperty.name() + "_" + key;
             String value;
             Serializable valueInstance = prop.getValue();
             if (!layoutService.referencePropertyAsExpression(key, valueInstance, null, null, null, null)) {
@@ -424,7 +424,7 @@ public class LayoutTagHandler extends TagHandler {
             } else {
                 // create a reference so that it's a real expression and it's
                 // not kept (cached) in a component value on ajax refresh
-                value = String.format("#{%s.properties.%s}", RenderVariables.layoutVariables.layout.name(), key);
+                value = "#{" + RenderVariables.layoutVariables.layout.name() + ".properties." + key + "}";
             }
             vars.put(name, eFactory.createValueExpression(ctx, value, Object.class));
         }
@@ -446,7 +446,7 @@ public class LayoutTagHandler extends TagHandler {
         }
         // use the default dev handler for widget types
         TagAttribute attr = helper.createAttribute("layout",
-                String.format("#{%s}", RenderVariables.layoutVariables.layout.name()));
+                "#{" + RenderVariables.layoutVariables.layout.name() + "}");
         TagAttributes devWidgetAttributes = FaceletHandlerHelper.getTagAttributes(attr);
         TagConfig devWidgetConfig = TagConfigFactory.createTagConfig(config, layout.getTagConfigId(),
                 devWidgetAttributes, new org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler());

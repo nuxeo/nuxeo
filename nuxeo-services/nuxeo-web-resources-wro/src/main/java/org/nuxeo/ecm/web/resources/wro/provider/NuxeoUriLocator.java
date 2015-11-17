@@ -54,7 +54,7 @@ public class NuxeoUriLocator implements UriLocator {
         if (resource != null) {
             String ruri = resource.getURI();
             if (ruri == null) {
-                log.error(String.format("Cannot handle resource '%s': no resolved uri", resource.getName()));
+                log.error("Cannot handle resource '" + resource.getName() + "': no resolved uri");
                 return null;
             }
             final UriLocator uriLocator = uriLocatorFactory.getInstance(ruri);
@@ -73,7 +73,7 @@ public class NuxeoUriLocator implements UriLocator {
     }
 
     public static String getUri(Resource resource) {
-        return String.format("%s%s", Resource.PREFIX, resource.getName());
+        return Resource.PREFIX + resource.getName();
     }
 
     public static boolean isProcessorEnabled(String alias, String uri) {

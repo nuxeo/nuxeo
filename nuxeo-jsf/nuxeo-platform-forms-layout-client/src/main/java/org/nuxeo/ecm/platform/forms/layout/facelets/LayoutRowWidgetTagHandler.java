@@ -84,7 +84,7 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
         LayoutRow row = null;
         String rowVariableName = RenderVariables.rowVariables.layoutRow.name();
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        TagAttribute rowAttribute = helper.createAttribute(rowVariableName, String.format("#{%s}", rowVariableName));
+        TagAttribute rowAttribute = helper.createAttribute(rowVariableName, "#{" + rowVariableName + "}");
         if (rowAttribute != null) {
             row = (LayoutRow) rowAttribute.getObject(ctx, LayoutRow.class);
         }
@@ -122,12 +122,11 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
                 level = Integer.valueOf(widget.getLevel());
                 tagConfigId = widget.getTagConfigId();
             }
-            variables.put(String.format("%s_%s", RenderVariables.widgetVariables.widget.name(), level), widgetVe);
+            variables.put(RenderVariables.widgetVariables.widget.name() + "_" + level, widgetVe);
             ValueExpression widgetIndexVe = eFactory.createValueExpression(Integer.valueOf(widgetCounter),
                     Integer.class);
             variables.put(RenderVariables.widgetVariables.widgetIndex.name(), widgetIndexVe);
-            variables.put(String.format("%s_%s", RenderVariables.widgetVariables.widgetIndex.name(), level),
-                    widgetIndexVe);
+            variables.put(RenderVariables.widgetVariables.widgetIndex.name() + "_" + level, widgetIndexVe);
 
             // XXX: expose widget controls too, need to figure out
             // why controls cannot be references to widget.controls like
@@ -135,7 +134,7 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             if (widget != null) {
                 for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
                     String key = ctrl.getKey();
-                    String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetControl.name(), key);
+                    String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
                     Serializable value = ctrl.getValue();
                     variables.put(name, eFactory.createValueExpression(value, Object.class));
                 }

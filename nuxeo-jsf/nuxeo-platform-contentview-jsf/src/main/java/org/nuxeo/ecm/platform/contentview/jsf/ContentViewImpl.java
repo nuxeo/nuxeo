@@ -430,8 +430,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         FacesContext context = FacesContext.getCurrentInstance();
         Object value = ComponentTagUtils.resolveElExpression(context, cacheKey);
         if (value != null && !(value instanceof String)) {
-            log.error(String.format("Error processing expression '%s', " + "result is not a String: %s", cacheKey,
-                    value));
+            log.error("Error processing expression '" + cacheKey + "', result is not a String: " + value);
         }
         return (String) value;
     }
@@ -506,8 +505,8 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
                 FacesContext context = FacesContext.getCurrentInstance();
                 Object value = ComponentTagUtils.resolveElExpression(context, searchDocumentModelBinding);
                 if (value != null && !(value instanceof DocumentModel)) {
-                    log.error(String.format("Error processing expression '%s', " + "result is not a DocumentModel: %s",
-                            searchDocumentModelBinding, value));
+                    log.error("Error processing expression '" + searchDocumentModelBinding
+                            + "', result is not a DocumentModel: " + value);
                 } else {
                     setSearchDocumentModel((DocumentModel) value);
                 }
@@ -565,8 +564,8 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
                 public Object apply(FacesContext ctx) {
                     Object value = ComponentTagUtils.resolveElExpression(ctx, resultColumnsBinding);
                     if (value != null && !(value instanceof List)) {
-                        log.error(String.format("Error processing expression '%s', " + "result is not a List: %s",
-                                resultColumnsBinding, value));
+                        log.error("Error processing expression '" + resultColumnsBinding + "', result is not a List: "
+                                + value);
                     }
                     return value;
                 }
@@ -609,8 +608,8 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         try {
             Object value = ComponentTagUtils.resolveElExpression(context, sortInfosBinding);
             if (value != null && !(value instanceof List)) {
-                log.error(String.format("Error processing expression '%s', " + "result is not a List: %s",
-                        sortInfosBinding, value));
+                log.error("Error processing expression '" + sortInfosBinding + "', result is not a List: '" + value
+                        + "'");
             }
             if (value == null) {
                 return null;
@@ -666,8 +665,8 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
                 try {
                     return Long.valueOf((String) value);
                 } catch (NumberFormatException e) {
-                    log.error(String.format("Error processing expression '%s', " + "result is not a Long: %s",
-                            pageSizeBinding, value));
+                    log.error("Error processing expression '" + pageSizeBinding + "', result is not a Long: '" + value
+                            + "'");
                 }
             } else if (value instanceof Number) {
                 return Long.valueOf(((Number) value).longValue());
@@ -679,22 +678,19 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
     }
 
     protected Object addSearchDocumentToELContext(FacesContext facesContext) {
-        if (facesContext == null) {
-            log.error(String.format("Faces context is null: cannot expose variable '%s' " + "for content view '%s'",
-                    SEARCH_DOCUMENT_EL_VARIABLE, getName()));
+        ExternalContext econtext = null;
+        if (facesContext != null) {
+            econtext = facesContext.getExternalContext();
+        }
+        if (facesContext == null || econtext == null) {
+            log.error("JSF context is null: cannot expose variable '" + SEARCH_DOCUMENT_EL_VARIABLE
+                    + "' for content view '" + getName() + "'");
             return null;
         }
-        ExternalContext econtext = facesContext.getExternalContext();
-        if (econtext != null) {
-            Map<String, Object> requestMap = econtext.getRequestMap();
-            Object previousValue = requestMap.get(SEARCH_DOCUMENT_EL_VARIABLE);
-            requestMap.put(SEARCH_DOCUMENT_EL_VARIABLE, searchDocumentModel);
-            return previousValue;
-        } else {
-            log.error(String.format("External context is null: cannot expose variable '%s' " + "for content view '%s'",
-                    SEARCH_DOCUMENT_EL_VARIABLE, getName()));
-            return null;
-        }
+        Map<String, Object> requestMap = econtext.getRequestMap();
+        Object previousValue = requestMap.get(SEARCH_DOCUMENT_EL_VARIABLE);
+        requestMap.put(SEARCH_DOCUMENT_EL_VARIABLE, searchDocumentModel);
+        return previousValue;
     }
 
     protected void removeSearchDocumentFromELContext(FacesContext facesContext, Object previousValue) {
@@ -710,9 +706,8 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
                 requestMap.put(SEARCH_DOCUMENT_EL_VARIABLE, previousValue);
             }
         } else {
-            log.error(String.format(
-                    "External context is null: cannot dispose variable '%s' " + "for content view '%s'",
-                    SEARCH_DOCUMENT_EL_VARIABLE, getName()));
+            log.error("External context is null: cannot dispose variable '" + SEARCH_DOCUMENT_EL_VARIABLE
+                    + "' for content view '" + getName() + "'");
         }
     }
 
@@ -748,14 +743,47 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
 
     @Override
     public String toString() {
-        return String.format("ContentViewImpl [name=%s, title=%s, " + "translateTitle=%s, iconPath=%s, "
-                + "selectionList=%s, pagination=%s, " + "actionCategories=%s, searchLayout=%s, "
-                + "resultLayouts=%s, currentResultLayout=%s, "
-                + "flags=%s, cacheKey=%s, cacheSize=%s, currentPageSize=%s"
-                + "refreshEventNames=%s, resetEventNames=%s," + "useGlobalPageSize=%s, searchDocumentModel=%s]", name,
-                title, Boolean.valueOf(translateTitle), iconPath, selectionList, pagination, actionCategories,
-                searchLayout, resultLayouts, currentResultLayout, flags, cacheKey, cacheSize, currentPageSize,
-                refreshEventNames, resetEventNames, Boolean.valueOf(useGlobalPageSize), searchDocumentModel);
+        final StringBuilder buf = new StringBuilder();
+        buf.append("ContentViewImpl")
+           .append(" {")
+           .append(" name=")
+           .append(name)
+           .append(", title=")
+           .append(title)
+           .append(", translateTitle=")
+           .append(translateTitle)
+           .append(", iconPath=")
+           .append(iconPath)
+           .append(", selectionList=")
+           .append(selectionList)
+           .append(", pagination=")
+           .append(pagination)
+           .append(", actionCategories=")
+           .append(actionCategories)
+           .append(", searchLayout=")
+           .append(searchLayout)
+           .append(", resultLayouts=")
+           .append(resultLayouts)
+           .append(", currentResultLayout=")
+           .append(currentResultLayout)
+           .append(", flags=")
+           .append(flags)
+           .append(", cacheKey=")
+           .append(cacheKey)
+           .append(", cacheSize=")
+           .append(cacheSize)
+           .append(", currentPageSize=")
+           .append(currentPageSize)
+           .append(", refreshEventNames=")
+           .append(refreshEventNames)
+           .append(", resetEventNames=")
+           .append(resetEventNames)
+           .append(", useGlobalPageSize=")
+           .append(useGlobalPageSize)
+           .append(", searchDocumentModel=")
+           .append(searchDocumentModel)
+           .append('}');
+        return buf.toString();
     }
 
     /*

@@ -515,7 +515,6 @@ public class UIInputFile extends UIInput implements NamingContainer {
         notifyPreviousErrors(context);
 
         // not ours to close
-        @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
         Blob blob = null;
         try {
@@ -570,19 +569,18 @@ public class UIInputFile extends UIInput implements NamingContainer {
             StringBuffer htmlBuffer = new StringBuffer();
             htmlBuffer.append("<input");
             for (Map.Entry<String, String> prop : props.entrySet()) {
-                htmlBuffer.append(String.format(" %s=\"%s\"", prop.getKey(), prop.getValue()));
+                htmlBuffer.append(" " + prop.getKey() + "=\"" + prop.getValue() + "\"");
             }
             htmlBuffer.append(" />");
             writer.write(htmlBuffer.toString());
             writer.endElement("td");
             writer.startElement("td", this);
             writer.writeAttribute("class", "fieldColumn", null);
-            String html = "<label for=\"%s\" style=\"float:left\">%s</label>";
             String label = (String) ComponentUtils.getAttributeValue(this, radioChoice + "Label", null);
             if (label == null) {
                 label = ComponentUtils.translate(context, "label.inputFile." + radioChoice + "Choice");
             }
-            writer.write(String.format(html, id, label));
+            writer.write("<label for=\"" + id + "\" style=\"float:left\">" + label + "</label>");
             writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
             if (InputFileChoice.isKeepOrKeepTemp(radioChoice)) {
                 UIComponent downloadFacet = getFacet(DOWNLOAD_FACET_NAME);
@@ -609,12 +607,11 @@ public class UIInputFile extends UIInput implements NamingContainer {
                         String onClick = "document.getElementById('%s').checked='checked'";
                         filenameComp.setOnclick(String.format(onClick, id));
                         writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
-                        html = "<label for=\"%s\">%s</label>";
                         label = (String) ComponentUtils.getAttributeValue(this, "editFilenameLabel", null);
                         if (label == null) {
                             label = ComponentUtils.translate(context, "label.inputFile.editFilename");
                         }
-                        writer.write(String.format(html, filenameComp.getId(), label));
+                        writer.write("<label for=\"" + filenameComp.getId() + "\">" + label + "</label>");
                         writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
                         ComponentUtils.encodeComponent(context, filenameComp);
                     }

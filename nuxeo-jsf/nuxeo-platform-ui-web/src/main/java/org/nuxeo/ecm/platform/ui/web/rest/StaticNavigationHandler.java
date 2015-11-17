@@ -110,7 +110,7 @@ public class StaticNavigationHandler {
         }
         // try to guess the view name
         String viewId = "/" + outcome + ".faces";
-        log.warn(String.format("Guessing view id for outcome '%s': use '%s'", outcome, viewId));
+        log.warn("Guessing view id for outcome '" + outcome + "': use '" + viewId + "'");
         return viewId;
     }
 

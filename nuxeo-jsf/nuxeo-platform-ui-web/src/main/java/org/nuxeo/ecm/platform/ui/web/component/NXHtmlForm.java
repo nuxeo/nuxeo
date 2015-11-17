@@ -43,8 +43,8 @@ public class NXHtmlForm extends HtmlForm {
             UIComponent parent = getParent();
             while (parent != null) {
                 if (parent instanceof NXHtmlForm) {
-                    log.error(String.format("Form component with id '%s' is already surrounded"
-                            + " by a form with id '%s'", getId(), parent.getId()));
+                    log.error("Form component with id '" + getId() + "' is already surrounded by a form with id '"
+                            + parent.getId() + "'");
                     break;
                 }
                 parent = parent.getParent();

@@ -44,12 +44,11 @@ public class PageResourceRenderer extends ResourceBundleRenderer {
         String name = (String) attributes.get("name");
         String type = (String) attributes.get("type");
         if (StringUtils.isBlank(type)) {
-            log.error(String.format("Cannot encode page with empty type at %s", component.getClientId()));
+            log.error("Cannot encode page with empty type at %s" + component.getClientId());
             return;
         }
         if (!ResourceType.css.equals(type) && !ResourceType.js.equals(type)) {
-            log.error(String.format("Unsupported type '%s' to encode page '%s' at %s", type, name,
-                    component.getClientId()));
+            log.error("Unsupported type '" + type + "' to encode page '" + name + "' at " + component.getClientId());
             return;
         }
         if (ResourceType.css.equals(type)) {

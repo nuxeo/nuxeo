@@ -115,8 +115,8 @@ public final class SeamComponentCallHelper {
             }
 
             if (type == null) {
-                throw new RuntimeException(String.format("Type cannot be determined for component [%s]. "
-                        + "Please ensure that it has a " + "local interface.", component));
+                throw new RuntimeException("Type cannot be determined for component [" + component
+                        + "]. Please ensure that it has a local interface.");
             }
         }
 

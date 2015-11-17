@@ -78,7 +78,7 @@ public class FileUtils {
             }
             blob.setMimeType(detectedMimeType);
         } catch (MimetypeDetectionException e) {
-            log.error(String.format("could not fetch mimetype for file %s", filename), e);
+            log.error("Could not fetch mimetype for file " + filename, e);
         } catch (IOException e) {
             log.error(e);
         }

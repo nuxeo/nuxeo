@@ -135,21 +135,32 @@ public class NXMessagesRenderer extends MessagesRenderer implements ComponentSys
 
             writer.startElement("script", messages);
             writer.writeAttribute("type", "text/javascript", null);
-
-            String scriptContent = "jQuery(document).ready(function() {\n" + "  jQuery.ambiance({\n" + "    "
-                    + "message: \"%s\",\n" + "    title: \"%s\",\n" + "    type: \"%s\",\n" + "    className: \"%s\",\n"
-                    + "    timeout: \"%d\"" + "  })\n" + "});\n";
-            String formattedScriptContent;
+            String message = "";
             if (showDetail) {
-                formattedScriptContent = String.format(scriptContent, StringEscapeUtils.escapeJavaScript(detail),
-                        StringEscapeUtils.escapeJavaScript(summary), errorType, severityStyleClass, timeout);
-            } else {
-                formattedScriptContent = String.format(scriptContent, "", StringEscapeUtils.escapeJavaScript(summary),
-                        errorType, severityStyleClass, timeout);
+                message = StringEscapeUtils.escapeJavaScript(detail);
             }
-            writer.writeText(formattedScriptContent, null);
+            String scriptContent = new StringBuilder().append("jQuery(document).ready(function() {\n")
+                                                      .append("  jQuery.ambiance({\n")
+                                                      .append("    message: \"")
+                                                      .append(message)
+                                                      .append("\",\n")
+                                                      .append("    title: \"")
+                                                      .append(StringEscapeUtils.escapeJavaScript(summary))
+                                                      .append("\",\n")
+                                                      .append("    type: \"")
+                                                      .append(errorType)
+                                                      .append("\",\n")
+                                                      .append("    className: \"")
+                                                      .append(severityStyleClass)
+                                                      .append("\",\n")
+                                                      .append("    timeout: \"")
+                                                      .append(timeout)
+                                                      .append("\"")
+                                                      .append("  })\n")
+                                                      .append("});\n")
+                                                      .toString();
+            writer.writeText(scriptContent, null);
             writer.endElement("script");
-
         }
     }
 

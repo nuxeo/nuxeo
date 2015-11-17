@@ -92,9 +92,8 @@ public class TabActionsSelection implements Serializable {
                     }
                 }
                 if (!categoryFound) {
-                    log.error(String.format("Cannot set current action '%s' for category"
-                            + " '%s' as this action does not " + "hold the given category.", tabAction.getId(),
-                            category));
+                    log.error("Cannot set current action '" + tabAction.getId() + "' for category '" + category
+                            + "' as this action does not hold the given category.");
                 }
             }
         } else {
@@ -126,9 +125,9 @@ public class TabActionsSelection implements Serializable {
                 set = true;
             } else {
                 if (actionManager.getAction(tabId) != null) {
-                    log.warn(String.format("Cannot set current tab with id '%s': " + "action is not enabled.", tabId));
+                    log.warn("Cannot set current tab with id '" + tabId + "': action is not enabled.");
                 } else {
-                    log.error(String.format("Cannot set current tab with id '%s': " + "action does not exist.", tabId));
+                    log.error("Cannot set current tab with id '" + tabId + "': action does not exist.");
                 }
             }
         }
@@ -234,7 +233,7 @@ public class TabActionsSelection implements Serializable {
                         }
                         setCurrentTabId(actionManager, actionContext, category, actionId, subTabsIds);
                     } else {
-                        log.error(String.format("Cannot set current tab from given encoded action: '%s'", encodedAction));
+                        log.error("Cannot set current tab from given encoded action: '" + encodedAction + "'");
                     }
                 }
             }

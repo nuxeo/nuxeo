@@ -98,7 +98,7 @@ public class AliasValueExpression extends ValueExpression {
             res = ve.getValue(context);
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Resolved expression var='%s' for mapper with id '%s': %s", var, id, res));
+            log.debug("Resolved expression var='" + var + "' for mapper with id '" + id + "': " + res);
         }
         return res;
     }
@@ -119,8 +119,7 @@ public class AliasValueExpression extends ValueExpression {
             ve.setValue(context, value);
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Resolved expression var='%s' for mapper with id '%s' and set value: %s", var, id,
-                    value));
+            log.debug("Resolved expression var='" + var + "' for mapper with id '" + id + "' and set value: " + value);
         }
     }
 
@@ -130,16 +129,14 @@ public class AliasValueExpression extends ValueExpression {
 
         if (vm == null) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("No alias variable mapper with id '%s' " + "found in request for var '%s'", id,
-                        var));
+                log.debug("No alias variable mapper with id '" + id + "' found in request for var '" + var + "'");
             }
             return null;
         }
 
         ValueExpression ve = vm.resolveVariable(var);
         if (ve == null) {
-            log.error(String.format("Variable for var '%s' not found in alias variable mapper " + "with id '%s'", var,
-                    id));
+            log.error("Variable for var '" + var + "' not found in alias variable mapper with id '" + id + "'");
             return null;
         }
 

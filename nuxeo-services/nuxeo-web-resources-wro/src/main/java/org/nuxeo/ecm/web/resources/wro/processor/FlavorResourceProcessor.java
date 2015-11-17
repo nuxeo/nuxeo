@@ -69,8 +69,9 @@ public class FlavorResourceProcessor extends AbstractFlavorProcessor {
             } else {
                 String content = IOUtils.toString(reader);
                 for (Map.Entry<String, String> preset : presets.entrySet()) {
-                    content = Pattern.compile(String.format("\"%s\"", preset.getKey()), Pattern.LITERAL).matcher(
-                            content).replaceAll(Matcher.quoteReplacement(preset.getValue()));
+                    content = Pattern.compile("\"" + preset.getKey() + "\"", Pattern.LITERAL)
+                                     .matcher(content)
+                                     .replaceAll(Matcher.quoteReplacement(preset.getValue()));
                 }
                 writer.write(content);
                 writer.flush();

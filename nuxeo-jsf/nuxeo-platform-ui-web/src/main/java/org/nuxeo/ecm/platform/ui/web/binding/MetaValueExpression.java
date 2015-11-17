@@ -133,7 +133,7 @@ public class MetaValueExpression extends ValueExpression implements Serializable
                     try {
                         res = newExpr.getValue(nxcontext);
                     } catch (ELException err) {
-                        log.error(String.format("Error processing expression %s: %s", expression, err));
+                        log.error("Error processing expression " + expression + ": " + err);
                         res = null;
                     }
                 } else {

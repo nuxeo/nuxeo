@@ -161,9 +161,19 @@ public class ContentViewLayoutImpl implements ContentViewLayout {
 
     @Override
     public String toString() {
-        return String.format("ContentViewLayoutImpl [name=%s, title=%s, "
-                + "translateTitle=%s, iconPath=%s, showCSVExport=%s]", name, title, Boolean.valueOf(translateTitle),
-                iconPath, new Boolean(showCSVExport));
+        final StringBuilder buf = new StringBuilder();
+        buf.append("ContentViewLayoutImpl")
+           .append(" {")
+           .append(" name=")
+           .append(name)
+           .append(", title=")
+           .append(title)
+           .append(", translateTitle=")
+           .append(translateTitle)
+           .append(", iconPath=")
+           .append(iconPath)
+           .append('}');
+        return buf.toString();
     }
 
     @Override

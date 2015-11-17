@@ -416,9 +416,7 @@ public class URLPolicyServiceImpl implements URLPolicyService {
                     try {
                         ve.setValue(context, value);
                     } catch (ELException e) {
-                        log.error(
-                                String.format("Could not apply request parameter %s " + "to expression %s", value, expr),
-                                e);
+                        log.error("Could not apply request parameter '" + value + "' to expression '" + expr + "'", e);
                     }
                 }
             }

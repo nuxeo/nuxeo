@@ -107,8 +107,19 @@ public class ContentViewHeader implements Serializable, Comparable<ContentViewHe
 
     @Override
     public String toString() {
-        return String.format("ContentViewHeader [name=%s, title=%s, " + "translateTitle=%s, iconPath=%s]", name, title,
-                Boolean.valueOf(translateTitle), iconPath);
+        final StringBuilder buf = new StringBuilder();
+        buf.append("ContentViewHeader")
+           .append(" {")
+           .append(" name=")
+           .append(name)
+           .append(", title=")
+           .append(title)
+           .append(", translateTitle=")
+           .append(translateTitle)
+           .append(", iconPath=")
+           .append(iconPath)
+           .append('}');
+        return buf.toString();
     }
 
 }

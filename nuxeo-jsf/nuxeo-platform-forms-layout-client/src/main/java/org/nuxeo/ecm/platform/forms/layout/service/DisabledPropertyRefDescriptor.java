@@ -54,7 +54,7 @@ public class DisabledPropertyRefDescriptor implements Serializable {
     protected Boolean enabled = Boolean.TRUE;
 
     public String getId() {
-        return String.format("%s/%s/%s/%s/%s", name, widgetType, widgetTypeCategory, widgetMode, template);
+        return name + "/" + widgetType + "/" + widgetTypeCategory + "/" + widgetMode + "/" + template;
     }
 
     public String getName() {
