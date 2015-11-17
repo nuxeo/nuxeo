@@ -74,6 +74,7 @@ public class EmailBasedUserResolver extends UserResolver {
         try {
             UserManager userManager = Framework.getLocalService(UserManager.class);
             user.setPropertyValue(userManager.getUserEmailField(), userInfo.getEmail());
+            userManager.updateUser(user);
         } catch (NuxeoException e) {
             log.error("Error while search user in UserManager using email " + userInfo.getEmail(), e);
             return null;
