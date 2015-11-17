@@ -45,7 +45,7 @@ public class UserProfileImporterWork extends AbstractWork {
 
     @Override
     public void work() {
-        initSession();
+        openSystemSession();
         importer = new UserProfileImporter();
         importer.doImport(session);
     }
