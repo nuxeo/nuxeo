@@ -105,7 +105,7 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
 
         @Override
         public void work() {
-            initSession();
+            openSystemSession();
             DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
             GraphNode node = nodeDoc.getAdapter(GraphNode.class);
             if (node == null) {
