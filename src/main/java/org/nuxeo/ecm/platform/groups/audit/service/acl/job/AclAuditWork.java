@@ -86,7 +86,7 @@ public class AclAuditWork extends AbstractWork {
             TransactionHelper.startTransaction(timeout);
         }
         setProgress(Progress.PROGRESS_0_PC);
-        initSession();
+        openSystemSession();
         doAudit();
         onAuditDone();
         setProgress(Progress.PROGRESS_100_PC);
