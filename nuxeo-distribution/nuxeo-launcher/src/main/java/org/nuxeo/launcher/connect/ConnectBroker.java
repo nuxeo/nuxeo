@@ -921,6 +921,7 @@ public class ConnectBroker {
         try {
             lines = FileUtils.readLines(commandsFile);
             for (String line : lines) {
+                boolean lineError = false;
                 line = line.trim();
                 String[] split = line.split("\\s+", 2);
                 if (split.length == 2) {
@@ -974,6 +975,7 @@ public class ConnectBroker {
                         }
                     } else {
                         errorValue = 1;
+                        lineError = true;
                     }
                 } else if (split.length == 1) {
                     if (line.length() > 0 && !line.startsWith("#")) {
@@ -981,6 +983,7 @@ public class ConnectBroker {
                             if ("init".equals(line)) {
                                 if (!addDistributionPackages()) {
                                     errorValue = 1;
+                                    lineError = true;
                                 }
                             } else {
                                 if (useResolver) {
@@ -1001,7 +1004,7 @@ public class ConnectBroker {
                         }
                     }
                 }
-                if (errorValue != 0) {
+                if (lineError) {
                     log.error("Error processing pending package/command: " + line);
                 }
             }
