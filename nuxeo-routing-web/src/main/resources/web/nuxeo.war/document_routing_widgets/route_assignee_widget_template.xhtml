@@ -8,10 +8,10 @@
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
   <h:panelGroup rendered="#{fn:startsWith(fieldOrValue, 'group:')}">
-    <nxu:set var="group" value="#{fn:split(fieldOrValue, ':')[1]}">
+    <nxu:set var="group" value="#{fieldOrValue.substring(6)}">
       <span class="group creator">
          <h:commandLink action="#{groupManagementActions.viewGroup(group)}">
-          <h:outputText value="#{group}"/>
+          <h:outputText value="#{nxu:groupFullName(group)}"/>
          </h:commandLink>
       </span>
     </nxu:set>
