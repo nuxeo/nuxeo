@@ -34,7 +34,7 @@ object ScnCreateDocuments {
           exec()
         }.pause(pause)
       }
-    )
+    ).feed(Feeders.admins).exec(NuxeoRest.waitForAsyncJobs())
   }
 
 }

@@ -23,11 +23,10 @@ import io.gatling.http.Predef._
 object ScnWaitForAsync {
 
   def get = () => {
-    scenario("NuxeoImporter")
+    scenario("WaitForAsync")
       .feed(Feeders.admins)
-      .exec(NuxeoImporter.waitForAsyncJobs())
+      .exec(NuxeoRest.waitForAsyncJobs())
   }
-
 
 }
 

@@ -32,7 +32,7 @@ object ScnUpdateDocuments {
           .exec(NuxeoRest.updateDocument())
           .pause(pause)
       }
-    )
+    ).feed(Feeders.admins).exec(NuxeoRest.waitForAsyncJobs())
   }
 
 }

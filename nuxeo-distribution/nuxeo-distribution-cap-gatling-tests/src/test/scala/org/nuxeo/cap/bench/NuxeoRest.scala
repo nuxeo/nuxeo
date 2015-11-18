@@ -279,6 +279,14 @@ object NuxeoRest {
       .check(status.in(200))
   }
 
+  def waitForAsyncJobs = () => {
+     http("Wait For Async")
+            .post(Constants.AUTOMATION_PATH + "/Elasticsearch.WaitForIndexing")
+            .basicAuth("${adminId}", "${adminPassword}")
+            .headers(Headers.base)
+            .header("content-type", "application/json+nxrequest")
+            .body(StringBody( """{"params":{"timeoutSecond": "3600", "refresh": "true"},"context":{}}"""))
+  }
 
   def reindexAll = () => {
     exitBlockOnFail {
@@ -289,15 +297,7 @@ object NuxeoRest {
           .headers(Headers.base)
           .header("content-type", "application/json+nxrequest")
           .body(StringBody( """{"params":{},"context":{}}"""))
-      )
-        .exec(
-          http("Wait For indexing")
-            .post(Constants.AUTOMATION_PATH + "/Elasticsearch.WaitForIndexing")
-            .basicAuth("${adminId}", "${adminPassword}")
-            .headers(Headers.base)
-            .header("content-type", "application/json+nxrequest")
-            .body(StringBody( """{"params":{"timeoutSecond": "3600", "refresh": "true"},"context":{}}"""))
-        )
+      ).exec(waitForAsyncJobs())
     }
 
   }

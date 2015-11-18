@@ -38,7 +38,7 @@ object ScnCRUD {
           .exec(NuxeoRest.getDocument())
           .pause(pause)
       }
-    )
+    ).feed(Feeders.admins).exec(NuxeoRest.waitForAsyncJobs())
   }
 
 }
