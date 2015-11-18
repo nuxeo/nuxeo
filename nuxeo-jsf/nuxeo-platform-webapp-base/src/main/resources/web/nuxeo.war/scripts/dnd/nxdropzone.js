@@ -285,7 +285,6 @@ DropZoneUIHandler.prototype.showContinue = function (batchId) {
   jQuery("#dndMsgUploadCompleted").css("display", "block");
   var continueButtonInBar = jQuery("#dropzone-bar-btn");
   continueButtonInBar.css("visibility", "visible");
-  continueButtonInBar.attr("value", "Continue");
 
   // Show the continue button at center of dropzone
   var continueButton = this.positionContinueButton();
