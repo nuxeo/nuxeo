@@ -6,6 +6,7 @@ import org.nuxeo.ecm.platform.importer.executor.AbstractImporterExecutor;
 import org.nuxeo.ecm.platform.importer.log.BufferredLogger;
 import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,6 +78,8 @@ public abstract class AbstractJaxRSImporterExecutor extends AbstractImporterExec
     @GET
     @Path("waitForAsyncJobs")
     public Response waitForAsyncJobs(@QueryParam("timeoutInSeconds") Integer timeoutInSeconds) {
+        // do not maintain a tx for this
+        TransactionHelper.commitOrRollbackTransaction();
         WorkManager workManager = Framework.getService(WorkManager.class);
         if (timeoutInSeconds == null) {
             timeoutInSeconds = 120;
