@@ -25,14 +25,18 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.runtime.api.Framework;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static java.lang.Long.max;
+
 /**
- * Returns tasks assigned to current user or one of its groups.
+ * Wait for Elasticsearch indexing background job
  *
  * @since 8.1
  */
@@ -62,8 +66,13 @@ public class ElasticsearchWaitForIndexingOperation {
 
     @OperationMethod
     public Boolean run() {
+        long start = System.currentTimeMillis();
+        WorkManager workManager = Framework.getService(WorkManager.class);
         try {
-            esa.prepareWaitForIndexing().get(timeout, TimeUnit.SECONDS);
+            if (!workManager.awaitCompletion(timeout, TimeUnit.SECONDS)) {
+                throw new TimeoutException();
+            }
+            esa.prepareWaitForIndexing().get(computeRemainingTime(start), TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             return Boolean.FALSE;
         } catch (InterruptedException e) {
@@ -77,5 +86,10 @@ public class ElasticsearchWaitForIndexingOperation {
         return Boolean.TRUE;
     }
 
+    protected long computeRemainingTime(long start) {
+        long elapsed = System.currentTimeMillis() - start;
+        // at least one second
+        return max(timeout - TimeUnit.MILLISECONDS.toSeconds(elapsed), 1);
+    }
 
 }
