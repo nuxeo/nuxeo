@@ -33,7 +33,7 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import java.util.Arrays;
 
 /**
- * Returns tasks assigned to current user or one of its groups.
+ * Run Elasticsearch indexing operation
  *
  * @since 8.1
  */
