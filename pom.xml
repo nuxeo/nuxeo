@@ -3655,7 +3655,7 @@
       <dependency>
         <groupId>net.jsourcerer.webdriver</groupId>
         <artifactId>JSErrorCollector</artifactId>
-        <version>0.6-NX01</version>
+        <version>0.6</version>
       </dependency>
       <dependency>
         <groupId>biz.neustar</groupId>
