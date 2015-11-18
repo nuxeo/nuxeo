@@ -365,6 +365,17 @@ public interface Work extends Serializable {
     String getOriginatingUsername();
 
     /**
+     * Gets the user on behalf of which this work is done.
+     * <p>
+     * This is informative only.
+     *
+     * @return the user id, or {@code null}
+     * @deprecated since 7.10. Use {@link #getOriginatingUsername()} instead.
+     */
+    @Deprecated
+    String getUserId();
+
+    /**
      * Gets the document impacted by the work.
      * <p>
      * Returns {@code null} if the work isn't about a single document.

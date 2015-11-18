@@ -475,6 +475,15 @@ public abstract class AbstractWork implements Work {
         return originatingUsername;
     }
 
+    /**
+     * @deprecated since 7.10. Use {@link #getOriginatingUsername()} instead.
+     */
+    @Override
+    @Deprecated
+    public String getUserId() {
+        return getOriginatingUsername();
+    }
+
     @Override
     public long getSchedulingTime() {
         return schedulingTime;
