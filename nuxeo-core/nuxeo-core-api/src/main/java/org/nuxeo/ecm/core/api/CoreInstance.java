@@ -80,7 +80,7 @@ public class CoreInstance {
     }
 
     /**
-     * Opens a {@link CoreSession} for the given user.
+     * MUST ONLY BE USED IN UNIT TESTS to open a {@link CoreSession} for the given user.
      * <p>
      * The session must be closed using {@link CoreSession#close}.
      *
