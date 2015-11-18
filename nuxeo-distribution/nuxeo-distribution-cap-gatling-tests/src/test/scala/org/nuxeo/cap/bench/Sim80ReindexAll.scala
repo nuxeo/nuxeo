@@ -23,7 +23,7 @@ import io.gatling.http.Predef._
 object ScnReindexAll {
 
   def get = () => {
-    scenario("NuxeoImporter")
+    scenario("ReindexAll")
       .feed(Feeders.admins)
       .exec(NuxeoRest.reindexAll())
   }
