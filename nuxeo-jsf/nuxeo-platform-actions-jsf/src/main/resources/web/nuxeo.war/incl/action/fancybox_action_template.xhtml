@@ -150,7 +150,7 @@
             <h:form id="#{fancyboxIdPrefix}closeFancyboxForm">
               <a4j:jsFunction id="#{fancyboxIdPrefix}closeFancybox"
                 name="#{fancyboxIdPrefix}closeFancybox"
-                render="#{elementsToReRender}">
+                render="#{elementsToReRender}" execute="@this">
                 <f:attribute name="selectedValue" value="" />
                 <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
                 <nxu:actionListenerMethod value="#{selectionActions.setStaticValue}" />
