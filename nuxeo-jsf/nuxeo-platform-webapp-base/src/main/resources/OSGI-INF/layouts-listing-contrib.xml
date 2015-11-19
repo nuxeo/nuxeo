@@ -1208,6 +1208,23 @@
       </properties>
     </widget>
 
+    <widget name="listing_issued_date" type="datetime">
+      <labels>
+        <label mode="any">label.content.header.issued</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dc.issued</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateFormatter()}</property>
+      </properties>
+      <properties mode="csv">
+        <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+        <property name="csv_forceType">date</property>
+      </properties>
+    </widget>
+
     <widget name="listing_author" type="listing_author">
       <labels>
         <label mode="any">label.content.header.author</label>
