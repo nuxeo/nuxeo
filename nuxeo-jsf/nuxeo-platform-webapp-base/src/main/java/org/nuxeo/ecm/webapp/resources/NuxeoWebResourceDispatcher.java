@@ -29,6 +29,7 @@ import javax.faces.event.ComponentSystemEventListener;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.jsf.PageResourceRenderer;
 import org.nuxeo.ecm.web.resources.jsf.ResourceBundleRenderer;
@@ -78,7 +79,6 @@ public class NuxeoWebResourceDispatcher implements ComponentSystemEventListener 
             }
         }
 
-        // avoid relocating CSS on postback
         moveResources(ctx, root, cssResources, TARGET_HEAD, SLOT_HEAD_START,
                 "Pushing head resource %s at the beggining of head tag");
         if (isDeferJavaScriptLoading()) {
@@ -92,6 +92,7 @@ public class NuxeoWebResourceDispatcher implements ComponentSystemEventListener 
         // push target resources
         List<UIComponent> existing = new ArrayList<UIComponent>(root.getComponentResources(ctx, addTo));
         for (UIComponent r : resources) {
+            ComponentUtils.setRelocated(r);
             root.removeComponentResource(ctx, r, removeFrom);
             root.addComponentResource(ctx, r, addTo);
             logResourceInfo(r, message);
