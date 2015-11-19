@@ -56,6 +56,57 @@
       </columns>
     </layout>
 
+    <layout name="dashboard_published_documents_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_issued_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_livedit_link</widget>
+        </column>
+      </columns>
+    </layout>
+
     <layout name="dashboard_task_listing">
       <templates>
         <template mode="any">
