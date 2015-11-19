@@ -101,8 +101,7 @@ public class JSONDocumentObject extends DocumentObject {
     }
 
     @DELETE
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response doDeleteJson() {
+    public Response doDelete() {
         super.doDelete();
         return Response.noContent().build();
     }
