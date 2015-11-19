@@ -40,6 +40,7 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
@@ -681,6 +682,67 @@ public final class ComponentUtils {
         for (String newHiddenValue : hiddenIds) {
             hiddenTargetList.addValue(newHiddenValue);
         }
+    }
+
+    public static String verifyTarget(String toVerify, String defaultTarget) {
+        if (StringUtils.isBlank(toVerify)) {
+            return null;
+        }
+        FacesContext context = FacesContext.getCurrentInstance();
+        boolean ajaxRequest = context.getPartialViewContext().isAjaxRequest();
+        if (ajaxRequest) {
+            // ease up ajax re-rendering in case of js scripts parsing defer
+            return null;
+        }
+        return defaultTarget;
+    }
+
+    public static String NUXEO_RESOURCE_RELOCATED = "NUXEO_RESOURCE_RELOCATED_MARKER";
+
+    /**
+     * Marks given component as relocated, so that subsequent calls to {@link #isRelocated(UIComponent)} returns true.
+     *
+     * @since 8.1
+     */
+    public static void setRelocated(UIComponent component) {
+        component.getAttributes().put(NUXEO_RESOURCE_RELOCATED, "true");
+    }
+
+    /**
+     * Returns true if given component is marked as relocated.
+     *
+     * @see #setRelocated(UIComponent)
+     * @see #relocate(UIComponent, String, String)
+     * @since 8.1
+     */
+    public static boolean isRelocated(UIComponent component) {
+        return component.getAttributes().containsKey(NUXEO_RESOURCE_RELOCATED);
+    }
+
+    /**
+     * Relocates given component, adding it to the view root resources for given target.
+     * <p>
+     * If given composite key is not null, current composite component client id is saved using this key on the
+     * component attributes, for later reuse.
+     * <p>
+     * Component is also marked as relocated so that subsequent calls to {@link #isRelocated(UIComponent)} returns true.
+     *
+     * @since 8.1
+     */
+    public static void relocate(UIComponent component, String target, String compositeKey) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (compositeKey != null) {
+            // We're checking for a composite component here as if the resource
+            // is relocated, it may still require it's composite component context
+            // in order to properly render. Store it for later use by
+            // encodeBegin() and encodeEnd().
+            UIComponent cc = UIComponent.getCurrentCompositeComponent(context);
+            if (cc != null) {
+                component.getAttributes().put(compositeKey, cc.getClientId(context));
+            }
+        }
+        setRelocated(component);
+        context.getViewRoot().addComponentResource(context, component, target);
     }
 
 }

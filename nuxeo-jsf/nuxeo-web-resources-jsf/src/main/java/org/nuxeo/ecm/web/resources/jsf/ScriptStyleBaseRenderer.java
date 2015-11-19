@@ -57,7 +57,7 @@ import javax.faces.event.ListenerFor;
 import javax.faces.event.PostAddToViewEvent;
 import javax.faces.render.Renderer;
 
-import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 import com.sun.faces.util.FacesLogger;
 
@@ -86,20 +86,12 @@ public abstract class ScriptStyleBaseRenderer extends Renderer implements Compon
      */
     public void processEvent(ComponentSystemEvent event) throws AbortProcessingException {
         UIComponent component = event.getComponent();
-        FacesContext context = FacesContext.getCurrentInstance();
-
+        if (ComponentUtils.isRelocated(component)) {
+            return;
+        }
         String target = verifyTarget((String) component.getAttributes().get("target"));
         if (target != null) {
-            // We're checking for a composite component here as if the resource
-            // is relocated, it may still require it's composite component context
-            // in order to properly render. Store it for later use by
-            // encodeBegin() and encodeEnd().
-            UIComponent cc = UIComponent.getCurrentCompositeComponent(context);
-            if (cc != null) {
-                component.getAttributes().put(COMP_KEY, cc.getClientId(context));
-            }
-            context.getViewRoot().addComponentResource(context, component, target);
-
+            ComponentUtils.relocate(component, target, COMP_KEY);
         }
     }
 
@@ -225,16 +217,7 @@ public abstract class ScriptStyleBaseRenderer extends Renderer implements Compon
      * Allow a subclass to control what's a valid value for "target".
      */
     protected String verifyTarget(String toVerify) {
-        if (StringUtils.isBlank(toVerify)) {
-            return null;
-        }
-        FacesContext context = FacesContext.getCurrentInstance();
-        boolean ajaxRequest = context.getPartialViewContext().isAjaxRequest();
-        if (ajaxRequest) {
-            // ease up ajax re-rendering in case of js scripts parsing defer
-            return null;
-        }
-        return toVerify;
+        return ComponentUtils.verifyTarget(toVerify, toVerify);
     }
 
 }

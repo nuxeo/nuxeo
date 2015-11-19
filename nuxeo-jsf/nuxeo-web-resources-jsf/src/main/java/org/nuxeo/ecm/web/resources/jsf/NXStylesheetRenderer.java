@@ -23,6 +23,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+
 /**
  * Overrides JSF stylesheet renderer to allow specifying resources from the war using "src" attribute.
  *
@@ -43,7 +45,7 @@ public class NXStylesheetRenderer extends AbstractResourceRenderer {
 
     @Override
     protected String verifyTarget(String toVerify) {
-        return "head";
+        return ComponentUtils.verifyTarget(toVerify, "head");
     }
 
     @Override
