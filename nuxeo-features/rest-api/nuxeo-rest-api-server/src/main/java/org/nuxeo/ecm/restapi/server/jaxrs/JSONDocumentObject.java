@@ -101,8 +101,7 @@ public class JSONDocumentObject extends DocumentObject {
     }
 
     @DELETE
-    @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response doDeleteJson() throws ClientException {
+    public Response doDelete() throws ClientException {
         super.doDelete();
         return Response.noContent().build();
     }
