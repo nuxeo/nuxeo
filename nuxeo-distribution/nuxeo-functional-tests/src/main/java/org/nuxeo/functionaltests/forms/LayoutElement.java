@@ -24,6 +24,7 @@ import org.nuxeo.functionaltests.Assert;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -155,9 +156,8 @@ public class LayoutElement implements LayoutFragment {
      */
     public void setInput(WebElement elt, String value) {
         elt.click();
-        elt.clear();
         if (value != null) {
-            elt.sendKeys(value);
+            elt.sendKeys(Keys.chord(Keys.CONTROL, "a"), value);
         }
     }
 
