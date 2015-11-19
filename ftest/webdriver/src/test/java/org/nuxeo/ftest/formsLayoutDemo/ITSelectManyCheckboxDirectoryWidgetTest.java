@@ -43,7 +43,10 @@ public class ITSelectManyCheckboxDirectoryWidgetTest extends AbstractWidgetPageT
         checkValueRequired(true);
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.watchAjaxRequests();
-        getEditWidget(SelectManyCheckboxDirectoryWidgetElement.class).setInputValue("marsh,cartman");
+        getEditWidget(SelectManyCheckboxDirectoryWidgetElement.class).setInputValue("marsh");
+        arm.waitForAjaxRequests();
+        arm.watchAjaxRequests();
+        getEditWidget(SelectManyCheckboxDirectoryWidgetElement.class).setInputValue("cartman");
         arm.waitForAjaxRequests();
         submitDemo();
         checkValueRequired(false);
