@@ -57,6 +57,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 
 /**
  * Test the CRUD rest API
@@ -284,6 +285,22 @@ public class DocumentBrowsingTest extends BaseTest {
 
         // When I do a DELETE request
         ClientResponse response = getResponse(RequestType.DELETE, "path" + doc.getPathAsString());
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+
+        fetchInvalidations();
+        // Then the doc is deleted
+        assertTrue(!session.exists(doc.getRef()));
+
+    }
+
+    @Test
+    public void iCanDeleteADocumentWithoutHeaders() throws Exception {
+        // Given a document
+        DocumentModel doc = RestServerInit.getNote(0, session);
+
+        // When I do a DELETE request
+        WebResource wr = service.path("path" + doc.getPathAsString());
+        ClientResponse response = wr.delete(ClientResponse.class);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
 
         fetchInvalidations();
