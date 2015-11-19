@@ -19,6 +19,7 @@ package org.nuxeo.ftest.formsLayoutDemo;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.forms.CheckboxWidgetElement;
 
 /**
@@ -36,10 +37,15 @@ public class ITCheckboxWidgetTest extends AbstractWidgetPageTest {
         checkNoError();
         assertEquals("No", getViewWidget(CheckboxWidgetElement.class).getValue(false));
         submitDemo();
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.watchAjaxRequests();
         getEditWidget(CheckboxWidgetElement.class).setInputValue("true");
+        arm.waitForAjaxRequests();
         submitDemo();
         assertEquals("Yes", getViewWidget(CheckboxWidgetElement.class).getValue(false));
+        arm.watchAjaxRequests();
         getEditWidget(CheckboxWidgetElement.class).setInputValue("false");
+        arm.waitForAjaxRequests();
         submitDemo();
         assertEquals("No", getViewWidget(CheckboxWidgetElement.class).getValue(false));
         navigateTo(pageId);

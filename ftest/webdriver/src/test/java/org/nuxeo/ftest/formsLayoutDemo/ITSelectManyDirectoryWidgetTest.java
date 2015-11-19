@@ -43,7 +43,10 @@ public class ITSelectManyDirectoryWidgetTest extends AbstractWidgetPageTest {
         checkValueRequired(true);
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.watchAjaxRequests();
-        getEditWidget(SelectManyDirectoryWidgetElement.class).setInputValue("Stan Marsh,Eric Cartman");
+        getEditWidget(SelectManyDirectoryWidgetElement.class).setInputValue("Stan Marsh");
+        arm.waitForAjaxRequests();
+        arm.watchAjaxRequests();
+        getEditWidget(SelectManyDirectoryWidgetElement.class).setInputValue("Eric Cartman");
         arm.waitForAjaxRequests();
         submitDemo();
         checkValueRequired(false);
