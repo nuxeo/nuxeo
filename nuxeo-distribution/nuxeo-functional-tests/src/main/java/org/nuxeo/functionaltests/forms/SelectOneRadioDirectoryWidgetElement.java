@@ -42,6 +42,7 @@ public class SelectOneRadioDirectoryWidgetElement extends WidgetElement {
         for (WebElement option : options) {
             if (option.getAttribute("value").equals(value)) {
                 option.click();
+                break;
             }
         }
     }

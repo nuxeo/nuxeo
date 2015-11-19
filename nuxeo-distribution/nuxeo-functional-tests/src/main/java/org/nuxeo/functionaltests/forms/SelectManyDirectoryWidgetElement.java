@@ -31,16 +31,27 @@ public class SelectManyDirectoryWidgetElement extends WidgetElement {
         super(driver, id);
     }
 
+    /**
+     * Overridden to make sure the select element is reloaded correctly (for use cases where a selection triggers a
+     * submit of the form in ajax).
+     *
+     * @since 8.1
+     */
     @Override
-    public void setInput(WebElement elt, String value) {
-        Select select = new Select(elt);
-        select.deselectAll();
+    public void setInputValue(String value) {
+        Select select = new Select(getInputElement());
         if (value != null) {
             String[] split = value.split(",");
             for (String v : split) {
+                select = new Select(getInputElement());
                 select.selectByVisibleText(v);
             }
         }
+    }
+
+    @Override
+    public void setInput(WebElement elt, String value) {
+        throw new UnsupportedOperationException("Use #setInputValue(String) instead");
     }
 
 }
