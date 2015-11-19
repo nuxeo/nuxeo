@@ -186,12 +186,11 @@ public final class ComponentUtils {
      * @param blob the blob, if already fetched
      * @param filename the filename to use
      * @param reason the download reason
-     *
      * @since 7.3
      */
-   public static void download(DocumentModel doc, String xpath, Blob blob, String filename, String reason) {
-       download(doc, xpath, blob, filename, reason, null);
-   }
+    public static void download(DocumentModel doc, String xpath, Blob blob, String filename, String reason) {
+        download(doc, xpath, blob, filename, reason, null);
+    }
 
     /**
      * Downloads a blob and sends it to the requesting user, in the JSF current context.
@@ -202,7 +201,6 @@ public final class ComponentUtils {
      * @param filename the filename to use
      * @param reason the download reason
      * @param extendedInfos an optional map of extended informations to log
-     *
      * @since 7.3
      */
     public static void download(DocumentModel doc, String xpath, Blob blob, String filename, String reason,
@@ -256,39 +254,6 @@ public final class ComponentUtils {
     protected static boolean forceNoCacheOnMSIE() {
         // see NXP-7759
         return Framework.isBooleanPropertyTrue(FORCE_NO_CACHE_ON_MSIE);
-    }
-
-    /**
-     * Internet Explorer file downloads over SSL do not work with certain HTTP cache control headers
-     * <p>
-     * See http://support.microsoft.com/kb/323308/
-     * <p>
-     * What is not mentioned in the above Knowledge Base is that "Pragma: no-cache" also breaks download in MSIE over
-     * SSL
-     */
-    private static void addCacheControlHeaders(HttpServletRequest request, HttpServletResponse response) {
-        String userAgent = request.getHeader("User-Agent");
-        boolean secure = request.isSecure();
-        if (!secure) {
-            String nvh = request.getHeader(VH_HEADER);
-            if (nvh == null) {
-                nvh = Framework.getProperty(VH_PARAM);
-            }
-            if (nvh != null) {
-                secure = nvh.startsWith("https");
-            }
-        }
-        log.debug("User-Agent: " + userAgent);
-        log.debug("secure: " + secure);
-        if (userAgent.contains("MSIE") && (secure || forceNoCacheOnMSIE())) {
-            log.debug("Setting \"Cache-Control: max-age=15, must-revalidate\"");
-            response.setHeader("Cache-Control", "max-age=15, must-revalidate");
-        } else {
-            log.debug("Setting \"Cache-Control: private\" and \"Pragma: no-cache\"");
-            response.setHeader("Cache-Control", "private, must-revalidate");
-            response.setHeader("Pragma", "no-cache");
-            response.setDateHeader("Expires", 0);
-        }
     }
 
     // hook translation passing faces context
