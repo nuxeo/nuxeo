@@ -29,7 +29,7 @@ import org.osgi.framework.Bundle;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public interface RuntimeContext {
+public interface RuntimeContext extends AutoCloseable {
 
     /**
      * Gets the current runtime service.
@@ -161,5 +161,15 @@ public interface RuntimeContext {
      * Destroys this context.
      */
     void destroy();
+
+    /**
+     * Destroys the context on close.
+     *
+     * @since 8.1
+     */
+    @Override
+    default void close() {
+        destroy();
+    }
 
 }
