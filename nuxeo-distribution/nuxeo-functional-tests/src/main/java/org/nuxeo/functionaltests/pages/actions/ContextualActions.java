@@ -16,10 +16,15 @@
  */
 package org.nuxeo.functionaltests.pages.actions;
 
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+
+import com.google.common.base.Function;
 
 /**
  * The document contextual actions
@@ -43,9 +48,6 @@ public class ContextualActions extends AbstractPage {
     @FindBy(id = "fancybox-close")
     public WebElement closePermaBoxButton;
 
-    @FindBy(xpath = "//div[@id=\"nxw_documentActionsUpperButtons_panel\"]/div/ul/li")
-    public WebElement moreButton;
-
     @FindBy(xpath = "//img[@alt=\"Export\"]")
     public WebElement exportButton;
 
@@ -59,4 +61,21 @@ public class ContextualActions extends AbstractPage {
     public void clickOnButton(WebElement button) {
         button.click();
     }
+
+    /**
+     * Clicks on "More" button, making sure we wait for content to be shown.
+     *
+     * @since 8.1
+     */
+    public void openMore() {
+        String xpath = "//div[@id=\"nxw_documentActionsUpperButtons_panel\"]/div/ul/li";
+        driver.findElement(By.xpath(xpath)).click();
+        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver input) {
+                return driver.findElement(By.xpath(xpath + "/ul")).isDisplayed();
+            }
+        }, StaleElementReferenceException.class);
+    }
+
 }
