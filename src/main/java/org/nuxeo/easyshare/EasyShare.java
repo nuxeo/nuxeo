@@ -28,6 +28,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -271,6 +272,9 @@ public class EasyShare extends ModuleRoot {
     if (hasNotification) {
       //Email notification
       String email = docShare.getProperty("eshare:contactEmail").getValue(String.class);
+      if (StringUtils.isEmpty(email)) {
+          return;
+      }
       try {
         log.debug("Easyshare: starting email");
         EmailHelper emailHelper = new EmailHelper();
