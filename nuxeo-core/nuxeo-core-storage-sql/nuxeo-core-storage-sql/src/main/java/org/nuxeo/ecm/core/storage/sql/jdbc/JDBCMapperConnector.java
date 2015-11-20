@@ -4,7 +4,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 
+import javax.transaction.SystemException;
 import javax.transaction.xa.XAResource;
 
 import org.nuxeo.ecm.core.storage.sql.Mapper;
@@ -26,12 +28,16 @@ public class JDBCMapperConnector implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable {
+        String name = method.getName();
         if (mapper.isConnected()) {
+            if (Arrays.asList("start", "end", "prepare", "commit", "rollback").contains(name)) {
+                throw new SystemException("wrong tx management invoke on managed connection");
+            }
             return doInvoke(method, args);
         }
         // should not operate with tx mamagement (managed connection)
-        String name = method.getName();
         if ("start".equals(name)) {
             return XAResource.XA_OK;
         }
@@ -48,6 +54,12 @@ public class JDBCMapperConnector implements InvocationHandler {
             return null;
         }
         if ("clearCache".equals(name)) {
+            return doInvoke(method, args);
+        }
+        if ("receiveInvalidations".equals(name)) {
+            return doInvoke(method, args);
+        }
+        if ("sendInvalidations".equals(name)) {
             return doInvoke(method, args);
         }
         mapper.connect();
