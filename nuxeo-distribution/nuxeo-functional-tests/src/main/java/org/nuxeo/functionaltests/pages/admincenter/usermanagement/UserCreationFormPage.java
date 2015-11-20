@@ -21,6 +21,7 @@ package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
@@ -112,7 +113,10 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
                         true);
                 groups.selectValue(group);
             }
+            AjaxRequestManager arm = new AjaxRequestManager(driver);
+            arm.begin();
             createButton.click();
+            arm.end();
         } else {
             usernameInput.sendKeys(username);
             firstnameInput.sendKeys(firstname);
@@ -126,13 +130,19 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
                         true);
                 groups.selectValue(group);
             }
+            AjaxRequestManager arm = new AjaxRequestManager(driver);
+            arm.begin();
             createButton.click();
+            arm.end();
         }
         return asPage(UsersGroupsBasePage.class);
     }
 
     public UsersTabSubPage cancelCreation() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         cancelButton.click();
+        arm.end();
         return asPage(UsersTabSubPage.class);
     }
 
