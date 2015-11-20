@@ -104,21 +104,22 @@ public class ITContextualActionsTest extends AbstractTest {
         actions = filePage.getContextualActions();
 
         // Test follow action
-        actions.clickOnButton(actions.moreButton);
+        actions.openMore();
         actions = filePage.getContextualActions();
         actions.clickOnButton(actions.followButton);
         actions = filePage.getContextualActions();
 
         // Test Add to Worklist action
-        actions.clickOnButton(actions.moreButton);
+        actions.openMore();
         actions = filePage.getContextualActions();
         actions.clickOnButton(actions.addToWorklistButton);
         actions = filePage.getContextualActions();
         // Test More button & Export
-        actions.clickOnButton(actions.moreButton);
+        actions.openMore();
         actions = filePage.getContextualActions();
         actions.clickOnButton(actions.exportButton);
 
         logout();
     }
+
 }
