@@ -133,6 +133,7 @@
     <module>nuxeo-fsexporter</module>
     <module>nuxeo-showcase-content-sample</module>
     <module>nuxeo-travel-expenses</module>
+    <module>nuxeo-agenda</module>
   </modules>
 
   <dependencyManagement>

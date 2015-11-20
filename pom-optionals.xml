@@ -22,7 +22,6 @@
     <module>nuxeo-platform-smart-search</module>
     <module>nuxeo-platform-classification</module>
     <module>nuxeo-indesign-connector</module>
-    <module>nuxeo-agenda</module>
   </modules>
 
   <!-- dependencyManagement of optional addons must be defined in pom.xml -->
