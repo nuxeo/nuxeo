@@ -100,21 +100,13 @@ public class TestWebResourceService {
 
         String contrib = "webresources-test-override-config.xml";
         URL url = getClass().getClassLoader().getResource(contrib);
-        RuntimeContext ctx = null;
-        try {
-            ctx = harness.deployTestContrib(BUNDLE, url);
-
+        try (RuntimeContext ctx = harness.deployTestContrib(BUNDLE, url)) {
             r = service.getResource("my.css");
             assertNotNull(r);
             assertEquals("my.css", r.getName());
             assertEquals(ResourceType.css.name(), r.getType());
             assertEquals(0, r.getDependencies().size());
             assertEquals("css/my.css", r.getPath());
-
-        } finally {
-            if (ctx != null) {
-                ctx.destroy();
-            }
         }
 
     }
@@ -132,10 +124,7 @@ public class TestWebResourceService {
 
         String contrib = "webresources-test-override-config.xml";
         URL url = getClass().getClassLoader().getResource(contrib);
-        RuntimeContext ctx = null;
-        try {
-            ctx = harness.deployTestContrib(BUNDLE, url);
-
+        try (RuntimeContext ctx = harness.deployTestContrib(BUNDLE, url)) {
             r = service.getResourceBundle("myapp");
             assertNotNull(r);
             assertEquals("myapp", r.getName());
@@ -144,11 +133,6 @@ public class TestWebResourceService {
             assertEquals("foldable-box.js", r.getResources().get(1));
             assertEquals("foldable-box.css", r.getResources().get(2));
             assertEquals("my.css", r.getResources().get(3));
-
-        } finally {
-            if (ctx != null) {
-                ctx.destroy();
-            }
         }
 
     }
@@ -205,19 +189,11 @@ public class TestWebResourceService {
 
         String contrib = "webresources-test-override-config.xml";
         URL url = getClass().getClassLoader().getResource(contrib);
-        RuntimeContext ctx = null;
-        try {
-            ctx = harness.deployTestContrib(BUNDLE, url);
-
+        try (RuntimeContext ctx = harness.deployTestContrib(BUNDLE, url)) {
             p = service.getProcessor("myProc");
             assertNull(p);
             procs = service.getProcessors("wroPost");
             assertEquals(0, procs.size());
-
-        } finally {
-            if (ctx != null) {
-                ctx.destroy();
-            }
         }
 
     }
