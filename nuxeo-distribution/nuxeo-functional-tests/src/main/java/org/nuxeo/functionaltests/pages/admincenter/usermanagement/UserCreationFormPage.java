@@ -19,6 +19,7 @@
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
@@ -94,7 +95,10 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
                         true);
                 groups.selectValue(group);
             }
+            AjaxRequestManager arm = new AjaxRequestManager(driver);
+            arm.begin();
             createButton.click();
+            arm.end();
         } else {
             // TODO invite
         }
@@ -102,7 +106,10 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     }
 
     public UsersTabSubPage cancelCreation() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         cancelButton.click();
+        arm.end();
         return asPage(UsersTabSubPage.class);
     }
 
