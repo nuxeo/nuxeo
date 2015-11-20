@@ -706,8 +706,25 @@ public final class ComponentUtils {
                 component.getAttributes().put(compositeKey, cc.getClientId(context));
             }
         }
-        setRelocated(component);
-        context.getViewRoot().addComponentResource(context, component, target);
+        // avoid relocating resources that are not actually rendered
+        if (isRendered(component)) {
+            setRelocated(component);
+            context.getViewRoot().addComponentResource(context, component, target);
+        }
+    }
+
+    protected static boolean isRendered(UIComponent component) {
+        UIComponent comp = component;
+        while (comp.isRendered()) {
+            UIComponent parent = comp.getParent();
+            if (parent == null) {
+                // reached root
+                return true;
+            } else {
+                comp = parent;
+            }
+        }
+        return false;
     }
 
 }
