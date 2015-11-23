@@ -7,6 +7,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
   xmlns:a4j="http://richfaces.org/a4j">
 
   <c:set var="namespace" value="#{widgetProperty_namespace}" />
@@ -61,7 +62,7 @@
       <c:if test="#{widgetProperty_canAddNewEntry and directoryUIActions.checkContextualDirectoryFilter(filterToCheck, widgetProperty_directoryName)}">
         <nxu:set var="directoryNameForPopup" value="#{widgetProperty_directoryName}"
           cache="true">
-          <nxl:widgetType name="documentAction" value="null" mode="view"
+          <nxwt:documentAction value="null" mode="view"
             actionId="#{nxu:test(empty widgetProperty_addNewEntryAction, 'addEntryFromSuggestDirectoryWidget', widgetProperty_addNewEntryAction)}" />
         </nxu:set>
       </c:if>

@@ -4,9 +4,10 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <nxl:widgetType name="documentActions" value="#{field}" mode="view"
+  <nxwt:documentActions value="#{field}" mode="view"
     widgetProperty_category="BLOB_ACTIONS_LISTING" actionContextDocument="#{field}"
     actionsDisplay="icons" />
 

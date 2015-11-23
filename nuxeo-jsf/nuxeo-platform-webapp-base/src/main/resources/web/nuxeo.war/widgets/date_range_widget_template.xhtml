@@ -3,6 +3,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <c:if test="#{widget.mode != 'edit'}">
@@ -10,12 +11,12 @@
      <span class="tinyLabel"> 
       <h:outputText value="#{messages['label.search.between']} " />
      </span>
-     <nxl:widgetType name="datetime" mode="#{widget.mode}" label="#{widget.label}"
+     <nxwt:datetime mode="#{widget.mode}" label="#{widget.label}"
       value="#{field_0}" properties="#{widget.properties}" />
      <span class="tinyLabel"> 
       <h:outputText value="#{messages['label.search.and']} " />
      </span>
-     <nxl:widgetType name="datetime" mode="#{widget.mode}" label="#{widget.label}"
+     <nxwt:datetime mode="#{widget.mode}" label="#{widget.label}"
       value="#{field_1}" properties="#{widget.properties}" />
     </div>
   </c:if>
@@ -26,7 +27,7 @@
     <nxu:set var="parentWidgetMode" value="#{widget.mode}" cache="true">
     <nxu:set var="parentProperties" value="#{widget.properties}" cache="true">
 
-    <nxl:widgetType name="datetime"
+    <nxwt:datetime
       widgetName="#{parentWidgetName}_start"
       mode="#{parentWidgetMode}"
       value="#{field_0}"
@@ -35,7 +36,7 @@
       resolveOnly="true">
     <nxu:set var="widgetStart" value="#{widget}" cache="true">
 
-    <nxl:widgetType name="datetime"
+    <nxwt:datetime
       widgetName="#{parentWidgetName}_end"
       value="#{field_1}"
       mode="#{parentWidgetMode}"
@@ -84,10 +85,10 @@
     </div>
 
     </nxu:set>
-    </nxl:widgetType>
+    </nxwt:datetime>
 
     </nxu:set>
-    </nxl:widgetType>
+    </nxwt:datetime>
 
     </nxu:set>
     </nxu:set>

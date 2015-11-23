@@ -3,10 +3,11 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <c:if test="#{!empty currentDocument.dc.description}">
-    <nxl:widgetType name="textarea" mode="view"
+    <nxwt:textarea mode="view"
       value="#{currentDocument.dc.description}"
       styleClass="documentDescription quote" />
   </c:if>

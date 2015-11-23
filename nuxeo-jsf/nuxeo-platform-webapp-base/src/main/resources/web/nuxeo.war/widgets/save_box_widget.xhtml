@@ -5,6 +5,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
   xmlns:a4j="http://richfaces.org/a4j">
 <div id="#{widget.id}"
   class="#{widgetProperty_styleClass}">
@@ -28,11 +29,11 @@
     </p>
   </c:if>
 
-  <nxl:widgetType name="text"
+  <nxwt:text
     mode="edit"
     widgetName="#{widget.name}"
     value="#{fieldOrValue}"
-    properties="#{widget.properties}"/>
+    properties="#{widget.properties}" />
 
   <nxu:set var="action"
     value="#{webActions.getAction(widgetProperty_actionId, not widgetProperty_disableFiltered)}"
@@ -41,7 +42,7 @@
     value="#{nxu:componentAbsoluteId(component, widgetPanelId)}">
   <nxu:set var="elementsToRender"
     value="#{nxu:joinRender(ajaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}">
-    <nxl:widgetType name="action"
+    <nxwt:action
       mode="#{widget.mode}"
       widgetName="#{widget.name}_action"
       label=""

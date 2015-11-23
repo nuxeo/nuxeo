@@ -2,6 +2,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <c:set var="canHaveMainBlob" value="#{!empty currentDocumentAsBlobHolder}" />
@@ -45,7 +46,8 @@
               <h:outputText value="#{messages['label.summary.download.file']}" />
             </td>
             <td class="fieldColumn" docRef="#{currentDocument.id}">
-              <nxl:widgetType name="extendedFile" mode="view" value="#{currentDocument}" field="#{currentDocumentAsBlobHolder.xpath}"/>
+              <nxwt:extendedFile mode="view" value="#{currentDocument}"
+                field="#{currentDocumentAsBlobHolder.xpath}" />
             </td>
           </tr>
         </tbody>
@@ -63,8 +65,8 @@
                 <h:outputText value=" #{messages['label.summary.download.attachments']}" rendered="#{loop.index == 0}" />
               </td>
               <td class="fieldColumn">
-                <nxl:widgetType name="extendedFile" mode="view" value="#{currentDocument}"
-                                field="files:files/#{loop.index}/file" />
+                <nxwt:extendedFile mode="view" value="#{currentDocument}"
+                  field="files:files/#{loop.index}/file" />
               </td>
             </tr>
           </c:forEach>

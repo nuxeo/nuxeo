@@ -5,6 +5,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <h:outputScript target="#{pageJsTarget}">
@@ -138,14 +139,13 @@
           <a4j:outputPanel>
             <h:inputHidden id="objectDocumentUid"
               value="#{relationActions.objectDocumentUid}" />
-            <nxl:widgetType name="singleDocumentSuggestion" mode="edit"
+            <nxwt:singleDocumentSuggestion mode="edit"
               ajaxReRender="objectDocumentUid" onclick="javascript:selectObjectType(2)"
               value="#{relationActions}" field="objectDocumentUid"
               translated="true"
               width="100%"
               placeholder="label.relation.search.popup.title"
-              documentSchemas="dublincore,common">
-            </nxl:widgetType>
+              documentSchemas="dublincore,common" />
           </a4j:outputPanel>
 
         </h:panelGrid>

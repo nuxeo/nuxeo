@@ -7,6 +7,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <h3><h:outputText value="#{messages['label.bulk.import.documents']}" /></h3>
@@ -24,7 +25,7 @@
             #{messages['label.bulk.import.documents.select.location']}
           </td>
           <td class="fieldColumn">
-            <nxl:widgetType name="singleDocumentSuggestion" mode="edit"
+            <nxwt:singleDocumentSuggestion mode="edit"
               value="#{importActions}"
               field="selectedImportFolderId"
               required="true"
@@ -34,9 +35,7 @@
               placeholder="label.bulk.import.documents.select.location.placeholder"
               ajaxReRender="#{fancyButtonsRender}"
               pageProviderName="importFolders"
-              documentSchemas="dublincore,common">
-            </nxl:widgetType>
-
+              documentSchemas="dublincore,common" />
             <h:message styleClass="errorMessage" for="#{fancyboxFormId}"
               id="#{fancyboxFormId}_message" />
           </td>

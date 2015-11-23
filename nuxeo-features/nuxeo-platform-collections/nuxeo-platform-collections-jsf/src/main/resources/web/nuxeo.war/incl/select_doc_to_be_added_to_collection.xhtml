@@ -6,6 +6,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <h3>
@@ -21,15 +22,15 @@
           <tr>
             <td class="labelColumn required">
               #{messages['label.addToCollection.documents']}</td>
-            <td class="fieldColumn"><nxl:widgetType
-                name="multipleDocumentsSuggestion" mode="edit"
+            <td class="fieldColumn">
+              <nxwt:multipleDocumentsSuggestion mode="edit"
                 value="#{collectionActions}" field="docUidsToBeAdded"
                 required="true" width="100%" translated="true"
                 placeholder="label.addDocToCollection.docs.placeHolder"
                 ajaxReRender="#{fancyboxFormId}_buttons"
                 pageProviderName="default_collection_candidate"
-                documentSchemas="dublincore,common">
-              </nxl:widgetType></td>
+                documentSchemas="dublincore,common" />
+            </td>
           </tr>
         </tbody>
       </table>
