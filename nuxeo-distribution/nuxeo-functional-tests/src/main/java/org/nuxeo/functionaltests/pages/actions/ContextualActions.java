@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages.actions;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
@@ -45,9 +46,6 @@ public class ContextualActions extends AbstractPage {
 
     public String permaBoxFocusName = "permalinkFocus";
 
-    @FindBy(id = "fancybox-close")
-    public WebElement closePermaBoxButton;
-
     @FindBy(xpath = "//img[@alt=\"Export\"]")
     public WebElement exportButton;
 
@@ -76,6 +74,18 @@ public class ContextualActions extends AbstractPage {
                 return driver.findElement(By.xpath(xpath + "/ul")).isDisplayed();
             }
         }, StaleElementReferenceException.class);
+    }
+
+    /**
+     * Clicks on "More" button, making sure we wait for content to be shown.
+     *
+     * @since 8.1
+     */
+    public void closeFancyPermalinBox() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        driver.findElement(By.id("fancybox-close")).click();
+        arm.end();
     }
 
 }
