@@ -107,9 +107,9 @@ public class ITContextualActionsTest extends AbstractTest {
         actions.clickOnButton(actions.permaButton);
         actions = filePage.getContextualActions();
         // wait for element to be shown to close it, otherwise DOM may not be
-        // udpated yet
+        // updated yet
         actions.findElementWithTimeout(By.className(actions.permaBoxFocusName), 20 * 1000);
-        actions.clickOnButton(actions.closePermaBoxButton);
+        actions.closeFancyPermalinBox();
         actions = filePage.getContextualActions();
 
         // Test follow action
