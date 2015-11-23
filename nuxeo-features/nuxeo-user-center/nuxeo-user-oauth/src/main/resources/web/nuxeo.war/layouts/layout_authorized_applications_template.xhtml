@@ -1,0 +1,67 @@
+<f:subview
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  id="#{layout.id}">
+
+<c:if test="#{layout.mode == 'list_and_header'}">
+
+  <thead>
+    <tr>
+      <nxl:layoutRow>
+        <nxl:layoutRowWidget>
+          <th>
+            <h:outputText value="#{widget.label}" rendered="#{!widget.translated}" />
+            <h:outputText value="#{messages[widget.label]}" rendered="#{widget.translated}" />
+          </th>
+        </nxl:layoutRowWidget>
+      </nxl:layoutRow>
+        <th>
+        </th>
+    </tr>
+  </thead>
+  <tr class="#{directoryEntryClass}">
+    <nxl:layoutRow>
+      <nxl:layoutRowWidget>
+        <td class="fieldColumn">
+          <nxl:widget widget="#{widget}" value="#{value}" />
+        </td>
+      </nxl:layoutRowWidget>
+    </nxl:layoutRow>
+      <td class="fieldColumn">
+        <a4j:commandLink action="#{authorizedApplicationsActions.revokeAccess(value.id)}"
+          immediate="true" reRender="authorizedApplicationsPanel"
+          styleClass="action">
+          <h:outputText value="#{messages['command.revokeAccess']}"/>
+        </a4j:commandLink>
+      </td>
+  </tr>
+
+</c:if>
+
+<c:if test="#{layout.mode == 'list'}">
+
+  <tr class="#{directoryEntryClass}">
+    <nxl:layoutRow>
+      <nxl:layoutRowWidget>
+        <td class="fieldColumn">
+          <nxl:widget widget="#{widget}" value="#{value}" />
+        </td>
+      </nxl:layoutRowWidget>
+    </nxl:layoutRow>
+      <td class="fieldColumn">
+        <a4j:commandLink action="#{authorizedApplicationsActions.revokeAccess(value.id)}"
+          immediate="true" reRender="authorizedApplicationsPanel"
+          styleClass="action">
+          <h:outputText value="#{messages['command.revokeAccess']}"/>
+        </a4j:commandLink>
+      </td>
+  </tr>
+
+</c:if>
+
+</f:subview>

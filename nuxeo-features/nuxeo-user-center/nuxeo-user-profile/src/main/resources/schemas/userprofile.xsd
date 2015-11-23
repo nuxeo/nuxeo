@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.core/ecm/schemas/userprofile/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.core/ecm/schemas/userprofile/">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:element name="avatar" type="nxs:content" />
+  <xs:element name="birthdate" type="xs:date" />
+  <xs:element name="phonenumber" type="xs:string" />
+  <xs:element name="gender" type="xs:boolean" default="false" />
+  <xs:element name="locale" type="xs:string" />
+</xs:schema>

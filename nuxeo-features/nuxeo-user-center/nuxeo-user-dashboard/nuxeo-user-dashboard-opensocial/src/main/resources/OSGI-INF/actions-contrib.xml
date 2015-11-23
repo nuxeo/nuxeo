@@ -1,0 +1,77 @@
+<component name="org.nuxeo.ecm.user.center.dashboard.opensocial.actions">
+
+  <require>org.nuxeo.ecm.user.center.dashboard.jsf.actions</require>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="Dashboard" link="user_center_fragment.xhtml"
+      label="user.center.dashboard"
+      order="10">
+      <category>USER_CENTER</category>
+    </action>
+
+    <action id="DashboardMain" link="/incl/dashboard/user_opensocial_dashboard.xhtml"
+      label=""
+      order="10">
+      <category>Dashboard_sub_tab</category>
+      <filter id="notForMSIE7">
+        <rule grant="false">
+          <condition>#{isMSIE6or7}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="DashboardMain_MSIE7" link="/incl/dashboard/user_jsf_dashboard.xhtml"
+      label=""
+      order="10">
+      <category>Dashboard_sub_tab</category>
+      <filter id="fallBackForMSIE7">
+        <rule grant="true">
+          <condition>#{isMSIE6or7}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="DashboardManagement" link="/incl/dashboard/dashboard_management.xhtml"
+      label="admcommand.DashboardManagement" order="70">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>dashboardManagementAccess</filter-id>
+    </action>
+
+    <action id="DefaultDashboardManagement" link="/incl/dashboard/default_dashboard_management.xhtml"
+      label="tab.dashboard.management.default" order="10">
+      <category>DashboardManagement_sub_tab</category>
+      <filter-id>dashboardManagementAccess</filter-id>
+    </action>
+
+    <action id="AnonymousDashboardManagement" link="/incl/dashboard/anonymous_dashboard_management.xhtml"
+      label="tab.dashboard.management.anonymous" order="20">
+      <category>DashboardManagement_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+      <filter id="isAnonymousUserDefined">
+        <rule grant="true">
+          <condition>#{anonymousUserDefined}</condition>
+        </rule>
+      </filter>
+    </action>
+
+    <action id="ExternalGadgets">
+      <category>DashboardManagement_sub_tab</category>
+    </action>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="filters">
+
+    <filter id="dashboardManagementAccess">
+      <rule grant="true">
+        <condition>#{currentUser.administrator}</condition>
+        <condition>#{currentUser.isMemberOf('powerusers')}</condition>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>
