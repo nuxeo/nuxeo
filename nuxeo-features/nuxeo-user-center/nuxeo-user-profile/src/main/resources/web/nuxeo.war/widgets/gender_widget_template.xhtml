@@ -1,0 +1,23 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core" id="#{widget.id}">
+
+  <c:if test="#{widget.mode == 'edit' }">
+    <h:selectOneRadio value="#{field}" id="#{widget.id}_radio">
+      <f:selectItem itemValue="#{false}"
+        itemLabel="#{messages['label.userprofile.gender.male']}" />
+      <f:selectItem itemValue="#{true}"
+        itemLabel="#{messages['label.userprofile.gender.female']}" />
+    </h:selectOneRadio>
+    <h:message styleClass="errorMessage" for="#{widget.id}_radio"
+      id="#{widget.id}_message" />
+  </c:if>
+
+  <c:if test="#{widget.mode == 'view' }">
+    <h:outputText rendered="#{!field}"
+      value="#{messages['label.userprofile.gender.male']}" />
+    <h:outputText rendered="#{field}"
+      value="#{messages['label.userprofile.gender.female']}" />
+  </c:if>
+
+</f:subview>

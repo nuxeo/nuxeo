@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.theme">
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="userCenter/default" charset="utf-8">
+      <defaultFlavor>default</defaultFlavor>
+      <flavors>
+        <flavor>default</flavor>
+        <flavor>rainbow</flavor>
+      </flavors>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_sassCss</bundle>
+        <resource>nuxeo_usercenter_specific.scss</resource>
+      </resources>
+    </themePage>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <resource name="nuxeo_usercenter_specific.scss" type="css">
+      <path>themes/sass/nuxeo_usercenter_specific.scss</path>
+      <processors>
+        <processor>sassCss</processor>
+      </processors>
+    </resource>
+
+  </extension>
+
+</component>

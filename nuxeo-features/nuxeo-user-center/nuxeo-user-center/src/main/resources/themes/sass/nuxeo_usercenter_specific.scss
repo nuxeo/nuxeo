@@ -1,0 +1,38 @@
+// ----- Home Tab styles.
+// =Main Frame
+#nxw_homeTabs_tab_content .foldableBox .pageNavigationControls:first-of-type {
+  display: none;
+}
+
+#nxw_homeTabs_tab_content .gridBox .widgetPanel {
+  padding: 0 1em 0 0;
+}
+
+#nxw_homeTabs_tab_content .gridBox.gridStyle6:nth-child(2) .widgetPanel {
+  padding-right: 0;
+}
+
+#nxw_homeTabs_tab_content .gridBox.gridStyle6:nth-child(2) .foldableBox {
+  margin-right: 0;
+}
+
+#usersPanel > .tabsContent,
+#groupsPanel > .tabsContent {
+  margin-top: 0;
+  padding: 0;
+}
+
+// =Override GWT styles
+body,
+table td,
+select {
+  font-family: $default-font;
+}
+
+.widget .content {
+  width: 100%;
+}
+
+.description_block span {
+  font-size: 1em;
+}

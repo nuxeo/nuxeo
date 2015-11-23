@@ -1,0 +1,17 @@
+<f:subview xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <ui:composition template="/users/view_user_template.xhtml">
+    <ui:define name="view_user_tab_content">
+      <h:form id="viewUser"
+        rendered="#{userManagementActions.detailsMode == 'view'}">
+        <nxl:layout name="gridUserLayout" mode="view"
+          value="#{userProfileActions.selectedUserProfile}" />
+      </h:form>
+    </ui:define>
+  </ui:composition>
+
+</f:subview>

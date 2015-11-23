@@ -1,0 +1,44 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:a4j="http://richfaces.org/a4j"
+     class="tabsContent">
+
+  <h3>
+    #{messages['user.center.cloudServicesAccounts']}
+  </h3>
+
+  <ui:include src="user_tokens_directory.xhtml">
+    <ui:param name="bean" value="#{oauthUserTokens}"/><ui:param name="entryLayoutName" value="oauth2ProviderTokenLayoutUserDashboard"/>
+    <ui:param name="detailMode" value="edit"/>
+  </ui:include>
+
+  <c:if test="#{oauthUserTokens.editableEntry == null}">
+    <div style="margin-top: 10px">
+      <nxu:repeat var="entry" value="#{oauth2ServiceProvidersActions.getEnabledProviders()}">
+        <c:set var="providerName"
+               value="#{nxu:test(not empty entry.oauth2ServiceProvider.description, entry.oauth2ServiceProvider.description, entry.oauth2ServiceProvider.serviceName)}" />
+        <h:outputLink value="#"
+                      styleClass="button smallButton"
+                      onclick="openOAuthAuthorizationPopup('#{oauth2ServiceProvidersActions.getAuthorizationURL(entry.oauth2ServiceProvider.serviceName)}');
+                                   return false;">
+          #{nxu:translate('user.center.oauthtokens.add', providerName)}
+        </h:outputLink>
+      </nxu:repeat>
+    </div>
+  </c:if>
+
+  <a4j:jsFunction name="reRenderDirectory"
+                  render="directoryEditor">
+  </a4j:jsFunction>
+
+  <script>
+    function openOAuthAuthorizationPopup(url) {
+      var options = {
+        onClose: reRenderDirectory
+      };
+      openPopup(url, options);
+    }
+  </script>
+</div>

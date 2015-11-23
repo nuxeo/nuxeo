@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.oauth.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+    <layout name="authorizedApplications">
+      <templates>
+        <template mode="any">
+          /layouts/layout_authorized_applications_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>appId</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+        </row>
+        <row>
+          <widget>duration</widget>
+        </row>
+      </rows>
+
+      <widget name="appId" type="text">
+        <labels>
+          <label mode="any">AppId (Gadget) </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.appId</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.appId
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="creationDate" type="datetime">
+        <labels>
+          <label mode="any">Creation Date </label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.creationDate</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.creationDate
+          </property>
+        </properties>
+      </widget>
+
+      <widget name="duration" type="int">
+        <labels>
+          <label mode="any">Duration (in minutes)</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauthToken.durationInMinutes</field>
+        </fields>
+        <properties mode="any">
+          <property name="help">
+          label.oauth.help.durationInMinutes
+          </property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="oauth2ProviderTokenLayoutUserDashboard">
+      <templates>
+        <template mode="any">
+          /directory/directoryOAuth_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>id</widget>
+        </row>
+        <row>
+          <widget>serviceName</widget>
+        </row>
+        <row>
+          <widget>serviceLogin</widget>
+        </row>
+        <row>
+          <widget>creationDate</widget>
+        </row>
+        <row>
+          <widget>isShared</widget>
+        </row>
+        <row>
+          <widget>sharedWith</widget>
+        </row>
+      </rows>
+
+      <widget name="id" type="text">
+        <labels>
+          <label mode="any">label.oauth.token.id</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.id</field>
+        </fields>
+        <widgetModes>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
+      </widget>
+      <widget name="serviceName" type="text">
+        <labels>
+          <label mode="any">label.oauth.token.serviceName</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.serviceName</field>
+        </fields>
+      </widget>
+      <widget name="serviceLogin" type="text">
+        <labels>
+          <label mode="any">label.oauth.token.serviceLogin</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.serviceLogin</field>
+        </fields>
+      </widget>
+      <widget name="creationDate" type="datetime">
+        <labels>
+          <label mode="any">label.oauth.token.creationDate</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.creationDate</field>
+        </fields>
+      </widget>
+      <widget name="isShared" type="checkbox">
+        <labels>
+          <label mode="any">label.oauth.token.isShared</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>oauth2Token.isShared</field>
+        </fields>
+      </widget>
+      <widget name="sharedWith" type="multipleUsersSuggestion">
+        <labels>
+          <label mode="any">label.oauth.token.sharedWith</label>
+        </labels>
+        <fields>
+          <field>#{oauthUserTokens.sharedWith}</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="prefixed">true</property>
+          <property name="minChars">3</property>
+          <property name="hideHelpLabel">false</property>
+        </properties>
+        <widgetModes>
+          <mode value="view_list">hidden</mode>
+          <mode value="view_list_and_header">hidden</mode>
+        </widgetModes>
+      </widget>
+    </layout>
+  </extension>
+
+</component>
