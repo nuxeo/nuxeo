@@ -1,0 +1,13 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <h:form id="document_header_layout_form" class="titleBlock">
+    <nxl:documentLayout documentMode="header" mode="view"
+      value="#{currentDocument}" defaultLayout="document_header"
+      includeAnyMode="false" />
+  </h:form>
+
+  <nxl:widget name="documentTabs" mode="view" value="#{currentDocument}" />
+
+</div>
