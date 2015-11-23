@@ -1,0 +1,21 @@
+<component name="org.nuxeo.ecm.user.center.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="UserCenterMain" link="user_center" label="action.user.center"
+      order="5">
+      <category>USER_SERVICES</category>
+    </action>
+
+    <action id="userCenterLogout" link="#{loginLogoutAction.logout()}" label="command.logout">
+      <category>USER_CENTER_USER_SERVICES</category>
+    </action>
+
+    <action id="userCenterExit" link="#{adminViews.exit()}" label="action.user.center.exit">
+      <category>USER_CENTER_USER_SERVICES</category>
+    </action>
+
+  </extension>
+
+</component>

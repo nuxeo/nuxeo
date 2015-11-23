@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.core/ecm/schemas/test/testsettings2" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="testprop2" type="xs:string" default="" />
+
+</xs:schema>
+
+
+

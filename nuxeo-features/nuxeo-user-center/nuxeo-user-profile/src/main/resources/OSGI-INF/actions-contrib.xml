@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.user.center.profile.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="Profile" link="user_center_fragment.xhtml" label="user.center.profile"
+      order="20">
+      <category>USER_CENTER</category>
+    </action>
+
+    <action id="ProfileView" link="/incl/profile/user_profile.xhtml" label="user.center.profile.tab.view"
+      order="10">
+      <category>USER_CENTER_Profile</category>
+    </action>
+
+  </extension>
+
+</component>

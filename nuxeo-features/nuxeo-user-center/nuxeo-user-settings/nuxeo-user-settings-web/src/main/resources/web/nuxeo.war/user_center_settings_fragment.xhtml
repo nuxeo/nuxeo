@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<div xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+     <a4j:outputPanel id="user_center_subtab">
+
+      <ui:include src="/incl/message_banner.xhtml"/>
+      <ui:include src="/incl/user_center_settings_subview_selector.xhtml"/>
+
+      <div style="clear:both"></div>
+      <div class="tabsContent">
+        <ui:include src="/incl/user_center_settings_content.xhtml"/>
+      </div>
+
+   </a4j:outputPanel>
+
+</div>

@@ -1,0 +1,49 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:nxl="http://nuxeo.org/nxforms/layout"
+     xmlns:a4j="https://ajax4jsf.dev.java.net/ajax">
+
+  <h2><h:outputText
+    value="#{messages['user.center.authorizedApplication']}" /></h2>
+
+
+  <a4j:outputPanel id="authorizedApplicationsPanel">
+
+    <nxu:set var="authorizedApplications" value="#{authorizedApplicationsActions.authorizedApplications}">
+
+
+      <p><h:outputText value="#{messages['user.center.authorizedApplication.description']}" rendered="#{authorizedApplications.size gt 0}"/></p>
+      <p><h:outputText value="#{messages['user.center.noAuthorizedApplication']}" rendered="#{authorizedApplications.size le 0}" /></p>
+
+  <a4j:form id="authorizedApplicationsForm">
+  <table class="dataOutput">
+    <tbody>
+      <nxu:repeat var="application"
+        value="#{authorizedApplicationsActions.authorizedApplications}" index="index">
+        <c:if test="#{index % 2 == 0}">
+          <c:set var="directoryEntryClass" value="dataRowOdd" />
+        </c:if>
+        <c:if test="#{index % 2 != 0}">
+          <c:set var="directoryEntryClass" value="dataRowEven" />
+        </c:if>
+        <c:if test="#{index == 0}">
+          <nxl:layout name="authorizedApplications" mode="list_and_header"
+            value="#{application}" />
+        </c:if>
+        <c:if test="#{index != 0}">
+          <nxl:layout name="authorizedApplications" mode="list" value="#{application}" />
+        </c:if>
+      </nxu:repeat>
+    </tbody>
+  </table>
+  </a4j:form>
+
+
+  </nxu:set>
+  </a4j:outputPanel>
+
+
+</div>

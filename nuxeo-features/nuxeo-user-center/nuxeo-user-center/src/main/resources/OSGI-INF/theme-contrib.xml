@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.theme">
+
+  <require>org.nuxeo.theme.core</require>
+  <require>org.nuxeo.theme.fragments</require>
+  <require>org.nuxeo.theme.html</require>
+  <require>org.nuxeo.theme.jsf</require>
+
+  <!--  themes -->
+  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
+
+    <theme>
+      <src>themes/theme-galaxy-user-center.xml</src>
+    </theme>
+
+  </extension>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+
+    <view name="Nuxeo DM logo (Galaxy User Center Theme)"
+      template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/logo_DM_galaxy_user_center.xhtml</template>
+    </view>
+
+    <view name="User services (Galaxy User Center Theme)"
+      template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/user_services_galaxy_user_center.xhtml</template>
+      <resource>screen.css</resource>
+    </view>
+
+    <view name="Nuxeo DM footer (Galaxy User Center Theme)"
+      template-engine="jsf-facelets">
+      <format-type>widget</format-type>
+      <template>incl/footer_galaxy_user_center.xhtml</template>
+    </view>
+
+  </extension>
+
+  <!-- application settings -->
+  <extension target="org.nuxeo.theme.services.ThemeService"
+    point="applications">
+
+    <application root="${org.nuxeo.ecm.contextPath}"
+      template-engine="jsf-facelets">
+
+      <view id="/user_center.xhtml">
+        <theme>userCenter/default</theme>
+      </view>
+
+    </application>
+
+  </extension>
+
+  <!-- Styles presets -->
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="presets">
+
+    <palette name="Galaxy User Center borders"
+      src="themes/palettes/galaxy-user-center-borders.properties" category="border" />
+    <palette name="Galaxy User Center backgrounds"
+      src="themes/palettes/galaxy-user-center-backgrounds.properties"
+      category="background" />
+    <palette name="Galaxy User Center fonts"
+      src="themes/palettes/galaxy-user-center-fonts.properties" category="font" />
+    <palette name="Galaxy User Center colors"
+      src="themes/palettes/galaxy-user-center-colors.properties" category="color" />
+
+  </extension>
+
+</component>

@@ -1,0 +1,133 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <c:if test="#{domains.size() > 1}">
+  
+    <h:panelGrid columns="1">
+      <div class="dashboardDomainSelection">
+        <h:form id="selectDashboardDomain">
+          <h:outputText value="#{messages['label.selectDashboardDomain']}" />
+          <h:selectOneMenu value="#{jsfDashboardActions.selectedDomainId}"
+            id="selectDashboardDomainMenu">
+            <nxu:selectItems value="#{domains}" var="domain"
+              itemValue="#{domain.id}" itemLabel="#{nxd:titleOrId(domain)}" />
+          </h:selectOneMenu>
+          <h:commandButton action="#{jsfDashboardActions.submitSelectedDomainChange}"
+            value="#{messages['command.changeDashboardSelectedDomain']}"
+            styleClass="button"
+            id="dashboardDomainSubmitButton" />
+        </h:form>
+      </div>
+
+      <div style="clear:both"></div>
+    </h:panelGrid>
+  
+  </c:if>
+
+  <table cellspacing="10" class="dashboardItemTable">
+    <tbody>
+      <tr>
+        <td width="50%">
+
+          <h:panelGroup>
+            <ui:decorate template="/incl/foldable_content_view.xhtml">
+              <ui:param name="contentViewId" value="USER_TASKS" />
+              <ui:param name="contentViewName" value="USER_TASKS" />
+              <ui:param name="hideEmpty" value="true" />
+              <ui:define name="boxBodyStart">
+                <h:outputText value="#{messages['label.workflow.tasks']}"
+                  class="infoMessage" />          
+              </ui:define>
+              <ui:define name="syndication_buttons" />
+            </ui:decorate>
+          </h:panelGroup>
+      
+          <h:panelGroup>
+            <ui:decorate template="/incl/foldable_content_view.xhtml">
+              <ui:param name="contentViewId" value="USER_PROCESSES" />
+              <ui:param name="contentViewName" value="USER_PROCESSES" />
+              <ui:param name="hideEmpty" value="true" />
+              <ui:define name="boxBodyStart">
+                <h:outputText value="#{messages['label.user.processes']}"
+                  class="infoMessage" />
+              </ui:define>
+              <ui:define name="syndication_buttons" />
+            </ui:decorate>
+          </h:panelGroup>
+      
+          <h:panelGroup>
+            <ui:decorate template="/incl/foldable_content_view.xhtml">
+              <ui:param name="contentViewId" value="USER_WORKSPACES" />
+              <ui:param name="contentViewName" value="USER_WORKSPACES" />
+              <ui:param name="hideEmpty" value="true" />
+              <ui:define name="syndication_buttons" />
+            </ui:decorate>
+          </h:panelGroup>
+      
+          <h:panelGroup>
+            <ui:decorate template="/incl/foldable_content_view.xhtml">
+              <ui:param name="contentViewId" value="USER_SECTIONS" />
+              <ui:param name="contentViewName" value="USER_SECTIONS" />
+              <ui:param name="hideEmpty" value="true" />
+              <ui:define name="syndication_buttons" />
+            </ui:decorate>
+          </h:panelGroup>
+          
+        </td>
+        <td width="50%">
+
+          <h:panelGroup>
+            <ui:decorate template="/incl/foldable_content_view.xhtml">
+              <ui:param name="contentViewId" value="USER_DOCUMENTS" />
+              <ui:param name="contentViewName" value="USER_DOCUMENTS" />
+              <ui:param name="hideEmpty" value="true" />
+              <ui:define name="syndication_buttons" />
+            </ui:decorate>
+          </h:panelGroup>
+      
+          <h:panelGroup>
+            <ui:decorate template="/incl/foldable_content_view.xhtml">
+              <ui:param name="contentViewId" value="DOMAIN_DOCUMENTS" />
+              <ui:param name="contentViewName" value="DOMAIN_DOCUMENTS" />
+              <ui:param name="hideEmpty" value="true" />
+              <ui:define name="syndication_buttons" />
+            </ui:decorate>
+          </h:panelGroup>
+      
+          <h:panelGroup>
+            <ui:decorate template="/incl/foldable_content_view.xhtml">
+              <ui:param name="contentViewId" value="DOMAIN_PUBLISHED_DOCUMENTS" />
+              <ui:param name="contentViewName" value="DOMAIN_PUBLISHED_DOCUMENTS" />
+              <ui:param name="hideEmpty" value="true" />
+              <ui:define name="syndication_buttons" />
+            </ui:decorate>
+          </h:panelGroup>
+      
+          <h:panelGroup>
+            <ui:decorate template="/incl/foldable_content_view.xhtml">
+              <ui:param name="contentViewId" value="USER_SITES" />
+              <ui:param name="contentViewName" value="USER_SITES" />
+              <ui:param name="hideEmpty" value="true" />
+              <ui:define name="syndication_buttons" />
+            </ui:decorate>
+          </h:panelGroup>
+      
+          <h:panelGroup>
+            <ui:decorate template="/incl/foldable_content_view.xhtml">
+              <ui:param name="contentViewId" value="USER_DELETED_DOCUMENTS" />
+              <ui:param name="contentViewName" value="USER_DELETED_DOCUMENTS" />
+              <ui:param name="hideEmpty" value="true" />
+              <ui:define name="syndication_buttons" />
+            </ui:decorate>
+          </h:panelGroup>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

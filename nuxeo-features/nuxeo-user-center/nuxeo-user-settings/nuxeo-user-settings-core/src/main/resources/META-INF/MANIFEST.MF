@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Usersettings Core
+Bundle-SymbolicName: org.nuxeo.ecm.usersettings.core;singleton=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .
+Bundle-Category: core
+Nuxeo-Component: OSGI-INF/usersettings-core-types-contrib.xml,
+ OSGI-INF/usersettings-framework.xml,
+ OSGI-INF/usersettings-provider-contrib.xml

@@ -1,0 +1,18 @@
+<component name="org.nuxeo.ecm.user.center.notification.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="Notification" link="/incl/notification/user_subscriptions.xhtml" label="user.center.notification"
+      order="40">
+      <category>USER_CENTER</category>
+    </action>
+
+    <!-- <action id="NotificationView" link="/incl/profile/user_profile.xhtml" label="user.center.notification.tab.view"
+      order="10">
+      <category>USER_CENTER_Notification</category>
+    </action> -->
+
+  </extension>
+
+</component>

@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Usersettings Core test
+Bundle-SymbolicName: org.nuxeo.ecm.usersettings.core.test;singleton=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .
+Bundle-Category: core
+Nuxeo-Component: OSGI-INF/usersettings-test1-core-types-contrib.xml,
+ OSGI-INF/usersettings-test1-service-contrib.xml,
+ OSGI-INF/usersettings-test2-core-types-contrib.xml,
+ OSGI-INF/usersettings-test2-service-contrib.xml,
+ test-userservice-config.xml

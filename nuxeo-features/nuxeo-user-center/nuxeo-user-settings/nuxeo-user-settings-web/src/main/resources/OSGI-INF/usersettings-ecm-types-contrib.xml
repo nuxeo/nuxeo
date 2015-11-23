@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.usersettings.web.api.ecmtypes">
+
+	<require>org.nuxeo.ecm.platform.types</require>
+
+	<extension target="org.nuxeo.ecm.platform.types.TypeService"
+		point="types">
+
+    <type id="DefaultSettings" >
+      <label>DefaultSettings</label>
+      <icon>/icons/folder.gif</icon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>defaultSettings</layout>
+      </layouts>
+    </type>
+    <type id="NavigationSettings" >
+      <label>NavigationSettings</label>
+      <icon>/icons/folder.gif</icon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>navigationSettings</layout>
+      </layouts>
+    </type>
+    <type id="Vcard" >
+      <label>Vcard</label>
+      <icon>/icons/folder.gif</icon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>vcard</layout>
+      </layouts>
+    </type>
+
+		<type id="Workspace">
+			<subtypes>
+				<type>UserSettings</type>
+			</subtypes>
+		</type>
+
+
+	</extension>
+</component>
+

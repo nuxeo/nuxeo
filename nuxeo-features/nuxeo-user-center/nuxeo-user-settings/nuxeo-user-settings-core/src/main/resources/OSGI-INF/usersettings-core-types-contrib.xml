@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.usersettings.types">
+
+	<require>org.nuxeo.ecm.core.schema.TypeService</require>
+
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="schema">
+		<schema name="usersettings" src="schemas/usersettings.xsd"
+			prefix="uset" />
+    <schema name="defaultSettings" src="schemas/defaultSettings.xsd"
+      prefix="dset" />
+    <schema name="navigationSettings" src="schemas/navigationSettings.xsd"
+      prefix="nset" />
+    <schema name="vcard" src="schemas/vcard.xsd"
+      prefix="vc" />
+	</extension>
+
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="doctype">
+		<doctype name="UserSettings" extends="Workspace">
+			<schema name="usersettings" />
+			<schema name="common" />
+			<schema name="dublincore" />
+			<schema name="uid" />
+			<facet name="HiddenInNavigation" />
+		</doctype>
+    
+    <doctype name="DefaultSettings" extends="Document">
+      <schema name="defaultSettings" />
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="uid" />
+      <facet name="HiddenInNavigation" />
+    </doctype>
+    
+    <doctype name="NavigationSettings" extends="Document">
+      <schema name="navigationSettings" />
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="uid" />
+      <facet name="HiddenInNavigation" />
+    </doctype>
+    
+    <doctype name="Vcard" extends="Document">
+      <schema name="vcard" />
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="uid" />
+      <facet name="HiddenInNavigation" />
+      <facet name="HiddenInSettings" />
+    </doctype>
+	</extension>
+
+</component>

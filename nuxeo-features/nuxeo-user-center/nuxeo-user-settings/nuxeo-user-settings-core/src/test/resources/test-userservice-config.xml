@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.usermanager.test">
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+      point="userManager">
+    <userManager
+        class="org.nuxeo.ecm.platform.usermanager.FakeUserManagerImpl">
+      <users>
+        <directory>somedir</directory>
+        <emailField>mail</emailField>
+        <searchFields append="true">
+          <!-- BBB: use substringMatchSearchField explicitely instead -->
+          <searchField>first</searchField>
+          <exactMatchSearchField>last</exactMatchSearchField>
+          <substringMatchSearchField>email</substringMatchSearchField>
+        </searchFields>
+        <listingMode>search_only</listingMode>
+        <anonymousUser id="Guest">
+          <property name="first">Anonymous</property>
+          <property name="last">Coward</property>
+        </anonymousUser>
+        <virtualUser id="Administrator" searchable="false">
+          <password>secret</password>
+          <property name="first">My Custom</property>
+          <property name="last">Administrator</property>
+          <group>administrators</group>
+        </virtualUser>
+        <virtualUser id="testuser" searchable="false">
+          <password>testuser</password>
+          <property name="first">My Custom</property>
+          <property name="last">Member</property>
+          <group>members</group>
+          <group>othergroup</group>
+        </virtualUser>
+      </users>
+      <groups>
+        <directory>somegroupdir</directory>
+        <membersField>members</membersField>
+        <subGroupsField>subg</subGroupsField>
+        <parentGroupsField>parentg</parentGroupsField>
+        <listingMode>search_oh_yeah</listingMode>
+      </groups>
+      <defaultAdministratorId>tehroot</defaultAdministratorId>
+      <defaultGroup>defgr</defaultGroup>
+      <userSortField>name</userSortField>
+      <groupSortField>sn</groupSortField>
+    </userManager>
+  </extension>
+
+</component>

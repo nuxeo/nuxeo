@@ -1,0 +1,20 @@
+<component name="org.nuxeo.ecm.user.center.dashboard.jsf.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="Dashboard" link="user_center_fragment.xhtml"
+      label="user.center.dashboard"
+      order="10">
+      <category>USER_CENTER</category>
+    </action>
+
+    <action id="DashboardMain" link="/incl/dashboard/user_jsf_dashboard.xhtml"
+      label=""
+      order="10">
+      <category>USER_CENTER_Dashboard</category>
+    </action>
+
+  </extension>
+
+</component>

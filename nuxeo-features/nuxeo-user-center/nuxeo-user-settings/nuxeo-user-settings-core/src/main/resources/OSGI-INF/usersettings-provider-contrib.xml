@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component
+	name="org.nuxeo.ecm.usersettings.core.UserSettingsProvider">
+	
+	<extension target="org.nuxeo.ecm.usersettings.UserSettingsService"
+		point="userSettingsProvider">
+    
+    <userSettingsProvider type="Vcard" category="User" />
+
+    <userSettingsProvider type="DefaultSettings" category="Default" />
+    <userSettingsProvider type="NavigationSettings" category="Default" />
+
+	</extension>
+
+</component>

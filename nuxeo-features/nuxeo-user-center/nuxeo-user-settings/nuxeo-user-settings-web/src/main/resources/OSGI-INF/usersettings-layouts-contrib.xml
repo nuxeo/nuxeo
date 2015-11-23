@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.usersettings.web.api.layouts">
+
+	<require>org.nuxeo.ecm.platform.forms.layouts.webapp</require>
+	<extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+		point="layouts">
+
+    <layout name="defaultSettings">
+      <templates>
+        <template mode="any">/layouts/user_settings_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>language</widget>
+        </row>
+      </rows>
+      <widget name="language" type="text">
+        <labels>
+          <label mode="any">label.settings.language</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dset:language</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+    </layout>
+
+    <layout name="navigationSettings">
+      <templates>
+        <template mode="any">/layouts/user_settings_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>homePage</widget>
+        </row>
+        <row>
+          <widget>pagination</widget>
+        </row>
+        <row>
+          <widget>fullNavigation</widget>
+        </row>
+      </rows>
+      <widget name="homePage" type="text">
+        <labels>
+          <label mode="any">label.settings.homePage</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>nset:homePage</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="pagination" type="text">
+        <labels>
+          <label mode="any">label.settings.pagination</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>nset:pagination</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="fullNavigation" type="checkbox">
+        <labels>
+          <label mode="any">label.settings.fullNavigation</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>nset:fullNavigation</field>
+        </fields>
+      </widget>
+
+    </layout>
+
+    <layout name="vcard">
+      <templates>
+        <template mode="any">/layouts/user_settings_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>N</widget>
+        </row>
+      </rows>
+      <widget name="N" type="text">
+        <labels>
+          <label mode="any">label.settings.vcard.name</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>vc:N</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+
+    </layout>
+
+	</extension>
+
+</component>
+

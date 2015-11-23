@@ -1,0 +1,46 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:rich="http://richfaces.org/rich"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h1><h:outputText value="#{messages['label.my.subscriptions']}" /></h1>
+  
+  <nxu:dataTable id="dataTable" value="#{userSubscriptions}" var="row"
+      rowClasses="dataRowEven,dataRowOdd" styleClass="dataOutput">
+      
+      <c:set var="doc" value="#{userNotificationActions.getDocument(row.docId)}"/>
+
+      <!--  Notification -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.notification']}"/>
+        </f:facet>
+        <h:outputText value="#{messages[row.notification]}"/>
+      </nxu:column>
+
+      <!--  Principal -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.subscribed.to']}"/>
+        </f:facet>
+        <h:outputText value="#{row.userId}"/>
+      </nxu:column>
+
+      <!--  Document -->
+      <nxu:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.on.document']}"/>
+        </f:facet>
+        <nxd:restDocumentLink title="#{nxd:titleOrId(doc)}" document="#{doc}">
+          <span id="title_#{row.docId}">
+          <h:outputText value="#{nxd:titleOrId(doc)}" />
+          </span>
+        </nxd:restDocumentLink>
+        <br /><h:outputText value="#{doc.getPathAsString()}"/>
+      </nxu:column>
+  </nxu:dataTable>
+
+</div>

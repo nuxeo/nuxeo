@@ -1,0 +1,20 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <c:set var="settingsProviders" value="#{userSettingsActions.currentSettings}" />
+
+  <h:form rendered="#{not empty settingsProviders}">
+    <c:forEach var="row" items="#{settingsProviders}" >
+      <nxl:documentLayout mode="edit" value="#{row}" />
+    </c:forEach>
+    <h:commandButton  value="#{messages['command.save']}"
+      action="#{userSettingsActions.saveCurrentSettings()}"/>
+    <h:commandButton value="#{messages['command.reset.category']}"
+      action="#{userSettingsActions.resetCurrentSettingCategory()}"/>
+  </h:form>
+  <h:outputText rendered="#{empty settingsProviders}" value="#{messages['label.usersettings.tab.empty']}" />
+</div>

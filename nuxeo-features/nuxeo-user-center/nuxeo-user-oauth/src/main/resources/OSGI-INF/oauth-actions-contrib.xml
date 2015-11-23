@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.oauth.actions">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+    point="actions">
+
+    <action id="AuthorizedApplication" link="user_center_fragment.xhtml"
+      label="user.center.authorizedApplication"
+      order="50">
+      <category>USER_CENTER</category>
+    </action>
+
+    <action id="AuthorizedApplicationMain" link="/incl/oauth/authorized_applications.xhtml"
+      label=""
+      order="10">
+      <category>USER_CENTER_AuthorizedApplication</category>
+    </action>
+
+  </extension>
+
+</component>

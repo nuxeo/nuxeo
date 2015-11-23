@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo UserSettings API
+Bundle-SymbolicName: org.nuxeo.ecm.usersettings.api;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Bundle-ClassPath: .
+Export-Package: org.nuxeo.ecm.usersettings
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/usersettings-operations-contrib.xml,

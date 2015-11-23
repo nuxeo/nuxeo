@@ -1,0 +1,289 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.user.center.dashboard.jsf.layouts.listing">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="dashboard_document_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">false</property>
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_icon_type</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_title_link</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_lock_icon</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_modification_date</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_last_contributor</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="columnStyleClass">iconColumn</property>
+          </properties>
+          <widget>listing_livedit_link</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="dashboard_task_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_task_name</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_task_document_title_link</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_task_directive</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_task_comment</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_task_dueDate</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_task_startDate</widget>
+        </column>
+      </columns>
+    </layout>
+
+    <layout name="dashboard_process_listing">
+      <templates>
+        <template mode="any">
+          /layouts/layout_listing_ajax_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_process_name</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_process_document_title_link</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+          </properties>
+          <widget>listing_process_startDate</widget>
+        </column>
+      </columns>
+    </layout>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgettypes">
+
+    <widgetType name="listing_task_name">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_task_name_widget_template.xhtml
+      </property>
+    </widgetType>
+
+    <widgetType name="listing_process_name">
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_process_name_widget_template.xhtml
+      </property>
+    </widgetType>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="listing_task_name" type="listing_task_name">
+      <labels>
+        <label mode="any">label.workflow.task.name</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_task_document_title_link" type="listing_title_link">
+      <labels>
+        <label mode="any">label.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.document</field>
+        <field>data.document.ref</field>
+        <field>data.document.dc.description</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="tab">
+          #{nxu:test(layoutValue.data.taskInstance.getVariableLocally('createdFromCreateTaskOperation')
+          == 'true', '', 'TAB_CONTENT_JBPM')}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="listing_task_directive" type="text">
+      <labels>
+        <label mode="any">label.review.directive</label>
+      </labels>
+      <translated>true</translated>
+      <properties widgetMode="any">
+        <property name="value">
+          #{messages[layoutValue.data.directive]}
+        </property>
+      </properties>
+    </widget>
+
+    <widget name="listing_task_comment" type="text">
+      <labels>
+        <label mode="any">label.review.user.comment</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.comment</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_task_dueDate" type="datetime">
+      <labels>
+        <label mode="any">label.workflow.task.duedate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.dueDate</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="styleClass">
+          #{nxu:test(layoutValue.data.expired, 'error', '')}
+        </property>
+        <property name="pattern">#{nxu:dateAndTimeFormater('medium')}</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_task_startDate" type="datetime">
+      <labels>
+        <label mode="any">label.workflow.task.startDate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.startDate</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:dateAndTimeFormater('medium')}</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_process_name" type="listing_process_name">
+      <labels>
+        <label mode="any">label.name</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.processInstanceName</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_process_document_title_link"
+      type="listing_title_link">
+      <labels>
+        <label mode="any">label.title</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.documentModel</field>
+        <field>data.documentModel.ref</field>
+        <field>data.documentModel.dc.description</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="tab">TAB_CONTENT_JBPM</property>
+      </properties>
+    </widget>
+
+    <widget name="listing_process_startDate" type="datetime">
+      <labels>
+        <label mode="any">label.workflow.task.startDate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.processInstanceStartDate</field>
+      </fields>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:dateAndTimeFormater('medium')}</property>
+      </properties>
+    </widget>
+
+  </extension>
+
+</component>
