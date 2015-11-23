@@ -19,6 +19,12 @@ package org.nuxeo.apidoc.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -148,6 +154,7 @@ public class TestSnapshotPersist {
         assertNotNull(persistent);
 
         session.save();
+        testExportImport(persistent);
 
         persistent = snapshotManager.getSnapshot(runtimeSnapshot.getKey(), session);
         assertNotNull(persistent);
@@ -169,6 +176,22 @@ public class TestSnapshotPersist {
          */
 
         assertEquals(rtDump, pDump);
+
+        testExportImport(persistent);
+    }
+
+    /**
+     * @since 8.1
+     */
+    protected void testExportImport(DistributionSnapshot snapshot) throws IOException {
+        File tempFile = File.createTempFile("testExportImport", snapshot.getKey());
+        try (OutputStream out = new FileOutputStream(tempFile)) {
+            snapshotManager.exportSnapshot(session, snapshot.getKey(), out);
+        }
+        try (InputStream in = new FileInputStream(tempFile)) {
+            snapshotManager.importTmpSnapshot(session, in);
+        }
+        tempFile.delete();
     }
 
 }
