@@ -7,6 +7,7 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxw="http://nuxeo.org/nxforms/runtime/widget"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <ui:define name="page title">
@@ -26,7 +27,7 @@
       </h:form>
       <ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
       <ui:include src="/incl/message_banner.xhtml"/>
-      <nxl:widget name="documentTabs" mode="view" value="#{currentDocument}" />
+      <nxw:documentTabs mode="view" value="#{currentDocument}" />
     </div>
   </ui:define>
 

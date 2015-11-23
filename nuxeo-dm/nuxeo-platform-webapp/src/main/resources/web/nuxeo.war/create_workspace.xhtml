@@ -7,6 +7,7 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxw="http://nuxeo.org/nxforms/runtime/widget"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <ui:define name="page title">
@@ -41,7 +42,7 @@
       <div class="buttonsGadget">
         <input type="hidden" name="parentDocumentPath"
           value="#{currentDocument.pathAsString}" />
-        <nxl:widget name="documentCreateButtons" mode="view" value="#{changeableDocument}" />
+        <nxw:documentCreateButtons mode="view" value="#{changeableDocument}" />
       </div>
     </h:form>
     </div>

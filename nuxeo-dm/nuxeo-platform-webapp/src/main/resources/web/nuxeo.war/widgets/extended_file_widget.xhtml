@@ -6,6 +6,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxw="http://nuxeo.org/nxforms/runtime/widget"
   id="#{widget.id}">
 
   <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
@@ -35,9 +36,7 @@
     </c:if>
 
     <div class="actionsColumn">
-      <nxl:widget name="blobActions"
-                  mode="view"
-                  actions="#{actions}" />
+      <nxw:blobActions mode="view" actions="#{actions}" />
     </div>
     </nxu:set>
     </nxu:set>

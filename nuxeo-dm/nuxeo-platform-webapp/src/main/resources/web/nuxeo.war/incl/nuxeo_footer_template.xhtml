@@ -5,13 +5,13 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxw="http://nuxeo.org/nxforms/runtime/widget"
   id="footer">
 
 <ui:insert name="footer">
   <div class="footerDefaultLinks">
 
-    <nxl:widget name="footerLinks" mode="view" value="#{currentDocument}" />
+    <nxw:footerLinks mode="view" value="#{currentDocument}" />
 
     <div class="copyrights">
       <h:outputFormat value="#{messages['label.login.copyright']}">

@@ -6,6 +6,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxw="http://nuxeo.org/nxforms/runtime/widget"
   xmlns:a4j="http://richfaces.org/a4j">
   <ui:param name="pageName" value="admin/default" />
 
@@ -16,7 +17,7 @@
   <ui:define name="body">
 
     <ui:include src="/incl/sysinfo/confirmRestartScript.xhtml" />
-    <nxl:widget name="adminCenterTabs" mode="view" value="#{currentDocument}" />
+    <nxw:adminCenterTabs mode="view" value="#{currentDocument}" />
 
   </ui:define>
 

@@ -4,6 +4,7 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxw="http://nuxeo.org/nxforms/runtime/widget"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <ui:insert name="header_admin_message">
@@ -22,15 +23,15 @@
   <div class="userServicesBlock">
 
     <ui:insert name="header_main_tabs">
-      <nxl:widget name="mainTabs" mode="view" value="#{currentDocument}" />
+      <nxw:mainTabs mode="view" value="#{currentDocument}" />
     </ui:insert>
 
     <ui:insert name="header_user_menu_actions">
-      <nxl:widget name="userMenuActions" mode="view" value="#{currentDocument}" />
+      <nxw:userMenuActions mode="view" value="#{currentDocument}" />
     </ui:insert>
 
     <ui:insert name="header_user_actions">
-      <nxl:widget name="userActions" mode="view" value="#{currentDocument}" />
+      <nxw:userActions mode="view" value="#{currentDocument}" />
     </ui:insert>
 
     <div class="clear"></div>
@@ -38,7 +39,7 @@
   </div>
 
   <ui:insert name="header_search">
-    <nxl:widget name="headerSearch" mode="view" value="#{currentDocument}" />
+    <nxw:headerSearch mode="view" value="#{currentDocument}" />
   </ui:insert>
   <div class="clear"></div>
 
