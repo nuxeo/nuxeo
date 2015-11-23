@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -48,9 +49,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.automation.core", //
-        "org.nuxeo.apidoc.core", //
-})
+@Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.apidoc.core" })
 public class TestSnapshotPersist {
 
     private static final Log log = LogFactory.getLog(TestSnapshotPersist.class);
@@ -62,11 +61,9 @@ public class TestSnapshotPersist {
     protected SnapshotManager snapshotManager;
 
     protected String dumpSnapshot(DistributionSnapshot snap) {
-
         StringBuilder sb = new StringBuilder();
 
         BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(snap);
-
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupTree();
         for (BundleGroupFlatTree info : tree) {
             String pad = " ";
@@ -121,7 +118,6 @@ public class TestSnapshotPersist {
             ExtensionPointInfo epi = snap.getExtensionPoint(epid);
             sb.append(epi.getHierarchyPath());
             sb.append("\n");
-
         }
 
         for (String exid : exids) {
@@ -131,43 +127,38 @@ public class TestSnapshotPersist {
             sb.append(exi.getHierarchyPath());
             sb.append("\n");
         }
-
         return sb.toString();
     }
 
     @Test
     public void testPersist() throws Exception {
-
         DistributionSnapshot runtimeSnapshot = snapshotManager.getRuntimeSnapshot();
-
         String rtDump = dumpSnapshot(runtimeSnapshot);
         log.info("Live Dump:");
         log.info(rtDump);
 
         DistributionSnapshot persistent = snapshotManager.persistRuntimeSnapshot(session);
         assertNotNull(persistent);
-
         session.save();
 
         persistent = snapshotManager.getSnapshot(runtimeSnapshot.getKey(), session);
         assertNotNull(persistent);
         session.save();
 
-        /*
-         * DocumentModelList docs = session.query("select * from NXBundle"); for (DocumentModel doc : docs) {
-         * log.info("Bundle : " + doc.getTitle() + " --- " + doc.getPathAsString()); }
-         */
-
+        // DocumentModelList docs = session.query("select * from NXBundle");
+        // for (DocumentModel doc : docs) {
+        // log.info("Bundle : " + doc.getTitle() + " --- " + doc.getPathAsString());
+        // }
         String pDump = dumpSnapshot(persistent);
         log.info("Persisted Dump:");
         log.info(pDump);
 
-        /*
-         * String[] rtDumpLines = rtDump.trim().split("\n"); String[] pDumpLines = pDump.trim().split("\n");
-         * assertEquals(rtDumpLines.length, pDumpLines.length); for (int i = 0; i < rtDumpLines.length; i++) {
-         * assertEquals(rtDumpLines[i], pDumpLines[i]); }
-         */
-
+        // String[] rtDumpLines = rtDump.trim().split("\n");
+        // String[] pDumpLines = pDump.trim().split("\n");
+        // assertEquals(rtDumpLines.length, pDumpLines.length);
+        // for (int i = 0; i < rtDumpLines.length; i++) {
+        // assertEquals(rtDumpLines[i], pDumpLines[i]);
+        // }
         assertEquals(rtDump, pDump);
     }
 
