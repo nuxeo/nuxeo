@@ -698,6 +698,11 @@
         <artifactId>nuxeo-core-binarymanager-azure</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-gridfs</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
 
       <!-- Nuxeo diff -->
       <dependency>
