@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.profile.listeners.contrib">
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="resizeArticlePictureListener" async="false"
+      postCommit="false"
+      class="org.nuxeo.ecm.user.center.profile.listeners.ResizeAvatarPictureListener"
+      priority="200">
+      <event>beforeDocumentModification</event>
+    </listener>
+
+    <listener name="timezoneSelector"
+      class="org.nuxeo.ecm.user.center.profile.localeProvider.UserLocaleSelectorListener"
+      priority="200">
+      <event>documentModified</event>
+      <event>documentCreated</event>
+    </listener>
+
+  </extension>
+
+</component>

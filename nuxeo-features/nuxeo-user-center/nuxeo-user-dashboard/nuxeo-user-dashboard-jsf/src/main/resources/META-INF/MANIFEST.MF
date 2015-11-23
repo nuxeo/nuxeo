@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo User Center JSF Dashboard
+Bundle-SymbolicName: org.nuxeo.ecm.user.center.dashboard.jsf;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/actions-contrib.xml,
+ OSGI-INF/contentviews-contrib.xml,
+ OSGI-INF/layouts-listing-contrib.xml,
+ OSGI-INF/layouts-dashboard-contrib.xml

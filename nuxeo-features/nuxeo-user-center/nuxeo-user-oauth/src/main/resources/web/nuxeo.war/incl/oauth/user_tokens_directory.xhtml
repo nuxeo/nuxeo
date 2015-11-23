@@ -1,0 +1,70 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:a4j="http://richfaces.org/a4j"
+     xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:nxd="http://nuxeo.org/nxweb/document"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:nxl="http://nuxeo.org/nxforms/layout"
+     xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <script type="text/javascript">
+    function confirmDeleteDirectoryEntry() {
+      return confirm("#{messages['user.center.oauthtokens.confirmDelete']}");
+    }
+  </script>
+
+  <c:set value="command.#{detailMode}" var="detailButtonLabel"/>
+
+  <c:if test="#{bean.editableEntry != null}">
+    <div class="vocabularyEntryContent">
+      <h:form>
+        <nxl:layout name="#{entryLayoutName}" mode="#{detailMode}" value="#{bean.editableEntry}"/>
+
+        <div class="buttons">
+          <h:commandButton value="#{messages['command.save']}"
+                           styleClass="button"
+                           action="#{bean.saveEntry}"
+                           rendered="#{detailMode == 'edit'}"/>
+
+          <h:commandButton value="#{messages['command.back']}"
+                           styleClass="button"
+                           action="#{bean.resetEditEntry}"
+                           immediate="true"/>
+        </div>
+      </h:form>
+    </div>
+  </c:if>
+
+  <c:if test="#{bean.editableEntry == null}">
+    <h:form>
+      <div class="floatR">
+        <h:commandLink action="#{bean.refresh}" styleClass="button">
+          <h:outputText value="#{messages['command.refresh']}"/>
+        </h:commandLink>
+      </div>
+      <a4j:region>
+        <a4j:outputPanel id="directoryEditor">
+          <table class="dataOutput">
+            <tbody>
+            <nxu:repeat var="entry" value="#{bean.getCurrentUserTokens()}" index="index">
+              <c:if test="#{index%2 == 0}">
+                <c:set var="directoryEntryClass" value="dataRowOdd"/>
+              </c:if>
+              <c:if test="#{index%2 != 0}">
+                <c:set var="directoryEntryClass" value="dataRowEven"/>
+              </c:if>
+              <c:if test="#{index == 0}">
+                <nxl:layout name="#{entryLayoutName}" mode="view_list_and_header" value="#{entry}"/>
+              </c:if>
+              <c:if test="#{index != 0}">
+                <nxl:layout name="#{entryLayoutName}" mode="view_list" value="#{entry}"/>
+              </c:if>
+            </nxu:repeat>
+            </tbody>
+          </table>
+        </a4j:outputPanel>
+      </a4j:region>
+    </h:form>
+  </c:if>
+
+</div>

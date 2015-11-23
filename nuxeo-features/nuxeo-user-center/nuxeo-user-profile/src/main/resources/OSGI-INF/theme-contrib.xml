@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.profile.theme">
+
+  <require>org.nuxeo.ecm.user.center.theme</require>
+  <require>org.nuxeo.ecm.admin.center.theme</require>
+
+  <extension target="org.nuxeo.theme.styling.service" point="pages">
+
+    <themePage name="userCenter/default">
+      <resources append="true">
+        <resource>user_profile.scss</resource>
+      </resources>
+    </themePage>
+    <themePage name="admin/default">
+      <resources append="true">
+        <resource>user_profile.scss</resource>
+      </resources>
+    </themePage>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <resource name="user_profile.scss" type="css">
+      <path>themes/sass/user_profile.scss</path>
+      <processors>
+        <processor>sassCss</processor>
+      </processors>
+    </resource>
+
+  </extension>
+
+</component>

@@ -1,0 +1,45 @@
+<f:subview id="#{widget.id}" xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <c:if test="#{widget.mode == 'edit'}">
+
+    <nxu:inputFile id="#{widget.id}_file" value="#{field_1}"
+      filename="#{field_1.filename}" required="#{widgetProperty_required}"
+      editFilename="false">
+      <nxu:validateFileMimetype extensions=".jpg, .jpeg, .png, .gif" />
+    </nxu:inputFile>
+    <h:message for="#{widget.id}_file" id="#{widget.id}_message"
+      styleClass="errorMessage" />
+
+  </c:if>
+
+  <c:if test="#{widget.mode != 'edit'}">
+    <c:set var="userSchema" value="#{userManager.userSchemaName}"/>
+    <c:set var="userprofileSchema" value="userprofile"/>
+
+    <c:set var="userprofile" value="#{field_0.hasSchema(userprofileSchema) ? field_0 : userProfileActions.getUserProfileDocument(field_0[userSchema].username)}" />
+    <c:set var="avatar" value="#{empty field_1 ? userprofile[userprofileSchema].avatar : field_1}" />
+
+    <c:if test="#{empty avatar}">
+      <div class="profileAvatar">
+        <h:graphicImage value="/icons/missing_avatar.png"
+        title="Missing profile avatar" alt="Missing profile avatar" class="avatar" />
+      </div>
+    </c:if>
+
+    <c:if test="#{not empty avatar}">
+      <div class="profileAvatar">
+        <nxu:set var="image_url"
+          value="#{nxd:fileUrl('downloadFile', userprofile, widget.properties.file_property_name, avatar.filename)}">
+          <img src="#{image_url}" title="#{avatar.filename}"
+            alt="#{avatar.filename}" class="avatar" />
+        </nxu:set>
+      </div>
+    </c:if>
+
+  </c:if>
+
+</f:subview>

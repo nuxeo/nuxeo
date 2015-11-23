@@ -1,0 +1,35 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <c:if test="#{userDomains.size() > 1}">
+
+    <h:panelGrid columns="1" styleClass="fullWidth">
+      <div class="dashboardDomainSelection">
+        <h:form id="selectDashboardDomain" class="grayBox">
+          <h:outputText value="#{messages['label.selectDashboardDomain']}" />
+          <h:selectOneMenu value="#{jsfDashboardActions.selectedDomainId}"
+            id="selectDashboardDomainMenu">
+            <nxu:selectItems value="#{userDomains}" var="domain"
+              itemValue="#{domain.id}" itemLabel="#{nxd:titleOrId(domain)}" />
+          </h:selectOneMenu>
+          <h:commandButton
+            value="#{messages['command.changeDashboardSelectedDomain']}"
+            styleClass="button"
+            id="dashboardDomainSubmitButton" />
+        </h:form>
+      </div>
+
+      <div style="clear:both"></div>
+    </h:panelGrid>
+
+  </c:if>
+
+  <nxl:layout name="grid_dashboard_layout" mode="view"
+    value="#{jsfDashboardActions.selectedDomain}" />
+
+</div>

@@ -1,0 +1,3 @@
+tomcat.dir=/opt/nuxeo-dm
+#mvn.opts=-o
+

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.profile.UserProfileService">
+
+  <require>org.nuxeo.ecm.platform.userworkspace.UserWorkspaceService</require>
+
+  <implementation class="org.nuxeo.ecm.user.center.profile.UserProfileServiceImpl" />
+
+  <documentation>
+    Component and Service to manage the user profile
+
+    @author Quentin Lamerand (qlamerand@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.user.center.profile.UserProfileService" />
+  </service>
+
+  <extension-point name="config">
+    <documentation>
+      The user profile importerConfig contains:
+
+      - dataFile: define the user profile CSV data filename to be imported on startup.
+      - dateFormat: the date format used for CSV file date properties.
+      - listSeparatorRegex: the list separator regular expression used for CSV data file
+        list properties.
+      - updateExisting: if 'true' existing user profiles will be updated by the
+        import.
+      - batchSize: the number of user profile document updates to be committed in
+        one transaction.
+    </documentation>
+    <object class="org.nuxeo.ecm.user.center.profile.ImporterConfig" />
+  </extension-point>
+
+</component>

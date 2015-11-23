@@ -1,0 +1,255 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.user.center.dashboard.jsf.contentviews">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="user_tasks">
+      <title>title.dashboard.userTasks</title>
+      <translateTitle>true</translateTitle>
+      <emptySentence>label.dashboard.empty</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+      <pageProvider name="user_tasks">
+        <property name="coreSession">#{documentManager}</property>
+        <property name="filterDocumentsFromTrash">true</property>
+        <property name="locale">#{localeSelector.localeString}</property>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>workflowEvent</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_task_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="user_domains">
+      <title></title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="user_domains">
+        <property name="coreSession">#{documentManager}</property>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_document_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="domain_documents">
+      <title>title.domainSearch</title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="domain_documents">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{jsfDashboardActions.selectedDomainPath}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_document_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="domain_published_documents">
+      <title>title.last.published.documents</title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="domain_published_documents">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{jsfDashboardActions.selectedDomainPath}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_published_documents_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="user_documents">
+      <title>title.dashboard.userDocuments</title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="user_documents">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{currentUser.name}</parameter>
+        <parameter>#{jsfDashboardActions.selectedDomainPath}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_document_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="user_sections">
+      <title>title.dashboard.sections</title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="user_sections">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{jsfDashboardActions.selectedDomainPath}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_document_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="user_sites">
+      <title>title.dashboard.userSites</title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="user_sites">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{jsfDashboardActions.selectedDomainPath}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_document_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="user_workspaces">
+      <title>title.dashboard.userWorkspaces</title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="user_workspaces">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{jsfDashboardActions.selectedDomainPath}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>#{jsfDashboardActions.selectedDomainPath}</cacheKey>
+      <cacheSize>10</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_document_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="user_deleted_documents">
+      <title>title.dashboard.userDeletedDocuments</title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="user_deleted_documents">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{currentUser.name}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_document_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="user_favorites">
+      <title>title.dashboard.userFavorites</title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="user_favorites">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{currentUserFavorites.id}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_document_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+    <contentView name="user_shared_documents">
+      <title>title.dashboard.userSharedDocuments</title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="user_shared_documents">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{jsfDashboardActions.currentUserPrincipalsToCheck}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_document_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
+  </extension>
+
+</component>

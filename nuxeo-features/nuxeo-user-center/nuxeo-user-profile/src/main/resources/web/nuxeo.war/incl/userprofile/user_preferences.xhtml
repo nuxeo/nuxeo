@@ -1,0 +1,84 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:a4j="http://richfaces.org/a4j">
+<script type="text/javascript" src="#{baseURL}scripts/detect_timezone.js" />
+<script type="text/javascript" src="#{baseURL}scripts/nxtimezone.js" />
+
+  <a4j:region>
+    <a4j:outputPanel id="preferencesPanel" layout="block" class="mainNoTabs">
+
+      <div class="globalActionBar">
+        <h:form id="userpreferencesButtons" rendered="#{userPreferencesActions.mode == 'view'}">
+          <h1>
+            <h:outputText value="#{userPreferencesActions.userProfile.user.firstName} #{userPreferencesActions.userProfile.user.lastName}"/>
+          </h1>
+          <ul class="actionList" id="userPreferencesDropDownMenu">
+             <li class="dropDownMenu button dropdown">
+               <h:outputText value="#{messages['label.content.header.actions']}" />
+               <ul class="actionSubList">
+                 <li>
+                   <a4j:commandLink id="editUserButton"
+                        action="#{userPreferencesActions.setMode('edit')}"
+                        rendered="#{userPreferencesActions.mode == 'view'}"
+                        render="preferencesPanel">
+                        <h:outputText value="#{messages['label.userPreferences.updateLocale']}" />
+                   </a4j:commandLink>
+                 </li>
+                 <li>
+                   <a4j:commandLink id="resetTimezone"
+                        onclick="nxtz.resetTimeZoneCookie()"
+                        action="#{userPreferencesActions.resetTimezone()}"
+                        rendered="#{userPreferencesActions.mode == 'view'}"
+                        render="preferencesPanel">
+                        <h:outputText value="#{messages['label.userPreferences.resetTimeZone']}" />
+                   </a4j:commandLink>
+                 </li>
+               </ul>
+             </li>
+          </ul>
+
+          <script>
+            jQuery(document).ready(function() {
+              jQuery("#userPreferencesDropDownMenu").dropdown();
+            });
+          </script>
+
+        </h:form>
+      </div>
+      <div class="clear"></div>
+
+      <h:form id="viewUser" rendered="#{userPreferencesActions.mode == 'view'}">
+        <nxl:layout name="summary_user_preferences_layout" mode="view"
+          value="#{userPreferencesActions.userProfileDocument}" />
+      </h:form>
+
+      <h:form id="editUser" enctype="multipart/form-data"
+        rendered="#{userPreferencesActions.mode == 'edit'}">
+        <nxl:layout name="userpreferences" mode="edit" value="#{userPreferencesActions.userProfileDocument}" />
+        <table class="dataInput fullWidth">
+          <tbody>
+            <tr>
+              <td class="iconColumn"></td>
+              <td class="labelColumn"></td>
+              <td class="fieldColumn">
+                <h:commandButton id="saveUserButton"
+                  value="#{messages['command.save']}"
+                  action="#{userPreferencesActions.updateUser}"
+                  styleClass="button" />
+                <h:commandButton
+                  value="#{messages['command.cancel']}"
+                  actionListener="#{editableListBean.resetAllListsCachedModels}"
+                  action="#{userPreferencesActions.setMode('view')}"
+                  immediate="true"
+                  styleClass="button" id="viewUserButton"
+                  rendered="#{userPreferencesActions.mode != 'view'}" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </h:form>
+
+    </a4j:outputPanel>
+  </a4j:region>
+</div>

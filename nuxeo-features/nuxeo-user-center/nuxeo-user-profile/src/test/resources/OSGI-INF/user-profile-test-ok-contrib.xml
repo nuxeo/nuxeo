@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.profile.UserProfileService.test.ok">
+
+  <require>org.nuxeo.ecm.user.center.profile.UserProfileService</require>
+
+  <extension target="org.nuxeo.ecm.user.center.profile.UserProfileService"
+    point="config">
+
+    <importerConfig>
+      <dataFile>data/docs_ok.csv</dataFile>
+      <dateFormat>MM/dd/yyyy</dateFormat>
+      <listSeparatorRegex>\|</listSeparatorRegex>
+      <updateExisting>true</updateExisting>
+      <batchSize>2</batchSize>
+    </importerConfig>
+
+  </extension>
+
+</component>

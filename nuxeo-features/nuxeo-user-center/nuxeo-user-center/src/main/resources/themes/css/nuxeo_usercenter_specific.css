@@ -1,0 +1,29 @@
+/*
+Specific styles for the Home View
+=Main Frame -> small adjustments
+author: lkemen@nuxeo.com
+*/
+
+/* =Main Frame */
+#nxw_homeTabs_tab_content .foldableBox .pageNavigationControls:first-of-type {
+  display: none; }
+
+#usersPanel > .tabsContent,
+#groupsPanel > .tabsContent {
+  margin-top: 0;
+  padding: 0; }
+
+/* =Override GWT styles*/
+body,
+table td,
+select {
+  font-family: "default (__FLAVOR__ font)"; }
+
+.widget .content {
+  width: 100%; }
+
+p.directoryBack {
+  padding: .2em .2em .2em 2em; }
+
+.description_block span {
+  font-size: 1em; }
