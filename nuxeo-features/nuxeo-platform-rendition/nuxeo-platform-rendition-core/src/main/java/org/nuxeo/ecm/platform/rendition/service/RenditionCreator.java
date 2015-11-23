@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -52,7 +51,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.rendition.extension.AutomationRenderer;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -82,7 +81,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     /**
      * @since 8.1
      */
-    protected final NuxeoPrincipal originatingPrincipal;
+    protected final String renditionVariant;
 
     /**
      * @deprecated since 8.1
@@ -101,15 +100,13 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
      */
     public RenditionCreator(DocumentModel liveDocument, DocumentModel versionDocument, Blob renditionBlob,
             RenditionDefinition renditionDefinition) {
-
         super(liveDocument.getCoreSession());
-        originatingPrincipal = (NuxeoPrincipal) liveDocument.getCoreSession().getPrincipal();
         liveDocumentId = liveDocument.getId();
         versionDocumentId = versionDocument == null ? null : versionDocument.getId();
         this.renditionBlob = renditionBlob;
         this.renditionDefinition = renditionDefinition;
-        this.renditionName = renditionDefinition.getName();
-
+        renditionName = renditionDefinition.getName();
+        renditionVariant = renditionDefinition.getProvider().generateVariant(liveDocument, renditionDefinition);
     }
 
     public DocumentModel getDetachedRendition() {
@@ -170,8 +167,6 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
             doctype = FILE;
         }
 
-        boolean isPerUser = renditionDefinition.isPerUser();
-        String originatingUsername = getOriginatingUsername();
         boolean isVersionable = sourceDocument.isVersionable();
         String liveDocProp = isVersionable ? RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY : RENDITION_SOURCE_ID_PROPERTY;
         StringBuilder query = new StringBuilder();
@@ -180,17 +175,11 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         query.append(" = '");
         query.append(renditionName);
         query.append("' AND ");
-        if (isPerUser) {
+        if (renditionVariant != null) {
             query.append(RENDITION_VARIANT_PROPERTY);
-            if (originatingPrincipal.isAdministrator()) {
-                query.append(" IN (");
-                query.append(DefaultStoredRenditionManager.getAdministratorIdsCommaDelimitedAndSingleQuoted());
-                query.append(") AND ");
-            } else {
-                query.append(" = '");
-                query.append(originatingUsername);
-                query.append("' AND ");
-            }
+            query.append(" = '");
+            query.append(renditionVariant);
+            query.append("' AND ");
         }
         query.append(liveDocProp);
         query.append(" = '");
@@ -230,8 +219,8 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         if (sourceLastModified != null) {
             rendition.setPropertyValue(RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY, sourceLastModified);
         }
-        if (isPerUser) {
-            rendition.setPropertyValue(RENDITION_VARIANT_PROPERTY, originatingUsername);
+        if (renditionVariant != null) {
+            rendition.setPropertyValue(RENDITION_VARIANT_PROPERTY, renditionVariant);
         }
         rendition.setPropertyValue(RENDITION_NAME_PROPERTY, renditionName);
 

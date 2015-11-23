@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.rendition.Rendition;
+import org.nuxeo.ecm.platform.rendition.extension.AutomationRenderer;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
@@ -100,6 +101,11 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
         return blobs;
     }
 
+    @Override
+    public String generateVariant(DocumentModel doc, RenditionDefinition definition) {
+        return AutomationRenderer.generateVariant(doc, definition);
+    }
+
     protected String buildRenditionKey(DocumentModel doc, RenditionDefinition def) {
 
         StringBuffer sb = new StringBuffer(doc.getId());
@@ -110,8 +116,9 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             sb.append(modif.getTimeInMillis());
             sb.append("::");
         }
-        if (perUserRendition(def)) {
-            sb.append(doc.getCoreSession().getPrincipal().getName());
+        String renditionVariant = generateVariant(doc, def);
+        if (renditionVariant != null) {
+            sb.append(renditionVariant);
             sb.append("::");
         }
         sb.append(def.getName());

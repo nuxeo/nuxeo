@@ -15,15 +15,9 @@
  */
 package org.nuxeo.ecm.platform.rendition.service;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.rendition.impl.StoredRendition;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
-
-import java.util.HashSet;
 
 /**
  * The default @{link StoredRenditionManager} to Manage {@link StoredRendition}s on behalf of the
@@ -90,22 +84,6 @@ public class DefaultStoredRenditionManager implements StoredRenditionManager {
         storedDoc.attach(sessionId);
         StoredRendition storedRendition = new StoredRendition(storedDoc, def);
         return storedRendition;
-    }
-
-    /**
-     * Get comma-delimited, single-quoted list of all administrator ids
-     *
-     * @return comma-delimited list of all administrator ids, each in single quotes
-     */
-    protected static String getAdministratorIdsCommaDelimitedAndSingleQuoted() {
-        UserManager userManager = Framework.getService(UserManager.class);
-        HashSet<String> administratorIdSet = new HashSet<>();
-        for (String administratorGroupName : userManager.getAdministratorsGroups()) {
-            NuxeoGroup group = userManager.getGroup(administratorGroupName);
-            administratorIdSet.addAll(group.getMemberUsers());
-        }
-        String administratorIds = "'" + StringUtils.join(administratorIdSet, "','") + "'";
-        return administratorIds;
     }
 
 }

@@ -25,4 +25,8 @@ public class DummyRenditionProvider implements RenditionProvider {
         return blobs;
     }
 
+    @Override public String generateVariant(DocumentModel doc, RenditionDefinition definition) {
+        return null;
+    }
+
 }

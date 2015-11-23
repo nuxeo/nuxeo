@@ -48,7 +48,26 @@ public class Constants {
 
     public static final String RENDITION_NAME_PROPERTY = "rend:renditionName";
 
-    // originatingUsername when rendition definition is perUser, otherwise null
+    /**
+     * rendition variant property whose value is set by {@link
+     * org.nuxeo.ecm.platform.rendition.extension.RenditionProvider#generateVariant(DocumentModel, RenditionDefinition)}
+     *
+     * @since 8.1
+     */
     public static final String RENDITION_VARIANT_PROPERTY = "rend:renditionVariant";
+
+    /**
+     * rendition variant property user prefix
+     *
+     * @since 8.1
+     */
+    public static final String RENDITION_VARIANT_PROPERTY_USER_PREFIX = "user:";
+
+    /**
+     * rendition variant property administrator user identifier
+     *
+     * @since 8.1
+     */
+    public static final String RENDITION_VARIANT_PROPERTY_ADMINISTRATOR_USER = "administratoruser";
 
 }

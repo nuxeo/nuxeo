@@ -22,17 +22,10 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPE
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -58,7 +51,7 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
     /**
      * @since 8.1
      */
-    protected final NuxeoPrincipal originatingPrincipal;
+    protected final String renditionVariant;
 
     /**
      * @deprecated since 8.1
@@ -74,16 +67,14 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
      */
     protected RenditionFinder(DocumentModel source, RenditionDefinition renditionDefinition) {
         super(source.getCoreSession());
-        originatingPrincipal = (NuxeoPrincipal) source.getCoreSession().getPrincipal();
         this.source = source;
         this.renditionDefinition = renditionDefinition;
-        this.renditionName = renditionDefinition.getName();
+        renditionName = renditionDefinition.getName();
+        renditionVariant = renditionDefinition.getProvider().generateVariant(source, renditionDefinition);
     }
 
     @Override
     public void run() {
-        boolean isPerUser = renditionDefinition.isPerUser();
-        String originatingUsername = getOriginatingUsername();
         boolean isVersionable = source.isVersionable();
         String renditionSourceId = source.getId();
         StringBuilder query = new StringBuilder();
@@ -92,17 +83,11 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
         query.append(" = '");
         query.append(renditionName);
         query.append("' AND ");
-        if (isPerUser) {
+        if (renditionVariant != null) {
             query.append(RENDITION_VARIANT_PROPERTY);
-            if (originatingPrincipal.isAdministrator()) {
-                query.append(" IN (");
-                query.append(DefaultStoredRenditionManager.getAdministratorIdsCommaDelimitedAndSingleQuoted());
-                query.append(") AND ");
-            } else {
-                query.append(" = '");
-                query.append(originatingUsername);
-                query.append("' AND ");
-            }
+            query.append(" = '");
+            query.append(renditionVariant);
+            query.append("' AND ");
         }
         if (isVersionable) {
             if (!source.isVersion() && !source.isCheckedOut()) {
