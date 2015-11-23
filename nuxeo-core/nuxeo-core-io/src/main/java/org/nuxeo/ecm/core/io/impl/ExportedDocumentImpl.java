@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2012-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     bstefanescu
  *
- * $Id: ExportedDocumentImpl.java 29029 2008-01-14 18:38:14Z ldoguin $
  */
 
 package org.nuxeo.ecm.core.io.impl;
@@ -29,6 +28,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.dom4j.QName;
+
 import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
@@ -61,7 +61,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@SuppressWarnings("unchecked")
 public class ExportedDocumentImpl implements ExportedDocument {
 
     private static final Log log = LogFactory.getLog(ExportedDocumentImpl.class);
@@ -80,10 +79,10 @@ public class ExportedDocumentImpl implements ExportedDocument {
     protected Document document;
 
     // the external blobs if any
-    protected final Map<String, Blob> blobs = new HashMap<String, Blob>(4);
+    protected final Map<String, Blob> blobs = new HashMap<>(4);
 
     // the optional attached documents
-    protected final Map<String, Document> documents = new HashMap<String, Document>(4);
+    protected final Map<String, Document> documents = new HashMap<>(4);
 
     public ExportedDocumentImpl() {
     }
@@ -163,18 +162,18 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     @Override
-    public void putBlob(String id, Blob blob) {
-        blobs.put(id, blob);
+    public void putBlob(String blobId, Blob blob) {
+        blobs.put(blobId, blob);
     }
 
     @Override
-    public Blob removeBlob(String id) {
-        return blobs.remove(id);
+    public Blob removeBlob(String blobId) {
+        return blobs.remove(blobId);
     }
 
     @Override
-    public Blob getBlob(String id) {
-        return blobs.get(id);
+    public Blob getBlob(String blobId) {
+        return blobs.get(blobId);
     }
 
     @Override
@@ -188,18 +187,18 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     @Override
-    public Document getDocument(String id) {
-        return documents.get(id);
+    public Document getDocument(String docId) {
+        return documents.get(docId);
     }
 
     @Override
-    public void putDocument(String id, Document doc) {
-        documents.put(id, doc);
+    public void putDocument(String docId, Document doc) {
+        documents.put(docId, doc);
     }
 
     @Override
-    public Document removeDocument(String id) {
-        return documents.remove(id);
+    public Document removeDocument(String docId) {
+        return documents.remove(docId);
     }
 
     /**
