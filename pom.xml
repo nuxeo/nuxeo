@@ -25,7 +25,6 @@
     <nuxeo.login.version>8.1-SNAPSHOT</nuxeo.login.version>
     <nuxeo.shell.version>8.1-SNAPSHOT</nuxeo.shell.version>
     <nuxeo.webembedded.version>8.1-SNAPSHOT</nuxeo.webembedded.version>
-    <nuxeo.usercenter.version>8.1-SNAPSHOT</nuxeo.usercenter.version>
     <nuxeo.fsconnectors.version>8.1-SNAPSHOT</nuxeo.fsconnectors.version>
     <nuxeo.classification.version>8.1-SNAPSHOT</nuxeo.classification.version>
     <nuxeo.importer.version>8.1-SNAPSHOT</nuxeo.importer.version>
@@ -86,7 +85,6 @@
     <module>nuxeo-platform-user-registration</module>
     <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
-    <module>nuxeo-user-center</module>
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-apidoc-server</module>
@@ -292,38 +290,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-user-registration-web</artifactId>
         <version>${nuxeo.user.registration.version}</version>
-      </dependency>
-
-      <!-- User Center -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-center</artifactId>
-        <version>${nuxeo.usercenter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-dashboard</artifactId>
-        <version>${nuxeo.usercenter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-dashboard-jsf</artifactId>
-        <version>${nuxeo.usercenter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-notification</artifactId>
-        <version>${nuxeo.usercenter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-oauth</artifactId>
-        <version>${nuxeo.usercenter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-user-profile</artifactId>
-        <version>${nuxeo.usercenter.version}</version>
       </dependency>
 
       <!-- Filesystem connectors -->
