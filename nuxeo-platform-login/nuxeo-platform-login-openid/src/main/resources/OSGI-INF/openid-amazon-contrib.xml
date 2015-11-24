@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.oauth2.openid.amazon" version="1.0">
+    <require>org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry</require>
+    <require>org.nuxeo.usermapper.service.UserMapperComponent</require>
+
+    <extension target="org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry" point="providers">
+        <provider>
+            <name>Amazon</name>
+            <label>Amazon</label>
+            <description>Login using your Amazon account</description>
+            <authorizationServerURL>https://amazon.com/ap/oa</authorizationServerURL>
+            <tokenServerURL>https://api.amazon.com/auth/o2/token</tokenServerURL>
+            <userInfoURL>https://api.amazon.com/user/profile</userInfoURL>
+            <userInfoClass>org.nuxeo.ecm.platform.oauth2.openid.auth.DefaultOpenIDUserInfo</userInfoClass>
+            <scope>profile</scope>
+            <icon>/img/amazon_icon.png</icon>
+            <userMapperName>amazon_mapper</userMapperName>
+        </provider>
+    </extension>
+
+    <extension target="org.nuxeo.usermapper.service.UserMapperComponent"
+               point="mapper">
+        <mapper name="amazon_mapper" type="js">
+            <mapperScript>
+                searchAttributes.put("username", userObject.email);
+                userAttributes.put("firstName", userObject.name);
+                userAttributes.put("email", userObject.email);
+            </mapperScript>
+        </mapper>
+
+    </extension>
+
+</component>
