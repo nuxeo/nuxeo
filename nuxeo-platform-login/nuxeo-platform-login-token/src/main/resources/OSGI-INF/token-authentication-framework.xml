@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.login.token.TokenAuthenticationService">
+
+  <documentation>
+    Service to manage generation and storage of
+    authentication tokens. Each token
+    is unique and persisted in the
+    back-end with the user information it
+    is bound to: user name,
+    application name, device name, device description, permission.
+
+    @author Antoine Taillefer
+    (ataillefer@nuxeo.com)
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.tokenauth.service.TokenAuthenticationServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService" />
+  </service>
+
+</component>
