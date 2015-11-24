@@ -1,16 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>6.0-HF24-SNAPSHOT</version>
+    <version>8.1-SNAPSHOT</version>
     <relativePath>../../../../nuxeo-distribution/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-forms-layout-demo-webdriver-tests</artifactId>
-  <name>Layout Demo Functional Tests with Webdriver</name>
+  <artifactId>nuxeo-platform-forms-layout-demo-webdriver-tests-list-widget-compat</artifactId>
+  <name>Layout Demo Functional Tests with Webdriver on compat list widget</name>
 
   <dependencies>
     <dependency>
@@ -25,8 +26,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-forms-layout-demo</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
@@ -37,7 +37,7 @@
       <artifactId>nuxeo-distribution-tomcat</artifactId>
       <classifier>nuxeo-cap</classifier>
       <type>zip</type>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -66,6 +66,25 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>set-system-properties</goal>
+            </goals>
+            <configuration>
+              <properties>
+                <property>
+                  <name>nuxeo.home</name>
+                  <value>${project.build.directory}/tomcat-list-widget</value>
+                </property>
+              </properties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <executions>
@@ -75,13 +94,14 @@
               <goal>verify</goal>
             </goals>
             <configuration>
-              <excludes>
-                <exclude>**/**/ITAjaxListWidgetTest.java</exclude>
-              </excludes>
+              <includes>
+                <include>**/ITAjaxListWidgetTest.java</include>
+              </includes>
               <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.xml
                 -Dnuxeo.log.dir=${project.build.directory}
               </argLine>
-              <reportNameSuffix>layoutDemo</reportNameSuffix>
+              <reportNameSuffix>layoutDemoAjaxListWidget</reportNameSuffix>
+              <reportsDirectory>${project.build.directory}/failsafe-reports-list-widget</reportsDirectory>
             </configuration>
           </execution>
         </executions>
@@ -90,7 +110,7 @@
         <groupId>org.nuxeo.build</groupId>
         <artifactId>ant-assembly-maven-plugin</artifactId>
         <configuration>
-          <buildFile>${basedir}/itests.xml</buildFile>
+          <buildFile>${basedir}/itests-list-widget.xml</buildFile>
         </configuration>
         <executions>
           <execution>
