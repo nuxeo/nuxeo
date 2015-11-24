@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <require>org.nuxeo.ecm.platform.lang</require>
+
+  <install>
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+    <delete path="${bundle.fileName}.tmp" />
+    <mkdir path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
+
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties" addNewLine="true" />
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_en.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties" addNewLine="true" />
+    <append from="${bundle.fileName}.tmp/OSGI-INF/l10n/messages_fr.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties" addNewLine="true" />
+    <delete path="${bundle.fileName}.tmp" />
+  </install>
+
+  <extension target="web#FILTER">
+    <filter>
+      <filter-name>guiceFilter</filter-name>
+      <filter-class>
+        com.google.inject.servlet.GuiceFilter
+      </filter-class>
+    </filter>
+  </extension>
+
+  <extension target="web#FILTER-MAPPING">
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/gwtContainer/dispatch</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>guiceFilter</filter-name>
+      <url-pattern>/gwtContainer/dispatch</url-pattern>
+    </filter-mapping>
+  </extension>
+
+  <extension target="web#SERVLET">
+ 		<servlet>
+ 			<servlet-name>UploadServlet</servlet-name>
+ 			<servlet-class>org.nuxeo.gwt.habyt.upload.server.UploadServlet</servlet-class>
+ 		</servlet>
+ 	</extension>
+
+ 	<extension target="web#SERVLET-MAPPING">
+ 		<servlet-mapping>
+ 			<servlet-name>UploadServlet</servlet-name>
+ 			<url-pattern>/gwtContainer/upload</url-pattern>
+ 		</servlet-mapping>
+ 		<servlet-mapping>
+ 			<servlet-name>UploadServlet</servlet-name>
+ 			<url-pattern>/gwtContainer/upload/*</url-pattern>
+ 		</servlet-mapping>
+ 	</extension>
+
+
+  <extension target="web#LISTENER">
+    <listener>
+      <listener-class>
+        org.nuxeo.opensocial.container.server.guice.GuiceServletConfig
+      </listener-class>
+    </listener>
+  </extension>
+
+</fragment>

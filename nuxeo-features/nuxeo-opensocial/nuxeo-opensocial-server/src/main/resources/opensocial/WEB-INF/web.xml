@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+  <!--
+    Licensed to the Apache Software Foundation (ASF) under one or more contributor
+    license agreements. See the NOTICE file distributed with this work for
+    additional information regarding copyright ownership. The ASF licenses this
+    file to you under the Apache License, Version 2.0 (the "License"); you may not
+    use this file except in compliance with the License. You may obtain a copy of
+    the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+    applicable law or agreed to in writing, software distributed under the License
+    is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied. See the License for the specific language
+    governing permissions and limitations under the License.
+  -->
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+  <context-param>
+    <param-name>guice-modules</param-name>
+    <param-value>
+      org.nuxeo.opensocial.shindig.NuxeoPropertiesModule:
+      org.nuxeo.opensocial.shindig.ProxyModule:
+      org.apache.shindig.social.core.config.SocialApiGuiceModule:
+      org.nuxeo.opensocial.services.NuxeoServiceModule:
+      org.nuxeo.opensocial.services.NuxeoCryptoModule:
+      org.nuxeo.opensocial.shindig.gadgets.NXMakeRequestModule:
+      org.nuxeo.opensocial.shindig.gadgets.NXGadgetSpecFactoryModule:
+      org.apache.shindig.gadgets.DefaultGuiceModule:
+      org.apache.shindig.gadgets.oauth.OAuthModule:
+      org.apache.shindig.common.cache.ehcache.EhCacheModule
+    </param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>org.nuxeo.opensocial.servlet.GuiceContextListener</listener-class>
+  </listener>
+
+  <filter>
+    <filter-name>authFilter</filter-name>
+    <filter-class>org.apache.shindig.auth.AuthenticationServletFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>authFilter</filter-name>
+    <url-pattern>/social/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>authFilter</filter-name>
+    <url-pattern>/gadgets/ifr</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>authFilter</filter-name>
+    <url-pattern>/gadgets/makeRequest</url-pattern>
+  </filter-mapping>
+
+
+  <!-- Render a Gadget -->
+  <servlet>
+    <servlet-name>xml-to-html</servlet-name>
+    <servlet-class>
+      org.apache.shindig.gadgets.servlet.GadgetRenderingServlet
+    </servlet-class>
+  </servlet>
+
+  <!-- Proxy -->
+  <servlet>
+    <servlet-name>proxy</servlet-name>
+    <servlet-class>
+      org.apache.shindig.gadgets.servlet.ProxyServlet
+    </servlet-class>
+  </servlet>
+
+  <!-- makeRequest -->
+  <servlet>
+    <servlet-name>makeRequest</servlet-name>
+    <servlet-class>
+      org.apache.shindig.gadgets.servlet.MakeRequestServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>concat</servlet-name>
+    <servlet-class>
+      org.apache.shindig.gadgets.servlet.ConcatProxyServlet
+    </servlet-class>
+  </servlet>
+
+  <!-- OAuth callback -->
+  <servlet>
+    <servlet-name>oauthCallback</servlet-name>
+    <servlet-class>
+      org.apache.shindig.gadgets.servlet.OAuthCallbackServlet
+    </servlet-class>
+  </servlet>
+
+  <!-- Metadata RPC -->
+  <servlet>
+    <servlet-name>metadata</servlet-name>
+    <servlet-class>
+      org.apache.shindig.gadgets.servlet.RpcServlet
+    </servlet-class>
+  </servlet>
+
+  <!-- javascript serving -->
+  <servlet>
+    <servlet-name>js</servlet-name>
+    <servlet-class>org.apache.shindig.gadgets.servlet.JsServlet</servlet-class>
+  </servlet>
+
+  <!-- Serve REST api -->
+  <servlet>
+    <servlet-name>restapiServlet</servlet-name>
+    <servlet-class>
+      org.apache.shindig.social.opensocial.service.DataServiceServlet
+    </servlet-class>
+  </servlet>
+
+  <!-- Serve RPC api -->
+  <servlet>
+    <servlet-name>jsonRpcServlet</servlet-name>
+    <servlet-class>
+      org.apache.shindig.social.opensocial.service.JsonRpcServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>js</servlet-name>
+    <url-pattern>/gadgets/js/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>proxy</servlet-name>
+    <url-pattern>/gadgets/proxy/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>makeRequest</servlet-name>
+    <url-pattern>/gadgets/makeRequest</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>concat</servlet-name>
+    <url-pattern>/gadgets/concat</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>oauthCallback</servlet-name>
+    <url-pattern>/gadgets/oauthcallback</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>xml-to-html</servlet-name>
+    <url-pattern>/gadgets/ifr</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>metadata</servlet-name>
+    <url-pattern>/gadgets/metadata</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>restapiServlet</servlet-name>
+    <url-pattern>/social/rest/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>jsonRpcServlet</servlet-name>
+    <url-pattern>/social/rpc/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>

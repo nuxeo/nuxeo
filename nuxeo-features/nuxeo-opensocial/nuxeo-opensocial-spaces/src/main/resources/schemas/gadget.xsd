@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://org.nuxeo/schemas/portal/gadget"
+  xmlns:nxs="http://org.nuxeo/schemas/portal/gadget">
+
+  <xs:element name="type" type="xs:string"></xs:element>
+  <xs:element name="name" type="xs:string"></xs:element>
+  <xs:element name="url" type="xs:string"></xs:element>
+  <xs:element name="category" type="xs:string"></xs:element>
+
+  <xs:element name="props" type="nxs:properties" />
+
+  <xs:complexType name="properties">
+    <xs:sequence>
+      <xs:element name="property" type="nxs:property" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="property">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+      <xs:element name="value" type="xs:string" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="placeID" type="xs:string"></xs:element>
+  <xs:element name="position" type="xs:int"></xs:element>
+  <xs:element name="collapsed" type="xs:boolean"></xs:element>
+  <xs:element name="height" type="xs:int"></xs:element>
+  <xs:element name="htmlContent" type="xs:string"></xs:element>
+
+</xs:schema>

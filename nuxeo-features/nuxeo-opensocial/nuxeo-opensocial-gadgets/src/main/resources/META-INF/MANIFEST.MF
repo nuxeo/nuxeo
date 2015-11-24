@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-opensocial-gadgets
+Bundle-SymbolicName: org.nuxeo.opensocial.gadgets;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Leroy Merlin
+Require-Bundle: org.nuxeo.opensocial.gadgets.core
+Nuxeo-Component: OSGI-INF/gadget-contrib.xml
+Bundle-Category: stateless

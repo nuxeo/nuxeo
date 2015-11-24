@@ -1,0 +1,35 @@
+.NativeRichTextGadget.center .RichTextImage {
+	width: 100%;
+}
+
+.NativeRichTextGadget.center .gadget-content {
+	width: 100%;
+}
+
+.NativeRichTextGadget.left .RichTextImage {
+	float: left;
+	width: 50%;
+}
+
+.NativeRichTextGadget.left .gadget-content {
+	float: left;
+	width: 50%;
+}
+
+.NativeRichTextGadget.right .RichTextImage {
+	float: right;
+	width: 50%;
+}
+
+.NativeRichTextGadget.right .gadget-content {
+	float: left;
+	width: 50%;
+}
+
+.NativeRichTextGadget .deletePicture {
+	cursor: pointer;
+}
+
+.NativeRichTextGadget .previewPicture {
+	width: 50%;
+}
