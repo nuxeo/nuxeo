@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.digest">
+
+  <documentation>
+    This authentication plugin processes HTTP Digest Access Authentication
+    (RFC 2617).
+
+    It requires a specific directory to be configured with
+    the user manager implementation in order to stored specialized
+    hashed versions of the user passwords, which RFC 2617 needs.
+  </documentation>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="DIGEST_AUTH"
+      enabled="true" class="org.nuxeo.ecm.ui.web.auth.digest.DigestAuthenticator">
+      <stateful>false</stateful>
+      <loginModulePlugin>DigestLoginPlugin</loginModulePlugin>
+    </authenticationPlugin>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.login.LoginPluginRegistry"
+    point="plugin">
+    <LoginPlugin name="DigestLoginPlugin"
+      class="org.nuxeo.ecm.ui.web.auth.digest.DigestLoginPlugin">
+      <enabled>true</enabled>
+    </LoginPlugin>
+  </extension>
+
+</component>
