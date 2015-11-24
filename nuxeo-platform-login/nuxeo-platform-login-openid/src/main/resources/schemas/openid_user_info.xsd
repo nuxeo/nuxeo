@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.org/schemas/openid/userinfo">
+
+  <!-- subject@provider -->
+  <xs:element name="id" type="xs:string" />
+
+  <xs:element name="nuxeoLogin" type="xs:string" />
+  <xs:element name="provider" type="xs:string" />
+  
+  <!-- OpenID Connect Standard Claims -->
+  <xs:element name="subject" type="xs:string"/>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="given_name" type="xs:string"/>
+  <xs:element name="family_name" type="xs:string"/>
+  <xs:element name="middle_name" type="xs:string"/>
+  <xs:element name="nickname" type="xs:string"/>
+  <xs:element name="preferred_username" type="xs:string"/>
+  <xs:element name="profile" type="xs:string"/>
+  <xs:element name="picture" type="xs:string"/>
+  <xs:element name="website" type="xs:string"/>
+  <xs:element name="email" type="xs:string"/>
+  <xs:element name="email_verified" type="xs:boolean"/>
+  <xs:element name="gender" type="xs:string"/>
+  <xs:element name="birthdate" type="xs:date"/>
+  <xs:element name="zoneinfo" type="xs:string"/>
+  <xs:element name="locale" type="xs:string"/>
+  <xs:element name="phone_number" type="xs:string"/>
+  <xs:element name="address" type="xs:string"/>
+  <xs:element name="updated_time" type="xs:date"/>
+
+</xs:schema>
