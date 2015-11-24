@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo NTLM Login Module extension
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.ntlm;singleton:=true
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Require-Bundle: org.nuxeo.ecm.platform.login
+Nuxeo-Component: OSGI-INF/NTLM-authentication-contrib.xml
