@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.oauth2.openid.google"
+  version="1.0">
+
+  <requires>org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry
+  </requires>
+
+  <extension
+    target="org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry"
+    point="providers">
+    <provider>
+      <name>GoogleOpenIDConnect</name>
+      <label>Google</label>
+      <description>Login using your Google account</description>
+      <authorizationServerURL>https://accounts.google.com/o/oauth2/auth</authorizationServerURL>
+      <tokenServerURL>https://accounts.google.com/o/oauth2/token</tokenServerURL>
+      <userInfoURL>https://www.googleapis.com/oauth2/v1/userinfo</userInfoURL>
+      <userInfoClass>org.nuxeo.ecm.platform.oauth2.openid.auth.google.GoogleUserInfo</userInfoClass>
+      <scope>https://www.googleapis.com/auth/userinfo.email</scope>
+      <icon>/icons/google.png</icon>
+    </provider>
+
+    <provider>
+      <name>GooglePlusOpenIDConnect</name>
+      <label>Google+</label>
+      <description>Login using your Google+ account</description>
+      <authorizationServerURL>https://accounts.google.com/o/oauth2/auth</authorizationServerURL>
+      <tokenServerURL>https://accounts.google.com/o/oauth2/token</tokenServerURL>
+      <userInfoURL>https://www.googleapis.com/plus/v1/people/me</userInfoURL>
+      <scope>profile</scope>
+      <icon>/img/google_icon.png</icon>
+      <userInfoClass>org.nuxeo.ecm.platform.oauth2.openid.auth.googleplus.GooglePlusUserInfo</userInfoClass>
+    </provider>
+  </extension>
+
+</component>
