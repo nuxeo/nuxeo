@@ -1,0 +1,30 @@
+<component name="org.nuxeo.ecm.platform.login.mod_sso.test.mod_sso">
+   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+   <require>org.nuxeo.ecm.platform.login.Proxy</require>
+
+   <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+      <authenticationPlugin
+              name="PROXY_AUTH">
+       <loginModulePlugin>Trusting_LM</loginModulePlugin>
+       <parameters>
+         <parameter name="ssoHeaderName">remote_user</parameter>
+       </parameters>
+      </authenticationPlugin>
+  </extension>
+
+   <!-- Include Proxy Auth into authentication chain -->
+    <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+    <authenticationChain>
+      <plugins>
+        <!--  Keep basic Auth at top of Auth chain to support RSS access via BasicAuth -->
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>PROXY_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+</component>
