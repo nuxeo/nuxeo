@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.oauth2.openid.linkedin" version="1.0">
+
+	<requires>org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry</requires>
+
+	<extension
+		target="org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry"
+		point="providers">
+		<provider>
+			<name>LinkedInConnect</name>
+			<authorizationServerURL>https://www.linkedin.com/uas/oauth2/authorization</authorizationServerURL>
+			<tokenServerURL>https://www.linkedin.com/uas/oauth2/accessToken</tokenServerURL>
+			<accessTokenKey>oauth2_access_token</accessTokenKey>
+			<userInfoURL>https://api.linkedin.com/v1/people/~?format=json</userInfoURL>
+			<userInfoClass>org.nuxeo.ecm.platform.oauth2.openid.auth.linkedin.LinkedInUserInfo</userInfoClass>
+			<scope>r_basicprofile r_emailaddress</scope>
+			<icon>/img/linkedIn_icon.png</icon>
+		</provider>
+	</extension>
+
+</component>
