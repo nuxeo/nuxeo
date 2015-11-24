@@ -302,7 +302,7 @@ public abstract class AbstractTest {
             // Workaround: use 127.0.0.2
             proxy.setNoProxy("");
             // setProxyPreferences method does not exist with selenium version 2.43.0
-            //profile.setProxyPreferences(proxy);
+            // profile.setProxyPreferences(proxy);
             dc.setCapability(CapabilityType.PROXY, proxy);
         }
         dc.setCapability(FirefoxDriver.PROFILE, profile);
@@ -341,8 +341,9 @@ public abstract class AbstractTest {
                             chromeDriverExecutable.getCanonicalPath()));
                     System.setProperty(SYSPROP_CHROME_DRIVER_PATH, chromeDriverExecutable.getCanonicalPath());
                 } else {
-                    log.error(String.format("Could not find the Chrome driver looking at %s or system path."
-                            + " Download it from %s and set its path with " + "the System property %s.",
+                    log.error(String.format(
+                            "Could not find the Chrome driver looking at %s or system path."
+                                    + " Download it from %s and set its path with " + "the System property %s.",
                             chromeDriverDefaultPath, "http://code.google.com/p/chromedriver/downloads/list",
                             SYSPROP_CHROME_DRIVER_PATH));
                 }
@@ -440,9 +441,8 @@ public abstract class AbstractTest {
         if (surefirebooterJar != null) {
             try {
                 try {
-                    String cp = surefirebooterJar.getManifest()
-                                                 .getMainAttributes()
-                                                 .getValue(Attributes.Name.CLASS_PATH);
+                    String cp = surefirebooterJar.getManifest().getMainAttributes().getValue(
+                            Attributes.Name.CLASS_PATH);
                     if (cp != null) {
                         String[] cpe = cp.split(" ");
                         URL[] newUrls = new URL[cpe.length];
@@ -834,12 +834,11 @@ public abstract class AbstractTest {
      */
     protected DocumentBasePage createCollections(DocumentBasePage currentPage, String collectionsTitle,
             String fileDescription) {
-        DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = currentPage.getContentTab()
-                                                                                   .getDocumentCreatePage(
-                                                                                           "Collections",
-                                                                                           DublinCoreCreationDocumentFormPage.class);
+        DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = currentPage.getContentTab().getDocumentCreatePage(
+                "Collections", DublinCoreCreationDocumentFormPage.class);
         // Create File
-        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle, fileDescription);
+        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle,
+                fileDescription);
         return documentBasePage;
     }
 
