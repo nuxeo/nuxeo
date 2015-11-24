@@ -1,0 +1,16 @@
+syntax:glob
+.idea
+.classpath
+.metadata
+.project
+.settings
+.DS_Store
+bin
+target
+*~
+*.orig
+*.ipr
+*.iml
+*.iws
+pojo-bin
+seam-bin

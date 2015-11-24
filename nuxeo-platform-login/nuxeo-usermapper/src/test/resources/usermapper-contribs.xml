@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.usermapper.testContribs">
+
+  <extension target="org.nuxeo.usermapper.service.UserMapperComponent"
+    point="mapper">
+
+    <mapper name="javaDummy" class="org.nuxeo.usermapper.test.dummy.DummyUserMapper">
+    </mapper>
+
+    <mapper name="groovyDummy" type="groovy">
+      <mapperScript>
+          searchAttributes.put("username", userObject.login);
+          userAttributes.put("firstName", userObject.name.firstName);
+          userAttributes.put("lastName", userObject.name.lastName);
+          profileAttributes.put("userprofile:phonenumber", "555.666.7777");
+      </mapperScript>
+    </mapper>
+
+    <mapper name="jsDummy" type="js">
+      <mapperScript>
+          searchAttributes.put("username", userObject.login);
+          userAttributes.put("firstName", userObject.name.firstName);
+          userAttributes.put("lastName", userObject.name.lastName);
+          profileAttributes.put("userprofile:phonenumber", "555.666.7777");
+      </mapperScript>
+    </mapper>
+
+  </extension>
+
+</component>

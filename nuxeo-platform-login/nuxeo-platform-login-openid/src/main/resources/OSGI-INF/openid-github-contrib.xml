@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.oauth2.openid.github"
+  version="1.0">
+
+  <requires>org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry
+  </requires>
+
+  <extension
+    target="org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry"
+    point="providers">
+    <provider>
+      <name>ConnectGithubAuth</name>
+      <label>GitHub</label>
+      <description>Login using your GitHub account</description>
+      <authorizationServerURL>https://github.com/login/oauth/authorize</authorizationServerURL>
+      <tokenServerURL>https://github.com/login/oauth/access_token</tokenServerURL>
+      <userInfoURL>https://api.github.com/user</userInfoURL>
+      <scope>public_repo</scope>
+      <userInfoClass>org.nuxeo.ecm.platform.oauth2.openid.auth.github.GithubUserInfo</userInfoClass>
+    </provider>
+  </extension>
+
+</component>

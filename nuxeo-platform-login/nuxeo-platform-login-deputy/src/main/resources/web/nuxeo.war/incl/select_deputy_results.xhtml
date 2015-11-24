@@ -1,0 +1,60 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+  <h:panelGroup id="suggestedEntries">
+    <a4j:status>
+      <f:facet name="start">
+        <h:graphicImage value="/img/standart_waiter.gif" />
+      </f:facet>
+    </a4j:status>
+    <h4>
+      <h:outputText value="#{messages['label.security.searchResults']}"
+        rendered="#{principalListManager.displaySearchResults and (! empty principalListManager.suggestedEntries)}" />
+    </h4>
+
+    <h:outputText value="#{messages['label.security.emptysearch']}"
+      class="clipboardEmptyMessage"
+      rendered="#{!principalListManager.displaySearchResults}" />
+
+    <h:outputText value="#{messages['label.security.emptySearchResults']}"
+      rendered="#{empty principalListManager.suggestedEntries and principalListManager.displaySearchResults}"/>
+
+    <h:dataTable rendered="#{! empty principalListManager.suggestedEntries}"
+      var="entry" class="dataOutput" rowClasses="dataRowEven,dataRowOdd"
+      value="#{principalListManager.suggestedEntries}" columnClasses="iconColumn,,">
+      <h:column>
+        <f:facet name="header">
+          <h:outputText
+            value="#{messages['label.content.header.type']}" />
+        </f:facet>
+        <h:graphicImage value="/#{entry['icon']}" />
+      </h:column>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.username']}" />
+        </f:facet>
+        <h:outputText value="#{entry['label']}" />
+      </h:column>
+      <h:column>
+        <f:facet name="header">
+          <h:outputText value="#{messages['label.action']}" />
+        </f:facet>
+        <a4j:commandLink
+          value="#{messages['label.deputy.selectUser']}"
+          action="#{deputyActions.setNewDeputy(entry['id'])}"
+          render="deputy_edit,deputy_search"
+          rendered="#{empty searchLocation}" />
+      </h:column>
+    </h:dataTable>
+    <br />
+    <h:outputText value="#{messages['label.security.searchOverFlow']}"
+      class="clipboardEmptyMessage"
+      rendered="#{principalListManager.searchOverflow}" />
+
+  </h:panelGroup>
+</div>

@@ -1,0 +1,37 @@
+<component name="org.nuxeo.ecm.platform.login.keycloak.test">
+
+  <extension target="org.nuxeo.usermapper.service.UserMapperComponent"
+    point="mapper">
+    
+    <mapper name="keycloakTest" class="org.nuxeo.ecm.platform.ui.web.keycloak.MockUserMapper">
+    </mapper>
+  
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+    <authenticationPlugin name="KEYCLOAK_AUTH">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+      <parameters>
+        <parameter name="keycloakConfigFile">keycloak1.json</parameter>
+        <parameter name="mappingName">keycloakTest</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+  <!-- Include Keycloak Auth into authentication chain -->
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+    <authenticationChain>
+      <plugins>
+        <!--  Keep basic Auth at top of Auth chain to support RSS access via BasicAuth -->
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>KEYCLOAK_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+  
+
+</component>
