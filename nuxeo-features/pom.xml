@@ -49,6 +49,7 @@
     <module>nuxeo-thumbnail</module>
     <module>rest-api</module>
     <module>nuxeo-platform-rendition</module>
+    <module>nuxeo-user-center</module>
   </modules>
 
   <dependencies>
