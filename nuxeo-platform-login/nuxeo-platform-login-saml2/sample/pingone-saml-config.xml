@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.pingone.auth">
+
+    <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+    <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+
+    <!-- Authenticator -->
+    <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+            point="authenticators">
+        <authenticationPlugin name="PINGONE_AUTH" enabled="true"
+                              class="org.nuxeo.ecm.platform.auth.saml.SAMLAuthenticationProvider">
+            <loginModulePlugin>Trusting_LM</loginModulePlugin>
+            <parameters>
+                <parameter name="name">PingOne</parameter>
+                <parameter name="icon">nuxeo.war/img/pingOne.png</parameter>
+                <parameter name="metadata">nxserver/config/pingone-metadata-idp.xml</parameter>
+            </parameters>
+        </authenticationPlugin>
+    </extension>
+
+
+    <!-- ADDED TO THE FORM -->
+    <extension
+            target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+            point="chain">
+
+        <authenticationChain>
+            <plugins>
+                <plugin>BASIC_AUTH</plugin>
+                <plugin>FORM_AUTH</plugin>
+                <plugin>PINGONE_AUTH</plugin>
+            </plugins>
+        </authenticationChain>
+
+    </extension>
+</component>

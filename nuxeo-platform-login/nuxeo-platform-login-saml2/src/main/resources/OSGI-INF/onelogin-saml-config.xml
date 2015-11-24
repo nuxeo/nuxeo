@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.onelogin.auth">
+  <documentation>
+    Sample Authentication plugin for SAML authentication with OneLogin.
+
+    This plugin is disabled by default.
+
+    @author
+    Nelson Silva (nelson.silva@inevo.pt)
+  </documentation>
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+    <authenticationPlugin name="ONELOGIN_AUTH" enabled="false"
+                          class="org.nuxeo.ecm.platform.auth.saml.SAMLAuthenticationProvider">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+      <parameters>
+        <!-- Name and icon to display in login form
+        <parameter name="name">OneLogin</parameter>
+        <parameter name="icon">nuxeo.war/img/pingOne.png</parameter>
+        -->
+
+        <!-- Uri or relative path of the metadata and refresh timeout (in seconds)
+        <parameter name="metadata">https://app.onelogin.com/saml/metadata/<app_id></parameter>
+        <parameter name="timeout">5</parameter>
+        -->
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+</component>
