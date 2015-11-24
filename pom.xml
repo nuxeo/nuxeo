@@ -22,6 +22,7 @@
       <id>itest</id>
       <modules>
         <module>ftest/webdriver</module>
+        <module>ftest/webdriver/pom-list-widget.xml</module>
       </modules>
     </profile>
     <profile>
@@ -29,6 +30,7 @@
       <id>itestplatform</id>
       <modules>
         <module>ftest/webdriver</module>
+        <module>ftest/webdriver/pom-list-widget.xml</module>
       </modules>
     </profile>
   </profiles>

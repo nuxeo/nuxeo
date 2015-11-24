@@ -46,7 +46,6 @@ import org.openqa.selenium.support.ui.Select;
  * @since 7.10
  */
 @SuppressWarnings("deprecation")
-@Ignore("Ignored by default since js list widget is the new default behaviour")
 public class ITAjaxListWidgetTest extends AbstractTest {
 
     private final static String DUMMY_HTML_TEXT_CONTENT_1 = "dummy content";
