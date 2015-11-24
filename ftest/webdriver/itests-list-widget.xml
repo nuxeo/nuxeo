@@ -1,5 +1,7 @@
 <project name="nuxeo-layoutDemo-webdriver-tests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
 
+  <!-- specific configuration to enable compat prop for ajaxified list widget tests -->
+
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
@@ -14,6 +16,7 @@
     <copy todir="${nuxeo.nxserver}/bundles/">
       <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo" />
     </copy>
+    <copy file="src/test/resources/ajaxified-list-config.xml" todir="${nuxeo.nxserver}/config/" />
   </target>
 
 </project>
