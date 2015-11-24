@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.fragment.AddAllToCollectionForm;
@@ -286,7 +287,10 @@ public class DocumentBasePage extends AbstractPage {
      * @since 5.9.3
      */
     public AddToCollectionForm getAddToCollectionPopup() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         addToCollectionUpperAction.click();
+        arm.end();
         Locator.waitUntilElementPresent(By.id("fancybox-content"));
         return getWebFragment(By.id("fancybox-content"), AddToCollectionForm.class);
     }
@@ -302,7 +306,10 @@ public class DocumentBasePage extends AbstractPage {
                         driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute("disabled"));
             }
         }, StaleElementReferenceException.class);
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).click();
+        arm.end();
         Locator.waitUntilElementPresent(By.id("fancybox-content"));
         return getWebFragment(By.id("fancybox-content"), AddAllToCollectionForm.class);
     }
