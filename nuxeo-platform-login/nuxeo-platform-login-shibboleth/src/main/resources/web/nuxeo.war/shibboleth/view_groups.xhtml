@@ -1,0 +1,29 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:a4j="http://richfaces.org/a4j">
+
+  <a4j:outputPanel id="groupsPanel" layout="block">
+    <div class="tabsContent">
+
+      <!-- create form -->
+      <f:subview rendered="#{shibbGroupManagerActions.showCreateForm}"
+        id="createGroupView">
+        <ui:include src="create_group.xhtml"/>
+      </f:subview>
+
+      <!-- view form -->
+      <f:subview rendered="#{not empty shibbGroupManagerActions.selectedGroup and shibbGroupManagerActions.showUserOrGroup}"
+        id="viewGroupView">
+        <ui:include src="view_group.xhtml"/>
+      </f:subview>
+
+      <!-- listing -->
+      <f:subview rendered="#{!shibbGroupManagerActions.showUserOrGroup and !shibbGroupManagerActions.showCreateForm}"
+        id="groupsListingView">
+        <ui:include src="view_groups_listing.xhtml"/>
+      </f:subview>
+
+    </div>
+  </a4j:outputPanel>
+
+</div>
