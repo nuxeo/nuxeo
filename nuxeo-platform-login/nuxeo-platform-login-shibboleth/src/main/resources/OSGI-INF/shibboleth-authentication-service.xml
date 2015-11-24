@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService">
+
+  <documentation>
+    The Shibboleth Authentication Service handles the configuration to use
+    when connecting to Shibboleth for the authentication in Nuxeo.
+
+    @author Quentin Lamerand (qlamerand@nuxeo.com)
+  </documentation>
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService" />
+  </service>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationServiceImpl" />
+
+  <extension-point name="config">
+    <documentation>
+      Hold configuration for the Shibboleth Authentication Service. Contains:
+      * the mapping between request headers and user fields
+      * which header is used as user Id depending of the chosen IdP
+      * the login / logout URLs for Shibboleth
+
+      A sample configuration could be:
+      <code>
+        <extension
+          target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
+          point="config">
+          <config headerEncoding="utf-8">
+            <uidHeaders>
+              <uidHeader idpUrl="https://specific.idp">differentUid</uidHeader>
+              <default>uid</default>
+            </uidHeaders>
+
+            <loginURL>https://host/Shibboleth.sso/WAYF</loginURL>
+            <logoutURL>https://host/Shibboleth.sso/Logout</logoutURL>
+
+            <fieldMapping header="uid">username</fieldMapping>
+            <fieldMapping header="mail">email</fieldMapping>
+          </config>
+        </extension>
+      </code>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationConfig" />
+  </extension-point>
+
+</component>
