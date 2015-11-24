@@ -1,0 +1,43 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <h3>
+    <h:outputText value="#{messages['title.createGroup']}" />
+  </h3>
+
+  <h:form id="createGroup" rendered="#{shibbGroupManagerActions.allowCreateGroup and notReadOnly}">
+    <nxl:layout name="shibbGroup" mode="create" value="#{shibbGroupManagerActions.newGroup}" />
+    <table class="dataInput">
+      <tbody>
+        <tr>
+          <td>
+            <a4j:commandButton
+              id="button_save_and_create"
+              value="#{messages['command.saveAndCreate']}"
+              action="#{shibbGroupManagerActions.createGroup(true)}"
+              styleClass="button"
+              render="groupsPanel,facesStatusMessagePanel">
+              <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
+            </a4j:commandButton>
+            <a4j:commandButton
+              id="button_save"
+              value="#{messages['command.save']}"
+              action="#{shibbGroupManagerActions.createGroup}"
+              styleClass="button"
+              render="groupsPanel,facesStatusMessagePanel">
+              <nxu:actionListenerMethod value="#{editableListBean.resetAllListsCachedModels}" />
+            </a4j:commandButton>
+            <a4j:commandButton
+              action="#{shibbGroupManagerActions.toggleShowCreateForm}" immediate="true"
+              value="#{messages['command.cancel']}" styleClass="button"
+              render="groupsPanel" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </h:form>
+
+</div>

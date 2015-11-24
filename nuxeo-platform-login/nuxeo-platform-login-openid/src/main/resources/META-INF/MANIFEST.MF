@@ -1,0 +1,14 @@
+Require-Bundle: org.nuxeo.ecm.platform.login,
+ org.nuxeo.ecm.platform.web.common
+Bundle-Name: nuxeo.platform.login.openid
+Bundle-ManifestVersion: 2
+Nuxeo-Component: OSGI-INF/auth-contrib.xml,
+ OSGI-INF/openid-connect-provider-registry.xml,
+ OSGI-INF/schema-contrib.xml,
+ OSGI-INF/directory-contrib.xml,
+ OSGI-INF/openid-google-contrib.xml,
+ OSGI-INF/openid-facebook-contrib.xml,
+ OSGI-INF/openid-github-contrib.xml,
+ OSGI-INF/openid-linkedin-contrib.xml,
+ OSGI-INF/openid-amazon-contrib.xml
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.openid;singleton:=true

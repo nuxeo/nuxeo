@@ -1,0 +1,96 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <h1>
+    <h:outputText styleClass="label"
+      value="#{shibbGroupManagerActions.selectedGroup.id}" />
+  </h1>
+
+  <a4j:outputPanel id="groupDetailsPanel" layout="block">
+
+  <h:form>
+    <p class="directoryBack">
+      <a4j:commandLink immediate="true"
+        value="#{messages['command.directoryBack']}"
+        action="#{shibbGroupManagerActions.toggleShowUserOrGroup}"
+        render="groupsPanel" />
+    </p>
+  </h:form>
+
+  <h:form id="deleteGroupForm" rendered="#{shibbGroupManagerActions.allowDeleteGroup and notReadOnly}">
+    <script type="text/javascript">
+    function confirmDeleteGroup() {
+      return confirm("#{messages['label.userManager.confirmDeleteGroup']}");
+    }
+    </script>
+    <div class="action_bar">
+      <ul>
+        <li class="selected">
+          <a4j:commandLink
+            action="#{shibbGroupManagerActions.deleteGroup}"
+            onclick="if (!confirmDeleteGroup()) { return false; }"
+            render="groupsPanel">
+            <h:graphicImage value="/icons/delete.png" />
+            <h:outputText value="#{messages['command.delete']}" />
+          </a4j:commandLink>
+        </li>
+      </ul>
+    </div>
+    <div style="clear: both" />
+  </h:form>
+
+  <div class="tabsBar subtabsBar">
+    <h:form>
+      <ul>
+        <li class="#{nxu:test(shibbGroupManagerActions.detailsMode == 'view', 'selected', '')}">
+          <a4j:commandLink action="#{shibbGroupManagerActions.setDetailsMode('view')}"
+            immediate="true" render="groupDetailsPanel">
+            <h:outputText value="#{messages['label.groupManager.viewGroup']}" />
+          </a4j:commandLink>
+        </li>
+
+        <f:subview rendered="#{shibbGroupManagerActions.allowEditGroup and notReadOnly}">
+          <li class="#{nxu:test(shibbGroupManagerActions.detailsMode == 'edit', 'selected', '')}">
+            <a4j:commandLink
+              action="#{shibbGroupManagerActions.setDetailsMode('edit')}" immediate="true"
+                    render="groupDetailsPanel">
+              <h:outputText value="#{messages['label.groupManager.editGroup']}" />
+            </a4j:commandLink>
+          </li>
+        </f:subview>
+      </ul>
+    </h:form>
+  </div>
+  <div style="clear: both" />
+
+  <div class="tabsContent">
+
+    <h:form id="viewGroup" rendered="#{shibbGroupManagerActions.detailsMode == 'view'}">
+      <nxl:layout name="shibbGroup" mode="view" value="#{shibbGroupManagerActions.selectedGroup}" />
+    </h:form>
+
+    <h:form id="editGroup" rendered="#{shibbGroupManagerActions.detailsMode == 'edit' and shibbGroupManagerActions.allowEditGroup and notReadOnly}">
+      <nxl:layout name="shibbGroup" mode="edit" value="#{shibbGroupManagerActions.selectedGroup}" />
+      <table class="dataInput">
+        <tbody>
+          <tr>
+            <td class="iconColumn"></td>
+            <td class="labelColumn">
+              <a4j:commandButton
+                value="#{messages['command.save']}"
+                action="#{shibbGroupManagerActions.updateGroup}"
+                styleClass="button" render="groupDetailsPanel,facesStatusMessagePanel" />
+            </td>
+            <td class="fieldColumn"></td>
+          </tr>
+        </tbody>
+      </table>
+    </h:form>
+
+  </div>
+  </a4j:outputPanel>
+
+</div>

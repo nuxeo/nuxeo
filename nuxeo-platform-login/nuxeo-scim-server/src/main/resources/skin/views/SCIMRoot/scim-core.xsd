@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:tns="urn:scim:schemas:core:1.0"
+           targetNamespace="urn:scim:schemas:core:1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+  <xs:element name="Response" type="tns:Response"/>
+  <xs:element name="Error" type="tns:Error"/>
+  <xs:element name="User" type="tns:User"/>
+  <xs:element name="Group" type="tns:Group"/>
+  <xs:element name="Resource" type="tns:Resource"/>
+  <xs:element name="Schema" type="tns:Schema"/>
+  <xs:element name="ServiceProviderConfig" type="tns:ServiceProviderConfig"/>
+  <xs:element name="Bulk" type="tns:Bulk"/>
+  <xs:element name="Operation" type="tns:Operation"/>
+
+  <xs:group name="Resources">
+    <xs:sequence>
+      <xs:element name="totalResults" type="xs:long" minOccurs="0"
+                  maxOccurs="1"/>
+      <xs:element name="itemsPerPage" type="xs:int" minOccurs="0"
+                  maxOccurs="1"/>
+      <xs:element name="startIndex" type="xs:long" minOccurs="0"
+                  maxOccurs="1"/>
+      <xs:element name="Resources" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Resource"
+                        type="tns:Resource"
+                        minOccurs="0"
+                        maxOccurs="unbounded"
+                        nillable="true"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+
+  <xs:complexType name="Response">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element ref="tns:Resource" minOccurs="0"/>
+        <xs:group ref="tns:Resources"/>
+        <xs:element name="errors" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="error"
+                          type="tns:Error"
+                          minOccurs="0"
+                          maxOccurs="unbounded"
+                          nillable="true"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+      <xs:any namespace="##other" minOccurs="0"
+              maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Bulk">
+    <xs:sequence>
+      <xs:element name="failOnErrors" type="xs:int" minOccurs="0"
+        maxOccurs="1"/>
+      <xs:element name="Operations" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Operation"
+              type="tns:Operation"
+              minOccurs="1"
+              maxOccurs="unbounded" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="Operation">
+    <xs:sequence>
+      <xs:element name="method" type="xs:string" minOccurs="1"
+                  maxOccurs="1"/>
+      <xs:element name="bulkId" type="xs:string" minOccurs="0"
+                  maxOccurs="1"/>
+      <xs:element name="version" type="xs:string" minOccurs="0"
+                  maxOccurs="1"/>
+      <xs:element name="path" type="xs:string" minOccurs="0"
+                  maxOccurs="1"/>
+      <xs:element name="location" type="xs:string" minOccurs="0"
+                  maxOccurs="1"/>
+      <xs:element name="data" type="tns:Resource" minOccurs="0" 
+                  maxOccurs="1" />
+      <xs:element name="status" type="tns:Status" minOccurs="0" 
+                  maxOccurs="1" />
+      </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Status">
+    <xs:sequence>
+      <xs:element name="code" type="xs:string" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Error">
+    <xs:sequence>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+      <xs:element name="code" type="xs:string" minOccurs="0"/>
+      <xs:element name="uri" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="User">
+    <xs:complexContent>
+      <xs:extension base="tns:CoreResource">
+        <xs:sequence>
+          <xs:element name="userName" type="xs:string" minOccurs="0"/>
+          <xs:element name="name" type="tns:name" minOccurs="0"/>
+          <xs:element name="displayName" type="xs:string"
+                      minOccurs="0"/>
+          <xs:element name="nickName" type="xs:string" minOccurs="0"/>
+          <xs:element name="profileUrl" type="xs:string"
+                      minOccurs="0"/>
+          <xs:element name="title" type="xs:string" minOccurs="0"/>
+          <xs:element name="userType" type="xs:string" minOccurs="0"/>
+          <xs:element name="preferredLanguage" type="xs:string" minOccurs="0"/>
+          <xs:element name="locale" type="xs:string" minOccurs="0"/>
+          <xs:element name="timezone" type="xs:string" minOccurs="0"/>
+          <xs:element name="active" type="xs:boolean" minOccurs="0"/>
+          <xs:element name="password" type="xs:string" minOccurs="0"/>
+          <xs:element name="emails" minOccurs="0" >
+          <xs:complexType>
+              <xs:sequence>
+                <xs:element name="email"
+                            type="tns:multiValuedAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="phoneNumbers" minOccurs="0">
+          <xs:complexType>
+              <xs:sequence>
+                <xs:element name="phoneNumber"
+                            type="tns:multiValuedAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="ims" minOccurs="0">
+          <xs:complexType>
+              <xs:sequence>
+                <xs:element name="im"
+                            type="tns:multiValuedAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="photos" minOccurs="0">
+          <xs:complexType>
+              <xs:sequence>
+                <xs:element name="photo"
+                            type="tns:multiValuedAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="addresses" minOccurs="0">
+          <xs:complexType>
+              <xs:sequence>
+                <xs:element name="address"
+                            type="tns:address"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>           
+          <xs:element name="groups" minOccurs="0">
+          <xs:complexType>
+              <xs:sequence>
+                <xs:element name="group"
+                            type="tns:multiValuedAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="entitlements" minOccurs="0">
+          <xs:complexType>
+              <xs:sequence>
+                <xs:element name="entitlement"
+                            type="tns:multiValuedAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="roles" minOccurs="0">
+          <xs:complexType>
+              <xs:sequence>
+                <xs:element name="role"
+                            type="tns:multiValuedAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="x509Certificates" minOccurs="0">
+          <xs:complexType>
+              <xs:sequence>
+                <xs:element name="x509Certificate"
+                            type="tns:multiValuedAttribute"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:any namespace="##other" minOccurs="0"
+                  maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Group">
+    <xs:complexContent>
+      <xs:extension base="tns:CoreResource">
+        <xs:sequence>
+          <xs:element name="displayName" type="xs:string"
+            minOccurs="0"/>
+          <xs:element name="members" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="member"
+                  type="tns:multiValuedAttribute"
+                  minOccurs="0"
+                  maxOccurs="unbounded"/>
+                </xs:sequence>
+              </xs:complexType>
+          </xs:element>
+          <xs:any namespace="##other" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Resource">
+    <xs:sequence>
+    <xs:element name="id" type="xs:string" minOccurs="0"
+                maxOccurs="1"/>
+    <xs:element name="meta" type="tns:meta" minOccurs="0"
+                maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CoreResource">
+    <xs:complexContent>
+      <xs:extension base="tns:Resource">
+        <xs:sequence>
+          <xs:element name="externalId" type="xs:string"
+                      minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="address">
+    <xs:complexContent>
+  	  <xs:extension base="tns:multiValuedAttribute">
+  	    <xs:sequence>
+          <xs:element name="formatted" type="xs:string" minOccurs="0"/>
+          <xs:element name="streetAddress" type="xs:string" minOccurs="0"/>
+          <xs:element name="locality" type="xs:string" minOccurs="0"/>
+          <xs:element name="region" type="xs:string" minOccurs="0"/>
+          <xs:element name="postalCode" type="xs:string" minOccurs="0"/>
+          <xs:element name="country" type="xs:string" minOccurs="0"/>
+  	    </xs:sequence>
+  	  </xs:extension>
+  	</xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="multiValuedAttribute">
+    <xs:sequence>
+      <xs:element name="value" type="xs:anyType" minOccurs="0"/>
+      <xs:element name="display" type="xs:string" minOccurs="0"/>
+      <xs:element name="primary" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="type" type="xs:string" minOccurs="0"/>
+      <xs:element name="operation" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="name">
+    <xs:sequence>
+      <xs:element name="formatted" type="xs:string" minOccurs="0"/>
+      <xs:element name="familyName" type="xs:string" minOccurs="0"/>
+      <xs:element name="givenName" type="xs:string" minOccurs="0"/>
+      <xs:element name="middleName" type="xs:string" minOccurs="0"/>
+      <xs:element name="honorificPrefix" type="xs:string" minOccurs="0"/>
+      <xs:element name="honorificSuffix" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="meta">
+    <xs:sequence>
+      <xs:element name="created" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="lastModified" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="location" type="xs:string" minOccurs="0"/>
+      <xs:element name="version" type="xs:string" minOccurs="0"/>
+      <xs:element name="attributes" minOccurs="0">
+      <xs:complexType>
+        <xs:sequence>
+          <xs:element name="attribute"
+                      type="tns:multiValuedAttribute"
+                      minOccurs="0"
+                      maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SchemaAttribute">
+   <xs:sequence>
+     <xs:element name="name" type="xs:string" minOccurs="0"/>
+     <xs:element name="type" type="xs:string" minOccurs="0"/>
+     <xs:element name="multiValued" type="xs:boolean" minOccurs="0"/>
+     <xs:element name="multiValuedAttributeChildName" type="xs:string" minOccurs="0"/>
+     <xs:element name="description" type="xs:string" minOccurs="0"/>
+     <xs:element name="schema" type="xs:string" minOccurs="0"/>
+     <xs:element name="readOnly" type="xs:boolean" minOccurs="0"/>
+     <xs:element name="required" type="xs:boolean" minOccurs="0"/>
+     <xs:element name="caseExact" type="xs:boolean" minOccurs="0"/>
+     <xs:element name="subAttributes" minOccurs="0">
+       <xs:complexType>
+         <xs:sequence>
+           <xs:element name="subAttribute"
+                   type="tns:SchemaSubAttribute"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+         </xs:sequence>
+       </xs:complexType>
+     </xs:element>
+   </xs:sequence>
+ </xs:complexType>
+
+  <xs:complexType name="SchemaSubAttribute">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="type" type="xs:string" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+      <xs:element name="readOnly" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="required" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="caseExact" type="xs:boolean" minOccurs="0"/>
+      <xs:sequence>
+        <xs:element name="canonicalValues" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Schema">
+    <xs:complexContent>
+      <xs:extension base="tns:Resource">
+        <xs:sequence>
+          <xs:element name="name" type="xs:string"
+            minOccurs="0"/>
+          <xs:element name="description" type="xs:string"
+            minOccurs="0"/>
+          <xs:element name="schema" type="xs:string"
+            minOccurs="0"/>
+          <xs:element name="endpoint" type="xs:string"
+            minOccurs="0"/>
+          <xs:element name="attributes" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="attribute"
+                         type="tns:SchemaAttribute"
+                         minOccurs="0"
+                         maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="authenticationScheme">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+      <xs:element name="specUrl" type="xs:string" minOccurs="0"/>
+      <xs:element name="documentationUrl" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ServiceProviderConfig">
+    <xs:complexContent>
+      <xs:extension base="tns:Resource">
+        <xs:sequence>
+          <xs:element name="documentationUrl" type="xs:string"
+                      minOccurs="0"/>
+          <xs:element name="patch" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="bulk" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+                <xs:element name="maxOperations" type="xs:int"
+                            minOccurs="0"/>
+                <xs:element name="maxPayloadSize" type="xs:int"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="filter" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+                <xs:element name="maxResults" type="xs:int"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="changePassword" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="sort" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="etag" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="authenticationSchemes" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="authenticationScheme" type="tns:authenticationScheme"
+                            minOccurs="0"
+                            maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="xmlDataFormat" minOccurs="0">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="supported" type="xs:boolean"
+                            minOccurs="0"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:any namespace="##other" minOccurs="0"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>
