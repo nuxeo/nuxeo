@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo HTTP Digest Access Authentication Login Module extension
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.digest;singleton:=true
+Bundle-Version: 1.0.0
+Require-Bundle: org.nuxeo.ecm.platform.login
+Nuxeo-Component: OSGI-INF/digest-authentication-contrib.xml,
+ OSGI-INF/digest-authentication-schema-contrib.xml
