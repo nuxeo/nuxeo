@@ -1,0 +1,11 @@
+<f:subview xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:a4j="http://richfaces.org/a4j">
+  <a4j:commandLink action="#{shibbGroupManagerActions.setSelectedGroup(field_0)}"
+      actionListener="#{shibbGroupManagerActions.toggleShowUserOrGroup}"
+      render="groupsPanel">
+    <h:outputText value="#{field_0}" />
+  </a4j:commandLink>
+</f:subview>
