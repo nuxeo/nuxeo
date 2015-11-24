@@ -1,0 +1,53 @@
+<component name="org.nuxeo.ecm.platform.login.test.cas.test">
+   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+   <require>org.nuxeo.ecm.platform.login.Cas2SSO</require>
+
+   <!--  configure you CAS server parameters -->
+   <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+      <authenticationPlugin
+              name="CAS2_AUTH">
+       <needStartingURLSaving>true</needStartingURLSaving>
+       <loginModulePlugin>Trusting_LM</loginModulePlugin>
+       <parameters>
+         <parameter name="ticketKey">ticket</parameter>
+         <parameter name="appURL">http://127.0.0.1:8080/nuxeo/nxstartup.faces</parameter>
+         <parameter name="serviceLoginURL">http://127.0.0.1:8080/cas/login</parameter>
+         <parameter name="serviceValidateURL">http://127.0.0.1:8080/cas/serviceValidate</parameter>
+         <parameter name="serviceKey">service</parameter>
+         <parameter name="logoutURL">http://127.0.0.1:8080/cas/logout</parameter>
+         <parameter name="serviceValidatorClass">org.nuxeo.ecm.platform.ui.web.auth.cas2.MockServiceTicketValidator</parameter>
+         <parameter name="proxyValidatorClass">org.nuxeo.ecm.platform.ui.web.auth.cas2.MockProxyTicketValidator</parameter>
+       </parameters>
+      </authenticationPlugin>
+  </extension>
+
+   <!-- Include CAS2 into authentication chain -->
+    <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>CAS2_AUTH</plugin>
+        <plugin>BASIC_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+  
+    <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
+    <domain name="nuxeo-ecm-web">
+      <login-module code="org.nuxeo.ecm.platform.ui.web.auth.simple.LoginModuleYes"
+          flag="required">
+      </login-module>
+    </domain>
+
+    <domain name="nuxeo-ecm">
+      <login-module code="org.nuxeo.ecm.platform.ui.web.auth.simple.LoginModuleYes"
+          flag="required">
+      </login-module>
+    </domain>
+  </extension>
+  
+
+</component>
