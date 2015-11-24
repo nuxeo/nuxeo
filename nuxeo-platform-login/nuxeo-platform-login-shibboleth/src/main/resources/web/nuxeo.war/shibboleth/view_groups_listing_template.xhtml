@@ -1,0 +1,44 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:a4j="http://richfaces.org/a4j"
+     xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <!-- groups listing -->
+  <a4j:outputPanel id="groupsListingPanel" layout="block">
+
+    <nxu:set var="listingMode" value="#{nxu:test(shibbGroupManagerActions.listingMode == 'all', 'search_only', shibbGroupManagerActions.listingMode)}">
+    <nxu:set var="contentViewName" value="shibb_groups_listing_#{listingMode}">
+      <ui:decorate template="/incl/content_view.xhtml">
+        <ui:define name="content_view_header">
+          <!-- create button -->
+          <h:form rendered="#{shibbGroupManagerActions.allowCreateGroup and notReadOnly}"
+            id="createGroupActionsForm">
+            <div class="action_bar">
+              <ul>
+                <li class="selected">
+                  <a4j:commandLink action="#{shibbGroupManagerActions.toggleShowCreateForm}"
+                    immediate="true" id="createGroupButton" render="groupsPanel">
+                    <h:graphicImage value="/icons/action_add_group.png" />
+                    <h:outputText value="#{messages['command.createGroup']}" />
+                  </a4j:commandLink>
+                </li>
+              </ul>
+            </div>
+          </h:form>
+          <div style="clear:both" />
+
+          <ui:insert name="groups_search_method" />
+        </ui:define>
+
+        <ui:define name="pageNavigationControls" >
+          <ui:include src="/pagination/a4jPageNavigationControls.xhtml">
+            <ui:param name="contentIdToBeReRendered" value="#{contentViewRenderId}_resultsPanel" />
+          </ui:include>
+        </ui:define>
+      </ui:decorate>
+    </nxu:set>
+    </nxu:set>
+
+  </a4j:outputPanel>
+
+</div>
