@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://org.nuxeo/schemas/portal/wchtml" xmlns:nxs="http://org.nuxeo/schemas/portal/wchtml">
+
+	<xs:element name="html" type="xs:string"></xs:element>
+	<xs:element name="htmltitle" type="xs:string"></xs:element>
+	<xs:element name="htmlpicturelegend" type="xs:string"></xs:element>
+	<xs:element name="htmlpicturelink" type="xs:string"></xs:element>
+	<xs:element name="template" type="xs:string"></xs:element>
+
+</xs:schema>

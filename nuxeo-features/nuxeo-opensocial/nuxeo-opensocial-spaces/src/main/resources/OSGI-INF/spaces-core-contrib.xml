@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="org.nuxeo.ecm.spaces.core.types"
+  version="1.0">
+  <require>org.nuxeo.ecm.platform.picture.web.coreTypes</require>
+  <require>org.nuxeo.ecm.core.schema.TypeService
+  </require>
+  <require>org.nuxeo.ecm.core.CoreExtensions
+  </require>
+
+  <documentation>
+    Content type definition for Universe
+
+    @author
+    <a href="mailto:damien.desaintlaurent@leroymerlin.fr">Damien de Saint Laurent</a>
+  </documentation>
+
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="schema">
+    <schema name="space" prefix="space" src="schemas/space.xsd" />
+    <schema name="webcontent" prefix="wcontent" src="schemas/webcontent.xsd" />
+    <schema name="wchtml" prefix="wchtml" src="schemas/wchtml.xsd" />
+    <schema name="wcopensocial" prefix="wcopensocial" src="schemas/wcopensocial.xsd" />
+    <schema name="yuilayout" prefix="yuilayout" src="schemas/yuilayout.xsd" />
+    <schema name="yuiunit" prefix="yuiunit" src="schemas/yuiunit.xsd" />
+
+    <!--  We keep it for compatibility reasons : needed for gadget type -->
+    <schema name="gadget" prefix="gadget" src="schemas/gadget.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService"
+    point="doctype">
+    <doctype name="Space" extends="Folder">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="space" />
+      <schema name="file" />
+      <schema name="yuilayout" />
+      <facet name="Folderish" />
+      <facet name="HiddenInNavigation" />
+
+      <subtypes>
+        <type>Unit</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="Unit" extends="Folder">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="yuiunit" />
+      <schema name="file" />
+      <facet name="Folderish" />
+      <facet name="HiddenInNavigation" />
+
+      <subtypes>
+        <type>WCPicture</type>
+        <type>WCHtml</type>
+        <type>WCOpenSocial</type>
+      </subtypes>
+    </doctype>
+
+    <doctype name="WCPicture" extends="Picture">
+      <schema name="webcontent" />
+      <schema name="gadget" />
+      <schema name="file" />
+      <schema name="files" />
+      <facet name="Folderish" />
+      <facet name="HiddenInNavigation" />
+    </doctype>
+
+    <doctype name="WCHtml" extends="File">
+      <schema name="webcontent" />
+	    <schema name="gadget" />
+      <schema name="wchtml" />
+      <facet name="Folderish" />
+      <facet name="HiddenInNavigation" />
+    </doctype>
+
+    <doctype name="WCOpenSocial" extends="File">
+      <schema name="webcontent" />
+	    <schema name="gadget" />
+      <schema name="wcopensocial" />
+      <facet name="Folderish" />
+      <facet name="HiddenInNavigation" />
+    </doctype>
+
+
+
+    <!--  We keep it for compatibility reasons : we still
+          need to be able to access Gadget types in order to
+          make migration possible
+           -->
+
+    <doctype name="Gadget" extends="Folder">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <schema name="gadget" />
+      <schema name="file" />
+      <schema name="files" />
+      <facet name="Folderish" />
+      <facet name="HiddenInNavigation" />
+    </doctype>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+      point="types">
+      <types>
+        <type name="Gadget">default</type>
+        <type name="Space">default</type>
+        <type name="WCOpenSocial">default</type>
+        <type name="WCHtml">default</type>
+        <type name="WCPicture">default</type>
+        <type name="Unit">default</type>
+      </types>
+  </extension>
+</component>

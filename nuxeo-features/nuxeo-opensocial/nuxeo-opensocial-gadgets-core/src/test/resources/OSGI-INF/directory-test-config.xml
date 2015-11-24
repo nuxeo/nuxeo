@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.gadgets.directory.test.contrib">
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+      point="directories">
+
+    <directory name="externalGadgets" remove="true">
+    </directory>
+
+    <directory name="externalGadgets">
+      <schema>externalgadget</schema>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>externalGadgets</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+  </extension>
+</component>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.server.requestcontroller.contrib">
+
+    <extension target="org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService"
+                   point="filterConfig">
+
+        <filterConfig name="opensocial"
+                  transactional="true" buffered="false" synchonize="true">
+            <pattern>${org.nuxeo.ecm.contextPath}/opensocial.*</pattern>
+        </filterConfig>
+    </extension>
+    
+</component>

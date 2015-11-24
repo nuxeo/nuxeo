@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="Flash" height="95" scrolling="true"
+    scaling="true" directory_title="Flash"
+    description="Displays a Flash animation (or any other multimedia document)" author="Guillaume CUSNIEUX"
+    author_email="gcusnieux@leroymerlin.fr" author_affiliation="Leroy Merlin"
+    author_location="Lezennes, France">
+    <Require feature="dynamic-height" />
+    <Require feature="nuxeo" />
+    <Require feature="settitle" />
+    <Require feature="setprefs"/>
+    <Require feature="jquery" />
+    <Require feature="form" />
+    <Require feature="flash" />
+    <#include "dynamic-translations.ftl"/>
+
+  </ModulePrefs>
+
+    <UserPref name="height" display_name="Hauteur (en px)" default_value="400"/>
+    <UserPref name="title-flash" default_value="" datatype="hidden"/>
+
+  <Content type="html" view="default">
+<![CDATA[
+<html>
+  <head>
+  <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css?path=${contextPath}&basepath=${contextPath}"/>
+ <style type='text/css'>
+ /* A ${specDirectoryUrl} is added in each picture path to keep a relative url.
+      Without this, the browser is looking for a 127.0.0.1 url instead of localhost,
+      and pictures paths are broken unless you refresh the page. */
+ #hide img{
+     border:0;
+     padding:5px 5px 0 0;
+   }
+
+   *{
+      font-family:Lucida Grande, Arial,Verdana;
+      font-size:11px;
+    }
+
+
+    #show a{
+      text-decoration:none;
+      padding-left:20px;
+      background:url(${specDirectoryUrl}edit.png) no-repeat 0 0;
+      display:inline-block;
+      height:16px;
+    }
+
+    #show a:hover{
+      text-decoration:underline;
+    }
+
+    #show{
+     text-align:right;
+    }
+
+
+    #title-flash{
+    font-size:14px;
+    color:#13506B;
+    text-align:center;
+    font-weight:bold;
+    }
+
+  #hideContainer{
+    background:#f7f7f7;
+    text-align:right;
+  }
+
+  #title-field,#link-field{
+    width:98%;
+    border:1px solid #eee;
+  }
+
+
+  #formFlash{
+   background:#f7f7f7;
+  }
+
+  #formFlash td{
+   color:#555;
+  }
+
+  #upload{
+    padding-left:14px;
+    background:url(${specDirectoryUrl}accept.png) no-repeat 0 0;
+    color:#555;
+    display:block;
+    float:right;
+    font-weight:bold;
+    padding:0 0 3px 18px;
+    text-decoration:none;
+  }
+
+  #upload:hover{
+      text-decoration:underline;
+    }
+
+  </style>
+  <script type="text/javascript" language="javascript" src="flash.js"></script>
+   <script type="text/javascript">
+   var prefs = new _IG_Prefs(__MODULE_ID__);
+
+  gadgets.util.registerOnLoadHandler(function() {
+    launchGadget();
+  });
+   </script>
+   </head>
+   <body>
+   <div id="title-flash"></div>
+
+
+   <div id="content" style="text-align:center;margin:auto;">
+       <img id="loader" src="${specDirectoryUrl}standart_waiter.gif"/>
+       <div id="flash"></div>
+   </div>
+   <div id="perm" style="display:none;" class="tools">
+     <div id="show">
+        <div class="context-edit-button"><a href="#">__MSG_label.gadget.edit__</a></div>
+     </div>
+      <div style="display:none;margin:auto" id="form">
+
+       <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="${specDirectoryUrl}x.png"></a></div>
+       <table style="width:100%" id="formFlash">
+        <tr>
+          <td style="width:30%"><label for="title">Titre</label></td>
+          <td style="width:70%"><input type="text" name="title" id="title-field" /></td>
+        </tr>
+        <tr>
+          <td style="width:30%"><label for="photo">Animation</label> </td>
+          <td style="width:70%">
+          <form method="post" id="formUpload" enctype="multipart/form-data" action="#">
+            <input type="file" name="file" id="file" size="20" />
+          </form>
+        </td>
+        </tr>
+        <tr>
+          <td style="width:30%"></td>
+          <td style="width:70%">
+            <a href="" id="upload">Valider</a>
+          </td>
+        </tr>
+       </table>
+     </div>
+   </div>
+  </body>
+</html>
+  ]]>
+  </Content>
+
+</Module>

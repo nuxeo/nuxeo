@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://org.nuxeo/schemas/portal/webcontent"
+  xmlns:nxs="http://org.nuxeo/schemas/portal/webcontent">
+
+  <xs:element name="title" type="xs:string" default=""></xs:element>
+  <xs:element name="position" type="xs:int" default="0"></xs:element>
+  <xs:element name="isinaportlet" type="xs:boolean" default="true"></xs:element>
+  <xs:element name="iscollapsed" type="xs:boolean" default="false"></xs:element>
+
+  <xs:element name="preferences" type="nxs:properties" />
+
+  <xs:complexType name="properties">
+    <xs:sequence>
+      <xs:element name="property" type="nxs:property" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="property">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="1"
+        maxOccurs="1" />
+      <xs:element name="value" type="xs:string" minOccurs="1"
+        maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
