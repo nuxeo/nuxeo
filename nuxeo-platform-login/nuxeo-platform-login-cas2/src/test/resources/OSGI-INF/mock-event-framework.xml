@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.mock.eventService" version="1.0">
+  <documentation>
+    Mock Event service
+
+    @author Benjamin JALON
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.login.mockedServices.MockEventService"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.event.EventProducer"/>
+  </service>
+
+  <extension-point name="listener">
+    <object class="org.nuxeo.ecm.core.event.impl.EventListenerDescriptor"/>
+  </extension-point>
+
+</component>
