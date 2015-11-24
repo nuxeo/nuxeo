@@ -13,12 +13,6 @@
     <copy todir="${nuxeo.nxserver}/bundles/">
       <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo" />
     </copy>
-    <echo level="info" message="Removing single datasource conf" />
-    <!-- do not declare datasources (NXP-14138) -->
-    <antcall target="set-conf">
-      <param name="name" value="nuxeo.server.declare_datasources" />
-      <param name="value" value="false" />
-    </antcall>
   </target>
 
 </project>
