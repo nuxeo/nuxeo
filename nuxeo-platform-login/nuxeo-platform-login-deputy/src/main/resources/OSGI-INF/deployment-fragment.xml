@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<fragment version="1">
+ 
+  <require>org.nuxeo.ecm.platform.lang</require>
+  <require>org.nuxeo.ecm.webapp.core</require>
+
+  <install>
+    <!--  unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+    <!--  create a temp dir -->
+    <!--  be sure no directory with that name exists -->
+    <delete path="nxdeputy.tmp" />
+    <mkdir path="nxdeputy.tmp" />
+
+    <unzip from="${bundle.fileName}" to="nxdeputy.tmp">
+      <include>l10n/**</include>
+    </unzip>
+
+    <append from="nxdeputy.tmp/l10n/messages_en_US.properties"
+      to="nuxeo.war/WEB-INF/classes/messages.properties"
+      addNewLine="true" />
+    <append from="nxdeputy.tmp/l10n/messages_en_US.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en.properties"
+      addNewLine="true" />
+    <append from="nxdeputy.tmp/l10n/messages_en_US.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_en_US.properties"
+      addNewLine="true" />
+      
+   <append from="nxdeputy.tmp/l10n/messages_fr_FR.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr_FR.properties"
+      addNewLine="true" />
+      
+   <append from="nxdeputy.tmp/l10n/messages_fr_FR.properties"
+      to="nuxeo.war/WEB-INF/classes/messages_fr.properties"
+      addNewLine="true" />
+
+    <delete path="nxdeputy.tmp" />
+  </install>
+
+  <extension target="faces-config#NAVIGATION">
+
+    <navigation-case>
+      <from-outcome>view_deputies</from-outcome>
+      <to-view-id>/view_deputies.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>view_deputies_logins</from-outcome>
+      <to-view-id>/view_availableLogins.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
+      <from-outcome>edit_deputy</from-outcome>
+      <to-view-id>/edit_deputy.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+
+  </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/swuser</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+  </extension>
+
+</fragment>
+
