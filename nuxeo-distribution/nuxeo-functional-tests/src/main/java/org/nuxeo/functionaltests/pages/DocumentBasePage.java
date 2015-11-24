@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.fragment.AddAllToCollectionForm;
 import org.nuxeo.functionaltests.fragment.AddToCollectionForm;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
@@ -293,17 +294,17 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * @since 5.9.3
      */
-    public AddToCollectionForm getAddAllToCollectionPopup() {
+    public AddAllToCollectionForm getAddAllToCollectionPopup() {
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                return StringUtils.isBlank(driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute(
-                        "disabled"));
+                return StringUtils.isBlank(
+                        driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute("disabled"));
             }
         }, StaleElementReferenceException.class);
         driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).click();
         Locator.waitUntilElementPresent(By.id("fancybox-content"));
-        return getWebFragment(By.id("fancybox-content"), AddToCollectionForm.class);
+        return getWebFragment(By.id("fancybox-content"), AddAllToCollectionForm.class);
     }
 
     public boolean isAddToCollectionUpperActionAvailable() {
