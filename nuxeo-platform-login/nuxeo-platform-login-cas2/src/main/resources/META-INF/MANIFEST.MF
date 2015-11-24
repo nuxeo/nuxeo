@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo CAS2 extension
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.cas2;singleton:=true
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Require-Bundle: org.nuxeo.ecm.platform.login,
+ org.nuxeo.ecm.platform.web.common
+Nuxeo-Component: OSGI-INF/CAS2-authenticator-contrib.xml,
+ OSGI-INF/exception-handling-contrib.xml
