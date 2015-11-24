@@ -17,6 +17,7 @@
 package org.nuxeo.functionaltests.fragment;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -76,7 +77,10 @@ public class AddToCollectionForm extends WebFragmentImpl {
     public void setCollection(final String collectionName) {
         Locator.findElementAndWaitUntilEnabled(By.id(getChooseCollectionId()));
         Select2WidgetElement s2Collection = new Select2WidgetElement(driver, getChooseCollectionId());
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         s2Collection.selectValue(collectionName, false, true);
+        arm.end();
         Locator.findElementAndWaitUntilEnabled(By.id(getAddButtonId()));
     }
 
