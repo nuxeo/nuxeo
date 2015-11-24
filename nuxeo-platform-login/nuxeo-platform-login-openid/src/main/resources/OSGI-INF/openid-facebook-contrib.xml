@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.oauth2.openid.facebook"
+  version="1.0">
+
+  <requires>org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry
+  </requires>
+
+  <extension
+    target="org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry"
+    point="providers">
+    <provider>
+      <name>FacebookConnect</name>
+      <label>Facebook</label>
+      <description>Login via Facebook</description>
+      <authorizationServerURL>http://www.facebook.com/dialog/oauth</authorizationServerURL>
+      <tokenServerURL>https://graph.facebook.com/oauth/access_token</tokenServerURL>
+      <userInfoURL>https://graph.facebook.com/me</userInfoURL>
+      <userInfoClass>org.nuxeo.ecm.platform.oauth2.openid.auth.facebook.FacebookUserInfo</userInfoClass>
+      <scope>email</scope>
+      <icon>/icons/facebook.png</icon>
+    </provider>
+  </extension>
+
+</component>
