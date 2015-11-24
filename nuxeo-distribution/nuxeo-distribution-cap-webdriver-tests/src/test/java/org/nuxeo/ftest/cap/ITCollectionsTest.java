@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.fragment.AddAllToCollectionForm;
 import org.nuxeo.functionaltests.fragment.AddToCollectionForm;
 import org.nuxeo.functionaltests.pages.CollectionsPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -153,15 +154,15 @@ public class ITCollectionsTest extends AbstractTest {
 
         workspaceContentTab.selectDocumentByIndex(0, 1);
 
-        addToCollectionForm = workspaceContentTab.getAddAllToCollectionPopup();
+        AddAllToCollectionForm addAllToCollectionForm = workspaceContentTab.getAddAllToCollectionPopup();
 
-        addToCollectionForm.setCollection(COLLECTION_NAME_2);
+        addAllToCollectionForm.setCollection(COLLECTION_NAME_2);
 
-        assertTrue(addToCollectionForm.isNewDescriptionVisible());
+        assertTrue(addAllToCollectionForm.isNewDescriptionVisible());
 
-        addToCollectionForm.setNewDescription(COLLECTION_DESSCRIPTION_2);
+        addAllToCollectionForm.setNewDescription(COLLECTION_DESSCRIPTION_2);
 
-        workspaceContentTab = addToCollectionForm.addAll(ContentTabSubPage.class);
+        workspaceContentTab = addAllToCollectionForm.addAll(ContentTabSubPage.class);
 
         // Check Collections section in HOME
         CollectionsPage collectionsPage = fileDocumentBasePage.goToHomePage().goToCollections();
@@ -255,7 +256,8 @@ public class ITCollectionsTest extends AbstractTest {
         usersTab.searchUser(TEST_USERNAME);
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
-        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
+        documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
+                "Workspaces");
 
         // Create 2 collections in "My Collections" container
         documentBasePage = documentBasePage.switchToPersonalWorkspace();
