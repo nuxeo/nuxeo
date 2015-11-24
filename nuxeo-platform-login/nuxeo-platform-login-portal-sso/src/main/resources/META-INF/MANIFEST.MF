@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo protal SSO Login Module extension
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.portal;singleton:=true
+Bundle-Version: 1.0.0
+Require-Bundle: org.nuxeo.ecm.platform.login
+Nuxeo-Component: OSGI-INF/Portal-authentication-contrib.xml
