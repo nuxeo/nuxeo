@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.gadgets.coregadgets" version="1.0">
+
+  <extension target="org.nuxeo.opensocial.gadgets.service" point="gadget">
+
+    <!-- Nuxeo -->
+    <internalGadget name="quicksearch" disabled="false">
+      <mountPoint>/quicksearch</mountPoint>
+      <entryPoint>quicksearch.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>gadget-quicksearch.png</icon>
+    </internalGadget>
+    <internalGadget name="tasks">
+      <mountPoint>/tasks</mountPoint>
+      <entryPoint>tasks.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>my_tasks.png</icon>
+    </internalGadget>
+    <internalGadget name="userworkspaces">
+      <mountPoint>/userworkspaces</mountPoint>
+      <entryPoint>userworkspaces.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>user_workspace.png</icon>
+    </internalGadget>
+    <internalGadget name="userdocuments">
+      <mountPoint>/userdocuments</mountPoint>
+      <entryPoint>userdocuments.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>note_64.png</icon>
+    </internalGadget>
+    <internalGadget name="usersites">
+      <mountPoint>/usersites</mountPoint>
+      <entryPoint>usersites.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>user_sites.png</icon>
+    </internalGadget>
+    <internalGadget name="lastpublisheddocuments">
+      <mountPoint>/lastpublisheddocuments</mountPoint>
+      <entryPoint>lastpublisheddocuments.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>last_published_document.png</icon>
+    </internalGadget>
+    <internalGadget name="lastdocuments">
+      <mountPoint>/lastdocuments</mountPoint>
+      <entryPoint>lastdocuments.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>last_document.png</icon>
+    </internalGadget>
+    <internalGadget name="userdeleteddocuments">
+      <mountPoint>/userdeleteddocuments</mountPoint>
+      <entryPoint>userdeleteddocuments.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>user_deleted_documents.png</icon>
+    </internalGadget>
+     <internalGadget name="favorites" disabled="false">
+      <mountPoint>/favorites</mountPoint>
+      <directory>favorites</directory>
+      <entryPoint>favorites.xml</entryPoint>
+      <category>Nuxeo</category>
+      <icon>favorites_icon.png</icon>
+    </internalGadget>
+
+    <!-- Monitoring -->
+    <internalGadget name="httpMonitoring" disabled="false">
+      <mountPoint>/httpMonitoring</mountPoint>
+      <entryPoint>httpMonitoring.xml</entryPoint>
+      <category>gadget.category.monitoring</category>
+      <icon>monitoring.png</icon>
+    </internalGadget>
+
+    <internalGadget name="eventMonitoring" disabled="false">
+      <mountPoint>/eventMonitoring</mountPoint>
+      <entryPoint>eventMonitoring.xml</entryPoint>
+      <category>gadget.category.monitoring</category>
+      <icon>monitoring.png</icon>
+    </internalGadget>
+
+    <!-- Media -->
+    <internalGadget name="photo">
+      <mountPoint>/photo</mountPoint>
+      <entryPoint>photo.xml</entryPoint>
+      <category>gadget.category.media</category>
+      <icon>photo_icon.png</icon>
+    </internalGadget>
+    <internalGadget name="flash">
+      <mountPoint>/flash</mountPoint>
+      <entryPoint>flash.xml</entryPoint>
+      <category>gadget.category.media</category>
+      <icon>flash_icon.png</icon>
+    </internalGadget>
+    <internalGadget name="video">
+      <mountPoint>/video</mountPoint>
+      <entryPoint>video.xml</entryPoint>
+      <category>gadget.category.media</category>
+      <icon>video_icon.png</icon>
+    </internalGadget>
+
+    <!-- Utilities -->
+    <internalGadget name="meteo">
+      <mountPoint>/meteo</mountPoint>
+      <entryPoint>meteo.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>meteo_icon.png</icon>
+    </internalGadget>
+    <internalGadget name="bookmarks">
+      <mountPoint>/bookmarks</mountPoint>
+      <entryPoint>bookmarks.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>bookmarks_icon.png</icon>
+    </internalGadget>
+    <internalGadget name="richtext">
+      <mountPoint>/richtext</mountPoint>
+      <entryPoint>richtext.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>richtext_icon.png</icon>
+    </internalGadget>
+    <internalGadget name="todolist">
+      <mountPoint>/todolist</mountPoint>
+      <entryPoint>toDoList.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>todolist_icon.png</icon>
+    </internalGadget>
+    <internalGadget name="note">
+      <mountPoint>/note</mountPoint>
+      <entryPoint>note.xml</entryPoint>
+      <category>gadget.category.utilities</category>
+      <icon>note_icon.png</icon>
+    </internalGadget>
+
+  </extension>
+</component>

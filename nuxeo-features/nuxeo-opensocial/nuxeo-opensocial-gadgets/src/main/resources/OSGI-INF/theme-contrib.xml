@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.opensocial.gadgets.theme">
+
+  <require>org.nuxeo.theme.nuxeo.default</require>
+
+  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+    <!-- CSS -->
+    <!-- Common CSS -->
+    <resource name="gadget-documentlists.css">
+      <path>css/opensocial/gadgets/documentlists.css</path>
+    </resource>
+    <resource name="gadget-common.css">
+      <path>css/opensocial/gadgets/gadget-common.css</path>
+    </resource>
+    <!-- Gadgets CSS -->
+    <resource name="gadget-lastdocuments.css">
+      <path>css/opensocial/gadgets/lastdocuments.css</path>
+    </resource>
+    <resource name="gadget-lastpublisheddocuments.css">
+      <path>css/opensocial/gadgets/lastpublisheddocuments.css</path>
+    </resource>
+    <resource name="gadget-quicksearch.css">
+      <path>css/opensocial/gadgets/quicksearch.css</path>
+    </resource>
+    <resource name="gadget-tasks.css">
+      <path>css/opensocial/gadgets/tasks.css</path>
+    </resource>
+    <resource name="gadget-userdeleteddocuments.css">
+      <path>css/opensocial/gadgets/userdeleteddocuments.css</path>
+    </resource>
+    <resource name="gadget-userdocuments.css">
+      <path>css/opensocial/gadgets/userdocuments.css</path>
+    </resource>
+    <resource name="gadget-usersites.css">
+      <path>css/opensocial/gadgets/usersites.css</path>
+    </resource>
+    <resource name="gadget-userworkspaces.css">
+      <path>css/opensocial/gadgets/userworkspaces.css</path>
+    </resource>
+    <resource name="gadget-favorites.css">
+      <path>css/opensocial/gadgets/favorites.css</path>
+    </resource>
+
+    <!-- JS -->
+    <!-- Common JS -->
+    <resource name="gadget-context-management.js">
+      <path>scripts/opensocial/gadgets/context-management.js</path>
+    </resource>
+    <resource name="gadget-default-automation-request.js">
+      <path>scripts/opensocial/gadgets/default-automation-request.js</path>
+    </resource>
+    <resource name="gadget-default-documentlist-display.js">
+      <path>scripts/opensocial/gadgets/default-documentlist-display.js</path>
+    </resource>
+    <!-- Gadgets JS -->
+    <resource name="gadget-lastdocuments.js">
+      <path>scripts/opensocial/gadgets/lastdocuments.js</path>
+    </resource>
+    <resource name="gadget-lastpublisheddocuments.js">
+      <path>scripts/opensocial/gadgets/lastpublisheddocuments.js</path>
+    </resource>
+    <resource name="gadget-quicksearch.js">
+      <path>scripts/opensocial/gadgets/quicksearch.js</path>
+    </resource>
+    <resource name="gadget-tasks.js">
+      <path>scripts/opensocial/gadgets/tasks.js</path>
+    </resource>
+    <resource name="gadget-userdeleteddocuments.js">
+      <path>scripts/opensocial/gadgets/userdeleteddocuments.js</path>
+    </resource>
+    <resource name="gadget-userdocuments.js">
+      <path>scripts/opensocial/gadgets/userdocuments.js</path>
+    </resource>
+    <resource name="gadget-usersites.js">
+      <path>scripts/opensocial/gadgets/usersites.js</path>
+    </resource>
+    <resource name="gadget-userworkspaces.js">
+      <path>scripts/opensocial/gadgets/userworkspaces.js</path>
+    </resource>
+    <resource name="gadget-favorites.js">
+      <path>scripts/opensocial/gadgets/favorites.js</path>
+    </resource>
+  </extension>
+
+</component>

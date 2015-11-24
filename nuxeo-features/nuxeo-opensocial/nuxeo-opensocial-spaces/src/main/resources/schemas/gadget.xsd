@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://org.nuxeo/schemas/portal/gadget"
+  xmlns:nxs="http://org.nuxeo/schemas/portal/gadget">
+
+  <xs:element name="type" type="xs:string"></xs:element>
+  <xs:element name="name" type="xs:string"></xs:element>
+  <xs:element name="url" type="xs:string"></xs:element>
+  <xs:element name="category" type="xs:string"></xs:element>
+
+  <xs:element name="placeID" type="xs:string"></xs:element>
+  <xs:element name="position" type="xs:int"></xs:element>
+  <xs:element name="collapsed" type="xs:boolean"></xs:element>
+  <xs:element name="height" type="xs:int"></xs:element>
+  <xs:element name="htmlContent" type="xs:string"></xs:element>
+
+</xs:schema>

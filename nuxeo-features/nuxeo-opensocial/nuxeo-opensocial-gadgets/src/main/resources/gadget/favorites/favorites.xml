@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="MyFavorites"
+    description="Display the list of elements tagged as Favorite"
+    author="Gildas Lefèvre" author_email="glefevre@nuxeo.com">
+    <Optional feature="nuxeo" />
+    <Require feature="setprefs"/>
+    <Require feature="settitle" />
+    <#include "dynamic-translations.ftl"/>
+    <Require feature="dynamic-height" />
+    <#include "default-oauth-prefs.ftl"/>
+  </ModulePrefs>
+  <#include "context-prefs.ftl"/>
+  <Content type="html">
+  
+<![CDATA[
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css,gadget-documentlists.css,gadget-favorites.css?path=${contextPath}&basepath=${contextPath}"/>
+
+    <!-- insert JS Context -->
+    ${jsContext}
+    <script src="${clientSideBaseUrl}nxthemes-lib/gadget-default-automation-request.js,gadget-default-documentlist-display.js,gadget-context-management.js,gadget-favorites.js"></script>
+  </head>
+  <body>
+    <div class="tools">
+      <#include "context-chooser-ui.ftl"/>
+    </div>
+    <div id="content">
+      <#include "default-documentlist-layout.ftl"/>
+      <#include "default-request-controls.ftl"/>
+     </div>
+  </body>
+</html>
+]]>
+
+  </Content>
+</Module>
