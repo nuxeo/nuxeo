@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo mod_sso Login Module extension
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.mod_sso.test;singleton:=true
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Require-Bundle: org.nuxeo.ecm.platform.login.Proxy
