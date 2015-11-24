@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.login.shibboleth.layouts">
+
+  <require>
+    org.nuxeo.ecm.platform.forms.layout.WebLayoutManager
+  </require>
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+    <layout name="shibbGroup">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>groupName</widget>
+        </row>
+        <row>
+          <widget>expressionLanguage</widget>
+        </row>
+      </rows>
+      <widget name="groupName" type="text">
+        <translated>true</translated>
+        <labels>
+          <label mode="any">label.widget.shibboleth.groupName</label>
+        </labels>
+        <widgetModes>
+          <mode value="create">edit</mode>
+          <mode value="any">hidden</mode>
+        </widgetModes>
+        <fields>
+          <field>shibbGroup:groupName</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+      <widget name="expressionLanguage" type="text">
+        <translated>true</translated>
+        <labels>
+          <label mode="any">label.widget.shibboleth.expressionLanguage
+          </label>
+        </labels>
+        <fields>
+          <field>shibbGroup:expressionLanguage</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
+      </widget>
+    </layout>
+  </extension>
+</component>
