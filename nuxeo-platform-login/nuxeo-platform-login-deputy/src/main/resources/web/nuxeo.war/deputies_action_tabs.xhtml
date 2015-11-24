@@ -1,0 +1,19 @@
+<div class="tabsBar"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:t="http://myfaces.apache.org/tomahawk"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ul>
+    <li class="#{nxu:test(deputy_tab=='deputies', 'selected', '')}">
+    <h:commandLink action="view_deputies" immediate="true">
+       <h:outputText value="#{messages['label.deputies.viewMyDeputies']}" />
+    </h:commandLink>
+    </li>
+    <li class="#{nxu:test(deputy_tab=='logins', 'selected', '')}">
+    <h:commandLink action="view_deputies_logins" immediate="true">
+       <h:outputText value="#{messages['label.deputies.viewAlternateLogins']}" />
+    </h:commandLink>
+    </li>
+  </ul>
+</div>

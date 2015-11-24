@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="com.mysite.nuxeo.auth">
+   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+   <require>org.nuxeo.ecm.platform.login.ClearTrustSSO</require>
+
+   <!--  Configuration of the ClearTrust SSO authentication plugin -->
+   <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+      <authenticationPlugin
+              name="ClearTrust_AUTH"
+              enabled="true"
+              class="org.nuxeo.ecm.platform.ui.web.auth.cleartrust.ClearTrustAuthenticator">
+       <loginModulePlugin>Trusting_LM</loginModulePlugin>
+       <parameters>
+         <parameter name="cookieDomain"></parameter>
+         <parameter name="cleartrustLoginUrl">http://mysite.net/cleartrust/ct_logon_en.html</parameter>
+         <parameter name="cleartrustLogoutUrl">http://mysite.net/cleartrust/ct_logout_en.html</parameter>
+       </parameters>
+      </authenticationPlugin>
+  </extension>
+
+   <!-- Including the ClearTrust SSO authentication plugin into the authentication chain -->
+    <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>ClearTrust_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+</component>

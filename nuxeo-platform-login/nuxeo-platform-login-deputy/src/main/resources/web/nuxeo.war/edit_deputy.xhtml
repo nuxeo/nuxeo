@@ -1,0 +1,104 @@
+<ui:composition template="/pages/workspace_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+    <h:form>
+      <div>
+        <ui:decorate template="/deputies_action_tabs.xhtml">
+          <ui:param name="deputy_tab" value="deputies" />
+        </ui:decorate>
+
+        <div style="clear: both"></div>
+      </div>
+      <div class="tabsContent">
+        <ui:include src="/incl/message_banner.xhtml" />
+
+        <div style="clear: both" />
+
+
+        <table class="dataTableNoBorder">
+          <tbody>
+            <a4j:region>
+              <tr>
+                <td class="labelColumn"><h:outputText
+                    value="#{messages['label.review.select.reviewers']}" /></td>
+                <td class="fieldColumn">
+                  <div>
+                    <ui:decorate template="/incl/select_users_search.xhtml">
+                      <ui:param name="searchType" value="USER_TYPE" />
+                    </ui:decorate>
+                  </div>
+                  <table class="dataTable">
+                    <tr>
+                      <td><ui:include
+                          src="/incl/select_deputy_results.xhtml" /></td>
+                      <td>
+                        <div id="new_deputy">
+                          <h:outputText value="#{messages['label.deputies.deputy']}" />
+                          <br />
+                          <h:inputText value="#{editableDeputy.deputies.deputy}" />
+                        </div></td>
+                    </tr>
+                  </table></td>
+              </tr>
+            </a4j:region>
+          </tbody>
+        </table>
+
+
+        <h:panelGroup id="deputy_edit_div">
+          <table>
+            <tr>
+              <td><h:outputText
+                  value="#{messages['label.deputies.deputy']}" /></td>
+              <td><h:inputText value="#{editableDeputy.deputies.deputy}" />
+              </td>
+            </tr>
+            <tr>
+              <td><h:outputText
+                  value="#{messages['label.deputies.use.validatiDate']}" /></td>
+              <td><h:selectBooleanCheckbox
+                  value="#{editableDeputy.deputies.validateDate}"
+                  immediate="true">
+                  <a4j:ajax event="click" render="deputy_edit_div" />
+                </h:selectBooleanCheckbox>
+              </td>
+            </tr>
+            <h:panelGroup rendered="#{editableDeputy.deputies.validateDate}">
+              <tr>
+                <tr>
+                  <td><h:outputText
+                      value="#{messages['label.deputies.startDate']}" /></td>
+                  <td><rich:calendar id="validity_start" popup="true"
+                      value="#{editableDeputy.deputy.validityStartDate}"
+                      showApplyButton="false" defautTime="00:00" /></td>
+                </tr>
+                <tr>
+                  <td><h:outputText
+                      value="#{messages['label.deputies.endDate']}" /></td>
+                  <td><rich:calendar id="validity_end" popup="true"
+                      value="#{editableDeputy.deputy.validityEndDate}"
+                      showApplyButton="false" defaultTime="23:59" /></td>
+                </tr>
+            </h:panelGroup>
+          </table>
+        </h:panelGroup>
+      </div>
+      <h:commandButton value="#{messages['label.deputy.save']}"
+        action="#{deputyActions.saveDeputy()}" styleClass="button" />
+    </h:form>
+
+  </ui:define>
+
+</ui:composition>

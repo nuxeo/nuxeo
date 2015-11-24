@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.login.Kerberos">
+  <documentation>
+    This Authentication Plugin uses Kerberos to assert user identity.
+  </documentation>
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="KRB5_AUTH" enabled="true"
+      class="org.nuxeo.ecm.platform.ui.web.auth.krb5.Krb5Authenticator">
+      <needStartingURLSaving>true</needStartingURLSaving>
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+      <parameters>
+        <parameter name="servicePrincipalName">HTTP/nuxeo@NUXEO.ORG</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+</component>
