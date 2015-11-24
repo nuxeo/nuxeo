@@ -50,6 +50,7 @@
     <module>nuxeo-search-ui</module>
     <module>nuxeo-elasticsearch</module>
     <module>nuxeo-platform-rendition</module>
+    <module>nuxeo-user-center</module>
   </modules>
 
   <dependencies>
