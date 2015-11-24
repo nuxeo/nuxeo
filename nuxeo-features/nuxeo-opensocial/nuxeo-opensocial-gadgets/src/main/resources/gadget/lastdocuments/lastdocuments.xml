@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Last Modified Documents"
+    description="Lists the last modified documents"
+    author="tdeprat" author_email="tdelprat@nuxeo.com"
+    thumbnail="${clientSideBaseUrl}site/gadgets/lastdocuments/last_document.png"
+    screenshot="${clientSideBaseUrl}site/gadgets/lastdocuments/screenshot.png">
+    <Optional feature="nuxeo" />
+    <Require feature="setprefs"/>
+    <#include "dynamic-translations.ftl"/>
+    <Require feature="dynamic-height" />
+    <#include "default-oauth-prefs.ftl"/>
+  </ModulePrefs>
+  <UserPref name="documentLinkBuilder" datatype="hidden" default_value="" />
+  <#include "context-prefs.ftl"/>
+  <Content type="html">
+
+<![CDATA[
+<html>
+  <head>
+
+  <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css,gadget-documentlists.css,gadget-lastdocuments.css?path=${contextPath}&basepath=${contextPath}"/>
+
+  <!-- insert JS Context -->
+  ${jsContext}
+  <script src="${clientSideBaseUrl}nxthemes-lib/gadget-default-automation-request.js,gadget-default-documentlist-display.js,gadget-context-management.js,gadget-lastdocuments.js"></script>
+
+  </head>
+   <body>
+   <div class="tools">
+     <#include "context-chooser-ui.ftl"/>
+   </div>
+   <div id="content">
+     <#include "default-documentlist-layout.ftl"/>
+     <#include "default-request-controls.ftl"/>
+   </div>
+  </body>
+</html>
+]]>
+  </Content>
+</Module>

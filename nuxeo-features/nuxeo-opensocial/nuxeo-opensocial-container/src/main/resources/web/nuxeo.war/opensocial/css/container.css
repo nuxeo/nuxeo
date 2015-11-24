@@ -1,0 +1,285 @@
+/* Global Rules */
+iframe.gwt-Frame { border-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto }
+
+/* Actions on top right to edit layout, add gadgets */
+.opensocial_buttons { float:right }
+.opensocial_buttons ul li { display: inline;
+  list-style-type: none }
+
+/* Gadget Containers */
+#gwtContainer { clear: both;
+	position: relative }
+
+#gadgetContainer { width: 300px;
+	min-height: 20em;
+	padding: 2em }
+
+/* Gadget Container panel layout */
+.yui-unit { min-height: 1px }
+.yui-unit.highLight { background-color: #DDD;
+  min-height: 100px }
+#yui-main>div>div {	padding-top: 5px }
+
+.dragdrop-flow-panel-positioner {
+	display: block;
+	height: 50px;
+	color: black;
+	text-align: center;
+	margin-bottom: 10px;
+	background-color: #fff;
+	background-repeat: repeat;
+	border: 4px dashed #badb46;
+	-moz-box-shadow: 0 2px 8px #444 inset;
+	-moz-border-radius: 10px 10px 10px 10px;
+	opacity: .7;
+	margin-bottom: .5em;
+	margin-top: .5em }
+
+/*-- Gadgets --*/
+.widget { -moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+	border: 1px solid #ccc;
+	background-color: #fff;
+	margin:0 0 1.5em !important }
+
+/* Widgets Header */
+.header { color:#666;
+	text-shadow: 1px 1px 3px #fff;
+	border-bottom: 1px solid #ccc;
+  background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0, rgb(231,231,231)),
+    color-stop(.66, rgb(255,255,255)));
+  background-image: -moz-linear-gradient(
+    center bottom,
+    rgb(231,231,231) 0%,
+    rgb(255,255,255) 66%);
+  background-color: #e7e7e7;
+    /* For Internet Explorer 5.5 - 7 */
+  filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr='#ffffff', EndColorStr='#e8e8e8');
+    /* For Internet Explorer 8 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#ffffff, endColorstr=#e8e8e8)";}
+
+.header .title { font-weight: bold;
+  font-size: 102%;
+  padding:.35em .5em .35em 1em }
+
+/* Settings buttons in each gadget header */
+.header .facet {
+	background: url("../opensocial/images/tool-sprites.png") no-repeat scroll 0 0 transparent;
+	cursor: pointer;
+	float: right;
+	height: 16px;
+	margin-top: 4px;
+	margin-right: 3px;
+	overflow: hidden;
+	width: 16px;
+	display: block;
+	width: 16px;
+	overflow: hidden }
+
+.facet.facet-close { background-position: 0 0 }
+.facet.facet-close.over { background-position: -16px 0 }
+
+.facet.facet-maximize { background-position: 0 -16px }
+.facet.facet-maximize.over { background-position: -16px -16px }
+.facet.facet-minimize { background-position: 0 -32px }
+.facet.facet-minimize.over { background-position: -16px -32px }
+
+.facet.facet-configure { background-position: 0 -48px }
+.facet.facet-configure.over { background-position: -16px -48px }
+
+.facet.facet-collapse { background-position: 0 -64px }
+.facet.facet-collapse.over { background-position: -16px -64px }
+.facet.facet-collapsed { background-position: 0 -80px }
+.facet.facet-collapsed.over { background-position: -16px -80px }
+
+/* Message widget */
+.messageWidget { position: fixed }
+.messenger { margin: 0;
+	padding: 3px 10px 5px 12px !important;
+	font:normal 13px "Lucida Grande", Helvetica, sans-serif;
+	color: #000;
+	float: right;
+	border: 1px solid #00509b;
+	background-color: #e6f9ff !important;
+	-moz-border-radius:0px 0 0 8px;
+	-webkit-border-radius:0px 0 0 8px;
+	border-radius:0px 0 0 8px;
+	/* IE 8 */
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  /* all browsers */
+  opacity: .8 }
+
+/* Dialog box open when you redesign the layout or Change the widget settings */
+.gwt-DialogBox .dialogContent {
+  padding: 1em }
+
+div.builder { background-color: white;
+  -moz-box-shadow: 1px -1px 6px #999;
+  box-shadow: 1px 1px 7px #333;
+  -webkit-box-shadow: .1em .1em .8em #363636;
+  border:1px solid #666;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px }
+
+.builder td.dialogMiddleRight, .builder td.dialogTopLeft,
+.builder div.Caption, .builder td.dialogMiddleLeft,
+.builder td.dialogTopRight, .builder td.dialogBottomLeftInner,
+.builder td.dialogBottomCenter, .builder td.dialogBottomRight,
+.builder td.dialogBottomLeft {
+  background: none }
+
+.builder div.Caption { border:none;
+  cursor:move;
+  padding:.5em }
+
+.builder div.Caption, .builder td.dialogTopLeft, .builder td.dialogTopRight {
+    background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0, rgb(231,231,231)),
+    color-stop(.66, rgb(255,255,255)));
+  background-image: -moz-linear-gradient(
+    center bottom,
+    rgb(231,231,231) 0%,
+    rgb(255,255,255) 66%);
+  border-bottom:1px solid #666 }
+
+.builder td.dialogMiddleCenter { opacity: .90 }
+
+.builder fieldset { border: 1px dotted black;
+	margin: .5em 0;
+	padding: .5em }
+
+.builder-source { font-family: Courier New }
+
+.preferences-label {
+	font-weight: bold;
+	padding-left: 10px }
+
+.preferences-title { width: 273px;
+	height: 18px;
+	border: 1px solid #b5b8c8;
+	padding: 1px 3px;
+	font: 12px tahoma, arial, helvetica, sans-serif;
+	margin: 0 }
+
+.preferences-mainpanel { margin: 10px }
+
+.preferences-save,.preferences-cancel { width: 100px }
+.preferences-cancel { float: right }
+.preferences-save { float: left }
+
+.preferences .color-on,.preferences .color-off { margin: 4px;
+	cursor: pointer;
+	height: 18px;
+	width: 18px }
+.preferences .color-on { border: 2px solid #777; border-radius: 3px }
+.preferences .color-off { border: 2px solid #eee }
+
+/* Used in FolderPickerWidget.java */
+.folder-container { overflow: auto }
+.folder { padding: 10px 15px 0;
+	cursor: pointer;
+	margin: 10px 10px 0 10px;
+	border: 1px solid transparent;
+	float: left }
+
+.folder.highLight { border-color: #aaa }
+.folder.selected { border-color: #fff;
+  background-color: #aaa }
+
+.folder-preview .name { margin: 10px }
+.folder-preview { text-align: center }
+
+.folder .name,.folder-preview .name,.folder-preview .creator { color: #fff;
+	font-size: 11px;
+	font-weight: bold;
+	text-align: center;
+	cursor: pointer;
+	text-align: center;
+	width: 76px }
+
+.folderChooser td.dialogMiddleCenter { background-color: grey;
+	opacity: .97 }
+
+/* Color settings in widgets */
+.border-color-FF0000,.border-color-FF0066,
+.border-color-FF6600,.border-color-99CC00,
+.border-color-66CCFF,.border-color-999999,
+.border-color-CCCCCC,.border-color-ffffff,
+.border-color-none { border-width: 1px;
+	border-style: solid }
+
+.border-color-FF0000 { border-color: #f00 }
+.border-color-FF0066 { border-color: #f06 }
+.border-color-FF6600 { border-color: #f60 }
+.border-color-99CC00 { border-color: #9c0 }
+.border-color-66CCFF { border-color: #6cf }
+.border-color-999999 { border-color: #999 }
+.border-color-CCCCCC { border-color: #ccc }
+.border-color-FFFFFF { border-color: #fff }
+
+.title-color-FF0000 { color: #f00 }
+.title-color-FF0066 { color: #f06 }
+.title-color-FF6600 { color: #f60 }
+.title-color-99CC00 { color: #9c0 }
+.title-color-66CCFF { color: #6cf }
+.title-color-999999 { color: #999 }
+.title-color-CCCCCC { color: #ccc }
+.title-color-FFFFFF { color: #fff }
+
+/* Layout Manager */
+#manager { background-color: #ccc;
+	-moz-box-shadow: inset 0 2px 8px #444;
+	-webkit-box-shadow: inset 0 2px 8px #444;
+	padding: .5em .5em .5em .5em }
+
+#managerTabPanel { margin: .5em 0 0 0;
+	padding: 0 }
+
+#closeLayoutManager { text-align: right;
+	width: 100%;
+	margin-bottom: 1em }
+#closeLinkLayoutManager { background-repeat: no-repeat;
+	color: #000 }
+
+ul#managerTabs { margin: -2.2em 0 0 0;
+	padding: 0 0 0 0;
+	list-style: none;
+	list-style-type: none;
+	clear: both }
+
+#managerTabs li { color: #ccc;
+	background-color: #555;
+	float: left;
+	height: 1.5em;
+	cursor: pointer;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 7px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 7px;
+	padding: 0 1em 0 .5em;
+	margin: 0 0 0 .5em }
+
+#managerTabs li.selected { color: white;
+	background-color: #777;
+	height: 2em;
+	-moz-box-shadow: 2px -2px 2px #444;
+	-webkit-box-shadow: 1px -4px 4px #444 }
+
+.managerTab { color: white;
+	border: .1em solid #555;
+	background-color: #777;
+	margin-top: -.6em;
+	padding: .6em .5em .5em .5em;
+	-moz-box-shadow: 2px 2px 4px #777;
+	-webkit-box-shadow: 2px 2px 4px #777 }

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.spaces.core.spacemanager.test.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.spaces.core.spacemanager.service"
+    point="spaceProviders">
+    <spaceProvider name="homeSpace">
+      <class>org.nuxeo.ecm.spaces.core.SingleDocSpaceProvider</class>
+      <param key="path">/home</param>
+      <param key="title">Home</param>
+    </spaceProvider>
+
+    <spaceProvider name="home2">
+      <class>org.nuxeo.ecm.spaces.core.SingleDocSpaceProvider</class>
+      <param key="path">/home2</param>
+      <param key="title">Home2</param>
+    </spaceProvider>
+  </extension>
+
+</component>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="Video" category="tools"
+    render_inline="required" scrolling="false" directory_title="Video"
+    singleton="false" author="Guillaume Cusnieux" author_email="gcusnieux@leroymerlin.fr"
+    author_affiliation="Leroy Merlin" author_location="Lezennes, France">
+    <Require feature="opensocial-0.8" />
+    <Require feature="dynamic-height" />
+    <Require feature="setprefs" />
+    <Require feature="nuxeo" />
+    <Require feature="jquery" />
+    <Require feature="form" />
+    <#include "dynamic-translations.ftl"/>
+  </ModulePrefs>
+  <UserPref name="vidTitle" datatype="hidden"/>
+   <UserPref name="tmp" datatype="hidden"/>
+  <Content type="html">
+    <![CDATA[
+<html>
+  <head>
+  <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css?path=${contextPath}&basepath=${contextPath}"/>
+    <style type='text/css'>
+      /* A ${specDirectoryUrl} is added in each picture path to keep a relative url.
+      Without this, the browser is looking for a 127.0.0.1 url instead of localhost,
+      and pictures paths are broken unless you refresh the page. */
+      *{
+       font-family:Trebuchet, Arial,Verdana;
+       font-size:11px;
+      }
+
+      #cancelVideo img{
+       border:0;
+       padding:5px 5px 0 0;
+     }
+
+      #baliseVideo{
+       border:1px solid #eee;
+       width:98%;
+       height:70px;
+       display:block;
+      }
+
+      #title-field{
+       width:98%;
+       border:1px solid #eee;
+      }
+
+      #container{
+       padding:0 0 5px 0;
+      }
+
+      #hideContainer{
+         background:#f7f7f7;
+        text-align:right;
+      }
+
+      #addVideo,#showVideo{
+       display:none;
+      }
+
+      #title{
+        text-align:center;
+        font-size:14px;
+        color:#13506B;
+        font-weight:bold;
+      }
+
+      #formVideo{
+        background:#f7f7f7;
+        color:#555;
+      }
+
+      label{
+       padding-left:10px;
+      }
+
+      #hide img{
+       border:0;
+       padding:5px 5px 0 0;
+     }
+
+      #show a{
+    text-decoration:none;
+    padding-left:20px;
+    background:url(${specDirectoryUrl}edit.png) no-repeat 0 0;
+    display:inline-block;
+    height:16px;
+  }
+
+  #show a:hover{
+    text-decoration:underline;
+  }
+
+  #show{
+   text-align:right;
+  }
+
+      #valid{
+        padding-left:14px;
+        background:url(${specDirectoryUrl}accept.png) no-repeat 0 0;
+        color:#555;
+        display:block;
+        float:right;
+        font-weight:bold;
+        padding:0px 0px 2px 18px;
+        text-decoration:none;
+      }
+
+    </style>
+
+    <script type="text/javascript" language="javascript" src="video.js"></script>
+    <script type="text/javascript">
+      var prefs = new _IG_Prefs(__MODULE_ID__);
+      gadgets.util.registerOnLoadHandler( function() {
+         launchVideoWidget();
+      });
+    </script>
+  </head>
+  <body>
+    <div id="content">
+      <div id="title"></div>
+      <div id="video"></div>
+
+      <div id="perm" style="display:none;">
+        <div id="form" style="display:none;margin:auto">
+          <form style="text-align:center;" method="post" id="formUpload" enctype="application/x-www-form-urlencoded" action="#">
+            <div id="hideContainer"><a href="#" id="hide" title="fermer"><img src="${specDirectoryUrl}x.png"></a></div>
+            <table style="width:100%" id="formVideo">
+              <tr>
+                <td style="width:30%">
+                  <label>Titre</label>
+                </td>
+                <td style="width:70%">
+                  <input type="text" name="title" id="title-field" value="">
+                </td>
+              </tr>
+              <tr>
+                <td style="width:30%">
+                  <label>Balise Video</label>
+                </td>
+                <td style="width:70%">
+                   <textarea id="baliseVideo" name="gadget:htmlContent"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <td style="width:30%"></td>
+                <td style="width:70%">
+                    <a href="#" id="valid" >Valider</a>
+                </td>
+              </tr>
+            </table>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="tools" id="show">
+      <div class="context-edit-button"><a href="#">__MSG_label.gadget.edit__</a></div>
+    </div>
+  </body>
+</html>
+    ]]>
+  </Content>
+</Module>

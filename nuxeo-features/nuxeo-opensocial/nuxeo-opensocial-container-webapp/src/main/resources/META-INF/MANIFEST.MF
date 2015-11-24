@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-opensocial-container-webapp
+Bundle-SymbolicName: org.nuxeo.ecm.opensocial.gwt.container.webapp;singleton:=true
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule

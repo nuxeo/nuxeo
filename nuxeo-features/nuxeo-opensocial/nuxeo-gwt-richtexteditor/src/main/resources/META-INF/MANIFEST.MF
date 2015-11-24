@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-gwt-richtexteditor
+Bundle-SymbolicName: org.nuxeo.ecm.opensocial.gwt.richtexteditor;singleton:=true
+

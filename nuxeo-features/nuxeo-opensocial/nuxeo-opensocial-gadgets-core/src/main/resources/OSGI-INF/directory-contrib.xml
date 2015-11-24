@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<component name="xml-opensocialDashboard.directoryContrib">
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
+    point="directories">
+
+   <!-- has to be matched to the java version of the name in GadgetServiceImpl -->
+    <directory name="externalGadgets">
+      <schema>externalgadget</schema>
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <cacheTimeout>3600</cacheTimeout>
+      <cacheMaxSize>1000</cacheMaxSize>
+      <table>externalGadgets</table>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
+  </extension>
+</component>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+  <ModulePrefs title="My Workspaces"
+    description="List users workspaces for a given scope"
+    author="tdeprat" author_email="tdelprat@nuxeo.com"
+    thumbnail="${clientSideBaseUrl}site/gadgets/userworkspaces/user_workspace.png"
+    screenshot="${clientSideBaseUrl}site/gadgets/userworkspaces/screenshot.png">
+    <Optional feature="nuxeo" />
+    <Require feature="setprefs"/>
+    <#include "dynamic-translations.ftl"/>
+    <Require feature="dynamic-height" />
+    <#include "default-oauth-prefs.ftl"/>
+  </ModulePrefs>
+  <#include "context-prefs.ftl"/>
+  <UserPref name="documentLinkBuilder" datatype="hidden" default_value="" />
+  <Content type="html">
+
+<![CDATA[
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="${clientSideBaseUrl}nxthemes-lib/gadget-common.css,gadget-documentlists.css,gadget-userworkspaces.css?path=${contextPath}&basepath=${contextPath}"/>
+
+    <!-- insert JS Context -->
+    ${jsContext}
+    <script src="${clientSideBaseUrl}nxthemes-lib/gadget-default-automation-request.js,gadget-default-documentlist-display.js,gadget-context-management.js,gadget-userworkspaces.js"></script>
+
+  </head>
+   <body>
+   <div class="tools">
+     <#include "context-chooser-ui.ftl"/>
+   </div>
+   <div id="content">
+     <#include "default-documentlist-layout.ftl"/>
+     <#include "default-request-controls.ftl"/>
+   </div>
+  </body>
+</html>
+]]>
+  </Content>
+</Module>
