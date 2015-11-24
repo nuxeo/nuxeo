@@ -1,0 +1,57 @@
+<component name="MyAPP.Cas2SSO">
+   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+   <require>org.nuxeo.ecm.platform.login.Cas2SSO</require>
+
+   <!--  configure you CAS server parameters -->
+   <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="authenticators">
+      <authenticationPlugin
+              name="CAS2_AUTH">
+       <needStartingURLSaving>true</needStartingURLSaving>
+       <loginModulePlugin>Trusting_LM</loginModulePlugin>
+       <parameters>
+         <parameter name="ticketKey">ticket</parameter>
+         <parameter name="appURL">http://127.0.0.1:8080/nuxeo/nxstartup.faces</parameter>
+         <parameter name="serviceLoginURL">http://127.0.0.1:8080/cas/login</parameter>
+         <parameter name="serviceValidateURL">http://127.0.0.1:8080/cas/serviceValidate</parameter>
+         <parameter name="serviceKey">service</parameter>
+         <parameter name="logoutURL">http://127.0.0.1:8080/cas/logout</parameter>
+       </parameters>
+      </authenticationPlugin>
+
+    <authenticationPlugin name="ANONYMOUS_AUTH_FOR_CAS2" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.cas2.AnonymousAuthenticatorForCAS2">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+    </authenticationPlugin>
+  </extension>
+
+   <!-- Include CAS2 into authentication chain -->
+    <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>CAS2_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH_FOR_CAS2</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+
+  <extension
+    target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+    <userManager>
+      <users>
+        <anonymousUser id="Anonymous">
+          <property name="firstName">Anonymous</property>
+          <property name="lastName">User</property>
+        </anonymousUser>
+      </users>
+    </userManager>
+  </extension>
+  
+
+  
+</component>
