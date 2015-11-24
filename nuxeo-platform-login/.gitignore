@@ -1,0 +1,12 @@
+syntax:glob
+.classpath
+.metadata
+.project
+.settings
+bin
+target
+*~
+*.orig
+*.ipr
+*.iml
+*.iws
