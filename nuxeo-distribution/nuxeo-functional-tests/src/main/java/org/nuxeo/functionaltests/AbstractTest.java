@@ -25,6 +25,7 @@ package org.nuxeo.functionaltests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -382,24 +383,7 @@ public abstract class AbstractTest {
     @After
     public void checkJavascriptError() {
         if (driver != null) {
-            List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver);
-            if (jsErrors != null && !jsErrors.isEmpty()) {
-                StringBuilder msg = new StringBuilder();
-                msg.append(jsErrors.size()).append(" Javascript error(s) detected: ");
-                msg.append("[");
-                int i = 0;
-                for (JavaScriptError jsError : jsErrors) {
-                    if (i != 0) {
-                        msg.append(", ");
-                    }
-                    i++;
-                    msg.append("\"").append(jsError.getErrorMessage()).append("\"");
-                    msg.append(" at ").append(jsError.getSourceName());
-                    msg.append(" line ").append(jsError.getLineNumber());
-                }
-                msg.append("]");
-                log.error(msg.toString());
-            }
+            new JavaScriptErrorCollector(driver).checkForErrors();
         }
     }
 
@@ -560,31 +544,7 @@ public abstract class AbstractTest {
 
     public static <T> T get(String url, Class<T> pageClassToProxy) {
         if (driver != null) {
-            List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver);
-            if (jsErrors != null && !jsErrors.isEmpty()) {
-                StringBuilder msg = new StringBuilder();
-                msg.append(jsErrors.size()).append(" Javascript error(s) detected: ");
-                msg.append("[");
-                int i = 0;
-                for (JavaScriptError jsError : jsErrors) {
-                    if (i != 0) {
-                        msg.append(", ");
-                    }
-                    i++;
-                    msg.append("\"").append(jsError.getErrorMessage()).append("\"");
-                    msg.append(" at ").append(jsError.getSourceName());
-                    msg.append(" line ").append(jsError.getLineNumber());
-                }
-                msg.append("]");
-                /*if (driver != null) {
-                    ScreenshotTaker taker = new ScreenshotTaker();
-                    taker.takeScreenshot(driver, "NXP-17647-");
-                    taker.dumpPageSource(driver, "NXP-17647-");
-                    driver.get(NUXEO_URL + "/wro/api/v1/resource/bundle/nuxeo_includes.js");
-                    taker.dumpPageSource(driver, "NXP-17647-includes-js");
-                }*/
-                log.error(msg.toString());
-            }
+            new JavaScriptErrorCollector(driver).checkForErrors();
         }
         driver.get(url);
         return asPage(pageClassToProxy);
