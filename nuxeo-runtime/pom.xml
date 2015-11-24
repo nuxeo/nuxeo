@@ -5,6 +5,7 @@
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-ecm</artifactId>
     <version>5.8.0-HF37-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.runtime</groupId>

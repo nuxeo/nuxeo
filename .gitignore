@@ -31,4 +31,6 @@ dependency-tree.log
 target
 marketplace
 nuxeo-webengine/nuxeo-webengine-gwt/war/
-
+nuxeo-opensocial-features/maven-eclipse.xml
+nuxeo-opensocial-container/war/
+nuxeo-opensocial-container/.gwt

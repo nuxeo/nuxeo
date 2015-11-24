@@ -5,6 +5,7 @@
     <groupId>org.nuxeo.runtime</groupId>
     <artifactId>nuxeo-runtime-parent</artifactId>
     <version>5.8.0-HF37-SNAPSHOT</version>
+    <relativePath>../nuxeo-runtime/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.core</groupId>
