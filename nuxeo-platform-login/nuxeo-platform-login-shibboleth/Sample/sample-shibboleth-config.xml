@@ -1,0 +1,47 @@
+<component name="sample.shibboleth.config">
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+  <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>SHIB_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
+    point="config">
+    <config>
+      <uidHeaders>
+        <default>uid</default>
+      </uidHeaders>
+
+      <loginURL>https://host/Shibboleth.sso/WAYF</loginURL>
+      <logoutURL>https://host/Shibboleth.sso/Logout</logoutURL>
+
+      <fieldMapping header="uid">username</fieldMapping>
+      <fieldMapping header="mail">email</fieldMapping>
+    </config>
+  </extension>
+
+  <!-- Add an Anonymous user -->
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+    <userManager>
+      <users>
+        <anonymousUser id="Guest">
+          <property name="firstName">Guest</property>
+          <property name="lastName">User</property>
+        </anonymousUser>
+      </users>
+    </userManager>
+  </extension>
+
+</component>
