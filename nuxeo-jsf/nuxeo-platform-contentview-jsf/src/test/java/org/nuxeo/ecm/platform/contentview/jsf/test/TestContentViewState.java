@@ -532,7 +532,12 @@ public class TestContentViewState extends SQLRepositoryTestCase {
         JSONAssert.assertEquals(expectedJson, json, true);
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
-        assertEquals(ENC_CURRENT_DOC_CHILDREN_WITH_SEARCH_DOC, encodedJson);
+        // NXP-18169: encoded result is not the same using Java 7 and Java 8, hence the two following asserts
+        // assertEquals(ENC_CURRENT_DOC_CHILDREN_WITH_SEARCH_DOC, encodedJson);
+        JSONAssert.assertEquals(expectedJson,
+                JSONContentViewState.toJSON(JSONContentViewState.fromJSON(encodedJson, true), false), true);
+        JSONAssert.assertEquals(expectedJson, JSONContentViewState.toJSON(
+                JSONContentViewState.fromJSON(ENC_CURRENT_DOC_CHILDREN_WITH_SEARCH_DOC, true), false), true);
     }
 
     @Test
