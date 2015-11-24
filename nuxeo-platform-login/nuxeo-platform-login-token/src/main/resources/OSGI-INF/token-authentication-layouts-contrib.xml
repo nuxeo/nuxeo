@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.login.token.layouts">
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="layouts">
+
+    <layout name="authTokenBindings">
+      <templates>
+        <template mode="any">
+          /layouts/auth_token_bindings_layout_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>authToken</widget>
+        </row>
+        <row>
+          <widget>authTokenApplicationName</widget>
+        </row>
+        <row>
+          <widget>authTokenDeviceId</widget>
+        </row>
+        <row>
+          <widget>authTokenDeviceDescription</widget>
+        </row>
+        <row>
+          <widget>authTokenPermission</widget>
+        </row>
+        <row>
+          <widget>authTokenCreationDate</widget>
+        </row>
+      </rows>
+    </layout>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+    point="widgets">
+
+    <widget name="authToken" type="text">
+      <labels>
+        <label mode="any">label.tokenauth.token</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>authtoken:token</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="authTokenApplicationName" type="text">
+      <labels>
+        <label mode="any">label.tokenauth.applicationName</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>authtoken:applicationName</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="authTokenDeviceId" type="text">
+      <labels>
+        <label mode="any">label.tokenauth.deviceId</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>authtoken:deviceId</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="authTokenDeviceDescription" type="text">
+      <labels>
+        <label mode="any">label.tokenauth.deviceDescription</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>authtoken:deviceDescription</field>
+      </fields>
+    </widget>
+
+    <widget name="authTokenPermission" type="text">
+      <labels>
+        <label mode="any">label.tokenauth.permission</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>authtoken:permission</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">view</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="authTokenCreationDate" type="datetime">
+      <labels>
+        <label mode="any">label.tokenauth.creationDate</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>authtoken:creationDate</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">view</mode>
+      </widgetModes>
+      <properties widgetMode="any">
+        <property name="pattern">#{nxu:basicDateAndTimeFormatter()}
+        </property>
+      </properties>
+    </widget>
+
+  </extension>
+
+</component>

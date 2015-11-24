@@ -1,0 +1,67 @@
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+
+  <script type="text/javascript">
+    function confirmRevokeTokenBinding() {
+      return confirm("#{messages['label.tokenauth.revoke.confirm']}");
+    }
+    function confirmRevokeAllTokenBindings() {
+        return confirm("#{messages['label.tokenauth.revokeAll.confirm']}");
+    }
+  </script>
+
+  <a4j:outputPanel id="authTokenBindingsPanel" layout="block">
+    <nxu:set var="currentUserAuthTokenBindings" cache="true" value="#{tokenAuthenticationActions.currentUserAuthTokenBindings}">
+
+    <h:form id="currentUserAuthTokenBindings">
+
+      <c:if test="#{!empty currentUserAuthTokenBindings}">
+        <table class="dataOutput">
+          <thead>
+            <nxl:layout name="authTokenBindings" mode="header" value="" />
+          </thead>
+          <tbody>
+            <c:forEach var="authTokenBinding" items="#{currentUserAuthTokenBindings}"
+              varStatus="status">
+              <c:if test="#{status.index % 2 == 0}">
+                <c:set var="authTokenBindingClass" value="dataRowOdd" />
+              </c:if>
+              <c:if test="#{status.index % 2 != 0}">
+                <c:set var="authTokenBindingClass" value="dataRowEven" />
+              </c:if>
+              <nxl:layout name="authTokenBindings" mode="list" value="#{authTokenBinding}" />
+            </c:forEach>
+          </tbody>
+        </table>
+      </c:if>
+      <c:if test="#{empty currentUserAuthTokenBindings}">
+        <div>
+          <h:outputText value="#{messages['label.tokenauth.noTokens']}" class="emptyResult"/>
+        </div>
+      </c:if>
+      <a4j:commandButton value="#{messages['label.tokenauth.refresh']}"
+        id="authTokenBindingsRefreshButton"
+        styleClass="button"
+        action="#{tokenAuthenticationActions.refreshAuthTokenBindings}"
+        immediate="true"
+        render="authTokenBindingsPanel" />
+      <c:if test="#{!empty currentUserAuthTokenBindings}">
+      <a4j:commandButton value="#{messages['label.tokenauth.revokeAll']}"
+        id="#{layout.id}_deleteAllButton"
+        styleClass="button"
+        action="#{tokenAuthenticationActions.deleteAllTokenBindings()}"
+        onclick="if (!confirmRevokeAllTokenBindings()) { return false; }"
+        immediate="true"
+        render="authTokenBindingsPanel" />
+      </c:if>
+    </h:form>
+
+    </nxu:set>
+  </a4j:outputPanel>
+
+</div>
