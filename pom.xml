@@ -91,12 +91,7 @@
     <module>nuxeo-platform-user-registration</module>
     <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
-<<<<<<< HEAD
-    <module>nuxeo-opensocial</module>
-    <module>nuxeo-user-center</module>
-=======
     <module>nuxeo-platform-login</module>
->>>>>>> a1fd568... NXP-18441: move nuxeo-user-center to nuxeo repository
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-apidoc-server</module>
     <module>nuxeo-birt</module>
