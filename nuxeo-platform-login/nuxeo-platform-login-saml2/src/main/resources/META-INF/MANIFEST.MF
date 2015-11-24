@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo SAML v2
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.saml2;singleton:=true
+Require-Bundle: org.nuxeo.ecm.platform.login,
+ org.nuxeo.ecm.platform.web.common
+Nuxeo-Component: OSGI-INF/key-manager-service.xml,
+ OSGI-INF/onelogin-saml-config.xml
