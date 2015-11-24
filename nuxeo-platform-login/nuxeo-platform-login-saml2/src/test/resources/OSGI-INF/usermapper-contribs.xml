@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.usermapper.testContribs">
+
+  <extension target="org.nuxeo.usermapper.service.UserMapperComponent"
+    point="mapper">
+
+    <mapper name="saml" type="js">
+      <mapperScript>
+          searchAttributes.put("username", userObject.getNameID().getValue());
+          userAttributes.put("email", userObject.getNameID().getValue());
+      </mapperScript>
+    </mapper>
+
+  </extension>
+
+</component>

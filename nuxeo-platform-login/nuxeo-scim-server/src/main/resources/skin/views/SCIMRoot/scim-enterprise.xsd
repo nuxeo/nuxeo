@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:tns="urn:scim:schemas:extension:enterprise:1.0"
+           targetNamespace="urn:scim:schemas:extension:enterprise:1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+
+  <xs:element name="employeeNumber" type="xs:string"/>
+  <xs:element name="costCenter" type="xs:string"/>
+  <xs:element name="organization" type="xs:string"/>
+  <xs:element name="division" type="xs:string"/>
+  <xs:element name="department" type="xs:string"/>
+  <xs:element name="manager" type="tns:manager"/>
+
+  <xs:complexType name="manager">
+    <xs:sequence>
+      <xs:element name="managerId" type="xs:string" minOccurs="0"/>
+      <xs:element name="displayName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

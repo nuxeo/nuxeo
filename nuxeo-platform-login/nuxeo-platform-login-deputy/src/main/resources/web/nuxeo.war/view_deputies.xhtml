@@ -1,0 +1,156 @@
+<ui:composition template="/pages/workspace_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:rich="http://richfaces.org/rich">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+    <h:form>
+
+      <h:panelGroup rendered="#{deputyActions.mandated == true}">
+        <h:commandLink
+          value="#{messages['action.deputies.loginAsOriginal']}"
+          action="#{deputyActions.loginAsOriginal}" />
+      </h:panelGroup>
+
+      <h:panelGroup rendered="#{deputyActions.mandated == false}">
+        <ui:decorate template="/deputies_action_tabs.xhtml">
+          <ui:param name="deputy_tab" value="deputies" />
+        </ui:decorate>
+
+        <div style="clear: both"></div>
+
+        <div class="tabsContent">
+          <ui:include src="/incl/message_banner.xhtml" />
+
+          <div style="clear: both" />
+
+
+          <h:outputText value="#{messages['label.deputy.empty']}"
+            class="clipboardEmptyMessage" rendered="#{userDeputies==null}" />
+          <br />
+
+          <h:dataTable var="deputy" value="#{userDeputies}"
+            styleClass="dataTableLine">
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="#{messages['label.deputies.user']}" />
+              </f:facet>
+              <h:outputText value="#{deputy.deputies.deputy}" />
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText
+                  value="#{messages['label.deputies.use.validatiDate']}" />
+              </f:facet>
+              <h:panelGroup rendered="#{deputy.deputies.validateDate}">
+                <h:outputText value="#{deputy.deputies.validityStartDate}">
+                  <f:convertDateTime pattern="dd/MM/yyyy" />
+                </h:outputText>
+              -
+              <h:outputText value="#{deputy.deputies.validityEndDate}">
+                  <f:convertDateTime pattern="dd/MM/yyyy" />
+                </h:outputText>
+              </h:panelGroup>
+            </h:column>
+            <h:column>
+              <f:facet name="header">
+                <h:outputText value="#{messages['label.deputies.actions']}" />
+              </f:facet>
+              <h:commandLink value="#{messages['label.deputies.edit']}"
+                action="#{deputyActions.editDeputy(deputy.deputies.deputy)}" />
+              <br />
+              <h:commandLink value="#{messages['label.deputies.delete']}"
+                action="#{deputyActions.deleteDeputy(deputy.deputies.deputy)}" />
+            </h:column>
+          </h:dataTable>
+          <h:commandButton value="#{messages['label.deputies.add']}"
+            action="#{deputyActions.createDeputy()}" styleClass="button"
+            rendered="#{editableDeputy==null}" />
+          <h:messages />
+
+          <h:panelGroup id="editDeputy" rendered="#{editableDeputy!=null}">
+
+            <h:panelGroup id="deputy_search"
+              rendered="#{editableDeputy.deputies.deputy==null}">
+              <table class="dataTableNoBorder">
+                <tbody>
+                  <a4j:region>
+                    <tr>
+                      <td class="labelColumn"><h:outputText
+                          value="#{messages['label.deputy.search.user']}" />
+                      </td>
+                      <td class="fieldColumn">
+                        <div>
+                          <ui:decorate template="/incl/select_users_search.xhtml">
+                            <ui:param name="searchType" value="USER_TYPE" />
+                          </ui:decorate>
+                        </div>
+                        <table class="dataTable">
+                          <tr>
+                            <td><ui:include
+                                src="/incl/select_deputy_results.xhtml" />
+                            </td>
+                          </tr>
+                        </table></td>
+                    </tr>
+                  </a4j:region>
+                </tbody>
+              </table>
+            </h:panelGroup>
+
+            <h:panelGroup id="deputy_edit"
+              rendered="#{editableDeputy.deputies.deputy!=null}">
+              <table>
+                <tr>
+                  <td><h:outputText
+                      value="#{messages['label.deputies.deputy.login']}" /></td>
+                  <td><h:inputText value="#{editableDeputy.deputies.deputy}"
+                      readonly="true" />
+                  </td>
+                </tr>
+                <tr>
+                  <td><h:outputText
+                      value="#{messages['label.deputies.use.validatiDate']}" />
+                  </td>
+                  <td><h:selectBooleanCheckbox
+                      value="#{editableDeputy.deputies.validateDate}">
+                    </h:selectBooleanCheckbox></td>
+                </tr>
+
+                <tr>
+                  <td><h:outputText
+                      value="#{messages['label.deputies.startDate']}" /></td>
+                  <td><rich:calendar id="validity_start" popup="true"
+                      value="#{editableDeputy.deputy.validityStartDate}"
+                      showApplyButton="false" defautTime="00:00" /></td>
+                </tr>
+                <tr>
+                  <td><h:outputText
+                      value="#{messages['label.deputies.endDate']}" /></td>
+                  <td><rich:calendar id="validity_end" popup="true"
+                      value="#{editableDeputy.deputy.validityEndDate}"
+                      showApplyButton="false" defaultTime="23:59" /></td>
+                </tr>
+              </table>
+            </h:panelGroup>
+            <h:commandButton value="#{messages['label.deputy.save']}"
+              action="#{deputyActions.saveDeputy()}" styleClass="button" />
+            <h:commandButton value="#{messages['label.deputy.cancel']}"
+              action="#{deputyActions.cancelDeputy()}" styleClass="button" />
+
+          </h:panelGroup>
+        </div>
+      </h:panelGroup>
+    </h:form>
+  </ui:define>
+
+</ui:composition>

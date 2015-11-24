@@ -1,0 +1,84 @@
+<ui:composition template="/pages/workspace_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <ui:define name="page title">Nuxeo 5 EP</ui:define>
+
+  <ui:define name="body">
+    <h:form id="searchForm" onkeypress="trapEnter(event);">
+      <div>
+
+        <ui:decorate template="/deputies_action_tabs.xhtml">
+          <ui:param name="deputy_tab" value="logins" />
+        </ui:decorate>
+        <div style="clear: both"></div>
+      </div>
+      <div class="tabsContent">
+        <ui:include src="/incl/message_banner.xhtml" />
+
+        <div style="clear: both" />
+
+        <h:outputText value="#{messages['label.deputy.logins.empty']}"
+          class="clipboardEmptyMessage" rendered="#{alternateLogins==null}" />
+
+
+        <h:dataTable var="user" value="#{alternateLogins}"
+          styleClass="dataOutput">
+          <h:column>
+            <f:facet name="header">
+              <h:outputText value="#{messages['label.userManager.user']}" />
+            </f:facet>
+            <h:commandLink value="#{user.name}"
+              action="#{userManagerActions.viewUser}" />
+          </h:column>
+          <h:column>
+            <f:facet name="header">
+              <h:outputText value="#{messages['label.userManager.firstName']}" />
+            </f:facet>
+            <h:outputText value="#{user.firstName}" />
+          </h:column>
+          <h:column>
+            <f:facet name="header">
+              <h:outputText value="#{messages['label.userManager.lastName']}" />
+            </f:facet>
+            <h:outputText value="#{user.lastName}" />
+          </h:column>
+          <h:column>
+            <f:facet name="header">
+              <h:outputText value="#{messages['label.deputies.actions']}" />
+            </f:facet>
+            <h:commandLink value="#{messages['action.deputies.loginAs']}"
+              action="#{deputyActions.loginAsDeputy(user.name)}" />
+          </h:column>
+        </h:dataTable>
+      </div>
+      <h:messages />
+
+
+      <div></div>
+    </h:form>
+
+    <h:form rendered="#{currentNuxeoPrincipal.administrator}">
+      <div class="tabsContent">
+        <h:outputText
+          value="#{messages['label.deputy.administratorLogin.info']}" />
+        <br />
+        <h:outputText
+          value="#{messages['label.deputy.administratorLogin.login']}" />
+        <h:inputText value="#{deputyActions.adminLogin}" />
+        <br />
+        <h:commandButton value="#{messages['action.deputies.loginAs']}"
+          action="#{deputyActions.adminLoginAsDeputy()}" styleClass="button" />
+      </div>
+    </h:form>
+
+  </ui:define>
+
+</ui:composition>
