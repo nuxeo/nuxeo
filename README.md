@@ -56,9 +56,7 @@ purpose.
 
 ## Launching webdriver tests
 
-Run:
-
-    $ mvn clean install -Pitest
+    mvn clean install -Pitest
 
 
 # Development
