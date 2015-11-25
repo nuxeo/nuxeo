@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>8.1-SNAPSHOT</version>
+    <version>6.0-HF24-SNAPSHOT</version>
     <relativePath>../../../../nuxeo-distribution/pom.xml</relativePath>
   </parent>
 
@@ -95,7 +95,7 @@
             </goals>
             <configuration>
               <includes>
-                <include>**/ITAjaxListWidgetTest.java</include>
+                <include>**/ITJSListWidgetTest.java</include>
               </includes>
               <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.xml
                 -Dnuxeo.log.dir=${project.build.directory}
