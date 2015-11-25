@@ -2,13 +2,47 @@
 
 This addon presents layouts and widgets in a "show-case like" web site.
 
-The application is visible at http://localhost:8080/nuxeo/layoutDemo 
+The application is visible at http://localhost:8080/nuxeo/layoutDemo
 
 Webdriver tests also ensure that all standard widget types are working ok.
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-platform-forms-layout-demo-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-forms-layout-demo-master/)
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_FT_nuxeo-platform-forms-layout-demo-master-webdriver)](https://qa.nuxeo.org/jenkins/job/addons_FT_nuxeo-platform-forms-layout-demo-master-webdriver/)
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_FT_nuxeo-platform-forms-layout-demo-master-webdriver-list-widget)](https://qa.nuxeo.org/jenkins/job/addons_FT_nuxeo-platform-forms-layout-demo-master-webdriver-list-widget/)
+Unit Tests: [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-platform-forms-layout-demo-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-forms-layout-demo-master/)
+
+Webdriver Tests: [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_FT_nuxeo-platform-forms-layout-demo-master-webdriver)](https://qa.nuxeo.org/jenkins/job/addons_FT_nuxeo-platform-forms-layout-demo-master-webdriver/)
+
+Webdriver List Widget Compat Tests: [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_FT_nuxeo-platform-forms-layout-demo-master-webdriver-list-widget)](https://qa.nuxeo.org/jenkins/job/addons_FT_nuxeo-platform-forms-layout-demo-master-webdriver-list-widget/)
+
+The application presents standard widget types available to the Nuxeo layout service, and can be used as a demo, reference and preview application.
+
+You can browse widget types by clicking on items in the left menu.
+
+The idea of this application came with [Studio integration](http://www.nuxeo.com/en/products/studio), as widget types configuration needed to be made user friendly by:
+
+* providing a library of available widget types, taking care of the widget accepted field type (String, Boolean, Integer....);
+* making it possible to set the widget properties using a form;
+* making it possible to preview the resulting widget.
+
+It was also interesting for functional tests, to verify that default widget types all work as expected, and are styled correctly.
+
+So the widget type definition was improved to hold configuration
+instructions (title, description, definition of field types that match
+the widget type...).
+
+To describe the available properties depending on the mode, as well as
+the form to display them, layouts were the natural choice. So the widget
+type definition was modified to accept standard layout definitions, with
+widgets using the property name as a field.
+
+Using this way of describing a widget type is also a good maintenance tool:
+the information is kept in XML format, accepting HTML rendering for the
+description. It can be used directly to generate pages like the
+reference page or preview forms on this showcase application (using the
+standard JSF implementation of layouts).
+
+It can be exported in JSON format for Nuxeo Studio, as it accepts
+widget types as JSON contributions and uses them to fill its registries.
+A specific GWT implementation of layouts has been implemented for this
+purpose.
 
 ## Building
 
