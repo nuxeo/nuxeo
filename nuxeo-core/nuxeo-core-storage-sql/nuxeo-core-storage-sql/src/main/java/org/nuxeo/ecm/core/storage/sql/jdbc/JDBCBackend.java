@@ -12,8 +12,13 @@
 
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.naming.NamingException;
@@ -58,6 +63,12 @@ public class JDBCBackend implements RepositoryBackend {
     private SQLInfo sqlInfo;
 
     private boolean firstMapper = true;
+
+    // static because in Nuxeo 6.0 if a component init fails, RegistrationInfoImpl marks it
+    // as RESOLVED which means that the next lookup will re-create it, which in turn will
+    // create a new RepositoryService instance and a new RepositoryImpl / JDBCBackend too.
+    // FALSE if init failed, TRUE if succeeded, null if not yet done
+    private static Map<String, Boolean> REPOSITORY_INITIALIZED = new HashMap<>();
 
     private ClusterInvalidator clusterInvalidator;
 
@@ -201,18 +212,30 @@ public class JDBCBackend implements RepositoryBackend {
         } else {
             mapper.connect();
         }
+        String repositoryName = repository.getName();
+        if (FALSE.equals(REPOSITORY_INITIALIZED.get(repositoryName))) {
+            throw new NuxeoException("Database initialization failed previously for: " + repositoryName);
+        }
         if (firstMapper) {
+            REPOSITORY_INITIALIZED.put(repositoryName, FALSE);
             firstMapper = false;
-            if (repositoryDescriptor.getNoDDL()) {
+            String ddlMode = repositoryDescriptor.getDDLMode();
+            if (ddlMode == null) {
+                // compat
+                ddlMode = repositoryDescriptor.getNoDDL() ? RepositoryDescriptor.DDL_MODE_IGNORE
+                        : RepositoryDescriptor.DDL_MODE_COMPAT;
+            }
+            if (ddlMode.equals(RepositoryDescriptor.DDL_MODE_IGNORE)) {
                 log.info("Skipping database creation");
             } else {
                 // first connection, initialize the database
-                mapper.createDatabase();
+                mapper.createDatabase(ddlMode);
             }
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Database ready, fulltext: disabled=%b searchDisabled=%b.",
                         repositoryDescriptor.getFulltextDisabled(), repositoryDescriptor.getFulltextSearchDisabled()));
             }
+            REPOSITORY_INITIALIZED.put(repositoryName, TRUE);
         }
         return mapper;
     }

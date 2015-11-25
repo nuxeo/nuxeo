@@ -19,6 +19,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
 
 /**
  * Helper to provide SQL migration calls while adding a column.
@@ -75,7 +76,8 @@ public class TableUpgrader {
      * @param addedColumns list of added column
      * @throws SQLException Exception thrown by JDBC
      */
-    public void upgrade(String tableKey, List<Column> addedColumns) throws SQLException {
+    public void upgrade(String tableKey, List<Column> addedColumns, String ddlMode, ListCollector ddlCollector)
+            throws SQLException {
         for (TableUpgrade upgrade : tableUpgrades) {
             if (!upgrade.tableKey.equals(tableKey)) {
                 continue;
@@ -96,7 +98,8 @@ public class TableUpgrader {
             }
             if (doUpgrade) {
                 log.info("Upgrading table: " + tableKey);
-                mapper.sqlInfo.executeSQLStatements(upgrade.sqlProcedure, mapper);
+                mapper.sqlInfo.executeSQLStatements(upgrade.sqlProcedure, ddlMode, mapper.connection, mapper.logger,
+                        ddlCollector);
             }
         }
     }

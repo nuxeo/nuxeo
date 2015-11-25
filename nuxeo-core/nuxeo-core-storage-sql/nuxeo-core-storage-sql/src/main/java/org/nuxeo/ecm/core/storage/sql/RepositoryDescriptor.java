@@ -41,6 +41,21 @@ public class RepositoryDescriptor {
 
     public static final int DEFAULT_PATH_OPTIM_VERSION = 2;
 
+    /** At startup, DDL changes are not detected. */
+    public static final String DDL_MODE_IGNORE = "ignore";
+
+    /** At startup, DDL changes are detected and if not empty they are dumped. */
+    public static final String DDL_MODE_DUMP = "dump";
+
+    /** At startup, DDL changes are detected and executed. */
+    public static final String DDL_MODE_EXECUTE = "execute";
+
+    /** At startup, DDL changes are detected and if not empty Nuxeo startup is aborted. */
+    public static final String DDL_MODE_ABORT = "abort";
+
+    /** Specifies that stored procedure detection must be compatible with previous Nuxeo versions. */
+    public static final String DDL_MODE_COMPAT = "compat";
+
     @XObject(value = "index")
     public static class FulltextIndexDescriptor {
 
@@ -230,6 +245,13 @@ public class RepositoryDescriptor {
 
     @XNodeMap(value = "cachingMapper/property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> cachingMapperProperties = new HashMap<>();
+
+    @XNode("ddlMode")
+    private String ddlMode;
+
+    public String getDDLMode() {
+        return ddlMode;
+    }
 
     @XNode("noDDL")
     private Boolean noDDL;
@@ -423,6 +445,7 @@ public class RepositoryDescriptor {
         cachingMapperEnabled = other.cachingMapperEnabled;
         cachingMapperProperties = new HashMap<>(other.cachingMapperProperties);
         noDDL = other.noDDL;
+        ddlMode = other.ddlMode;
         sqlInitFiles = new ArrayList<>(other.sqlInitFiles);
         softDeleteEnabled = other.softDeleteEnabled;
         proxiesEnabled = other.proxiesEnabled;
@@ -478,6 +501,9 @@ public class RepositoryDescriptor {
         cachingMapperProperties.putAll(other.cachingMapperProperties);
         if (other.noDDL != null) {
             noDDL = other.noDDL;
+        }
+        if (other.ddlMode != null) {
+            ddlMode = other.ddlMode;
         }
         sqlInitFiles.addAll(other.sqlInitFiles);
         if (other.softDeleteEnabled != null) {

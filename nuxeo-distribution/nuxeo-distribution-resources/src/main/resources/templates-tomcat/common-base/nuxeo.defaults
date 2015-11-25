@@ -25,6 +25,7 @@ nuxeo.vcs.idle-timeout-minutes=10
 nuxeo.vcs.fulltext.disabled=false
 nuxeo.vcs.fulltext.search.disabled=false
 nuxeo.vcs.noddl=false
+nuxeo.vcs.ddlmode=compat
 nuxeo.vcs.idtype=varchar
 nuxeo.vcs.fulltext.analyzer.language=english
 nuxeo.vcs.optimizations.acl.enabled=true

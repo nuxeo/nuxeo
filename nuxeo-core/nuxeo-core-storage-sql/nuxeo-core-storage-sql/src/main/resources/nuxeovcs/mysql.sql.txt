@@ -17,8 +17,7 @@
 #CATEGORY: beforeTableCreation
 
 
-DROP FUNCTION IF EXISTS NX_IN_TREE;
-
+#PROC: NX_IN_TREE
 CREATE FUNCTION NX_IN_TREE(id ${idType}, baseid ${idType})
 RETURNS BOOLEAN
 LANGUAGE SQL
@@ -45,8 +44,7 @@ BEGIN
 END
 
 
-DROP FUNCTION IF EXISTS NX_ACCESS_ALLOWED;
-
+#PROC: NX_ACCESS_ALLOWED
 CREATE FUNCTION NX_ACCESS_ALLOWED(id ${idType}, users VARCHAR(10000), perms VARCHAR(10000))
 RETURNS BOOLEAN
 LANGUAGE SQL
@@ -91,9 +89,8 @@ BEGIN
 END;
 
 
-DROP PROCEDURE IF EXISTS NX_CLUSTER_INVAL;
-
 #IF: clusteringEnabled
+#PROC: NX_CLUSTER_INVAL
 CREATE PROCEDURE NX_CLUSTER_INVAL(n BIGINT, i ${idType}, f TEXT, k TINYINT)
 LANGUAGE SQL
 MODIFIES SQL DATA
@@ -119,50 +116,6 @@ END;
 
 
 #CATEGORY: afterTableCreation
-
-
-# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
-
-#TEST:
-SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'NXP_TAGGING' AND TABLE_SCHEMA = SCHEMA();
-
-#IF: ! emptyResult
-LOG.INFO Upgrading tags
-
-#IF: ! emptyResult
-DROP PROCEDURE IF EXISTS NX_UPGRADE_TAGS;
-
-#IF: ! emptyResult
-CREATE PROCEDURE NX_UPGRADE_TAGS()
-LANGUAGE SQL
-MODIFIES SQL DATA
-BEGIN
-  -- make tags placeless
-  UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = 0;
-  -- make tagging hierarchy
-  UPDATE nxp_tagging SET id = uuid();
-  INSERT INTO hierarchy (id, name, isproperty, primarytype)
-    SELECT tg.id, t.label, 0, 'Tagging'
-      FROM nxp_tagging tg
-      JOIN tag t ON tg.tag_id = t.id;
-  -- make tagging relation
-  INSERT INTO relation (id, source, target)
-    SELECT id, document_id, tag_id FROM nxp_tagging;
-  -- make tagging dublincore (save is_private into coverage just in case)
-  INSERT INTO dublincore (id, title, creator, created, coverage)
-    SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private
-      FROM nxp_tagging tg
-      JOIN tag t ON tg.tag_id = t.id;
-  -- drop now useless table
-  DROP TABLE nxp_tagging;
-  -- remove old tags root
-  DELETE FROM hierarchy
-    WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = 0
-      AND parentid IN (SELECT id FROM (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = 0) as stupid);
-END;
-
-#IF: ! emptyResult
-CALL NX_UPGRADE_TAGS()
 
 
 ############################################################

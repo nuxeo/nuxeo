@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core.storage.sql.jdbc;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table.IndexType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
 
 /**
  * This singleton generates and holds the actual SQL DDL and DML statements for the operations needed by the
@@ -1232,7 +1234,7 @@ public class SQLInfo {
             }
         }
         if (!testProps.isEmpty()) {
-            SQLStatement.read(dialect.getTestSQLStatementsFilename(), sqlStatements);
+            SQLStatement.read(dialect.getTestSQLStatementsFilename(), sqlStatements, true); // DDL time
         }
         sqlStatementsProperties = dialect.getSQLStatementsProperties(model, database);
         if (!testProps.isEmpty()) {
@@ -1243,10 +1245,12 @@ public class SQLInfo {
     /**
      * Executes the SQL statements for the given category.
      */
-    public void executeSQLStatements(String category, JDBCConnection jdbc) throws SQLException {
+    public void executeSQLStatements(String category, String ddlMode, Connection connection, JDBCLogger logger,
+            ListCollector ddlCollector) throws SQLException {
         List<SQLStatement> statements = sqlStatements.get(category);
         if (statements != null) {
-            SQLStatement.execute(statements, sqlStatementsProperties, jdbc);
+            SQLStatement.execute(statements, ddlMode, sqlStatementsProperties, dialect, connection, logger,
+                    ddlCollector);
         }
     }
 

@@ -29,6 +29,7 @@
 # pathOptimizationsEnabled
 # softDeleteEnabled
 # proxiesEnabled
+# arrayColumnsEnabled
 
 ############################################################
 
@@ -46,7 +47,8 @@ SELECT 1 FROM pg_class WHERE relname = '${idSequenceName}';
 CREATE SEQUENCE ${idSequenceName};
 
 #-- Deprecated since 5.9.5, see nx_children
-CREATE OR REPLACE FUNCTION NX_IN_TREE(id ${idType}, baseid ${idType})
+#PROC: nx_in_tree
+CREATE FUNCTION nx_in_tree(id ${idType}, baseid ${idType})
 RETURNS boolean
 AS $$
 DECLARE
@@ -69,7 +71,8 @@ STABLE
 COST 400;
 
 
-CREATE OR REPLACE FUNCTION NX_ACCESS_ALLOWED(id ${idType}, users varchar[], permissions varchar[])
+#PROC: nx_access_allowed
+CREATE FUNCTION nx_access_allowed(id ${idType}, users varchar[], permissions varchar[])
 RETURNS boolean
 AS $$
 DECLARE
@@ -98,7 +101,8 @@ STABLE
 COST 500;
 
 #IF: clusteringEnabled
-CREATE OR REPLACE FUNCTION NX_CLUSTER_INVAL(n bigint, i ${idType}, f varchar[], k int)
+#PROC: nx_cluster_inval
+CREATE FUNCTION nx_cluster_inval(n bigint, i ${idType}, f varchar[], k int)
 RETURNS VOID
 AS $$
 DECLARE
@@ -112,7 +116,8 @@ LANGUAGE plpgsql;
 
 
 #IF: fulltextEnabled
-CREATE OR REPLACE FUNCTION NX_TO_TSVECTOR(string VARCHAR)
+#PROC: nx_to_tsvector
+CREATE FUNCTION nx_to_tsvector(string VARCHAR)
 RETURNS TSVECTOR
 AS $$
   SELECT TO_TSVECTOR('${fulltextAnalyzer}', SUBSTR($1, 1, 250000))
@@ -122,29 +127,8 @@ IMMUTABLE;
 
 
 #IF: pathOptimizationsEnabled
-#TEST:
-SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'ancestors')
-           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='ancestors_ancestors_is_null_idx');
-
-
-#IF: pathOptimizationsEnabled
-#IF: ! emptyResult
-CREATE INDEX ancestors_ancestors_is_null_idx ON ancestors USING btree(ancestors) WHERE ancestors IS NULL;
-
-
-#IF: pathOptimizationsEnabled
-#TEST:
-SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'ancestors')
-           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='ancestors_ancestors_idx');
-
-
-#IF: pathOptimizationsEnabled
-#IF: ! emptyResult
-CREATE INDEX ancestors_ancestors_idx ON ancestors USING gin(ancestors);
-
-
-#IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION nx_ancestors_create_triggers()
+#PROC: nx_ancestors_create_triggers
+CREATE FUNCTION nx_ancestors_create_triggers()
 RETURNS void
 AS $$
   -- drop old deprecated triggers
@@ -164,8 +148,10 @@ $$
 LANGUAGE sql
 VOLATILE;
 
+
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION nx_get_ancestors(id ${idTypeParam}) RETURNS ${idTypeParam}[]
+#PROC: nx_get_ancestors
+CREATE FUNCTION nx_get_ancestors(id ${idTypeParam}) RETURNS ${idTypeParam}[]
     AS $$
 DECLARE
   curid ${idType} := id;
@@ -185,7 +171,8 @@ END $$
 
 
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION nx_init_ancestors()
+#PROC: nx_init_ancestors
+CREATE FUNCTION nx_init_ancestors()
 RETURNS void
     AS $$
 BEGIN
@@ -204,7 +191,8 @@ END $$
 
 
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION nx_ancestors_insert()
+#PROC: nx_ancestors_insert
+CREATE FUNCTION nx_ancestors_insert()
 RETURNS trigger
 AS $$
 BEGIN
@@ -225,7 +213,8 @@ VOLATILE;
 
 
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION nx_ancestors_update()
+#PROC: nx_ancestors_update
+CREATE FUNCTION nx_ancestors_update()
 RETURNS trigger
 AS $$
 BEGIN
@@ -250,7 +239,8 @@ VOLATILE;
 # ancestors ids (since Nuxeo 5.5)
 
 #IF: pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idType}[])
+#PROC: nx_ancestors
+CREATE FUNCTION nx_ancestors(ids ${idType}[])
 RETURNS SETOF ${idType}
 AS $$
 DECLARE
@@ -267,7 +257,8 @@ VOLATILE;
 
 # TODO 8.4: use CTE
 #IF: !pathOptimizationsEnabled
-CREATE OR REPLACE FUNCTION NX_ANCESTORS(ids ${idType}[])
+#PROC: nx_ancestors
+CREATE FUNCTION nx_ancestors(ids ${idType}[])
 RETURNS SETOF ${idType}
 AS $$
 DECLARE
@@ -294,7 +285,8 @@ VOLATILE;
 
 
 #IF: fulltextEnabled
-CREATE OR REPLACE FUNCTION NX_UPDATE_FULLTEXT()
+#PROC: nx_update_fulltext
+CREATE FUNCTION nx_update_fulltext()
 RETURNS trigger
 AS $$
 BEGIN
@@ -306,20 +298,26 @@ VOLATILE;
 
 
 #IF: fulltextEnabled
-DROP TRIGGER IF EXISTS NX_TRIG_FT_UPDATE ON ${fulltextTable};
-
+#TEST:
+SELECT 1 FROM pg_trigger WHERE tgname = 'nx_trig_ft_update'
 
 #IF: fulltextEnabled
+#IF: emptyResult
 CREATE TRIGGER NX_TRIG_FT_UPDATE
   BEFORE INSERT OR UPDATE ON ${fulltextTable}
   FOR EACH ROW EXECUTE PROCEDURE NX_UPDATE_FULLTEXT();
 
+
 # -- migrate table from read_acls into aclr, since 5.4.2
 #TEST:
+#SET_IF_NOT_EMPTY: migrate_old_read_acls
+#SET_IF_NOT_EMPTY: create_table_aclr
 SELECT 1 FROM pg_tables WHERE tablename = 'read_acls';
 
-#IF: !emptyResult
+#IF: migrate_old_read_acls
 ALTER TABLE read_acls RENAME TO aclr;
+
+#IF: migrate_old_read_acls
 ALTER TABLE aclr RENAME COLUMN id TO acl_id;
 
 
@@ -335,20 +333,24 @@ ALTER TABLE aclr DROP CONSTRAINT read_acls_pkey;
 # -- Read acls table
 # -- acl ex: jsmith,administrators,-Everyone
 # -- acl_id = md5(acl)
+#IF: ! migrate_old_read_acls
 #TEST:
+#SET_IF_EMPTY: create_table_aclr
 SELECT 1 FROM pg_tables WHERE tablename = 'aclr';
 
-#IF: emptyResult
+#IF: ! migrate_old_read_acls
+#IF: create_table_aclr
 CREATE TABLE aclr (
   acl_id varchar(34) NOT NULL,
   acl varchar(${readAclMaxSize})
 );
 
 
+#IF: ! create_table_aclr
 #TEST:
 SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_acl_id_idx';
 
-#IF: emptyResult
+#IF: create_table_aclr OR: emptyResult
 CREATE INDEX aclr_acl_id_idx ON aclr USING btree(acl_id);
 
 
@@ -364,31 +366,37 @@ DROP TABLE read_acls_cache;
 # -- users ex: {members,jsmith,Everyone}
 # -- user_id = md5(users)
 #TEST:
+#SET_IF_EMPTY: create_table_aclr_user
 SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user';
 
-#IF: emptyResult
+#IF: create_table_aclr_user
 CREATE ${unlogged} TABLE aclr_user (
   user_id varchar(34) NOT NULL CONSTRAINT aclr_user_user_id_key UNIQUE,
   users varchar(250)[]
 );
 
 # -- add unique constraint if missing (upgrade from < 5.9.3)
+#IF: ! create_table_aclr_user
 #TEST:
 SELECT 1 FROM pg_constraint WHERE conname = 'aclr_user_user_id_key';
 
+#IF: ! create_table_aclr_user
 #IF: emptyResult
 ALTER TABLE aclr_user ADD CONSTRAINT aclr_user_user_id_key UNIQUE (user_id);
 
 # -- drop index not needed anymore due to above constraint's implicit index
+#IF: ! create_table_aclr_user
 #TEST:
 SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_user_user_id_idx';
 
+#IF: ! create_table_aclr_user
 #IF: ! emptyResult
 DROP INDEX aclr_user_user_id_idx;
 
 
 # -- Jonction between aclr and aclr_user
 #TEST:
+#SET_IF_EMPTY: create_table_aclr_user_map
 SELECT 1 FROM pg_tables WHERE tablename = 'aclr_user_map';
 
 #IF: emptyResult
@@ -398,22 +406,25 @@ CREATE ${unlogged} TABLE aclr_user_map (
 );
 
 
+#IF: ! create_table_aclr_user_map
 #TEST:
 SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_user_map_user_id_idx';
 
-#IF: emptyResult
+#IF: create_table_aclr_user_map OR: emptyResult
 CREATE INDEX aclr_user_map_user_id_idx ON aclr_user_map USING btree(user_id);
 
 
+#IF: ! create_table_aclr_user_map
 #TEST:
 SELECT 1 FROM pg_indexes WHERE indexname = 'aclr_user_map_acl_id_idx';
 
-#IF: emptyResult
+#IF: create_table_aclr_user_map OR: emptyResult
 CREATE INDEX aclr_user_map_acl_id_idx ON aclr_user_map USING btree(acl_id, user_id);
 
 
 # -- Associate a read acl for each hierarchy entry
 #TEST:
+#SET_IF_EMPTY: create_table_hierarchy_read_acl
 SELECT 1 FROM pg_tables WHERE tablename='hierarchy_read_acl';
 
 #IF: emptyResult
@@ -425,24 +436,28 @@ CREATE TABLE hierarchy_read_acl (
 
 
 # -- Remove useless primary key
+#IF: ! create_table_hierarchy_read_acl
 #TEST:
 SELECT 1 FROM pg_constraint WHERE conname='hierarchy_read_acl_pkey';
 
+#IF: ! create_table_hierarchy_read_acl
 #IF: ! emptyResult
 ALTER TABLE hierarchy_read_acl DROP CONSTRAINT hierarchy_read_acl_pkey;
 
 
+#IF: ! create_table_hierarchy_read_acl
 #TEST:
 SELECT 1 FROM pg_indexes WHERE indexname='hierarchy_read_acl_id_idx';
 
-#IF: emptyResult
+#IF: create_table_hierarchy_read_acl OR: emptyResult
 CREATE INDEX hierarchy_read_acl_id_idx ON hierarchy_read_acl USING btree(id);
 
 
+#IF: ! create_table_hierarchy_read_acl
 #TEST:
 SELECT 1 FROM pg_indexes WHERE indexname='hierarchy_read_acl_acl_id_idx';
 
-#IF: emptyResult
+#IF: create_table_hierarchy_read_acl OR: emptyResult
 CREATE INDEX hierarchy_read_acl_acl_id_idx ON hierarchy_read_acl USING btree(acl_id);
 
 
@@ -475,23 +490,25 @@ DROP TABLE read_acl_permissions;
 
 #-- List of permission that grant the read access
 #TEST:
+#SET_IF_EMPTY: create_table_aclr_permission
 SELECT 1 FROM pg_tables WHERE tablename='aclr_permission';
 
-#IF: emptyResult
+#IF: create_table_aclr_permission
 CREATE TABLE aclr_permission (
   permission character varying(250)
 );
 
-
+#IF: ! create_table_aclr_permission
 #TEST:
 SELECT 1 FROM aclr_permission;
 
-#IF: emptyResult
+#IF: create_table_aclr_permission OR: emptyResult
 INSERT INTO aclr_permission VALUES ${readPermissions};
 
 
 
-CREATE OR REPLACE FUNCTION nx_get_local_read_acl(id ${idType})
+#PROC: nx_get_local_read_acl
+CREATE FUNCTION nx_get_local_read_acl(id ${idType})
 RETURNS varchar
 AS $$
 -- Compute the read acl for a hierarchy id using a local acl
@@ -526,7 +543,8 @@ LANGUAGE plpgsql
 STABLE;
 
 
-CREATE OR REPLACE FUNCTION nx_get_read_acl(id ${idTypeParam})
+#PROC: nx_get_read_acl
+CREATE FUNCTION nx_get_read_acl(id ${idTypeParam})
 RETURNS varchar
 AS $$
 -- Compute the read acl for a hierarchy id using inherited acl
@@ -575,7 +593,8 @@ LANGUAGE plpgsql
 STABLE;
 
 
-CREATE OR REPLACE FUNCTION nx_prepare_user_read_acls(users varchar[])
+#PROC: nx_prepare_user_read_acls
+CREATE FUNCTION nx_prepare_user_read_acls(users varchar[])
 RETURNS void
 AS $$
 -- prepare the aclr for the user
@@ -599,7 +618,8 @@ LANGUAGE plpgsql
 VOLATILE;
 
 
-CREATE OR REPLACE FUNCTION nx_list_read_acls_for(users varchar[])
+#PROC: nx_list_read_acls_for
+CREATE FUNCTION nx_list_read_acls_for(users varchar[])
 RETURNS SETOF text
 AS $$
 -- List read acl ids for a list of user/groups
@@ -634,7 +654,8 @@ LANGUAGE plpgsql
 STABLE;
 
 
-CREATE OR REPLACE FUNCTION nx_log_acls_modified()
+#PROC: nx_log_acls_modified
+CREATE FUNCTION nx_log_acls_modified()
 RETURNS trigger
 AS $$
 -- Trigger to log change in the acls table
@@ -652,7 +673,10 @@ END $$
 LANGUAGE plpgsql;
 
 
-DROP TRIGGER IF EXISTS nx_trig_acls_modified ON acls;
+#TEST:
+SELECT 1 FROM pg_trigger WHERE tgname = 'nx_trig_acls_modified'
+
+#IF: emptyResult
 CREATE TRIGGER nx_trig_acls_modified
   AFTER INSERT OR UPDATE OR DELETE ON acls
   FOR EACH ROW EXECUTE PROCEDURE nx_log_acls_modified();
@@ -661,7 +685,8 @@ CREATE TRIGGER nx_trig_acls_modified
 ALTER TABLE acls DISABLE TRIGGER nx_trig_acls_modified;
 
 
-CREATE OR REPLACE FUNCTION nx_log_hierarchy_modified()
+#PROC: nx_log_hierarchy_modified
+CREATE FUNCTION nx_log_hierarchy_modified()
 RETURNS trigger
 AS $$
 -- Trigger to log doc_id that need read acl update
@@ -682,7 +707,10 @@ END $$
 LANGUAGE plpgsql;
 
 
-DROP TRIGGER IF EXISTS nx_trig_hierarchy_modified ON hierarchy;
+#TEST:
+SELECT 1 FROM pg_trigger WHERE tgname = 'nx_trig_hierarchy_modified'
+
+#IF: emptyResult
 CREATE TRIGGER nx_trig_hierarchy_modified
   AFTER INSERT OR UPDATE ON hierarchy
   FOR EACH ROW EXECUTE PROCEDURE nx_log_hierarchy_modified();
@@ -692,7 +720,8 @@ CREATE TRIGGER nx_trig_hierarchy_modified
 ALTER TABLE hierarchy DISABLE TRIGGER nx_trig_hierarchy_modified;
 
 
-CREATE OR REPLACE FUNCTION nx_aclr_modified()
+#PROC: nx_aclr_modified
+CREATE FUNCTION nx_aclr_modified()
 RETURNS trigger
 AS $$
 -- Trigger to update the user read alcs
@@ -726,9 +755,17 @@ END $$
 LANGUAGE plpgsql;
 
 # -- remove old trigger since 5.4.2
-DROP TRIGGER IF EXISTS nx_trig_read_acls_modified ON aclr;
+#TEST:
+SELECT 1 FROM pg_trigger WHERE tgname = 'nx_trig_read_acls_modified'
 
-DROP TRIGGER IF EXISTS nx_trig_aclr_modified ON aclr;
+#IF: !emptyResult
+DROP TRIGGER nx_trig_read_acls_modified ON aclr;
+
+
+#TEST:
+SELECT 1 FROM pg_trigger WHERE tgname = 'nx_trig_aclr_modified'
+
+#IF: emptyResult
 CREATE TRIGGER nx_trig_aclr_modified
   AFTER INSERT ON aclr
   FOR EACH ROW EXECUTE PROCEDURE nx_aclr_modified();
@@ -738,7 +775,8 @@ CREATE TRIGGER nx_trig_aclr_modified
 ALTER TABLE aclr DISABLE TRIGGER nx_trig_aclr_modified;
 
 
-CREATE OR REPLACE FUNCTION nx_rebuild_read_acls()
+#PROC: nx_rebuild_read_acls
+CREATE FUNCTION nx_rebuild_read_acls()
 RETURNS void
 AS $$
 -- Rebuild the read acls tables
@@ -760,7 +798,8 @@ LANGUAGE plpgsql
 VOLATILE;
 
 
-CREATE OR REPLACE FUNCTION nx_vacuum_read_acls()
+#PROC: nx_vacuum_read_acls
+CREATE FUNCTION nx_vacuum_read_acls()
 RETURNS void
 AS $$
 -- Remove unused read acls entries
@@ -781,7 +820,8 @@ LANGUAGE plpgsql
 VOLATILE;
 
 
-CREATE OR REPLACE FUNCTION nx_update_read_acls()
+#PROC: nx_update_read_acls
+CREATE FUNCTION nx_update_read_acls()
 RETURNS void
 AS $$
 -- Rebuild only necessary read acls
@@ -835,7 +875,8 @@ LANGUAGE plpgsql
 VOLATILE;
 
 
-CREATE OR REPLACE FUNCTION nx_log_hierarchy_read_acl_modified()
+#PROC: nx_log_hierarchy_read_acl_modified
+CREATE FUNCTION nx_log_hierarchy_read_acl_modified()
 RETURNS trigger
 AS $$
 -- Trigger to update the aclr tables
@@ -850,37 +891,32 @@ END $$
 LANGUAGE plpgsql;
 
 
-DROP TRIGGER IF EXISTS nx_trig_hierarchy_read_acl_modified ON hierarchy_read_acl;
+#TEST:
+SELECT 1 FROM pg_trigger WHERE tgname = 'nx_trig_hierarchy_read_acl_modified'
+
+#IF: emptyResult
 CREATE TRIGGER nx_trig_hierarchy_read_acl_modified
   AFTER INSERT OR UPDATE ON hierarchy_read_acl
   FOR EACH ROW EXECUTE PROCEDURE nx_log_hierarchy_read_acl_modified();
 
 
-# build the read acls if empty, this takes care of the upgrade
-#IF: aclOptimizationsEnabled
-#TEST:
-SELECT 1 FROM aclr LIMIT 1;
+# build the read acls if new, this takes care of the upgrade
 
 #IF: aclOptimizationsEnabled
-#IF: emptyResult
+#IF: create_table_aclr
 LOG.INFO Upgrading to optimized acls
 
 #IF: aclOptimizationsEnabled
-#IF: emptyResult
+#IF: create_table_aclr
 SELECT * FROM nx_rebuild_read_acls();
-
-#IF: aclOptimizationsEnabled
-LOG.INFO Vacuuming tables used by optimized acls
-
-# Vacuum the read acls tables
-#IF: aclOptimizationsEnabled
-SELECT nx_vacuum_read_acls();
 
 
 # ------------------------------------------------------------
 # -- Path management using CTE
 # -- @since 5.9.5
-CREATE OR REPLACE FUNCTION nx_children(${idType})
+
+#PROC: nx_children
+CREATE FUNCTION nx_children(${idType})
 RETURNS TABLE(id ${idType})
 AS $$
   WITH RECURSIVE children AS (
@@ -904,7 +940,8 @@ LOG.INFO Soft delete enabled
 
 #IF: softDeleteEnabled
 #IF: proxiesEnabled
-CREATE OR REPLACE FUNCTION NX_DELETE(ids ${idType}[], nowTime TIMESTAMP)
+#PROC: nx_delete
+CREATE FUNCTION nx_delete(ids ${idType}[], nowTime TIMESTAMP)
 RETURNS void
 AS $$
 -- Marks the given ids as deleted at the given time (null means now)
@@ -924,7 +961,8 @@ VOLATILE;
 
 #IF: softDeleteEnabled
 #IF: ! proxiesEnabled
-CREATE OR REPLACE FUNCTION NX_DELETE(ids ${idType}[], nowTime TIMESTAMP)
+#PROC: nx_delete
+CREATE FUNCTION nx_delete(ids ${idType}[], nowTime TIMESTAMP)
 RETURNS void
 AS $$
 -- Marks the given ids as deleted at the given time (null means now)
@@ -941,7 +979,8 @@ VOLATILE;
 
 
 #IF: softDeleteEnabled
-CREATE OR REPLACE FUNCTION NX_DELETE_PURGE(max INTEGER, beforeTime TIMESTAMP)
+#PROC: nx_delete_purge
+CREATE FUNCTION nx_delete_purge(max INTEGER, beforeTime TIMESTAMP)
 RETURNS INT
 AS $$
 -- Does hard delete on soft-deleted rows earlier than beforeTime (null means all).
@@ -990,48 +1029,6 @@ LANGUAGE plpgsql
 VOLATILE;
 
 
-# ##### upgrade tag / nxp_tagging (since Nuxeo 5.3.2) #####
-
-#TEST:
-SELECT 1 FROM pg_tables WHERE tablename = 'nxp_tagging';
-
-#IF: ! emptyResult
-LOG.INFO Upgrading tags
-
-#IF: ! emptyResult
-CREATE OR REPLACE FUNCTION nx_upgrade_tags()
-RETURNS void
-AS $$
-  -- make tags placeless
-  UPDATE hierarchy SET parentid = NULL WHERE primarytype = 'Tag' AND isproperty = false;
-  -- make tagging hierarchy
-  UPDATE nxp_tagging SET id = md5(id)::uuid;
-  INSERT INTO hierarchy (id, name, isproperty, primarytype)
-    SELECT tg.id, t.label, false, 'Tagging'
-      FROM nxp_tagging tg
-      JOIN tag t ON tg.tag_id = t.id;
-  -- make tagging relation
-  INSERT INTO relation (id, source, target)
-    SELECT id, document_id, tag_id FROM nxp_tagging;
-  -- make tagging dublincore (save is_private into coverage just in case)
-  INSERT INTO dublincore (id, title, creator, created, coverage)
-    SELECT tg.id, t.label, tg.author, tg.creation_date, tg.is_private::text
-      FROM nxp_tagging tg
-      JOIN tag t ON tg.tag_id = t.id;
-  -- drop now useless table
-  DROP TABLE nxp_tagging;
-  -- remove old tags root
-  DELETE FROM hierarchy
-    WHERE name = 'tags' AND primarytype = 'HiddenFolder' AND isproperty = false
-      AND parentid IN (SELECT id FROM hierarchy WHERE primarytype = 'Root' AND isproperty = false);
-$$
-LANGUAGE sql
-VOLATILE;
-
-#IF: ! emptyResult
-SELECT nx_upgrade_tags();
-
-
 ############################################################
 # Temporary workaround that should be removed see NXP-7399.
 
@@ -1062,27 +1059,83 @@ CREATE INDEX nxp_logs_log_date_idx ON nxp_logs USING btree(log_date);
 ############################################################
 # Adding miscellaneous indexes
 
-#TEST:
-SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'dc_contributors')
-           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='dc_contributors_item_idx');
 
-#IF: ! emptyResult
+#IF: pathOptimizationsEnabled
+#IF: ! create_table_ancestors
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'ancestors_ancestors_is_null_idx';
+
+#IF: pathOptimizationsEnabled
+#IF: create_table_ancestors OR: emptyResult
+CREATE INDEX ancestors_ancestors_is_null_idx ON ancestors USING btree(ancestors) WHERE ancestors IS NULL;
+
+
+#IF: pathOptimizationsEnabled
+#IF: ! create_table_ancestors
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'ancestors_ancestors_idx';
+
+#IF: pathOptimizationsEnabled
+#IF: create_table_ancestors OR: emptyResult
+CREATE INDEX ancestors_ancestors_idx ON ancestors USING gin(ancestors);
+
+
+#IF: ! arrayColumnsEnabled
+#IF: ! create_table_dc_contributors
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'dc_contributors_item_idx';
+
+#IF: ! arrayColumnsEnabled
+#IF: create_table_dc_contributors OR: emptyResult
 CREATE INDEX dc_contributors_item_idx ON dc_contributors USING btree(item);
 
 
+#IF: ! create_table_dublincore
 #TEST:
-SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'dublincore')
-           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='dublincore_modified_idx');
+SELECT 1 FROM pg_indexes WHERE indexname = 'dublincore_modified_idx';
 
-#IF: ! emptyResult
+#IF: create_table_dublincore OR: emptyResult
 CREATE INDEX dublincore_modified_idx ON dublincore USING btree(modified);
 
-#TEST:
-SELECT 1 WHERE EXISTS(SELECT 1 FROM pg_tables WHERE tablename = 'fulltext')
-           AND NOT EXISTS(SELECT 1 FROM pg_indexes WHERE indexname='fulltext_jobid_idx');
 
-#IF: ! emptyResult
+#IF: fulltextEnabled
+#IF: ! create_table_fulltext
+#TEST:
+SELECT 1 FROM pg_indexes WHERE indexname = 'fulltext_jobid_idx';
+
+#IF: fulltextEnabled
+#IF: create_table_fulltext OR: emptyResult
 CREATE INDEX fulltext_jobid_idx ON fulltext USING btree(jobid);
+
+
+############################################################
+
+# Init ancestors table if just-created or empty
+
+#IF: pathOptimizationsEnabled
+#IF: ! create_table_ancestors
+#TEST:
+SELECT 1 FROM ancestors LIMIT 1
+
+#IF: pathOptimizationsEnabled
+#IF: create_table_ancestors OR: emptyResult
+SELECT nx_init_ancestors();
+
+
+# Clear ancestors table if no optims, in case we re-activate optims later
+
+#IF: ! pathOptimizationsEnabled
+#TEST:
+SELECT 1 FROM pg_tables WHERE tablename = 'ancestors';
+
+#IF: ! pathOptimizationsEnabled
+#IF: ! emptyResult
+#TEST:
+SELECT 1 FROM ancestors LIMIT 1
+
+#IF: ! pathOptimizationsEnabled
+#IF: ! emptyResult
+TRUNCATE TABLE ancestors;
 
 
 ############################################################

@@ -13,24 +13,30 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
@@ -425,6 +431,61 @@ public class DialectMySQL extends Dialect {
     @Override
     public String getBinaryFulltextSql(List<String> columns) {
         return "SELECT " + StringUtils.join(columns, ", ") + " FROM `fulltext` WHERE id=?";
+    }
+
+    @Override
+    public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
+            JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
+        boolean compatCheck = ddlMode.contains(RepositoryDescriptor.DDL_MODE_COMPAT);
+        String ifExists = compatCheck ? "IF EXISTS " : "";
+        String procDrop;
+        if (procCreate.toLowerCase().startsWith("create function ")) {
+            procDrop = "DROP FUNCTION " + ifExists + procName;
+        } else {
+            procDrop = "DROP PROCEDURE " + ifExists + procName;
+        }
+        if (compatCheck) {
+            return Arrays.asList(procDrop, procCreate);
+        }
+        try (Statement st = connection.createStatement()) {
+            String getBody = "SELECT body FROM MYSQL.PROC WHERE db = DATABASE() AND name = '" + procName + "'";
+            logger.log(getBody);
+            try (ResultSet rs = st.executeQuery(getBody)) {
+                if (rs.next()) {
+                    String body = rs.getString(1);
+                    if (normalizeString(procCreate).contains(normalizeString(body))) {
+                        logger.log("  -> exists, unchanged");
+                        return Collections.emptyList();
+                    } else {
+                        logger.log("  -> exists, old");
+                        return Arrays.asList(procDrop, procCreate);
+                    }
+                } else {
+                    logger.log("  -> missing");
+                    return Collections.singletonList(procCreate);
+                }
+            }
+        }
+    }
+
+    protected static String normalizeString(String string) {
+        // MySQL strips comments when recording a procedure's body
+        return string.replaceAll("-- .*", " ").replaceAll("[ \n\r\t]+", " ").trim();
+    }
+
+    @Override
+    public Collection<? extends String> getDumpStart() {
+        return Collections.singleton("DELIMITER $$");
+    }
+
+    @Override
+    public Collection<? extends String> getDumpStop() {
+        return Collections.singleton("DELIMITER ;");
+    }
+
+    @Override
+    public String getSQLForDump(String sql) {
+        return sql + " $$";
     }
 
 }

@@ -29,6 +29,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,6 +41,7 @@ import java.util.Set;
 
 import javax.transaction.xa.XAException;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,6 +55,7 @@ import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
@@ -906,6 +909,75 @@ public class DialectOracle extends Dialect {
     @Override
     public String getSoftDeleteCleanupSql() {
         return "{CALL NX_DELETE_PURGE(?, ?, ?)}";
+    }
+
+    @Override
+    public List<String> getStartupSqls(Model model, Database database) {
+        if (aclOptimizationsEnabled) {
+            log.info("Vacuuming tables used by optimized acls");
+            return Arrays.asList("{CALL nx_vacuum_read_acls}");
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
+            JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
+        boolean compatCheck = ddlMode.contains(RepositoryDescriptor.DDL_MODE_COMPAT);
+        if (compatCheck) {
+            procCreate = "CREATE OR REPLACE " + procCreate.substring("create ".length());
+            return Collections.singletonList(procCreate);
+        }
+        try (Statement st = connection.createStatement()) {
+            String getBody;
+            if (procCreate.toLowerCase().startsWith("create trigger ")) {
+                getBody = "SELECT TRIGGER_BODY FROM USER_TRIGGERS WHERE TRIGGER_NAME = '" + procName + "'";
+            } else {
+                // works for TYPE, FUNCTION, PROCEDURE
+                getBody = "SELECT TEXT FROM ALL_SOURCE WHERE NAME = '" + procName + "' ORDER BY LINE";
+            }
+            logger.log(getBody);
+            try (ResultSet rs = st.executeQuery(getBody)) {
+                if (rs.next()) {
+                    List<String> lines = new ArrayList<>();
+                    do {
+                        lines.add(rs.getString(1));
+                    } while (rs.next());
+                    String body = org.apache.commons.lang.StringUtils.join(lines, ' ');
+                    if (normalizeString(procCreate).contains(normalizeString(body))) {
+                        logger.log("  -> exists, unchanged");
+                        return Collections.emptyList();
+                    } else {
+                        logger.log("  -> exists, old");
+                        if (!procCreate.toLowerCase().startsWith("create ")) {
+                            throw new NuxeoException("Should start with CREATE: " + procCreate);
+                        }
+                        procCreate = "CREATE OR REPLACE " + procCreate.substring("create ".length());
+                        return Collections.singletonList(procCreate);
+                    }
+                } else {
+                    logger.log("  -> missing");
+                    return Collections.singletonList(procCreate);
+                }
+            }
+        }
+    }
+
+    protected static String normalizeString(String string) {
+        return string.replaceAll("[ \n\r\t]+", " ").trim();
+    }
+
+    @Override
+    public String getSQLForDump(String sql) {
+        String sqll = sql.toLowerCase();
+        if (sqll.startsWith("{call ")) {
+            // transform something used for JDBC calls into a proper SQL*Plus dump
+            return "EXECUTE " + sql.substring("{call ".length(), sql.length() - 1); // without ; or /
+        }
+        if (sqll.endsWith("end")) {
+            sql += ";";
+        }
+        return sql + "\n/";
     }
 
 }

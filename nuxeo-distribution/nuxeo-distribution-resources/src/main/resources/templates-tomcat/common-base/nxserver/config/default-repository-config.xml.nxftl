@@ -16,6 +16,7 @@
         blockingTimeoutMillis="${nuxeo.vcs["blocking-timeout-millis"]}" idleTimeoutMinutes="${nuxeo.vcs["idle-timeout-minutes"]}" />
       <clustering id="${repository.clustering.id}" enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
       <noDDL>${nuxeo.vcs.noddl}</noDDL>
+      <ddlMode>${nuxeo.vcs.ddlmode}</ddlMode>
       <aclOptimizations enabled="${nuxeo.vcs.optimizations.acl.enabled}"/>
       <pathOptimizations enabled="${nuxeo.vcs.optimizations.path.enabled}"/>
       <idType>${nuxeo.vcs.idtype}</idType>
