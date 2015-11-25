@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
@@ -1092,31 +1094,14 @@ public abstract class Dialect {
     }
 
     /**
-     * Called before a table is created, when it's been determined that it doesn't exist yet.
+     * Gets the sql statements to execute after the repository init (at startup).
+     * <p>
+     * Used for vacuum-like operations.
      *
-     * @return {@code false} if the table must actually not be created
+     * @since 6.0-HF24, 7.10-HF01, 8.1
      */
-    public boolean preCreateTable(Connection connection, Table table, Model model, Database database)
-            throws SQLException {
-        return true;
-    }
-
-    /**
-     * Gets the sql statements to call after a table has been created.
-     * <p>
-     * Used for migrations/upgrades.
-     */
-    public List<String> getPostCreateTableSqls(Table table, Model model, Database database) {
+    public List<String> getStartupSqls(Model model, Database database) {
         return Collections.emptyList();
-    }
-
-    /**
-     * Called after an existing table has been detected in the database.
-     * <p>
-     * Used for migrations/upgrades.
-     */
-    public void existingTableDetected(Connection connection, Table table, Model model, Database database)
-            throws SQLException {
     }
 
     /**
@@ -1265,6 +1250,61 @@ public abstract class Dialect {
      */
     public String getBinaryFulltextSql(List<String> columns) {
         return "SELECT " + StringUtils.join(columns, ", ") + " FROM fulltext WHERE id=?";
+    }
+
+    /**
+     * Checks if a given stored procedure exists and is identical to the passed creation SQL.
+     * <p>
+     * There are 3 cases to deal with, and actions to perform:
+     * <ul>
+     * <li>the stored procedure doesn't exist, and must be created (create the stored procedure);
+     * <li>the stored procedure exists but is not up to date (drop the old stored procedure and re-create it);
+     * <li>the stored procedure exists and is up to date (nothing to do).
+     * </ul>
+     * <p>
+     * When there is nothing to do, {@code null} is returned. Otherwise the returned value is a list of SQL statements
+     * to execute. Note that the SQL statements will include also INSERT statements to be executed to remember the
+     * creation SQL itself.
+     *
+     * @param procName the stored procedure name
+     * @param procCreate the creation SQL for the stored procedure
+     * @param connection the connection
+     * @param logger the logger
+     * @param properties the statement execution properties
+     * @return a list of SQL statements
+     * @since 6.0-HF24, 7.10-HF01, 8.1
+     */
+    public abstract List<String> checkStoredProcedure(String procName, String procCreate, Connection connection,
+            JDBCLogger logger, Map<String, Serializable> properties) throws SQLException;
+
+    /**
+     * Returns the initial DDL statements to add to a DDL dump.
+     *
+     * @return a list of SQL statements, usually empty
+     * @since 6.0-HF24, 7.10-HF01, 8.1
+     */
+    public Collection<? extends String> getDumpStart() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Returns the final DDL statements to add to a DDL dump.
+     *
+     * @return a list of SQL statements, usually empty
+     * @since 6.0-HF24, 7.10-HF01, 8.1
+     */
+    public Collection<? extends String> getDumpStop() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Returns the SQL statement with proper terminator to use in a dump.
+     *
+     * @return the SQL statement
+     * @since 6.0-HF24, 7.10-HF01, 8.1
+     */
+    public String getSQLForDump(String sql) {
+        return sql + ";";
     }
 
 }
