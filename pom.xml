@@ -22,7 +22,6 @@
     <nuxeo.addons.version>8.1-SNAPSHOT</nuxeo.addons.version>
     <nuxeo.opencmis.version>8.1-SNAPSHOT</nuxeo.opencmis.version>
     <nuxeo.businessdays.version>8.1-SNAPSHOT</nuxeo.businessdays.version>
-    <nuxeo.login.version>8.1-SNAPSHOT</nuxeo.login.version>
     <nuxeo.shell.version>8.1-SNAPSHOT</nuxeo.shell.version>
     <nuxeo.webembedded.version>8.1-SNAPSHOT</nuxeo.webembedded.version>
     <nuxeo.fsconnectors.version>8.1-SNAPSHOT</nuxeo.fsconnectors.version>
@@ -85,7 +84,6 @@
     <module>nuxeo-platform-user-registration</module>
     <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
-    <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-apidoc-server</module>
     <module>nuxeo-activity</module>
@@ -173,76 +171,10 @@
         <version>${nuxeo.businessdays.version}</version>
       </dependency>
 
-      <!-- Login -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-cas2</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-cleartrust</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-deputy</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-digest</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-openid</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-mod_sso</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-ntlm</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-portal-sso</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-shibboleth</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-token</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-kerberos</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-saml2</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.nuxeo.shibboleth.invitation</groupId>
         <artifactId>nuxeo-shibboleth-invitation</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-usermapper</artifactId>
-        <version>${nuxeo.login.version}</version>
+        <version>${nuxeo.addons.version}</version>
       </dependency>
 
       <!-- Nuxeo Shell -->
