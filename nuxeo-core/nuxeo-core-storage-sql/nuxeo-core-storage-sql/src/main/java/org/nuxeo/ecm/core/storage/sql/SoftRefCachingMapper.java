@@ -69,8 +69,8 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public void createDatabase() throws StorageException {
-        mapper.createDatabase();
+    public void createDatabase(String ddlMode) throws StorageException {
+        mapper.createDatabase(ddlMode);
     }
 
     @Override

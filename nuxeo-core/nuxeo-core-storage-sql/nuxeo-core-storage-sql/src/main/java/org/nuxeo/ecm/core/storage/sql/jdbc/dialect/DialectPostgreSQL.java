@@ -25,6 +25,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
@@ -52,6 +54,7 @@ import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
@@ -91,6 +94,8 @@ public class DialectPostgreSQL extends Dialect {
 
     protected boolean pathOptimizationsEnabled;
 
+    protected final boolean arrayColumnsEnabled;
+
     protected String usersSeparator;
 
     protected final DialectIdType idType;
@@ -109,6 +114,10 @@ public class DialectPostgreSQL extends Dialect {
                         : repositoryDescriptor.fulltextAnalyzer;
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
                 : repositoryDescriptor.getPathOptimizationsEnabled();
+        if (repositoryDescriptor != null) {
+            log.info("Path optimizations " + (pathOptimizationsEnabled ? "enabled" : "disabled"));
+        }
+        arrayColumnsEnabled = repositoryDescriptor == null ? false : repositoryDescriptor.getArrayColumns();
         int major, minor;
         try {
             major = metadata.getDatabaseMajorVersion();
@@ -1066,6 +1075,7 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
+        properties.put("arrayColumnsEnabled", Boolean.valueOf(arrayColumnsEnabled));
         if (!fulltextDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
             properties.put("fulltextTable", ft.getQuotedName());
@@ -1103,75 +1113,12 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public boolean preCreateTable(Connection connection, Table table, Model model, Database database)
-            throws SQLException {
-        String tableKey = table.getKey();
-        if (model.HIER_TABLE_NAME.equals(tableKey)) {
-            hierarchyCreated = true;
-            return true;
-        }
-        if (model.ANCESTORS_TABLE_NAME.equals(tableKey)) {
-            if (hierarchyCreated) {
-                // database initialization
-                return true;
-            }
-            // upgrade of an existing database
-            // check hierarchy size
-            String sql = "SELECT COUNT(*) FROM hierarchy WHERE NOT isproperty";
-            Statement s = connection.createStatement();
-            ResultSet rs = s.executeQuery(sql);
-            rs.next();
-            long count = rs.getLong(1);
-            rs.close();
-            s.close();
-            if (count > 100000) {
-                // if the hierarchy table is too big, tell the admin to do the
-                // init by hand
-                pathOptimizationsEnabled = false;
-                log.error("Table ANCESTORS not initialized automatically because table HIERARCHY is too big. "
-                        + "Upgrade by hand by calling: SELECT nx_init_ancestors()");
-            }
-            return true;
-        }
-        return true;
-    }
-
-    @Override
-    public List<String> getPostCreateTableSqls(Table table, Model model, Database database) {
-        if (Model.ANCESTORS_TABLE_NAME.equals(table.getKey())) {
-            List<String> sqls = new ArrayList<String>();
-            if (pathOptimizationsEnabled) {
-                sqls.add("SELECT nx_init_ancestors()");
-            } else {
-                log.info("Path optimizations disabled");
-            }
-            return sqls;
+    public List<String> getStartupSqls(Model model, Database database) {
+        if (aclOptimizationsEnabled) {
+            log.info("Vacuuming tables used by optimized acls");
+            return Arrays.asList("SELECT nx_vacuum_read_acls()");
         }
         return Collections.emptyList();
-    }
-
-    @Override
-    public void existingTableDetected(Connection connection, Table table, Model model, Database database)
-            throws SQLException {
-        if (Model.ANCESTORS_TABLE_NAME.equals(table.getKey())) {
-            if (!pathOptimizationsEnabled) {
-                log.info("Path optimizations disabled");
-                return;
-            }
-            // check if we want to initialize the descendants table now, or log
-            // a warning if the hierarchy table is too big
-            String sql = "SELECT id FROM ancestors LIMIT 1";
-            Statement s = connection.createStatement();
-            ResultSet rs = s.executeQuery(sql);
-            boolean empty = !rs.next();
-            rs.close();
-            s.close();
-            if (empty) {
-                pathOptimizationsEnabled = false;
-                log.error("Table ANCESTORS empty, must be upgraded by hand by calling: " + "SELECT nx_init_ancestors()");
-                log.info("Path optimizations disabled");
-            }
-        }
     }
 
     @Override
@@ -1257,16 +1204,28 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public void performAdditionalStatements(Connection connection) throws SQLException {
+        // Check if there is a pre-existing aclr_permission table
+        boolean createAclrPermission;
+        try (Statement s = connection.createStatement()) {
+            String sql = "SELECT 1 FROM pg_tables WHERE tablename = 'aclr_permission'";
+            try (ResultSet rs = s.executeQuery(sql)) {
+                createAclrPermission = !rs.next();
+            }
+        }
+        // If no table, it will be created and filled at DDL execution time
+        if (createAclrPermission) {
+            return;
+        }
         // Warn user if BROWSE permissions has changed
         Set<String> dbPermissions = new HashSet<String>();
-        String sql = "SELECT * FROM aclr_permission";
-        Statement s = connection.createStatement();
-        ResultSet rs = s.executeQuery(sql);
-        while (rs.next()) {
-            dbPermissions.add(rs.getString(1));
+        try (Statement s = connection.createStatement()) {
+            String sql = "SELECT * FROM aclr_permission";
+            try (ResultSet rs = s.executeQuery(sql)) {
+                while (rs.next()) {
+                    dbPermissions.add(rs.getString(1));
+                }
+            }
         }
-        rs.close();
-        s.close();
         Set<String> confPermissions = new HashSet<String>();
         SecurityService securityService = NXCore.getSecurityService();
         for (String perm : securityService.getPermissionsToCheck(SecurityConstants.BROWSE)) {
@@ -1346,6 +1305,48 @@ public class DialectPostgreSQL extends Dialect {
             return "SELECT " + StringUtils.join(columnsAs, ", ") + " FROM fulltext WHERE id=?";
         }
         return super.getBinaryFulltextSql(columns);
+    }
+
+    @Override
+    public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
+            JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
+        boolean compatCheck = ddlMode.contains(RepositoryDescriptor.DDL_MODE_COMPAT);
+        if (compatCheck) {
+            procCreate = "CREATE OR REPLACE " + procCreate.substring("create ".length());
+            return Collections.singletonList(procCreate);
+        }
+        try (Statement st = connection.createStatement()) {
+            // check if the stored procedure exists and its content
+            String getBody = "SELECT prosrc FROM pg_proc WHERE proname = '" + procName + "'";
+            logger.log(getBody);
+            try (ResultSet rs = st.executeQuery(getBody)) {
+                if (rs.next()) {
+                    // stored proc already exists
+                    String body = rs.getString(1);
+                    if (normalizeString(procCreate).contains(normalizeString(body))) {
+                        logger.log("  -> exists, unchanged");
+                        return Collections.emptyList();
+                    } else {
+                        logger.log("  -> exists, old");
+                        // we can't drop then recreate as for instance a function used by a trigger
+                        // would say "cannot drop function ... because other objects depend on it"
+                        // so we hack and do an do a replace
+                        if (!procCreate.toLowerCase().startsWith("create ")) {
+                            throw new NuxeoException("Should start with CREATE: " + procCreate);
+                        }
+                        procCreate = "CREATE OR REPLACE " + procCreate.substring("create ".length());
+                        return Collections.singletonList(procCreate);
+                    }
+                } else {
+                    logger.log("  -> missing");
+                    return Collections.singletonList(procCreate);
+                }
+            }
+        }
+    }
+
+    protected static String normalizeString(String string) {
+        return string.replaceAll("[ \n\r\t]+", " ").trim();
     }
 
 }

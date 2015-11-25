@@ -12,6 +12,11 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.sql.Array;
@@ -22,11 +27,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -44,9 +51,11 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.PartialList;
@@ -57,6 +66,7 @@ import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
+import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
@@ -67,6 +77,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -90,8 +101,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     public static final String TEST_UPGRADE_LAST_CONTRIBUTOR = "testUpgradeLastContributor";
 
     public static final String TEST_UPGRADE_LOCKS = "testUpgradeLocks";
-
-    public static final String TEST_UPGRADE_FULLTEXT = "testUpgradeFulltext";
 
     protected TableUpgrader tableUpgrader;
 
@@ -145,9 +154,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      */
 
     @Override
-    public void createDatabase() throws StorageException {
+    public void createDatabase(String ddlMode) throws StorageException {
         try {
-            createTables();
+            createTables(ddlMode);
         } catch (Exception e) {
             checkConnectionReset(e);
             throw new StorageException(e);
@@ -180,13 +189,15 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         return origName;
     }
 
-    protected void createTables() throws SQLException {
-        sqlInfo.executeSQLStatements(null, this); // for missing category
-        sqlInfo.executeSQLStatements("first", this);
-        sqlInfo.executeSQLStatements("beforeTableCreation", this);
+    protected void createTables(String ddlMode) throws SQLException {
+        ListCollector ddlCollector = new ListCollector();
+
+        sqlInfo.executeSQLStatements(null, ddlMode, connection, logger, ddlCollector); // for missing category
+        sqlInfo.executeSQLStatements("first", ddlMode, connection, logger, ddlCollector);
+        sqlInfo.executeSQLStatements("beforeTableCreation", ddlMode, connection, logger, ddlCollector);
         if (testProps.containsKey(TEST_UPGRADE)) {
             // create "old" tables
-            sqlInfo.executeSQLStatements("testUpgrade", this);
+            sqlInfo.executeSQLStatements("testUpgrade", ddlMode, connection, logger, null); // do not collect
         }
 
         String schemaName = dialect.getConnectionSchema(connection);
@@ -195,82 +206,46 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         Database database = sqlInfo.getDatabase();
         Map<String, List<Column>> added = new HashMap<String, List<Column>>();
 
-        Statement st = null;
-        ResultSet rs = null;
-        try {
-            st = connection.createStatement();
-            for (Table table : database.getTables()) {
-                String tableName = getTableName(table.getPhysicalName());
-                if (tableNames.contains(tableName.toUpperCase())) {
-                    dialect.existingTableDetected(connection, table, model, sqlInfo.database);
-                } else {
+        for (Table table : database.getTables()) {
+            String tableName = getTableName(table.getPhysicalName());
+            if (!tableNames.contains(tableName.toUpperCase())) {
 
-                    /*
-                     * Create missing table.
-                     */
+                /*
+                 * Create missing table.
+                 */
 
-                    boolean create = dialect.preCreateTable(connection, table, model, sqlInfo.database);
-                    if (!create) {
-                        log.warn("Creation skipped for table: " + tableName);
-                        continue;
-                    }
+                ddlCollector.add(table.getCreateSql());
+                ddlCollector.addAll(table.getPostCreateSqls(model));
 
-                    String sql = table.getCreateSql();
-                    logger.log(sql);
-                    try {
-                        st.execute(sql);
-                        countExecute();
-                    } catch (SQLException e) {
-                        try {
-                            closeStatement(st);
-                        } finally {
-                            throw new SQLException("Error creating table: " + sql + " : " + e.getMessage(), e);
-                        }
-                    }
+                added.put(table.getKey(), null); // null = table created
 
-                    for (String s : table.getPostCreateSqls(model)) {
-                        logger.log(s);
-                        try {
-                            st.execute(s);
-                            countExecute();
-                        } catch (SQLException e) {
-                            throw new SQLException("Error post creating table: " + s + " : " + e.getMessage(), e);
-                        }
-                    }
-                    for (String s : dialect.getPostCreateTableSqls(table, model, sqlInfo.database)) {
-                        logger.log(s);
-                        try {
-                            st.execute(s);
-                            countExecute();
-                        } catch (SQLException e) {
-                            throw new SQLException("Error post creating table: " + s + " : " + e.getMessage(), e);
-                        }
-                    }
-                    added.put(table.getKey(), null); // null = table created
-                }
+                sqlInfo.sqlStatementsProperties.put("create_table_" + tableName.toLowerCase(), Boolean.TRUE);
+
+            } else {
 
                 /*
                  * Get existing columns.
                  */
 
-                rs = metadata.getColumns(null, schemaName, tableName, "%");
                 Map<String, Integer> columnTypes = new HashMap<String, Integer>();
                 Map<String, String> columnTypeNames = new HashMap<String, String>();
                 Map<String, Integer> columnTypeSizes = new HashMap<String, Integer>();
-                while (rs.next()) {
-                    String schema = rs.getString("TABLE_SCHEM");
-                    if (schema != null) { // null for MySQL, doh!
-                        if ("INFORMATION_SCHEMA".equals(schema.toUpperCase())) {
-                            // H2 returns some system tables (locks)
-                            continue;
+                try (ResultSet rs = metadata.getColumns(null, schemaName, tableName, "%")) {
+                    while (rs.next()) {
+                        String schema = rs.getString("TABLE_SCHEM");
+                        if (schema != null) { // null for MySQL, doh!
+                            if ("INFORMATION_SCHEMA".equals(schema.toUpperCase())) {
+                                // H2 returns some system tables (locks)
+                                continue;
+                            }
                         }
+                        String columnName = rs.getString("COLUMN_NAME").toUpperCase();
+                        columnTypes.put(columnName, Integer.valueOf(rs.getInt("DATA_TYPE")));
+                        columnTypeNames.put(columnName, rs.getString("TYPE_NAME"));
+                        columnTypeSizes.put(columnName, Integer.valueOf(rs.getInt("COLUMN_SIZE")));
                     }
-                    String columnName = rs.getString("COLUMN_NAME").toUpperCase();
-                    columnTypes.put(columnName, Integer.valueOf(rs.getInt("DATA_TYPE")));
-                    columnTypeNames.put(columnName, rs.getString("TYPE_NAME"));
-                    columnTypeSizes.put(columnName, Integer.valueOf(rs.getInt("COLUMN_SIZE")));
                 }
-                rs.close();
+
                 /*
                  * Update types and create missing columns.
                  */
@@ -281,23 +256,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     Integer type = columnTypes.remove(upperName);
                     if (type == null) {
                         log.warn("Adding missing column in database: " + column.getFullQuotedName());
-                        String sql = table.getAddColumnSql(column);
-                        logger.log(sql);
-                        try {
-                            st.execute(sql);
-                            countExecute();
-                        } catch (SQLException e) {
-                            throw new SQLException("Error adding column: " + sql + " : " + e.getMessage(), e);
-                        }
-                        for (String s : table.getPostAddSqls(column, model)) {
-                            logger.log(s);
-                            try {
-                                st.execute(s);
-                                countExecute();
-                            } catch (SQLException e) {
-                                throw new SQLException("Error post adding column: " + s + " : " + e.getMessage(), e);
-                            }
-                        }
+                        ddlCollector.add(table.getAddColumnSql(column));
+                        ddlCollector.addAll(table.getPostAddSqls(column, model));
                         addedColumns.add(column);
                     } else {
                         int expected = column.getJdbcType();
@@ -306,7 +266,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         Integer actualSize = columnTypeSizes.get(upperName);
                         if (!column.setJdbcType(actual, actualName, actualSize.intValue())) {
                             log.error(String.format("SQL type mismatch for %s: expected %s, database has %s / %s (%s)",
-                                    column.getFullQuotedName(), Integer.valueOf(expected), type, actualName, actualSize));
+                                    column.getFullQuotedName(), Integer.valueOf(expected), type, actualName,
+                                    actualSize));
                         }
                     }
                 }
@@ -324,32 +285,119 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     added.put(table.getKey(), addedColumns);
                 }
             }
-        } finally {
-            try {
-                closeStatement(st, rs);
-            } catch (SQLException e) {
-                log.error(e.getMessage(), e);
-            }
         }
 
         if (testProps.containsKey(TEST_UPGRADE)) {
             // create "old" content in tables
-            sqlInfo.executeSQLStatements("testUpgradeOldTables", this);
+            sqlInfo.executeSQLStatements("testUpgradeOldTables", ddlMode, connection, logger, ddlCollector);
         }
 
         // run upgrade for each table if added columns or test
         for (Entry<String, List<Column>> en : added.entrySet()) {
             List<Column> addedColumns = en.getValue();
             String tableKey = en.getKey();
-            upgradeTable(tableKey, addedColumns);
+            upgradeTable(tableKey, addedColumns, ddlMode, ddlCollector);
         }
-        sqlInfo.executeSQLStatements("afterTableCreation", this);
-        sqlInfo.executeSQLStatements("last", this);
+
+        sqlInfo.executeSQLStatements("afterTableCreation", ddlMode, connection, logger, ddlCollector);
+        sqlInfo.executeSQLStatements("last", ddlMode, connection, logger, ddlCollector);
+
+        // aclr_permission check for PostgreSQL
         dialect.performAdditionalStatements(connection);
+
+        /*
+         * Execute all the collected DDL, or dump it if requested, depending on ddlMode
+         */
+
+        // ddlMode may be:
+        // ignore (not treated here, nothing done)
+        // dump (implies execute)
+        // dump,execute
+        // dump,ignore (no execute)
+        // execute
+        // abort (implies dump)
+        // compat can be used instead of execute to always recreate stored procedures
+
+        List<String> ddl = ddlCollector.getStrings();
+        boolean ignore = ddlMode.contains(RepositoryDescriptor.DDL_MODE_IGNORE);
+        boolean dump = ddlMode.contains(RepositoryDescriptor.DDL_MODE_DUMP);
+        boolean abort = ddlMode.contains(RepositoryDescriptor.DDL_MODE_ABORT);
+        if (dump || abort) {
+
+            /*
+             * Dump DDL if not empty.
+             */
+
+            if (!ddl.isEmpty()) {
+                File dumpFile = new File(Environment.getDefault().getLog(), "ddl-vcs-" + repository.getName() + ".sql");
+                try (OutputStream out = new FileOutputStream(dumpFile); PrintStream ps = new PrintStream(out)) {
+                    for (String sql : dialect.getDumpStart()) {
+                        ps.println(sql);
+                    }
+                    for (String sql : ddl) {
+                        sql = sql.trim();
+                        if (sql.endsWith(";")) {
+                            sql = sql.substring(0, sql.length() - 1);
+                        }
+                        ps.println(dialect.getSQLForDump(sql));
+                    }
+                    for (String sql : dialect.getDumpStop()) {
+                        ps.println(sql);
+                    }
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
+                }
+
+                /*
+                 * Abort if requested.
+                 */
+
+                if (abort) {
+                    log.error("Dumped DDL to: " + dumpFile);
+                    throw new NuxeoException("Database initialization failed for: " + repository.getName()
+                            + ", DDL must be executed: " + dumpFile);
+                }
+            }
+        }
+        if (!ignore) {
+
+            /*
+             * Execute DDL.
+             */
+
+            try (Statement st = connection.createStatement()) {
+                for (String sql : ddl) {
+                    logger.log(sql.replace("\n", "\n    ")); // indented
+                    try {
+                        st.execute(sql);
+                    } catch (SQLException e) {
+                        throw new SQLException("Error executing: " + sql + " : " + e.getMessage(), e);
+                    }
+                    countExecute();
+                }
+            }
+
+            /*
+             * Execute post-DDL stuff.
+             */
+
+            try (Statement st = connection.createStatement()) {
+                for (String sql : dialect.getStartupSqls(model, sqlInfo.database)) {
+                    logger.log(sql.replace("\n", "\n    ")); // indented
+                    try {
+                        st.execute(sql);
+                    } catch (SQLException e) {
+                        throw new SQLException("Error executing: " + sql + " : " + e.getMessage(), e);
+                    }
+                    countExecute();
+                }
+            }
+        }
     }
 
-    protected void upgradeTable(String tableKey, List<Column> addedColumns) throws SQLException {
-        tableUpgrader.upgrade(tableKey, addedColumns);
+    protected void upgradeTable(String tableKey, List<Column> addedColumns, String ddlMode, ListCollector ddlCollector)
+            throws SQLException {
+        tableUpgrader.upgrade(tableKey, addedColumns, ddlMode, ddlCollector);
     }
 
     /** Finds uppercase table names. */

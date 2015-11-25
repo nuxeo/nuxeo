@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
@@ -615,6 +617,15 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
+    public List<String> getStartupSqls(Model model, Database database) {
+        if (aclOptimizationsEnabled) {
+            log.info("Vacuuming tables used by optimized acls");
+            return Arrays.asList("EXEC nx_vacuum_read_acls");
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
     public boolean isClusteringSupported() {
         return true;
     }
@@ -788,6 +799,52 @@ public class DialectSQLServer extends Dialect {
     @Override
     public String getSoftDeleteCleanupSql() {
         return "{?= call dbo.NX_DELETE_PURGE(?, ?)}";
+    }
+
+    @Override
+    public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
+            JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
+        boolean compatCheck = ddlMode.contains(RepositoryDescriptor.DDL_MODE_COMPAT);
+        String procCreateLower = procCreate.toLowerCase();
+        String procDrop;
+        if (procCreateLower.startsWith("create function ")) {
+            procDrop = "DROP FUNCTION " + procName;
+        } else if (procCreateLower.startsWith("create procedure ")) {
+            procDrop = "DROP PROCEDURE " + procName;
+        } else {
+            procDrop = "DROP TRIGGER " + procName;
+        }
+        if (compatCheck) {
+            procDrop = "IF OBJECT_ID('" + procName + "') IS NOT NULL " + procDrop;
+            return Arrays.asList(procDrop, procCreate);
+        }
+        try (Statement st = connection.createStatement()) {
+            String getBody = "SELECT OBJECT_DEFINITION(OBJECT_ID('" + procName + "'))";
+            logger.log(getBody);
+            try (ResultSet rs = st.executeQuery(getBody)) {
+                rs.next();
+                String body = rs.getString(1);
+                if (body == null) {
+                    logger.log("  -> missing");
+                    return Collections.singletonList(procCreate);
+                } else if (normalizeString(procCreate).contains(normalizeString(body))) {
+                    logger.log("  -> exists, unchanged");
+                    return Collections.emptyList();
+                } else {
+                    logger.log("  -> exists, old");
+                    return Arrays.asList(procDrop, procCreate);
+                }
+            }
+        }
+    }
+
+    protected static String normalizeString(String string) {
+        return string.replaceAll("[ \n\r\t]+", " ").trim();
+    }
+
+    @Override
+    public String getSQLForDump(String sql) {
+        return sql + "\nGO";
     }
 
 }

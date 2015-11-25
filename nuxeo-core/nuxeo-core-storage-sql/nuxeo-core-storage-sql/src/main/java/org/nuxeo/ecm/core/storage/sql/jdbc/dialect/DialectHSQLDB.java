@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,6 +27,7 @@ import org.nuxeo.ecm.core.storage.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
@@ -279,6 +281,12 @@ public class DialectHSQLDB extends Dialect {
     @Override
     public String addPagingClause(String sql, long limit, long offset) {
         return sql + String.format(" LIMIT %d OFFSET %d", limit, offset);
+    }
+
+    @Override
+    public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
+            JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -76,9 +76,10 @@ public interface Mapper extends RowMapper, XAResource {
 
     /**
      * Creates the necessary structures in the database.
+     *
+     * @param ddlMode the DDL execution mode
      */
-    // TODO
-    void createDatabase() throws StorageException;
+    void createDatabase(String ddlMode) throws StorageException;
 
     /*
      * ========== Methods returning non-Rows ==========

@@ -16,19 +16,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.storage.sql.Activator;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 
 /**
  * A SQL statement and some optional tags that condition execution.
@@ -56,17 +60,61 @@ public class SQLStatement {
          */
         public static final String TAG_IF = "#IF:";
 
+        /**
+         * Tag to define a stored procedure / function / type / trigger. Followed by its name. Use by
+         * {@link Dialect#checkStoredProcedure}.
+         */
+        public static final String TAG_PROC = "#PROC:";
+
+        /**
+         * Tag to set a var to true if the result if the statement is empty.
+         */
+        public static final String TAG_SET_IF_EMPTY = "#SET_IF_EMPTY:";
+
+        /**
+         * Tag to set a var to true if the result if the statement is not empty.
+         */
+        public static final String TAG_SET_IF_NOT_EMPTY = "#SET_IF_NOT_EMPTY:";
+
         public static final String VAR_EMPTY_RESULT = "emptyResult";
 
-        /** Tag: TAG_TEST, TAG_IF */
+        /** The tag key. */
         public final String key;
 
-        /** The value behind a tag, used for TAG_IF */
+        /**
+         * The value behind a tag, used for {@link #TAG_IF}, {@link #TAG_PROC}, {@link #TAG_SET_IF_EMPTY},
+         * {@link #TAG_SET_IF_NOT_EMPTY}
+         */
         public final String value;
 
         public Tag(String key, String value) {
             this.key = key;
             this.value = value;
+        }
+    }
+
+    /**
+     * Collects a list of strings.
+     *
+     * @since 6.0-HF24, 7.10-HF01, 8.1
+     */
+    public static class ListCollector {
+
+        private final List<String> list = new ArrayList<>();
+
+        /** Collects one string. */
+        public void add(String string) {
+            list.add(string);
+        }
+
+        /** Collects several strings. */
+        public void addAll(List<String> strings) {
+            list.addAll(strings);
+        }
+
+        /** Gets the collected strings. */
+        public List<String> getStrings() {
+            return list;
         }
     }
 
@@ -122,6 +170,11 @@ public class SQLStatement {
      */
     public static Map<String, List<SQLStatement>> read(String filename, Map<String, List<SQLStatement>> statements)
             throws IOException {
+        return read(filename, statements, false);
+    }
+
+    public static Map<String, List<SQLStatement>> read(String filename, Map<String, List<SQLStatement>> statements,
+            boolean allDDL) throws IOException {
         InputStream is = Activator.getResourceAsStream(filename);
         if (is == null) {
             throw new IOException("Cannot open: " + filename);
@@ -129,24 +182,28 @@ public class SQLStatement {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         String line;
         String category = null;
-        List<Tag> tags = null;
+        List<Tag> tags = new LinkedList<>();
         try {
             while ((line = reader.readLine()) != null) {
-                if (line.startsWith(SQLStatement.CATEGORY)) {
-                    category = line.substring(SQLStatement.CATEGORY.length()).trim();
+                int colonPos = line.indexOf(':');
+                String key = colonPos < 0 ? "" : line.substring(0, colonPos + 1);
+                String value = colonPos < 0 ? "" : line.substring(colonPos + 1).trim();
+                switch (key) {
+                case SQLStatement.CATEGORY:
+                    category = value;
                     continue;
-                } else if (line.startsWith(Tag.TAG_TEST) || line.startsWith(Tag.TAG_IF)) {
-                    String key = line.substring(0, line.indexOf(':') + 1);
-                    String value = line.substring(key.length()).trim();
+                case Tag.TAG_TEST:
+                case Tag.TAG_IF:
+                case Tag.TAG_PROC:
+                case Tag.TAG_SET_IF_EMPTY:
+                case Tag.TAG_SET_IF_NOT_EMPTY:
                     if (value.length() == 0) {
                         value = null;
                     }
-                    if (tags == null) {
-                        tags = new LinkedList<Tag>();
-                    }
                     tags.add(new Tag(key, value));
                     continue;
-                } else if (line.startsWith("#")) {
+                }
+                if (line.startsWith("#")) {
                     continue;
                 }
                 StringBuilder buf = new StringBuilder();
@@ -176,7 +233,7 @@ public class SQLStatement {
                         buf.append('\n');
                     }
                 }
-                tags = null;
+                tags = new LinkedList<>();
                 if (line == null) {
                     break;
                 }
@@ -201,59 +258,77 @@ public class SQLStatement {
     /**
      * Executes a list of SQL statements, following the tags.
      */
-    public static void execute(List<SQLStatement> statements, Map<String, Serializable> properties, JDBCConnection jdbc)
-            throws SQLException {
-        Statement st = jdbc.connection.createStatement();
-        try {
+    public static void execute(List<SQLStatement> statements, String ddlMode, Map<String, Serializable> properties,
+            Dialect dialect, Connection connection, JDBCLogger logger, ListCollector ddlCollector) throws SQLException {
+        try (Statement st = connection.createStatement()) {
             STATEMENT: //
             for (SQLStatement statement : statements) {
                 boolean test = false;
+                String proc = null;
+                Set<String> setIfEmpty = new HashSet<>();
+                Set<String> setIfNotEmpty = new HashSet<>();
                 for (Tag tag : statement.tags) {
-                    if (tag.key.equals(Tag.TAG_TEST)) {
+                    switch (tag.key) {
+                    case Tag.TAG_TEST:
                         test = true;
-                    } else if (tag.key.equals(Tag.TAG_IF)) {
-                        String key = tag.value;
-                        boolean neg = key.startsWith("!");
-                        if (neg) {
-                            key = key.substring(1).trim();
+                        break;
+                    case Tag.TAG_PROC:
+                        proc = tag.value;
+                        break;
+                    case Tag.TAG_IF:
+                        String expr = tag.value;
+                        boolean res = false;
+                        for (String key : expr.split(" OR: ")) {
+                            boolean neg = key.startsWith("!");
+                            if (neg) {
+                                key = key.substring(1).trim();
+                            }
+                            Serializable value = properties.get(key);
+                            if (value == null) {
+                                logger.log("Defaulting to false: " + key);
+                                value = Boolean.FALSE;
+                            }
+                            if (!(value instanceof Boolean)) {
+                                logger.error("Not a boolean condition: " + key);
+                                continue STATEMENT;
+                            }
+                            if (((Boolean) value).booleanValue() != neg) {
+                                res = true;
+                                break;
+                            }
                         }
-                        Serializable value = properties.get(key);
-                        if (value == null) {
-                            jdbc.logger.error("Unknown condition: " + key);
+                        if (!res) {
                             continue STATEMENT;
                         }
-                        if (!(value instanceof Boolean)) {
-                            jdbc.logger.error("Not a boolean condition: " + key);
-                            continue STATEMENT;
-                        }
-                        if (((Boolean) value).booleanValue() == neg) {
-                            // condition failed
-                            continue STATEMENT;
-                        }
-                        // ok
+                        break;
+                    case Tag.TAG_SET_IF_EMPTY:
+                        setIfEmpty.add(tag.value);
+                        break;
+                    case Tag.TAG_SET_IF_NOT_EMPTY:
+                        setIfNotEmpty.add(tag.value);
+                        break;
                     }
                 }
                 String sql = statement.sql;
                 sql = replaceVars(sql, properties);
                 if (sql.startsWith("LOG.DEBUG")) {
                     String msg = sql.substring("LOG.DEBUG".length()).trim();
-                    jdbc.logger.log(msg);
+                    logger.log(msg);
                     continue;
                 } else if (sql.startsWith("LOG.INFO")) {
                     String msg = sql.substring("LOG.INFO".length()).trim();
-                    jdbc.logger.info(msg);
+                    logger.info(msg);
                     continue;
                 } else if (sql.startsWith("LOG.ERROR")) {
                     String msg = sql.substring("LOG.ERROR".length()).trim();
-                    jdbc.logger.error(msg);
+                    logger.error(msg);
                     continue;
                 } else if (sql.startsWith("LOG.FATAL")) {
                     String msg = sql.substring("LOG.FATAL".length()).trim();
-                    jdbc.logger.error(msg);
+                    logger.error(msg);
                     throw new SQLException("Fatal error: " + msg);
                 }
 
-                jdbc.logger.log(sql.replace("\n", "\n    ")); // indented
                 if (sql.endsWith(";") && properties.containsKey(DIALECT_WITH_NO_SEMICOLON)) {
                     // derby at least doesn't allow a terminating semicolon
                     sql = sql.substring(0, sql.length() - 1);
@@ -261,20 +336,36 @@ public class SQLStatement {
 
                 try {
                     if (test) {
-                        ResultSet rs = st.executeQuery(sql);
-                        Boolean emptyResult = Boolean.valueOf(!rs.next());
-                        properties.put(Tag.VAR_EMPTY_RESULT, emptyResult);
-                        jdbc.logger.log("  -> emptyResult = " + emptyResult);
-                        rs.close();
+                        logger.log(sql.replace("\n", "\n    ")); // indented
+                        try (ResultSet rs = st.executeQuery(sql)) {
+                            boolean empty = !rs.next();
+                            properties.put(Tag.VAR_EMPTY_RESULT, Boolean.valueOf(empty));
+                            logger.log("  -> emptyResult = " + empty);
+                            if (empty) {
+                                for (String prop : setIfEmpty) {
+                                    properties.put(prop, Boolean.TRUE);
+                                    logger.log("  -> " + prop + " = true");
+                                }
+                            } else {
+                                for (String prop : setIfNotEmpty) {
+                                    logger.log("  -> " + prop + " = true");
+                                }
+                            }
+                        }
+                    } else if (proc != null) {
+                        ddlCollector.addAll(
+                                dialect.checkStoredProcedure(proc, sql, ddlMode, connection, logger, properties));
+                    } else if (ddlCollector != null) {
+                        ddlCollector.add(sql);
                     } else {
+                        // upgrade stuff, execute immediately
+                        logger.log(sql.replace("\n", "\n    ")); // indented
                         st.execute(sql);
                     }
                 } catch (SQLException e) {
                     throw new SQLException("Error executing: " + sql + " : " + e.getMessage(), e);
                 }
             }
-        } finally {
-            st.close();
         }
     }
 
