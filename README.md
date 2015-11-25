@@ -54,14 +54,15 @@ purpose.
    nxserver/bundles directory
 2. Start the server.
 
-## Launching webdriver tests
+## Launching Webdriver Tests
 
     mvn clean install -Pitest
 
 
 # Development
 
-## Adding a new widget type
+## Adding a New Widget Type
+
 To add a new widget type to the application, you need to:
 - add a xhtml template in nuxeo.war/layoutDemo/demoWidgets
 - declare this template with a view id in OSGI-INF/deployment-fragment.xml
