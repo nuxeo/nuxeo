@@ -57,6 +57,17 @@
     <module>nuxeo-platform-test</module>
     <module>nuxeo-platform-query-api</module>
     <module>nuxeo-platform-oauth</module>
+    <module>nuxeo-platform-login-cas2</module>
+    <module>nuxeo-platform-login-mod_sso</module>
+    <module>nuxeo-platform-login-ntlm</module>
+    <module>nuxeo-platform-login-portal-sso</module>
+    <module>nuxeo-platform-login-cleartrust</module>
+    <module>nuxeo-platform-login-shibboleth</module>
+    <module>nuxeo-platform-login-digest</module>
+    <module>nuxeo-platform-login-deputy</module>
+    <module>nuxeo-platform-login-token</module>
+    <module>nuxeo-platform-login-openid</module>
+    <module>nuxeo-platform-login-kerberos</module>
   </modules>
 
   <dependencies>

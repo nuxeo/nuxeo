@@ -3,35 +3,19 @@
 
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-login-parent</artifactId>
+    <artifactId>nuxeo-services-parent</artifactId>
     <version>5.8.0-HF37-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-login-openid</artifactId>
-  <name>OpenId / OAuth 2 authentication plugin for Nuxeo EP</name>
-  <description>Nuxeo Enterprise Platform: OpenID</description>
+  <artifactId>nuxeo-platform-login-cas2</artifactId>
+  <name>CAS2 authentication plugin for Nuxeo EP</name>
+  <description>Nuxeo Enterprise Platform: CAS2</description>
 
   <dependencies>
-    <!-- <dependency> -->
-    <!-- <groupId>org.nuxeo.ecm.platform</groupId> -->
-    <!-- <artifactId>nuxeo-platform-ui-web</artifactId> -->
-    <!-- <scope>provided</scope> -->
-    <!-- </dependency> -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-oauth</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-web-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-login</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-usermanager-api</artifactId>
+      <artifactId>nuxeo-platform-ui-web</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -42,6 +26,10 @@
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>jsp-api</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.ejb</groupId>
+      <artifactId>ejb-api</artifactId>
     </dependency>
 
     <dependency>
@@ -54,10 +42,18 @@
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-directory-api</artifactId>
+      <artifactId>nuxeo-platform-login</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-usermanager-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -67,18 +63,25 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-sql</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-webapp-base</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-web-common</artifactId>
     </dependency>
   </dependencies>
 

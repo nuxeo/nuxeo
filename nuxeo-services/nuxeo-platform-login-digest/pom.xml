@@ -1,35 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-login-parent</artifactId>
+    <artifactId>nuxeo-services-parent</artifactId>
     <version>5.8.0-HF37-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-login-mod_sso</artifactId>
-  <name>Nuxeo mod_sso plugin for LoginModule</name>
+  <artifactId>nuxeo-platform-login-digest</artifactId>
+  <name>Nuxeo HTTP Digest Authentication plugin</name>
   <description>
-    Nuxeo Enterprise Platform: Login module using Apache's mod_sso plugin to
-    authenticate users.
+    Nuxeo EP plugin to support HTTP Digest Access authentication (RFC 2617)
   </description>
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-login</artifactId>
-      <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-ui-web</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
+      <artifactId>nuxeo-platform-web-common</artifactId>
     </dependency>
 
     <dependency>
@@ -46,6 +37,21 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+
+      <dependency>
+          <groupId>net.sf.opencsv</groupId>
+          <artifactId>opencsv</artifactId>
+      </dependency>
+
+
   </dependencies>
 
 </project>
