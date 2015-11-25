@@ -22,7 +22,6 @@
     <nuxeo.addons.version>5.8.0-HF37-SNAPSHOT</nuxeo.addons.version>
     <nuxeo.opencmis.version>5.8.0-HF37-SNAPSHOT</nuxeo.opencmis.version>
     <nuxeo.marianne.version>5.8.0-HF37-SNAPSHOT</nuxeo.marianne.version>
-    <nuxeo.login.version>5.8.0-HF37-SNAPSHOT</nuxeo.login.version>
     <nuxeo.facetedsearch.version>5.8.0-HF37-SNAPSHOT</nuxeo.facetedsearch.version>
     <nuxeo.shell.version>5.8.0-HF37-SNAPSHOT</nuxeo.shell.version>
     <nuxeo.webembedded.version>5.8.0-HF37-SNAPSHOT</nuxeo.webembedded.version>
@@ -78,7 +77,6 @@
     <module>nuxeo-jboss-jca-configurator</module>
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-classification</module>
-    <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-document-routing</module>
     <module>nuxeo-platform-faceted-search</module>
     <module>nuxeo-platform-error-web</module>
@@ -160,58 +158,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-correspondence-marianne-core</artifactId>
         <version>${nuxeo.marianne.version}</version>
-      </dependency>
-
-      <!-- Login -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-cas2</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-cleartrust</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-deputy</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-digest</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-mod_sso</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-ntlm</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-portal-sso</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-shibboleth</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-token</artifactId>
-        <version>${nuxeo.login.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-login-kerberos</artifactId>
-        <version>${nuxeo.login.version}</version>
       </dependency>
 
       <!-- Faceted Search -->
