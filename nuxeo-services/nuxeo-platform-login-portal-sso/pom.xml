@@ -2,37 +2,34 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-login-parent</artifactId>
+    <artifactId>nuxeo-services-parent</artifactId>
     <version>8.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-login-kerberos</artifactId>
-  <name>Nuxeo Kerberos authentication plugin</name>
-  <description>
-    Nuxeo Enterprise Platform: Plugin for SPNEGO/Kerberos authentication
-  </description>
+  <artifactId>nuxeo-platform-login-portal-sso</artifactId>
+  <name>Nuxeo portal authentication plugin for LoginModule</name>
+  <description>Nuxeo Enterprise Platform: Login module
+    using sso headers to validate authentication of requests coming from a portal.</description>
 
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-login</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-web</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>javax.servlet.jsp</groupId>
       <artifactId>jsp-api</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>

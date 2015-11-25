@@ -2,15 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-platform-login-parent</artifactId>
+    <artifactId>nuxeo-services-parent</artifactId>
     <version>8.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-platform-login-mod_sso</artifactId>
-  <name>Nuxeo mod_sso plugin for LoginModule</name>
+  <artifactId>nuxeo-platform-login-kerberos</artifactId>
+  <name>Nuxeo Kerberos authentication plugin</name>
   <description>
-    Nuxeo Enterprise Platform: Login module using Apache's mod_sso plugin to
-    authenticate users.
+    Nuxeo Enterprise Platform: Plugin for SPNEGO/Kerberos authentication
   </description>
 
   <dependencies>
@@ -24,12 +23,6 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-ui-web</artifactId>
       <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.nuxeo.runtime</groupId>
-      <artifactId>nuxeo-runtime-test</artifactId>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
