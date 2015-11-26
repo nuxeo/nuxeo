@@ -35,6 +35,11 @@
       <param name="name" value="elasticsearch.enabled" />
       <param name="value" value="false" />
     </antcall>
+    <!-- enable js list -->
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.jsf.listWidget.compatEnabled" />
+      <param name="value" value="false" />
+    </antcall>
   </target>
 
   <target name="download" unless="no.download">
