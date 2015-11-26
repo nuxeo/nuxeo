@@ -73,7 +73,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget.addNewElement();
         assertEquals(1, listWidget.getRows().size());
         listWidget = page.submitListArrayWidget();
-        assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_listItem", 0));
+        assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_listItem", 0, 1));
 
         listWidget.getSubWidget("nxw_listItem", 0).setInputValue("test");
         listWidget.addNewElement();
@@ -102,7 +102,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget.addNewElement();
         assertEquals(1, listWidget.getRows().size());
         listWidget = page.submitListWidget();
-        assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_listItem", 0, 1));
+        assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_listItem", 0, 3));
 
         listWidget.getSubWidget("nxw_listItem_2", 0).setInputValue("test");
         listWidget.addNewElement();
@@ -155,12 +155,12 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget = page.submitComplexListWidget();
 
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
-        assertEquals("'lala' is not a number. Example: 99.",
-                listWidget.getSubWidgetMessageValue("nxw_intComplexItem", 0));
+        assertEquals("'lala' is not a number. Example: 99",
+                listWidget.getSubWidgetMessageValue("nxw_intComplexItem", 0, 1));
 
         listWidget.getSubWidget("nxw_intComplexItem", 0).setInputValue("3");
         listWidget = page.submitComplexListWidget();
-        assertThat(listWidget.getSubWidgetMessageValue("nxw_intComplexItem", 0), isEmptyString());
+        assertThat(listWidget.getSubWidgetMessageValue("nxw_intComplexItem", 0, 1), isEmptyString());
 
         // View mode
         listWidget = page.getComplexListViewWidget();
@@ -250,14 +250,14 @@ public class ITJSListWidgetTest extends AbstractTest {
 
         listWidget = page.submitListOfListsWidget();
 
-        assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0));
+        assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0, 1));
 
         WidgetElement stringArrayItem = listWidget.getSubWidget("nxw_stringArrayItem", 0, WidgetElement.class, false);
         new Select(stringArrayItem.getInputElement()).selectByValue("cartman");
 
         listWidget = page.submitListOfListsWidget();
 
-        assertThat(listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0), isEmptyString());
+        assertThat(listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0, 1), isEmptyString());
 
         JSListWidgetElement stringListItem = listWidget.getSubWidget("nxw_stringListItem", 0, JSListWidgetElement.class,
                 false);
@@ -281,7 +281,7 @@ public class ITJSListWidgetTest extends AbstractTest {
 
         assertEquals("test", listWidget.getSubWidget("nxw_stringItem_1", 0).getOutputValue());
 
-        stringArrayItem = listWidget.getWidget("stringArrayItem", WidgetElement.class);
+        stringArrayItem = listWidget.getWidget("stringArrayItem_1", WidgetElement.class);
         assertEquals("Eric Cartman", stringArrayItem.getOutputValue());
 
         stringListItem = listWidget.getSubWidget("nxw_stringListItem_1", 0, JSListWidgetElement.class, false);
@@ -305,7 +305,7 @@ public class ITJSListWidgetTest extends AbstractTest {
 
         assertEquals("test", listWidget.getSubWidget("nxw_stringItem_1", 0).getOutputValue());
 
-        stringArrayItem = listWidget.getWidget("stringArrayItem", WidgetElement.class);
+        stringArrayItem = listWidget.getWidget("stringArrayItem_1", WidgetElement.class);
         assertEquals("Eric Cartman", stringArrayItem.getOutputValue());
         assertEquals(1, stringListItem.getRows().size());
 
@@ -374,7 +374,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         // submit => there should not be any validation error
         listWidget = page.submitListOfListsWidget();
 
-        assertNotEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0));
+        assertNotEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0, 1));
     }
 
     /**
@@ -404,8 +404,8 @@ public class ITJSListWidgetTest extends AbstractTest {
         // submit => there should not be a validation error on second item
         listWidget = page.submitListOfListsWidget();
 
-        assertNotEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0));
-        assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 1));
+        assertNotEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0, 1));
+        assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 1, 1));
     }
 
 }
