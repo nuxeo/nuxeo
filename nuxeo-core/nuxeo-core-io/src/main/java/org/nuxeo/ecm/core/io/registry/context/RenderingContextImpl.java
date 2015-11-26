@@ -40,6 +40,7 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_ENRICHER
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.EMBED_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
+import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.SEPARATOR;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.TRANSLATE_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.WRAPPED_CONTEXT;
 
@@ -150,14 +151,22 @@ public class RenderingContextImpl implements RenderingContext {
         return getSplittedParameterValues(EMBED_ENRICHERS, entity);
     }
 
-    @SuppressWarnings("deprecation")
     private Set<String> getSplittedParameterValues(String category, String... subCategories) {
+        // supports dot '.' as separator
+        Set<String> result = getSplittedParameterValues('.', category, subCategories);
+        // supports hyphen '-' as separator
+        result.addAll(getSplittedParameterValues(SEPARATOR, category, subCategories));
+        return result;
+    }
+
+    @SuppressWarnings("deprecation")
+    private Set<String> getSplittedParameterValues(char separator, String category, String... subCategories) {
         if (category == null) {
             return Collections.emptySet();
         }
         String paramKey = category;
         for (String subCategory : subCategories) {
-            paramKey += "." + subCategory;
+            paramKey += separator + subCategory;
         }
         paramKey = paramKey.toLowerCase();
         List<Object> dirty = getParameters(paramKey);
@@ -165,7 +174,7 @@ public class RenderingContextImpl implements RenderingContext {
         // backward compatibility, supports X-NXDocumentProperties and X-NXContext-Category
         if (EMBED_PROPERTIES.toLowerCase().equals(paramKey)) {
             dirty.addAll(getParameters(MarshallingConstants.DOCUMENT_PROPERTIES_HEADER));
-        } else if ((EMBED_ENRICHERS + "." + ENTITY_TYPE).toLowerCase().equals(paramKey)) {
+        } else if ((EMBED_ENRICHERS + separator + ENTITY_TYPE).toLowerCase().equals(paramKey)) {
             dirty.addAll(getParameters(MarshallingConstants.NXCONTENT_CATEGORY_HEADER));
         }
         Set<String> result = new TreeSet<String>();
@@ -350,24 +359,24 @@ public class RenderingContextImpl implements RenderingContext {
             return paramValues(EMBED_PROPERTIES, (Object[]) schemaName);
         }
 
-        public RenderingContextBuilder fetch(String entityType, String... propertyName) {
-            return paramValues(FETCH_PROPERTIES + "." + entityType, (Object[]) propertyName);
-        }
-
-        public RenderingContextBuilder translate(String entityType, String... propertyName) {
-            return paramValues(TRANSLATE_PROPERTIES + "." + entityType, (Object[]) propertyName);
-        }
-
-        public RenderingContextBuilder fetchInDoc(String... propertyName) {
-            return paramValues(FETCH_PROPERTIES + "." + ENTITY_TYPE, (Object[]) propertyName);
+        public RenderingContextBuilder enrich(String entityType, String... enricherName) {
+            return paramValues(EMBED_ENRICHERS + SEPARATOR + entityType, (Object[]) enricherName);
         }
 
         public RenderingContextBuilder enrichDoc(String... enricherName) {
-            return paramValues(EMBED_ENRICHERS + "." + ENTITY_TYPE, (Object[]) enricherName);
+            return enrich(ENTITY_TYPE, enricherName);
         }
 
-        public RenderingContextBuilder enrich(String entityType, String... enricherName) {
-            return paramValues(EMBED_ENRICHERS + "." + ENTITY_TYPE, (Object[]) enricherName);
+        public RenderingContextBuilder fetch(String entityType, String... propertyName) {
+            return paramValues(FETCH_PROPERTIES + SEPARATOR + entityType, (Object[]) propertyName);
+        }
+
+        public RenderingContextBuilder fetchInDoc(String... propertyName) {
+            return fetch(ENTITY_TYPE, propertyName);
+        }
+
+        public RenderingContextBuilder translate(String entityType, String... propertyName) {
+            return paramValues(TRANSLATE_PROPERTIES + SEPARATOR + entityType, (Object[]) propertyName);
         }
 
         public RenderingContextBuilder depth(DepthValues value) {
