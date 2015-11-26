@@ -123,6 +123,23 @@ final class StampState implements Externalizable {
         }
     }
 
+    /**
+     * Clears the held components state for given index.
+     *
+     * @since 8.1
+     */
+    public void clearIndex(int index) {
+        if (!rows.isEmpty()) {
+            Iterator<DualKey> iter = rows.keySet().iterator();
+            while (iter.hasNext()) {
+                DualKey dk = iter.next();
+                if (_eq(dk.key1, index)) {
+                    iter.remove();
+                }
+            }
+        }
+    }
+
     public void put(Object currencyObj, String key, Object value) {
         Map<DualKey, Object> comparant = Collections.emptyMap();
         if (rows == comparant) {
@@ -347,6 +364,19 @@ final class StampState implements Externalizable {
             return k2 == null;
         }
         return k1.equals(k2);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder buf = new StringBuilder();
+
+        buf.append("StampState");
+        buf.append(" {");
+        buf.append(" rows=");
+        buf.append(rows);
+        buf.append('}');
+
+        return buf.toString();
     }
 
 }

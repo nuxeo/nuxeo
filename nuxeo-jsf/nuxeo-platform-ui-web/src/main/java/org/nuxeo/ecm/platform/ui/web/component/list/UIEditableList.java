@@ -46,7 +46,6 @@ import javax.faces.event.ExceptionQueuedEventContext;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -664,7 +663,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      * @throws IllegalArgumentException if model does not handle one of given indexes.
      */
     public Object moveValue(int fromIndex, int toIndex) {
-        throw new NotImplementedException();
+        return getEditableModel().moveValue(fromIndex, toIndex);
     }
 
     /**
@@ -674,7 +673,19 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
      * @throws IllegalArgumentException if model does not handle this index.
      */
     public Object removeValue(int index) {
-        return getEditableModel().removeValue(index);
+        int oldIndex = getRowIndex();
+        setRowIndex(index);
+        EditableModel model = getEditableModel();
+        Integer rowKey = model.getRowKey();
+        if (rowKey != null) {
+            InternalState iState = getInternalState(false);
+            if (iState != null) {
+                iState._stampState.clearIndex(rowKey.intValue());
+            }
+        }
+        Object res = model.removeValue(index);
+        setRowIndex(oldIndex);
+        return res;
     }
 
     /**
