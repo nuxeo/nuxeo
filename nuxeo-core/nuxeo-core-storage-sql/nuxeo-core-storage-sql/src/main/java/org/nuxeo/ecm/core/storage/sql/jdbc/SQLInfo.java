@@ -1245,11 +1245,12 @@ public class SQLInfo {
     /**
      * Executes the SQL statements for the given category.
      */
-    public void executeSQLStatements(String category, Connection connection, JDBCLogger logger,
+    public void executeSQLStatements(String category, String ddlMode, Connection connection, JDBCLogger logger,
             ListCollector ddlCollector) throws SQLException {
         List<SQLStatement> statements = sqlStatements.get(category);
         if (statements != null) {
-            SQLStatement.execute(statements, sqlStatementsProperties, dialect, connection, logger, ddlCollector);
+            SQLStatement.execute(statements, ddlMode, sqlStatementsProperties, dialect, connection, logger,
+                    ddlCollector);
         }
     }
 

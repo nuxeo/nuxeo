@@ -388,7 +388,7 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public List<String> checkStoredProcedure(String procName, String procCreate, Connection connection,
+    public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
             JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
         throw new UnsupportedOperationException();
     }

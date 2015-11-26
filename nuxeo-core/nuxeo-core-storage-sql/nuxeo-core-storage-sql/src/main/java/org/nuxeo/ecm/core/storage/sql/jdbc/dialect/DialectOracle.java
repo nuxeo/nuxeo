@@ -921,8 +921,13 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public List<String> checkStoredProcedure(String procName, String procCreate, Connection connection,
+    public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
             JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
+        boolean compatCheck = ddlMode.contains(RepositoryDescriptor.DDL_MODE_COMPAT);
+        if (compatCheck) {
+            procCreate = "CREATE OR REPLACE " + procCreate.substring("create ".length());
+            return Collections.singletonList(procCreate);
+        }
         try (Statement st = connection.createStatement()) {
             String getBody;
             if (procCreate.toLowerCase().startsWith("create trigger ")) {

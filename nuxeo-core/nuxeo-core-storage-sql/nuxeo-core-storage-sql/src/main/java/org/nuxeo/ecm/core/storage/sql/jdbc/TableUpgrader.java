@@ -76,7 +76,8 @@ public class TableUpgrader {
      * @param addedColumns list of added column
      * @throws SQLException Exception thrown by JDBC
      */
-    public void upgrade(String tableKey, List<Column> addedColumns, ListCollector ddlCollector) throws SQLException {
+    public void upgrade(String tableKey, List<Column> addedColumns, String ddlMode, ListCollector ddlCollector)
+            throws SQLException {
         for (TableUpgrade upgrade : tableUpgrades) {
             if (!upgrade.tableKey.equals(tableKey)) {
                 continue;
@@ -97,7 +98,7 @@ public class TableUpgrader {
             }
             if (doUpgrade) {
                 log.info("Upgrading table: " + tableKey);
-                mapper.sqlInfo.executeSQLStatements(upgrade.sqlProcedure, mapper.connection, mapper.logger,
+                mapper.sqlInfo.executeSQLStatements(upgrade.sqlProcedure, ddlMode, mapper.connection, mapper.logger,
                         ddlCollector);
             }
         }

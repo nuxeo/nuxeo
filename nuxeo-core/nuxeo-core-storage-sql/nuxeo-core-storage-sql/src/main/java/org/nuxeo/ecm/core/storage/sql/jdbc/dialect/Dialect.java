@@ -1268,14 +1268,15 @@ public abstract class Dialect {
      *
      * @param procName the stored procedure name
      * @param procCreate the creation SQL for the stored procedure
+     * @param ddlMode the DDL mode
      * @param connection the connection
      * @param logger the logger
      * @param properties the statement execution properties
      * @return a list of SQL statements
      * @since 6.0-HF24, 7.10-HF01, 8.1
      */
-    public abstract List<String> checkStoredProcedure(String procName, String procCreate, Connection connection,
-            JDBCLogger logger, Map<String, Serializable> properties) throws SQLException;
+    public abstract List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode,
+            Connection connection, JDBCLogger logger, Map<String, Serializable> properties) throws SQLException;
 
     /**
      * Returns the initial DDL statements to add to a DDL dump.

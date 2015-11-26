@@ -185,12 +185,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     protected void createTables(String ddlMode) throws SQLException {
         ListCollector ddlCollector = new ListCollector();
 
-        sqlInfo.executeSQLStatements(null, connection, logger, ddlCollector); // for missing category
-        sqlInfo.executeSQLStatements("first", connection, logger, ddlCollector);
-        sqlInfo.executeSQLStatements("beforeTableCreation", connection, logger, ddlCollector);
+        sqlInfo.executeSQLStatements(null, ddlMode, connection, logger, ddlCollector); // for missing category
+        sqlInfo.executeSQLStatements("first", ddlMode, connection, logger, ddlCollector);
+        sqlInfo.executeSQLStatements("beforeTableCreation", ddlMode, connection, logger, ddlCollector);
         if (testProps.containsKey(TEST_UPGRADE)) {
             // create "old" tables
-            sqlInfo.executeSQLStatements("testUpgrade", connection, logger, null); // do not collect
+            sqlInfo.executeSQLStatements("testUpgrade", ddlMode, connection, logger, null); // do not collect
         }
 
         String schemaName = dialect.getConnectionSchema(connection);
@@ -282,18 +282,18 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
         if (testProps.containsKey(TEST_UPGRADE)) {
             // create "old" content in tables
-            sqlInfo.executeSQLStatements("testUpgradeOldTables", connection, logger, ddlCollector);
+            sqlInfo.executeSQLStatements("testUpgradeOldTables", ddlMode, connection, logger, ddlCollector);
         }
 
         // run upgrade for each table if added columns or test
         for (Entry<String, List<Column>> en : added.entrySet()) {
             List<Column> addedColumns = en.getValue();
             String tableKey = en.getKey();
-            upgradeTable(tableKey, addedColumns, ddlCollector);
+            upgradeTable(tableKey, addedColumns, ddlMode, ddlCollector);
         }
 
-        sqlInfo.executeSQLStatements("afterTableCreation", connection, logger, ddlCollector);
-        sqlInfo.executeSQLStatements("last", connection, logger, ddlCollector);
+        sqlInfo.executeSQLStatements("afterTableCreation", ddlMode, connection, logger, ddlCollector);
+        sqlInfo.executeSQLStatements("last", ddlMode, connection, logger, ddlCollector);
 
         // aclr_permission check for PostgreSQL
         dialect.performAdditionalStatements(connection);
@@ -309,6 +309,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         // dump,ignore (no execute)
         // execute
         // abort (implies dump)
+        // compat can be used instead of execute to always recreate stored procedures
 
         List<String> ddl = ddlCollector.getStrings();
         boolean ignore = ddlMode.contains(RepositoryDescriptor.DDL_MODE_IGNORE);
@@ -388,9 +389,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
     }
 
-    protected void upgradeTable(String tableKey, List<Column> addedColumns, ListCollector ddlCollector)
+    protected void upgradeTable(String tableKey, List<Column> addedColumns, String ddlMode, ListCollector ddlCollector)
             throws SQLException {
-        tableUpgrader.upgrade(tableKey, addedColumns, ddlCollector);
+        tableUpgrader.upgrade(tableKey, addedColumns, ddlMode, ddlCollector);
     }
 
     /** Finds uppercase table names. */

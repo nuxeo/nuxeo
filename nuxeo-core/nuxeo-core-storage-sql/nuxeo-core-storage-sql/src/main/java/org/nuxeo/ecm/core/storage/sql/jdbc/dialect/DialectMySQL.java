@@ -434,8 +434,19 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
-    public List<String> checkStoredProcedure(String procName, String procCreate, Connection connection,
+    public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
             JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
+        boolean compatCheck = ddlMode.contains(RepositoryDescriptor.DDL_MODE_COMPAT);
+        String ifExists = compatCheck ? "IF EXISTS " : "";
+        String procDrop;
+        if (procCreate.toLowerCase().startsWith("create function ")) {
+            procDrop = "DROP FUNCTION " + ifExists + procName;
+        } else {
+            procDrop = "DROP PROCEDURE " + ifExists + procName;
+        }
+        if (compatCheck) {
+            return Arrays.asList(procDrop, procCreate);
+        }
         try (Statement st = connection.createStatement()) {
             String getBody = "SELECT body FROM MYSQL.PROC WHERE db = DATABASE() AND name = '" + procName + "'";
             logger.log(getBody);
@@ -447,12 +458,6 @@ public class DialectMySQL extends Dialect {
                         return Collections.emptyList();
                     } else {
                         logger.log("  -> exists, old");
-                        String procDrop;
-                        if (procCreate.toLowerCase().startsWith("create function ")) {
-                            procDrop = "DROP FUNCTION " + procName;
-                        } else {
-                            procDrop = "DROP PROCEDURE " + procName;
-                        }
                         return Arrays.asList(procDrop, procCreate);
                     }
                 } else {

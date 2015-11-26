@@ -782,8 +782,22 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public List<String> checkStoredProcedure(String procName, String procCreate, Connection connection,
+    public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
             JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
+        boolean compatCheck = ddlMode.contains(RepositoryDescriptor.DDL_MODE_COMPAT);
+        String procCreateLower = procCreate.toLowerCase();
+        String procDrop;
+        if (procCreateLower.startsWith("create function ")) {
+            procDrop = "DROP FUNCTION " + procName;
+        } else if (procCreateLower.startsWith("create procedure ")) {
+            procDrop = "DROP PROCEDURE " + procName;
+        } else {
+            procDrop = "DROP TRIGGER " + procName;
+        }
+        if (compatCheck) {
+            procDrop = "IF OBJECT_ID('" + procName + "') IS NOT NULL " + procDrop;
+            return Arrays.asList(procDrop, procCreate);
+        }
         try (Statement st = connection.createStatement()) {
             String getBody = "SELECT OBJECT_DEFINITION(OBJECT_ID('" + procName + "'))";
             logger.log(getBody);
@@ -798,15 +812,6 @@ public class DialectSQLServer extends Dialect {
                     return Collections.emptyList();
                 } else {
                     logger.log("  -> exists, old");
-                    String procCreateLower = procCreate.toLowerCase();
-                    String procDrop;
-                    if (procCreateLower.startsWith("create function ")) {
-                        procDrop = "DROP FUNCTION " + procName;
-                    } else if (procCreateLower.startsWith("create procedure ")) {
-                        procDrop = "DROP PROCEDURE " + procName;
-                    } else {
-                        procDrop = "DROP TRIGGER " + procName;
-                    }
                     return Arrays.asList(procDrop, procCreate);
                 }
             }

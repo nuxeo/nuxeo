@@ -258,13 +258,13 @@ public class SQLStatement {
     /**
      * Executes a list of SQL statements, following the tags.
      */
-    public static void execute(List<SQLStatement> statements, Map<String, Serializable> properties, Dialect dialect,
-            Connection connection, JDBCLogger logger, ListCollector ddlCollector) throws SQLException {
+    public static void execute(List<SQLStatement> statements, String ddlMode, Map<String, Serializable> properties,
+            Dialect dialect, Connection connection, JDBCLogger logger, ListCollector ddlCollector) throws SQLException {
         try (Statement st = connection.createStatement()) {
             STATEMENT: //
             for (SQLStatement statement : statements) {
                 boolean test = false;
-                String procName = null;
+                String proc = null;
                 Set<String> setIfEmpty = new HashSet<>();
                 Set<String> setIfNotEmpty = new HashSet<>();
                 for (Tag tag : statement.tags) {
@@ -273,7 +273,7 @@ public class SQLStatement {
                         test = true;
                         break;
                     case Tag.TAG_PROC:
-                        procName = tag.value;
+                        proc = tag.value;
                         break;
                     case Tag.TAG_IF:
                         String expr = tag.value;
@@ -352,9 +352,9 @@ public class SQLStatement {
                                 }
                             }
                         }
-                    } else if (procName != null) {
+                    } else if (proc != null) {
                         ddlCollector.addAll(
-                                dialect.checkStoredProcedure(procName, sql, connection, logger, properties));
+                                dialect.checkStoredProcedure(proc, sql, ddlMode, connection, logger, properties));
                     } else if (ddlCollector != null) {
                         ddlCollector.add(sql);
                     } else {

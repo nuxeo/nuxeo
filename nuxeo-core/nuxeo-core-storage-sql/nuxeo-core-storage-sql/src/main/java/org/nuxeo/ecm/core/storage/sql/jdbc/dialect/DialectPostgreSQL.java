@@ -1276,8 +1276,13 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public List<String> checkStoredProcedure(String procName, String procCreate, Connection connection,
+    public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
             JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
+        boolean compatCheck = ddlMode.contains(RepositoryDescriptor.DDL_MODE_COMPAT);
+        if (compatCheck) {
+            procCreate = "CREATE OR REPLACE " + procCreate.substring("create ".length());
+            return Collections.singletonList(procCreate);
+        }
         try (Statement st = connection.createStatement()) {
             // check if the stored procedure exists and its content
             String getBody = "SELECT prosrc FROM pg_proc WHERE proname = '" + procName + "'";

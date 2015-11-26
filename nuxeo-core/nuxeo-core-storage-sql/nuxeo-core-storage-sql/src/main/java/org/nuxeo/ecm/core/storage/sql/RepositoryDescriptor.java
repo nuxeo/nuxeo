@@ -53,6 +53,9 @@ public class RepositoryDescriptor {
     /** At startup, DDL changes are detected and if not empty Nuxeo startup is aborted. */
     public static final String DDL_MODE_ABORT = "abort";
 
+    /** Specifies that stored procedure detection must be compatible with previous Nuxeo versions. */
+    public static final String DDL_MODE_COMPAT = "compat";
+
     @XObject(value = "index")
     public static class FulltextIndexDescriptor {
 
