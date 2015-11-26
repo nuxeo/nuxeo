@@ -2,22 +2,12 @@
 <component name="org.nuxeo.ecm.collections.listing">
 
   <require>org.nuxeo.ecm.platform.forms.layouts.webapp.listing</require>
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.types</require>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
 
-    <layout name="collections_listing">
-      <templates>
-        <template mode="any">
-          /layouts/layout_listing_ajax_template.xhtml
-        </template>
-        <template mode="csv">
-          /layouts/layout_listing_csv_template.xhtml
-        </template>
-        <template mode="pdf">
-          /layouts/layout_listing_pdf_template.xhtml
-        </template>
-      </templates>
+    <layout name="collections_listing" type="listingTable">
       <properties mode="any">
         <property name="showListingHeader">true</property>
         <property name="showRowEvenOddClass">true</property>
