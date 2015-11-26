@@ -164,6 +164,7 @@ public class EditableListBean {
                 model.addValue(template);
             } else {
                 for (int i = 0; i < number; i++) {
+                    // make sure added template is unreferenced
                     model.addTemplateValue();
                 }
             }
@@ -188,21 +189,21 @@ public class EditableListBean {
             if (index == null) {
                 return;
             }
-            model.removeValue(index);
+            editableComp.removeValue(index);
             break;
         case MOVEUP:
             index = getIndex(requestMap);
             if (index == null) {
                 return;
             }
-            model.moveValue(index, index - 1);
+            editableComp.moveValue(index, index - 1);
             break;
         case MOVEDOWN:
             index = getIndex(requestMap);
             if (index == null) {
                 return;
             }
-            model.moveValue(index, index + 1);
+            editableComp.moveValue(index, index + 1);
             break;
         }
     }
