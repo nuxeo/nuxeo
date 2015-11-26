@@ -52,7 +52,6 @@
     <copy todir="${nuxeo.nxserver}/bundles/">
       <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo:${maven.project.version}:jar" />
     </copy>
-    <copy file="src/test/resources/js-list-config.xml" todir="${nuxeo.nxserver}/config/" />
   </target>
 
 </project>
