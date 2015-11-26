@@ -62,6 +62,11 @@ public interface MarshallingConstants {
     String TRANSLATE_PROPERTIES = "translate";
 
     /**
+     * Default separator for enrichers, fetch and translate based properties.
+     */
+    char SEPARATOR = '-';
+
+    /**
      * Parameter name to specify how deep the marshallers should call sub marshallers.
      */
     String MAX_DEPTH_PARAM = "depth";
@@ -78,7 +83,8 @@ public interface MarshallingConstants {
     String DOCUMENT_PROPERTIES_HEADER = "X-NXDocumentProperties";
 
     /**
-     * @deprecated use {@value #EMBED_ENRICHERS} concatenated with "document" (example: enrichers:document=acls)
+     * @deprecated use {@value #EMBED_ENRICHERS} concatenated with the entity type "document" seprated with a '-'
+     *             (example: enrichers-document=acls)
      */
     @Deprecated
     String NXCONTENT_CATEGORY_HEADER = "X-NXContext-Category";

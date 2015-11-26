@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  * Add document user visible permissions as json attachment.
  * </p>
  * <p>
- * Enable if parameter enrichers.document=userVisiblePermissions is present.
+ * Enable if parameter enrichers-document=userVisiblePermissions is present.
  * </p>
  * <p>
  * Format is:
