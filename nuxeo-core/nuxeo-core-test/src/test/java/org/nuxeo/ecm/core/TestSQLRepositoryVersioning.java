@@ -1034,4 +1034,23 @@ public class TestSQLRepositoryVersioning {
         assertEquals(2, verRefs.size());
     }
 
+    @Test
+    public void testSearchVersionWithNoLiveDocument() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        // create a version
+        DocumentRef vref = session.checkIn(doc.getRef(), VersioningOption.MAJOR, null);
+        // create a proxy
+        session.createProxy(vref, new PathRef("/"));
+        // remove the live doc, the version is not removed because of the proxy
+        session.removeDocument(doc.getRef());
+        session.save();
+        // now search as non-admin
+        try (CoreSession bobSession = openSessionAs("bob")) {
+            // if this returns then all is well, otherwise it means there's an infinite loop somewhere
+            bobSession.query("SELECT * FROM Document");
+        }
+    }
+
 }
