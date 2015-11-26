@@ -19,7 +19,7 @@
       <references>
         <tableReference field="groups" directory="groupDirectory"
           table="user2group" sourceColumn="userId"
-          targetColumn="groupId"
+          targetColumn="groupId" dataFile="directories/user2group.csv"
           master="true" />
       </references>
 
@@ -32,6 +32,7 @@
       <table>groups</table>
       <idField>groupname</idField>
       <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/groups.csv</dataFile>
       <createTablePolicy>always</createTablePolicy>
 
       <references>

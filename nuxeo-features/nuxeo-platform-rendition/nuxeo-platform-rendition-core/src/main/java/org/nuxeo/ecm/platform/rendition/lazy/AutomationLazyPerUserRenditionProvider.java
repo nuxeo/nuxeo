@@ -20,7 +20,9 @@ import org.nuxeo.ecm.platform.rendition.lazy.AutomationLazyRenditionProvider;
 
 /**
  * @since 7.10
+ * @deprecated since 8.1, use {@link org.nuxeo.ecm.platform.rendition.service.RenditionDefinition}.isPerUser().
  */
+@Deprecated
 public class AutomationLazyPerUserRenditionProvider extends AutomationLazyRenditionProvider {
 
     @Override

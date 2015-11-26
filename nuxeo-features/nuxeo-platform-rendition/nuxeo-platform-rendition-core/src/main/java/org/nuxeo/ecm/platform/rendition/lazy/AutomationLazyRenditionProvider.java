@@ -32,7 +32,10 @@ public class AutomationLazyRenditionProvider extends AbstractLazyCachableRenditi
         return AutomationRenderer.isRenditionAvailable(doc, def);
     }
 
-    @Override
+    /**
+     * @deprecated since 8.1, use {@link org.nuxeo.ecm.platform.rendition.service.RenditionDefinition}.isPerUser().
+     */
+    @Deprecated
     protected boolean perUserRendition() {
         return false;
     }

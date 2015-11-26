@@ -47,4 +47,8 @@ public class ThumbnailRenditionProvider implements RenditionProvider {
 
         return Collections.emptyList();
     }
+
+    @Override public String generateVariant(DocumentModel doc, RenditionDefinition definition) {
+        return null;
+    }
 }

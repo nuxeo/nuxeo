@@ -47,4 +47,16 @@ public interface RenditionProvider {
      */
     List<Blob> render(DocumentModel doc, RenditionDefinition definition);
 
+    /**
+     * Generate the optional {@link org.nuxeo.ecm.platform.rendition.Constants#RENDITION_VARIANT_PROPERTY} value
+     * for a given {@link RenditionDefinition}. For example, the generated
+     * variant for a non-Admin originating user w/a perUser @{link RenditionDefinition} is "user:<originatingUsername>".
+     *
+     * @param doc the target {@link DocumentModel}
+     * @param definition the {@link RenditionDefinition} to use
+     * @return the generated {@link org.nuxeo.ecm.platform.rendition.Constants#RENDITION_VARIANT_PROPERTY} value or null
+     *
+     * @since 8.1
+     */
+    String generateVariant(DocumentModel doc, RenditionDefinition definition);
 }

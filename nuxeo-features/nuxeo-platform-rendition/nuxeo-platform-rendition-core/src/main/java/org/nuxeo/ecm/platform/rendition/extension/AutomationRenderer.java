@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
@@ -144,6 +145,30 @@ public class AutomationRenderer {
             throw new NuxeoException("Exception while running the operation chain: "
                     + definition.getOperationChain(), e);
         }
+    }
+
+    /**
+     * Generate the optional {@link org.nuxeo.ecm.platform.rendition.Constants#RENDITION_VARIANT_PROPERTY} value
+     * for a given {@link RenditionDefinition}. For example, the generated
+     * variant for a non-Admin originating user w/a perUser @{link RenditionDefinition} is "user:<originatingUsername>".
+     *
+     * @param doc the target {@link DocumentModel}
+     * @param definition the {@link RenditionDefinition} to use
+     * @return the generated {@link org.nuxeo.ecm.platform.rendition.Constants#RENDITION_VARIANT_PROPERTY} value or null
+     *
+     * @since 8.1
+     */
+    public static String generateVariant(DocumentModel doc, RenditionDefinition definition) {
+        NuxeoPrincipal originatingPrincipal = (NuxeoPrincipal) doc.getCoreSession().getPrincipal();
+        if (definition.isPerUser()) {
+            if (originatingPrincipal.isAdministrator()) {
+                return org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPERTY_ADMINISTRATOR_USER;
+            } else {
+                return org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPERTY_USER_PREFIX
+                        + originatingPrincipal.getName();
+            }
+        }
+        return null;
     }
 
     /**

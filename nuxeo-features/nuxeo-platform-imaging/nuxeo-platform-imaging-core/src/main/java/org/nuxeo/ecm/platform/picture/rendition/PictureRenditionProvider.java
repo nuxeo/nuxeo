@@ -49,4 +49,9 @@ public class PictureRenditionProvider implements RenditionProvider {
         Blob blob = picture.getPictureFromTitle(definition.getName());
         return blob != null ? Collections.singletonList(blob) : Collections.emptyList();
     }
+
+    @Override
+    public String generateVariant(DocumentModel doc, RenditionDefinition definition) {
+        return null;
+    }
 }
