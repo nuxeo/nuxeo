@@ -10,13 +10,14 @@
     </renditionDefinition>
 
     <renditionDefinition name="zipTreeExportLazily" enabled="true"
-        class="org.nuxeo.ecm.platform.rendition.lazy.AutomationLazyPerUserRenditionProvider">
+        class="org.nuxeo.ecm.platform.rendition.lazy.AutomationLazyRenditionProvider">
       <label>label.exportview.zipTreeExport</label>
       <icon>/icons/zip_tree_export.png</icon>
       <contentType>application/zip</contentType>
       <allowEmptyBlob>true</allowEmptyBlob>
       <operationChain>zipTreeExportRendition</operationChain>
       <storeByDefault>true</storeByDefault>
+      <variantPolicy>user</variantPolicy>
       <filters>
         <filter-id>folder</filter-id>
       </filters>
