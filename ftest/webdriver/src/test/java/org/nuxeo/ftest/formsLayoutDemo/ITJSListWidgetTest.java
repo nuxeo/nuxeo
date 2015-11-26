@@ -407,4 +407,71 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 1));
     }
 
+    /**
+     * Non-regression test for NXP-18486: removed element state should be reset.
+     *
+     * @since 8.1
+     */
+    @Test
+    public void testRemovedElementReset() {
+        JSListWidgetElement listWidget = page.getListEditWidget();
+        assertNotNull(listWidget);
+        listWidget.addNewElement();
+        assertEquals("", listWidget.getSubWidget("nxw_listItem_2", 0).getInputValue());
+        listWidget.getSubWidget("nxw_listItem_2", 0).setInputValue("test");
+
+        // remove it an add a new one
+        listWidget.removeElement(0);
+        listWidget.addNewElement();
+
+        // check that new element state is reset
+        assertEquals("", listWidget.getSubWidget("nxw_listItem_2", 0).getInputValue());
+    }
+
+    /**
+     * Non-regression test for NXP-18486: removed element state should be reset.
+     *
+     * @since 8.1
+     */
+    @Test
+    public void testRemovedSubElementReset() {
+        JSListWidgetElement listWidget = page.getListOfListsEditWidget();
+        assertNotNull(listWidget);
+        listWidget.addNewElement();
+
+        JSListWidgetElement stringListItem = listWidget.getSubWidget("nxw_stringListItem", 0, JSListWidgetElement.class,
+                false);
+        stringListItem.addNewElement();
+        assertEquals("", stringListItem.getSubWidget("nxw_stringListSubItem", 0).getInputValue());
+        stringListItem.getSubWidget("nxw_stringListSubItem", 0).setInputValue("test sublist");
+
+        // remove it an add a new one
+        stringListItem.removeElement(0);
+        stringListItem.addNewElement();
+
+        // check that new element state is reset
+        assertEquals("", stringListItem.getSubWidget("nxw_stringListSubItem", 0).getInputValue());
+    }
+
+    /**
+     * Non-regression test for NXP-18486: removed element state should be reset.
+     *
+     * @since 8.1
+     */
+    @Test
+    public void testRemovedComplexElementReset() {
+        JSListWidgetElement listWidget = page.getComplexListEditWidget();
+        assertNotNull(listWidget);
+        listWidget.addNewElement();
+        assertEquals("", listWidget.getSubWidget("nxw_stringComplexItem", 0).getInputValue());
+        listWidget.getSubWidget("nxw_stringComplexItem", 0).setInputValue("test");
+
+        // remove it an add a new one
+        listWidget.removeElement(0);
+        listWidget.addNewElement();
+
+        // check that new element state is reset
+        assertEquals("", listWidget.getSubWidget("nxw_stringComplexItem", 0).getInputValue());
+    }
+
 }
