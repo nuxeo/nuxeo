@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CyclicBarrier;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 
@@ -49,6 +52,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -56,12 +60,14 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -115,7 +121,8 @@ public class TestRenditionService {
         assertEquals(8, renditionDefinitions.size());
 
         RenditionDefinition rd = renditionDefinitions.stream()
-                                                     .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(renditionDefinition.getName()))
+                                                     .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(
+                                                             renditionDefinition.getName()))
                                                      .findFirst()
                                                      .get();
         assertNotNull(rd);
@@ -125,7 +132,8 @@ public class TestRenditionService {
         assertTrue(rd.isEnabled());
 
         rd = renditionDefinitions.stream()
-                                 .filter(renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(renditionDefinition.getName()))
+                                 .filter(renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(
+                                         renditionDefinition.getName()))
                                  .findFirst()
                                  .get();
         assertNotNull(rd);
@@ -319,11 +327,19 @@ public class TestRenditionService {
         assertEquals(renditionBlob.getLength(), renditionDocument.getPropertyValue("common:size"));
 
         // now get a different rendition as a different user
-        try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
+        NuxeoPrincipal totoPrincipal = Framework.getService(UserManager.class).getPrincipal("toto");
+        try (CoreSession userSession = coreFeature.openCoreSession(totoPrincipal)) {
             folder = userSession.getDocument(folder.getRef());
             Rendition totoRendition = getRendition(folder, renditionName, true, isLazy);
             assertTrue(totoRendition.isStored());
             assertNotEquals(renditionDocument.getRef(), totoRendition.getHostDocument().getRef());
+
+            // verify Administrator's rendition is larger than user's rendition
+            assertNotEquals(rendition.getHostDocument().getRef(), totoRendition.getHostDocument().getRef());
+            long adminZipEntryCount = countZipEntries(new ZipInputStream(rendition.getBlob().getStream()));
+            long totoZipEntryCount = countZipEntries(new ZipInputStream(totoRendition.getBlob().getStream()));
+            assertTrue(String.format("Admin rendition entry count %s should be greater than user rendition entry count %s",
+                    adminZipEntryCount, totoZipEntryCount), adminZipEntryCount > totoZipEntryCount);
         }
 
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
@@ -373,17 +389,17 @@ public class TestRenditionService {
 
     protected DocumentModel createBlobFile() {
         Blob blob = createTextBlob("Dummy text", "dummy.txt");
-        DocumentModel file = createFileWithBlob("/", blob, "dummy-file");
+        DocumentModel file = createDocumentWithBlob("/", blob, "dummy-file", "File");
         assertNotNull(file);
         return file;
     }
 
-    protected DocumentModel createFileWithBlob(String parentPath, Blob blob, String name) {
-        DocumentModel file = session.createDocumentModel(parentPath, name, "File");
-        BlobHolder bh = file.getAdapter(BlobHolder.class);
+    protected DocumentModel createDocumentWithBlob(String parentPath, Blob blob, String name, String typeName) {
+        DocumentModel doc = session.createDocumentModel(parentPath, name, typeName);
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
         bh.setBlob(blob);
-        file = session.createDocument(file);
-        return file;
+        doc = session.createDocument(doc);
+        return doc;
     }
 
     protected Blob createTextBlob(String content, String filename) {
@@ -393,21 +409,93 @@ public class TestRenditionService {
     }
 
     protected DocumentModel createFolderWithChildren() {
-        DocumentModel folder = session.createDocumentModel("/", "dummy", "Folder");
-        folder = session.createDocument(folder);
-        ACP acp = new ACPImpl();
-        ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
-        acl.add(new ACE("toto", SecurityConstants.READ, true));
-        acp.addACL(acl);
-        session.setACP(folder.getRef(), acp, true);
+        DocumentModel root = session.getRootDocument();
+        ACP acp = session.getACP(root.getRef());
+        ACL existingACL = acp.getOrCreateACL();
+        existingACL.clear();
+        existingACL.add(new ACE("Administrator", SecurityConstants.EVERYTHING, true));
+        existingACL.add(new ACE("group_1", SecurityConstants.READ, true));
+        acp.addACL(existingACL);
+        session.setACP(root.getRef(), acp, true);
 
-        DocumentModel file1 = createFileWithBlob("/dummy", createTextBlob("Dummy1 text", "dummy1.txt"), "dummy1-file");
-        DocumentModel file2 = createFileWithBlob("/dummy", createTextBlob("Dummy2 text", "dummy2.txt"), "dummy2-file");
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "dummy", "Folder");
+        folder = session.createDocument(folder);
+        session.save();
+
+        for (int i = 1; i <= 2; i++) {
+            String childFolderName = "childFolder" + i;
+            DocumentModel childFolder = session.createDocumentModel(folder.getPathAsString(), childFolderName, "Folder");
+            childFolder = session.createDocument(childFolder);
+            if (i == 1) {
+                acp = new ACPImpl();
+                ACL acl = new ACLImpl();
+                acl.add(new ACE("Administrator", SecurityConstants.EVERYTHING, true));
+                acl.add(ACE.BLOCK);
+                acp.addACL(acl);
+                childFolder.setACP(acp, true);
+                session.save();
+            }
+
+            DocumentModel doc1 = createDocumentWithBlob(
+                    childFolder.getPathAsString(), createTextBlob("Dummy1 text", "dummy1.txt"), "dummy1-file", "File");
+            DocumentModel doc2 = createDocumentWithBlob(
+                    childFolder.getPathAsString(), createTextBlob("Dummy2 text", "dummy2.txt"), "dummy2-file", "File");
+        }
+
+        session.save();
         TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
         TransactionHelper.startTransaction();
         folder = session.getDocument(folder.getRef());
         return folder;
+    }
+
+    @Test
+    public void shouldPreventAdminFromReusingOthersNonVersionedStoredRendition() throws Exception {
+        DocumentModel folder = createFolderWithChildren();
+        String renditionName = ZIP_TREE_EXPORT_RENDITION_DEFINITION;
+        Rendition totoRendition;
+
+        // get rendition as non-admin user 'toto'
+        NuxeoPrincipal totoPrincipal = Framework.getService(UserManager.class).getPrincipal("toto");
+        try (CoreSession userSession = coreFeature.openCoreSession(totoPrincipal)) {
+            folder = userSession.getDocument(folder.getRef());
+            totoRendition = renditionService.getRendition(folder, renditionName, true);
+            assertTrue(totoRendition.isStored());
+        }
+
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
+
+        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
+
+        // now get rendition as admin user 'Administrator'
+        folder = session.getDocument(folder.getRef());
+        Rendition rendition = renditionService.getRendition(folder, renditionName, true);
+        assertTrue(rendition.isStored());
+        assertTrue(rendition.isCompleted());
+
+        // verify Administrator's rendition is different from user's rendition, is larger than user's rendition,
+        // and was created later
+        assertNotEquals(rendition.getHostDocument().getRef(), totoRendition.getHostDocument().getRef());
+        long adminZipEntryCount = countZipEntries(new ZipInputStream(rendition.getBlob().getStream()));
+        long totoZipEntryCount = countZipEntries(new ZipInputStream(totoRendition.getBlob().getStream()));
+        assertTrue(String.format("Admin rendition entry count %s should be greater than user rendition entry count %s",
+                adminZipEntryCount, totoZipEntryCount), adminZipEntryCount > totoZipEntryCount);
+        Calendar adminModificationDate = rendition.getModificationDate();
+        Calendar totoModificationDate = totoRendition.getModificationDate();
+        assertTrue(
+                String.format("Admin rendition modif date %s should be after user rendition modif date %s",
+                        adminModificationDate.toInstant(), totoModificationDate.toInstant()),
+                adminModificationDate.after(totoModificationDate));
+    }
+
+    private long countZipEntries(ZipInputStream zis) throws IOException {
+        int entryCount = 0;
+        while (zis.getNextEntry() != null) {
+            entryCount++;
+        }
+        return entryCount;
     }
 
     @Test

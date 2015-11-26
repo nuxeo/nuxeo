@@ -33,11 +33,6 @@ public class AutomationLazyRenditionProvider extends AbstractLazyCachableRenditi
     }
 
     @Override
-    protected boolean perUserRendition() {
-        return false;
-    }
-
-    @Override
     protected Work getRenditionWork(String key, DocumentModel doc, RenditionDefinition def) {
         return new AutomationRenditionBuilder(key, doc, def);
     }

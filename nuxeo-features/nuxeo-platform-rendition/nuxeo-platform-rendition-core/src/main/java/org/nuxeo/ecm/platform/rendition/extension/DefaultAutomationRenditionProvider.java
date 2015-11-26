@@ -21,4 +21,10 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
     public List<Blob> render(DocumentModel doc, RenditionDefinition definition) {
         return AutomationRenderer.render(doc, definition, null);
     }
+
+    @Override
+    public String getVariant(DocumentModel doc, RenditionDefinition definition) {
+        return AutomationRenderer.getVariant(doc, definition);
+    }
+
 }

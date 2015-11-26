@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.rendition.service;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_NAME_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_MODIFICATION_DATE_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_VARIANT_PROPERTY;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -25,7 +26,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
  * Retrieves stored Rendition associated to a DocumentModel.
@@ -42,22 +43,43 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
 
     protected final String renditionName;
 
-    protected RenditionFinder(DocumentModel source, String renditionName) {
+    /**
+     * @since 8.1
+     */
+    protected RenditionDefinition renditionDefinition;
+
+    /**
+     * @since 8.1
+     */
+    protected final String renditionVariant;
+
+    /**
+     * @since 8.1
+     */
+    protected RenditionFinder(DocumentModel source, RenditionDefinition renditionDefinition) {
         super(source.getCoreSession());
         this.source = source;
-        this.renditionName = renditionName;
+        this.renditionDefinition = renditionDefinition;
+        renditionName = renditionDefinition.getName();
+        renditionVariant = renditionDefinition.getProvider().getVariant(source, renditionDefinition);
     }
 
     @Override
     public void run() {
+        boolean isVersionable = source.isVersionable();
+        String renditionSourceId = source.getId();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ");
         query.append(RENDITION_NAME_PROPERTY);
         query.append(" = '");
-        query.append(renditionName);
+        query.append(NXQL.escapeStringInner(renditionName));
         query.append("' AND ");
-        boolean isVersionable = source.isVersionable();
-        String renditionSourceId = source.getId();
+        if (renditionVariant != null) {
+            query.append(RENDITION_VARIANT_PROPERTY);
+            query.append(" = '");
+            query.append(NXQL.escapeStringInner(renditionVariant));
+            query.append("' AND ");
+        }
         if (isVersionable) {
             if (!source.isVersion() && !source.isCheckedOut()) {
                 DocumentModel lastVersion = session.getLastDocumentVersion(source.getRef());
@@ -96,9 +118,7 @@ public class RenditionFinder extends UnrestrictedSessionRunner {
     }
 
     protected String getSourceDocumentModificationDatePropertyName() {
-        RenditionService rs = Framework.getService(RenditionService.class);
-        RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
-        return def.getSourceDocumentModificationDatePropertyName();
+        return renditionDefinition.getSourceDocumentModificationDatePropertyName();
     }
 
     protected static String formatTimestamp(Calendar cal) {
