@@ -79,6 +79,7 @@ BEGIN
       UNTIL done END REPEAT;
       CLOSE cur;
     END;
+    SET newid = NULL;
     SELECT parentid INTO newid FROM hierarchy WHERE hierarchy.id = curid;
     IF first AND newid IS NULL THEN
       SELECT versionableid INTO newid FROM versions WHERE versions.id = curid;

@@ -944,4 +944,23 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         ver.setACP(acp, true);
     }
 
+    @Test
+    public void testSearchVersionWithNoLiveDocument() throws ClientException {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        // create a version
+        DocumentRef vref = session.checkIn(doc.getRef(), VersioningOption.MAJOR, null);
+        // create a proxy
+        session.createProxy(vref, new PathRef("/"));
+        // remove the live doc, the version is not removed because of the proxy
+        session.removeDocument(doc.getRef());
+        session.save();
+        // now search as non-admin
+        closeSession();
+        session = openSessionAs("bob");
+        // if this returns then all is well, otherwise it means there's an infinite loop somewhere
+        session.query("SELECT * FROM Document");
+    }
+
 }
