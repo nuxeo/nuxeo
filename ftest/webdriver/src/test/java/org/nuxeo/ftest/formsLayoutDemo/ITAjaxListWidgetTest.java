@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.forms.ListWidgetElement;
@@ -37,11 +36,10 @@ import org.nuxeo.functionaltests.formsLayoutDemo.page.ValidationPage;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.standardWidgets.AjaxListStandardWidgetPage;
 import org.openqa.selenium.support.ui.Select;
 
-
 /**
  * List Widget Tests (compat version for ajaxified version).
  * <p>
- * WARN: ignored by default since js list widget is the new default behaviour.
+ * WARN: run only when using pom-list-widget.xml since js list widget is the new default behaviour.
  *
  * @since 7.10
  */
@@ -412,6 +410,73 @@ public class ITAjaxListWidgetTest extends AbstractTest {
 
         assertNotEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0));
         assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 1));
+    }
+
+    /**
+     * Non-regression test for NXP-18486: removed element state should be reset.
+     *
+     * @since 8.1
+     */
+    @Test
+    public void testRemovedElementReset() {
+        ListWidgetElement listWidget = page.getListEditWidget();
+        assertNotNull(listWidget);
+        listWidget.addNewElement();
+        assertEquals("", listWidget.getSubWidget("nxw_listItem_2", 0).getInputValue());
+        listWidget.getSubWidget("nxw_listItem_2", 0).setInputValue("test");
+
+        // remove it an add a new one
+        listWidget.removeElement(0);
+        listWidget.addNewElement();
+
+        // check that new element state is reset
+        assertEquals("", listWidget.getSubWidget("nxw_listItem_2", 0).getInputValue());
+    }
+
+    /**
+     * Non-regression test for NXP-18486: removed element state should be reset.
+     *
+     * @since 8.1
+     */
+    @Test
+    public void testRemovedSubElementReset() {
+        ListWidgetElement listWidget = page.getListOfListsEditWidget();
+        assertNotNull(listWidget);
+        listWidget.addNewElement();
+
+        ListWidgetElement stringListItem = listWidget.getSubWidget("nxw_stringListItem", 0, ListWidgetElement.class,
+                false);
+        stringListItem.addNewElement();
+        assertEquals("", stringListItem.getSubWidget("nxw_stringListSubItem", 0).getInputValue());
+        stringListItem.getSubWidget("nxw_stringListSubItem", 0).setInputValue("test sublist");
+
+        // remove it an add a new one
+        stringListItem.removeElement(0);
+        stringListItem.addNewElement();
+
+        // check that new element state is reset
+        assertEquals("", stringListItem.getSubWidget("nxw_stringListSubItem", 0).getInputValue());
+    }
+
+    /**
+     * Non-regression test for NXP-18486: removed element state should be reset.
+     *
+     * @since 8.1
+     */
+    @Test
+    public void testRemovedComplexElementReset() {
+        ListWidgetElement listWidget = page.getComplexListEditWidget();
+        assertNotNull(listWidget);
+        listWidget.addNewElement();
+        assertEquals("", listWidget.getSubWidget("nxw_stringComplexItem", 0).getInputValue());
+        listWidget.getSubWidget("nxw_stringComplexItem", 0).setInputValue("test");
+
+        // remove it an add a new one
+        listWidget.removeElement(0);
+        listWidget.addNewElement();
+
+        // check that new element state is reset
+        assertEquals("", listWidget.getSubWidget("nxw_stringComplexItem", 0).getInputValue());
     }
 
 }
