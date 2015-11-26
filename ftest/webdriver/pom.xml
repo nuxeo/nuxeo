@@ -76,7 +76,7 @@
             </goals>
             <configuration>
               <excludes>
-                <exclude>**/**/ITJSListWidgetTest.java</exclude>
+                <exclude>**/ITJSListWidgetTest.java</exclude>
               </excludes>
               <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.xml
                 -Dnuxeo.log.dir=${project.build.directory}
