@@ -990,10 +990,12 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         boolean visitRows = requiresRowIteration(context);
 
         int oldRowIndex = -1;
+        Object requestMapValue = null;
         if (visitRows) {
             oldRowIndex = getRowIndex();
             if (oldRowIndex != -1) {
                 setRowIndex(-1);
+                requestMapValue = saveRequestMapModelValue();
             }
         }
 
@@ -1014,6 +1016,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             popComponentFromEL(facesContext);
             if (visitRows && oldRowIndex != -1) {
                 setRowIndex(oldRowIndex);
+                restoreRequestMapModelValue(requestMapValue);
             }
         }
 
