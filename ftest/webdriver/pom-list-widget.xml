@@ -58,6 +58,7 @@
   </dependencies>
 
   <build>
+    <directory>target-list-widget</directory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -65,25 +66,6 @@
         <configuration>
           <skipTests>true</skipTests>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>properties-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>set-system-properties</goal>
-            </goals>
-            <configuration>
-              <properties>
-                <property>
-                  <name>nuxeo.home</name>
-                  <value>${project.build.directory}/tomcat-list-widget</value>
-                </property>
-              </properties>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
