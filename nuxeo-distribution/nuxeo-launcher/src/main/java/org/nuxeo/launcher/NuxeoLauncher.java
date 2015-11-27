@@ -196,7 +196,7 @@ public abstract class NuxeoLauncher {
      */
     protected static final String OPTION_SNAPSHOT = "snapshot";
 
-    private static final String OPTION_SNAPSHOT_DESC = "Allow use of SNAPSHOT Marketplace packages.\n"
+    private static final String OPTION_SNAPSHOT_DESC = "Allow use of SNAPSHOT Nuxeo Packages.\n"
             + "This option is implicit:\n" //
             + "\t- on SNAPSHOT distributions (daily builds),\n"
             + "\t- if the command explicitly requests a SNAPSHOT package.";
@@ -463,21 +463,21 @@ public abstract class NuxeoLauncher {
             + "        restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".\n"
             + "        pack\t\t\tBuild a static archive.\n"
             + "        showconf\t\tDisplay the instance configuration.\n"
-            + "        mp-list\t\t\tList local Marketplace packages.\n"
-            + "        mp-listall\t\tList all Marketplace Packages.\n"
-            + "        mp-init\t\t\tPre-cache Marketplace packages locally available in the distribution.\n"
-            + "        mp-update\t\tUpdate cache of marketplace packages list.\n"
-            + "        mp-add\t\t\tAdd Marketplace package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
-            + "        mp-install\t\tRun Marketplace package installation. It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. Else you must provide the package file(s), name(s) or ID(s) as parameter.\n"
-            + "        mp-uninstall\t\tUninstall Marketplace package(s). You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
-            + "        mp-remove\t\tRemove Marketplace package(s) from the local cache. You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
+            + "        mp-list\t\t\tList local Nuxeo Packages.\n"
+            + "        mp-listall\t\tList all Nuxeo Packages.\n"
+            + "        mp-init\t\t\tPre-cache Nuxeo Packages locally available in the distribution.\n"
+            + "        mp-update\t\tUpdate cache of Nuxeo Packages list.\n"
+            + "        mp-add\t\t\tAdd Nuxeo Package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
+            + "        mp-install\t\tRun Nuxeo Package installation. It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. Else you must provide the package file(s), name(s) or ID(s) as parameter.\n"
+            + "        mp-uninstall\t\tUninstall Nuxeo Package(s). You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
+            + "        mp-remove\t\tRemove Nuxeo Package(s) from the local cache. You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
             + "        mp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.\n"
-            + "        mp-set\t\t\tInstall a list of Marketplace Packages and remove those not in the list.\n"
-            + "        mp-request\t\tInstall and uninstall Marketplace Package(s) in one command. You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).\n"
+            + "        mp-set\t\t\tInstall a list of Nuxeo Packages and remove those not in the list.\n"
+            + "        mp-request\t\tInstall and uninstall Nuxeo Package(s) in one command. You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).\n"
             + "        mp-purge\t\tUninstall and remove all packages from the local cache.\n"
             + "        mp-hotfix\t\tInstall all the available hotfixes for the current platform (requires a registered instance).\n"
-            + "        mp-upgrade\t\tGet all the available upgrades for the Marketplace packages currently installed (requires a registered instance).\n"
-            + "        mp-show\t\t\tShow Marketplace package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
+            + "        mp-upgrade\t\tGet all the available upgrades for the Nuxeo Packages currently installed (requires a registered instance).\n"
+            + "        mp-show\t\t\tShow Nuxeo Package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
             + "\nThe following commands are always executed in console/headless mode (no GUI): "
             + "\"configure\", \"mp-init\", \"mp-purge\", \"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", "
             + "\"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", \"mp-reset\", \"mp-list\", \"mp-listall\", \"mp-update\", "
@@ -2541,7 +2541,7 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Upgrade the marketplace packages (addons) available for the instance
+     * Upgrade the Nuxeo Packages (addons) available for the instance
      *
      * @return {@code true} if command succeed
      * @throws PackageException
