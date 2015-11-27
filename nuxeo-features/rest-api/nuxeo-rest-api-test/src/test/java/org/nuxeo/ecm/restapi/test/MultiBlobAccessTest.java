@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
@@ -28,6 +29,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,6 +77,23 @@ public class MultiBlobAccessTest extends BaseTest {
         doc = session.createDocument(doc);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
+    }
+
+    @Test
+    public void itDoesNotUpdateBlobsThroughDocEndpoint() throws Exception {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("properties", "multiblob");
+        ClientResponse response = getResponse(RequestType.GET, "path" + doc.getPathAsString(), headers);
+        String docJsonIN = IOUtils.toString(response.getEntityInputStream());
+        response = getResponse(RequestType.PUT, "path" + doc.getPathAsString(), docJsonIN, headers);
+        DocumentModel doc = session.getDocument(new PathRef("/testBlob"));
+        assertEquals(2, ((List<?>) doc.getProperty("mb:blobs").getValue()).size());
+        Blob blob1 = (Blob) doc.getProperty("mb:blobs/0/content").getValue();
+        assertNotNull(blob1);
+        assertEquals("one", blob1.getString());
+        Blob blob2 = (Blob) doc.getProperty("mb:blobs/1/content").getValue();
+        assertNotNull(blob2);
+        assertEquals("two", blob2.getString());
     }
 
     @Test

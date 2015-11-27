@@ -47,6 +47,11 @@ public class JSONStringBlobDecoder implements JSONBlobDecoder {
         String data = null;
         if (jsonObject.has("data")) {
             data = jsonObject.get("data").getTextValue();
+            // try to avoid the bug NXP-18488: data contains the blob url
+            // and must not be recognized as a new blob content
+            if (data.startsWith("http")) {
+                data = null;
+            }
         } else if (jsonObject.has("content")) {
             data = jsonObject.get("content").getTextValue();
         }
