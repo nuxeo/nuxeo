@@ -486,7 +486,7 @@ public class ConnectBroker {
     public boolean pkgReset() {
         CommandInfo cmdInfo = cset.newCommandInfo(CommandInfo.CMD_RESET);
         if ("ask".equalsIgnoreCase(accept)) {
-            accept = readConsole("The reset will erase Marketplace packages history.\n"
+            accept = readConsole("The reset will erase the Nuxeo Packages history.\n"
                     + "Do you want to continue (yes/no)? [yes] ", "yes");
         }
         if (!Boolean.parseBoolean(accept)) {

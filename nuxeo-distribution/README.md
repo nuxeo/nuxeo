@@ -67,14 +67,14 @@ Ant usage: `ant package`
  * nuxeo-distribution-cap-gatling-tests: Gatling bench on Nuxeo CAP
  * nuxeo-distribution-cap-selenium-tests: Selenium functional tests on Nuxeo CAP
  * nuxeo-distribution-cap-webdriver-tests: WebDriver functional tests on Nuxeo CAP
- * nuxeo-marketplace-dm: Transitional Marketplace Package for DM
+ * nuxeo-marketplace-dm: Transitional package for DM
 
 ## Produced packages
 
  * NXR packages
    * Core Server
    * Content Application Platform (CAP)
- * Marketplace Packages
+ * Nuxeo Packages
    * Transitional Package for Advanced Document Management (DM)
  * Tomcat packages
    * Core Server
@@ -122,17 +122,17 @@ This is the default packaged application in `nuxeo-distribution-tomcat/target/` 
 
 Advanced document management features. The package has been split and deprecated; it is kept for helping in transition.
 
-Built Marketplace Package is in `nuxeo-marketplace-dm/target/`.
+Built Nuxeo Package is in `nuxeo-marketplace-dm/target/`.
 
 It can be installed in CAP Tomcat using `nuxeoctl` or from the Administration page within the Nuxeo server.
 
 ### Other applications
 
-There are a lot of other useful addons (see <http://nuxeo.github.io>) and applications packages available from the [Nuxeo Marketplace](http://marketplace.nuxeo.com/).
+There are a lot of other useful addons (see <http://nuxeo.github.io>) and packages available from the [Nuxeo Marketplace](http://marketplace.nuxeo.com/).
 
-Addons are manually built and deployed on the target server.
+Nuxeo Addons are manually built and deployed on the target server.
 
-Marketplace applications can be installed using `nuxeoctl` or from the Administration page within the Nuxeo server.
+Nuxeo Packages can be installed using `nuxeoctl` or from the Administration page within the server.
 
 ## Custom build
 
