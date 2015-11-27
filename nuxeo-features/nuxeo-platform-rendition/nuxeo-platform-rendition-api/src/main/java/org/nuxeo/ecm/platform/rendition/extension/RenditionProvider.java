@@ -47,4 +47,18 @@ public interface RenditionProvider {
      */
     List<Blob> render(DocumentModel doc, RenditionDefinition definition);
 
+    /**
+     * Gets the optional {@link org.nuxeo.ecm.platform.rendition.Constants#RENDITION_VARIANT_PROPERTY
+     * RENDITION_VARIANT_PROPERTY} value for a given {@link RenditionDefinition}.
+     *
+     * @param doc the target document
+     * @param definition the rendition definition to use
+     * @return the generated {@link org.nuxeo.ecm.platform.rendition.Constants#RENDITION_VARIANT_PROPERTY
+     *         RENDITION_VARIANT_PROPERTY} value, or {@code null}
+     * @since 8.1
+     */
+    default String getVariant(DocumentModel doc, RenditionDefinition definition) {
+        return null;
+    }
+
 }

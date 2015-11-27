@@ -17,13 +17,7 @@
 
 package org.nuxeo.ecm.platform.rendition.service.lazy;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.platform.rendition.lazy.AbstractLazyCachableRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
@@ -35,7 +29,11 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
  */
 public class LazyRenditionProviderSample extends AbstractLazyCachableRenditionProvider {
 
+    /**
+     * @deprecated since 7.10-HF01
+     */
     @Override
+    @Deprecated
     protected boolean perUserRendition() {
         return false;
     }

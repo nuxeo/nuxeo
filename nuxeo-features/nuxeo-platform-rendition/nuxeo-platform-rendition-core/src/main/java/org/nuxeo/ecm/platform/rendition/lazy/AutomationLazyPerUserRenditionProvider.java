@@ -20,7 +20,9 @@ import org.nuxeo.ecm.platform.rendition.lazy.AutomationLazyRenditionProvider;
 
 /**
  * @since 7.10
+ * @deprecated since 7.10-HF01
  */
+@Deprecated
 public class AutomationLazyPerUserRenditionProvider extends AutomationLazyRenditionProvider {
 
     @Override
