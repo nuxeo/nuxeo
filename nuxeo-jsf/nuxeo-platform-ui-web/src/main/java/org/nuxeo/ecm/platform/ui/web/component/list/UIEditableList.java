@@ -333,9 +333,15 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             FacesContext context = getFacesContext();
             Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
             if (value == null) {
-                requestMap.remove(modelName);
+                Object old = requestMap.remove(modelName);
+                if (log.isDebugEnabled()) {
+                    log.debug("Removing exposed model value for " + getId() + ": " + old);
+                }
             } else {
                 requestMap.put(modelName, value);
+                if (log.isDebugEnabled()) {
+                    log.debug("Exposing model value for " + getId() + ": " + value);
+                }
             }
         }
     }
@@ -390,7 +396,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 }
             } else {
                 // only expose protected model
-                requestMap.put(modelName, new ProtectedEditableModelImpl(model));
+                requestMap.put(modelName, new ProtectedEditableModelImpl(getId(), model));
             }
         }
 
