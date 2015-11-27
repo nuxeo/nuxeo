@@ -32,6 +32,10 @@ public class AutomationLazyRenditionProvider extends AbstractLazyCachableRenditi
         return AutomationRenderer.isRenditionAvailable(doc, def);
     }
 
+    /**
+     * @deprecated since 7.10-HF01
+     */
+    @Deprecated
     @Override
     protected boolean perUserRendition() {
         return false;
