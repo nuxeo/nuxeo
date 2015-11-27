@@ -18,8 +18,15 @@ package org.nuxeo.ecm.diff.service;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
+
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -68,6 +75,14 @@ public class TestDocumentDiff extends DiffTestCase {
     @Inject
     protected DocumentXMLExporter docXMLExporter;
 
+    protected DateFormat dateFormatter;
+
+    @Before
+    public void init() {
+        dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SS'Z'", Locale.ENGLISH);
+        dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
     /**
      * Tests doc diff.
      */
@@ -93,18 +108,19 @@ public class TestDocumentDiff extends DiffTestCase {
         // description => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"), PropertyType.STRING, "description", null);
         // created => different
-        // db storage normalization may give us different timezones...
-        boolean keepTimeZone = ((SimplePropertyDiff) schemaDiff.getFieldDiff("created")).getLeftValue().equals(
-                "2011-12-29T11:24:25.00Z");
-        String expectedLeftCreated = keepTimeZone ? "2011-12-29T11:24:25.00Z" : "2011-12-29T10:24:25.00Z";
-        String expectedRightCreated = keepTimeZone ? "2011-12-29T11:24:50.00Z" : "2011-12-29T10:24:50.00Z";
+        String expectedLeftCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 29, 11, 24, 25).getTime());
+        String expectedRightCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 29, 11, 24, 50).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"), PropertyType.DATE, expectedLeftCreated,
                 expectedRightCreated);
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
-        String expectedLeftModified = keepTimeZone ? "2011-12-29T11:24:25.00Z" : "2011-12-29T10:24:25.00Z";
-        String expectedRightModified = keepTimeZone ? "2011-12-30T12:05:02.00Z" : "2011-12-30T11:05:02.00Z";
+        String expectedLeftModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 29, 11, 24, 25).getTime());
+        String expectedRightModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 30, 12, 05, 2).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("modified"), PropertyType.DATE, expectedLeftModified,
                 expectedRightModified);
         // lastContributor => same once trimmed
@@ -219,7 +235,8 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.TRUE),
                         String.valueOf(Boolean.FALSE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, "10", null));
-        String expectedRightDateItem = keepTimeZone ? "2011-12-29T23:00:00.00Z" : "2011-12-29T22:00:00.00Z";
+        String expectedRightDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 29, 23, 0, 0).getTime());
         expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, null,
                 expectedRightDateItem));
         checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"), expectedComplexFieldDiff);
@@ -236,7 +253,8 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.TRUE),
                         String.valueOf(Boolean.FALSE)));
         item1ExpectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, "12", null));
-        expectedRightDateItem = keepTimeZone ? "2011-12-30T23:00:00.00Z" : "2011-12-30T22:00:00.00Z";
+        expectedRightDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 30, 23, 0, 0).getTime());
         item1ExpectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, null,
                 expectedRightDateItem));
 
@@ -311,18 +329,19 @@ public class TestDocumentDiff extends DiffTestCase {
         // description => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"), PropertyType.STRING, null, "description");
         // created => different
-        // db storage normalization may give us different timezones...
-        boolean keepTimeZone = ((SimplePropertyDiff) schemaDiff.getFieldDiff("created")).getLeftValue().equals(
-                "2011-12-29T11:24:50.00Z");
-        String expectedLeftCreated = keepTimeZone ? "2011-12-29T11:24:50.00Z" : "2011-12-29T10:24:50.00Z";
-        String expectedRightCreated = keepTimeZone ? "2011-12-29T11:24:25.00Z" : "2011-12-29T10:24:25.00Z";
+        String expectedLeftCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 29, 11, 24, 50).getTime());
+        String expectedRightCreated = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 29, 11, 24, 25).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"), PropertyType.DATE, expectedLeftCreated,
                 expectedRightCreated);
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
-        String expectedLeftModified = keepTimeZone ? "2011-12-30T12:05:02.00Z" : "2011-12-30T11:05:02.00Z";
-        String expectedRightModified = keepTimeZone ? "2011-12-29T11:24:25.00Z" : "2011-12-29T10:24:25.00Z";
+        String expectedLeftModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 30, 12, 05, 2).getTime());
+        String expectedRightModified = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 29, 11, 24, 25).getTime());
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("modified"), PropertyType.DATE, expectedLeftModified,
                 expectedRightModified);
 
@@ -438,7 +457,8 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.FALSE),
                         String.valueOf(Boolean.TRUE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, null, "10"));
-        String expectedLeftDateItem = keepTimeZone ? "2011-12-29T23:00:00.00Z" : "2011-12-29T22:00:00.00Z";
+        String expectedLeftDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 29, 23, 0, 0).getTime());
         expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, expectedLeftDateItem,
                 null));
         checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"), expectedComplexFieldDiff);
@@ -455,7 +475,8 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.FALSE),
                         String.valueOf(Boolean.TRUE)));
         item1ExpectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, null, "12"));
-        expectedLeftDateItem = keepTimeZone ? "2011-12-30T23:00:00.00Z" : "2011-12-30T22:00:00.00Z";
+        expectedLeftDateItem = dateFormatter.format(DocumentDiffRepositoryInit.getCalendarNoMillis(2011,
+                Calendar.DECEMBER, 30, 23, 0, 0).getTime());
         item1ExpectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE,
                 expectedLeftDateItem, null));
 
