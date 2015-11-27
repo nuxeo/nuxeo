@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.ui.web.model.impl;
 
 import javax.el.ValueExpression;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.model.EditableModel;
 import org.nuxeo.ecm.platform.ui.web.model.ProtectedEditableModel;
 
@@ -29,16 +31,27 @@ import org.nuxeo.ecm.platform.ui.web.model.ProtectedEditableModel;
  */
 public class ProtectedEditableModelImpl implements ProtectedEditableModel {
 
+    private static final Log log = LogFactory.getLog(ProtectedEditableModelImpl.class);
+
+    protected final String componentId;
+
     protected final EditableModel delegate;
 
     protected final ProtectedEditableModel parent;
 
     protected final ValueExpression binding;
 
-    public ProtectedEditableModelImpl(EditableModel delegate, ProtectedEditableModel parent, ValueExpression binding) {
+    public ProtectedEditableModelImpl(String compId, EditableModel delegate, ProtectedEditableModel parent,
+            ValueExpression binding) {
+        this.componentId = compId;
         this.delegate = delegate;
         this.parent = parent;
         this.binding = binding;
+    }
+
+    @Override
+    public String getComponentId() {
+        return componentId;
     }
 
     @Override
@@ -48,7 +61,11 @@ public class ProtectedEditableModelImpl implements ProtectedEditableModel {
 
     @Override
     public Object getRowData() {
-        return delegate.getRowData();
+        Object data = delegate.getRowData();
+        if (log.isDebugEnabled()) {
+            log.debug("getRowData " + getComponentId() + " -> " + data);
+        }
+        return data;
     }
 
     @Override
@@ -81,7 +98,9 @@ public class ProtectedEditableModelImpl implements ProtectedEditableModel {
         final StringBuilder buf = new StringBuilder();
         buf.append(ProtectedEditableModelImpl.class.getSimpleName());
         buf.append(" {");
-        buf.append(" binding=");
+        buf.append(" component id=");
+        buf.append(componentId);
+        buf.append(", binding=");
         buf.append(binding);
         buf.append(", delegate=");
         buf.append(delegate);

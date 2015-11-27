@@ -32,6 +32,15 @@ import javax.faces.model.DataModel;
 public interface ProtectedEditableModel {
 
     /**
+     * Returns the originating JSF component id this model is attached to.
+     * <p>
+     * Useful to debug model exposure to the context.
+     *
+     * @since 8.1
+     */
+    String getComponentId();
+
+    /**
      * @see DataModel#getRowCount()
      */
     int getRowCount();
