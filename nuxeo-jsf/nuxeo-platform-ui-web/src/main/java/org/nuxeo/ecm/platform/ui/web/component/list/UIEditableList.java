@@ -346,6 +346,17 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         }
     }
 
+    protected final void exposeRequestMapModelValue(Object oldRequestValue) {
+        Object modelValue;
+        EditableModel model = getEditableModel();
+        if (model == null || !model.isRowAvailable()) {
+            modelValue = oldRequestValue;
+        } else {
+            modelValue = new ProtectedEditableModelImpl(getId(), model);
+        }
+        restoreRequestMapModelValue(modelValue);
+    }
+
     /**
      * Prepares this component for a change in the rowData.
      * <p>
@@ -384,21 +395,7 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         Object currencyObj = getRowKey();
 
         // expose model to the request map or remove it given row availability
-        String modelName = getModel();
-        if (modelName != null) {
-            Map<String, Object> requestMap = context.getExternalContext().getRequestMap();
-            EditableModel model = getEditableModel();
-            if (model == null || !model.isRowAvailable()) {
-                if (oldRequestValue != null) {
-                    requestMap.put(modelName, oldRequestValue);
-                } else {
-                    requestMap.remove(modelName);
-                }
-            } else {
-                // only expose protected model
-                requestMap.put(modelName, new ProtectedEditableModelImpl(getId(), model));
-            }
-        }
+        exposeRequestMapModelValue(oldRequestValue);
 
         int position = 0;
         for (UIComponent stamp : getChildren()) {
@@ -566,6 +563,9 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             preRowDataChange();
             getEditableModel().setRowIndex(rowIndex);
             postRowDataChange(oldValue);
+        } else {
+            Object oldRequestValue = saveRequestMapModelValue();
+            exposeRequestMapModelValue(oldRequestValue);
         }
     }
 
@@ -589,6 +589,9 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
             Object oldRequestValue = saveRequestMapModelValue();
             getEditableModel().setRowKey(rowKey);
             postRowDataChange(oldRequestValue);
+        } else {
+            Object oldRequestValue = saveRequestMapModelValue();
+            exposeRequestMapModelValue(oldRequestValue);
         }
     }
 
