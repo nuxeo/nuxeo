@@ -40,11 +40,14 @@ import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.Reader;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.ecm.core.schema.types.Field;
 
 /**
  * Convert Json as {@link DocumentModel}.
@@ -120,12 +123,46 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             try (SessionWrapper wrapper = ctx.getSession(null)) {
                 doc = wrapper.getSession().getDocument(new IdRef(uid));
             }
+            avoidBlobUpdate(simpleDoc, doc);
             applyPropertyValues(simpleDoc, doc);
         } else {
             doc = simpleDoc;
         }
 
         return doc;
+    }
+
+    /**
+     * Avoid the blob updates. It's managed by custom ways.
+     */
+    private void avoidBlobUpdate(DocumentModel docToClean, DocumentModel docRef) {
+        for (String schema : docToClean.getSchemas()) {
+            for (String field : docToClean.getDataModel(schema).getDirtyFields()) {
+                avoidBlobUpdate(docToClean.getProperty(field), docRef);
+            }
+        }
+    }
+
+    private void avoidBlobUpdate(Property propToClean, DocumentModel docRef) {
+        if (propToClean instanceof BlobProperty) {
+            // if the blob used to exist
+            if (propToClean.getValue() == null) {
+                Serializable value = docRef.getPropertyValue(propToClean.getPath());
+                propToClean.setValue(value);
+            }
+        } else if (propToClean instanceof ComplexProperty) {
+            ComplexProperty complexPropToClean = (ComplexProperty) propToClean;
+            for (Field field : complexPropToClean.getType().getFields()) {
+                Property childPropToClean = complexPropToClean.get(field.getName().getLocalName());
+                avoidBlobUpdate(childPropToClean, docRef);
+            }
+        } else if (propToClean instanceof ListProperty) {
+            ListProperty listPropToClean = (ListProperty) propToClean;
+            for (int i = 0; i < listPropToClean.size(); i++) {
+                Property elPropToClean = listPropToClean.get(i);
+                avoidBlobUpdate(elPropToClean, docRef);
+            }
+        }
     }
 
     public static void applyPropertyValues(DocumentModel src, DocumentModel dst) {
