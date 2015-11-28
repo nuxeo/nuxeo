@@ -56,8 +56,12 @@ CREATE SEQUENCE ${idSequenceName}
 #PROC: NX_STRING_ARRAY
 CREATE TYPE NX_STRING_ARRAY AS VARRAY(32767) OF VARCHAR2(32767)
 
-# -- CREATE OR REPLACE will not work if ACLR_USER_USERS nested table is not empty
-#PROC: NX_STRING_TABLE
+# don't use PROC: which uses CREATE OR REPLACE which fails when ACLR_USER_USERS nested table is not empty
+# avoiding ORA-02303: cannot drop or replace a type with type or table dependents
+#TEST:
+SELECT 1 FROM USER_TYPES WHERE TYPE_NAME = 'NX_STRING_TABLE'
+
+#IF: emptyResult
 CREATE TYPE NX_STRING_TABLE AS TABLE OF VARCHAR2(4000)
 
 
