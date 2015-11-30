@@ -203,7 +203,7 @@ END;
 # ------------------------------------------------------------
 # -- Path management using CTE
 # -- @since 5.9.5
-#PROC: dbo.NX_CHILDREN
+#PROC: dbo.nx_children
 CREATE FUNCTION nx_children(@root ${idType})
 RETURNS TABLE AS RETURN
   WITH children (id) AS (
@@ -381,7 +381,7 @@ SELECT 1 FROM sys.indexes WHERE name = 'ancestors_ancestor_idx'
 CREATE INDEX [ancestors_ancestor_idx] ON [dbo].[ancestors] ([ancestor])
 
 
-#PROC: dbo.NX_GET_ANCESTORS
+#PROC: dbo.nx_get_ancestors
 CREATE FUNCTION nx_get_ancestors(@id ${idType})
 RETURNS @output TABLE (ancestor_id ${idType}) AS
   -- List ancestors of a document
@@ -405,7 +405,7 @@ BEGIN
   RETURN;
 END;
 
-#PROC: dbo.NX_INIT_ANCESTORS
+#PROC: dbo.nx_init_ancestors
 CREATE PROCEDURE nx_init_ancestors AS
 BEGIN
   SET NOCOUNT ON;
@@ -426,7 +426,7 @@ BEGIN
 END;
 
 
-#PROC: dbo.NX_TRIG_ANCESTOR_INSERT
+#PROC: dbo.nx_trig_ancestor_insert
 CREATE TRIGGER nx_trig_ancestor_insert ON [hierarchy]
 AFTER INSERT AS
 BEGIN
@@ -448,10 +448,10 @@ END;
 
 
 #IF: ! pathOptimizationsEnabled
-ALTER TABLE [hierarchy] DISABLE TRIGGER NX_TRIG_ANCESTOR_INSERT
+ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_ancestor_insert
 
 
-#PROC: dbo.NX_TRIG_ANCESTOR_UPDATE
+#PROC: dbo.nx_trig_ancestor_update
 CREATE TRIGGER nx_trig_ancestor_update ON [hierarchy]
 AFTER UPDATE AS
 BEGIN
@@ -783,7 +783,7 @@ INSERT INTO aclr_permission ${readPermissions};
 
 # -- FUNCTIONS --------------------------------------------------
 
-#PROC: dbo.NX_GET_LOCAL_READ_ACL
+#PROC: dbo.nx_get_local_read_acl
 CREATE FUNCTION nx_get_local_read_acl(@id ${idType})
 RETURNS NVARCHAR(4000) AS
 -- Compute the read acl for hierarchy id using a local acl
@@ -821,7 +821,7 @@ BEGIN
 END;
 
 
-#PROC: dbo.NX_GET_READ_ACL
+#PROC: dbo.nx_get_read_acl
 CREATE FUNCTION nx_get_read_acl(@id ${idType})
 RETURNS NVARCHAR(4000) AS
 -- Compute the merged read acl for a doc id
@@ -857,7 +857,7 @@ BEGIN
 END;
 
 
-#PROC: dbo.NX_MD5
+#PROC: dbo.nx_md5
 CREATE FUNCTION nx_md5(@string NVARCHAR(4000))
 RETURNS CHAR(32) AS
 BEGIN
@@ -868,7 +868,7 @@ END;
 
 
 #IF: aclOptimizationsEnabled
-#PROC: dbo.NX_GET_READ_PERMISSIONS
+#PROC: dbo.nx_get_read_permissions
 CREATE FUNCTION nx_get_read_permissions()
 RETURNS NVARCHAR(4000) AS
 BEGIN
@@ -892,7 +892,7 @@ END;
 
 
 #IF: aclOptimizationsEnabled
-#PROC: dbo.NX_GET_READ_ACL_ID
+#PROC: dbo.nx_get_read_acl_id
 CREATE FUNCTION nx_get_read_acl_id(@id ${idType})
 RETURNS CHAR(32) AS
 BEGIN
@@ -903,7 +903,7 @@ END;
 
 
 #IF: aclOptimizationsEnabled
-#PROC: dbo.NX_LIST_READ_ACLS_FOR
+#PROC: dbo.nx_list_read_acls_for
 CREATE FUNCTION nx_list_read_acls_for(@users NVARCHAR(4000))
 RETURNS @output TABLE (acl_id CHAR(32)) AS
   -- List matching read acl ids for a list of user/groups
@@ -924,7 +924,7 @@ END;
 # -- TRIGGERS --------------------------------------------------
 
 
-#PROC: dbo.NX_TRIG_ACLS_MODIFIED
+#PROC: dbo.nx_trig_acls_modified
 CREATE TRIGGER nx_trig_acls_modified ON [acls]
 AFTER INSERT, UPDATE, DELETE AS
 BEGIN
@@ -939,7 +939,7 @@ END;
 ALTER TABLE [acls] DISABLE TRIGGER nx_trig_acls_modified
 
 
-#PROC: dbo.NX_TRIG_HIERARCHY_INSERT
+#PROC: dbo.nx_trig_hierarchy_insert
 CREATE TRIGGER nx_trig_hierarchy_insert ON [hierarchy]
 AFTER INSERT AS
 BEGIN
@@ -953,7 +953,7 @@ END;
 ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_hierarchy_insert
 
 
-#PROC: dbo.NX_TRIG_HIERARCHY_UPDATE
+#PROC: dbo.nx_trig_hierarchy_update
 CREATE TRIGGER nx_trig_hierarchy_update ON [hierarchy]
 AFTER UPDATE AS
 BEGIN
@@ -968,7 +968,7 @@ END;
 ALTER TABLE [hierarchy] DISABLE TRIGGER nx_trig_hierarchy_update
 
 
-#PROC: dbo.NX_TRIG_ACLR_MODIFIED
+#PROC: dbo.nx_trig_aclr_modified
 CREATE TRIGGER nx_trig_aclr_modified ON [aclr]
 AFTER INSERT AS
 BEGIN
@@ -1009,7 +1009,7 @@ END;
 ALTER TABLE [aclr] DISABLE TRIGGER nx_trig_aclr_modified
 
 
-#PROC: dbo.NX_TRIG_HIER_READ_ACL_MOD
+#PROC: dbo.nx_trig_hier_read_acl_mod
 CREATE TRIGGER nx_trig_hier_read_acl_mod ON [hierarchy_read_acl]
 AFTER INSERT, UPDATE AS
 BEGIN
@@ -1031,7 +1031,7 @@ ALTER TABLE [hierarchy_read_acl] DISABLE TRIGGER nx_trig_hier_read_acl_mod
 
 
 #IF: aclOptimizationsEnabled
-#PROC: dbo.NX_PREPARE_USER_READ_ACLS
+#PROC: dbo.nx_prepare_user_read_acls
 CREATE PROCEDURE nx_prepare_user_read_acls @users NVARCHAR(4000) AS
   -- prepare the read aclr for the user
 BEGIN
@@ -1078,7 +1078,7 @@ END;
 
 
 #IF: aclOptimizationsEnabled
-#PROC: dbo.NX_REBUILD_READ_ACLS
+#PROC: dbo.nx_rebuild_read_acls
 CREATE PROCEDURE nx_rebuild_read_acls
   -- Rebuild the read acls tables
 AS
@@ -1095,7 +1095,7 @@ END;
 
 
 #IF: aclOptimizationsEnabled
-#PROC: dbo.NX_VACUUM_READ_ACLS
+#PROC: dbo.nx_vacuum_read_acls
 CREATE PROCEDURE nx_vacuum_read_acls
   -- Remove unused read acls entries
 AS
@@ -1110,7 +1110,7 @@ END;
 
 
 #IF: aclOptimizationsEnabled
-#PROC: dbo.NX_UPDATE_READ_ACLS
+#PROC: dbo.nx_update_read_acls
 CREATE PROCEDURE nx_update_read_acls
   -- Rebuild only necessary read acls
 AS

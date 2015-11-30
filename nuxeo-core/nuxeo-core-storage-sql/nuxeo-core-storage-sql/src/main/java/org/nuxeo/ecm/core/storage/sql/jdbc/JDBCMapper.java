@@ -77,7 +77,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectOracle;
-import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.DialectSQLServer;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
 import org.nuxeo.runtime.api.Framework;
 
@@ -363,9 +362,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             try (Statement st = connection.createStatement()) {
                 for (String sql : ddl) {
                     logger.log(sql.replace("\n", "\n    ")); // indented
-                    if (dialect instanceof DialectSQLServer && sql.toLowerCase().contains("nx_children")) {
-                        logger.warn(sql.replace("\n", "\n    ")); // DEBUG
-                    }
                     try {
                         st.execute(sql);
                     } catch (SQLException e) {
