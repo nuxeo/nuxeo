@@ -473,7 +473,7 @@ public class DialectMySQL extends Dialect {
             return Arrays.asList(procDrop, procCreate);
         }
         try (Statement st = connection.createStatement()) {
-            String getBody = "SELECT body FROM MYSQL.PROC WHERE db = DATABASE() AND name = '" + procName + "'";
+            String getBody = "SELECT body FROM mysql.proc WHERE db = DATABASE() AND name = '" + procName + "'";
             logger.log(getBody);
             try (ResultSet rs = st.executeQuery(getBody)) {
                 if (rs.next()) {
