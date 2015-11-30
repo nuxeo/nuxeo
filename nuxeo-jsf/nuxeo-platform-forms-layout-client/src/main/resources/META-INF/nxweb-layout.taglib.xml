@@ -82,8 +82,9 @@
       <required>false</required>
       <type>java.lang.String</type>
       <description>
-        Name of the widget type category that will be used. Available since
-        5.7.3, defaults implicitely to "jsf" when not set for compatibility.
+        Category of the widget type (optional). Available since 5.7.3, and used in
+        conjunction with the 'name' attribute. Defaults implicitly to "jsf"
+        when not set for compatibility.
       </description>
     </attribute>
     <attribute>
@@ -252,11 +253,12 @@
     </attribute>
     <attribute>
       <name>category</name>
-      <required>true</required>
+      <required>false</required>
       <type>java.lang.String</type>
       <description>
         Category of the widget (optional). Available since 5.6, and used in
-        conjunction with the 'name' attribute.
+        conjunction with the 'name' attribute. Defaults implicitly to "jsf"
+        when not set for compatibility.
       </description>
     </attribute>
     <attribute>
@@ -359,10 +361,12 @@
     </attribute>
     <attribute>
       <name>category</name>
-      <required>true</required>
+      <required>false</required>
       <type>java.lang.String</type>
       <description>
-        Category of the layout (optional). Available since 5.5.
+        Category of the layout (optional). Available since 5.5, and used in
+        conjunction with the 'name' attribute. Defaults implicitly to "jsf"
+        when not set for compatibility.
       </description>
     </attribute>
     <attribute>
