@@ -91,7 +91,7 @@ public class AutomationMapper {
                     }
                 }
                 if (docs.size() == l.size() && docs.size() > 0) {
-                    ctx.put(entryId, ((DocumentWrapper) entry).getDoc());
+                    ctx.put(entryId, docs);
                 }
             }
         }

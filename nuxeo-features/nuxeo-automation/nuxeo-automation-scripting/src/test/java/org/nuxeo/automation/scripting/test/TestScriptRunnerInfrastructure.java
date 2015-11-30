@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -424,5 +425,17 @@ public class TestScriptRunnerInfrastructure {
         String principal = (String) automationService.run(ctx, "my-chain-with-loginasop", null);
         assertEquals("Administrator" + System.lineSeparator(), outContent.toString());
         assertEquals("Administrator", principal);
+    }
+
+    @Test
+    public void canUnwrapContextDocListing() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModel root = session.getRootDocument();
+        DocumentModelList docs = new DocumentModelListImpl();
+        docs.add(root);
+        docs.add(root);
+        ctx.put("docs", docs);
+        Object result = automationService.run(ctx, "Scripting.SimpleScript", null);
+        assertNotNull(result);
     }
 }
