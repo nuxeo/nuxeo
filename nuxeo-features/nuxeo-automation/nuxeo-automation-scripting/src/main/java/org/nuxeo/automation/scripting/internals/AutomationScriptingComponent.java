@@ -44,7 +44,7 @@ public class AutomationScriptingComponent extends DefaultComponent {
 
     protected ScriptingFactory scriptingFactory;
 
-    public AutomationScriptingService scriptingService;
+    public AutomationScriptingService scriptingService = new AutomationScriptingServiceImpl();
 
     @Override
     public void activate(ComponentContext context) {
@@ -54,8 +54,6 @@ public class AutomationScriptingComponent extends DefaultComponent {
         if (Boolean.valueOf(Framework.getProperty(AutomationScriptingConstants.AUTOMATION_SCRIPTING_MONITOR,
                 Boolean.toString(log.isTraceEnabled())))) {
             scriptingService = MetricInvocationHandler.newProxy(scriptingService, AutomationScriptingService.class);
-        } else {
-            scriptingService = new AutomationScriptingServiceImpl();
         }
     }
 
