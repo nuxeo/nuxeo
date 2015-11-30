@@ -163,7 +163,12 @@ public class DocumentBasePage extends AbstractPage {
         clickOnDocumentTabLink(tabLink, useAjaxTabs());
     }
 
-    protected void clickOnDocumentTabLink(WebElement tabLink, boolean useAjax) {
+    /**
+     * Clicks on given tab element, detecting begin and end of potential ajax request.
+     *
+     * @since 8.1
+     */
+    public void clickOnDocumentTabLink(WebElement tabLink, boolean useAjax) {
         clickOnTabIfNotSelected("nxw_documentTabs_panel", tabLink, useAjax);
     }
 
