@@ -25,6 +25,12 @@
     </navigation-case>
 
     <navigation-case>
+      <from-outcome>admin_view_documents</from-outcome>
+      <to-view-id>/admin_view_documents.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+
+    <navigation-case>
       <from-outcome>confirm_download</from-outcome>
       <to-view-id>/connect_confirm_download.xhtml</to-view-id>
       <redirect />
