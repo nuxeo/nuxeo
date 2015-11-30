@@ -17,8 +17,6 @@ import static java.lang.Boolean.TRUE;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.naming.NamingException;
@@ -64,11 +62,7 @@ public class JDBCBackend implements RepositoryBackend {
 
     private boolean firstMapper = true;
 
-    // static because in Nuxeo 6.0 if a component init fails, RegistrationInfoImpl marks it
-    // as RESOLVED which means that the next lookup will re-create it, which in turn will
-    // create a new RepositoryService instance and a new RepositoryImpl / JDBCBackend too.
-    // FALSE if init failed, TRUE if succeeded, null if not yet done
-    private static Map<String, Boolean> REPOSITORY_INITIALIZED = new HashMap<>();
+    private Boolean initialized;
 
     private ClusterInvalidator clusterInvalidator;
 
@@ -213,11 +207,11 @@ public class JDBCBackend implements RepositoryBackend {
             mapper.connect();
         }
         String repositoryName = repository.getName();
-        if (FALSE.equals(REPOSITORY_INITIALIZED.get(repositoryName))) {
+        if (FALSE.equals(initialized)) {
             throw new NuxeoException("Database initialization failed previously for: " + repositoryName);
         }
         if (firstMapper) {
-            REPOSITORY_INITIALIZED.put(repositoryName, FALSE);
+            initialized = FALSE;
             firstMapper = false;
             String ddlMode = repositoryDescriptor.getDDLMode();
             if (ddlMode == null) {
@@ -235,7 +229,7 @@ public class JDBCBackend implements RepositoryBackend {
                 log.debug(String.format("Database ready, fulltext: disabled=%b searchDisabled=%b.",
                         repositoryDescriptor.getFulltextDisabled(), repositoryDescriptor.getFulltextSearchDisabled()));
             }
-            REPOSITORY_INITIALIZED.put(repositoryName, TRUE);
+            initialized = TRUE;
         }
         return mapper;
     }

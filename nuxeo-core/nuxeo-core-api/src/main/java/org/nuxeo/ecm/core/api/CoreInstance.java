@@ -181,6 +181,9 @@ public class CoreInstance {
 
     protected CoreSession acquireCoreSession(String repositoryName, NuxeoPrincipal principal) {
         CoreSession session = Framework.getLocalService(CoreSession.class);
+        if (session == null) {
+            throw new NuxeoException("RepositoryService failed to start");
+        }
         session.connect(repositoryName, principal);
         sessions.put(session.getSessionId(), new RegistrationInfo(session));
         return session;

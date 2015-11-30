@@ -92,6 +92,11 @@ public class DefaultMonitorComponent extends DefaultComponent {
     // don't use activate, it would be too early
     @Override
     public void applicationStarted(ComponentContext context) {
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        if (repositoryService == null) {
+            // RepositoryService failed to start, no need to go further
+            return;
+        }
         uninstall();
         install();
     }
