@@ -378,6 +378,21 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.SimpleScript">
+      <inputType>void</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <param name="document" type="string"/>
+      <script><![CDATA[
+        function run(input, params) {
+            var root = Repository.GetDocument(null, {
+                "value" : "/"
+            });
+            return root;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
