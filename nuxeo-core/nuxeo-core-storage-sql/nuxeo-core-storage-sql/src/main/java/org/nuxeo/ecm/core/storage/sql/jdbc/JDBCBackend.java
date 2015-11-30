@@ -217,7 +217,7 @@ public class JDBCBackend implements RepositoryBackend {
             if (ddlMode == null) {
                 // compat
                 ddlMode = repositoryDescriptor.getNoDDL() ? RepositoryDescriptor.DDL_MODE_IGNORE
-                        : RepositoryDescriptor.DDL_MODE_COMPAT;
+                        : RepositoryDescriptor.DDL_MODE_EXECUTE;
             }
             if (ddlMode.equals(RepositoryDescriptor.DDL_MODE_IGNORE)) {
                 log.info("Skipping database creation");
