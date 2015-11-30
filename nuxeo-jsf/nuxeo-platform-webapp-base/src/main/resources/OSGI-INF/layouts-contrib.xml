@@ -4475,6 +4475,12 @@
                 <row>
                   <widget category="widgetTypeConf">tabs_hideSingleTab</widget>
                 </row>
+                <row>
+                  <widget category="widgetTypeConf">tabs_link_view</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">tabs_link_pattern</widget>
+                </row>
               </rows>
             </layout>
           </layouts>

@@ -18,7 +18,9 @@
     <nxd:restDocumentLink document="#{field_0}"
       tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}"
       tabs="#{widgetProperty_tabs}"
-      target="#{widgetProperty_target}">
+      target="#{widgetProperty_target}"
+      view="#{nxu:test(empty tabWidgetView, widgetProperty_view, tabWidgetView)}"
+      pattern="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}">
       <span id="title_#{field_1}" title="#{label}" class="documentTitle">
        <c:if test="#{widgetProperty_localize}">
         #{messages[nxd:titleOrId(field_0)]}
@@ -34,7 +36,9 @@
         newConversation="true" target="_blank"
         tab="#{widgetProperty_tab}"
         subTab="#{widgetProperty_subTab}"
-        tabs="#{widgetProperty_tabs}">
+        tabs="#{widgetProperty_tabs}"
+        view="#{nxu:test(empty tabWidgetView, widgetProperty_view, tabWidgetView)}"
+        pattern="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}">
         <nxu:graphicImage value="/icons/external.gif"
           style="vertical-align:middle"
           alt="#{messages['permalink.newTab']}"
@@ -59,11 +63,11 @@
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>
     <c:if test="#{widgetProperty_localize}">
-        #{messages[nxd:titleOrId(field_0)]}
-       </c:if>
-       <c:if test="#{!widgetProperty_localize}">
-         #{nxd:titleOrId(field_0)}
-       </c:if>
+      #{messages[nxd:titleOrId(field_0)]}
+    </c:if>
+    <c:if test="#{!widgetProperty_localize}">
+     #{nxd:titleOrId(field_0)}
+    </c:if>
   </nxp:html>
 </c:if>
 </nxu:set></nxu:set>
