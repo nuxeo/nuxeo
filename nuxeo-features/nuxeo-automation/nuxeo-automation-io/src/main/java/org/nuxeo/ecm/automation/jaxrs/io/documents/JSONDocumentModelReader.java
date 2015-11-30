@@ -49,8 +49,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
@@ -127,6 +131,7 @@ public class JSONDocumentModelReader implements
         if (uid != null) {
             CoreSession session = SessionFactory.getSession(request);
             DocumentModel doc = session.getDocument(new IdRef(uid));
+            avoidBlobUpdate(simpleDoc, doc);
             applyPropertyValues(simpleDoc, doc);
             return doc;
         } else {
@@ -148,12 +153,46 @@ public class JSONDocumentModelReader implements
         // the core session
         if (uid != null) {
             DocumentModel doc = session.getDocument(new IdRef(uid));
+            avoidBlobUpdate(simpleDoc, doc);
             applyPropertyValues(simpleDoc, doc);
             return doc;
         } else {
             return simpleDoc;
         }
 
+    }
+
+    /**
+     * Avoid the blob updates. It's managed by custom ways.
+     */
+    private static void avoidBlobUpdate(DocumentModel docToClean, DocumentModel docRef) {
+        for (String schema : docToClean.getSchemas()) {
+            for (String field : docToClean.getDataModel(schema).getDirtyFields()) {
+                avoidBlobUpdate(docToClean.getProperty(field), docRef);
+            }
+        }
+    }
+
+    private static void avoidBlobUpdate(Property propToClean, DocumentModel docRef) {
+        if (propToClean instanceof BlobProperty) {
+            // if the blob used to exist
+            if (propToClean.getValue() == null) {
+                Serializable value = docRef.getPropertyValue(propToClean.getPath());
+                propToClean.setValue(value);
+            }
+        } else if (propToClean instanceof ComplexProperty) {
+            ComplexProperty complexPropToClean = (ComplexProperty) propToClean;
+            for (Field field : complexPropToClean.getType().getFields()) {
+                Property childPropToClean = complexPropToClean.get(field.getName().getLocalName());
+                avoidBlobUpdate(childPropToClean, docRef);
+            }
+        } else if (propToClean instanceof ListProperty) {
+            ListProperty listPropToClean = (ListProperty) propToClean;
+            for (int i = 0; i < listPropToClean.size(); i++) {
+                Property elPropToClean = listPropToClean.get(i);
+                avoidBlobUpdate(elPropToClean, docRef);
+            }
+        }
     }
 
     static Properties readProperties(JsonParser jp) throws Exception {
