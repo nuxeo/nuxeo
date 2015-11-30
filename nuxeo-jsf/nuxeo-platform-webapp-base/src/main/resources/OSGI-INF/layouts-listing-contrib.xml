@@ -80,6 +80,40 @@
       </fields>
     </widget>
 
+    <widget name="listing_link_pattern" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Link Pattern</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The document pattern to use for this link (optional). Available since 8.1.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>pattern</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_link_view" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Link View</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The document view to use for this link (optional). Available since 8.1.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>view</field>
+      </fields>
+    </widget>
+
     <widget name="listing_link_hideExternalLink" type="checkbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -558,6 +592,12 @@
                   <widget category="widgetTypeConf">localize</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">listing_link_pattern</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">listing_link_view</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">listing_link_hideExternalLink</widget>
                 </row>
                 <row>
@@ -620,6 +660,8 @@
         </categories>
         <properties>
           <defaultValues mode="any">
+            <property name="view">view_documents</property>
+            <property name="pattern">id</property>
             <property name="hideExternalLink">true</property>
           </defaultValues>
           <layouts mode="any">
@@ -636,6 +678,12 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">listing_link_target</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">listing_link_pattern</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">listing_link_view</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">localize</widget>

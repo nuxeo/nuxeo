@@ -18,18 +18,36 @@
 <nxu:set var="tabIds"
   value="#{parentTabActionCategory}:#{action.id}"
   cache="true">
+<nxu:set var="repositoryName"
+  value="#{nxu:test(empty action.properties.repositoryName, widgetProperty_repositoryName, action.properties.repositoryName)}"
+  cache="true">
+<nxu:set var="confView"
+  value="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
+  cache="true">
+<nxu:set var="finalView"
+  value="#{nxu:test(empty tabWidgetView, confView, tabWidgetView)}"
+  cache="true">
+<nxu:set var="pattern"
+  value="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
+  cache="true">
+<nxu:set var="finalPattern"
+  value="#{nxu:test(empty tabWidgetPattern, pattern, tabWidgetPattern)}"
+  cache="true">
+<nxu:set var="target"
+  value="#{nxu:test(empty action.properties.target, widgetProperty_target, action.properties.target)}"
+  cache="true">
 
 <c:if test="#{not useAjaxForm}">
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
-    repositoryName="#{nxu:test(empty action.properties.repositoryName, widgetProperty_repositoryName, action.properties.repositoryName)}"
-    view="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
-    pattern="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
+    repositoryName="#{repositoryName}"
+    view="#{finalView}"
+    pattern="#{finalPattern}"
     tabs="#{tabIds}"
     addTabInfo="false"
     accesskey="#{action.accessKey}"
     id="#{widget.id}"
-    target="#{nxu:test(empty action.properties.target, widgetProperty_target, action.properties.target)}"
+    target="#{target}"
     styleClass="#{actionStyleClass} #{action.properties.styleClass}"
     onclick="#{onclick}">
     <ui:include src="/incl/action/action_icon_label_template.xhtml" />
@@ -41,9 +59,9 @@
 
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
-    repositoryName="#{nxu:test(empty action.properties.repositoryName, widgetProperty_repositoryName, action.properties.repositoryName)}"
-    view="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
-    pattern="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
+    repositoryName="#{repositoryName}"
+    view="#{finalView}"
+    pattern="#{finalPattern}"
     tabs="#{tabIds}"
     addTabInfo="false"
     accesskey="#{action.accessKey}"
@@ -65,6 +83,12 @@
 
 </c:if>
 
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 

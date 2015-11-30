@@ -14,10 +14,11 @@
   <div class="popupTarget" docRef="#{field_0}">
 
     <nxd:restDocumentLink documentId="#{field_0}" repositoryName="#{field_1}"
-      pattern="id" view="view_documents"
       tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}"
       tabs="#{widgetProperty_tabs}"
-      target="#{widgetProperty_target}">
+      target="#{widgetProperty_target}"
+      view="#{nxu:test(empty tabWidgetView, widgetProperty_view, tabWidgetView)}"
+      pattern="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}">
       <span id="title_#{field_0}" title="#{label}" class="documentTitle">
        <c:if test="#{widgetProperty_localize}">
         #{messages[field_2]}
@@ -30,11 +31,12 @@
 
     <c:if test="#{!widgetProperty_hideExternalLink}">
       <nxd:restDocumentLink documentId="#{field_0}" repositoryName="#{field_1}"
-        pattern="id" view="view_documents"
         newConversation="true" target="_blank"
         tab="#{widgetProperty_tab}"
         subTab="#{widgetProperty_subTab}"
-        tabs="#{widgetProperty_tabs}">
+        tabs="#{widgetProperty_tabs}"
+        view="#{nxu:test(empty tabWidgetView, widgetProperty_view, tabWidgetView)}"
+        pattern="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}">
         <nxu:graphicImage value="/icons/external.gif"
           style="vertical-align:middle"
           alt="#{messages['permalink.newTab']}"
@@ -48,11 +50,11 @@
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>
     <c:if test="#{widgetProperty_localize}">
-        #{messages[field_2]}
-       </c:if>
-       <c:if test="#{!widgetProperty_localize}">
-         #{field_2}
-       </c:if>
+      #{messages[field_2]}
+    </c:if>
+    <c:if test="#{!widgetProperty_localize}">
+     #{field_2}
+    </c:if>
   </nxp:html>
 </c:if>
 </f:subview>

@@ -2,5 +2,6 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
-  <nxl:widget name="documentSubTabs" mode="view" value="#{currentDocument}" />
+  <nxl:widget name="documentSubTabs" mode="view" value="#{currentDocument}"
+    view="#{tabWidgetView}" pattern="#{tabWidgetPattern}" />
 </ui:composition>

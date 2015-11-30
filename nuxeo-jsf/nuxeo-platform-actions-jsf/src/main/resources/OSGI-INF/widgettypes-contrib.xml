@@ -246,6 +246,40 @@
       </selectOptions>
     </widget>
 
+    <widget name="tabs_link_pattern" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Link Pattern</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The document pattern to use for tabs links (optional). Available since 8.1.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>pattern</field>
+      </fields>
+    </widget>
+
+    <widget name="tabs_link_view" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Link View</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The document pattern to use for tabs links (optional). Available since 8.1.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>view</field>
+      </fields>
+    </widget>
+
     <widget name="tabs_hideSingleTab" type="checkbox">
       <categories>
         <category>widgetTypeConf</category>
@@ -509,6 +543,12 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">tabs_overallDisplay</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">tabs_link_view</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">tabs_link_pattern</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">tabs_hideSingleTab</widget>
