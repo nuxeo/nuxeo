@@ -2,6 +2,123 @@
 
 <component name="org.nuxeo.ecm.platform.forms.layouts.webapp.listing">
 
+  <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
+    point="widgets">
+
+    <widget name="listing_link_tab" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Tab</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The tab to select when clicking on the
+          document link. Available since 5.4.2.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>tab</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_link_subTab" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Sub Tab</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The sub tab to select when clicking on the
+          document link. Available since 5.5.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>subTab</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_link_tabs" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Tabs</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Combination of tabs to select when clicking
+          on the
+          document link. Sample value: MAIN_TABS:document.
+          Available since 7.3.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>tabs</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_link_target" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Target</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Available since 6.0. The target attribute
+          of
+          the link.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>target</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_link_hideExternalLink" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide External Link</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Available since 5.7.2. Flag indicating that
+          the external link, opening the document in a new
+          conversation, must be hidden.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideExternalLink</field>
+      </fields>
+    </widget>
+
+    <widget name="listing_link_hideDownloadLink" type="checkbox">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Hide Download Link</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Available since 6.0. Flag indicating that
+          the download link must be hidden.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>hideDownloadLink</field>
+      </fields>
+    </widget>
+
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgettypes">
 
@@ -426,132 +543,27 @@
             <layout name="listing_title_link_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>tab</widget>
+                  <widget category="widgetTypeConf">listing_link_tab</widget>
                 </row>
                 <row>
-                  <widget>subTab</widget>
+                  <widget category="widgetTypeConf">listing_link_subTab</widget>
                 </row>
                 <row>
-                  <widget>tabs</widget>
+                  <widget category="widgetTypeConf">listing_link_tabs</widget>
                 </row>
                 <row>
-                  <widget>target</widget>
+                  <widget category="widgetTypeConf">listing_link_target</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">localize</widget>
                 </row>
                 <row>
-                  <widget>hideExternalLink</widget>
+                  <widget category="widgetTypeConf">listing_link_hideExternalLink</widget>
                 </row>
                 <row>
-                  <widget>hideDownloadLink</widget>
+                  <widget category="widgetTypeConf">listing_link_hideDownloadLink</widget>
                 </row>
               </rows>
-              <widget name="tab" type="text">
-                <labels>
-                  <label mode="any">Tab</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The tab to select when clicking on the
-                    document link. Available since 5.4.2.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>tab</field>
-                </fields>
-              </widget>
-              <widget name="subTab" type="text">
-                <labels>
-                  <label mode="any">Sub Tab</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The sub tab to select when clicking on the
-                    document link. Available since 5.5.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>subTab</field>
-                </fields>
-              </widget>
-              <widget name="tabs" type="text">
-                <labels>
-                  <label mode="any">Tabs</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Combination of tabs to select when clicking
-                    on the
-                    document link. Sample value: MAIN_TABS:document.
-                    Available since 7.3.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>tabs</field>
-                </fields>
-              </widget>
-              <widget name="target" type="text">
-                <labels>
-                  <label mode="any">Target</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Available since 6.0. The target attribute
-                    of
-                    the link.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>target</field>
-                </fields>
-              </widget>
-              <widget name="localize" type="checkbox">
-                <categories>
-                  <category>widgetTypeConf</category>
-                </categories>
-                <labels>
-                  <label mode="any">Localize</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Available since 5.7.1. Flag indicating that
-                    the title is localized.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>localize</field>
-                </fields>
-              </widget>
-              <widget name="hideExternalLink" type="checkbox">
-                <labels>
-                  <label mode="any">Hide External Link</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Available since 5.7.2. Flag indicating that
-                    the external link, opening the document in a new
-                    conversation, must be hidden.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideExternalLink</field>
-                </fields>
-              </widget>
-              <widget name="hideDownloadLink" type="checkbox">
-                <labels>
-                  <label mode="any">Hide Download Link</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Available since 6.0. Flag indicating that
-                    the download link must be hidden.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideDownloadLink</field>
-                </fields>
-              </widget>
             </layout>
           </layouts>
         </properties>
@@ -611,113 +623,27 @@
             <property name="hideExternalLink">true</property>
           </defaultValues>
           <layouts mode="any">
-            <layout name="listing_title_link_widget_type_properties_any">
+            <layout name="listing_id_title_link_widget_type_properties_any">
               <rows>
                 <row>
-                  <widget>tab</widget>
+                  <widget category="widgetTypeConf">listing_link_tab</widget>
                 </row>
                 <row>
-                  <widget>subTab</widget>
+                  <widget category="widgetTypeConf">listing_link_subTab</widget>
                 </row>
                 <row>
-                  <widget>tabs</widget>
+                  <widget category="widgetTypeConf">listing_link_tabs</widget>
                 </row>
                 <row>
-                  <widget>target</widget>
+                  <widget category="widgetTypeConf">listing_link_target</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">localize</widget>
                 </row>
                 <row>
-                  <widget>hideExternalLink</widget>
+                  <widget category="widgetTypeConf">listing_link_hideExternalLink</widget>
                 </row>
               </rows>
-              <widget name="tab" type="text">
-                <labels>
-                  <label mode="any">Tab</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The tab to select when clicking on the
-                    document link.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>tab</field>
-                </fields>
-              </widget>
-              <widget name="subTab" type="text">
-                <labels>
-                  <label mode="any">Sub Tab</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The sub tab to select when clicking on the
-                    document link.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>subTab</field>
-                </fields>
-              </widget>
-              <widget name="tabs" type="text">
-                <labels>
-                  <label mode="any">Tabs</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Combination of tabs to select when clicking
-                    on the
-                    document link. Sample value: MAIN_TABS:document.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>tabs</field>
-                </fields>
-              </widget>
-              <widget name="target" type="text">
-                <labels>
-                  <label mode="any">Target</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    The target attribute of the link.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>target</field>
-                </fields>
-              </widget>
-              <widget name="localize" type="checkbox">
-                <categories>
-                  <category>widgetTypeConf</category>
-                </categories>
-                <labels>
-                  <label mode="any">Localize</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Flag indicating that the title is localized.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>localize</field>
-                </fields>
-              </widget>
-              <widget name="hideExternalLink" type="checkbox">
-                <labels>
-                  <label mode="any">Hide External Link</label>
-                </labels>
-                <helpLabels>
-                  <label mode="any">
-                    Flag indicating that the external link, opening the document in a new
-                    conversation, must be hidden.
-                  </label>
-                </helpLabels>
-                <fields>
-                  <field>hideExternalLink</field>
-                </fields>
-              </widget>
             </layout>
           </layouts>
         </properties>
