@@ -322,8 +322,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
              */
 
             if (!ddl.isEmpty()) {
-                File dumpFile = new File(Environment.getDefault().getLog(), "ddl-vcs-" + repository.getName() + "-"
-                        + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()) + ".sql");
+                File dumpFile = new File(Environment.getDefault().getLog(), "ddl-vcs-" + repository.getName() + ".sql");
                 try (OutputStream out = new FileOutputStream(dumpFile); PrintStream ps = new PrintStream(out)) {
                     for (String sql : dialect.getDumpStart()) {
                         ps.println(sql);
