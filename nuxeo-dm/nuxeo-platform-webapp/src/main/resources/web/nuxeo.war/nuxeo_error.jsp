@@ -8,6 +8,7 @@
 <%
   String context = request.getContextPath();
   String user_message = (String) request.getAttribute("user_message");
+  user_message = user_message != null ? user_message : "";
   String exception_message = (String) request.getAttribute("exception_message");
   String stackTrace = (String) request.getAttribute("stackTrace");
   String request_dump = (String) request.getAttribute("request_dump");
