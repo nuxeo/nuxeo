@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
@@ -57,6 +59,8 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -117,6 +121,11 @@ public abstract class AbstractChangeFinderTestCase {
     protected DocumentModel folder3;
 
     protected CoreSession user1Session;
+
+    @BeforeClass
+    public static void ignoreIfSQLServer() {
+        assumeTrue(!(DatabaseHelper.DATABASE instanceof DatabaseSQLServer));
+    }
 
     @Before
     public void init() throws Exception {
