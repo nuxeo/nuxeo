@@ -70,8 +70,8 @@ public class WorkflowObject extends DefaultObject {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createWorkflowInstance(WorkflowRequest workflowRequest) {
         final String workflowInstanceId = documentRoutingService.createNewInstance(
-                workflowRequest.getWorkflowModelName(), workflowRequest.getAttachedDocumentIds(), ctx.getCoreSession(),
-                true);
+                workflowRequest.getWorkflowModelName(), workflowRequest.getAttachedDocumentIds(),
+                workflowRequest.getVariables(), ctx.getCoreSession(), true);
         DocumentModel workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
         DocumentRoute route = workflowInstance.getAdapter(DocumentRoute.class);
         return Response.ok(route).status(Status.CREATED).build();
