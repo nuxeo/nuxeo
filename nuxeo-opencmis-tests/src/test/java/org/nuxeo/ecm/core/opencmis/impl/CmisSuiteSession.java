@@ -92,9 +92,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
-import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -888,24 +886,14 @@ public class CmisSuiteSession {
                 "OSGI-INF/test-servicefactorymanager-contrib.xml");
         session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
 
-        GregorianCalendar lastModifiedCalendar = Helper.getCalendar(2007, 4, 11, 12, 0, 0); // in GMT-02
-        Folder folder = (Folder) session.getObjectByPath("/testfolder1");
-        Map<String, Serializable> properties = new HashMap<>();
-        properties.put("dc:description", "my description");
-        properties.put("dc:modified", lastModifiedCalendar);
-        folder.updateProperties(properties, true);
-        // TODO XXX fix timezone issues with H2 / SQL Server
-        DatabaseHelper database = DatabaseHelper.DATABASE;
-        if (!(database instanceof DatabaseH2 || database instanceof DatabaseSQLServer)) {
-            assertEquals(lastModifiedCalendar.getTimeInMillis(),
-                    ((GregorianCalendar) folder.getPropertyValue("dc:modified")).getTimeInMillis());
-        }
+        Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        GregorianCalendar lastModifiedCalendar = doc.getPropertyValue("dc:modified");
 
         // check Last-Modified Cache Response Header
         RepositoryInfo ri = session.getRepositoryInfo();
         String uri = ri.getThinClientUri() + ri.getId() + "/";
-        uri += isAtomPub ? "children?id=" : "root?objectId=";
-        uri += folder.getId();
+        uri += isAtomPub ? "content?id=" : "root?objectId=";
+        uri += doc.getId();
         String lastModified = DateUtil.formatDate(lastModifiedCalendar.getTime());
         String encoding = Base64.encodeBytes(new String(USERNAME + ":" + PASSWORD).getBytes());
         DefaultHttpClient client = new DefaultHttpClient();
@@ -915,10 +903,7 @@ public class CmisSuiteSession {
         try {
             response = client.execute(request);
             assertEquals(HttpServletResponse.SC_OK, response.getStatusLine().getStatusCode());
-            // TODO XXX fix timezone issues with H2 / SQL Server
-            if (!(database instanceof DatabaseH2 || database instanceof DatabaseSQLServer)) {
-                assertEquals(lastModified, response.getLastHeader("Last-Modified").getValue());
-            }
+            assertEquals(lastModified, response.getLastHeader("Last-Modified").getValue());
         } finally {
             client.getConnectionManager().shutdown();
         }
