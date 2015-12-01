@@ -33,8 +33,10 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.blob.binary.CachingBinaryManager;
 import org.nuxeo.ecm.core.blob.binary.LazyBinary;
@@ -120,6 +122,16 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
         assertTrue(binary instanceof LazyBinary);
         assertEquals(bytes.length, binary.getLength());
         assertEquals(CONTENT, toString(binary.getStream()));
+    }
+
+    @Test
+    public void testAsBlobProvider() throws Exception {
+        // to acquire the BinaryGarbageCollector, the BlobManagerComponent only has a BlobProvider
+        if (binaryManager instanceof BlobProvider) {
+            BinaryManager bm = ((BlobProvider) binaryManager).getBinaryManager();
+            assertNotNull(bm);
+            assertEquals(binaryManager, bm);
+        }
     }
 
     /**

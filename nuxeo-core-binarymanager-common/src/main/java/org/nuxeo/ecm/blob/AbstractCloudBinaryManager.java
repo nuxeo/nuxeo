@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.CachingBinaryManager;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
@@ -108,6 +109,11 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         initializeCache(cacheSizeStr, getFileStorage());
 
         garbageCollector = instantiateGarbageCollector();
+    }
+
+    @Override
+    public BinaryManager getBinaryManager() {
+        return this;
     }
 
     @Override
