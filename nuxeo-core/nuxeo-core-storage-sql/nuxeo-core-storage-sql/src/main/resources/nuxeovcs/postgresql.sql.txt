@@ -48,7 +48,7 @@ CREATE SEQUENCE ${idSequenceName};
 
 #-- Deprecated since 5.9.5, see nx_children
 #PROC: nx_in_tree
-CREATE FUNCTION nx_in_tree(id ${idType}, baseid ${idType})
+CREATE FUNCTION nx_in_tree(id ${idTypeParam}, baseid ${idTypeParam})
 RETURNS boolean
 AS $$
 DECLARE
@@ -72,7 +72,7 @@ COST 400;
 
 
 #PROC: nx_access_allowed
-CREATE FUNCTION nx_access_allowed(id ${idType}, users varchar[], permissions varchar[])
+CREATE FUNCTION nx_access_allowed(id ${idTypeParam}, users varchar[], permissions varchar[])
 RETURNS boolean
 AS $$
 DECLARE
@@ -102,7 +102,7 @@ COST 500;
 
 #IF: clusteringEnabled
 #PROC: nx_cluster_inval
-CREATE FUNCTION nx_cluster_inval(n bigint, i ${idType}, f varchar[], k int)
+CREATE FUNCTION nx_cluster_inval(n bigint, i ${idTypeParam}, f varchar[], k int)
 RETURNS VOID
 AS $$
 DECLARE
@@ -236,7 +236,7 @@ VOLATILE;
 
 #IF: pathOptimizationsEnabled
 #PROC: nx_ancestors
-CREATE FUNCTION nx_ancestors(ids ${idType}[])
+CREATE FUNCTION nx_ancestors(ids ${idTypeParam}[])
 RETURNS SETOF ${idType}
 AS $$
 DECLARE
@@ -254,7 +254,7 @@ VOLATILE;
 # TODO 8.4: use CTE
 #IF: !pathOptimizationsEnabled
 #PROC: nx_ancestors
-CREATE FUNCTION nx_ancestors(ids ${idType}[])
+CREATE FUNCTION nx_ancestors(ids ${idTypeParam}[])
 RETURNS SETOF ${idType}
 AS $$
 DECLARE
@@ -504,7 +504,7 @@ INSERT INTO aclr_permission VALUES ${readPermissions};
 
 
 #PROC: nx_get_local_read_acl
-CREATE FUNCTION nx_get_local_read_acl(id ${idType})
+CREATE FUNCTION nx_get_local_read_acl(id ${idTypeParam})
 RETURNS varchar
 AS $$
 -- Compute the read acl for a hierarchy id using a local acl
@@ -911,7 +911,7 @@ SELECT * FROM nx_rebuild_read_acls();
 # -- @since 5.9.5
 
 #PROC: nx_children
-CREATE FUNCTION nx_children(${idType})
+CREATE FUNCTION nx_children(${idTypeParam})
 RETURNS TABLE(id ${idType})
 AS $$
   WITH RECURSIVE children AS (
@@ -936,7 +936,7 @@ LOG.INFO Soft delete enabled
 #IF: softDeleteEnabled
 #IF: proxiesEnabled
 #PROC: nx_delete
-CREATE FUNCTION nx_delete(ids ${idType}[], nowTime TIMESTAMP)
+CREATE FUNCTION nx_delete(ids ${idTypeParam}[], nowTime TIMESTAMP)
 RETURNS void
 AS $$
 -- Marks the given ids as deleted at the given time (null means now)
@@ -957,7 +957,7 @@ VOLATILE;
 #IF: softDeleteEnabled
 #IF: ! proxiesEnabled
 #PROC: nx_delete
-CREATE FUNCTION nx_delete(ids ${idType}[], nowTime TIMESTAMP)
+CREATE FUNCTION nx_delete(ids ${idTypeParam}[], nowTime TIMESTAMP)
 RETURNS void
 AS $$
 -- Marks the given ids as deleted at the given time (null means now)

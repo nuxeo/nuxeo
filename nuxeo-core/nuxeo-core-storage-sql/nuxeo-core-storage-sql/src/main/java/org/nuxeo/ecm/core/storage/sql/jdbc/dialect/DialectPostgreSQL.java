@@ -34,8 +34,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -1307,6 +1309,9 @@ public class DialectPostgreSQL extends Dialect {
         return super.getBinaryFulltextSql(columns);
     }
 
+    // parenthesizes parameter part, with optional nested parentheses
+    private static final Pattern SIG_MATCH = Pattern.compile("[^(]*\\((([^()]*|\\([^()]*\\))*)\\).*", Pattern.DOTALL);
+
     @Override
     public List<String> checkStoredProcedure(String procName, String procCreate, String ddlMode, Connection connection,
             JDBCLogger logger, Map<String, Serializable> properties) throws SQLException {
@@ -1315,14 +1320,25 @@ public class DialectPostgreSQL extends Dialect {
             procCreate = "CREATE OR REPLACE " + procCreate.substring("create ".length());
             return Collections.singletonList(procCreate);
         }
+        // extract signature from create statement
+        Matcher m = SIG_MATCH.matcher(procCreate);
+        if (!m.matches()) {
+            throw new NuxeoException("Cannot parse arguments: " + procCreate);
+        }
+        String procArgs = normalizeArgs(m.group(1));
         try (Statement st = connection.createStatement()) {
             // check if the stored procedure exists and its content
-            String getBody = "SELECT prosrc FROM pg_proc WHERE proname = '" + procName + "'";
+            String getBody = "SELECT prosrc, pg_get_function_identity_arguments(oid) FROM pg_proc WHERE proname = '" + procName + "'";
             logger.log(getBody);
             try (ResultSet rs = st.executeQuery(getBody)) {
-                if (rs.next()) {
-                    // stored proc already exists
+                while (rs.next()) {
                     String body = rs.getString(1);
+                    String args = rs.getString(2);
+                    if (!args.equals(procArgs)) {
+                        // different signature
+                        continue;
+                    }
+                    // stored proc already exists
                     if (normalizeString(procCreate).contains(normalizeString(body))) {
                         logger.log("  -> exists, unchanged");
                         return Collections.emptyList();
@@ -1337,16 +1353,59 @@ public class DialectPostgreSQL extends Dialect {
                         procCreate = "CREATE OR REPLACE " + procCreate.substring("create ".length());
                         return Collections.singletonList(procCreate);
                     }
-                } else {
-                    logger.log("  -> missing");
-                    return Collections.singletonList(procCreate);
                 }
             }
+            logger.log("  -> missing");
+            return Collections.singletonList(procCreate);
         }
     }
 
     protected static String normalizeString(String string) {
         return string.replaceAll("[ \n\r\t]+", " ").trim();
     }
+
+    /** The type aliases that we use for our stored procedure argument definitions. */
+    private static final Map<String, String> TYPE_ALIASES = new HashMap<>();
+
+    static {
+        TYPE_ALIASES.put("bool", "boolean");
+        TYPE_ALIASES.put("varchar", "character varying");
+        TYPE_ALIASES.put("int", "integer");
+        TYPE_ALIASES.put("int4", "integer");
+        TYPE_ALIASES.put("int8", "bigint");
+        TYPE_ALIASES.put("timestamp", "timestamp without time zone");
+    }
+
+    /** Normalize PostgreSQL type aliases. */
+    protected static String normalizeArgs(String args) {
+        if (args.isEmpty()) {
+            return args;
+        }
+        args = args.toLowerCase();
+        List<String> argList = Arrays.asList(args.split(",[ ]*"));
+        List<String> newArgList = new ArrayList<>(argList.size());
+        for (String arg : argList) {
+            // array or size spec
+            int i = arg.indexOf('(');
+            if (i == -1) {
+                i = arg.indexOf('[');
+            }
+            String suffix = "";
+            if (i > 0) {
+                suffix = arg.substring(i);
+                arg = arg.substring(0, i);
+            }
+            for (Entry<String, String> es : TYPE_ALIASES.entrySet()) {
+                String type = es.getKey();
+                if (arg.equals(type) || arg.endsWith(" " + type)) {
+                    arg = arg.substring(0, arg.length() - type.length()) + es.getValue();
+                    break;
+                }
+            }
+            newArgList.add(arg + suffix);
+        }
+        return org.apache.commons.lang.StringUtils.join(newArgList, ", ");
+    }
+
 
 }
