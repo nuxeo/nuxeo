@@ -29,6 +29,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -107,7 +108,6 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoContentStream;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -958,24 +958,14 @@ public class CmisSuiteSession {
                 "OSGI-INF/test-servicefactorymanager-contrib.xml");
         session = cmisFeatureSession.setUpCmisSession(coreSession.getRepositoryName());
 
-        GregorianCalendar lastModifiedCalendar = Helper.getCalendar(2007, 4, 11, 12, 0, 0); // in GMT-02
-        Folder folder = (Folder) session.getObjectByPath("/testfolder1");
-        Map<String, Serializable> properties = new HashMap<>();
-        properties.put("dc:description", "my description");
-        properties.put("dc:modified", lastModifiedCalendar);
-        folder.updateProperties(properties, true);
-        // TODO XXX fix timezone issues with H2 / SQL Server
-        StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
-        if (!(storageConfiguration.isVCSH2() || storageConfiguration.isVCSSQLServer())) {
-            assertEquals(lastModifiedCalendar.getTimeInMillis(),
-                    ((GregorianCalendar) folder.getPropertyValue("dc:modified")).getTimeInMillis());
-        }
+        Document doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        Calendar lastModifiedCalendar = doc.getPropertyValue("dc:modified");
 
         // check Last-Modified Cache Response Header
         RepositoryInfo ri = session.getRepositoryInfo();
         String uri = ri.getThinClientUri() + ri.getId() + "/";
-        uri += isAtomPub ? "children?id=" : "root?objectId=";
-        uri += folder.getId();
+        uri += isAtomPub ? "content?id=" : "root?objectId=";
+        uri += doc.getId();
         String lastModified = DateUtil.formatDate(lastModifiedCalendar.getTime());
         String encoding = Base64.encodeBytes(new String(USERNAME + ":" + PASSWORD).getBytes());
         DefaultHttpClient client = new DefaultHttpClient();
@@ -985,10 +975,7 @@ public class CmisSuiteSession {
         try {
             response = client.execute(request);
             assertEquals(HttpServletResponse.SC_OK, response.getStatusLine().getStatusCode());
-            // TODO XXX fix timezone issues with H2 / SQL Server
-            if (!(storageConfiguration.isVCSH2() || storageConfiguration.isVCSSQLServer())) {
-                assertEquals(lastModified, response.getLastHeader("Last-Modified").getValue());
-            }
+            assertEquals(lastModified, response.getLastHeader("Last-Modified").getValue());
         } finally {
             client.getConnectionManager().shutdown();
         }
