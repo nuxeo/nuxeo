@@ -1011,7 +1011,7 @@
         <category>widgetTypeConf</category>
       </categories>
       <labels>
-        <label mode="any">Number of open item(s)</label>
+        <label mode="any">'Add' action label</label>
       </labels>
       <helpLabels>
         <label mode="any">
