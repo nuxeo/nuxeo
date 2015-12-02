@@ -15,8 +15,11 @@
       <input type="date" value="{{endDate::change}}" style="display: inline; width: 150px"></input>
     </div>
 
-    <nuxeo-connection id="nx_connection" url="/nuxeo"></nuxeo-connection>
-    <nuxeo-search-analytics-dashboard start-date="[[startDate]]" end-date="[[endDate]]"></nuxeo-search-analytics-dashboard>
+    <nuxeo-connection id="nx_connection" url="#{baseURL}"></nuxeo-connection>
+    <nuxeo-search-analytics-dashboard index="audit"
+                                      start-date="[[startDate]]"
+                                      end-date="[[endDate]]">
+    </nuxeo-search-analytics-dashboard>
 
   </template>
 
