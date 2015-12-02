@@ -1,3 +1,7 @@
+/*
+    WARN: Do not forget to minify this script in nuxeo-select2.min.js.
+*/
+
 (function() {
 
   var entityMap = {
