@@ -82,6 +82,7 @@ public class TestSQLRepositoryFulltextQuery extends SQLRepositoryTestCase {
                 "OSGI-INF/test-repo-core-types-contrib.xml");
         deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib-2.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/disable-schedulers.xml");
         openSession();
     }
 

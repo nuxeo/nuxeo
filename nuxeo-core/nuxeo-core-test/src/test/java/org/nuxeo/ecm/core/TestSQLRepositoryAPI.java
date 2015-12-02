@@ -110,6 +110,7 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
         super.setUp();
         deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-core-types-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/disable-schedulers.xml");
         fireFrameworkStarted();
         openSession();
     }
