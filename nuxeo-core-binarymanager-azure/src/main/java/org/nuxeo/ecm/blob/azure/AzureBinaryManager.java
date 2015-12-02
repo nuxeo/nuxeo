@@ -59,7 +59,7 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
 
     public static final String ENDPOINT_PROTOCOL_PROPERTY = "endpointProtocol";
 
-    public final static String PROPERTIES_PREFIX = "nuxeo.storage.azure";
+    public final static String SYSTEM_PROPERTY_PREFIX = "nuxeo.storage.azure";
 
     public static final String ACCOUNT_NAME_PROPERTY = "account.name";
 
@@ -74,8 +74,8 @@ public class AzureBinaryManager extends AbstractCloudBinaryManager {
     protected CloudBlobContainer container;
 
     @Override
-    protected String getPropertyPrefix() {
-        return PROPERTIES_PREFIX;
+    protected String getSystemPropertyPrefix() {
+        return SYSTEM_PROPERTY_PREFIX;
     }
 
     @Override

@@ -92,7 +92,7 @@ public class TestAzureBinaryManager extends AbstractTestCloudBinaryManager<Azure
     public static void initialize() {
         AbstractCloudBinaryManager bm = new AzureBinaryManager();
         PARAMETERS.forEach(s -> {
-            properties.put(s, Framework.getProperty(bm.getConfigurationKey(s)));
+            properties.put(s, Framework.getProperty(bm.getSystemPropertyName(s)));
         });
 
         // Ensure mandatory parameters are set
