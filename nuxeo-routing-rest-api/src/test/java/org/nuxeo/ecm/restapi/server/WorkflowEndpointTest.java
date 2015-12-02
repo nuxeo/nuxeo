@@ -21,6 +21,7 @@ package org.nuxeo.ecm.restapi.server;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -565,6 +566,47 @@ public class WorkflowEndpointTest extends BaseTest {
         }
         assertEquals(1, actors.size());
         assertEquals(expectedActor, actors.get(0));
+    }
+
+    @Test
+    public void testTaskActionUrls() throws IOException {
+        // Check POST /workflow
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
+
+        // Check GET /workflow/{workflowInstanceId}
+        response = getResponse(RequestType.GET, "/workflow/" + createdWorflowInstanceId);
+        node = mapper.readTree(response.getEntityInputStream());
+        String fetchedWorflowInstanceId = node.get("id").getTextValue();
+        assertEquals(createdWorflowInstanceId, fetchedWorflowInstanceId);
+
+        // Check GET /workflow .i.e get running workflow initialized by currentUser
+        response = getResponse(RequestType.GET, "/workflow");
+        node = mapper.readTree(response.getEntityInputStream());
+        // we expect to retrieve the one previously created
+        assertEquals(1, node.get("entries").size());
+        Iterator<JsonNode> elements = node.get("entries").getElements();
+        fetchedWorflowInstanceId = elements.next().get("id").getTextValue();
+        assertEquals(createdWorflowInstanceId, fetchedWorflowInstanceId);
+
+        // Check GET /task i.e. pending tasks for current user
+        response = getResponse(RequestType.GET, "/task");
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, node.get("entries").size());
+        JsonNode element = node.get("entries").getElements().next();
+        assertNotNull(element);
+        JsonNode taskInfo = element.get("taskInfo");
+        assertNotNull(taskInfo);
+        JsonNode taskActions = taskInfo.get("taskActions");
+        assertEquals(2, taskActions.size());
+        JsonNode taskAction = taskActions.getElements().next();
+        assertNotNull(taskAction);
+        assertEquals(String.format("http://localhost:18090/api/v1/task/%s/cancel", element.get("id").getTextValue()),
+                taskAction.get("url").getTextValue());
     }
 
 }
