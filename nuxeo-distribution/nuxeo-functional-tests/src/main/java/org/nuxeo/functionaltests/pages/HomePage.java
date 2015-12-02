@@ -16,6 +16,7 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -36,7 +37,10 @@ public class HomePage extends DocumentBasePage {
     }
 
     public CollectionsPage goToCollections() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         menu.findElement(By.linkText("Collections")).click();
+        arm.end();
         return asPage(CollectionsPage.class);
     }
 
