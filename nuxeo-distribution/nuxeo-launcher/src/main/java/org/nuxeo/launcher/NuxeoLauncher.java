@@ -1229,15 +1229,25 @@ public abstract class NuxeoLauncher {
         String algorithm = cmdLine.getOptionValue(OPTION_ENCRYPT, null);
         if (params.length == 0) {
             Console console = System.console();
-            if (console == null) {
-                errorValue = EXIT_CODE_INVALID;
-                return;
+            String encryptedString;
+            if (console != null) {
+                encryptedString = crypto.encrypt(algorithm,
+                        Crypto.getBytes(console.readPassword("Please enter the value to encrypt: ")));
+            } else { // try reading from stdin
+                try {
+                    encryptedString = crypto.encrypt(algorithm, IOUtils.toByteArray(System.in));
+                } catch (IOException e) {
+                    log.debug(e, e);
+                    errorValue = EXIT_CODE_ERROR;
+                    return;
+                }
             }
-            params = new String[] { console.readLine("Please enter the value to encrypt: ") };
-        }
-        for (String strToEncrypt : params) {
-            String encryptedString = crypto.encrypt(algorithm, strToEncrypt.getBytes());
             System.out.println(encryptedString);
+        } else {
+            for (String strToEncrypt : params) {
+                String encryptedString = crypto.encrypt(algorithm, strToEncrypt.getBytes());
+                System.out.println(encryptedString);
+            }
         }
     }
 
@@ -1247,12 +1257,20 @@ public abstract class NuxeoLauncher {
      */
     protected void decrypt() throws ConfigurationException {
         Crypto crypto = configurationGenerator.getCrypto();
+        boolean validKey = false;
         Console console = System.console();
-        if (console == null) {
-            errorValue = EXIT_CODE_ERROR;
-            return;
+        if (console != null) {
+            validKey = crypto.verifyKey(console.readPassword("Please enter the secret key: "));
+        } else { // try reading from stdin
+            try {
+                validKey = crypto.verifyKey(IOUtils.toByteArray(System.in));
+            } catch (IOException e) {
+                log.debug(e, e);
+                errorValue = EXIT_CODE_ERROR;
+                return;
+            }
         }
-        if (!crypto.verifyKey(console.readPassword("Please enter the secret key: "))) {
+        if (!validKey) {
             errorValue = EXIT_CODE_INVALID;
             return;
         }
@@ -1313,12 +1331,24 @@ public abstract class NuxeoLauncher {
             } else {
                 if (raw && !keyChecked && Crypto.isEncrypted(value)) {
                     keyChecked = true;
+                    boolean validKey;
                     Console console = System.console();
-                    if (console != null && crypto.verifyKey(console.readPassword("Please enter the secret key: "))) {
+                    if (console != null) {
+                        validKey = crypto.verifyKey(console.readPassword("Please enter the secret key: "));
+                    } else { // try reading from stdin
+                        try {
+                            validKey = crypto.verifyKey(IOUtils.toByteArray(System.in));
+                        } catch (IOException e) {
+                            log.debug(e, e);
+                            errorValue = EXIT_CODE_ERROR;
+                            return;
+                        }
+                    }
+                    if (validKey) {
                         raw = false;
                         value = new String(crypto.decrypt(value));
                     } else {
-                        errorValue = EXIT_CODE_ERROR;
+                        errorValue = EXIT_CODE_INVALID;
                     }
                 }
                 if (isRegexp) {
@@ -1327,7 +1357,7 @@ public abstract class NuxeoLauncher {
                 sb.append(value + newLine);
             }
         }
-        System.out.println(sb.toString());
+        System.out.print(sb.toString());
     }
 
     /**
@@ -1352,18 +1382,29 @@ public abstract class NuxeoLauncher {
                 }
             } else {
                 Console console = System.console();
-                if (console == null) {
-                    errorValue = EXIT_CODE_INVALID;
-                    return;
-                }
-                if (doEncrypt) {
-                    value = crypto.encrypt(algorithm,
-                            Crypto.getBytes(console.readPassword("Please enter the value for %s: ", key)));
-                } else if (Environment.CRYPT_KEY.equals(key) || Environment.CRYPT_KEYSTORE_PASS.equals(key)) {
-                    value = Base64.encodeBase64String(Crypto.getBytes(console.readPassword(
-                            "Please enter the value for %s: ", key)));
-                } else {
-                    value = console.readLine("Please enter the value for %s: ", key);
+                if (console != null) {
+                    final String fmt = "Please enter the value for %s: ";
+                    if (doEncrypt) {
+                        value = crypto.encrypt(algorithm, Crypto.getBytes(console.readPassword(fmt, key)));
+                    } else if (Environment.CRYPT_KEY.equals(key) || Environment.CRYPT_KEYSTORE_PASS.equals(key)) {
+                        value = Base64.encodeBase64String(Crypto.getBytes(console.readPassword(fmt, key)));
+                    } else {
+                        value = console.readLine(fmt, key);
+                    }
+                } else { // try reading from stdin
+                    try {
+                        if (doEncrypt) {
+                            value = crypto.encrypt(algorithm, IOUtils.toByteArray(System.in));
+                        } else if (Environment.CRYPT_KEY.equals(key) || Environment.CRYPT_KEYSTORE_PASS.equals(key)) {
+                            value = Base64.encodeBase64String(IOUtils.toByteArray(System.in));
+                        } else {
+                            value = IOUtils.toString(System.in);
+                        }
+                    } catch (IOException e) {
+                        log.debug(e, e);
+                        errorValue = EXIT_CODE_ERROR;
+                        return;
+                    }
                 }
             }
             changedParameters.put(key, value);
