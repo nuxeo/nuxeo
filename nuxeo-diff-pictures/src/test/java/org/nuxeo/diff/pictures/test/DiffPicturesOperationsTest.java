@@ -106,13 +106,6 @@ public class DiffPicturesOperationsTest {
         coreSession.save();
     }
 
-    @After
-    public void cleanup() {
-
-        coreSession.removeDocument(parentOfTestDocs.getRef());
-        coreSession.save();
-    }
-
     protected DocumentModel createPictureDocument(File inFile) {
 
         DocumentModel pictDoc = coreSession.createDocumentModel(parentOfTestDocs.getPathAsString(), inFile.getName(),
