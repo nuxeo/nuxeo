@@ -25,13 +25,13 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Properties;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,8 +54,8 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
  * This test must be run with at least the following system properties set:
  * <ul>
  * <li>nuxeo.s3storage.bucket</li>
- * <li>nuxeo.s3storage.awsid or AWS_ACCESS_KEY_ID</li>
- * <li>nuxeo.s3storage.awssecret or AWS_SECRET_ACCESS_KEY</li>
+ * <li>nuxeo.s3storage.awsid (or AWS_ACCESS_KEY_ID environment variable)</li>
+ * <li>nuxeo.s3storage.awssecret (or AWS_SECRET_ACCESS_KEY environment variable)</li>
  * </ul>
  * <p>
  * ***** NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!! *****
@@ -64,10 +64,12 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 @Features(RuntimeFeature.class)
 public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3BinaryManager> {
 
+    protected static Map<String, String> PROPERTIES = Collections.emptyMap();
+
     @BeforeClass
     public static void beforeClass() {
         // this also checks in system properties for the configuration
-        String bucketName = Framework.getProperty(S3BinaryManager.BUCKET_NAME_KEY);
+        String bucketName = Framework.getProperty("nuxeo.s3storage.bucket");
         if (bucketName == null) {
             // NOTE THAT THE TESTS WILL REMOVE ALL FILES IN THE BUCKET!!!
             // ********** NEVER COMMIT THE SECRET KEYS !!! **********
@@ -75,21 +77,13 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
             String idKey = "CHANGETHIS";
             String secretKey = "CHANGETHIS";
             // ********** NEVER COMMIT THE SECRET KEYS !!! **********
-            Properties props = Framework.getProperties();
-            props.setProperty(S3BinaryManager.BUCKET_NAME_KEY, bucketName);
-            props.setProperty(S3BinaryManager.AWS_ID_KEY, idKey);
-            props.setProperty(S3BinaryManager.AWS_SECRET_KEY, secretKey);
+            PROPERTIES = new HashMap<>();
+            PROPERTIES.put(S3BinaryManager.BUCKET_NAME_PROPERTY, bucketName);
+            PROPERTIES.put(S3BinaryManager.AWS_ID_PROPERTY, idKey);
+            PROPERTIES.put(S3BinaryManager.AWS_SECRET_PROPERTY , secretKey);
         }
         boolean disabled = bucketName.equals("CHANGETHIS");
         assumeTrue("No AWS credentials configured", !disabled);
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        Properties props = Framework.getProperties();
-        props.remove(S3BinaryManager.CONNECTION_MAX_KEY);
-        props.remove(S3BinaryManager.CONNECTION_RETRY_KEY);
-        props.remove(S3BinaryManager.CONNECTION_TIMEOUT_KEY);
     }
 
     @After
@@ -116,14 +110,21 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
 
     @Test
     public void testS3MaxConnections() throws Exception {
-        // cleaned by tearDown
-        Properties props = Framework.getProperties();
-        props.put(S3BinaryManager.CONNECTION_MAX_KEY, "1");
-        props.put(S3BinaryManager.CONNECTION_RETRY_KEY, "0");
-        props.put(S3BinaryManager.CONNECTION_TIMEOUT_KEY, "5000"); // 5s
-        binaryManager = new S3BinaryManager();
-        binaryManager.initialize("repo", Collections.emptyMap());
+        PROPERTIES.put(S3BinaryManager.CONNECTION_MAX_PROPERTY, "1");
+        PROPERTIES.put(S3BinaryManager.CONNECTION_RETRY_PROPERTY, "0");
+        PROPERTIES.put(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY, "5000"); // 5s
+        try {
+            binaryManager = new S3BinaryManager();
+            binaryManager.initialize("repo", PROPERTIES);
+            doTestS3MaxConnections();
+        } finally {
+            PROPERTIES.remove(S3BinaryManager.CONNECTION_MAX_PROPERTY);
+            PROPERTIES.remove(S3BinaryManager.CONNECTION_RETRY_PROPERTY);
+            PROPERTIES.remove(S3BinaryManager.CONNECTION_TIMEOUT_PROPERTY);
+        }
+    }
 
+    protected void doTestS3MaxConnections() throws Exception {
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
         binaryManager.getBinary(Blobs.createBlob(CONTENT));
@@ -142,7 +143,7 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
     @Override
     protected S3BinaryManager getBinaryManager() throws IOException {
         S3BinaryManager binaryManager = new S3BinaryManager();
-        binaryManager.initialize("repo", Collections.emptyMap());
+        binaryManager.initialize("repo", PROPERTIES);
         return binaryManager;
     }
 

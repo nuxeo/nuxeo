@@ -35,7 +35,6 @@ import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
-import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
@@ -55,9 +54,9 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
     private static final Log log = LogFactory.getLog(AbstractCloudBinaryManager.class);
 
     /**
-     * Gets the property prefix used in configurarion properties
+     * Gets the prefix used for configuration using system properties.
      */
-    protected abstract String getPropertyPrefix();
+    protected abstract String getSystemPropertyPrefix();
 
     protected abstract FileStorage getFileStorage();
 
@@ -96,7 +95,7 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
         // Enable direct download from the remote binary store
         directDownload = Boolean.parseBoolean(getProperty(DIRECTDOWNLOAD_PROPERTY, DEFAULT_DIRECTDOWNLOAD));
-        directDownloadExpire = getIntFrameworkProperty(DIRECTDOWNLOAD_EXPIRE_PROPERTY);
+        directDownloadExpire = getIntProperty(DIRECTDOWNLOAD_EXPIRE_PROPERTY);
         if (directDownloadExpire < 0) {
             directDownloadExpire = DEFAULT_DIRECTDOWNLOAD_EXPIRE;
         }
@@ -170,15 +169,14 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         if (isNotBlank(propValue)) {
             return propValue;
         }
-
-        return Framework.getProperty(getConfigurationKey(propertyName), defaultValue);
+        return Framework.getProperty(getSystemPropertyName(propertyName), defaultValue);
     }
 
     /**
-     * Gets an integer framework property, or -1 if undefined.
+     * Gets an integer property, or -1 if undefined.
      */
-    protected static int getIntFrameworkProperty(String key) {
-        String s = Framework.getProperty(key);
+    protected int getIntProperty(String key) {
+        String s = getProperty(key);
         int value = -1;
         if (!isBlank(s)) {
             try {
@@ -190,8 +188,8 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         return value;
     }
 
-    public String getConfigurationKey(String propertyName) {
-        return String.format("%s.%s", getPropertyPrefix(), propertyName);
+    public String getSystemPropertyName(String propertyName) {
+        return getSystemPropertyPrefix() + "." + propertyName;
     }
 
     protected String getContentTypeHeader(Blob blob) {

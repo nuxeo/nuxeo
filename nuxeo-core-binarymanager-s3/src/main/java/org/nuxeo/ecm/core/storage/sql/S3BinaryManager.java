@@ -53,7 +53,6 @@ import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -100,51 +99,51 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     private static final Log log = LogFactory.getLog(S3BinaryManager.class);
 
-    public static final String PROPERTY_PREFIX = "nuxeo.s3storage";
+    public static final String SYSTEM_PROPERTY_PREFIX = "nuxeo.s3storage";
 
-    public static final String BUCKET_NAME_KEY = "nuxeo.s3storage.bucket";
+    public static final String BUCKET_NAME_PROPERTY = "bucket";
 
-    public static final String BUCKET_PREFIX_KEY = "nuxeo.s3storage.bucket.prefix";
+    public static final String BUCKET_PREFIX_PROPERTY = "bucket.prefix";
 
-    public static final String BUCKET_REGION_KEY = "nuxeo.s3storage.region";
+    public static final String BUCKET_REGION_PROPERTY = "region";
 
     public static final String DEFAULT_BUCKET_REGION = null; // US East
 
-    public static final String AWS_ID_KEY = "nuxeo.s3storage.awsid";
+    public static final String AWS_ID_PROPERTY = "awsid";
 
-    public static final String AWS_ID_ENV_KEY = "AWS_ACCESS_KEY_ID";
+    public static final String AWS_ID_ENV = "AWS_ACCESS_KEY_ID";
 
-    public static final String AWS_SECRET_KEY = "nuxeo.s3storage.awssecret";
+    public static final String AWS_SECRET_PROPERTY = "awssecret";
 
-    public static final String AWS_SECRET_ENV_KEY = "AWS_SECRET_ACCESS_KEY";
+    public static final String AWS_SECRET_ENV = "AWS_SECRET_ACCESS_KEY";
 
-    public static final String CACHE_SIZE_KEY = "nuxeo.s3storage.cachesize";
+    public static final String CACHE_SIZE_PROPERTY = "cachesize";
 
     /** AWS ClientConfiguration default 50 */
-    public static final String CONNECTION_MAX_KEY = "nuxeo.s3storage.connection.max";
+    public static final String CONNECTION_MAX_PROPERTY = "connection.max";
 
     /** AWS ClientConfiguration default 3 (with exponential backoff) */
-    public static final String CONNECTION_RETRY_KEY = "nuxeo.s3storage.connection.retry";
+    public static final String CONNECTION_RETRY_PROPERTY = "connection.retry";
 
     /** AWS ClientConfiguration default 50*1000 = 50s */
-    public static final String CONNECTION_TIMEOUT_KEY = "nuxeo.s3storage.connection.timeout";
+    public static final String CONNECTION_TIMEOUT_PROPERTY = "connection.timeout";
 
     /** AWS ClientConfiguration default 50*1000 = 50s */
-    public static final String SOCKET_TIMEOUT_KEY = "nuxeo.s3storage.socket.timeout";
+    public static final String SOCKET_TIMEOUT_PROPERTY = "socket.timeout";
 
-    public static final String KEYSTORE_FILE_KEY = "nuxeo.s3storage.crypt.keystore.file";
+    public static final String KEYSTORE_FILE_PROPERTY = "crypt.keystore.file";
 
-    public static final String KEYSTORE_PASS_KEY = "nuxeo.s3storage.crypt.keystore.password";
+    public static final String KEYSTORE_PASS_PROPERTY = "crypt.keystore.password";
 
-    public static final String PRIVKEY_ALIAS_KEY = "nuxeo.s3storage.crypt.key.alias";
+    public static final String PRIVKEY_ALIAS_PROPERTY = "crypt.key.alias";
 
-    public static final String PRIVKEY_PASS_KEY = "nuxeo.s3storage.crypt.key.password";
+    public static final String PRIVKEY_PASS_PROPERTY = "crypt.key.password";
 
-    public static final String ENDPOINT_KEY = "nuxeo.s3storage.endpoint";
+    public static final String ENDPOINT_PROPERTY = "endpoint";
 
-    public static final String DIRECTDOWNLOAD_KEY = "nuxeo.s3storage.downloadfroms3";
+    public static final String DIRECTDOWNLOAD_PROPERTY_COMPAT = "downloadfroms3";
 
-    public static final String DIRECTDOWNLOAD_EXPIRE_KEY = "nuxeo.s3storage.downloadfroms3.expire";
+    public static final String DIRECTDOWNLOAD_EXPIRE_PROPERTY_COMPAT = "downloadfroms3.expire";
 
     private static final Pattern MD5_RE = Pattern.compile("(.*/)?[0-9a-f]{32}");
 
@@ -190,47 +189,46 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     @Override
     protected void setupCloudClient() throws IOException {
         // Get settings from the configuration
-        // TODO parse properties too
-        bucketName = Framework.getProperty(BUCKET_NAME_KEY);
-        bucketNamePrefix = MoreObjects.firstNonNull(Framework.getProperty(BUCKET_PREFIX_KEY), StringUtils.EMPTY);
-        String bucketRegion = Framework.getProperty(BUCKET_REGION_KEY);
+        bucketName = getProperty(BUCKET_NAME_PROPERTY);
+        bucketNamePrefix = MoreObjects.firstNonNull(getProperty(BUCKET_PREFIX_PROPERTY), StringUtils.EMPTY);
+        String bucketRegion = getProperty(BUCKET_REGION_PROPERTY);
         if (isBlank(bucketRegion)) {
             bucketRegion = DEFAULT_BUCKET_REGION;
         }
-        String awsID = Framework.getProperty(AWS_ID_KEY);
-        String awsSecret = Framework.getProperty(AWS_SECRET_KEY);
+        String awsID = getProperty(AWS_ID_PROPERTY);
+        String awsSecret = getProperty(AWS_SECRET_PROPERTY);
 
-        String proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
-        String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
-        String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
-        String proxyPassword = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
+        String proxyHost = getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
+        String proxyPort = getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
+        String proxyLogin = getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
+        String proxyPassword = getProperty(Environment.NUXEO_HTTP_PROXY_PASSWORD);
 
-        int maxConnections = getIntFrameworkProperty(CONNECTION_MAX_KEY);
-        int maxErrorRetry = getIntFrameworkProperty(CONNECTION_RETRY_KEY);
-        int connectionTimeout = getIntFrameworkProperty(CONNECTION_TIMEOUT_KEY);
-        int socketTimeout = getIntFrameworkProperty(SOCKET_TIMEOUT_KEY);
+        int maxConnections = getIntProperty(CONNECTION_MAX_PROPERTY);
+        int maxErrorRetry = getIntProperty(CONNECTION_RETRY_PROPERTY);
+        int connectionTimeout = getIntProperty(CONNECTION_TIMEOUT_PROPERTY);
+        int socketTimeout = getIntProperty(SOCKET_TIMEOUT_PROPERTY);
 
-        String keystoreFile = Framework.getProperty(KEYSTORE_FILE_KEY);
-        String keystorePass = Framework.getProperty(KEYSTORE_PASS_KEY);
-        String privkeyAlias = Framework.getProperty(PRIVKEY_ALIAS_KEY);
-        String privkeyPass = Framework.getProperty(PRIVKEY_PASS_KEY);
-        String endpoint = Framework.getProperty(ENDPOINT_KEY);
+        String keystoreFile = getProperty(KEYSTORE_FILE_PROPERTY);
+        String keystorePass = getProperty(KEYSTORE_PASS_PROPERTY);
+        String privkeyAlias = getProperty(PRIVKEY_ALIAS_PROPERTY);
+        String privkeyPass = getProperty(PRIVKEY_PASS_PROPERTY);
+        String endpoint = getProperty(ENDPOINT_PROPERTY);
 
         // Fallback on default env keys for ID and secret
         if (isBlank(awsID)) {
-            awsID = System.getenv(AWS_ID_ENV_KEY);
+            awsID = System.getenv(AWS_ID_ENV);
         }
         if (isBlank(awsSecret)) {
-            awsSecret = System.getenv(AWS_SECRET_ENV_KEY);
+            awsSecret = System.getenv(AWS_SECRET_ENV);
         }
 
         if (isBlank(bucketName)) {
-            throw new RuntimeException("Missing conf: " + BUCKET_NAME_KEY);
+            throw new RuntimeException("Missing conf: " + BUCKET_NAME_PROPERTY);
         }
 
         if (!isBlank(bucketNamePrefix) && !bucketNamePrefix.endsWith("/")) {
             log.warn(String.format("%s %s S3 bucket prefix should end by '/' " + ": added automatically.",
-                    BUCKET_PREFIX_KEY, bucketNamePrefix));
+                    BUCKET_PREFIX_PROPERTY, bucketNamePrefix));
             bucketNamePrefix += "/";
         }
         // set up credentials
@@ -335,10 +333,16 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             throw new IOException(e);
         }
 
-        directDownload = Boolean.parseBoolean(Framework.getProperty(DIRECTDOWNLOAD_KEY, DEFAULT_DIRECTDOWNLOAD));
-        directDownloadExpire = getIntFrameworkProperty(DIRECTDOWNLOAD_EXPIRE_KEY);
-        if (directDownloadExpire < 0) {
-            directDownloadExpire = DEFAULT_DIRECTDOWNLOAD_EXPIRE;
+        // compat for NXP-17895, using "downloadfroms3", to be removed
+        // these two fields have already been initialized by the base class initialize()
+        // using standard property "directdownload"
+        String dd = getProperty(DIRECTDOWNLOAD_PROPERTY_COMPAT);
+        if (dd != null) {
+            directDownload = Boolean.parseBoolean(dd);
+        }
+        int dde = getIntProperty(DIRECTDOWNLOAD_EXPIRE_PROPERTY_COMPAT);
+        if (dde >= 0) {
+            directDownloadExpire = dde;
         }
 
         transferManager = new TransferManager(amazonS3);
@@ -350,8 +354,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     }
 
     @Override
-    protected String getPropertyPrefix() {
-        return PROPERTY_PREFIX;
+    protected String getSystemPropertyPrefix() {
+        return SYSTEM_PROPERTY_PREFIX;
     }
 
     @Override
