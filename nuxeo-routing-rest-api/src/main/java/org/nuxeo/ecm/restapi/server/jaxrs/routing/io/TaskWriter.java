@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -132,16 +132,18 @@ public class TaskWriter extends EntityWriter<Task> {
         jg.writeStartObject();
         // add nodeVariables
         for (Entry<String, Serializable> e : node.getVariables().entrySet()) {
-            JsonEncodeDecodeUtils.encodeVariableEntry(node.getDocument(), GraphNode.PROP_VARIABLES_FACET, e, jg, request);
+            JsonEncodeDecodeUtils.encodeVariableEntry(node.getDocument(), GraphNode.PROP_VARIABLES_FACET, e, jg,
+                    request);
         }
         // add workflow variables
         if (workflowInstance != null) {
-            final String transientSchemaName =  DocumentRoutingConstants.GLOBAL_VAR_SCHEMA_PREFIX + node.getId();
+            final String transientSchemaName = DocumentRoutingConstants.GLOBAL_VAR_SCHEMA_PREFIX + node.getId();
             final SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             final Schema transientSchema = schemaManager.getSchema(transientSchemaName);
             for (Entry<String, Serializable> e : workflowInstance.getVariables().entrySet()) {
                 if (transientSchema == null || transientSchema.hasField(e.getKey())) {
-                    JsonEncodeDecodeUtils.encodeVariableEntry(workflowInstance.getDocument(), GraphRoute.PROP_VARIABLES_FACET, e, jg, request);
+                    JsonEncodeDecodeUtils.encodeVariableEntry(workflowInstance.getDocument(),
+                            GraphRoute.PROP_VARIABLES_FACET, e, jg, request);
                 }
             }
         }
