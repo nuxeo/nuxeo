@@ -68,6 +68,7 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
 
     @BeforeClass
     public static void beforeClass() {
+        PROPERTIES = new HashMap<>();
         // this also checks in system properties for the configuration
         String bucketName = Framework.getProperty("nuxeo.s3storage.bucket");
         if (bucketName == null) {
@@ -77,7 +78,6 @@ public class TestS3BinaryManager extends AbstractTestCloudBinaryManager<S3Binary
             String idKey = "CHANGETHIS";
             String secretKey = "CHANGETHIS";
             // ********** NEVER COMMIT THE SECRET KEYS !!! **********
-            PROPERTIES = new HashMap<>();
             PROPERTIES.put(S3BinaryManager.BUCKET_NAME_PROPERTY, bucketName);
             PROPERTIES.put(S3BinaryManager.AWS_ID_PROPERTY, idKey);
             PROPERTIES.put(S3BinaryManager.AWS_SECRET_PROPERTY , secretKey);
