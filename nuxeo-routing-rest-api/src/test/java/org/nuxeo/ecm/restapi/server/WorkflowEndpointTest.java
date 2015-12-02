@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -123,7 +123,8 @@ public class WorkflowEndpointTest extends BaseTest {
         return result;
     }
 
-    protected String getCurrentTaskId(final String createdWorflowInstanceId) throws IOException, JsonProcessingException {
+    protected String getCurrentTaskId(final String createdWorflowInstanceId) throws IOException,
+            JsonProcessingException {
         ClientResponse response;
         JsonNode node;
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
@@ -516,7 +517,7 @@ public class WorkflowEndpointTest extends BaseTest {
 
     @Test
     public void testReassignTask() throws IOException {
-     // Start SerialDocumentReview on Note 0
+        // Start SerialDocumentReview on Note 0
         DocumentModel note = RestServerInit.getNote(0, session);
         ClientResponse response = getResponse(
                 RequestType.POST,
