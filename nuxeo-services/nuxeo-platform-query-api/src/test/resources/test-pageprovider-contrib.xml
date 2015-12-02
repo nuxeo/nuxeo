@@ -160,7 +160,7 @@
         <predicate parameter="dc:title" operator="FULLTEXT" hint="ES: ANALYZER(fr_analyzer)">
           <field schema="advanced_search" name="title" />
         </predicate>
-        <predicate parameter="ecm:fulltext" operator="FULLTEXT" hint="ES: INDEX(dc:title.fulltext) OPERATOR(fuzzy)">
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT ALL" hint="ES: INDEX(dc:title.fulltext) OPERATOR(fuzzy)">
           <field schema="advanced_search" name="title" />
         </predicate>
         <predicate parameter="dc:title" operator="FULLTEXT">

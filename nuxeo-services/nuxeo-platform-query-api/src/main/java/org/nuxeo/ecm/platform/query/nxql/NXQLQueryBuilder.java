@@ -473,8 +473,8 @@ public class NXQLQueryBuilder {
     protected static String getParameterWithHint(String operator, String parameter, String hint) {
         String ret = parameter;
         // add ecm:fulltext. prefix if needed
-        if (operator.equals("FULLTEXT ALL") || operator.equals("FULLTEXT") && !parameter.startsWith(NXQL
-                .ECM_FULLTEXT)) {
+        if ((operator.equals("FULLTEXT ALL") || operator.equals("FULLTEXT"))
+                && !parameter.startsWith(NXQL.ECM_FULLTEXT)) {
              ret = NXQL.ECM_FULLTEXT + '.' + parameter;
         }
         // add the hint
