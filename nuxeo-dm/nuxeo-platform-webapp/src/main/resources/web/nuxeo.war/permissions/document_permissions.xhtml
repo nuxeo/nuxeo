@@ -46,30 +46,9 @@
           'label.permissions.dateBased': "#{messages['label.permissions.dateBased']}",
           'label.permissions.blockDescription': "#{messages['label.permissions.blockDescription']}",
           'command.delete': "#{messages['command.delete']}",
-          'AddChildren': "#{messages['label.security.permission.addChildren']}",
-          'Browse': "#{messages['label.security.permission.browse']}",
-          'Everything': "#{messages['label.security.permission.everything']}",
-          'Read': "#{messages['label.security.permission.read']}",
-          'ReadChildren': "#{messages['label.security.permission.readChildren']}",
-          'ReadLifeCycle': "#{messages['label.security.permission.readLifeCycle']}",
-          'ReadProperties': "#{messages['label.security.permission.readProperties']}",
-          'ReadRemove': "#{messages['label.security.permission.readRemove']}",
-          'ReadSecurity': "#{messages['label.security.permission.readSecurity']}",
-          'ReadWrite': "#{messages['label.security.permission.readWrite']}",
-          'Remove': "#{messages['label.security.permission.remove']}",
-          'RemoveChildren': "#{messages['label.security.permission.removeChildren']}",
-          'Version': "#{messages['label.security.permission.version']}",
-          'Write': "#{messages['label.security.permission.write']}",
-          'WriteLifeCycle': "#{messages['label.security.permission.writeLifeCycle']}",
-          'WriteProperties': "#{messages['label.security.permission.writeProperties']}",
-          'WriteSecurity': "#{messages['label.security.permission.writeSecurity']}",
-          'CanAskForPublishing': "#{messages['label.security.permission.canAskForPublishing']}",
-          'ReadCanCollect': "#{messages['label.security.permission.readCanCollect']}",
-          'RestrictedRead': "#{messages['label.security.permission.restrictedRead']}",
-          'Moderate': "#{messages['label.security.permission.moderate']}",
-          'Comment': "#{messages['label.security.permission.comment']}",
-          'WriteOnWebcontainer': "#{messages['label.security.permission.writeOnWebcontainer']}",
-          'EverythingOnWebcontainer': "#{messages['label.security.permission.everythingOnWebcontainer']}"
+          <c:forEach var="permissionToLabel" items="#{securityActions.permissionsToLabels.entrySet()}" varStatus="status">
+          '#{permissionToLabel.key}': "#{messages[permissionToLabel.value]}"<c:if test="#{not status.last}">,</c:if>
+          </c:forEach>
         };
         return elements;
       })(nuxeo.elements || {});

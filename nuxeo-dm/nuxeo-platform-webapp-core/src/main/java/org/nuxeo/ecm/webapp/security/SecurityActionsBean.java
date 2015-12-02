@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -681,6 +682,21 @@ public class SecurityActionsBean extends InputController implements SecurityActi
 
     public String getLabel(String permission) {
         return StringUtils.isNotBlank(permission) ? labeler.makeLabel(permission) : permission;
+    }
+
+    /**
+     * Returns a Map containing all contributed permissions and their associated labels.
+     *
+     * @since 8.1
+     */
+    public Map<String, String> getPermissionsToLabels() {
+        PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
+        String[] permissions = permissionProvider.getPermissions();
+        Map<String, String> permissionsToLabels = new HashMap<>();
+        for (String permission : permissions) {
+            permissionsToLabels.put(permission, getLabel(permission));
+        }
+        return permissionsToLabels;
     }
 
 }
