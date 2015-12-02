@@ -120,7 +120,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.ecm.core.convert", //
         "org.nuxeo.ecm.core.convert.plugins", //
 })
-@LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
+@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
+        "org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml" })
 public class TestSQLRepositoryAPI {
 
     @Inject

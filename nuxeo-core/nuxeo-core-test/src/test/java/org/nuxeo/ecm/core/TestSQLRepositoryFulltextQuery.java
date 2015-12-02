@@ -75,7 +75,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 })
 @LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/testquery-core-types-contrib.xml",
         "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
-        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml" })
+        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib-2.xml",
+        "org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml" })
 public class TestSQLRepositoryFulltextQuery {
 
     @Inject

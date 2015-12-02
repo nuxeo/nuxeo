@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.disable.schedulers" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService"
+    point="schedule">
+    <schedule id="workManagerCleanup" enabled="false" />
+    <schedule id="softDeleteCleanup" enabled="false" />
+    <schedule id="aceScheduler" enabled="false" />
+  </extension>
+
+</component>
