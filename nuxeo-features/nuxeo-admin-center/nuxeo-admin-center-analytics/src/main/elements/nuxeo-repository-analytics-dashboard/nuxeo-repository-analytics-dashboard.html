@@ -20,7 +20,8 @@ Contributors:
 
     <!-- Number of documents -->
     <nuxeo-repository-data start-date="[[startDate]]" end-date="[[endDate]]"
-                           metrics="cardinality(ecm:uuid)" data="{{totalCount}}">
+                           metrics="cardinality(ecm:uuid)" data="{{totalCount}}"
+                           index="[[index]]">
     </nuxeo-repository-data>
 
     <paper-card heading="Documents" elevation="2">
@@ -34,7 +35,8 @@ Contributors:
     <nuxeo-repository-data start-date="[[startDate]]" end-date="[[endDate]]"
                            grouped-by="ecm:primaryType"
                            group-limit="10"
-                           data="{{typeCount}}">
+                           data="{{typeCount}}"
+                           index="[[index]]">
     </nuxeo-repository-data>
 
     <paper-card heading="Document Types" elevation="2">
@@ -51,7 +53,8 @@ Contributors:
     <nuxeo-repository-data start-date="[[startDate]]" end-date="[[endDate]]"
                            grouped-by="dc:creator"
                            group-limit="10"
-                           data="{{topCreators}}">
+                           data="{{topCreators}}"
+                           index="[[index]]">
     </nuxeo-repository-data>
 
     <paper-card heading="Top 10 creators" elevation="2">
@@ -68,7 +71,8 @@ Contributors:
     <nuxeo-repository-data start-date="[[startDate]]" end-date="[[endDate]]"
                            with-date-intervals="week"
                            date-field="dc:created"
-                           data="{{docsCreatedPerWeek}}">
+                           data="{{docsCreatedPerWeek}}"
+                           index="[[index]]">
     </nuxeo-repository-data>
 
     <paper-card heading="Document created" elevation="2">
@@ -84,7 +88,8 @@ Contributors:
     <nuxeo-repository-data start-date="[[startDate]]" end-date="[[endDate]]"
                            with-date-intervals="week"
                            date-field="dc:modified"
-                           data="{{docsModifiedPerWeek}}">
+                           data="{{docsModifiedPerWeek}}"
+                           index="[[index]]">
     </nuxeo-repository-data>
 
     <paper-card heading="Documents modified" elevation="2">
@@ -105,11 +110,15 @@ Contributors:
     is: 'nuxeo-repository-analytics-dashboard',
     behaviors: [Nuxeo.ChartDataBehavior],
     properties: {
+      index: {
+        type: String,
+        value: 'nuxeo'
+      },
       startDate: String,
       endDate: String,
       colors: {
-          type: Array,
-          value: ['#fb8072','#8dd3c7','#ffffb3','#bebada','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd']
+        type: Array,
+        value: ['#fb8072', '#8dd3c7', '#ffffb3', '#bebada', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd']
       }
     }
   });

@@ -1,13 +1,13 @@
 <h:panelGroup layout="block"
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxr="http://nuxeo.org/nxweb/resources"
-  style="overflow: hidden">
+              xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:h="http://java.sun.com/jsf/html"
+              xmlns:nxr="http://nuxeo.org/nxweb/resources"
+              style="overflow: hidden">
 
-  <h:outputScript src="/bower_components/webcomponentsjs/webcomponents-lite.js" target="" />
-  <h:outputScript src="/bower_components/moment/min/moment-with-locales.min.js" target="" />
+  <h:outputScript src="/bower_components/webcomponentsjs/webcomponents-lite.js" target=""/>
+  <h:outputScript src="/bower_components/moment/min/moment-with-locales.min.js" target=""/>
 
-  <nxr:import src="/analytics/elements/elements.vulcanized.html" target="" />
+  <nxr:import src="/analytics/elements/elements.vulcanized.html" target=""/>
 
   <template is="dom-bind">
 
@@ -16,8 +16,11 @@
       <input type="date" value="{{endDate::change}}" style="display: inline; width: 150px"></input>
     </div>
 
-    <nuxeo-connection id="nx_connection" url="/nuxeo"></nuxeo-connection>
-    <nuxeo-repository-analytics-dashboard start-date="[[startDate]]" end-date="[[endDate]]"></nuxeo-repository-analytics-dashboard>
+    <nuxeo-connection id="nx_connection" url="#{baseURL}"></nuxeo-connection>
+    <nuxeo-repository-analytics-dashboard index="#{frameworkPropertyActions.getProperty('elasticsearch.indexName')}"
+                                          start-date="[[startDate]]"
+                                          end-date="[[endDate]]">
+    </nuxeo-repository-analytics-dashboard>
 
   </template>
 
