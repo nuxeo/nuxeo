@@ -41,7 +41,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Default implementation of the {@link FileSystemItemAdapterService}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class FileSystemItemAdapterServiceImpl extends DefaultComponent implements FileSystemItemAdapterService {
@@ -245,11 +245,12 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     /*--------------------------- Protected ---------------------------------------*/
-    protected void setActiveFactories() throws InstantiationException, IllegalAccessException, ClientException {
+    public void setActiveFactories() throws InstantiationException, IllegalAccessException, ClientException {
         topLevelFolderItemFactory = topLevelFolderItemFactoryRegistry.getActiveFactory(activeTopLevelFolderItemFactoryRegistry.activeFactory);
         fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(activeFileSystemItemFactoryRegistry.activeFactories);
     }
 
+    /*--------------------------- Protected ---------------------------------------*/
     /**
      * Tries to adapt the given document as the top level {@link FolderItem}. If it doesn't match, iterates on the
      * ordered contributed file system item factories until it finds one that matches and retrieves a non null

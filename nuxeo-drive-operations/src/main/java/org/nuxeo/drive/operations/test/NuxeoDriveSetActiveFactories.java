@@ -21,12 +21,13 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
+import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
 
 /**
  * Activates / deactivates the {@link FileSystemItem} factories of the given profile.
@@ -64,7 +65,8 @@ public class NuxeoDriveSetActiveFactories {
         } else {
             Framework.getRuntime().getContext().undeploy(url);
         }
-        Framework.getLocalService(ReloadService.class).reload();
+        FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getService(FileSystemItemAdapterService.class);
+        fileSystemItemAdapterService.setActiveFactories();
         return true;
     }
 

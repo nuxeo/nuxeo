@@ -34,7 +34,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
@@ -45,8 +44,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.runtime.reload"})
-@LocalDeploy("org.nuxeo.drive.operations:drive-repo-ds.xml")
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations"})
 @Jetty(port = 18080)
 public class TestActivateFactories {
 
