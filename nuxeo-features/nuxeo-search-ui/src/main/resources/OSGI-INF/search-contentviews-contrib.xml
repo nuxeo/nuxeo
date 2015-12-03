@@ -22,6 +22,7 @@
             AND NOT (ecm:mixinType = 'Collection' AND ecm:name = 'Locally Edited')
             AND ecm:isCheckedInVersion = 0
             AND ecm:currentLifeCycleState != 'deleted'
+            AND ecm:parentId IS NOT NULL
             AND SORTED_COLUMN IS NOT NULL
           </fixedPart>
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
@@ -177,6 +178,7 @@
             ecm:mixinType != 'HiddenInNavigation' AND
             ecm:isCheckedInVersion = 0
             AND ecm:currentLifeCycleState != 'deleted'
+            AND ecm:parentId IS NOT NULL
             AND SORTED_COLUMN IS NOT NULL
           </fixedPart>
           <predicate parameter="ecm:fulltext" operator="FULLTEXT">
