@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -19,6 +19,7 @@
 package org.nuxeo.launcher.config;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -64,15 +65,17 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
 
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.codec.Crypto;
+import org.nuxeo.common.codec.CryptoProperties;
+import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
-import org.nuxeo.launcher.commons.text.TextTemplate;
 import org.nuxeo.log4j.Log4JHelper;
 
+import freemarker.core.ParseException;
 import freemarker.template.TemplateException;
 
 /**
- * Builder for server configuration and datasource files from templates and
- * properties.
+ * Builder for server configuration and datasource files from templates and properties.
  *
  * @author jcarsique
  */
@@ -86,8 +89,7 @@ public class ConfigurationGenerator {
     /**
      * @since 5.7
      */
-    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] {
-            "1.7", "1.8" };
+    public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.7", "1.8" };
 
     /**
      * @since 5.6
@@ -106,7 +108,7 @@ public class ConfigurationGenerator {
 
     public static final String TEMPLATES = "templates";
 
-    protected static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
+    public static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
 
     /**
      * Absolute or relative PATH to the user chosen template
@@ -117,8 +119,7 @@ public class ConfigurationGenerator {
     public static final String PARAM_TEMPLATE_NAME = "nuxeo.template";
 
     /**
-     * Absolute or relative PATH to the user chosen templates (comma separated
-     * list)
+     * Absolute or relative PATH to the user chosen templates (comma separated list)
      */
     public static final String PARAM_TEMPLATES_NAME = "nuxeo.templates";
 
@@ -139,8 +140,7 @@ public class ConfigurationGenerator {
     public static final String PARAM_TEMPLATES_FREEMARKER_EXTENSIONS = "nuxeo.freemarker_parsing_extensions";
 
     /**
-     * Absolute or relative PATH to the included templates (comma separated
-     * list)
+     * Absolute or relative PATH to the included templates (comma separated list)
      */
     protected static final String PARAM_INCLUDED_TEMPLATES = "nuxeo.template.includes";
 
@@ -150,8 +150,7 @@ public class ConfigurationGenerator {
 
     public static final String BOUNDARY_END = "### END - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
-    public static final List<String> DB_LIST = Arrays.asList("default",
-            "postgresql", "oracle", "mysql", "mssql", "db2");
+    public static final List<String> DB_LIST = Arrays.asList("default", "postgresql", "oracle", "mysql", "mssql", "db2");
 
     public static final String PARAM_WIZARD_DONE = "nuxeo.wizard.done";
 
@@ -171,7 +170,11 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_HTTP_PORT = "nuxeo.server.http.port";
 
-    public static final String PARAM_STATUS_KEY = "server.status.key";
+    /**
+     * @deprecated Since 7.4. Use {@link Environment#SERVER_STATUS_KEY} instead
+     */
+    @Deprecated
+    public static final String PARAM_STATUS_KEY = Environment.SERVER_STATUS_KEY;
 
     public static final String PARAM_CONTEXT_PATH = "org.nuxeo.ecm.contextPath";
 
@@ -212,17 +215,15 @@ public class ConfigurationGenerator {
     public static final String NUXEO_DEV_SYSTEM_PROP = "org.nuxeo.dev";
 
     /**
-     * Seam hot reload property, also controlled by
-     * {@link #NUXEO_DEV_SYSTEM_PROP}
+     * Seam hot reload property, also controlled by {@link #NUXEO_DEV_SYSTEM_PROP}
      *
      * @since 5.6
      */
     public static final String SEAM_DEBUG_SYSTEM_PROP = "org.nuxeo.seam.debug";
 
     /**
-     * Old way of detecting if seam debug should be enabled, by looking for the
-     * presence of this file. Setting property {@link #SEAM_DEBUG_SYSTEM_PROP}
-     * in nuxeo.conf is enough now.
+     * Old way of detecting if seam debug should be enabled, by looking for the presence of this file. Setting property
+     * {@link #SEAM_DEBUG_SYSTEM_PROP} in nuxeo.conf is enough now.
      *
      * @deprecated since 5.6
      * @since 5.6
@@ -253,7 +254,7 @@ public class ConfigurationGenerator {
 
     private Properties defaultConfig;
 
-    private Properties userConfig;
+    private CryptoProperties userConfig;
 
     private boolean configurable = false;
 
@@ -304,8 +305,7 @@ public class ConfigurationGenerator {
         private static final long serialVersionUID = 1L;
 
         {
-            put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS,
-                    PARAM_TEMPLATES_PARSING_EXTENSIONS);
+            put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS, PARAM_TEMPLATES_PARSING_EXTENSIONS);
             put("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key");
             put("mail.pop3.host", "mail.store.host");
             put("mail.pop3.port", "mail.store.port");
@@ -342,13 +342,11 @@ public class ConfigurationGenerator {
         if (nuxeoConfPath != null) {
             nuxeoConf = new File(nuxeoConfPath).getAbsoluteFile();
         } else {
-            nuxeoConf = new File(nuxeoHome, "bin" + File.separator
-                    + "nuxeo.conf").getAbsoluteFile();
+            nuxeoConf = new File(nuxeoHome, "bin" + File.separator + "nuxeo.conf").getAbsoluteFile();
         }
         System.setProperty(NUXEO_CONF, nuxeoConf.getPath());
 
-        nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator
-                + NUXEO_DEFAULT_CONF);
+        nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator + NUXEO_DEFAULT_CONF);
 
         // detect server type based on System properties
         isJetty = System.getProperty(JettyConfigurator.JETTY_HOME) != null;
@@ -407,7 +405,7 @@ public class ConfigurationGenerator {
         return forceGeneration;
     }
 
-    public Properties getUserConfig() {
+    public CryptoProperties getUserConfig() {
         return userConfig;
     }
 
@@ -428,8 +426,7 @@ public class ConfigurationGenerator {
                 generateFiles();
             } else if (forceGeneration) {
                 log.info("Configuration files generation (nuxeo.force.generation="
-                        + userConfig.getProperty(PARAM_FORCE_GENERATION)
-                        + ")...");
+                        + userConfig.getProperty(PARAM_FORCE_GENERATION) + ")...");
                 generateFiles();
             } else {
                 log.info("Server already configured (set nuxeo.force.generation=true to force configuration files generation).");
@@ -438,24 +435,20 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Initialize configurator, check requirements and load current
-     * configuration
+     * Initialize configurator, check requirements and load current configuration
      *
-     * @return returns true if current install is configurable, else returns
-     *         false
+     * @return returns true if current install is configurable, else returns false
      */
     public boolean init() {
         return init(false);
     }
 
     /**
-     * Initialize configurator, check requirements and load current
-     * configuration
+     * Initialize configurator, check requirements and load current configuration
      *
      * @since 5.6
      * @param forceReload If true, forces configuration reload.
-     * @return returns true if current install is configurable, else returns
-     *         false
+     * @return returns true if current install is configurable, else returns false
      */
     public boolean init(boolean forceReload) {
         if (serverConfigurator instanceof UnknownServerConfigurator) {
@@ -466,7 +459,7 @@ public class ConfigurationGenerator {
         if (!nuxeoConf.exists()) {
             log.info("Missing " + nuxeoConf);
             configurable = false;
-            userConfig = new Properties();
+            userConfig = new CryptoProperties();
         } else if (userConfig == null || userConfig.size() == 0 || forceReload) {
             try {
                 setBasicConfiguration();
@@ -481,15 +474,21 @@ public class ConfigurationGenerator {
         return configurable;
     }
 
-    public void changeTemplates(String newTemplates) {
+    /**
+     * @param newTemplates
+     * @return Old templates
+     */
+    public String changeTemplates(String newTemplates) {
+        String oldTemplates = templates;
+        templates = newTemplates;
         try {
-            templates = newTemplates;
             setBasicConfiguration(false);
             configurable = true;
         } catch (ConfigurationException e) {
             log.warn("Error reading basic configuration.", e);
             configurable = false;
         }
+        return oldTemplates;
     }
 
     /**
@@ -506,14 +505,13 @@ public class ConfigurationGenerator {
         setBasicConfiguration(true);
     }
 
-    private void setBasicConfiguration(boolean save)
-            throws ConfigurationException {
+    private void setBasicConfiguration(boolean save) throws ConfigurationException {
         try {
             // Load default configuration
             defaultConfig = loadTrimmedProperties(nuxeoDefaultConf);
             // Add System properties
             defaultConfig.putAll(System.getProperties());
-            userConfig = new Properties(defaultConfig);
+            userConfig = new CryptoProperties(defaultConfig);
 
             // If Windows, replace backslashes in paths in nuxeo.conf
             if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
@@ -523,8 +521,7 @@ public class ConfigurationGenerator {
             userConfig.putAll(loadTrimmedProperties(nuxeoConf));
             onceGeneration = "once".equals(userConfig.getProperty(PARAM_FORCE_GENERATION));
             forceGeneration = onceGeneration
-                    || Boolean.parseBoolean(userConfig.getProperty(
-                            PARAM_FORCE_GENERATION, "false"));
+                    || Boolean.parseBoolean(userConfig.getProperty(PARAM_FORCE_GENERATION, "false"));
             checkForDeprecatedParameters(userConfig);
 
             // Synchronize directories between serverConfigurator and
@@ -537,8 +534,7 @@ public class ConfigurationGenerator {
         } catch (NullPointerException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
-            throw new ConfigurationException("Missing file: "
-                    + nuxeoDefaultConf + " or " + nuxeoConf, e);
+            throw new ConfigurationException("Missing file: " + nuxeoDefaultConf + " or " + nuxeoConf, e);
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         }
@@ -556,8 +552,7 @@ public class ConfigurationGenerator {
         }
 
         Map<String, String> newParametersToSave = evalDynamicProperties();
-        if (save && newParametersToSave != null
-                && !newParametersToSave.isEmpty()) {
+        if (save && newParametersToSave != null && !newParametersToSave.isEmpty()) {
             saveConfiguration(newParametersToSave, false, false);
         }
 
@@ -580,19 +575,16 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Old way of detecting if seam debug is set, by checking for the presence
-     * of a file.
+     * Old way of detecting if seam debug is set, by checking for the presence of a file.
      * <p>
-     * On 5.6, using the config generator to get the info from the nuxeo.conf
-     * file makes it possible to get the property value this early, so adding an
-     * empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer needed.
+     * On 5.6, using the config generator to get the info from the nuxeo.conf file makes it possible to get the property
+     * value this early, so adding an empty file at {@link #SEAM_HOT_RELOAD_GLOBAL_CONFIG} is no longer needed.
      *
      * @deprecated since 5.6
      */
     @Deprecated
     protected boolean hasSeamDebugFile() {
-        File f = new File(getServerConfigurator().getConfigDir(),
-                SEAM_HOT_RELOAD_GLOBAL_CONFIG_FILE);
+        File f = new File(getServerConfigurator().getConfigDir(), SEAM_HOT_RELOAD_GLOBAL_CONFIG_FILE);
         if (!f.exists()) {
             return false;
         }
@@ -629,8 +621,7 @@ public class ConfigurationGenerator {
      * @throws ConfigurationException
      * @since 5.5
      */
-    protected HashMap<String, String> evalDynamicProperties()
-            throws ConfigurationException {
+    protected HashMap<String, String> evalDynamicProperties() throws ConfigurationException {
         HashMap<String, String> newParametersToSave = new HashMap<>();
         evalLoopbackURL();
         evalServerStatusKey(newParametersToSave);
@@ -642,14 +633,12 @@ public class ConfigurationGenerator {
      *
      * @param newParametersToSave
      * @throws ConfigurationException
-     * @see #PARAM_STATUS_KEY
+     * @see Environment#SERVER_STATUS_KEY
      * @since 5.5
      */
-    private void evalServerStatusKey(Map<String, String> newParametersToSave)
-            throws ConfigurationException {
-        if (userConfig.getProperty(PARAM_STATUS_KEY) == null) {
-            newParametersToSave.put(PARAM_STATUS_KEY,
-                    UUID.randomUUID().toString().substring(0, 8));
+    private void evalServerStatusKey(Map<String, String> newParametersToSave) throws ConfigurationException {
+        if (userConfig.getProperty(Environment.SERVER_STATUS_KEY) == null) {
+            newParametersToSave.put(Environment.SERVER_STATUS_KEY, UUID.randomUUID().toString().substring(0, 8));
         }
     }
 
@@ -665,10 +654,8 @@ public class ConfigurationGenerator {
             if (bindAddress.isAnyLocalAddress()) {
                 boolean preferIPv6 = "false".equals(System.getProperty("java.net.preferIPv4Stack"))
                         && "true".equals(System.getProperty("java.net.preferIPv6Addresses"));
-                bindAddress = preferIPv6 ? InetAddress.getByName("::1")
-                        : InetAddress.getByName("127.0.0.1");
-                log.debug("Bind address is \"ANY\", using local address instead: "
-                        + bindAddress);
+                bindAddress = preferIPv6 ? InetAddress.getByName("::1") : InetAddress.getByName("127.0.0.1");
+                log.debug("Bind address is \"ANY\", using local address instead: " + bindAddress);
             }
         } catch (UnknownHostException e) {
             log.debug(e, e);
@@ -679,11 +666,9 @@ public class ConfigurationGenerator {
         String contextPath = userConfig.getProperty(PARAM_CONTEXT_PATH);
         // Is IPv6 or IPv4 ?
         if (bindAddress instanceof Inet6Address) {
-            loopbackURL = "http://[" + bindAddress.getHostAddress() + "]:"
-                    + httpPort + contextPath;
+            loopbackURL = "http://[" + bindAddress.getHostAddress() + "]:" + httpPort + contextPath;
         } else {
-            loopbackURL = "http://" + bindAddress.getHostAddress() + ":"
-                    + httpPort + contextPath;
+            loopbackURL = "http://" + bindAddress.getHostAddress() + ":" + httpPort + contextPath;
         }
         log.debug("Set as loop back URL: " + loopbackURL);
         defaultConfig.setProperty(PARAM_LOOPBACK_URL, loopbackURL);
@@ -692,8 +677,7 @@ public class ConfigurationGenerator {
     /**
      * Read nuxeo.conf, replace backslashes in paths and write new nuxeo.conf
      *
-     * @throws ConfigurationException if any error reading or writing
-     *             nuxeo.conf
+     * @throws ConfigurationException if any error reading or writing nuxeo.conf
      * @since 5.4.1
      */
     protected void replaceBackslashes() throws ConfigurationException {
@@ -746,8 +730,7 @@ public class ConfigurationGenerator {
     public void setDirectoryWithProperty(String key) {
         String directory = userConfig.getProperty(key);
         if (directory == null) {
-            defaultConfig.setProperty(key,
-                    serverConfigurator.getDirectory(key).getPath());
+            defaultConfig.setProperty(key, serverConfigurator.getDirectory(key).getPath());
         } else {
             serverConfigurator.setDirectory(key, directory);
         }
@@ -780,51 +763,38 @@ public class ConfigurationGenerator {
                 writeConfiguration();
             }
         } catch (FileNotFoundException e) {
-            throw new ConfigurationException("Missing file: " + e.getMessage(),
-                    e);
+            throw new ConfigurationException("Missing file: " + e.getMessage(), e);
+        } catch (TemplateException | ParseException e) {
+            throw new ConfigurationException("Could not process FreeMarker template: " + e.getMessage(), e);
         } catch (IOException e) {
-            throw new ConfigurationException("Configuration failure: "
-                    + e.getMessage(), e);
-        } catch (TemplateException e) {
-            throw new ConfigurationException(
-                    "Could not process FreeMarker template: " + e.getMessage(),
-                    e);
+            throw new ConfigurationException("Configuration failure: " + e.getMessage(), e);
         }
     }
 
-    private List<File> includeTemplates(String templatesList)
-            throws IOException {
+    private List<File> includeTemplates(String templatesList) throws IOException {
         List<File> orderedTemplates = new ArrayList<>();
-        StringTokenizer st = new StringTokenizer(templatesList,
-                TEMPLATE_SEPARATOR);
+        StringTokenizer st = new StringTokenizer(templatesList, TEMPLATE_SEPARATOR);
         while (st.hasMoreTokens()) {
             String nextToken = st.nextToken();
             File chosenTemplate = new File(nextToken);
             // is it absolute and existing or relative path ?
-            if (!chosenTemplate.exists()
-                    || !chosenTemplate.getPath().equals(
-                            chosenTemplate.getAbsolutePath())) {
-                chosenTemplate = new File(nuxeoDefaultConf.getParentFile(),
-                        nextToken);
+            if (!chosenTemplate.exists() || !chosenTemplate.getPath().equals(chosenTemplate.getAbsolutePath())) {
+                chosenTemplate = new File(nuxeoDefaultConf.getParentFile(), nextToken);
             }
             if (includedTemplates.contains(chosenTemplate)) {
                 log.debug("Already included " + nextToken);
                 continue;
             }
             if (!chosenTemplate.exists()) {
-                log.error(String.format(
-                        "Template '%s' not found with relative or absolute path (%s). "
-                                + "Check your %s parameter, and %s for included files.",
-                        nextToken, chosenTemplate, PARAM_TEMPLATES_NAME,
-                        PARAM_INCLUDED_TEMPLATES));
+                log.error(String.format("Template '%s' not found with relative or absolute path (%s). "
+                        + "Check your %s parameter, and %s for included files.", nextToken, chosenTemplate,
+                        PARAM_TEMPLATES_NAME, PARAM_INCLUDED_TEMPLATES));
                 continue;
             }
-            File chosenTemplateConf = new File(chosenTemplate,
-                    NUXEO_DEFAULT_CONF);
+            File chosenTemplateConf = new File(chosenTemplate, NUXEO_DEFAULT_CONF);
             includedTemplates.add(chosenTemplate);
             if (!chosenTemplateConf.exists()) {
-                log.warn("Ignore template (no default configuration): "
-                        + nextToken);
+                log.warn("Ignore template (no default configuration): " + nextToken);
                 continue;
             }
 
@@ -836,8 +806,7 @@ public class ConfigurationGenerator {
             // Load configuration from chosen templates
             defaultConfig.putAll(subTemplateConf);
             orderedTemplates.add(chosenTemplate);
-            String templateInfo = "Include template: "
-                    + chosenTemplate.getPath();
+            String templateInfo = "Include template: " + chosenTemplate.getPath();
             if (quiet) {
                 log.debug(templateInfo);
             } else {
@@ -866,9 +835,8 @@ public class ConfigurationGenerator {
                 // warnings but old things should keep working
                 // properties.remove(key);
                 if (!hideDeprecationWarnings) {
-                    log.warn("Parameter " + key
-                            + " is deprecated - please use "
-                            + parametersMigration.get(key) + " instead");
+                    log.warn("Parameter " + key + " is deprecated - please use " + parametersMigration.get(key)
+                            + " instead");
                 }
             }
         }
@@ -891,47 +859,40 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Save changed parameters in {@code nuxeo.conf}. This method does not
-     * check values in map. Use {@link #saveFilteredConfiguration(Map)} for
-     * parameters filtering.
+     * Save changed parameters in {@code nuxeo.conf}. This method does not check values in map. Use
+     * {@link #saveFilteredConfiguration(Map)} for parameters filtering.
      *
      * @param changedParameters Map of modified parameters
      * @see #saveFilteredConfiguration(Map)
      */
-    public void saveConfiguration(Map<String, String> changedParameters)
-            throws ConfigurationException {
+    public void saveConfiguration(Map<String, String> changedParameters) throws ConfigurationException {
         // Keep generation true or once; switch false to once
         saveConfiguration(changedParameters, false, true);
     }
 
     /**
-     * Save changed parameters in {@code nuxeo.conf} calculating templates if
-     * changedParameters contains a value for {@link #PARAM_TEMPLATE_DBNAME}. If
-     * a parameter value is empty ("" or null), then the property is unset. This
-     * method does not check values in map: use
-     * {@link #saveFilteredConfiguration(Map)} for parameters filtering.
+     * Save changed parameters in {@code nuxeo.conf} calculating templates if changedParameters contains a value for
+     * {@link #PARAM_TEMPLATE_DBNAME}. If a parameter value is empty ("" or null), then the property is unset.
+     * {@link #PARAM_WIZARD_DONE}, {@link #PARAM_TEMPLATES_NAME} and {@link #PARAM_FORCE_GENERATION} cannot be unset,
+     * but their value can be changed.<br/>
+     * This method does not check values in map: use {@link #saveFilteredConfiguration(Map)} for parameters filtering.
      *
      * @param changedParameters Map of modified parameters
-     * @param setGenerationOnceToFalse If generation was on (true or once),
-     *            then set it to false or not?
-     * @param setGenerationFalseToOnce If generation was off (false), then set
-     *            it to once?
+     * @param setGenerationOnceToFalse If generation was on (true or once), then set it to false or not?
+     * @param setGenerationFalseToOnce If generation was off (false), then set it to once?
      * @see #saveFilteredConfiguration(Map)
      * @since 5.5
      */
-    public void saveConfiguration(Map<String, String> changedParameters,
-            boolean setGenerationOnceToFalse, boolean setGenerationFalseToOnce)
-            throws ConfigurationException {
+    public void saveConfiguration(Map<String, String> changedParameters, boolean setGenerationOnceToFalse,
+            boolean setGenerationFalseToOnce) throws ConfigurationException {
         setOnceToFalse = setGenerationOnceToFalse;
         setFalseToOnce = setGenerationFalseToOnce;
         updateStoredConfig();
         String newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBNAME);
         if (newDbTemplate != null) {
-            changedParameters.put(PARAM_TEMPLATES_NAME,
-                    rebuildTemplatesStr(newDbTemplate));
+            changedParameters.put(PARAM_TEMPLATES_NAME, rebuildTemplatesStr(newDbTemplate));
         }
-        if (changedParameters.containsValue(null)
-                || changedParameters.containsValue("")) {
+        if (changedParameters.containsValue(null) || changedParameters.containsValue("")) {
             // There are properties to unset
             Set<String> propertiesToUnset = new HashSet<>();
             for (String key : changedParameters.keySet()) {
@@ -959,31 +920,27 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Save changed parameters in {@code nuxeo.conf}, filtering parameters with
-     * {@link #getChangedParametersMap(Map, Map)}
+     * Save changed parameters in {@code nuxeo.conf}, filtering parameters with {@link #getChangedParameters(Map)}
      *
      * @param changedParameters Maps of modified parameters
      * @since 5.4.2
-     * @see #saveConfiguration(Map, boolean)
-     * @see #getChangedParametersMap(Map, Map)
+     * @see #saveConfiguration(Map)
+     * @see #getChangedParameters(Map)
      */
-    public void saveFilteredConfiguration(Map<String, String> changedParameters)
-            throws ConfigurationException {
+    public void saveFilteredConfiguration(Map<String, String> changedParameters) throws ConfigurationException {
         Map<String, String> filteredParameters = getChangedParameters(changedParameters);
         saveConfiguration(filteredParameters);
     }
 
     /**
-     * Filters given parameters including them only if (there was no previous
-     * value and new value is not empty/null) or (there was a previous value
-     * and it differs from the new value)
+     * Filters given parameters including them only if (there was no previous value and new value is not empty/null) or
+     * (there was a previous value and it differs from the new value)
      *
      * @param changedParameters parameters to be filtered
      * @return filtered map
      * @since 5.4.2
      */
-    public Map<String, String> getChangedParameters(
-            Map<String, String> changedParameters) {
+    public Map<String, String> getChangedParameters(Map<String, String> changedParameters) {
         Map<String, String> filteredChangedParameters = new HashMap<>();
         for (String key : changedParameters.keySet()) {
             String oldParam = getStoredConfig().getProperty(key);
@@ -991,8 +948,8 @@ public class ConfigurationGenerator {
             if (newParam != null) {
                 newParam = newParam.trim();
             }
-            if (oldParam == null && StringUtils.isNotEmpty(newParam)
-                    || oldParam != null && !oldParam.trim().equals(newParam)) {
+            if (oldParam == null && StringUtils.isNotEmpty(newParam) || oldParam != null
+                    && !oldParam.trim().equals(newParam)) {
                 filteredChangedParameters.put(key, newParam);
             }
         }
@@ -1007,23 +964,19 @@ public class ConfigurationGenerator {
             // Copy back file content
             writer.append(newContent.toString());
             // Write changed parameters
-            writer.write(BOUNDARY_BEGIN + " " + new Date().toString()
-                    + System.getProperty("line.separator"));
+            writer.write(BOUNDARY_BEGIN + " " + new Date().toString() + System.getProperty("line.separator"));
             for (Object o : new TreeSet<>(userConfig.keySet())) {
                 String key = (String) o;
                 // Ignore parameters already stored in newContent
-                if (PARAM_FORCE_GENERATION.equals(key)
-                        || PARAM_WIZARD_DONE.equals(key)
+                if (PARAM_FORCE_GENERATION.equals(key) || PARAM_WIZARD_DONE.equals(key)
                         || PARAM_TEMPLATES_NAME.equals(key)) {
                     continue;
                 }
                 String oldValue = storedConfig.getProperty(key, "");
-                String newValue = userConfig.getProperty(key, "");
+                String newValue = userConfig.getRawProperty(key, "");
                 if (!newValue.equals(oldValue)) {
-                    writer.write("#" + key + "=" + oldValue
-                            + System.getProperty("line.separator"));
-                    writer.write(key + "=" + newValue
-                            + System.getProperty("line.separator"));
+                    writer.write("#" + key + "=" + oldValue + System.getProperty("line.separator"));
+                    writer.write(key + "=" + newValue + System.getProperty("line.separator"));
                 }
             }
             writer.write(BOUNDARY_END + System.getProperty("line.separator"));
@@ -1081,8 +1034,7 @@ public class ConfigurationGenerator {
                             }
                         } else if (line.startsWith(PARAM_TEMPLATES_NAME)) {
                             if (templatesParam != null) {
-                                line = PARAM_TEMPLATES_NAME + "="
-                                        + templatesParam;
+                                line = PARAM_TEMPLATES_NAME + "=" + templatesParam;
                             }
                             if (templatesIndex == null) {
                                 newLines.add(line);
@@ -1091,13 +1043,22 @@ public class ConfigurationGenerator {
                                 newLines.set(templatesIndex, line);
                             }
                         } else {
-                            newLines.add(line);
+                            int equalIdx = line.indexOf("=");
+                            if (equalIdx < 1 || line.trim().startsWith("#")) {
+                                newLines.add(line);
+                            } else {
+                                String key = line.substring(0, equalIdx).trim();
+                                if (userConfig.getProperty(key) != null) {
+                                    newLines.add(line);
+                                } else {
+                                    newLines.add("#" + line);
+                                }
+                            }
                         }
                     } else {
                         // What must be written just before the BOUNDARY_BEGIN
                         if (templatesIndex == null && templatesParam != null) {
-                            newLines.add(PARAM_TEMPLATES_NAME + "="
-                                    + templatesParam);
+                            newLines.add(PARAM_TEMPLATES_NAME + "=" + templatesParam);
                             templatesIndex = newLines.size() - 1;
                         }
                         if (wizardIndex == null && wizardParam != null) {
@@ -1109,8 +1070,7 @@ public class ConfigurationGenerator {
                 } else {
                     if (!line.startsWith(BOUNDARY_END)) {
                         int equalIdx = line.indexOf("=");
-                        if (line.startsWith("#" + PARAM_TEMPLATES_NAME)
-                                || line.startsWith(PARAM_TEMPLATES_NAME)) {
+                        if (line.startsWith("#" + PARAM_TEMPLATES_NAME) || line.startsWith(PARAM_TEMPLATES_NAME)) {
                             // Backward compliance, it must be ignored
                             continue;
                         }
@@ -1124,7 +1084,7 @@ public class ConfigurationGenerator {
                         } else {
                             String key = line.substring(0, equalIdx).trim();
                             String value = line.substring(equalIdx + 1).trim();
-                            if (!value.equals(userConfig.getProperty(key))) {
+                            if (!value.equals(userConfig.getRawProperty(key))) {
                                 getStoredConfig().setProperty(key, value);
                             }
                         }
@@ -1147,15 +1107,13 @@ public class ConfigurationGenerator {
         }
         StringBuffer newContent = new StringBuffer();
         for (int i = 0; i < newLines.size(); i++) {
-            newContent.append(newLines.get(i).trim()
-                    + System.getProperty("line.separator"));
+            newContent.append(newLines.get(i).trim() + System.getProperty("line.separator"));
         }
         return newContent;
     }
 
     /**
-     * Extract a database template from the current list of templates. Return
-     * the last one if there are multiples.
+     * Extract a database template from the current list of templates. Return the last one if there are multiples.
      *
      * @see #rebuildTemplatesStr(String)
      */
@@ -1171,22 +1129,17 @@ public class ConfigurationGenerator {
         }
         String dbType = userConfig.getProperty(PARAM_TEMPLATE_DBTYPE);
         if (!found && dbType != null) {
-            log.warn(String.format(
-                    "Didn't find a known database template in the list but "
-                            + "some template contributed a value for %s.",
-                    PARAM_TEMPLATE_DBTYPE));
+            log.warn(String.format("Didn't find a known database template in the list but "
+                    + "some template contributed a value for %s.", PARAM_TEMPLATE_DBTYPE));
             dbTemplate = dbType;
         }
         if (!dbTemplate.equals(dbType)) {
             if (dbType == null) {
-                log.warn(String.format("Missing value for %s, using %s",
-                        PARAM_TEMPLATE_DBTYPE, dbTemplate));
+                log.warn(String.format("Missing value for %s, using %s", PARAM_TEMPLATE_DBTYPE, dbTemplate));
                 userConfig.setProperty(PARAM_TEMPLATE_DBTYPE, dbTemplate);
             } else {
-                log.error(String.format(
-                        "Inconsistent values between %s (%s) and %s (%s)",
-                        PARAM_TEMPLATE_DBNAME, dbTemplate,
-                        PARAM_TEMPLATE_DBTYPE, dbType));
+                log.error(String.format("Inconsistent values between %s (%s) and %s (%s)", PARAM_TEMPLATE_DBNAME,
+                        dbTemplate, PARAM_TEMPLATE_DBTYPE, dbType));
             }
         }
         defaultConfig.setProperty(PARAM_TEMPLATE_DBNAME, dbTemplate);
@@ -1234,12 +1187,10 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Create needed directories. Check existence of old paths. If old paths
-     * have been found and they cannot be upgraded automatically, then
-     * upgrading message is logged and error thrown.
+     * Create needed directories. Check existence of old paths. If old paths have been found and they cannot be upgraded
+     * automatically, then upgrading message is logged and error thrown.
      *
-     * @throws ConfigurationException If a deprecated directory has been
-     *             detected.
+     * @throws ConfigurationException If a deprecated directory has been detected.
      * @since 5.4.2
      * @see ServerConfigurator#verifyInstallation()
      */
@@ -1254,12 +1205,9 @@ public class ConfigurationGenerator {
         serverConfigurator.verifyInstallation();
         if (!"default".equals(userConfig.getProperty(PARAM_TEMPLATE_DBTYPE))) {
             try {
-                checkDatabaseConnection(
-                        userConfig.getProperty(PARAM_TEMPLATE_DBNAME),
-                        userConfig.getProperty(PARAM_DB_NAME),
-                        userConfig.getProperty(PARAM_DB_USER),
-                        userConfig.getProperty(PARAM_DB_PWD),
-                        userConfig.getProperty(PARAM_DB_HOST),
+                checkDatabaseConnection(userConfig.getProperty(PARAM_TEMPLATE_DBNAME),
+                        userConfig.getProperty(PARAM_DB_NAME), userConfig.getProperty(PARAM_DB_USER),
+                        userConfig.getProperty(PARAM_DB_PWD), userConfig.getProperty(PARAM_DB_HOST),
                         userConfig.getProperty(PARAM_DB_PORT));
             } catch (FileNotFoundException e) {
                 throw new ConfigurationException(e);
@@ -1268,20 +1216,17 @@ public class ConfigurationGenerator {
             } catch (DatabaseDriverException e) {
                 log.debug(e, e);
                 log.error(e.getMessage());
-                throw new ConfigurationException(
-                        "Could not find database driver: " + e.getMessage());
+                throw new ConfigurationException("Could not find database driver: " + e.getMessage());
             } catch (SQLException e) {
                 log.debug(e, e);
                 log.error(e.getMessage());
-                throw new ConfigurationException(
-                        "Failed to connect on database: " + e.getMessage());
+                throw new ConfigurationException("Failed to connect on database: " + e.getMessage());
             }
         }
     }
 
     /**
      * @return Marketplace packages directory
-     *
      * @since 5.9.4
      */
     private File getPackagesDir() {
@@ -1307,12 +1252,9 @@ public class ConfigurationGenerator {
             }
         }
         if (!isCompliant) {
-            String message = String.format(
-                    "Nuxeo requires Java %s (detected %s).",
+            String message = String.format("Nuxeo requires Java %s (detected %s).",
                     ArrayUtils.toString(COMPLIANT_JAVA_VERSIONS), version);
-            if (isGreater
-                    || "nofail".equalsIgnoreCase(System.getProperty("jvmcheck",
-                            "fail"))) {
+            if (isGreater || "nofail".equalsIgnoreCase(System.getProperty("jvmcheck", "fail"))) {
                 log.warn(message);
             } else {
                 throw new ConfigurationException(message);
@@ -1321,25 +1263,22 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Will check the configured addresses are reachable and Nuxeo required
-     * ports are available on those addresses. Server specific implementations
-     * should override this method in order to check for server specific ports.
-     * {@link #bindAddress} must be set before.
+     * Will check the configured addresses are reachable and Nuxeo required ports are available on those addresses.
+     * Server specific implementations should override this method in order to check for server specific ports.
+     * {@link #PARAM_BIND_ADDRESS} must be set before.
      *
      * @throws ConfigurationException
      * @since 5.5
-     * @see ServerConfigurator#checkNetwork()
+     * @see ServerConfigurator#verifyInstallation()
      */
     public void checkAddressesAndPorts() throws ConfigurationException {
         InetAddress bindAddress = getBindAddress();
         // Sanity check
         if (bindAddress.isMulticastAddress()) {
-            throw new ConfigurationException("Multicast address won't work: "
-                    + bindAddress);
+            throw new ConfigurationException("Multicast address won't work: " + bindAddress);
         }
         checkAddressReachable(bindAddress);
-        checkPortAvailable(bindAddress,
-                Integer.parseInt(userConfig.getProperty(PARAM_HTTP_PORT)));
+        checkPortAvailable(bindAddress, Integer.parseInt(userConfig.getProperty(PARAM_HTTP_PORT)));
     }
 
     public InetAddress getBindAddress() throws ConfigurationException {
@@ -1358,14 +1297,12 @@ public class ConfigurationGenerator {
      * @throws ConfigurationException
      * @since 5.5
      */
-    public static void checkAddressReachable(InetAddress address)
-            throws ConfigurationException {
+    public static void checkAddressReachable(InetAddress address) throws ConfigurationException {
         try {
             log.debug("Checking availability of " + address);
             address.isReachable(ADDRESS_PING_TIMEOUT);
         } catch (IOException e) {
-            throw new ConfigurationException("Unreachable bind address "
-                    + address);
+            throw new ConfigurationException("Unreachable bind address " + address);
         }
     }
 
@@ -1373,15 +1310,12 @@ public class ConfigurationGenerator {
      * Checks if port is available on given address.
      *
      * @param port port to check for availability
-     * @throws ConfigurationException Throws an exception if address is
-     *             unavailable.
+     * @throws ConfigurationException Throws an exception if address is unavailable.
      * @since 5.5
      */
-    public static void checkPortAvailable(InetAddress address, int port)
-            throws ConfigurationException {
+    public static void checkPortAvailable(InetAddress address, int port) throws ConfigurationException {
         if ((port == 0) || (port == -1)) {
-            log.warn("Port is set to "
-                    + Integer.toString(port)
+            log.warn("Port is set to " + Integer.toString(port)
                     + " - assuming it is disabled - skipping availability check");
             return;
         }
@@ -1391,16 +1325,14 @@ public class ConfigurationGenerator {
         ServerSocket socketTCP = null;
         // DatagramSocket socketUDP = null;
         try {
-            log.debug("Checking availability of port " + port + " on address "
-                    + address);
+            log.debug("Checking availability of port " + port + " on address " + address);
             socketTCP = new ServerSocket(port, 0, address);
             socketTCP.setReuseAddress(true);
             // socketUDP = new DatagramSocket(port, address);
             // socketUDP.setReuseAddress(true);
             // return true;
         } catch (IOException e) {
-            throw new ConfigurationException(e.getMessage() + ": " + address
-                    + ":" + port, e);
+            throw new ConfigurationException(e.getMessage() + ": " + address + ":" + port, e);
         } finally {
             // if (socketUDP != null) {
             // socketUDP.close();
@@ -1429,14 +1361,13 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @return Log files produced by Log4J configuration without loading this
-     *         configuration instead of current active one.
+     * @return Log files produced by Log4J configuration without loading this configuration instead of current active
+     *         one.
      * @since 5.4.2
      */
     public ArrayList<String> getLogFiles() {
         File log4jConfFile = serverConfigurator.getLogConfFile();
-        System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
-                getLogDir().getPath());
+        System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, getLogDir().getPath());
         return Log4JHelper.getFileAppendersFiles(log4jConfFile);
     }
 
@@ -1447,8 +1378,7 @@ public class ConfigurationGenerator {
      * @since 5.4.2
      */
     public boolean isWizardRequired() {
-        return !"true".equalsIgnoreCase(getUserConfig().getProperty(
-                PARAM_WIZARD_DONE, "true"))
+        return !"true".equalsIgnoreCase(getUserConfig().getProperty(PARAM_WIZARD_DONE, "true"))
                 && serverConfigurator.isWizardAvailable();
     }
 
@@ -1459,8 +1389,8 @@ public class ConfigurationGenerator {
      * @return new templates string using given dbTemplate
      * @since 5.4.2
      * @see #extractDatabaseTemplateName()
-     * @see {@link #changeDBTemplate(String)}
-     * @see {@link #changeTemplates(String)}
+     * @see #changeDBTemplate(String)
+     * @see #changeTemplates(String)
      */
     public String rebuildTemplatesStr(String dbTemplate) {
         String currentDBTemplate = userConfig.getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
@@ -1522,8 +1452,7 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @return File pointing to the directory containing the marketplace
-     *         packages included in the distribution
+     * @return File pointing to the directory containing the marketplace packages included in the distribution
      * @since 5.6
      */
     public File getDistributionMPDir() {
@@ -1540,22 +1469,19 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Add template(s) to the {@link #PARAM_TEMPLATES_NAME} list if not already
-     * present
+     * Add template(s) to the {@link #PARAM_TEMPLATES_NAME} list if not already present
      *
      * @param templatesToAdd Comma separated templates to add
      * @throws ConfigurationException
      * @since 5.5
      */
-    public void addTemplate(String templatesToAdd)
-            throws ConfigurationException {
+    public void addTemplate(String templatesToAdd) throws ConfigurationException {
         String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
         List<String> templatesList = new ArrayList<>();
         templatesList.addAll(Arrays.asList(currentTemplatesStr.split(TEMPLATE_SEPARATOR)));
         List<String> templatesToAddList = Arrays.asList(templatesToAdd.split(TEMPLATE_SEPARATOR));
         if (templatesList.addAll(templatesToAddList)) {
-            String newTemplatesStr = StringUtils.join(templatesList,
-                    TEMPLATE_SEPARATOR);
+            String newTemplatesStr = StringUtils.join(templatesList, TEMPLATE_SEPARATOR);
             HashMap<String, String> parametersToSave = new HashMap<>();
             parametersToSave.put(PARAM_TEMPLATES_NAME, newTemplatesStr);
             saveFilteredConfiguration(parametersToSave);
@@ -1566,7 +1492,7 @@ public class ConfigurationGenerator {
     /**
      * Remove template(s) from the {@link #PARAM_TEMPLATES_NAME} list
      *
-     * @param templates Comma separated templates to remove
+     * @param templatesToRm Comma separated templates to remove
      * @throws ConfigurationException
      * @since 5.5
      */
@@ -1576,8 +1502,7 @@ public class ConfigurationGenerator {
         templatesList.addAll(Arrays.asList(currentTemplatesStr.split(TEMPLATE_SEPARATOR)));
         List<String> templatesToRmList = Arrays.asList(templatesToRm.split(TEMPLATE_SEPARATOR));
         if (templatesList.removeAll(templatesToRmList)) {
-            String newTemplatesStr = StringUtils.join(templatesList,
-                    TEMPLATE_SEPARATOR);
+            String newTemplatesStr = StringUtils.join(templatesList, TEMPLATE_SEPARATOR);
             HashMap<String, String> parametersToSave = new HashMap<>();
             parametersToSave.put(PARAM_TEMPLATES_NAME, newTemplatesStr);
             saveFilteredConfiguration(parametersToSave);
@@ -1594,14 +1519,88 @@ public class ConfigurationGenerator {
      * @return The old value
      * @since 5.5
      */
-    public String setProperty(String key, String value)
-            throws ConfigurationException {
+    public String setProperty(String key, String value) throws ConfigurationException {
         String oldValue = getStoredConfig().getProperty(key);
+        if (PARAM_TEMPLATES_NAME.equals(key)) {
+            templates = StringUtils.isBlank(value) ? null : value;
+        }
         HashMap<String, String> newParametersToSave = new HashMap<>();
         newParametersToSave.put(key, value);
         saveFilteredConfiguration(newParametersToSave);
         setBasicConfiguration();
         return oldValue;
+    }
+
+    /**
+     * Set properties in nuxeo configuration
+     *
+     * @param newParametersToSave
+     * @return The old values
+     * @throws ConfigurationException
+     * @since 7.4
+     */
+    public Map<String, String> setProperties(Map<String, String> newParametersToSave) throws ConfigurationException {
+        Map<String, String> oldValues = new HashMap<>();
+        for (String key : newParametersToSave.keySet()) {
+            oldValues.put(key, getStoredConfig().getProperty(key));
+            if (PARAM_TEMPLATES_NAME.equals(key)) {
+                String value = newParametersToSave.get(key);
+                templates = StringUtils.isBlank(value) ? null : value;
+            }
+        }
+        saveFilteredConfiguration(newParametersToSave);
+        setBasicConfiguration();
+        return oldValues;
+    }
+
+    /**
+     * Set properties in the given template, if it exists
+     *
+     * @param newParametersToSave
+     * @return The old values
+     * @throws ConfigurationException
+     * @throws IOException
+     * @since 7.4
+     */
+    public Map<String, String> setProperties(String template, Map<String, String> newParametersToSave)
+            throws ConfigurationException, IOException {
+        File templateConf = getTemplateConf(template);
+        Properties templateProperties = loadTrimmedProperties(templateConf);
+        Map<String, String> oldValues = new HashMap<>();
+        StringBuffer newContent = new StringBuffer();
+        try (BufferedReader reader = new BufferedReader(new FileReader(templateConf))) {
+            String line = reader.readLine();
+            if (line != null && line.startsWith("## DO NOT EDIT THIS FILE")) {
+                throw new ConfigurationException("The template states in its header that it must not be modified.");
+            }
+            while (line != null) {
+                int equalIdx = line.indexOf("=");
+                if (equalIdx < 1 || line.trim().startsWith("#")) {
+                    newContent.append(line + System.getProperty("line.separator"));
+                } else {
+                    String key = line.substring(0, equalIdx).trim();
+                    if (newParametersToSave.containsKey(key)) {
+                        newContent.append(key + "=" + newParametersToSave.get(key)
+                                + System.getProperty("line.separator"));
+                    } else {
+                        newContent.append(line + System.getProperty("line.separator"));
+                    }
+                }
+                line = reader.readLine();
+            }
+        }
+        for (String key : newParametersToSave.keySet()) {
+            if (templateProperties.containsKey(key)) {
+                oldValues.put(key, templateProperties.getProperty(key));
+            } else {
+                newContent.append(key + "=" + newParametersToSave.get(key) + System.getProperty("line.separator"));
+            }
+        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(templateConf))) {
+            writer.append(newContent.toString());
+        }
+        setBasicConfiguration();
+        return oldValues;
     }
 
     /**
@@ -1619,17 +1618,13 @@ public class ConfigurationGenerator {
      * @throws SQLException
      * @since 5.6
      */
-    public void checkDatabaseConnection(String databaseTemplate, String dbName,
-            String dbUser, String dbPassword, String dbHost, String dbPort)
-            throws FileNotFoundException, IOException, DatabaseDriverException,
+    public void checkDatabaseConnection(String databaseTemplate, String dbName, String dbUser, String dbPassword,
+            String dbHost, String dbPort) throws FileNotFoundException, IOException, DatabaseDriverException,
             SQLException {
-        File databaseTemplateDir = new File(nuxeoHome, TEMPLATES
-                + File.separator + databaseTemplate);
-        Properties templateProperties = loadTrimmedProperties(new File(
-                databaseTemplateDir, NUXEO_DEFAULT_CONF));
+        File databaseTemplateDir = new File(nuxeoHome, TEMPLATES + File.separator + databaseTemplate);
+        Properties templateProperties = loadTrimmedProperties(new File(databaseTemplateDir, NUXEO_DEFAULT_CONF));
         String classname, connectionUrl;
-        if (userConfig.getProperty(PARAM_TEMPLATE_DBNAME).equals(
-                databaseTemplateDir)) {
+        if (userConfig.getProperty(PARAM_TEMPLATE_DBNAME).equals(databaseTemplateDir)) {
             // userConfig already includes databaseTemplate
             classname = userConfig.getProperty(PARAM_DB_DRIVER);
             connectionUrl = userConfig.getProperty(PARAM_DB_JDBC_URL);
@@ -1647,8 +1642,7 @@ public class ConfigurationGenerator {
             }
         }
         // Load driver class from template or default lib directory
-        Driver driver = lookupDriver(databaseTemplate, databaseTemplateDir,
-                classname);
+        Driver driver = lookupDriver(databaseTemplate, databaseTemplateDir, classname);
         // Test db connection
         DriverManager.registerDriver(driver);
         Properties ttProps = new Properties(userConfig);
@@ -1668,9 +1662,8 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Build an {@link URLClassLoader} for the given databaseTemplate looking
-     * in the templates directory and in the server lib directory, then looks
-     * for a driver
+     * Build an {@link URLClassLoader} for the given databaseTemplate looking in the templates directory and in the
+     * server lib directory, then looks for a driver
      *
      * @param databaseTemplate
      * @param databaseTemplateDir
@@ -1678,12 +1671,10 @@ public class ConfigurationGenerator {
      * @return Driver driver if found, else an Exception must have been raised.
      * @throws IOException
      * @throws FileNotFoundException
-     * @throws DatabaseDriverException If there was an error when trying to
-     *             instantiate the driver.
+     * @throws DatabaseDriverException If there was an error when trying to instantiate the driver.
      * @since 5.6
      */
-    private Driver lookupDriver(String databaseTemplate,
-            File databaseTemplateDir, String classname)
+    private Driver lookupDriver(String databaseTemplate, File databaseTemplateDir, String classname)
             throws FileNotFoundException, IOException, DatabaseDriverException {
         File[] files = (File[]) ArrayUtils.addAll( //
                 new File(databaseTemplateDir, "lib").listFiles(), //
@@ -1693,8 +1684,7 @@ public class ConfigurationGenerator {
             for (File file : files) {
                 if (file.getName().endsWith("jar")) {
                     try {
-                        urlsList.add(new URL("jar:file:" + file.getPath()
-                                + "!/"));
+                        urlsList.add(new URL("jar:file:" + file.getPath() + "!/"));
                         log.debug("Added " + file.getPath());
                     } catch (MalformedURLException e) {
                         log.error(e);
@@ -1720,22 +1710,17 @@ public class ConfigurationGenerator {
      */
     public Environment getEnv() {
         /*
-         * It could be useful to initialize DEFAULT env in {@link
-         * #setBasicConfiguration()}... For now, the generated {@link
-         * Environment} is not static.
+         * It could be useful to initialize DEFAULT env in {@link #setBasicConfiguration()}... For now, the generated
+         * {@link Environment} is not static.
          */
         if (env == null) {
             env = new Environment(getRuntimeHome());
             env.init();
             env.setServerHome(getNuxeoHome());
-            env.setData(new File(
-                    userConfig.getProperty(Environment.NUXEO_DATA_DIR)));
-            env.setLog(new File(
-                    userConfig.getProperty(Environment.NUXEO_LOG_DIR)));
-            env.setTemp(new File(
-                    userConfig.getProperty(Environment.NUXEO_TMP_DIR)));
-            File distribFile = new File(new File(nuxeoHome, TEMPLATES),
-                    "common/config/distribution.properties");
+            env.setData(new File(userConfig.getProperty(Environment.NUXEO_DATA_DIR)));
+            env.setLog(new File(userConfig.getProperty(Environment.NUXEO_LOG_DIR)));
+            env.setTemp(new File(userConfig.getProperty(Environment.NUXEO_TMP_DIR)));
+            File distribFile = new File(new File(nuxeoHome, TEMPLATES), "common/config/distribution.properties");
             if (distribFile.exists()) {
                 try {
                     env.loadProperties(loadTrimmedProperties(distribFile));
@@ -1746,24 +1731,19 @@ public class ConfigurationGenerator {
                 }
             }
             env.loadProperties(userConfig);
-            env.setProperty(PARAM_MP_DIR,
-                    getDistributionMPDir().getAbsolutePath());
-            env.setProperty(Environment.NUXEO_MP_DIR,
-                    getPackagesDir().getAbsolutePath());
+            env.setProperty(PARAM_MP_DIR, getDistributionMPDir().getAbsolutePath());
+            env.setProperty(Environment.NUXEO_MP_DIR, getPackagesDir().getAbsolutePath());
         }
         return env;
     }
 
     /**
      * @since 5.6
-     * @param props Properties object to be filled
      * @param propsFile Properties file
-     * @return new Properties containing trimmed keys and values read in
-     *         {@code propsFile}
+     * @return new Properties containing trimmed keys and values read in {@code propsFile}
      * @throws IOException
      */
-    public static Properties loadTrimmedProperties(File propsFile)
-            throws IOException {
+    public static Properties loadTrimmedProperties(File propsFile) throws IOException {
         Properties props = new Properties();
         FileInputStream propsIS = new FileInputStream(propsFile);
         try {
@@ -1780,8 +1760,7 @@ public class ConfigurationGenerator {
      * @param propsIS Properties InputStream
      * @throws IOException
      */
-    public static void loadTrimmedProperties(Properties props,
-            InputStream propsIS) throws IOException {
+    public static void loadTrimmedProperties(Properties props, InputStream propsIS) throws IOException {
         if (props == null) {
             return;
         }
@@ -1805,53 +1784,75 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Build a {@link Hashtable} which contains environment properties to
-     * instantiate a {@link InitialDirContext}
+     * Build a {@link Hashtable} which contains environment properties to instantiate a {@link InitialDirContext}
      *
      * @since 6.0
      */
-    public Hashtable<Object, Object> getContextEnv(String ldapUrl,
-            String bindDn, String bindPassword, boolean checkAuthentication) {
+    public Hashtable<Object, Object> getContextEnv(String ldapUrl, String bindDn, String bindPassword,
+            boolean checkAuthentication) {
         Hashtable<Object, Object> contextEnv = new Hashtable<>();
-        contextEnv.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY,
-                "com.sun.jndi.ldap.LdapCtxFactory");
+        contextEnv.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         contextEnv.put("com.sun.jndi.ldap.connect.timeout", "10000");
         contextEnv.put(javax.naming.Context.PROVIDER_URL, ldapUrl);
         if (checkAuthentication) {
-            contextEnv.put(javax.naming.Context.SECURITY_AUTHENTICATION,
-                    "simple");
+            contextEnv.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");
             contextEnv.put(javax.naming.Context.SECURITY_PRINCIPAL, bindDn);
-            contextEnv.put(javax.naming.Context.SECURITY_CREDENTIALS,
-                    bindPassword);
+            contextEnv.put(javax.naming.Context.SECURITY_CREDENTIALS, bindPassword);
         }
         return contextEnv;
     }
 
     /**
-     * Check if the LDAP parameters are correct to bind to a LDAP server. if
-     * authenticate argument is true, it will also check if the authentication
-     * against the LDAP server succeeds
+     * Check if the LDAP parameters are correct to bind to a LDAP server. if authenticate argument is true, it will also
+     * check if the authentication against the LDAP server succeeds
      *
      * @param ldapUrl
      * @param ldapBindDn
      * @param ldapBindPwd
-     * @param authenticate Indicates if authentication against LDAP should be
-     *            checked.
+     * @param authenticate Indicates if authentication against LDAP should be checked.
      * @since 6.0
      */
-    public void checkLdapConnection(String ldapUrl, String ldapBindDn,
-            String ldapBindPwd, boolean authenticate) throws NamingException {
-        checkLdapConnection(getContextEnv(ldapUrl, ldapBindDn, ldapBindPwd,
-                authenticate));
+    public void checkLdapConnection(String ldapUrl, String ldapBindDn, String ldapBindPwd, boolean authenticate)
+            throws NamingException {
+        checkLdapConnection(getContextEnv(ldapUrl, ldapBindDn, ldapBindPwd, authenticate));
     }
 
     /**
-     * @oaram env Environment properties to build a {@link InitialDirContext}
+     * @param contextEnv Environment properties to build a {@link InitialDirContext}
      * @since 6.0
      */
-    public void checkLdapConnection(Hashtable<Object, Object> contextEnv)
-            throws NamingException {
+    public void checkLdapConnection(Hashtable<Object, Object> contextEnv) throws NamingException {
         DirContext dirContext = new InitialDirContext(contextEnv);
         dirContext.close();
     }
+
+    /**
+     * @return a {@link Crypto} instance initialized with the configuration parameters
+     * @since 7.4
+     * @see Crypto
+     */
+    public Crypto getCrypto() {
+        return userConfig.getCrypto();
+    }
+
+    /**
+     * @param template path to configuration template directory
+     * @return A {@code nuxeo.defaults} file if it exists.
+     * @throws ConfigurationException if the template file is not found.
+     * @since 7.4
+     */
+    public File getTemplateConf(String template) throws ConfigurationException {
+        File templateDir = new File(template);
+        if (!templateDir.isAbsolute()) {
+            templateDir = new File(System.getProperty("user.dir"), template);
+            if (!templateDir.exists() || !new File(templateDir, NUXEO_DEFAULT_CONF).exists()) {
+                templateDir = new File(nuxeoDefaultConf.getParentFile(), template);
+            }
+        }
+        if (!templateDir.exists() || !new File(templateDir, NUXEO_DEFAULT_CONF).exists()) {
+            throw new ConfigurationException("Template not found: " + template);
+        }
+        return new File(templateDir, NUXEO_DEFAULT_CONF);
+    }
+
 }

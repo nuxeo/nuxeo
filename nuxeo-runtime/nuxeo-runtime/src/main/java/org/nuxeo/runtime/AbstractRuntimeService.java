@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.runtime;
@@ -22,12 +21,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.api.Framework;
@@ -37,21 +37,21 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
+
 import org.osgi.framework.Bundle;
 
 /**
  * Abstract implementation of the Runtime Service.
  * <p>
- * Implementors are encouraged to extend this class instead of directly
- * implementing the {@link RuntimeService} interface.
+ * Implementors are encouraged to extend this class instead of directly implementing the {@link RuntimeService}
+ * interface.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class AbstractRuntimeService implements RuntimeService {
 
     /**
-     * Property that controls whether or not to redirect JUL to JCL. By default
-     * is true (JUL will be redirected)
+     * Property that controls whether or not to redirect JUL to JCL. By default is true (JUL will be redirected)
      */
     public static final String REDIRECT_JUL = "org.nuxeo.runtime.redirectJUL";
 
@@ -65,7 +65,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     protected File workingDir;
 
-    protected Properties properties = new Properties();
+    protected CryptoProperties properties = new CryptoProperties(System.getProperties());
 
     protected ComponentManager manager;
 
@@ -81,8 +81,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     // during the startup
     protected final List<String> warnings = new ArrayList<String>();
 
-    protected AbstractRuntimeService(DefaultRuntimeContext context,
-            Map<String, String> properties) {
+    protected AbstractRuntimeService(DefaultRuntimeContext context, Map<String, String> properties) {
         this.context = context;
         context.setRuntime(this);
         if (properties != null) {
@@ -106,29 +105,24 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     protected static URL getBuiltinFeatureURL() {
-        return Thread.currentThread().getContextClassLoader().getResource(
-                "org/nuxeo/runtime/nx-feature.xml");
+        return Thread.currentThread().getContextClassLoader().getResource("org/nuxeo/runtime/nx-feature.xml");
     }
 
     @Override
     public synchronized void start() throws Exception {
         if (!isStarted) {
             if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "false"))) {
-                Level threshold = Level.parse(getProperty(
-                        REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
+                Level threshold = Level.parse(getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
                 JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
             }
-            log.info("Starting Nuxeo Runtime service " + getName()
-                    + "; version: " + getVersion());
+            log.info("Starting Nuxeo Runtime service " + getName() + "; version: " + getVersion());
             // NXRuntime.setInstance(this);
             manager = createComponentManager();
-            Framework.sendEvent(new RuntimeServiceEvent(
-                    RuntimeServiceEvent.RUNTIME_ABOUT_TO_START, this));
+            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_START, this));
             doStart();
             startExtensions();
             isStarted = true;
-            Framework.sendEvent(new RuntimeServiceEvent(
-                    RuntimeServiceEvent.RUNTIME_STARTED, this));
+            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STARTED, this));
         }
     }
 
@@ -139,18 +133,15 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
         isShuttingDown = true;
         try {
-            log.info("Stopping Nuxeo Runtime service " + getName()
-                    + "; version: " + getVersion());
-            Framework.sendEvent(new RuntimeServiceEvent(
-                    RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
+            log.info("Stopping Nuxeo Runtime service " + getName() + "; version: " + getVersion());
+            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
             try {
                 stopExtensions();
                 doStop();
                 manager.shutdown();
             } finally {
                 isStarted = false;
-                Framework.sendEvent(new RuntimeServiceEvent(
-                        RuntimeServiceEvent.RUNTIME_STOPPED, this));
+                Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STOPPED, this));
                 manager = null;
             }
             JavaUtilLoggingHelper.reset();
@@ -190,7 +181,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     @Override
-    public Properties getProperties() {
+    public CryptoProperties getProperties() {
         // do not unreference properties: some methods rely on this to set
         // variables here...
         return properties;
@@ -203,26 +194,23 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     @Override
     public String getProperty(String name, String defValue) {
-        Properties props = new Properties(System.getProperties());
-        props.putAll(properties);
-        String value = props.getProperty(name, defValue);
-        if (value != null && value.startsWith("$")
-                && value.equals("${" + name + "}")) {
+        String value = properties.getProperty(name, defValue);
+        if (value == null || ("${" + name + "}").equals(value)) {
             // avoid loop, don't expand
             return value;
         }
         return expandVars(value);
     }
 
+    @Override
     public void setProperty(String name, Object value) {
-        properties.put(name, value.toString());
+        properties.setProperty(name, value.toString());
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        return sb.append(getName()).append(" version ").append(
-                getVersion().toString()).toString();
+        return sb.append(getName()).append(" version ").append(getVersion().toString()).toString();
     }
 
     @Override
@@ -284,9 +272,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     @Override
     public String expandVars(String expression) {
-        Properties props = new Properties(System.getProperties());
-        props.putAll(properties);
-        return new TextTemplate(props).process(expression);
+        return new TextTemplate(properties).processText(expression);
     }
 
     @Override
@@ -315,13 +301,11 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         }
         Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
         Collection<ComponentName> activatingRegistrations = manager.getActivatingRegistrations();
-        msg.append(hr).append("\n= Component Loading Status: Pending: ").append(
-                pendingRegistrations.size()).append(" / Unstarted: ").append(
-                activatingRegistrations.size()).append(" / Total: ").append(
+        msg.append(hr).append("\n= Component Loading Status: Pending: ").append(pendingRegistrations.size()).append(
+                " / Unstarted: ").append(activatingRegistrations.size()).append(" / Total: ").append(
                 manager.getRegistrations().size()).append('\n');
         for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
-            msg.append("  * ").append(e.getKey()).append(" requires ").append(
-                    e.getValue()).append('\n');
+            msg.append("  * ").append(e.getKey()).append(" requires ").append(e.getValue()).append('\n');
         }
         for (ComponentName componentName : activatingRegistrations) {
             msg.append("  - ").append(componentName).append('\n');
