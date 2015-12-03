@@ -37,15 +37,27 @@ class Operation {
   }
 
   enrich(objectType, ...enrichers) {
-    this.headers[`enrichers.${objectType}`] = enrichers.join(',');
+    // NXP-18425: use both headers to support both nginx (which requires hyphen)
+    // and NXP-7.10 with no HF (no hyphen support -> no nginx support)
+    var enrichingHeader = enrichers.join(',');
+    this.headers[`enrichers.${objectType}`] = enrichingHeader;
+    this.headers[`enrichers-${objectType}`] = enrichingHeader;
   }
 
   fetch(objectType, ...parts) {
-    this.headers[`fetch.${objectType}`] = parts.join(',');
+    // NXP-18425: use both headers to support both nginx (which requires hyphen)
+    // and NXP-7.10 with no HF (no hyphen support -> no nginx support)
+    var fetchingHeader = parts.join(',');
+    this.headers[`fetch.${objectType}`] = fetchingHeader;
+    this.headers[`fetch-${objectType}`] = fetchingHeader;
   }
 
   translate(objectType, ...elements) {
-    this.headers[`translate.${objectType}`] = elements.join(',');
+    // NXP-18425: use both headers to support both nginx (which requires hyphen)
+    // and NXP-7.10 with no HF (no hyphen support -> no nginx support)
+    var translationHeader = elements.join(',');
+    this.headers[`translate.${objectType}`] = translationHeader;
+    this.headers[`translate-${objectType}`] = translationHeader;
   }
 
   execute() {
