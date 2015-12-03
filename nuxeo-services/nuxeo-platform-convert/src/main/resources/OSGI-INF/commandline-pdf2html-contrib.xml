@@ -7,8 +7,8 @@
 
     <command name="pdftohtml" enabled="true">
       <commandLine>pdftohtml</commandLine>
-      <parameterString> -c -enc UTF-8 -noframes #{inFilePath} #{outDirPath}/index.html</parameterString>
-      <winParameterString> -c -enc UTF-8 -noframes #{inFilePath} #{outDirPath}\index.html</winParameterString>
+      <parameterString> -c -nodrm -enc UTF-8 -noframes #{inFilePath} #{outDirPath}/index.html</parameterString>
+      <winParameterString> -c -nodrm -enc UTF-8 -noframes #{inFilePath} #{outDirPath}\index.html</winParameterString>
       <installationDirective>You need to install pdftohtml</installationDirective>
     </command>
 
