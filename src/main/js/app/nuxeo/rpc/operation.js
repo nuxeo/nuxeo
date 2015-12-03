@@ -37,15 +37,15 @@ class Operation {
   }
 
   enrich(objectType, ...enrichers) {
-    this.headers[`enrichers.${objectType}`] = enrichers.join(',');
+    this.headers[`enrichers-${objectType}`] = enrichers.join(',');
   }
 
   fetch(objectType, ...parts) {
-    this.headers[`fetch.${objectType}`] = parts.join(',');
+    this.headers[`fetch-${objectType}`] = parts.join(',');
   }
 
   translate(objectType, ...elements) {
-    this.headers[`translate.${objectType}`] = elements.join(',');
+    this.headers[`translate-${objectType}`] = elements.join(',');
   }
 
   execute() {
