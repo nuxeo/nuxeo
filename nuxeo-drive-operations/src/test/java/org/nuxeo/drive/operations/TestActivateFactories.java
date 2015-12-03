@@ -42,7 +42,7 @@ import org.nuxeo.runtime.test.runner.Jetty;
  */
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.runtime.reload", "org.nuxeo.ecm.core.cache" })
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.ecm.core.cache" })
 @Jetty(port = 18080)
 public class TestActivateFactories {
 

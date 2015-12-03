@@ -240,12 +240,12 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
         return null;
     }
 
-    /*--------------------------- Protected ---------------------------------------*/
-    protected void setActiveFactories() {
+    public void setActiveFactories() {
         topLevelFolderItemFactory = topLevelFolderItemFactoryRegistry.getActiveFactory(activeTopLevelFolderItemFactoryRegistry.activeFactory);
         fileSystemItemFactories = fileSystemItemFactoryRegistry.getOrderedActiveFactories(activeFileSystemItemFactoryRegistry.activeFactories);
     }
 
+    /*--------------------------- Protected ---------------------------------------*/
     /**
      * Tries to adapt the given document as the top level {@link FolderItem}. If it doesn't match, iterates on the
      * ordered contributed file system item factories until it finds one that matches and retrieves a non null
