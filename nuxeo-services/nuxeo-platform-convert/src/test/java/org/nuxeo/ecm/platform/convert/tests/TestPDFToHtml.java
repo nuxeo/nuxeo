@@ -107,6 +107,15 @@ public class TestPDFToHtml extends NXRuntimeTestCase {
 
         String htmlContent = mainBlob.getString();
         assertTrue(htmlContent.contains("Hello"));
+        
+        pdfBH = getBlobFromPath("test-docs/test-copy-text-restricted.pdf");
+
+        result = cs.convert(converterName, pdfBH, null);
+        assertNotNull(result);
+        
+        blobs = result.getBlobs();
+        assertNotNull(blobs);
+        assertEquals(10, blobs.size());
     }
 
 }
