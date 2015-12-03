@@ -19,10 +19,10 @@
 
 package org.nuxeo.ecm.platform.audit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
+import java.io.Serializable;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,12 +39,14 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -229,6 +231,24 @@ public class TestNXAuditEventsService {
         assertEquals("Root", entry.getDocType());
         assertEquals("documentCreated", entry.getEventId());
         assertEquals(SecurityConstants.SYSTEM_USERNAME, entry.getPrincipalName());
+
+    }
+
+    @Test
+    public void simplePincipalNameIsLoggedAsPrincipalName() throws Exception {
+        // Given a simple principal
+        Principal principal = new SimplePrincipal("testuser");
+
+        // When i fire an event with it
+        EventContext ctx = new UnboundEventContext(principal, new HashMap<String, Serializable>());
+        EventService es = Framework.getService(EventService.class);
+        es.fireEvent(ctx.newEvent("loginSuccess"));
+        es.waitForAsyncCompletion();
+
+        // Then then event is logged with the principal's name
+        assertEquals(1, serviceUnderTest.getEventsCount("loginSuccess").intValue());
+        LogEntry logEntry = serviceUnderTest.nativeQueryLogs("log.eventId ='loginSuccess'", 1, 1).get(0);
+        assertEquals("testuser", logEntry.getPrincipalName());
 
     }
 

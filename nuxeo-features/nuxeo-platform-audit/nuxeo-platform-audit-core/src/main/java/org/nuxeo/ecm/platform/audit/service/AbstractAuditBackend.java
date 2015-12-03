@@ -221,6 +221,8 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
 
+
+
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel document = docCtx.getSourceDocument();
@@ -249,6 +251,8 @@ public abstract class AbstractAuditBackend implements AuditBackend {
                 String principalName = null;
                 if (principal instanceof NuxeoPrincipal) {
                     principalName = ((NuxeoPrincipal) principal).getActingUser();
+                } else {
+                    principalName = principal.getName();
                 }
                 entry.setPrincipalName(principalName);
             } else {
@@ -283,9 +287,11 @@ public abstract class AbstractAuditBackend implements AuditBackend {
             Map<String, Serializable> properties = ctx.getProperties();
 
             if (principal != null) {
-                String principalName = null;
+                String principalName;
                 if (principal instanceof NuxeoPrincipal) {
                     principalName = ((NuxeoPrincipal) principal).getActingUser();
+                } else {
+                    principalName = principal.getName();
                 }
                 entry.setPrincipalName(principalName);
             }
