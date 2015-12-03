@@ -21,11 +21,12 @@ import io.gatling.core.Predef._
 import io.gatling.core.config.GatlingFiles
 import io.gatling.http.Predef._
 
+import scala.concurrent.duration.Duration
 import scala.io.Source
 
 object ScnSetup {
 
-  def get = (userCount: Integer) => {
+  def get = (userCount: Integer, pause: Duration) => {
     scenario("Setup").exec(
       feed(Feeders.admins)
         .exec(NuxeoRest.createGroupIfNotExists(Constants.GAT_GROUP_NAME))
@@ -34,7 +35,7 @@ object ScnSetup {
         .exec(NuxeoRest.createDocumentIfNotExistsAsAdmin(Constants.GAT_WS_PATH, Constants.GAT_FOLDER_NAME, "Folder"))
         .repeat(userCount.intValue(), "count") {
         feed(Feeders.usersCircular)
-          .exec(NuxeoRest.createUserIfNotExists(Constants.GAT_GROUP_NAME))
+          .exec(NuxeoRest.createUserIfNotExists(Constants.GAT_GROUP_NAME)).pause(pause)
         //.exec(Actions.createDocumentIfNotExists(Constants.GAT_WS_PATH, Constants.GAT_USER_FOLDER_NAME, "Folder"))
       }
     )
@@ -49,6 +50,6 @@ class Sim00Setup extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
-  val scn = ScnSetup.get(userCount)
-  setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
+  val scn = ScnSetup.get(userCount, Parameters.getPause())
+  setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol).exponentialPauses
 }
