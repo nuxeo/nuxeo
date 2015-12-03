@@ -211,6 +211,9 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
     }
 
     protected void putLengthInCache(String digest, Long len) throws IOException {
+        if (len == null) {
+            return;
+        }
         // write decimal length in file
         OutputStream out = null;
         try {
