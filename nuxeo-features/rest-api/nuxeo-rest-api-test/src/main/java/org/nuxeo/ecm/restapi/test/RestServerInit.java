@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
+import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -61,6 +62,10 @@ public class RestServerInit implements RepositoryInit {
 
     @Override
     public void populate(CoreSession session) {
+        JsonFactoryManager jsonFactoryManager = Framework.getLocalService(JsonFactoryManager.class);
+        if (!jsonFactoryManager.isStackDisplay()) {
+            jsonFactoryManager.toggleStackDisplay();
+        }
         // try to prevent NXP-15404
         // clearRepositoryCaches(session.getRepositoryName());
         // Create some docs
