@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
@@ -126,7 +127,9 @@ public class TemplateInitListener implements EventListener {
                                 // check if source template is visible
                                 if (docCtx.getCoreSession().exists(templateRef)) {
                                     DocumentModel sourceTemplateDoc = docCtx.getCoreSession().getDocument(templateRef);
-                                    tps.makeTemplateBasedDocument(targetDoc, sourceTemplateDoc, false);
+                                    if (!LifeCycleConstants.DELETED_STATE.equals(sourceTemplateDoc.getCurrentLifeCycleState())) {
+                                    	tps.makeTemplateBasedDocument(targetDoc, sourceTemplateDoc, false);
+                                    }
                                 }
                             }
                         }
