@@ -38,6 +38,7 @@ import org.nuxeo.functionaltests.pages.wizard.WizardPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+@Ignore("NXP-18551 and NXP-15177")
 public class ITWizardAndUpdateCenterTests extends AbstractTest {
 
     private static final String MARKETPLACE_PACKAGE_ID = "audit-web-access-1.2.1";
