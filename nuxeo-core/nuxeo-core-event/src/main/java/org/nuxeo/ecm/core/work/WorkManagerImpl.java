@@ -17,6 +17,28 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.event.EventServiceComponent;
+import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.Work.State;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
+import org.nuxeo.ecm.core.work.api.WorkQueuingImplDescriptor;
+import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
+import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,29 +63,6 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.event.EventServiceComponent;
-import org.nuxeo.ecm.core.work.api.Work;
-import org.nuxeo.ecm.core.work.api.Work.State;
-import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
-import org.nuxeo.ecm.core.work.api.WorkQueuingImplDescriptor;
-import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.metrics.MetricsService;
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
 
 /**
  * The implementation of a {@link WorkManager}. This delegates the queuing implementation to a {@link WorkQueuing}
@@ -562,7 +561,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         protected final Timer workTimer;
 
         protected WorkThreadPoolExecutor(String queueId, int corePoolSize, int maximumPoolSize, long keepAliveTime,
-                TimeUnit unit, ThreadFactory threadFactory) {
+                                         TimeUnit unit, ThreadFactory threadFactory) {
             super(corePoolSize, maximumPoolSize, keepAliveTime, unit, queuing.initScheduleQueue(queueId), threadFactory);
             this.queueId = queueId;
             completionSynchronizer = new WorkCompletionSynchronizer(queueId);
@@ -759,34 +758,34 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             log.debug("Scheduling work: " + work + " using queue: " + queueId);
         }
         switch (scheduling) {
-        case ENQUEUE:
-            break;
-        case CANCEL_SCHEDULED:
-            Work w = getExecutor(queueId).removeScheduled(workId);
-            if (w != null) {
-                w.setWorkInstanceState(State.CANCELED);
-                if (log.isDebugEnabled()) {
-                    log.debug("Canceling existing scheduled work before scheduling ("
-                            + completionSynchronizer.scheduledOrRunning.get() + ")");
+            case ENQUEUE:
+                break;
+            case CANCEL_SCHEDULED:
+                Work w = getExecutor(queueId).removeScheduled(workId);
+                if (w != null) {
+                    w.setWorkInstanceState(State.CANCELED);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Canceling existing scheduled work before scheduling ("
+                                + completionSynchronizer.scheduledOrRunning.get() + ")");
+                    }
                 }
-            }
-            break;
-        case IF_NOT_SCHEDULED:
-        case IF_NOT_RUNNING:
-        case IF_NOT_RUNNING_OR_SCHEDULED:
-            // TODO disabled for now because hasWorkInState uses isScheduled
-            // which is buggy
-            boolean disabled = Boolean.TRUE.booleanValue();
-            if (!disabled && hasWorkInState(workId, scheduling.state)) {
-                // mark passed work as canceled
-                work.setWorkInstanceState(State.CANCELED);
-                if (log.isDebugEnabled()) {
-                    log.debug("Canceling schedule because found: " + scheduling);
-                }
-                return;
+                break;
+            case IF_NOT_SCHEDULED:
+            case IF_NOT_RUNNING:
+            case IF_NOT_RUNNING_OR_SCHEDULED:
+                // TODO disabled for now because hasWorkInState uses isScheduled
+                // which is buggy
+                boolean disabled = Boolean.TRUE.booleanValue();
+                if (!disabled && hasWorkInState(workId, scheduling.state)) {
+                    // mark passed work as canceled
+                    work.setWorkInstanceState(State.CANCELED);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Canceling schedule because found: " + scheduling);
+                    }
+                    return;
 
-            }
-            break;
+                }
+                break;
 
         }
         getExecutor(queueId).execute(work);
