@@ -52,12 +52,15 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//img[@alt=\"Add to Favorites\"]")
     public WebElement favoritesButton;
 
+    public String xmlExportTitle = "XML Export";
+
     public ContextualActions(WebDriver driver) {
         super(driver);
     }
 
-    public void clickOnButton(WebElement button) {
+    public ContextualActions clickOnButton(WebElement button) {
         button.click();
+        return asPage(ContextualActions.class);
     }
 
     /**
@@ -65,7 +68,7 @@ public class ContextualActions extends AbstractPage {
      *
      * @since 8.1
      */
-    public void openMore() {
+    public ContextualActions openMore() {
         String xpath = "//div[@id=\"nxw_documentActionsUpperButtons_panel\"]/div/ul/li";
         driver.findElement(By.xpath(xpath)).click();
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
@@ -74,6 +77,7 @@ public class ContextualActions extends AbstractPage {
                 return driver.findElement(By.xpath(xpath + "/ul")).isDisplayed();
             }
         }, StaleElementReferenceException.class);
+        return asPage(ContextualActions.class);
     }
 
     /**
@@ -81,11 +85,12 @@ public class ContextualActions extends AbstractPage {
      *
      * @since 8.1
      */
-    public void closeFancyPermalinBox() {
+    public ContextualActions closeFancyPermalinBox() {
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
         driver.findElement(By.id("fancybox-close")).click();
         arm.end();
+        return asPage(ContextualActions.class);
     }
 
 }

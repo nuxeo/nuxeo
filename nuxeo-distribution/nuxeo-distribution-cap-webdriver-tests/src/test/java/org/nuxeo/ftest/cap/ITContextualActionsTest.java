@@ -15,15 +15,12 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.apache.commons.logging.LogFactory.getLog;
-
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.NavigationSubPage;
@@ -31,21 +28,11 @@ import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
-
-import com.google.common.base.Function;
 
 /**
  * Tests the contextual menu actions
  */
 public class ITContextualActionsTest extends AbstractTest {
-
-    private static final Log log = getLog(ITContextualActionsTest.class);
 
     public final static String WORKSPACE_ROOT = "Workspaces";
 
@@ -94,58 +81,30 @@ public class ITContextualActionsTest extends AbstractTest {
         ContextualActions actions = filePage.getContextualActions();
 
         // Test favorites action
-        actions.clickOnButton(actions.favoritesButton);
-        actions = filePage.getContextualActions();
+        actions = actions.clickOnButton(actions.favoritesButton);
 
         // Test lock action
-        actions.clickOnButton(actions.lockButton);
-        actions = filePage.getContextualActions();
-        states = filePage.getCurrentStates();
+        actions = actions.clickOnButton(actions.lockButton);
+        states = asPage(FileDocumentBasePage.class).getCurrentStates();
         Assert.assertTrue(states.contains(DOCUMENT_LOCKED));
 
         // Test permalink action
-        actions.clickOnButton(actions.permaButton);
-        actions = filePage.getContextualActions();
+        actions = actions.clickOnButton(actions.permaButton);
         // wait for element to be shown to close it, otherwise DOM may not be
         // updated yet
-        actions.findElementWithTimeout(By.className(actions.permaBoxFocusName), 20 * 1000);
-        actions.closeFancyPermalinBox();
-        actions = filePage.getContextualActions();
+        Locator.findElementWithTimeout(By.className(actions.permaBoxFocusName), 20 * 1000);
+        actions = asPage(ContextualActions.class).closeFancyPermalinBox();
 
         // Test follow action
-        actions.openMore();
-        actions = filePage.getContextualActions();
-        actions.clickOnButton(actions.followButton);
-        actions = filePage.getContextualActions();
+        actions = actions.openMore().clickOnButton(actions.followButton);
 
-        // Test Add to Worklist action
-        actions.openMore();
-        actions = filePage.getContextualActions();
-        actions.clickOnButton(actions.addToWorklistButton);
-        actions = filePage.getContextualActions();
+        // Test  More button & Add to Worklist action
+        actions = actions.openMore().clickOnButton(actions.addToWorklistButton);
         // Test More button & Export
-        actions.openMore();
-        actions = filePage.getContextualActions();
-        actions.clickOnButton(actions.exportButton);
-        actions = filePage.getContextualActions();
-        waitForExportPopup();
+        actions = actions.openMore().clickOnButton(actions.exportButton);
+        Locator.findElementWithTimeout(By.linkText(actions.xmlExportTitle), 20 * 1000);
 
         logout();
     }
 
-    private void waitForExportPopup() {
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(5, TimeUnit.SECONDS)
-                                                                .pollingEvery(100, TimeUnit.MILLISECONDS)
-                                                                .ignoring(NoSuchElementException.class);
-        try {
-            wait.until(new Function<WebDriver, WebElement>() {
-                @Override
-                public WebElement apply(WebDriver driver) {
-                    return driver.findElement(By.linkText("XML Export"));
-                }
-            });
-        } catch (TimeoutException e) {
-            log.warn("Could not see Export popup.");
-        }
-    }
 }
