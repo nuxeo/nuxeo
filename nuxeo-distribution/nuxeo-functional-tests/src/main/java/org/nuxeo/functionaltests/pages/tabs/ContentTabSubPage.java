@@ -18,6 +18,9 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,9 +37,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import com.google.common.base.Function;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents and displaying the current document's
@@ -144,16 +144,16 @@ public class ContentTabSubPage extends DocumentBasePage {
         // get all table item and if the link has the documents title, click
         // (enable) checkbox
 
-        selectDocumentByTitles(documentTitle);
+        selectByTitle(documentTitle);
         findElementWaitUntilEnabledAndClick(By.xpath(ADD_TO_WORKLIST_BUTTON_XPATH));
 
         return asPage(DocumentBasePage.class);
     }
 
     /**
-     * @since 8.1
+     * Removes all documents visible on current page.
      */
-    public ContentTabSubPage removeAllDocuments(boolean recurse) {
+    public ContentTabSubPage removeAllDocuments() {
         ContentTabSubPage page = asPage(ContentTabSubPage.class);
         By locator = By.xpath(SELECT_ALL_BUTTON_XPATH);
         if (!hasElement(locator)) {
@@ -163,19 +163,7 @@ public class ContentTabSubPage extends DocumentBasePage {
         findElementWaitUntilEnabledAndClick(By.xpath(SELECT_ALL_BUTTON_XPATH));
         deleteSelectedDocuments();
 
-        page = asPage(ContentTabSubPage.class);
-
-        try {
-            documentContentForm.findElement(By.tagName("tbody"));
-        } catch (NoSuchElementException e) {
-            // no more document to remove
-            return page;
-        }
-        return recurse ? removeAllDocuments() : page;
-    }
-
-    public ContentTabSubPage removeAllDocuments() {
-        return removeAllDocuments(true);
+        return asPage(ContentTabSubPage.class);
     }
 
     /**

@@ -92,7 +92,7 @@ public class ITCollectionsTest extends AbstractTest {
                     "Workspaces");
         }
         ContentTabSubPage contentTabSubPage = documentBasePage.switchToPersonalWorkspace().getContentTab();
-        contentTabSubPage = contentTabSubPage.removeAllDocuments(false);
+        contentTabSubPage = contentTabSubPage.removeAllDocuments();
         ManageTabSubPage manageTabSubPage = contentTabSubPage.getManageTab();
         manageTabSubPage.getTrashSubTab().purgeAllDocuments();
         logout();
