@@ -1,9 +1,6 @@
 package org.nuxeo.ecm.platform.template.tests;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.List;
@@ -19,6 +16,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -177,6 +175,19 @@ public class TestTemplateSourceTypeBindings {
         // verify that template has NOT been associated
         assertNull(simpleFile2.getAdapter(TemplateBasedDocument.class));
 
+        // restore binding
+        t1.setForcedTypes(new String[] { "File" }, true);
+        assertTrue(t1.getForcedTypes().contains("File"));
+        session.save();
+        waitForAsyncCompletion();
+        // change template's state to 'deleted'
+        session.followTransition(t1.getAdaptedDoc(), LifeCycleConstants.DELETE_TRANSITION);
+        assertEquals(LifeCycleConstants.DELETED_STATE, session.getDocument(t1.getAdaptedDoc().getRef()).getCurrentLifeCycleState());
+        // now create a simple file
+        DocumentModel simpleFile3 = session.createDocumentModel(root.getPathAsString(), "myTestFile3", "File");
+        simpleFile3 = session.createDocument(simpleFile3);
+        // verify that template has NOT been associated
+        assertNull(simpleFile3.getAdapter(TemplateBasedDocument.class));
     }
 
     @Test
