@@ -304,7 +304,10 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             @Override
             public Boolean call() throws Exception {
                 WorkManager wm = Framework.getLocalService(WorkManager.class);
-                wm.awaitCompletion(INDEXING_QUEUE_ID, 300, TimeUnit.SECONDS);
+                boolean completed = false;
+                do {
+                    completed = wm.awaitCompletion(INDEXING_QUEUE_ID, 300, TimeUnit.SECONDS);
+                } while (! completed);
                 return true;
             }
         });
