@@ -16,18 +16,19 @@
  */
 package org.nuxeo.ftest.cap;
 
-import org.junit.Test;
-import org.nuxeo.functionaltests.AbstractTest;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-import org.nuxeo.functionaltests.pages.tabs.TrashSubPage;
-import org.openqa.selenium.WebElement;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.TrashSubPage;
+import org.openqa.selenium.WebElement;
 
 /**
  * Tests for the manage tab.
@@ -36,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class ITManageTest extends AbstractTest {
 
-    protected final static String TEST_FILE_NAME = "test1";
+    protected final static String TEST_FILE_TITLE = "Test File description";
 
     protected final static String WORKSPACE_TITLE = "workspace";
 
@@ -49,34 +50,38 @@ public class ITManageTest extends AbstractTest {
     public void testTrashPurge() throws UserNotConnectedException, IOException {
         DocumentBasePage documentBasePage = login();
 
-        // Create five files under workspace.
+        // Create a file under workspace.
         DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("workspace");
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("workspace");
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("workspace");
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("workspace");
-        createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null, null);
-        workspacePage.getHeaderLinks().getNavigationSubPage().goToDocument("workspace");
-        List<WebElement> docs = workspacePage.getContentTab().getChildDocumentRows();
+        DocumentBasePage filePage = createFile(workspacePage, TEST_FILE_TITLE, null, false, null, null, null);
+
+        // Copy/paste it to get 5 files.
+        ContentTabSubPage content = filePage.getHeaderLinks()
+                                            .getNavigationSubPage()
+                                            .goToDocument(WORKSPACE_TITLE)
+                                            .getContentTab()
+                                            .copyByTitle(TEST_FILE_TITLE)
+                                            .paste()
+                                            .paste()
+                                            .paste()
+                                            .paste();
+
+        List<WebElement> docs = content.getChildDocumentRows();
         assertNotNull(docs);
         assertEquals(docs.size(), 5);
-        // Select every files and remove them.
-        workspacePage.getContentTab().removeAllDocuments();
-        docs = workspacePage.getContentTab().getChildDocumentRows();
+        // Select all files and remove them.
+        content.removeAllDocuments().getChildDocumentRows();
+        docs = content.getChildDocumentRows();
         assertNotNull(docs);
         assertEquals(docs.size(), 0);
+
         // Go to trash page.
-        TrashSubPage trashSubPage = workspacePage.getManageTab().getTrashSubTab();
+        TrashSubPage trashSubPage = asPage(DocumentBasePage.class).getManageTab().getTrashSubTab();
         docs = trashSubPage.getChildDocumentRows();
         assertNotNull(docs);
         assertEquals(docs.size(), 5);
+
         // Empty the trash.
-        trashSubPage.emptyTrash();
-        docs = trashSubPage.getChildDocumentRows();
+        docs = trashSubPage.emptyTrash().getChildDocumentRows();
         assertNotNull(docs);
         assertEquals(docs.size(), 0);
     }
