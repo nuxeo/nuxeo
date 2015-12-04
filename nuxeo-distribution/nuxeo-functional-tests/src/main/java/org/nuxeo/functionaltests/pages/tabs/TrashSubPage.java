@@ -18,16 +18,15 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-import java.util.List;
 
 /**
  * @since 5.9.3
@@ -64,23 +63,21 @@ public class TrashSubPage extends AbstractPage {
         return page;
     }
 
+    /**
+     * Removes all documents visible on current page.
+     */
     public TrashSubPage purgeAllDocuments() {
         TrashSubPage page = asPage(TrashSubPage.class);
         By locator = By.id(SELECT_ALL_BUTTON_ID);
         if (!hasElement(locator)) {
-            // no document to remove
+            // no documents to remove
             return page;
         }
         findElementWaitUntilEnabledAndClick(By.id(SELECT_ALL_BUTTON_ID));
+
         deleteSelectedDocuments();
 
-        try {
-            documentContentForm.findElement(By.tagName("tbody"));
-        } catch (NoSuchElementException e) {
-            // no more document to remove
-            return page;
-        }
-        return purgeAllDocuments();
+        return asPage(TrashSubPage.class);
     }
 
     protected void deleteSelectedDocuments() {
