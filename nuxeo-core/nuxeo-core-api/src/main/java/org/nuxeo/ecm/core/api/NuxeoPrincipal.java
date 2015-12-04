@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.api;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Class to represent a principal in Nuxeo. This class holds the list of roles and groups for this principal.
@@ -28,6 +29,16 @@ import java.util.List;
 public interface NuxeoPrincipal extends Principal, Serializable {
 
     String PREFIX = "user:";
+
+    /**
+     * @since 8.1
+     */
+    String TRANSIENT_USER_PREFIX = "transient/";
+
+    /**
+     * @since 8.1
+     */
+    String TRANSIENT_USER_FORMAT = TRANSIENT_USER_PREFIX + "%s/%s";
 
     /**
      * Gets the first name of this principal.
@@ -178,5 +189,35 @@ public interface NuxeoPrincipal extends Principal, Serializable {
      * @since 6.0
      */
     String getActingUser();
+
+    /**
+     * Returns true if the principal is a transient principal.
+     *
+     * @since 8.1
+     */
+    boolean isTransient();
+
+    /**
+     * Returns true if the given @{code username} is a transient username.
+     *
+     * @since 8.1
+     */
+    static boolean isTransientUsername(String username) {
+        return username != null && username.startsWith(TRANSIENT_USER_PREFIX);
+    }
+
+    /**
+     * Computes a unique transient username from the given {@code baseUsername}.
+     *
+     * @since 8.1
+     */
+    static String computeTransientUsername(String baseUsername) {
+        if (baseUsername != null && !baseUsername.startsWith(TRANSIENT_USER_PREFIX)) {
+            String uuid = UUID.randomUUID().toString();
+            uuid = uuid.replaceAll("-", "").substring(0, 16);
+            return String.format(TRANSIENT_USER_FORMAT, baseUsername, uuid);
+        }
+        return baseUsername;
+    }
 
 }

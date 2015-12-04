@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.core.security;
 
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.CHANGED_ACL_NAME;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.DOCUMENT_REFS;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ACE_STATUS_UPDATED;
@@ -26,13 +27,17 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ACE_STATUS_UPDATED
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -55,7 +60,10 @@ public class UpdateACEStatusWork extends AbstractWork {
 
     public static final String CATEGORY = "updateACEStatus";
 
-    public static final String QUERY = "SELECT ecm:uuid FROM Document WHERE (ecm:acl/*1/status = 0 AND ecm:acl/*1/begin <= TIMESTAMP '%s') OR (ecm:acl/*1/status = 1 AND ecm:acl/*1/end <= TIMESTAMP '%s')";
+    public static final String QUERY = "SELECT ecm:uuid, ecm:acl/*1/principal, ecm:acl/*1/permission,"
+            + " ecm:acl/*1/grant, ecm:acl/*1/creator, ecm:acl/*1/begin, ecm:acl/*1/end, ecm:acl/*1/name FROM Document"
+            + " WHERE (ecm:acl/*1/status = 0 AND ecm:acl/*1/begin <= TIMESTAMP '%s')"
+            + " OR (ecm:acl/*1/status = 1 AND ecm:acl/*1/end <= TIMESTAMP '%s')";
 
     public static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -75,29 +83,53 @@ public class UpdateACEStatusWork extends AbstractWork {
 
         IterableQueryResult result = session.queryAndFetch(String.format(QUERY, formattedDate, formattedDate),
                 NXQL.NXQL);
-        List<String> docIds = new ArrayList<>();
+        Map<String, List<ACE>> docIdsToACEs = new HashMap<>();
         try {
             for (Map<String, Serializable> map : result) {
-                docIds.add((String) map.get("ecm:uuid"));
+                String docId = (String) map.get("ecm:uuid");
+                List<ACE> aces = docIdsToACEs.get(docId);
+                if (aces == null) {
+                    aces = new ArrayList<>();
+                    docIdsToACEs.put(docId, aces);
+                }
+
+                String username = (String) map.get("ecm:acl/*1/principal");
+                String permission = (String) map.get("ecm:acl/*1/permission");
+                Boolean grant = (Boolean) map.get("ecm:acl/*1/grant");
+                String creator = (String) map.get("ecm:acl/*1/creator");
+                Calendar begin = (Calendar) map.get("ecm:acl/*1/begin");
+                Calendar end = (Calendar) map.get("ecm:acl/*1/end");
+                String aclName = (String) map.get("ecm:acl/*1/name");
+                Map<String, Serializable> contextData = new HashMap<>();
+                contextData.put(CHANGED_ACL_NAME, aclName);
+                ACE ace = ACE.builder(username, permission)
+                        .isGranted(grant)
+                        .creator(creator)
+                        .begin(begin)
+                        .end(end)
+                        .contextData(contextData)
+                        .build();
+                aces.add(ace);
             }
         } finally {
             result.close();
         }
 
         int acpUpdatedCount = 0;
-        List<DocumentRef> processedDocIds = new ArrayList<>();
-        for (String docId : docIds) {
+        Map<DocumentRef, List<ACE>> processedRefToACEs = new HashMap<>();
+        for (Map.Entry<String, List<ACE>> entry : docIdsToACEs.entrySet()) {
             try {
-                DocumentRef ref = new IdRef(docId);
+                DocumentRef ref = new IdRef(entry.getKey());
                 ACP acp = session.getACP(ref);
+                // re-set the ACP to actually write the new status
                 session.setACP(ref, acp, true);
                 acpUpdatedCount++;
-                processedDocIds.add(ref);
+                processedRefToACEs.put(ref, entry.getValue());
                 if (acpUpdatedCount % batchSize == 0) {
-                    fireACEStatusUpdatedEvent(processedDocIds);
+                    fireACEStatusUpdatedEvent(processedRefToACEs);
                     commitOrRollbackTransaction();
                     startTransaction();
-                    processedDocIds.clear();
+                    processedRefToACEs.clear();
                 }
             } catch (TransactionRuntimeException e) {
                 if (e.getMessage().contains("Transaction timeout")) {
@@ -106,14 +138,14 @@ public class UpdateACEStatusWork extends AbstractWork {
                 throw e;
             }
         }
-        fireACEStatusUpdatedEvent(processedDocIds);
+        fireACEStatusUpdatedEvent(processedRefToACEs);
 
         setStatus(null);
     }
 
-    protected void fireACEStatusUpdatedEvent(List<DocumentRef> docRefs) {
+    protected void fireACEStatusUpdatedEvent(Map<DocumentRef, List<ACE>> refToACEs) {
         EventContext eventContext = new EventContextImpl(session, session.getPrincipal());
-        eventContext.setProperty(DOCUMENT_REFS, (Serializable) docRefs);
+        eventContext.setProperty(DOCUMENT_REFS, (Serializable) refToACEs);
         eventContext.setProperty(REPOSITORY_NAME, session.getRepositoryName());
         Framework.getService(EventService.class).fireEvent(ACE_STATUS_UPDATED, eventContext);
     }

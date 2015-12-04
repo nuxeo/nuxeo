@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.security;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
@@ -59,13 +60,12 @@ public class TestACEStatusUpdate {
     protected EventService eventService;
 
     @Test
-    public void shouldUpdateStatusToEffective() {
+    public void shouldUpdateStatusToEffective() throws InterruptedException {
         DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
         doc = session.createDocument(doc);
 
-        Date now = new Date();
         Calendar begin = new GregorianCalendar();
-        begin.setTimeInMillis(now.toInstant().plus(1, ChronoUnit.DAYS).toEpochMilli());
+        begin.setTimeInMillis(Instant.now().plus(5, ChronoUnit.SECONDS).toEpochMilli());
         ACP acp = doc.getACP();
         ACE ace = ACE.builder("leela", "Read").creator("Administrator").begin(begin).build();
         acp.addACE(ACL.LOCAL_ACL, ace);
@@ -83,13 +83,8 @@ public class TestACEStatusUpdate {
         assertNotNull(leelaACE);
         assertTrue(leelaACE.isPending());
 
-        // make the ACE effective
-        begin = new GregorianCalendar();
-        begin.setTimeInMillis(now.toInstant().minus(1, ChronoUnit.DAYS).toEpochMilli());
-        ACE newLeelaACE = (ACE) leelaACE.clone();
-        newLeelaACE.setBegin(begin);
-        session.replaceACE(doc.getRef(), ACL.LOCAL_ACL, leelaACE, newLeelaACE);
-
+        // wait for the ACE to be effective
+        Thread.sleep(10000);
         fireUpdateACEStatusEventAndWait();
 
         doc = session.getDocument(doc.getRef());
@@ -116,15 +111,17 @@ public class TestACEStatusUpdate {
     }
 
     @Test
-    public void shouldUpdateStatusToArchived() {
+    public void shouldUpdateStatusToArchived() throws InterruptedException {
         DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
         doc = session.createDocument(doc);
 
         Date now = new Date();
         Calendar begin = new GregorianCalendar();
         begin.setTimeInMillis(now.toInstant().minus(5, ChronoUnit.DAYS).toEpochMilli());
+        Calendar end = new GregorianCalendar();
+        end.setTimeInMillis(Instant.now().plus(5, ChronoUnit.SECONDS).toEpochMilli());
         ACP acp = doc.getACP();
-        ACE ace = ACE.builder("leela", "Read").creator("Administrator").begin(begin).build();
+        ACE ace = ACE.builder("leela", "Read").creator("Administrator").begin(begin).end(end).build();
         acp.addACE(ACL.LOCAL_ACL, ace);
         doc.setACP(acp, true);
 
@@ -140,13 +137,8 @@ public class TestACEStatusUpdate {
         assertNotNull(leelaACE);
         assertTrue(leelaACE.isEffective());
 
-        // make the ACE archived
-        Calendar end = new GregorianCalendar();
-        end.setTimeInMillis(now.toInstant().minus(1, ChronoUnit.DAYS).toEpochMilli());
-        ACE newLeelaACE = (ACE) leelaACE.clone();
-        newLeelaACE.setEnd(end);
-        session.replaceACE(doc.getRef(), ACL.LOCAL_ACL, leelaACE, newLeelaACE);
-
+        // wait for the ACE to be effective
+        Thread.sleep(10000);
         fireUpdateACEStatusEventAndWait();
 
         doc = session.getDocument(doc.getRef());

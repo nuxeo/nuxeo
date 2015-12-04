@@ -14,6 +14,7 @@
         <property name="alwaysDisplaySubTabs">true</property>
       </properties>
       <filter-id>not_anonymous</filter-id>
+      <filter-id>not_transient_user</filter-id>
     </action>
 
     <action id="CollectionList" link="/incl/collection_listing.xhtml"
@@ -29,6 +30,7 @@
       <properties>
         <property name="include">/incl/add_to_collection.xhtml</property>
       </properties>
+      <filter-id>not_transient_user</filter-id>
     </action>
 
     <action id="selectDocumentToBeAddedToCollection" order="0" label="label.addToCollection.selectDocToBeAddedToCollection"
@@ -38,6 +40,7 @@
       <properties>
         <property name="include">/incl/select_doc_to_be_added_to_collection.xhtml</property>
       </properties>
+      <filter-id>not_transient_user</filter-id>
     </action>
 
 
@@ -76,6 +79,7 @@
         <property name="height">400</property>
         <property name="width">600</property>
       </properties>
+      <filter-id>not_transient_user</filter-id>
     </action>
 
     <action id="exportViewZipBlobExport">

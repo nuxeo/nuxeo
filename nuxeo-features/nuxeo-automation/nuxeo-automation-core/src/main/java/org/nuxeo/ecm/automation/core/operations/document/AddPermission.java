@@ -33,10 +33,12 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 
 /**
  * Operation that adds a permission to a given ACL for a given user.
@@ -55,8 +57,14 @@ public class AddPermission {
     @Context
     protected CoreSession session;
 
-    @Param(name = "username", alias = "user", description = "ACE target user/group.")
+    @Param(name = "username", required = false, alias = "user", description = "ACE target user/group.")
     protected String user;
+
+    /**
+     * @since 8.1
+     */
+    @Param(name = "email", required = false, description = "ACE target user/group.")
+    protected String email;
 
     @Param(name = "permission", description = "ACE permission.")
     String permission;
@@ -93,13 +101,31 @@ public class AddPermission {
     }
 
     protected void addPermission(DocumentModel doc) {
+        if (user == null && email == null) {
+            throw new IllegalParameterException("'username' or 'email' parameter must be set");
+        }
+
+        if (user == null && end == null) {
+            throw new IllegalParameterException("'end' parameter must be set when adding a permission for an 'email'");
+        }
+
+        String username = user;
+        if (username == null) {
+            username = NuxeoPrincipal.computeTransientUsername(email);
+        }
+
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         Map<String, Serializable> contextData = new HashMap<>();
         contextData.put(NOTIFY_KEY, notify);
         contextData.put(COMMENT_KEY, comment);
 
         String creator = session.getPrincipal().getName();
-        ACE ace = ACE.builder(user, permission).creator(creator).begin(begin).end(end).contextData(contextData).build();
+        ACE ace = ACE.builder(username, permission)
+                     .creator(creator)
+                     .begin(begin)
+                     .end(end)
+                     .contextData(contextData)
+                     .build();
         boolean permissionChanged = false;
         if (blockInheritance) {
             permissionChanged = acp.blockInheritance(aclName, creator);

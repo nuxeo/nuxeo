@@ -844,6 +844,12 @@
       </rule>
     </filter>
 
+    <filter id="not_transient_user">
+      <rule grant="false">
+        <condition>#{currentUser.transient}</condition>
+      </rule>
+    </filter>
+
     <filter id="view_content">
       <rule grant="true">
         <permission>ReadChildren</permission>

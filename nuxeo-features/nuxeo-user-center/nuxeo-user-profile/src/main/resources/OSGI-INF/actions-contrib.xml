@@ -8,6 +8,7 @@
       icon="/icons/profile.png" order="20">
       <category>USER_CENTER</category>
       <filter-id>not_anonymous</filter-id>
+      <filter-id>not_transient_user</filter-id>
     </action>
 
     <action id="ProfileView" link="/incl/userprofile/user_profile.xhtml"
@@ -20,6 +21,7 @@
       order="30">
       <category>USER_CENTER</category>
       <filter-id>not_anonymous</filter-id>
+      <filter-id>not_transient_user</filter-id>
     </action>
 
     <action id="PreferencesView" link="/incl/userprofile/user_preferences.xhtml"
@@ -31,6 +33,7 @@
       link="#{userPreferencesActions.navigateToPreferencesPage}"
       order="70">
       <category>USER_MENU_ACTIONS</category>
+      <filter-id>not_transient_user</filter-id>
     </action>
 
 

@@ -10,6 +10,7 @@
       order="50" icon="/icons/authorized_apps.png">
       <category>USER_CENTER</category>
       <filter-id>not_anonymous</filter-id>
+      <filter-id>not_transient_user</filter-id>
     </action>
 
     <action id="AuthorizedApplicationMain" link="/incl/oauth/authorized_applications.xhtml"
@@ -21,6 +22,7 @@
     <action id="OAuthTokens" link="/incl/oauth/user_tokens.xhtml" label="tab.user.center.cloudServices" order="55">
       <category>USER_CENTER</category>
       <filter-id>not_anonymous</filter-id>
+      <filter-id>not_transient_user</filter-id>
     </action>
 
   </extension>

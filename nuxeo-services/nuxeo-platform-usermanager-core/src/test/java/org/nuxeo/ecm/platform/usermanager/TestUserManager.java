@@ -1047,4 +1047,22 @@ public class TestUserManager extends UserManagerTestCase {
 
     }
 
+    @Test
+    public void testTransientUsers() {
+        NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
+        assertFalse(principal.isTransient());
+
+        String transientUsername = NuxeoPrincipal.computeTransientUsername("leela@nuxeo.com");
+        assertTrue(NuxeoPrincipal.isTransientUsername(transientUsername));
+        principal = userManager.getPrincipal(transientUsername);
+        assertNotNull(principal);
+        assertTrue(principal.isTransient());
+        assertFalse(principal.isAdministrator());
+        assertFalse(principal.isAnonymous());
+        assertTrue(principal.getAllGroups().isEmpty());
+        assertEquals("leela@nuxeo.com", principal.getFirstName());
+        assertEquals("leela@nuxeo.com", principal.getEmail());
+        assertEquals(transientUsername, principal.getName());
+    }
+
 }

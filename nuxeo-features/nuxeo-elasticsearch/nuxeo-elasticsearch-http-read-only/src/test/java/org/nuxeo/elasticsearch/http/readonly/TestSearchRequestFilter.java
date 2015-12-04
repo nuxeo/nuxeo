@@ -256,6 +256,11 @@ public class TestSearchRequestFilter {
             }
 
             @Override
+            public boolean isTransient() {
+                return false;
+            }
+
+            @Override
             public String getName() {
                 return "admin";
             }
@@ -397,6 +402,11 @@ public class TestSearchRequestFilter {
             @Override
             public String getActingUser() {
                 return null;
+            }
+
+            @Override
+            public boolean isTransient() {
+                return false;
             }
 
             @Override

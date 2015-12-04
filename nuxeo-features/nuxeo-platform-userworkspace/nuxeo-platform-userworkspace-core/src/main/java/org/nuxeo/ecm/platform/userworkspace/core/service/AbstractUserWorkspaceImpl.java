@@ -142,6 +142,10 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         } else {
             usedUsername = userName;
         }
+        if (NuxeoPrincipal.isTransientUsername(usedUsername)) {
+            // no personal workspace for transient users
+            return null;
+        }
 
         PathRef uwsDocRef = getExistingUserWorkspacePathRef(userCoreSession, usedUsername, context);
 

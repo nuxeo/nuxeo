@@ -6,6 +6,7 @@
     <action id="home" link="view_home" label="label.main.tab.home" order="20"
       type="main_tab">
       <category>MAIN_TABS</category>
+      <filter-id>not_transient_user</filter-id>
     </action>
 
     <!-- Users and Groups directory -->
@@ -14,6 +15,7 @@
       <category>USER_CENTER</category>
       <filter-id>not_anonymous</filter-id>
       <filter-id>not_readonly</filter-id>
+      <filter-id>not_transient_user</filter-id>
     </action>
     <action id="UsersHome" link="/users/view_users.xhtml"
       label="label.userManager.users" order="10">
@@ -31,6 +33,7 @@
       label="user.center.saved.searches" icon="/icons/saved_searches.png" order="70">
       <category>USER_CENTER</category>
       <filter-id>not_anonymous</filter-id>
+      <filter-id>not_transient_user</filter-id>
       <filter id="SavedSearches_has_subtabs">
         <rule grant="false">
           <condition>

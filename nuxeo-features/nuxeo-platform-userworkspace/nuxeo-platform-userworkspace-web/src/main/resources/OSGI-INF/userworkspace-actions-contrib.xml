@@ -18,6 +18,7 @@
       icon="/icons/show_personal_workspace.gif" order="61">
       <category>USER_MENU_ACTIONS</category>
       <filter-id>not_anonymous</filter-id>
+      <filter-id>not_transient_user</filter-id>
       <filter-id>canAccessPersonalWorkspace</filter-id>
     </action>
   </extension>

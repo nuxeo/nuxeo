@@ -16,6 +16,7 @@
     <action id="addToFavoritesAction" order="0" label="label.addToFavorites"
       link="#{favoritesActions.addCurrentDocumentToFavorites()}" icon="/icons/pin.png">
       <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>not_transient_user</filter-id>
       <filter-id>canAddToFavorites</filter-id>
     </action>
 
@@ -23,6 +24,7 @@
       label="label.removeFromFavorites" link="#{favoritesActions.removeCurrentDocumentFromFavorites()}"
       icon="/icons/pinned.png">
       <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>not_transient_user</filter-id>
       <filter-id>canRemoveFromFavorites</filter-id>
     </action>
 

@@ -218,4 +218,9 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
         return getName();
     }
 
+    @Override
+    public boolean isTransient() {
+        String name = getName();
+        return name != null && name.startsWith(TRANSIENT_USER_PREFIX);
+    }
 }

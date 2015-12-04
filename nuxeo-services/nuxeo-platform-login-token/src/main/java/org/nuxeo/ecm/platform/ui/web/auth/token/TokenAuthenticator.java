@@ -30,7 +30,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.web.common.CookieHelper;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -45,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
-public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
+public class TokenAuthenticator implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension {
 
     public static final String ALLOW_ANONYMOUS_KEY = "allowAnonymous";
 
@@ -56,6 +58,8 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
     private static final Log log = LogFactory.getLog(TokenAuthenticator.class);
 
     protected static final String TOKEN_HEADER = "X-Authentication-Token";
+
+    protected static final String TOKEN_PARAM = "token";
 
     protected boolean allowAnonymous = false;
 
@@ -88,23 +92,29 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
             log.debug("Anonymous user is not allowed to get authenticated by token, returning null.");
             return null;
         }
+
+        Cookie cookie = CookieHelper.createCookie(httpRequest, TOKEN_HEADER, token);
+        httpResponse.addCookie(cookie);
+
         return new UserIdentificationInfo(userName, userName);
     }
 
     /**
      * Gets the token from the request if present else null.
      *
-     * @param httpRequest
-     * @return
      * @since 5.9.2
      */
     private String getTokenFromRequest(HttpServletRequest httpRequest) {
         String token = httpRequest.getHeader(TOKEN_HEADER);
 
+        if (token == null) {
+            token = httpRequest.getParameter(TOKEN_PARAM);
+        }
+
         // If we don't find the token in request header, let's check in cookies
         if (token == null && httpRequest.getCookies() != null) {
             Cookie cookie = getTokenCookie(httpRequest);
-            if (cookie != null && isAllowedToUseCookieToken(httpRequest)) {
+            if (cookie != null) {
                 return cookie.getValue();
             }
         }
@@ -114,34 +124,18 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
     /**
      * Returns the token from the cookies if found else null.
      *
-     * @param httpRequest
-     * @return
      * @since 5.9.2
      */
     private Cookie getTokenCookie(HttpServletRequest httpRequest) {
         Cookie[] cookies = httpRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(TOKEN_HEADER) && isAllowedToUseCookieToken(httpRequest)) {
+                if (cookie.getName().equals(TOKEN_HEADER)) {
                     return cookie;
                 }
             }
         }
         return null;
-    }
-
-    /**
-     * Guard the use of cookie token to htpps only or localhost.
-     *
-     * @param httpRequest
-     * @return
-     * @since 5.9.2
-     */
-    private boolean isAllowedToUseCookieToken(HttpServletRequest req) {
-        if (LOCALHOST.equals(req.getServerName())) {
-            return true;
-        }
-        return HTTPS.equals(req.getScheme());
     }
 
     @Override
@@ -167,4 +161,14 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin {
         return tokenAuthService.getUserName(token);
     }
 
+    @Override
+    public Boolean handleLogout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+        Cookie cookie = getTokenCookie(httpRequest);
+        if (cookie != null) {
+            cookie.setMaxAge(0);
+            cookie.setValue("");
+            httpResponse.addCookie(cookie);
+        }
+        return false;
+    }
 }

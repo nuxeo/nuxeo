@@ -1,262 +1,322 @@
 <script>
-    var lang = navigator.language || navigator.browserLanguage;
-    DOM.set("lang", lang);
+  var lang = navigator.language || navigator.browserLanguage;
+  DOM.set("lang", lang);
 </script>
 
 <dom-module id="popup-permission">
-    <template>
-        <nuxeo-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}} on-response="handleResponse"></nuxeo-operation>
-        <nuxeo-operation id="replaceOp" op="Document.ReplacePermission" input={{docId}} params={{params}} on-response="handleResponse"></nuxeo-operation>
+  <template>
+    <nuxeo-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}}
+      on-response="handleResponse"></nuxeo-operation>
+    <nuxeo-operation id="replaceOp" op="Document.ReplacePermission" input={{docId}} params={{params}}
+      on-response="handleResponse"></nuxeo-operation>
 
+    <template is="dom-if" if="{{!updatingACE}}">
+      <template is="dom-if" if="{{!shareWithExternal}}">
+        <paper-button on-click="togglePopup">[[i18n('label.permissions.newPermission', 'New Permission')]]
+        </paper-button>
+      </template>
+      <template is="dom-if" if="{{shareWithExternal}}">
+        <paper-button on-click="togglePopup">[[i18n('label.permissions.shareWithExternal', 'Share With External')]]
+        </paper-button>
+      </template>
+    </template>
+    <template is="dom-if" if="{{updatingACE}}">
+      <paper-icon-button on-click="togglePopup" icon="editor:mode-edit"></paper-icon-button>
+    </template>
+
+    <paper-dialog id="popupRight" modal _bound-on-focus="{{_ignoreBoundOnFocus}}">
+      <template is="dom-if" if="{{!updatingACE}}">
+        <template is="dom-if" if="{{!shareWithExternal}}">
+          <h2>[[i18n('label.permissions.addPermission', 'Add a Permission')]]</h2>
+        </template>
+        <template is="dom-if" if="{{shareWithExternal}}">
+          <h2>[[i18n('label.permissions.shareWithExternal', 'Share With External')]]</h2>
+        </template>
+      </template>
+      <template is="dom-if" if="{{updatingACE}}">
+        <h2>[[i18n('label.permissions.updatePermission', 'Update Permission')]]</h2>
+      </template>
+
+      <!-- Give acces to row -->
+      <paper-dialog-scrollable>
         <template is="dom-if" if="{{!updatingACE}}">
-            <paper-button on-click="togglePopup">[[i18n('label.permissions.newPermission', 'New Permission')]]</paper-button>
+          <template is="dom-if" if="{{!shareWithExternal}}">
+            <div>
+              <div><span class="required">[[i18n('label.permissions.userGroup', 'User / Group')]]</span></div>
+              <div>
+                <nuxeo-user-suggestion value="{{params.username}}"></nuxeo-user-suggestion>
+              </div>
+            </div>
+          </template>
+          <template is="dom-if" if="{{shareWithExternal}}">
+            <div>
+              <div><span class="required">[[i18n('label.permissions.email', 'Email')]]</span></div>
+              <div>
+                <paper-input value="{{params.email}}"></paper-input>
+              </div>
+            </div>
+          </template>
+        </template>
+        <!-- Right row -->
+        <div layout horizontal>
+          <div><span class="required">[[i18n('label.permissions.right', 'Right')]]</span></div>
+          <paper-dropdown-menu>
+            <paper-menu class="dropdown-content" selected="{{params.permission}}" attr-for-selected="permission">
+              <template is="dom-repeat" items="[[userVisiblePermissions]]" as="permission">
+                <paper-item permission="[[permission]]">[[i18n(permission, permission)]]</paper-item>
+              </template>
+            </paper-menu>
+          </paper-dropdown-menu>
+        </div>
+        <div>
+          <div>[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
+          <template is="dom-if" if="{{!shareWithExternal}}">
+            <paper-radio-group selected="{{selectedTimeFrame}}">
+              <paper-radio-button name="permanent" on-change="toggleTimeFrame">[[i18n('label.permissions.permanent',
+                'Permanent')]]
+              </paper-radio-button>
+              <paper-radio-button name="datebased" on-change="toggleTimeFrame">[[i18n('label.permissions.dateBased',
+                'Date based')]]
+              </paper-radio-button>
+            </paper-radio-group>
+          </template>
+          <div class="timeFrameLabel">[[i18n('label.permissions.from', 'From')]]</div>
+          <div>
+            <input id="begin" class="jsDate" type="date" data-native="mobile" data-format="MM/dd/yyyy"
+              value="{{params.begin::change}}"/>
+          </div>
+          <template is="dom-if" if="{{!shareWithExternal}}">
+            <div class="timeFrameLabel"><span>[[i18n('label.permissions.to', 'To')]]</span></div>
+          </template>
+          <template is="dom-if" if="{{shareWithExternal}}">
+            <div class="timeFrameLabel"><span class="required">[[i18n('label.permissions.to', 'To')]]</span></div>
+          </template>
+          <div>
+            <input id="end" class="jsDate" type="date" data-native="mobile" data-format="MM/dd/yyyy"
+              value="{{params.end::change}}"/>
+          </div>
+        </div>
+        <div id="notification">
+          <template is="dom-if" if="{{!shareWithExternal}}">
+            <div layout horizontal>
+              <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">
+                [[i18n('label.permissions.notify', 'Send an email to notify user')]]
+              </paper-checkbox>
+            </div>
+          </template>
+          <div layout horizontal>
+            <iron-autogrow-textarea
+              placeholder="[[i18n('label.permissions.notifyPlaceholder', 'Hi! Could you comment this document and...')]]"
+              id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
+          </div>
+        </div>
+      </paper-dialog-scrollable>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss>[[i18n('label.permissions.cancel', 'Cancel')]]</paper-button>
+        <template is="dom-if" if="{{!updatingACE}}">
+          <paper-button on-tap="doCreateAndAdd">[[i18n('label.permissions.createAndAdd', 'Create and add another')]]
+          </paper-button>
+          <paper-button class="colorful" on-tap="doCreate">[[i18n('label.permissions.create', 'Create')]]</paper-button>
         </template>
         <template is="dom-if" if="{{updatingACE}}">
-            <paper-icon-button on-click="togglePopup" icon="editor:mode-edit"></paper-icon-button>
+          <paper-button class="colorful" on-tap="doUpdate">[[i18n('label.permissions.update', 'Update')]]</paper-button>
         </template>
-
-        <paper-dialog id="popupRight" modal _bound-on-focus="{{_ignoreBoundOnFocus}}">
-            <template is="dom-if" if="{{!updatingACE}}">
-                <h2>[[i18n('label.permissions.addPermission', 'Add a Permission')]]</h2>
-            </template>
-            <template is="dom-if" if="{{updatingACE}}">
-                <h2>[[i18n('label.permissions.updatePermission', 'Update Permission')]]</h2>
-            </template>
-
-            <!-- Give acces to row -->
-            <paper-dialog-scrollable>
-                <template is="dom-if" if="{{!updatingACE}}">
-                    <div>
-                        <div><span class="required">[[i18n('label.permissions.userGroup', 'User / Group')]]</span></div>
-                        <div>
-                            <nuxeo-user-suggestion value="{{params.username}}"></nuxeo-user-suggestion>
-                        </div>
-                    </div>
-                </template>
-                <!-- Right row -->
-                <div layout horizontal>
-                    <div><span class="required">[[i18n('label.permissions.right', 'Right')]]</span></div>
-                    <paper-dropdown-menu>
-                        <paper-menu class="dropdown-content" selected="{{params.permission}}" attr-for-selected="permission">
-                            <template is="dom-repeat" items="[[userVisiblePermissions]]" as="permission">
-                                <paper-item permission="[[permission]]">[[i18n(permission, permission)]]</paper-item>
-                            </template>
-                        </paper-menu>
-                    </paper-dropdown-menu>
-                </div>
-                <div>
-                    <div>[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
-                    <paper-radio-group selected="{{selectedTimeFrame}}">
-                        <paper-radio-button name="permanent" on-change="toggleTimeFrame">[[i18n('label.permissions.permanent', 'Permanent')]]</paper-radio-button>
-                        <paper-radio-button name="datebased" on-change="toggleTimeFrame">[[i18n('label.permissions.dateBased', 'Date based')]]</paper-radio-button>
-                    </paper-radio-group>
-                    <div class="timeFrameLabel">[[i18n('label.permissions.from', 'From')]]</div>
-                    <div>
-                        <input id="begin" class="jsDate" type="date" data-native="mobile" data-format="MM/dd/yyyy"
-                          value="{{params.begin::change}}" />
-                    </div>
-                    <div class="timeFrameLabel">[[i18n('label.permissions.to', 'To')]]</div>
-                    <div>
-                        <input id="end" class="jsDate" type="date" data-native="mobile" data-format="MM/dd/yyyy"
-                          value="{{params.end::change}}" />
-                    </div>
-                </div>
-                <div id="notification">
-                    <div layout horizontal>
-                        <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">[[i18n('label.permissions.notify', 'Send an email to notify user')]]</paper-checkbox>
-                    </div>
-                    <div layout horizontal>
-                        <iron-autogrow-textarea placeholder="[[i18n('label.permissions.notifyPlaceholder', 'Hi! Could you comment this document and...')]]" id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
-                    </div>
-                </div>
-            </paper-dialog-scrollable>
-
-            <div class="buttons">
-                <paper-button dialog-dismiss>[[i18n('label.permissions.cancel', 'Cancel')]]</paper-button>
-                <template is="dom-if" if="{{!updatingACE}}">
-                    <paper-button on-tap="doCreateAndAdd">[[i18n('label.permissions.createAndAdd', 'Create and add another')]]</paper-button>
-                    <paper-button class="colorful" on-tap="doCreate">[[i18n('label.permissions.create', 'Create')]]</paper-button>
-                </template>
-                <template is="dom-if" if="{{updatingACE}}">
-                    <paper-button class="colorful" on-tap="doUpdate">[[i18n('label.permissions.update', 'Update')]]</paper-button>
-                </template>
-            </div>
-        </paper-dialog>
-    </template>
+      </div>
+    </paper-dialog>
+  </template>
 </dom-module>
 
 <script>
-    Polymer({
-        is: 'popup-permission',
+  Polymer({
+    is: 'popup-permission',
 
-        properties: {
-            docId: {
-                type: String,
-                value: ''
-            },
-            ace: {
-                type: Object,
-                value: null
-            },
-            userVisiblePermissions: {
-                type: Array,
-                value: []
-            },
-            params: {
-                type: Object,
-                computed: 'computeParams(ace)'
-            },
-            updatingACE: {
-                type: Boolean,
-                computed: 'isUpdatingACE(ace)'
-            },
-            selectedTimeFrame: {
-                type: String,
-                value: 'permanent'
-            },
+    properties: {
+      docId: {
+        type: String,
+        value: ''
+      },
+      ace: {
+        type: Object,
+        value: null
+      },
+      userVisiblePermissions: {
+        type: Array,
+        value: []
+      },
+      params: {
+        type: Object,
+        computed: 'computeParams(ace, shareWithExternal)'
+      },
+      updatingACE: {
+        type: Boolean,
+        computed: 'isUpdatingACE(ace)'
+      },
+      shareWithExternal: {
+        type: Boolean,
+        value: false
+      },
+      selectedTimeFrame: {
+        type: String,
+        value: 'permanent'
+      },
 
-            _ignoreBoundOnFocus: {
-                type: Function,
-                value: function() {
-                    return this._onFocus.bind(this);
-                }
-            }
-        },
-
-        ready: function() {
-        },
-
-        togglePopup: function() {
-            this.$.popupRight.toggle();
-            if (this.selectedTimeFrame === 'permanent') {
-                jQuery(this).find('.jsDate').attr('disabled', true);
-                jQuery(this).find('.timeFrameLabel').addClass('disabled');
-            }
-        },
-
-        doCreate: function() {
-            this._doSend(true);
-        },
-
-        doCreateAndAdd: function() {
-            this._doSend(false);
-        },
-
-        doUpdate: function() {
-            this._doSend(true);
-        },
-
-        _doSend: function(togglePopup) {
-            if (!this.params.username || !this.params.permission) {
-                // do nothing
-                return;
-            }
-
-            var dateBased = this.selectedTimeFrame === 'datebased';
-            if(this.params.begin && dateBased) {
-                this.params.begin = this.params.begin.length > 0 ? moment(new Date(this.params.begin)).format() : null;
-            } else {
-                this.params.begin = null;
-            }
-
-            if(this.params.end && dateBased) {
-                this.params.end = this.params.end.length > 0 ? moment(new Date(this.params.end)).format() : null;
-            } else {
-                this.params.end = null;
-            }
-
-            if (this.updatingACE) {
-                this.$.replaceOp.execute();
-            } else {
-                this.$.createOp.execute();
-            }
-
-            if (togglePopup) {
-                this.togglePopup();
-            }
-        },
-
-        handleResponse: function() {
-            if (this.updatingACE) {
-                this.fire('aceupdated');
-            } else {
-                this.fire('acecreated');
-
-                this.set('params.username', null);
-                this.set('params.permission', 'Read');
-                this.set('params.begin', '');
-                this.set('params.end', '');
-                this.set('params.notify', true);
-                this.set('params.comment', '');
-                this.set('selectedTimeFrame', 'permanent');
-                // 'hack' to hide the old selected date
-                jQuery(this).find('.btr-dateinput-value').text('');
-            }
-        },
-
-        toggleCommentText: function(event) {
-            var checked = event.target.checked;
-            this.$.notification.querySelector('#commentText').readonly = !checked;
-            if (!checked) {
-                this.set('params.comment', '');
-            }
-        },
-
-        toggleTimeFrame: function(event) {
-            var name = event.target.name;
-            this.set('selectedTimeFrame', name);
-            var disabled = name === 'datebased' ? false : true;
-            jQuery(this).find('.jsDate').attr('disabled', disabled);
-            jQuery(this).find('.timeFrameLabel').each(function(i, ele) {
-                if (disabled) {
-                    jQuery(ele).addClass('disabled');
-                } else {
-                    jQuery(ele).removeClass('disabled');
-                }
-            });
-        },
-
-        computeParams: function(ace) {
-            var params = {
-                username: null,
-                permission: 'Read',
-                begin: '',
-                end: '',
-                notify: true,
-                disableTimeFrame: true,
-                selectedTimeFrame: 'permanent',
-                comment: ''
-            };
-
-            if (ace !== null) {
-                params.id = ace.id;
-                params.username = typeof ace.username === 'object' ? (ace.username['entity-type'] === 'user' ? ace.username.id : ace.username.groupname) : ace.username;
-                params.permission = ace.permission;
-                params.notify = ace.notify;
-                params.comment = ace.comment;
-                var dateBased = false;
-                if (ace.begin !== null) {
-                    params.begin = moment(new Date(ace.begin)).format('YYYY-MM-DD');
-                    dateBased = true;
-                }
-                if (ace.end !== null) {
-                    params.end = moment(new Date(ace.end)).format('YYYY-MM-DD');
-                    dateBased = true;
-                }
-
-                if (dateBased) {
-                    this.set('selectedTimeFrame', 'datebased');
-                }
-            }
-            return params;
-        },
-
-        isUpdatingACE: function(ace) {
-            return ace !== null;
-        },
-
-        _onFocus: function() {
-
+      _ignoreBoundOnFocus: {
+        type: Function,
+        value: function () {
+          return this._onFocus.bind(this);
         }
-    });
+      }
+    },
+
+    ready: function () {
+    },
+
+    togglePopup: function () {
+      this.$.popupRight.toggle();
+      if (this.selectedTimeFrame === 'permanent') {
+        jQuery(this).find('.jsDate').attr('disabled', true);
+        jQuery(this).find('.timeFrameLabel').addClass('disabled');
+      }
+    },
+
+    doCreate: function () {
+      this._doSend(true);
+    },
+
+    doCreateAndAdd: function () {
+      this._doSend(false);
+    },
+
+    doUpdate: function () {
+      this._doSend(true);
+    },
+
+    _doSend: function (togglePopup) {
+      if (this.shareWithExternal && ((!this.updatingACE && !this.params.email) || (this.updatingACE && !this.params.username))) {
+        return;
+      }
+      if (!this.shareWithExternal && !this.params.username) {
+        return;
+      }
+
+      var dateBased = this.selectedTimeFrame === 'datebased';
+      if (this.params.begin && dateBased) {
+        this.params.begin = this.params.begin.length > 0 ? moment(new Date(this.params.begin)).format() : null;
+      } else {
+        this.params.begin = null;
+      }
+
+      if (this.params.end && dateBased) {
+        this.params.end = this.params.end.length > 0 ? moment(new Date(this.params.end)).format() : null;
+      } else {
+        this.params.end = null;
+      }
+      if (this.params.end === null && this.shareWithExternal) {
+        //do nothing, we need an end date
+        return;
+      }
+
+      if (this.updatingACE) {
+        this.$.replaceOp.execute();
+      } else {
+        this.$.createOp.execute();
+      }
+
+      if (togglePopup) {
+        this.togglePopup();
+      }
+    },
+
+    handleResponse: function () {
+      if (this.updatingACE) {
+        this.fire('aceupdated');
+      } else {
+        this.fire('acecreated');
+
+        this.set('params.username', null);
+        this.set('params.email', null);
+        this.set('params.permission', 'Read');
+        this.set('params.begin', '');
+        this.set('params.end', '');
+        this.set('params.notify', true);
+        this.set('params.comment', '');
+        this.set('selectedTimeFrame', this.shareWithExternal ? 'datebased' : 'permanent');
+        // 'hack' to hide the old selected date
+        jQuery(this).find('.btr-dateinput-value').text('');
+      }
+    },
+
+    toggleCommentText: function (event) {
+      var checked = event.target.checked;
+      this.$.notification.querySelector('#commentText').readonly = !checked;
+      if (!checked) {
+        this.set('params.comment', '');
+      }
+    },
+
+    toggleTimeFrame: function (event) {
+      var name = event.target.name;
+      this.set('selectedTimeFrame', name);
+      var disabled = name === 'datebased' ? false : true;
+      jQuery(this).find('.jsDate').attr('disabled', disabled);
+      jQuery(this).find('.timeFrameLabel').each(function (i, ele) {
+        if (disabled) {
+          jQuery(ele).addClass('disabled');
+        } else {
+          jQuery(ele).removeClass('disabled');
+        }
+      });
+    },
+
+    computeParams: function (ace, shareWithExternal) {
+      var params = {
+        username: null,
+        email: null,
+        permission: 'Read',
+        begin: '',
+        end: '',
+        notify: true,
+        comment: ''
+      };
+
+      // force datebased and notification for external share
+      if (shareWithExternal) {
+        this.set('selectedTimeFrame', 'datebased');
+        this.set('notify', true);
+      }
+
+      if (ace !== null) {
+        params.id = ace.id;
+        var username = typeof ace.username === 'object' ? (ace.username['entity-type'] === 'user' ? ace.username.id : ace.username.groupname) : ace.username;
+        params.username = username;
+
+        params.permission = ace.permission;
+        params.notify = ace.notify;
+        params.comment = ace.comment;
+        var dateBased = false;
+        if (ace.begin !== null) {
+          params.begin = moment(new Date(ace.begin)).format('YYYY-MM-DD');
+          dateBased = true;
+        }
+        if (ace.end !== null) {
+          params.end = moment(new Date(ace.end)).format('YYYY-MM-DD');
+          dateBased = true;
+        }
+
+        if (dateBased) {
+          this.set('selectedTimeFrame', 'datebased');
+        }
+      }
+      return params;
+    },
+
+    isUpdatingACE: function (ace) {
+      return ace !== null;
+    },
+
+    _onFocus: function () {
+
+    }
+  });
 </script>

@@ -19,10 +19,7 @@
 
 package org.nuxeo.ecm.permissions;
 
-import static org.nuxeo.ecm.core.api.event.CoreEventConstants.CHANGED_ACL_NAME;
-import static org.nuxeo.ecm.core.api.event.CoreEventConstants.NEW_ACE;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.NEW_ACP;
-import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACE;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACP;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
@@ -71,17 +68,10 @@ public class PermissionListener implements EventListener {
     }
 
     protected void updateDirectory(DocumentEventContext docCtx) {
-        ACE oldACE = (ACE) docCtx.getProperty(OLD_ACE);
-        ACE newACE = (ACE) docCtx.getProperty(NEW_ACE);
-        String changedACLName = (String) docCtx.getProperty(CHANGED_ACL_NAME);
-        if (oldACE != null && newACE != null && changedACLName != null) {
-            handleReplaceACE(docCtx, changedACLName, oldACE, newACE);
-        } else {
-            ACP oldACP = (ACP) docCtx.getProperty(OLD_ACP);
-            ACP newACP = (ACP) docCtx.getProperty(NEW_ACP);
-            if (oldACP != null && newACP != null) {
-                handleUpdateACP(docCtx, oldACP, newACP);
-            }
+        ACP oldACP = (ACP) docCtx.getProperty(OLD_ACP);
+        ACP newACP = (ACP) docCtx.getProperty(NEW_ACP);
+        if (oldACP != null && newACP != null) {
+            handleUpdateACP(docCtx, oldACP, newACP);
         }
     }
 
@@ -95,6 +85,8 @@ public class PermissionListener implements EventListener {
                 for (ACE ace : diff.removedACEs) {
                     String id = computeDirectoryId(doc, diff.aclName, ace.getId());
                     session.deleteEntry(id);
+
+                    removeToken(doc, ace);
                 }
 
                 for (ACE ace : diff.addedACEs) {
@@ -111,6 +103,8 @@ public class PermissionListener implements EventListener {
                             comment);
                     session.createEntry(m);
 
+                    addToken(doc, ace);
+
                     if (notify && ace.isGranted() && ace.isEffective()) {
                         firePermissionNotificationEvent(docCtx, diff.aclName, ace);
                     }
@@ -119,6 +113,10 @@ public class PermissionListener implements EventListener {
         }
     }
 
+    /**
+     * @deprecated since 8.1. Not used anymore.
+     */
+    @Deprecated
     protected void handleReplaceACE(DocumentEventContext docCtx, String changedACLName, ACE oldACE, ACE newACE) {
         DocumentModel doc = docCtx.getSourceDocument();
 
@@ -191,7 +189,16 @@ public class PermissionListener implements EventListener {
         docCtx.setProperty(ACL_NAME_KEY, aclName);
         EventService eventService = Framework.getService(EventService.class);
         eventService.fireEvent(PERMISSION_NOTIFICATION_EVENT, docCtx);
+    }
 
+    protected void addToken(DocumentModel doc, ACE ace) {
+        if (!ace.isArchived()) {
+            TransientUserPermissionHelper.acquireToken(ace.getUsername(), doc, ace.getPermission());
+        }
+    }
+
+    protected void removeToken(DocumentModel doc, ACE deletedAce) {
+        TransientUserPermissionHelper.revokeToken(deletedAce.getUsername(), doc);
     }
 
     private static class ACLDiff {

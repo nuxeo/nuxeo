@@ -56,6 +56,7 @@ import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -98,7 +99,8 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
             return;
         }
 
-        StringList to = getRecipients(ace.getUsername());
+        String username = ace.getUsername();
+        StringList to = getRecipients(username);
         if (to == null) {
             // no recipient
             return;
@@ -132,6 +134,14 @@ public class PermissionGrantedNotificationListener implements PostCommitFilterin
                 if (creator != null) {
                     ctx.put("aceCreator",
                             String.format("%s (%s)", Functions.principalFullName(creator), creator.getName()));
+                }
+            }
+
+            if (NuxeoPrincipal.isTransientUsername(username)) {
+                TokenAuthenticationService tokenAuthenticationService = Framework.getService(TokenAuthenticationService.class);
+                String token = tokenAuthenticationService.getToken(username, doc.getRepositoryName(), doc.getId());
+                if (token != null) {
+                    ctx.put("token", token);
                 }
             }
 

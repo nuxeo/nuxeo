@@ -100,8 +100,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         this(name, isAnonymous, isAdministrator, true);
     }
 
-    public NuxeoPrincipalImpl(String name, boolean isAnonymous, boolean isAdministrator, boolean updateAllGroups)
-            {
+    public NuxeoPrincipalImpl(String name, boolean isAnonymous, boolean isAdministrator, boolean updateAllGroups) {
         DocumentModelImpl documentModelImpl = new DocumentModelImpl(config.schemaName);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
@@ -427,4 +426,9 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return getOriginatingUser() == null ? getName() : getOriginatingUser();
     }
 
+    @Override
+    public boolean isTransient() {
+        String name = getName();
+        return name != null && name.startsWith(TRANSIENT_USER_PREFIX);
+    }
 }

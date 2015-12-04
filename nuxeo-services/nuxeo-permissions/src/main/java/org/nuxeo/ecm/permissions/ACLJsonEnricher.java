@@ -36,6 +36,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -125,7 +126,9 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
             for (ACE ace : acl.getACEs()) {
                 jg.writeStartObject();
                 jg.writeStringField("id", ace.getId());
-                writePrincipalOrGroup(USERNAME_PROPERTY, ace.getUsername(), jg);
+                String username = ace.getUsername();
+                writePrincipalOrGroup(USERNAME_PROPERTY, username, jg);
+                jg.writeBooleanField("externalUser", NuxeoPrincipal.isTransientUsername(username));
                 jg.writeStringField("permission", ace.getPermission());
                 jg.writeBooleanField("granted", ace.isGranted());
                 writePrincipalOrGroup(CREATOR_PROPERTY, ace.getCreator(), jg);

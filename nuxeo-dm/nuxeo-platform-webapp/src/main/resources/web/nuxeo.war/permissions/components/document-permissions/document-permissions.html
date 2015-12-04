@@ -52,19 +52,23 @@
             </div>
             <template is="dom-repeat" items="{{localAces}}" as="ace">
               <div class$="[[aclRowClass(ace)]]">
-                <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
+                <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span>
+                </div>
                 <div><span class="label">[[i18n(ace.permission)]]</span></div>
                 <div><span>{{formatTimeFrame(ace)}}</span></div>
-                <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
+                <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span>
+                </div>
                 <div>
                   <template is="dom-if" if="{{hasEverythingRight}}">
                     <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}"
                       user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                       on-aceupdated="refresh"></popup-permission>
                     <paper-icon-button icon="delete" on-click="localRightsDel"></paper-icon-button>
-                    <popup-confirm id="confirmation" delete-label="[[i18n('command.delete', 'Delete')]]" cancel-label="[[i18n('label.permissions.cancel', 'Cancel')]]">
+                    <popup-confirm id="confirmation" delete-label="[[i18n('command.delete', 'Delete')]]"
+                      cancel-label="[[i18n('label.permissions.cancel', 'Cancel')]]">
                       <paper-dialog-scrollable>
-                        <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be deleted')]]</h2>
+                        <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be
+                          deleted')]]</h2>
 
                         <div class="acl-table">
                           <div class="acl-table-row acl-table-headers">
@@ -74,10 +78,12 @@
                             <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
                           </div>
                           <div class$="[[aclRowClass(ace)]]">
-                            <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
+                            <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span>
+                            </div>
                             <div><span class="label">[[i18n(ace.permission)]]</span></div>
                             <div><span>{{formatTimeFrame(ace)}}</span></div>
-                            <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
+                            <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span>
+                            </div>
                           </div>
                         </div>
                       </paper-dialog-scrollable>
@@ -97,10 +103,12 @@
     <div class="bubbleBox">
       <div class="bubbleHeader">
         <template is="dom-if" if="{{canBlockInheritance}}">
-          <paper-button id="block" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]</paper-button>
+          <paper-button id="block" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]
+          </paper-button>
         </template>
         <template is="dom-if" if="{{canUnblockInheritance}}">
-          <paper-button id="unblock" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]</paper-button>
+          <paper-button id="unblock" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]
+          </paper-button>
         </template>
         <h3>[[i18n('label.permissions.inherited', 'Permissions inherited from upper levels')]]</h3>
         <template is="dom-if" if="{{!hasInheritedAces}}">
@@ -109,7 +117,10 @@
       </div>
       <div>
         <template is="dom-if" if="{{hasInheritedAces}}">
-          <div class="tips">[[i18n('label.permissions.blockDescription', 'If you want to explicitly control the access to this document you can block the permissions inheritance. Any change made on parent document will not affect the access conditions to this document. You and the administrators will be added to local permissions.')]]
+          <div class="tips">[[i18n('label.permissions.blockDescription', 'If you want to explicitly control the access
+            to this document you can block the permissions inheritance. Any change made on parent document will not
+            affect the access conditions to this document. You and the administrators will be added to local
+            permissions.')]]
           </div>
           <div class="acl-table">
             <div class="acl-table-row acl-table-headers">
@@ -120,18 +131,92 @@
             </div>
             <template is="dom-repeat" items="{{inheritedAces}}" as="ace">
               <div class$="[[aclRowClass(ace)]]">
-                <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
+                <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span>
+                </div>
                 <div><span class="label">[[i18n(ace.permission)]]</span></div>
                 <div><span>{{formatTimeFrame(ace)}}</span></div>
-                <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span></div>
+                <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span>
+                </div>
               </div>
             </template>
           </div>
         </template>
         <template is="dom-if" if="{{!hasInheritedAces}}">
-          <p class="emptyResult">[[i18n('label.permissions.noInheritedText', 'Only local permissions are applied. Unblock to restore the permissions inheritance from upper levels.')]]</p>
+          <p class="emptyResult">[[i18n('label.permissions.noInheritedText', 'Only local permissions are applied.
+            Unblock to restore the permissions inheritance from upper levels.')]]</p>
         </template>
       </div>
+    </div>
+
+    <div class="bubbleBox">
+      <div class="bubbleHeader">
+        <h3>[[i18n('label.permissions.externalSharing', 'External Sharing')]]</h3>
+        <template is="dom-if" if="{{hasEverythingRight}}">
+          <popup-permission doc-id="{{doc.uid}}"
+            user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
+            share-with-external="true"
+            on-acecreated="refresh"></popup-permission>
+        </template>
+      </div>
+      <template is="dom-if" if="{{hasExternalAces}}">
+        <div>
+          <div class="acl-table">
+            <div class="acl-table-row acl-table-headers">
+              <div class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</div>
+              <div class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</div>
+              <div class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
+              <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
+              <div class="tmp-tab">[[i18n('label.permissions.actions', 'Actions')]]</div>
+            </div>
+            <template is="dom-repeat" items="{{externalAces}}" as="ace">
+              <div class$="[[aclRowClass(ace)]]">
+                <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span>
+                </div>
+                <div><span class="label">[[i18n(ace.permission)]]</span></div>
+                <div><span>{{formatTimeFrame(ace)}}</span></div>
+                <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span>
+                </div>
+                <div>
+                  <template is="dom-if" if="{{hasEverythingRight}}">
+                    <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}"
+                      user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
+                      share-with-external="true"
+                      on-aceupdated="refresh"></popup-permission>
+                    <paper-icon-button icon="delete" on-click="localRightsDel"></paper-icon-button>
+                    <popup-confirm id="confirmation" delete-label="[[i18n('command.delete', 'Delete')]]"
+                      cancel-label="[[i18n('label.permissions.cancel', 'Cancel')]]">
+                      <paper-dialog-scrollable>
+                        <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be
+                          deleted')]]</h2>
+
+                        <div class="acl-table">
+                          <div class="acl-table-row acl-table-headers">
+                            <div class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</div>
+                            <div class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</div>
+                            <div class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
+                            <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
+                          </div>
+                          <div class$="[[aclRowClass(ace)]]">
+                            <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span>
+                            </div>
+                            <div><span class="label">[[i18n(ace.permission)]]</span></div>
+                            <div><span>{{formatTimeFrame(ace)}}</span></div>
+                            <div><span class$="[[entityClass(ace.creator)]]" title="[[entityTooltip(ace.creator)]]">[[entityDisplay(ace.creator)]]</span>
+                            </div>
+                          </div>
+                        </div>
+                      </paper-dialog-scrollable>
+                    </popup-confirm>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="{{!hasExternalAces}}">
+        <p class="emptyResult">[[i18n('label.permissions.noExternalSharing', 'No external sharing.')]]</p>
+      </template>
     </div>
 
     <nuxeo-operation id="rmPermission" op="Document.RemovePermission" input="{{doc.uid}}"
@@ -175,6 +260,11 @@
         value: false,
         computed: 'computeHasInheritedAces(doc)'
       },
+      hasExternalAces: {
+        type: Boolean,
+        value: false,
+        computed: 'computeHasExternalAces(doc)'
+      },
       localAces: {
         type: Array,
         value: [],
@@ -184,6 +274,11 @@
         type: Array,
         value: [],
         computed: 'computeInheritedAces(doc)'
+      },
+      externalAces: {
+        type: Array,
+        value: [],
+        computed: 'computeExternalAces(doc)'
       },
       canBlockInheritance: {
         type: Boolean,
@@ -267,6 +362,10 @@
       return this.computeInheritedAces(doc).length > 0;
     },
 
+    computeHasExternalAces: function (doc) {
+      return this.computeExternalAces(doc).length > 0;
+    },
+
     computeLocalAces: function (doc) {
       var localAces = [];
       if (this.acls) {
@@ -275,7 +374,7 @@
           if (acl.name !== 'inherited') {
             for (var j = 0; j < acl.aces.length; j++) {
               var ace = acl.aces[j];
-              if (ace.granted && (ace.status === 'pending' || ace.status === 'effective')) {
+              if (ace.granted && (ace.status === 'pending' || ace.status === 'effective') && ace.externalUser === false) {
                 ace.aclName = acl.name;
                 localAces.push(ace);
               }
@@ -290,7 +389,6 @@
     computeInheritedAces: function (doc) {
       var inheritedAces = [];
       if (this.acls) {
-        var acls = doc.contextParameters.acls;
         for (var i = 0; i < this.acls.length; i++) {
           if (this.acls[i].name === 'inherited') {
             var acl = this.acls[i];
@@ -307,6 +405,25 @@
       return inheritedAces;
     },
 
+    computeExternalAces: function (doc) {
+      var externalAces = [];
+      if (this.acls) {
+        for (var i = 0; i < this.acls.length; i++) {
+          if (this.acls[i].name !== 'inherited') {
+            var acl = this.acls[i];
+            for (var j = 0; j < acl.aces.length; j++) {
+              var ace = acl.aces[j];
+              if (ace.granted && (ace.status === 'pending' || ace.status === 'effective') && ace.externalUser === true) {
+                externalAces.push(ace);
+              }
+            }
+          }
+        }
+      }
+      externalAces.sort(this._sortAces);
+      return externalAces;
+    },
+
     _sortAces: function (a, b) {
       if (a.begin === null) {
         return -1;
@@ -319,11 +436,11 @@
       }
     },
 
-    computeCanBlockInheritance: function(hasEverythingRight, hasInheritedAces) {
+    computeCanBlockInheritance: function (hasEverythingRight, hasInheritedAces) {
       return hasEverythingRight && hasInheritedAces;
     },
 
-    computeCanUnblockInheritance: function(hasEverythingRight, hasInheritedAces) {
+    computeCanUnblockInheritance: function (hasEverythingRight, hasInheritedAces) {
       return hasEverythingRight && !hasInheritedAces;
     },
 
@@ -335,7 +452,7 @@
       this.$.unblockOp.execute();
     },
 
-    entityDisplay: function(entity) {
+    entityDisplay: function (entity) {
       if (!entity) {
         return '';
       }
@@ -366,7 +483,7 @@
       return entity;
     },
 
-    entityTooltip: function(entity) {
+    entityTooltip: function (entity) {
       if (!entity) {
         return '';
       }
@@ -382,7 +499,7 @@
       return entity;
     },
 
-    entityClass: function(entity) {
+    entityClass: function (entity) {
       if (!entity) {
         return '';
       }
@@ -397,7 +514,7 @@
       return '';
     },
 
-    aclRowClass: function(ace) {
+    aclRowClass: function (ace) {
       return 'acl-table-row' + ' ' + ace.status;
     }
   });

@@ -195,4 +195,8 @@ public class SystemPrincipal implements NuxeoPrincipal {
         return false;
     }
 
+    @Override
+    public boolean isTransient() {
+        return false;
+    }
 }
