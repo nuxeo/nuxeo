@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -35,6 +36,7 @@ import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -57,6 +59,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseSQLServer;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -134,6 +138,11 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     protected long lastEventLogId;
 
+    @BeforeClass
+    public static void ignoreIfSQLServer() {
+        assumeTrue(!(DatabaseHelper.DATABASE instanceof DatabaseSQLServer));
+    }
+
     @Before
     public void init() throws Exception {
         // Enable deletion listener because the tear down disables it
@@ -168,7 +177,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         // Delete test users
         deleteUser("user1");
         deleteUser("user2");
-       
+
 
         // Disable deletion listener for the repository cleanup phase done in
         // CoreFeature#afterTeardown to avoid exception due to no active
@@ -239,7 +248,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         } finally {
             commitAndWaitForAsyncCompletion();
         }
-        
+
         TransactionHelper.startTransaction();
     }
 
