@@ -174,7 +174,8 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @param timeout
      * @since 5.7.2
      */
-    public void filterDocument(final String filter, final int expectedNbOfDisplayedResult, final int timeout) {
+    public ContentTabSubPage filterDocument(final String filter, final int expectedNbOfDisplayedResult,
+            final int timeout) {
         filterInput.clear();
         filterInput.sendKeys(filter);
         filterButton.click();
@@ -188,6 +189,7 @@ public class ContentTabSubPage extends DocumentBasePage {
                 }
             }
         });
+        return asPage(ContentTabSubPage.class);
     }
 
     /**
@@ -197,7 +199,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @param timeout
      * @since 5.7.2
      */
-    public void clearFilter(final int expectedNbOfDisplayedResult, final int timeout) {
+    public ContentTabSubPage clearFilter(final int expectedNbOfDisplayedResult, final int timeout) {
         clearFilterButton.click();
         Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
             @Override
@@ -209,31 +211,53 @@ public class ContentTabSubPage extends DocumentBasePage {
                 }
             }
         });
+        return asPage(ContentTabSubPage.class);
     }
 
     /**
-     * Select the document by their index in the content view.
+     * Selects documents by their index in the content view.
      *
-     * @param indexes
      * @since 5.7.8
+     * @deprecated since 8.1, use {@link #selectByIndex(int...)} instead.
      */
-    public void selectDocumentByIndex(int... indexes) {
+    @Deprecated
+    public ContentTabSubPage selectDocumentByIndex(int... indexes) {
+        return selectByIndex(indexes);
+    }
+
+    /**
+     * Selects documents by their index in the content view.
+     *
+     * @since 8.1
+     */
+    public ContentTabSubPage selectByIndex(int... indexes) {
         AjaxRequestManager a = new AjaxRequestManager(driver);
         for (int i : indexes) {
             a.watchAjaxRequests();
             getChildDocumentRows().get(i).findElement(By.xpath(CHECK_BOX_XPATH)).click();
             a.waitForAjaxRequests();
         }
+        return asPage(ContentTabSubPage.class);
     }
 
     /**
-     * Select the document by their title in the content view.
+     * Selects documents by their title in the content view.
      *
-     * @param indexes
      * @since 5.7.8
+     * @deprecated since 8.1 use {@link #selectByTitle(String...)}
      */
-    public void selectDocumentByTitles(String... titles) {
-        selectDocumentByIndex(convertToIndexes(titles));
+    @Deprecated
+    public ContentTabSubPage selectDocumentByTitles(String... titles) {
+        return selectByTitle(titles);
+    }
+
+    /**
+     * Selects documents by title in the content view.
+     *
+     * @since 8.1
+     */
+    public ContentTabSubPage selectByTitle(String... titles) {
+        return selectByIndex(convertToIndexes(titles));
     }
 
     protected int[] convertToIndexes(String... titles) {
@@ -255,30 +279,30 @@ public class ContentTabSubPage extends DocumentBasePage {
     }
 
     /**
-     * Select the document by their index in the content view and copy them in the clipboard.
+     * Selects documents by their index in the content view and copy them in the clipboard.
      *
      * @param indexes
      * @since 5.7.8
      */
-    public void copyByIndex(int... indexes) {
-        selectDocumentByIndex(indexes);
+    public ContentTabSubPage copyByIndex(int... indexes) {
+        selectByIndex(indexes);
         findElementWaitUntilEnabledAndClick(By.xpath(COPY_BUTTON_XPATH));
+        return asPage(ContentTabSubPage.class);
     }
 
     /**
-     * Select the document by their title in the content view and copy them in the clipboard.
+     * Selects documents by their title in the content view and copy them in the clipboard.
      *
      * @param indexes
      * @since 5.7.8
      */
-    public void copyByTitle(String... titles) {
-        copyByIndex(convertToIndexes(titles));
+    public ContentTabSubPage copyByTitle(String... titles) {
+        return copyByIndex(convertToIndexes(titles));
     }
 
     /**
-     * Past the content of the clip board.
+     * Pastes the content of the clip board.
      *
-     * @param indexes
      * @since 5.7.8
      */
     public ContentTabSubPage paste() {

@@ -21,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.NavigationSubPage;
@@ -82,42 +83,31 @@ public class ITContextualActionsTest extends AbstractTest {
         ContextualActions actions = filePage.getContextualActions();
 
         // Test favorites action
-        actions.clickOnButton(actions.favoritesButton);
-        actions = filePage.getContextualActions();
+        actions = actions.clickOnButton(actions.favoritesButton);
 
         // Test lock action
-        actions.clickOnButton(actions.lockButton);
-        actions = filePage.getContextualActions();
-        states = filePage.getCurrentStates();
+        actions = actions.clickOnButton(actions.lockButton);
+        states = asPage(FileDocumentBasePage.class).getCurrentStates();
         Assert.assertTrue(states.contains(DOCUMENT_LOCKED));
 
         // Test download action
         actions.clickOnButton(actions.downloadButton);
         actions = filePage.getContextualActions();
         // Test permalink action
-        actions.clickOnButton(actions.permaButton);
-        actions = filePage.getContextualActions();
+        actions = actions.clickOnButton(actions.permaButton);
         // wait for element to be shown to close it, otherwise DOM may not be
         // updated yet
-        actions.findElementWithTimeout(By.className(actions.permaBoxFocusName), 20 * 1000);
-        actions.closeFancyPermalinBox();
-        actions = filePage.getContextualActions();
+        Locator.findElementWithTimeout(By.className(actions.permaBoxFocusName), 20 * 1000);
+        actions = asPage(ContextualActions.class).closeFancyPermalinBox();
 
         // Test follow action
-        actions.openMore();
-        actions = filePage.getContextualActions();
-        actions.clickOnButton(actions.followButton);
-        actions = filePage.getContextualActions();
+        actions = actions.openMore().clickOnButton(actions.followButton);
 
-        // Test Add to Worklist action
-        actions.openMore();
-        actions = filePage.getContextualActions();
-        actions.clickOnButton(actions.addToWorklistButton);
-        actions = filePage.getContextualActions();
+        // Test  More button & Add to Worklist action
+        actions = actions.openMore().clickOnButton(actions.addToWorklistButton);
         // Test More button & Export
-        actions.openMore();
-        actions = filePage.getContextualActions();
-        actions.clickOnButton(actions.exportButton);
+        actions = actions.openMore().clickOnButton(actions.exportButton);
+        Locator.findElementWithTimeout(By.linkText(actions.xmlExportTitle), 20 * 1000);
 
         logout();
     }
