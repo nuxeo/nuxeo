@@ -33,10 +33,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CyclicBarrier;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -796,26 +798,45 @@ public class TestRenditionService {
     public void shouldFilterRenditionDefinitions() throws Exception {
         runtimeHarness.deployContrib(RENDITION_CORE, RENDITION_FILTERS_COMPONENT_LOCATION);
 
+        List<RenditionDefinition> availableRenditionDefinitions;
+        Rendition rendition;
+
+        // ----- Note
+
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         doc = session.createDocument(doc);
-        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(
-                doc);
-        assertEquals(7, availableRenditionDefinitions.size());
+        availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        assertRenditionDefinitions(availableRenditionDefinitions, "renditionOnlyForNote");
+
+        rendition = renditionService.getRendition(doc, "renditionOnlyForNote", false);
+        assertNotNull(rendition);
+        // others are filtered out
+        try {
+            rendition = renditionService.getRendition(doc, "renditionOnlyForFile", false);
+            fail();
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Rendition renditionOnlyForFile cannot be used"));
+        }
+
+        // ----- File
 
         doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(7, availableRenditionDefinitions.size());
+        assertRenditionDefinitions(availableRenditionDefinitions, "renditionOnlyForFile");
 
         doc.setPropertyValue("dc:rights", "Unauthorized");
         session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(6, availableRenditionDefinitions.size());
+        // renditionOnlyForFile filtered out, unauthorized
+        assertRenditionDefinitions(availableRenditionDefinitions);
+
+        // ----- Folder
 
         doc = session.createDocumentModel("/", "folder", "Folder");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(7, availableRenditionDefinitions.size());
+        assertRenditionDefinitions(availableRenditionDefinitions, "renditionOnlyForFolder");
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_FILTERS_COMPONENT_LOCATION);
     }
@@ -828,24 +849,44 @@ public class TestRenditionService {
         doc = session.createDocument(doc);
         List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(
                 doc);
-        assertEquals(8, availableRenditionDefinitions.size());
+        assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2");
 
         doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(8, availableRenditionDefinitions.size());
+        assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2");
 
         doc.setPropertyValue("dc:rights", "Unauthorized");
         session.saveDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(6, availableRenditionDefinitions.size());
+        assertRenditionDefinitions(availableRenditionDefinitions);
 
         doc = session.createDocumentModel("/", "folder", "Folder");
         doc = session.createDocument(doc);
         availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
-        assertEquals(8, availableRenditionDefinitions.size());
+        assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2");
 
         runtimeHarness.undeployContrib(RENDITION_CORE, RENDITION_DEFINITION_PROVIDERS_COMPONENT_LOCATION);
+    }
+
+    protected static void assertRenditionDefinitions(List<RenditionDefinition> actual, String... otherExpected) {
+        List<String> expected = new ArrayList<>(Arrays.asList( //
+                "iamlazy", //
+                "renditionDefinitionWithCustomOperationChain", //
+                "xmlExport", //
+                "zipExport", //
+                "zipTreeExport", //
+                "zipTreeExportLazily" //
+        ));
+        if (otherExpected != null) {
+            expected.addAll(Arrays.asList(otherExpected));
+            Collections.sort(expected);
+        }
+        assertEquals(expected, renditionNames(actual));
+    }
+
+    protected static List<String> renditionNames(List<RenditionDefinition> list) {
+        return list.stream().map(d -> d.getName()).sorted().collect(Collectors.toList());
     }
 
 }
