@@ -105,7 +105,7 @@ public abstract class IndexingCommandsStacker {
                 break;
             case DOCUMENT_CREATED_BY_COPY:
                 type = Type.INSERT;
-                recurse = doc.isFolder();
+                recurse = isFolderish(doc);
                 break;
             case BEFORE_DOC_UPDATE:
             case DOCUMENT_CHECKEDOUT:
@@ -117,15 +117,15 @@ public abstract class IndexingCommandsStacker {
                 break;
             case DOCUMENT_MOVED:
                 type = Type.UPDATE;
-                recurse = doc.isFolder();
+                recurse = isFolderish(doc);
                 break;
             case DOCUMENT_REMOVED:
                 type = Type.DELETE;
-                recurse = doc.isFolder();
+                recurse = isFolderish(doc);
                 break;
             case DOCUMENT_SECURITY_UPDATED:
                 type = Type.UPDATE_SECURITY;
-                recurse = doc.isFolder();
+                recurse = isFolderish(doc);
                 break;
             case DOCUMENT_CHILDREN_ORDER_CHANGED:
                 type = Type.UPDATE_DIRECT_CHILDREN;
@@ -141,6 +141,10 @@ public abstract class IndexingCommandsStacker {
         } else {
             cmds.add(type, sync, recurse);
         }
+    }
+
+    private boolean isFolderish(DocumentModel doc) {
+        return doc.isFolder() && ! doc.isVersion();
     }
 
     protected IndexingCommands getOrCreateCommands(DocumentModel doc) {
