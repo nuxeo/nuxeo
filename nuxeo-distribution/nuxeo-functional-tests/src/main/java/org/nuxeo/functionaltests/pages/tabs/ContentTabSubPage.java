@@ -160,7 +160,10 @@ public class ContentTabSubPage extends DocumentBasePage {
             // no document to remove
             return page;
         }
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         findElementWaitUntilEnabledAndClick(By.xpath(SELECT_ALL_BUTTON_XPATH));
+        arm.end();
         deleteSelectedDocuments();
 
         return asPage(ContentTabSubPage.class);
