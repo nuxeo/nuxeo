@@ -120,22 +120,18 @@ public class TestRenditionService {
         assertFalse(renditionDefinitions.isEmpty());
         assertEquals(8, renditionDefinitions.size());
 
-        RenditionDefinition rd = renditionDefinitions.stream()
-                                                     .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(
-                                                             renditionDefinition.getName()))
-                                                     .findFirst()
-                                                     .get();
+        RenditionDefinition rd = renditionDefinitions.stream().filter(
+                renditionDefinition -> PDF_RENDITION_DEFINITION.equals(
+                        renditionDefinition.getName())).findFirst().get();
         assertNotNull(rd);
         assertEquals(PDF_RENDITION_DEFINITION, rd.getName());
         assertEquals("blobToPDF", rd.getOperationChain());
         assertEquals("label.rendition.pdf", rd.getLabel());
         assertTrue(rd.isEnabled());
 
-        rd = renditionDefinitions.stream()
-                                 .filter(renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(
-                                         renditionDefinition.getName()))
-                                 .findFirst()
-                                 .get();
+        rd = renditionDefinitions.stream().filter(
+                renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(
+                        renditionDefinition.getName())).findFirst().get();
         assertNotNull(rd);
         assertEquals("renditionDefinitionWithCustomOperationChain", rd.getName());
         assertEquals("Dummy", rd.getOperationChain());
@@ -338,8 +334,10 @@ public class TestRenditionService {
             assertNotEquals(rendition.getHostDocument().getRef(), totoRendition.getHostDocument().getRef());
             long adminZipEntryCount = countZipEntries(new ZipInputStream(rendition.getBlob().getStream()));
             long totoZipEntryCount = countZipEntries(new ZipInputStream(totoRendition.getBlob().getStream()));
-            assertTrue(String.format("Admin rendition entry count %s should be greater than user rendition entry count %s",
-                    adminZipEntryCount, totoZipEntryCount), adminZipEntryCount > totoZipEntryCount);
+            assertTrue(
+                    String.format("Admin rendition entry count %s should be greater than user rendition entry count %s",
+                            adminZipEntryCount, totoZipEntryCount),
+                    adminZipEntryCount > totoZipEntryCount);
         }
 
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
@@ -424,7 +422,8 @@ public class TestRenditionService {
 
         for (int i = 1; i <= 2; i++) {
             String childFolderName = "childFolder" + i;
-            DocumentModel childFolder = session.createDocumentModel(folder.getPathAsString(), childFolderName, "Folder");
+            DocumentModel childFolder = session.createDocumentModel(folder.getPathAsString(), childFolderName,
+                    "Folder");
             childFolder = session.createDocument(childFolder);
             if (i == 1) {
                 acp = new ACPImpl();
@@ -436,10 +435,10 @@ public class TestRenditionService {
                 session.save();
             }
 
-            DocumentModel doc1 = createDocumentWithBlob(
-                    childFolder.getPathAsString(), createTextBlob("Dummy1 text", "dummy1.txt"), "dummy1-file", "File");
-            DocumentModel doc2 = createDocumentWithBlob(
-                    childFolder.getPathAsString(), createTextBlob("Dummy2 text", "dummy2.txt"), "dummy2-file", "File");
+            DocumentModel doc1 = createDocumentWithBlob(childFolder.getPathAsString(),
+                    createTextBlob("Dummy1 text", "dummy1.txt"), "dummy1-file", "File");
+            DocumentModel doc2 = createDocumentWithBlob(childFolder.getPathAsString(),
+                    createTextBlob("Dummy2 text", "dummy2.txt"), "dummy2-file", "File");
         }
 
         session.save();
@@ -604,7 +603,8 @@ public class TestRenditionService {
         Blob renditionBlob = bh.getBlob();
         assertNotNull(renditionBlob);
         assertEquals("application/pdf", renditionBlob.getMimeType());
-        List<Map<String, Serializable>> renditionFiles = (List<Map<String, Serializable>>) renditionDocument.getPropertyValue(FILES_FILES_PROPERTY);
+        List<Map<String, Serializable>> renditionFiles = (List<Map<String, Serializable>>) renditionDocument.getPropertyValue(
+                FILES_FILES_PROPERTY);
         assertTrue(renditionFiles.isEmpty());
     }
 
@@ -709,8 +709,8 @@ public class TestRenditionService {
         assertTrue(rendition.getBlob().getString().contains(desc));
 
         // verify the thread renditions
-        List<Rendition> renditions = Arrays.asList(new Rendition[] { t1.getDetachedRendition(),
-                t2.getDetachedRendition() });
+        List<Rendition> renditions = Arrays.asList(
+                new Rendition[] { t1.getDetachedRendition(), t2.getDetachedRendition() });
         for (Rendition rend : renditions) {
             assertNotNull(rend);
             assertTrue(rend.isStored());
@@ -798,7 +798,8 @@ public class TestRenditionService {
 
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         doc = session.createDocument(doc);
-        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(
+                doc);
         assertEquals(7, availableRenditionDefinitions.size());
 
         doc = session.createDocumentModel("/", "file", "File");
@@ -825,7 +826,8 @@ public class TestRenditionService {
 
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         doc = session.createDocument(doc);
-        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
+        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(
+                doc);
         assertEquals(8, availableRenditionDefinitions.size());
 
         doc = session.createDocumentModel("/", "file", "File");
