@@ -21,6 +21,7 @@
       <event>binaryTextUpdated</event>
       <event>documentTagUpdated</event>
       <event>documentProxyUpdated</event>
+      <event>childrenOrderChanged</event>
     </listener>
 
   </extension>

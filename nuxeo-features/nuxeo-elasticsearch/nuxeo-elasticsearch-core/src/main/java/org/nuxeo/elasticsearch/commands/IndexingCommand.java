@@ -51,7 +51,7 @@ public class IndexingCommand implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public enum Type {
-        INSERT, UPDATE, UPDATE_SECURITY, DELETE
+        INSERT, UPDATE, UPDATE_SECURITY, DELETE, UPDATE_DIRECT_CHILDREN,
     }
 
     public static final String PREFIX = "IndexingCommand-";
