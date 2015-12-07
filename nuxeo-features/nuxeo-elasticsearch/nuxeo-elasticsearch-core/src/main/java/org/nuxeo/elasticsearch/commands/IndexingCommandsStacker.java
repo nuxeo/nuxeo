@@ -18,6 +18,17 @@
 
 package org.nuxeo.elasticsearch.commands;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.elasticsearch.ElasticSearchConstants;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
+import org.nuxeo.runtime.api.Framework;
+
+import java.util.Map;
+
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BINARYTEXT_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
@@ -29,17 +40,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PROXY_UPD
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_TAG_UPDATED;
-
-import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.elasticsearch.ElasticSearchConstants;
-import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Contains logic to stack ElasticSearch commands depending on Document events This class is mainly here to make testing
@@ -98,36 +98,36 @@ public abstract class IndexingCommandsStacker {
         Type type;
         boolean recurse = false;
         switch (eventId) {
-        case DOCUMENT_CREATED:
-        case LifeCycleConstants.TRANSITION_EVENT:
-            type = Type.INSERT;
-            break;
-        case DOCUMENT_CREATED_BY_COPY:
-            type = Type.INSERT;
-            recurse = doc.isFolder();
-            break;
-        case BEFORE_DOC_UPDATE:
-        case DOCUMENT_CHECKEDOUT:
-        case DOCUMENT_CHECKEDIN:
-        case BINARYTEXT_UPDATED:
-        case DOCUMENT_TAG_UPDATED:
-        case DOCUMENT_PROXY_UPDATED:
-            type = Type.UPDATE;
-            break;
-        case DOCUMENT_MOVED:
-            type = Type.UPDATE;
-            recurse = doc.isFolder();
-            break;
-        case DOCUMENT_REMOVED:
-            type = Type.DELETE;
-            recurse = doc.isFolder();
-            break;
-        case DOCUMENT_SECURITY_UPDATED:
-            type = Type.UPDATE_SECURITY;
-            recurse = doc.isFolder();
-            break;
-        default:
-            return;
+            case DOCUMENT_CREATED:
+            case LifeCycleConstants.TRANSITION_EVENT:
+                type = Type.INSERT;
+                break;
+            case DOCUMENT_CREATED_BY_COPY:
+                type = Type.INSERT;
+                recurse = doc.isFolder();
+                break;
+            case BEFORE_DOC_UPDATE:
+            case DOCUMENT_CHECKEDOUT:
+            case DOCUMENT_CHECKEDIN:
+            case BINARYTEXT_UPDATED:
+            case DOCUMENT_TAG_UPDATED:
+            case DOCUMENT_PROXY_UPDATED:
+                type = Type.UPDATE;
+                break;
+            case DOCUMENT_MOVED:
+                type = Type.UPDATE;
+                recurse = doc.isFolder();
+                break;
+            case DOCUMENT_REMOVED:
+                type = Type.DELETE;
+                recurse = doc.isFolder();
+                break;
+            case DOCUMENT_SECURITY_UPDATED:
+                type = Type.UPDATE_SECURITY;
+                recurse = doc.isFolder();
+                break;
+            default:
+                return;
         }
         if (sync && recurse) {
             // split into 2 commands one sync and an async recurse
