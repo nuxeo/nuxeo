@@ -22,16 +22,17 @@ import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.binary.AbstractBinaryManager;
@@ -41,7 +42,6 @@ import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -118,11 +118,12 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         return gridFS;
     }
 
+    /**
+     * A binary backed by GridFS.
+     */
     protected class GridFSBinary extends Binary {
 
         private static final long serialVersionUID = 1L;
-
-        protected final long length;
 
         protected GridFSBinary(String digest, long length, String blobProviderId) {
             super(digest, blobProviderId);
@@ -130,50 +131,53 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
         }
 
         @Override
-        public long getLength() {
-            return length;
-        }
-
-        @Override
         public InputStream getStream() {
             GridFSDBFile dbFile = gridFS.findOne(digest);
-            return dbFile.getInputStream();
-        }
-
-        @Override
-        public File getFile() {
-            // TODO NXP-18405 Remove this dedicated Binary impl
-            if (file == null || !file.exists()) {
-                try {
-                    file = File.createTempFile("nuxeo-gridfs-", ".bin");
-                    GridFSDBFile dbFile = gridFS.findOne(digest);
-                    IOUtils.copy(dbFile.getInputStream(), new FileOutputStream(file));
-                    Framework.trackFile(file, this);
-                } catch (IOException e) {
-                    throw new NuxeoException("Unable to extract file from GridFS Stream", e);
-                }
-            }
-            return file;
+            return dbFile == null ? null : dbFile.getInputStream();
         }
     }
 
     @Override
-    protected Binary getBinary(InputStream stream) throws IOException {
-
-        GridFSInputFile gFile = gridFS.createFile(stream, true);
-        gFile.save();
-        String digest = gFile.getMD5();
-        long length = gFile.getLength();
-
-        // check if the file already existed ?
-        GridFSDBFile existingFile = gridFS.findOne(digest);
-        if (existingFile == null) {
-            gFile.setFilename(digest);
-            gFile.save();
-        } else {
-            gridFS.remove(gFile);
+    public Binary getBinary(Blob blob) throws IOException {
+        if (!(blob instanceof FileBlob)) {
+            return super.getBinary(blob); // just open the stream and call getBinary(InputStream)
         }
+        // we already have a file so can compute the length and digest efficiently
+        File file = ((FileBlob) blob).getFile();
+        long length = file.length();
+        String digest;
+        try (InputStream in = new FileInputStream(file)) {
+            digest = DigestUtils.md5Hex(in);
+        }
+        // if the digest is not already known then save to GridFS
+        GridFSDBFile dbFile = gridFS.findOne(digest);
+        if (dbFile == null) {
+            try (InputStream in = new FileInputStream(file)) {
+                GridFSInputFile inputFile = gridFS.createFile(in, digest);
+                inputFile.save();
+            }
+        }
+        return new GridFSBinary(digest, length, blobProviderId);
+    }
 
+    @Override
+    protected Binary getBinary(InputStream in) throws IOException {
+        // save the file to GridFS
+        GridFSInputFile inputFile = gridFS.createFile(in, true);
+        inputFile.save();
+        // now we know length and digest
+        long length = inputFile.getLength();
+        String digest = inputFile.getMD5();
+        // if the digest is already known then reuse it instead
+        GridFSDBFile dbFile = gridFS.findOne(digest);
+        if (dbFile == null) {
+            // no existing file, set its filename as the digest
+            inputFile.setFilename(digest);
+            inputFile.save();
+        } else {
+            // file already existed, no need for the temporary one
+            gridFS.remove(inputFile);
+        }
         return new GridFSBinary(digest, length, blobProviderId);
     }
 
