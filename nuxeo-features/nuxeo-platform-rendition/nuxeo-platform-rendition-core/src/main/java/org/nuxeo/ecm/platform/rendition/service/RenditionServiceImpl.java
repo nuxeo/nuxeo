@@ -343,8 +343,12 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
                 String message = "The rendition definition '%s' is not registered";
                 throw new NuxeoException(String.format(message, renditionName));
             }
+        } else {
+            // we have a rendition definition but we must check that it can be used for this doc
+            if (!renditionDefinitionRegistry.canUseRenditionDefinition(renditionDefinition, doc)) {
+                throw new NuxeoException("Rendition " + renditionName + " cannot be used for this doc " + doc.getId());
+            }
         }
-
         if (!renditionDefinition.getProvider().isAvailable(doc, renditionDefinition)) {
             throw new NuxeoException("Rendition " + renditionName + " not available for this doc " + doc.getId());
         }
