@@ -72,7 +72,7 @@ public class ContextualActions extends AbstractPage {
      * @since 8.1
      */
     public ContextualActions openMore() {
-        String xpath = "//div[@id=\"nxw_documentActionsUpperButtons_panel\"]/div/ul/li";
+        final String xpath = "//div[@id=\"nxw_documentActionsUpperButtons_panel\"]/div/ul/li";
         driver.findElement(By.xpath(xpath)).click();
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
