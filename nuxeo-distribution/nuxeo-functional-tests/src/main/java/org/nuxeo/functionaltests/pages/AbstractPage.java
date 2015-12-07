@@ -283,4 +283,14 @@ public abstract class AbstractPage {
         // you are now outside both frames
         return driver.switchTo().frame(id);
     }
+
+    /**
+     * Helper method to adapt tests behaviour when ajaxifying tabs.
+     *
+     * @since 6.0-HF24
+     */
+    public boolean useAjaxTabs() {
+        return false;
+    }
+
 }

@@ -37,10 +37,14 @@ public class HomePage extends DocumentBasePage {
     }
 
     public CollectionsPage goToCollections() {
-        AjaxRequestManager arm = new AjaxRequestManager(driver);
-        arm.begin();
-        menu.findElement(By.linkText("Collections")).click();
-        arm.end();
+        if (useAjaxTabs()) {
+            AjaxRequestManager arm = new AjaxRequestManager(driver);
+            arm.begin();
+            menu.findElement(By.linkText("Collections")).click();
+            arm.end();
+        } else {
+            menu.findElement(By.linkText("Collections")).click();
+        }
         return asPage(CollectionsPage.class);
     }
 
