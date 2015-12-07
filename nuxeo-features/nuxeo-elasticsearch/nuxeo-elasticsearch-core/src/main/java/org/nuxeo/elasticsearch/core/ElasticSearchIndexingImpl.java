@@ -139,7 +139,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     void processBulkIndexCommands(List<IndexingCommand> cmds) {
         BulkRequestBuilder bulkRequest = esa.getClient().prepareBulk();
         for (IndexingCommand cmd : cmds) {
-            if (cmd.getType() == Type.DELETE) {
+            if (cmd.getType() == Type.DELETE || cmd.getType() == Type.UPDATE_DIRECT_CHILDREN) {
                 continue;
             }
             try {
@@ -185,9 +185,14 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     @Override
     public void indexNonRecursive(IndexingCommand cmd) {
+        Type type = cmd.getType();
+        if (type == Type.UPDATE_DIRECT_CHILDREN) {
+            // the parent don't need to be indexed
+            return;
+        }
         Context stopWatch = null;
         try {
-            if (cmd.getType() == Type.DELETE) {
+            if (type == Type.DELETE) {
                 stopWatch = deleteTimer.time();
                 processDeleteCommand(cmd);
             } else {

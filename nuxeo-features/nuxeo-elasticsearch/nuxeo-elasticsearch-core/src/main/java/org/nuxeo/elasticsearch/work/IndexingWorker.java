@@ -18,15 +18,16 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_USING_CHILDREN_TRAVERSAL_PROPERTY;
-
-import java.util.List;
-
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
+import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.List;
+
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_USING_CHILDREN_TRAVERSAL_PROPERTY;
 
 /**
  * Simple Indexing Worker
@@ -50,6 +51,7 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
                 case INSERT:
                 case UPDATE:
                 case UPDATE_SECURITY:
+                case UPDATE_DIRECT_CHILDREN:
                     return true;
                 case DELETE:
                     // recurse deletion is done atomically
@@ -65,18 +67,27 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         for (IndexingCommand cmd : cmds) {
             if (needRecurse(cmd)) {
-                Work subWorker;
-                boolean useChildrenWorker = Boolean.parseBoolean(Framework.getProperty(REINDEX_USING_CHILDREN_TRAVERSAL_PROPERTY,
-                        "false"));
-                if (useChildrenWorker) {
-                    subWorker = new ChildrenIndexingWorker(cmd);
-                } else {
-                    subWorker = new ScrollingIndexingWorker(cmd.getRepositoryName(), String.format(
-                            "SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", cmd.getTargetDocumentId()));
-                }
-                wm.schedule(subWorker);
+                wm.schedule(getWorker(cmd));
             }
         }
+    }
+
+    private Work getWorker(IndexingCommand cmd) {
+        Work ret;
+        if (cmd.getType() == Type.UPDATE_DIRECT_CHILDREN) {
+            ret = new ScrollingIndexingWorker(cmd.getRepositoryName(), String.format(
+                    "SELECT ecm:uuid FROM Document WHERE ecm:parentId = '%s'", cmd.getTargetDocumentId()));
+        } else {
+            boolean useChildrenWorker = Boolean.parseBoolean(Framework.getProperty(REINDEX_USING_CHILDREN_TRAVERSAL_PROPERTY,
+                    "false"));
+            if (useChildrenWorker) {
+                ret = new ChildrenIndexingWorker(cmd);
+            } else {
+                ret = new ScrollingIndexingWorker(cmd.getRepositoryName(), String.format(
+                        "SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", cmd.getTargetDocumentId()));
+            }
+        }
+        return ret;
     }
 
     public String getCmdsDigest() {
