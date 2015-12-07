@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -67,8 +68,8 @@ import static org.junit.Assume.assumeTrue;
  * Test "on the fly" indexing via the listener system
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.tag" })
+@Features({RepositoryElasticSearchFeature.class})
+@Deploy({"org.nuxeo.ecm.platform.tag"})
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestAutomaticIndexing {
 
@@ -659,5 +660,41 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(file2.getId(), ret.get(2).getId());
     }
 
+    @Test
+    public void shouldNotIndexRecursivelyVersionFolder() throws Exception {
+        startTransaction();
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel file1 = new DocumentModelImpl("/folder", "testfile1", "File");
+        file1 = session.createDocument(file1);
+        DocumentModel file2 = new DocumentModelImpl("/folder", "testfile2", "File");
+        file2 = session.createDocument(file2);
+
+        folder.setPropertyValue("dc:title", "v1");
+        folder = session.saveDocument(folder);
+        DocumentRef v1 = folder.checkIn(VersioningOption.MAJOR, "init");
+
+        folder.setPropertyValue("dc:title", "v2");
+        folder = session.saveDocument(folder);
+        DocumentRef v2 = folder.checkIn(VersioningOption.MAJOR, "update");
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        // 3 docs (2 files + 1 folder checkout) + 2 versions of folder
+        assertNumberOfCommandProcessed(5);
+        startTransaction();
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
+        Assert.assertEquals(5, ret.totalSize());
+
+        // delete the first version
+        session.removeDocument(v1);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(1);
+        startTransaction();
+
+        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
+        Assert.assertEquals(4, ret.totalSize());
+    }
 
 }
