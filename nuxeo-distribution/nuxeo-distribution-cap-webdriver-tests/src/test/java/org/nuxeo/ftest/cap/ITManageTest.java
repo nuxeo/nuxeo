@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -37,9 +38,9 @@ import org.openqa.selenium.WebElement;
  */
 public class ITManageTest extends AbstractTest {
 
-    protected final static String TEST_FILE_TITLE = "Test File description";
+    protected final static String TEST_FILE_TITLE = "Trash Test File " + new Date().getTime();
 
-    protected final static String WORKSPACE_TITLE = "workspace";
+    protected final static String WORKSPACE_TITLE = "Trash Test Workspace " + new Date().getTime();
 
     /**
      * Test trash management.
@@ -67,23 +68,26 @@ public class ITManageTest extends AbstractTest {
 
         List<WebElement> docs = content.getChildDocumentRows();
         assertNotNull(docs);
-        assertEquals(docs.size(), 5);
+        assertEquals(5, docs.size());
         // Select all files and remove them.
-        content.removeAllDocuments().getChildDocumentRows();
-        docs = content.getChildDocumentRows();
+        docs = content.removeAllDocuments().getChildDocumentRows();
         assertNotNull(docs);
-        assertEquals(docs.size(), 0);
+        assertEquals(0, docs.size());
 
         // Go to trash page.
         TrashSubPage trashSubPage = asPage(DocumentBasePage.class).getManageTab().getTrashSubTab();
         docs = trashSubPage.getChildDocumentRows();
         assertNotNull(docs);
-        assertEquals(docs.size(), 5);
+        assertEquals(5, docs.size());
 
         // Empty the trash.
         docs = trashSubPage.emptyTrash().getChildDocumentRows();
         assertNotNull(docs);
-        assertEquals(docs.size(), 0);
+        assertEquals(0, docs.size());
+
+        // cleanup workspace
+        asPage(DocumentBasePage.class).getNavigationSubPage().goToDocument("Workspaces");
+        asPage(ContentTabSubPage.class).removeDocument(WORKSPACE_TITLE);
     }
 
 }

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.Alert;
@@ -55,12 +56,11 @@ public class TrashSubPage extends AbstractPage {
     }
 
     public TrashSubPage emptyTrash() {
-        TrashSubPage page = asPage(TrashSubPage.class);
         findElementWaitUntilEnabledAndClick(By.id(EMPTY_TRASH_BUTTON_ID));
         Alert alert = driver.switchTo().alert();
         assertEquals("Permanently delete all documents in trash?", alert.getText());
         alert.accept();
-        return page;
+        return asPage(TrashSubPage.class);
     }
 
     /**
@@ -73,7 +73,10 @@ public class TrashSubPage extends AbstractPage {
             // no documents to remove
             return page;
         }
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         findElementWaitUntilEnabledAndClick(By.id(SELECT_ALL_BUTTON_ID));
+        arm.end();
 
         deleteSelectedDocuments();
 
