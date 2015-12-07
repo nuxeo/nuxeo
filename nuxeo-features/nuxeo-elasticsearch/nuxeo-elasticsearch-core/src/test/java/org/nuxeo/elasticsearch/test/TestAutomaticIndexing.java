@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
@@ -59,7 +60,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 
 /**
  * Test "on the fly" indexing via the listener system
@@ -611,5 +613,49 @@ public class TestAutomaticIndexing {
 
         startTransaction();
     }
+
+    @Test
+    public void shouldIndexOrderedFolder() throws Exception {
+        startTransaction();
+        DocumentModel ofolder = session.createDocumentModel("/", "ofolder", "OrderedFolder");
+        ofolder = session.createDocument(ofolder);
+        DocumentModel file1 = new DocumentModelImpl("/ofolder", "testfile1", "File");
+        file1 = session.createDocument(file1);
+        DocumentModel file2 = new DocumentModelImpl("/ofolder", "testfile2", "File");
+        file2 = session.createDocument(file2);
+        DocumentModel file3 = new DocumentModelImpl("/ofolder", "testfile3", "File");
+        file3 = session.createDocument(file3);
+        DocumentModel folder4 = new DocumentModelImpl("/ofolder", "folder4", "Folder");
+        folder4 = session.createDocument(folder4);
+        DocumentModel file = new DocumentModelImpl("/ofolder/folder4", "testfile", "File");
+        file = session.createDocument(file);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(6);
+        startTransaction();
+
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(
+                String.format("SELECT * FROM Document WHERE ecm:parentId='%s' ORDER BY ecm:pos", ofolder.getId())));
+        Assert.assertEquals(4, ret.totalSize());
+        Assert.assertEquals(file1.getId(), ret.get(0).getId());
+        Assert.assertEquals(file2.getId(), ret.get(1).getId());
+        Assert.assertEquals(file3.getId(), ret.get(2).getId());
+
+        session.orderBefore(ofolder.getRef(), "testfile3", "testfile2");
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        // only the 4 direct children are reindexed
+        assertNumberOfCommandProcessed(4);
+        startTransaction();
+
+        ret = ess.query(new NxQueryBuilder(session).nxql(
+                String.format("SELECT * FROM Document WHERE ecm:parentId='%s' ORDER BY ecm:pos", ofolder.getId())));
+        Assert.assertEquals(4, ret.totalSize());
+        Assert.assertEquals(file1.getId(), ret.get(0).getId());
+        Assert.assertEquals(file3.getId(), ret.get(1).getId());
+        Assert.assertEquals(file2.getId(), ret.get(2).getId());
+    }
+
 
 }
