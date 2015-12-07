@@ -19,6 +19,7 @@ package org.nuxeo.ftest.formsLayoutDemo;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 
 /**
  * @since 7.4
@@ -37,11 +38,16 @@ public class ITIntWidgetTest extends AbstractWidgetPageTest {
         checkValueRequired(false);
         submitDemo();
         checkValueRequired(true);
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         getEditWidget().setInputValue("test");
+        arm.end();
         submitDemo();
         checkValueRequired(false);
         assertEquals("'test' is not a number. Example: 99", getEditWidgetMessage());
+        arm.begin();
         getEditWidget().setInputValue("3");
+        arm.end();
         submitDemo();
         checkValueRequired(false);
         assertEquals("", getEditWidgetMessage());
