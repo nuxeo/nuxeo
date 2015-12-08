@@ -59,20 +59,22 @@
     <a4j:region id="files_region">
       <a4j:outputPanel id="files_panel" layout="block">
         <c:forEach id="files_input" items="#{currentDocument.files.files}" var="file" varStatus="counter">
-          <div class="simpleBox">
-            <a4j:commandLink immediate="true"
-              onclick="if( !confirmRemoveFiles('#{nxu:javaScriptEscape(currentDocument.files.files[counter.index].filename)}')) return false;"
-              actionListener="#{FileManageActions.performAction}"
-              id="files_delete" render="document_files_edit"
-              bypassUpdates="true">
-              <h:graphicImage value="/icons/delete.png" alt="#{messages['command.remove.file']}" />
-              <f:param name="index" value="#{counter.index}" />
-            </a4j:commandLink>
+          <nxu:set var="filename" value="#{currentDocument.files.files[counter.index].file.filename != null ? currentDocument.files.files[counter.index].file.filename : currentDocument.files.files[counter.index].filename}">
+            <div class="simpleBox">
+              <a4j:commandLink immediate="true"
+                onclick="if( !confirmRemoveFiles('#{nxu:javaScriptEscape(filename)}')) return false;"
+                actionListener="#{FileManageActions.performAction}"
+                id="files_delete" render="document_files_edit"
+                bypassUpdates="true">
+                <h:graphicImage value="/icons/delete.png" alt="#{messages['command.remove.file']}" />
+                <f:param name="index" value="#{counter.index}" />
+              </a4j:commandLink>
 
-            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', counter.index, 'file', currentDocument.files.files[counter.index].filename)}">
-              <nxh:outputText value="#{currentDocument.files.files[counter.index].filename}" />
-            </nxh:outputLink>
-          </div>
+              <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', counter.index, 'file', filename)}">
+                <nxh:outputText value="#{filename}" />
+              </nxh:outputLink>
+            </div>
+          </nxu:set>
         </c:forEach>
       </a4j:outputPanel>
     </a4j:region>
