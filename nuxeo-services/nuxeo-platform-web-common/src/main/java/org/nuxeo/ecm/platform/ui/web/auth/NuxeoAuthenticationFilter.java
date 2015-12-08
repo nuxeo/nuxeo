@@ -42,6 +42,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.USERIDENT_KEY;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -66,6 +67,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
@@ -306,8 +308,10 @@ public class NuxeoAuthenticationFilter implements Filter {
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
             Throwable cause = e.getCause();
             if (cause instanceof DirectoryException) {
-                if (cause.getCause() instanceof NamingException
-                        && cause.getMessage().contains("LDAP response read timed out")) {
+                Throwable rootCause = ExceptionUtils.getRootCause(cause);
+                if (rootCause instanceof NamingException
+                        && rootCause.getMessage().contains("LDAP response read timed out")
+                        || rootCause instanceof SocketException) {
                     httpRequest.setAttribute(LOGIN_STATUS_CODE, HttpServletResponse.SC_GATEWAY_TIMEOUT);
                 }
                 return DIRECTORY_ERROR_PRINCIPAL;
