@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.AutomationRenderer;
@@ -80,6 +81,26 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
                 List<Blob> blobs = ts.getBlobs(key);
                 ts.release(key);
                 return blobs;
+            } else {
+                WorkManager wm = Framework.getService(WorkManager.class);
+                String workId = (String) ts.getParameter(key, WORKERID_KEY);
+                Work work = wm.find(workId, State.COMPLETED);
+                if (work == null) {
+                    work = wm.find(workId, State.FAILED);
+                }
+                if (work != null) {
+                    State state = work.getWorkInstanceState();
+                    if (state == State.FAILED) {
+                        // return an empty Blob
+                        List<Blob> blobs = new ArrayList<Blob>();
+                        StringBlob emptyBlob = new StringBlob("");
+                        emptyBlob.setFilename("error");
+                        emptyBlob.setMimeType("text/plain;" + LazyRendition.ERROR_MARKER);
+                        blobs.add(emptyBlob);
+                        ts.release(key);
+                        return blobs;
+                    }
+                }
             }
         }
         // return an empty Blob

@@ -46,6 +46,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 })
 @LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml", //
         "org.nuxeo.ecm.platform.rendition.core:test-directories-contrib.xml", //
+        "org.nuxeo.ecm.platform.rendition.core:test-automation-contrib.xml" //
 })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 public class RenditionFeature extends SimpleFeature {
