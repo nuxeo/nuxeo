@@ -308,7 +308,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             if (cause instanceof DirectoryException) {
                 if (cause.getCause() instanceof NamingException
                         && cause.getMessage().contains("LDAP response read timed out")) {
-                    httpRequest.setAttribute(LOGIN_STATUS_CODE, HttpServletResponse.SC_REQUEST_TIMEOUT);
+                    httpRequest.setAttribute(LOGIN_STATUS_CODE, HttpServletResponse.SC_GATEWAY_TIMEOUT);
                 }
                 return DIRECTORY_ERROR_PRINCIPAL;
             }
