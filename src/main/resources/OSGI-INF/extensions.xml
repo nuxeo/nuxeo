@@ -59,6 +59,9 @@
     </type>
   </extension>
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="actions">
+    <action id="TAB_CONTENT">
+      <filter-id>denyForEasyShareFolder</filter-id>
+    </action>
     <action id="TAB_VIEW">
       <filter-id>denyForEasyShareFolder</filter-id>
     </action>
