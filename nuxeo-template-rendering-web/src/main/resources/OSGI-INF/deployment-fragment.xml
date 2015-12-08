@@ -26,12 +26,6 @@
       <redirect />
     </navigation-case>
 
-    <navigation-case>
-      <from-outcome>associateTemplate</from-outcome>
-      <to-view-id>/associateTemplate.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
   </extension>
 
   <install>
