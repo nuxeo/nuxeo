@@ -38,12 +38,7 @@
        icon="/icons/doctemplate.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <properties>
-        <property name="iframe">
-          #{restHelper.getDocumentUrl(currentDocument,'associateTemplate',false)}
-        </property>
-        <property name="width">550</property>
-        <property name="height">150</property>
-        <property name="scrolling">no</property>
+        <property name="include">/associateTemplate.xhtml</property>
       </properties>
       <filter id="canAssociateTemplate">
         <rule grant="false">
