@@ -69,6 +69,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
+import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -119,8 +120,8 @@ public class TestRenditionService {
     @Test
     public void testDeclaredRenditionDefinitions() {
         List<RenditionDefinition> renditionDefinitions = renditionService.getDeclaredRenditionDefinitions();
-        assertFalse(renditionDefinitions.isEmpty());
-        assertEquals(8, renditionDefinitions.size());
+        assertRenditionDefinitions(renditionDefinitions, PDF_RENDITION_DEFINITION,
+                "renditionDefinitionWithUnknownOperationChain");
 
         RenditionDefinition rd = renditionDefinitions.stream().filter(
                 renditionDefinition -> PDF_RENDITION_DEFINITION.equals(
@@ -146,7 +147,8 @@ public class TestRenditionService {
         file = session.createDocument(file);
 
         List<RenditionDefinition> renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
-        assertEquals(6, renditionDefinitions.size());
+        int availableRenditionDefinitionCount = renditionDefinitions.size();
+        assertTrue(availableRenditionDefinitionCount > 0);
 
         // add a blob
         Blob blob = Blobs.createBlob("I am a Blob");
@@ -155,7 +157,7 @@ public class TestRenditionService {
 
         // rendition should be available now
         renditionDefinitions = renditionService.getAvailableRenditionDefinitions(file);
-        assertEquals(7, renditionDefinitions.size());
+        assertEquals(availableRenditionDefinitionCount + 1, renditionDefinitions.size());
 
     }
 
@@ -280,6 +282,48 @@ public class TestRenditionService {
 
         assertTrue(rendition.getHostDocument().isVersion());
 
+    }
+
+    @Test
+    public void doErrorRendition() {
+        DocumentModel file = createBlobFile();
+        session.save();
+        nextTransaction();
+
+        String renditionName = "delayedErrorAutomationRendition";
+        Rendition rendition = renditionService.getRendition(file, renditionName);
+        assertNotNull(rendition);
+        try {
+            rendition.getBlob();
+            fail();
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("DelayedError"));
+        }
+    }
+
+    @Test
+    public void doErrorLazyRendition() throws Exception {
+        DocumentModel file = createBlobFile();
+        session.save();
+        nextTransaction();
+
+        String renditionName = "lazyDelayedErrorAutomationRendition";
+        Rendition rendition = renditionService.getRendition(file, renditionName);
+        assertNotNull(rendition);
+        Blob blob = rendition.getBlob();
+        assertEquals(0, blob.getLength());
+        String mimeType = blob.getMimeType();
+        assertTrue(mimeType, mimeType.contains(LazyRendition.EMPTY_MARKER));
+
+        Thread.sleep(2000);
+        eventService.waitForAsyncCompletion(5000);
+
+        rendition = renditionService.getRendition(file, renditionName);
+        blob = rendition.getBlob();
+        mimeType = blob.getMimeType();
+        assertEquals(0, blob.getLength());
+        assertFalse(mimeType, mimeType.contains(LazyRendition.EMPTY_MARKER));
+        assertTrue(mimeType, mimeType.contains(LazyRendition.ERROR_MARKER));
     }
 
     @Test
@@ -871,7 +915,10 @@ public class TestRenditionService {
 
     protected static void assertRenditionDefinitions(List<RenditionDefinition> actual, String... otherExpected) {
         List<String> expected = new ArrayList<>(Arrays.asList( //
+                "delayedErrorAutomationRendition", //
                 "iamlazy", //
+                "lazyAutomation", //
+                "lazyDelayedErrorAutomationRendition", //
                 "renditionDefinitionWithCustomOperationChain", //
                 "xmlExport", //
                 "zipExport", //

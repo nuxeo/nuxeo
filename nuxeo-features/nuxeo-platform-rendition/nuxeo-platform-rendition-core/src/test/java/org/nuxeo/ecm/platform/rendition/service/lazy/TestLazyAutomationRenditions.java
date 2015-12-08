@@ -47,7 +47,9 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RenditionFeature.class, TransientStoreFeature.class })
-@LocalDeploy("org.nuxeo.ecm.platform.rendition.core:test-lazy-automation-rendition-contrib.xml")
+@LocalDeploy({ "org.nuxeo.ecm.platform.rendition.core:test-automation-contrib.xml", //
+        "org.nuxeo.ecm.platform.rendition.core:test-lazy-rendition-contrib.xml" //
+})
 /**
  *
  * Check that LazyRendition work via Nuxeo native API
