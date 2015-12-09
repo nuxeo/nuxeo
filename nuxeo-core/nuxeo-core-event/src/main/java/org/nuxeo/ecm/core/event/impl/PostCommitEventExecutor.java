@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
@@ -206,9 +207,12 @@ public class PostCommitEventExecutor {
 
         protected final EventBundle bundle;
 
+        protected String callerThread;
+
         public EventBundleRunner(List<EventListenerDescriptor> listeners, EventBundle bundle) {
             this.listeners = listeners;
             this.bundle = bundle;
+            callerThread = SequenceTracer.getThreadName();
         }
 
         @Override
@@ -216,6 +220,7 @@ public class PostCommitEventExecutor {
             if (log.isDebugEnabled()) {
                 log.debug("Events postcommit execution starting in thread: " + Thread.currentThread().getName());
             }
+            SequenceTracer.startFrom(callerThread, "Postcommit", "#ff410f");
             long t0 = System.currentTimeMillis();
             EventStats stats = Framework.getLocalService(EventStats.class);
 
@@ -227,6 +232,7 @@ public class PostCommitEventExecutor {
                 if (log.isDebugEnabled()) {
                     log.debug("Events postcommit execution start for listener: " + listener.getName());
                 }
+                SequenceTracer.start("run listener " + listener.getName());
                 long t1 = System.currentTimeMillis();
 
                 boolean ok = false;
@@ -240,6 +246,7 @@ public class PostCommitEventExecutor {
 
                     if (Thread.currentThread().isInterrupted()) {
                         log.error("Events postcommit execution interrupted for listener: " + listener.getName());
+                        SequenceTracer.destroy("interrupted");
                         ok = false;
                     } else {
                         ok = true;
@@ -261,20 +268,24 @@ public class PostCommitEventExecutor {
                             }
                             TransactionHelper.commitOrRollbackTransaction();
                         }
+                        long elapsed = System.currentTimeMillis() - t1;
                         if (stats != null) {
-                            stats.logAsyncExec(listener, System.currentTimeMillis() - t1);
+                            stats.logAsyncExec(listener, elapsed);
                         }
                         if (log.isDebugEnabled()) {
                             log.debug("Events postcommit execution end for listener: " + listener.getName() + " in "
-                                    + (System.currentTimeMillis() - t1) + "ms");
+                                    + elapsed + "ms");
                         }
+                        SequenceTracer.stop("listener done " + elapsed + " ms");
                     }
                 }
                 // even if interrupted due to timeout, we continue the loop
             }
+            long elapsed = System.currentTimeMillis() - t0;
             if (log.isDebugEnabled()) {
-                log.debug("Events postcommit execution finished in " + (System.currentTimeMillis() - t0) + "ms");
+                log.debug("Events postcommit execution finished in " + elapsed + "ms");
             }
+            SequenceTracer.stop("postcommit done" + elapsed + " ms");
             return Boolean.TRUE; // no error to report
         }
     }
@@ -293,14 +304,17 @@ public class PostCommitEventExecutor {
         protected final List<EventListenerDescriptor> listeners;
 
         protected final EventBundle bundle;
+        protected final String callerThread;
 
         public EventBundleBulkRunner(List<EventListenerDescriptor> listeners, EventBundle bundle) {
             this.listeners = listeners;
             this.bundle = bundle;
+            callerThread = SequenceTracer.getThreadName();
         }
 
         @Override
         public Boolean call() {
+            SequenceTracer.startFrom(callerThread, "BulkPostcommit", "#ff410f");
             if (log.isDebugEnabled()) {
                 log.debug("Events postcommit bulk execution starting in thread: " + Thread.currentThread().getName());
             }
@@ -318,6 +332,7 @@ public class PostCommitEventExecutor {
                     if (filtered.isEmpty()) {
                         continue;
                     }
+                    SequenceTracer.start("run listener " + listener.getName());
                     if (log.isDebugEnabled()) {
                         log.debug("Events postcommit bulk execution start for listener: " + listener.getName());
                     }
@@ -337,10 +352,12 @@ public class PostCommitEventExecutor {
                                         + listener.getName(), e);
                         return Boolean.FALSE; // report error
                     } finally {
+                        long elapsed = System.currentTimeMillis() - t1;
                         if (log.isDebugEnabled()) {
                             log.debug("Events postcommit bulk execution end for listener: " + listener.getName()
-                                    + " in " + (System.currentTimeMillis() - t1) + "ms");
+                                    + " in " + elapsed + "ms");
                         }
+                        SequenceTracer.stop("listener done " + elapsed + " ms");
                     }
                     if (interrupt) {
                         break;
@@ -361,9 +378,10 @@ public class PostCommitEventExecutor {
                         TransactionHelper.commitOrRollbackTransaction();
                     }
                 }
+                long elapsed = System.currentTimeMillis() - t0;
+                SequenceTracer.stop("BulkPostcommit done " + elapsed + " ms");
                 if (log.isDebugEnabled()) {
-                    log.debug("Events postcommit bulk execution finished in " + (System.currentTimeMillis() - t0)
-                            + "ms");
+                    log.debug("Events postcommit bulk execution finished in " + elapsed + "ms");
                 }
             }
             return Boolean.TRUE; // no error to report

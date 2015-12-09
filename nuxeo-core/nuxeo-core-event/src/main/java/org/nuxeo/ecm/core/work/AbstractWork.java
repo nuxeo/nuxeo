@@ -28,6 +28,7 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -121,6 +122,8 @@ public abstract class AbstractWork implements Work {
 
     protected WorkSchedulePath schedulePath;
 
+    protected String callerThread;
+
     /**
      * Constructs a {@link Work} instance with a unique id.
      */
@@ -129,12 +132,14 @@ public abstract class AbstractWork implements Work {
         // - several calls in the time granularity of nanoTime()
         // - several concurrent calls on different servers
         this(System.nanoTime() + "." + Math.abs(RANDOM.nextInt()));
+        callerThread = SequenceTracer.getThreadName();
     }
 
     public AbstractWork(String id) {
         this.id = id;
         progress = PROGRESS_INDETERMINATE;
         schedulingTime = System.currentTimeMillis();
+        callerThread = SequenceTracer.getThreadName();
     }
 
     @Override
@@ -318,6 +323,7 @@ public abstract class AbstractWork implements Work {
             suspended();
             return;
         }
+        SequenceTracer.startFrom(callerThread, "Work " + getTitle(), " #7acde9");
         Exception suppressed = null;
         int retryCount = getRetryCount(); // may be 0
         for (int i = 0; i <= retryCount; i++) {
@@ -328,6 +334,7 @@ public abstract class AbstractWork implements Work {
             Exception e = runWorkWithTransactionAndCheckExceptions();
             if (e == null) {
                 // no exception, work is done
+                SequenceTracer.stop("Work done " + (completionTime - startTime) + " ms");
                 return;
             }
             if (suppressed == null) {
@@ -340,6 +347,7 @@ public abstract class AbstractWork implements Work {
         if (suppressed != null) {
             String msg = "Work failed after " + retryCount + " " + (retryCount == 1 ? "retry" : "retries") + ", class="
                     + getClass() + " id=" + getId() + " category=" + getCategory() + " title=" + getTitle();
+            SequenceTracer.destroy("Work failure " + (completionTime - startTime) + " ms");
             throw new RuntimeException(msg, suppressed);
         }
     }

@@ -30,6 +30,7 @@ import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.event.Event;
@@ -188,9 +189,12 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             }
             try {
                 long t0 = System.currentTimeMillis();
+                SequenceTracer.start("Fire sync event " + event.getName());
                 desc.asEventListener().handleEvent(event);
+                long elapsed = System.currentTimeMillis() - t0;
+                SequenceTracer.stop("done in " + elapsed + " ms");
                 if (stats != null) {
-                    stats.logSyncExec(desc, System.currentTimeMillis() - t0);
+                    stats.logSyncExec(desc, elapsed);
                 }
                 if (event.isCanceled()) {
                     // break loop
@@ -198,6 +202,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                 }
             } catch (RuntimeException e) {
                 // get message
+                SequenceTracer.destroy("failure");
                 String message = "Exception during " + desc.getName() + " sync listener execution, ";
                 if (event.isBubbleException()) {
                     message += "other listeners will be ignored";

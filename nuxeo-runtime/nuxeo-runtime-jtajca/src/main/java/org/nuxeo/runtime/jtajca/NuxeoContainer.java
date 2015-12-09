@@ -61,6 +61,7 @@ import org.apache.geronimo.transaction.manager.RecoverableTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionImpl;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.xbean.naming.reference.SimpleReference;
+import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -522,6 +523,7 @@ public class NuxeoContainer {
 
         @Override
         public void begin() throws NotSupportedException, SystemException {
+            SequenceTracer.start("tx begin", "#DarkSalmon");
             transactionManager.begin();
             timers.put(transactionManager.getTransaction(), transactionTimer.time());
             concurrentCount.inc();
@@ -533,21 +535,26 @@ public class NuxeoContainer {
         @Override
         public void commit() throws HeuristicMixedException, HeuristicRollbackException, IllegalStateException,
                 RollbackException, SecurityException, SystemException {
+            SequenceTracer.start("tx commiting", "#de6238");
             Timer.Context timerContext = timers.remove(transactionManager.getTransaction());
             transactionManager.commit();
             if (timerContext != null) {
-                timerContext.stop();
+                long elapsed = timerContext.stop();
+                SequenceTracer.stop("tx commited");
+                SequenceTracer.stop("tx end "+ (long) (elapsed / 1000000) + " ms");
             }
             concurrentCount.dec();
         }
 
         @Override
         public void rollback() throws IllegalStateException, SecurityException, SystemException {
+            SequenceTracer.mark("tx rollbacking");
             Timer.Context timerContext = timers.remove(transactionManager.getTransaction());
             transactionManager.rollback();
             concurrentCount.dec();
             if (timerContext != null) {
-                timerContext.stop();
+                long elapsed = timerContext.stop();
+                SequenceTracer.destroy("tx rollbacked " + (long) (elapsed / 1000000) + " ms");
             }
             rollbackCount.inc();
         }
