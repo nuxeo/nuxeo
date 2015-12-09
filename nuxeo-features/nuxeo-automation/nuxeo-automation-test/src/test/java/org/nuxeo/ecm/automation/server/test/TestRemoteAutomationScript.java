@@ -38,6 +38,7 @@ import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -48,7 +49,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @since 7.4
  */
 @RunWith(FeaturesRunner.class)
-@Features({ EmbeddedAutomationServerFeature.class })
+@Features({ EmbeddedAutomationServerFeature.class, WebEngineFeature.class })
 @Deploy({ "org.nuxeo.ecm.automation.scripting" })
 @LocalDeploy({ "org.nuxeo.ecm.automation.test:operation-contrib.xml" })
 @Jetty(port = 18080)
@@ -109,5 +110,12 @@ public class TestRemoteAutomationScript {
                                                  .execute();
         assertNotNull(documents);
         assertEquals("Simple" + System.lineSeparator(), outContent.toString());
+    }
+
+    @Test
+    public void canHandleLoginAsRemotely() throws IOException {
+        Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
+        Documents documents = (Documents) session.newRequest("javascript.RemoteLoginAs").setInput(root).execute();
+        assertNotNull(documents.get(0));
     }
 }

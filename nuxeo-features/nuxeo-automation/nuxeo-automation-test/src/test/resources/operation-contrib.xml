@@ -64,5 +64,18 @@
         }
       </script>
     </scriptedOperation>
+
+    <scriptedOperation id="javascript.RemoteLoginAs">
+      <inputType>document</inputType>
+      <outputType>documents</outputType>
+      <category>Scripting</category>
+      <script>
+        function run(input, params) {
+          Auth.LoginAs(null, {});
+          var children =  Document.GetChildren(input, {});
+          return children;
+        }
+      </script>
+    </scriptedOperation>
   </extension>
 </component>
