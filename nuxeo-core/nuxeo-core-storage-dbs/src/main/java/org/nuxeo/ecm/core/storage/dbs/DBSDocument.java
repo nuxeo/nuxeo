@@ -368,14 +368,14 @@ public class DBSDocument extends BaseDocument<State> {
     // simple property only
     @Override
     public Serializable getPropertyValue(String name) {
-        DBSDocumentState docState = getStateMaybeProxyTarget(name);
+        DBSDocumentState docState = getStateOrTarget(name);
         return docState.get(name);
     }
 
     // simple property only
     @Override
     public void setPropertyValue(String name, Serializable value) {
-        DBSDocumentState docState = getStateMaybeProxyTarget(name);
+        DBSDocumentState docState = getStateOrTarget(name);
         docState.put(name, value);
     }
 
@@ -444,13 +444,13 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public Object getValue(String xpath) throws PropertyException {
-        DBSDocumentState docState = getStateMaybeProxyTarget(xpath);
+        DBSDocumentState docState = getStateOrTarget(xpath);
         return getValueObject(docState.getState(), xpath);
     }
 
     @Override
     public void setValue(String xpath, Object value) throws PropertyException {
-        DBSDocumentState docState = getStateMaybeProxyTarget(xpath);
+        DBSDocumentState docState = getStateOrTarget(xpath);
         // markDirty has to be called *before* we change the state
         docState.markDirty();
         setValueObject(docState.getState(), xpath, value);
@@ -459,7 +459,7 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public void visitBlobs(Consumer<BlobAccessor> blobVisitor) throws PropertyException {
         if (isProxy()) {
-            ((DBSDocument) getTargetDocument()).visitBlobs(blobVisitor);
+            getTargetDocument().visitBlobs(blobVisitor);
             // fall through for proxy schemas
         }
         Runnable markDirty = () -> docState.markDirty();
@@ -469,7 +469,7 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public Document checkIn(String label, String checkinComment) {
         if (isProxy()) {
-            throw new NuxeoException("Proxies cannot be checked in");
+            return getTargetDocument().checkIn(label, checkinComment);
         } else if (isVersion()) {
             throw new VersionNotModifiableException();
         } else {
@@ -482,7 +482,7 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public void checkOut() {
         if (isProxy()) {
-            throw new NuxeoException("Proxies cannot be checked out");
+            getTargetDocument().checkOut();
         } else if (isVersion()) {
             throw new VersionNotModifiableException();
         } else {
@@ -555,9 +555,11 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public boolean isCheckedOut() {
-        if (isVersion()) {
+        if (isProxy()) {
+            return getTargetDocument().isCheckedOut();
+        } else if (isVersion()) {
             return false;
-        } else { // also if isProxy()
+        } else {
             return !TRUE.equals(docState.get(KEY_IS_CHECKED_IN));
         }
     }
@@ -575,16 +577,19 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public Calendar getVersionCreationDate() {
+        DBSDocumentState docState = getStateOrTarget();
         return (Calendar) docState.get(KEY_VERSION_CREATED);
     }
 
     @Override
     public String getVersionLabel() {
+        DBSDocumentState docState = getStateOrTarget();
         return (String) docState.get(KEY_VERSION_LABEL);
     }
 
     @Override
     public String getCheckinComment() {
+        DBSDocumentState docState = getStateOrTarget();
         return (String) docState.get(KEY_VERSION_DESCRIPTION);
     }
 
@@ -658,11 +663,13 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public String getLifeCycleState() {
+        DBSDocumentState docState = getStateOrTarget();
         return (String) docState.get(KEY_LIFECYCLE_STATE);
     }
 
     @Override
     public void setCurrentLifeCycleState(String lifeCycleState) throws LifeCycleException {
+        DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_LIFECYCLE_STATE, lifeCycleState);
         BlobManager blobManager = Framework.getService(BlobManager.class);
         blobManager.notifyChanges(this, Collections.singleton(KEY_LIFECYCLE_STATE));
@@ -670,11 +677,13 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public String getLifeCyclePolicy() {
+        DBSDocumentState docState = getStateOrTarget();
         return (String) docState.get(KEY_LIFECYCLE_POLICY);
     }
 
     @Override
     public void setLifeCyclePolicy(String policy) throws LifeCycleException {
+        DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_LIFECYCLE_POLICY, policy);
         BlobManager blobManager = Framework.getService(BlobManager.class);
         blobManager.notifyChanges(this, Collections.singleton(KEY_LIFECYCLE_POLICY));
@@ -732,20 +741,31 @@ public class DBSDocument extends BaseDocument<State> {
         return (T) value;
     }
 
+    protected DBSDocumentState getStateOrTarget(Type type) throws PropertyException {
+        return getStateOrTargetForSchema(type.getName());
+    }
+
+    protected DBSDocumentState getStateOrTarget(String xpath) {
+        return getStateOrTargetForSchema(getSchema(xpath));
+    }
+
     /**
      * Checks if the given schema should be resolved on the proxy or the target.
      */
-    protected DBSDocumentState getStateMaybeProxyTarget(Type type) throws PropertyException {
-        if (isProxy() && !isSchemaForProxy(type.getName())) {
-            return ((DBSDocument) getTargetDocument()).docState;
+    protected DBSDocumentState getStateOrTargetForSchema(String schema) {
+        if (isProxy() && !isSchemaForProxy(schema)) {
+            return getTargetDocument().docState;
         } else {
             return docState;
         }
     }
 
-    protected DBSDocumentState getStateMaybeProxyTarget(String xpath) {
-        if (isProxy() && !isSchemaForProxy(getSchema(xpath))) {
-            return ((DBSDocument) getTargetDocument()).docState;
+    /**
+     * Gets the target state if this is a proxy, or the regular state otherwise.
+     */
+    protected DBSDocumentState getStateOrTarget() {
+        if (isProxy()) {
+            return getTargetDocument().docState;
         } else {
             return docState;
         }
@@ -757,11 +777,25 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     protected String getSchema(String xpath) {
+        switch (xpath) {
+        case KEY_MAJOR_VERSION:
+        case KEY_MINOR_VERSION:
+        case "major_version":
+        case "minor_version":
+            return "uid";
+        case KEY_FULLTEXT_SIMPLE:
+        case KEY_FULLTEXT_BINARY:
+        case KEY_FULLTEXT_JOBID:
+            return "__ecm__";
+        }
         int p = xpath.indexOf(':');
         if (p == -1) {
             throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
         String prefix = xpath.substring(0, p);
+        if ("ecm".equals(prefix)) {
+            return "__ecm__";
+        }
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         Schema schema = schemaManager.getSchemaFromPrefix(prefix);
         if (schema == null) {
@@ -775,7 +809,7 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public void readDocumentPart(DocumentPart dp) throws PropertyException {
-        DBSDocumentState docState = getStateMaybeProxyTarget(dp.getType());
+        DBSDocumentState docState = getStateOrTarget(dp.getType());
         readComplexProperty(docState.getState(), (ComplexProperty) dp);
     }
 
@@ -793,13 +827,13 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths)
             throws PropertyException {
-        DBSDocumentState docState = getStateMaybeProxyTarget(complexType);
+        DBSDocumentState docState = getStateOrTarget(complexType);
         return readPrefetch(docState.getState(), complexType, xpaths);
     }
 
     @Override
     public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException {
-        final DBSDocumentState docState = getStateMaybeProxyTarget(dp.getType());
+        DBSDocumentState docState = getStateOrTarget(dp.getType());
         // markDirty has to be called *before* we change the state
         docState.markDirty();
         boolean changed = writeComplexProperty(docState.getState(), (ComplexProperty) dp, writeContext);
@@ -816,6 +850,7 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public String[] getFacets() {
+        DBSDocumentState docState = getStateOrTarget();
         Object[] mixins = (Object[]) docState.get(KEY_MIXIN_TYPES);
         if (mixins == null) {
             return EMPTY_STRING_ARRAY;
@@ -836,6 +871,7 @@ public class DBSDocument extends BaseDocument<State> {
         if (getType().getFacets().contains(facet)) {
             return false; // already present in type
         }
+        DBSDocumentState docState = getStateOrTarget();
         Object[] mixins = (Object[]) docState.get(KEY_MIXIN_TYPES);
         if (mixins == null) {
             mixins = new Object[] { facet };
@@ -854,6 +890,7 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public boolean removeFacet(String facet) {
+        DBSDocumentState docState = getStateOrTarget();
         Object[] mixins = (Object[]) docState.get(KEY_MIXIN_TYPES);
         if (mixins == null) {
             return false;
@@ -880,7 +917,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Document getTargetDocument() {
+    public DBSDocument getTargetDocument() {
         if (isProxy()) {
             String targetId = (String) docState.get(KEY_PROXY_TARGET_ID);
             return session.getDocument(targetId);

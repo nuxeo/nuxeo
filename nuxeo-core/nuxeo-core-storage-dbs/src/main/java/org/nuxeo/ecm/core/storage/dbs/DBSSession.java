@@ -204,14 +204,14 @@ public class DBSSession implements Session {
     public Document resolvePath(String path) {
         // TODO move checks and normalize higher in call stack
         if (path == null) {
-            throw new IllegalArgumentException("Null path");
+            throw new DocumentNotFoundException("Null path");
         }
         int len = path.length();
         if (len == 0) {
-            throw new IllegalArgumentException("Empty path");
+            throw new DocumentNotFoundException("Empty path");
         }
         if (path.charAt(0) != '/') {
-            throw new IllegalArgumentException("Relative path: " + path);
+            throw new DocumentNotFoundException("Relative path: " + path);
         }
         if (len > 1 && path.charAt(len - 1) == '/') {
             // remove final slash
@@ -229,7 +229,7 @@ public class DBSSession implements Session {
         for (int i = 1; i < names.length; i++) {
             String name = names[i];
             if (name.length() == 0) {
-                throw new IllegalArgumentException("Path with empty component: " + path);
+                throw new DocumentNotFoundException("Path with empty component: " + path);
             }
             docState = transaction.getChildState(parentId, name);
             if (docState == null) {
@@ -243,14 +243,14 @@ public class DBSSession implements Session {
     protected String getDocumentIdByPath(String path) {
         // TODO move checks and normalize higher in call stack
         if (path == null) {
-            throw new IllegalArgumentException("Null path");
+            throw new DocumentNotFoundException("Null path");
         }
         int len = path.length();
         if (len == 0) {
-            throw new IllegalArgumentException("Empty path");
+            throw new DocumentNotFoundException("Empty path");
         }
         if (path.charAt(0) != '/') {
-            throw new IllegalArgumentException("Relative path: " + path);
+            throw new DocumentNotFoundException("Relative path: " + path);
         }
         if (len > 1 && path.charAt(len - 1) == '/') {
             // remove final slash
@@ -268,7 +268,7 @@ public class DBSSession implements Session {
         for (int i = 1; i < names.length; i++) {
             String name = names[i];
             if (name.length() == 0) {
-                throw new IllegalArgumentException("Path with empty component: " + path);
+                throw new DocumentNotFoundException("Path with empty component: " + path);
             }
             // TODO XXX add getChildId method
             docState = transaction.getChildState(parentId, name);
@@ -345,7 +345,7 @@ public class DBSSession implements Session {
         return new DBSDocument(null, null, this, true);
     }
 
-    protected Document getDocument(String id) {
+    protected DBSDocument getDocument(String id) {
         DBSDocumentState docState = transaction.getStateForUpdate(id);
         return getDocument(docState);
     }
@@ -359,11 +359,11 @@ public class DBSSession implements Session {
         return docs;
     }
 
-    protected Document getDocument(DBSDocumentState docState) {
+    protected DBSDocument getDocument(DBSDocumentState docState) {
         return getDocument(docState, true);
     }
 
-    protected Document getDocument(DBSDocumentState docState, boolean readonly) {
+    protected DBSDocument getDocument(DBSDocumentState docState, boolean readonly) {
         if (docState == null) {
             return null;
         }

@@ -62,6 +62,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
@@ -611,12 +613,7 @@ public class DBSTransactionState {
     protected void updateProxies() {
         for (String id : transientCreated) { // ordered
             DBSDocumentState docState = transientStates.get(id);
-            Object[] proxyIds = (Object[]) docState.get(KEY_PROXY_IDS);
-            if (proxyIds != null) {
-                for (Object proxyId : proxyIds) {
-                    updateProxy(docState, (String) proxyId);
-                }
-            }
+            updateProxies(docState);
         }
         // copy as we may modify proxies
         for (String id : transientStates.keySet().toArray(new String[0])) {
@@ -625,16 +622,20 @@ public class DBSTransactionState {
                 continue; // already done
             }
             if (docState.isDirty()) {
-                Object[] proxyIds = (Object[]) docState.get(KEY_PROXY_IDS);
-                if (proxyIds != null) {
-                    for (Object proxyId : proxyIds) {
-                        try {
-                            updateProxy(docState, (String) proxyId);
-                        } catch (ConcurrentUpdateException e) {
-                            e.addInfo("On doc " + docState.getId());
-                            throw e;
-                        }
-                    }
+                updateProxies(docState);
+            }
+        }
+    }
+
+    protected void updateProxies(DBSDocumentState target) {
+        Object[] proxyIds = (Object[]) target.get(KEY_PROXY_IDS);
+        if (proxyIds != null) {
+            for (Object proxyId : proxyIds) {
+                try {
+                    updateProxy(target, (String) proxyId);
+                } catch (ConcurrentUpdateException e) {
+                    e.addInfo("On doc " + target.getId());
+                    throw e;
                 }
             }
         }
@@ -649,16 +650,17 @@ public class DBSTransactionState {
             rollback(); // XXX
             throw new ConcurrentUpdateException("Proxy " + proxyId + " concurrently deleted");
         }
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         // clear all proxy data
         for (String key : proxy.getState().keyArray()) {
-            if (!isProxySpecific(key)) {
+            if (!isProxySpecific(key, schemaManager)) {
                 proxy.put(key, null);
             }
         }
         // copy from target
         for (Entry<String, Serializable> en : target.getState().entrySet()) {
             String key = en.getKey();
-            if (!isProxySpecific(key)) {
+            if (!isProxySpecific(key, schemaManager)) {
                 proxy.put(key, StateHelper.deepCopy(en.getValue()));
             }
         }
@@ -667,7 +669,7 @@ public class DBSTransactionState {
     /**
      * Things that we don't touch on a proxy when updating it.
      */
-    protected boolean isProxySpecific(String key) {
+    protected boolean isProxySpecific(String key, SchemaManager schemaManager) {
         switch (key) {
         // these are placeful stuff
         case KEY_ID:
@@ -685,7 +687,21 @@ public class DBSTransactionState {
         case KEY_PROXY_IDS:
             return true;
         }
-        return false;
+        int p = key.indexOf(':');
+        if (p == -1) {
+            // no prefix, assume not proxy-specific
+            return false;
+        }
+        String prefix = key.substring(0, p);
+        Schema schema = schemaManager.getSchemaFromPrefix(prefix);
+        if (schema == null) {
+            schema = schemaManager.getSchema(prefix);
+            if (schema == null) {
+                // unknown prefix, assume not proxy-specific
+                return false;
+            }
+        }
+        return schemaManager.isProxySchema(schema.getName(), null); // type unused
     }
 
     /**

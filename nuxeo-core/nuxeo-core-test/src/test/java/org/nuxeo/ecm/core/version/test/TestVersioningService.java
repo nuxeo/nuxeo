@@ -383,6 +383,88 @@ public class TestVersioningService {
         assertTrue(doc.isCheckedOut());
         assertVersion("0.1", doc);
         assertVersionLabel("0.1+", doc);
-
     }
+
+    @Test
+    public void testLiveProxyUpdate() throws Exception {
+        DocumentModel section = session.createDocumentModel("/", "section", "Folder");
+        section = session.createDocument(section);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // create a live proxy
+        DocumentModel proxy = session.createProxy(doc.getRef(), section.getRef());
+
+        // --- change the doc, see changes on the proxy immediately without save ---
+
+        // update
+        doc.setPropertyValue("dc:title", "foo");
+        doc = session.saveDocument(doc);
+        assertEquals("foo", doc.getPropertyValue("dc:title"));
+        // visible immediately on the proxy
+        proxy.refresh();
+        assertEquals("foo", proxy.getPropertyValue("dc:title"));
+
+        // lifecycle change
+        doc.followTransition("approve");
+        assertEquals("approved", doc.getCurrentLifeCycleState());
+        // visible immediately on the proxy
+        proxy.refresh();
+        assertEquals("approved", proxy.getCurrentLifeCycleState());
+
+        // check in for version change
+        doc.checkIn(VersioningOption.MINOR, null);
+        assertFalse(doc.isCheckedOut());
+        assertEquals("0.1", doc.getVersionLabel());
+        // visible immediately on the proxy
+        proxy.refresh();
+        assertFalse(proxy.isCheckedOut());
+        assertEquals("0.1", proxy.getVersionLabel());
+
+        // check out
+        doc.checkOut();
+        assertTrue(doc.isCheckedOut());
+        assertEquals("0.1+", doc.getVersionLabel());
+        // visible immediately on the proxy
+        proxy.refresh();
+        assertTrue(proxy.isCheckedOut());
+        assertEquals("0.1+", proxy.getVersionLabel());
+
+        // --- change the proxy, see changes on the doc immediately without save ---
+
+        // update
+        proxy.setPropertyValue("dc:title", "bar");
+        proxy = session.saveDocument(proxy);
+        assertEquals("bar", proxy.getPropertyValue("dc:title"));
+        // visible immediately on the doc, no save() needed
+        doc.refresh();
+        assertEquals("bar", doc.getPropertyValue("dc:title"));
+
+        // lifecycle change
+        proxy.followTransition("backToProject");
+        assertEquals("project", proxy.getCurrentLifeCycleState());
+        // visible immediately on the doc
+        doc.refresh();
+        assertEquals("project", doc.getCurrentLifeCycleState());
+
+        // check in for version change
+        proxy.checkIn(VersioningOption.MINOR, null);
+        assertFalse(proxy.isCheckedOut());
+        assertEquals("0.2", proxy.getVersionLabel());
+        // visible immediately on the doc
+        doc.refresh();
+        assertFalse(doc.isCheckedOut());
+        assertEquals("0.2", doc.getVersionLabel());
+
+        // check out
+        proxy.checkOut();
+        assertTrue(proxy.isCheckedOut());
+        assertEquals("0.2+", proxy.getVersionLabel());
+        // visible immediately on the doc
+        doc.refresh();
+        assertTrue(doc.isCheckedOut());
+        assertEquals("0.2+", doc.getVersionLabel());
+    }
+
 }
