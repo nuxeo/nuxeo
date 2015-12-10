@@ -419,11 +419,26 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     protected List<State> updateList(State state, String name, Property property) throws PropertyException {
         Collection<Property> properties = property.getChildren();
-        List<State> childStates = new ArrayList<>(properties.size());
-        for (int i = 0; i < properties.size(); i++) {
-            childStates.add(new State());
+        int newSize = properties.size();
+        @SuppressWarnings("unchecked")
+        List<State> childStates = (List<State>) state.get(name);
+        if (childStates == null) {
+            childStates = new ArrayList<>(newSize);
+            state.put(name, (Serializable) childStates);
         }
-        state.put(name, (Serializable) childStates);
+        int oldSize = childStates.size();
+        // remove extra list elements
+        if (oldSize > newSize) {
+            for (int i = oldSize - 1; i >= newSize; i--) {
+                childStates.remove(i);
+            }
+        }
+        // add new list elements
+        if (oldSize < newSize) {
+            for (int i = oldSize; i < newSize; i++) {
+                childStates.add(new State());
+            }
+        }
         return childStates;
     }
 
