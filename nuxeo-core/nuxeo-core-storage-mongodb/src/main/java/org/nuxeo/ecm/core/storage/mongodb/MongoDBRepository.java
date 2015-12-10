@@ -507,7 +507,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public void createState(State state) {
         DBObject ob = stateToBson(state);
         if (log.isTraceEnabled()) {
-            log.trace("MongoDB: CREATE " + ob);
+            log.trace("MongoDB: CREATE " + ob.get(KEY_ID) + ": " + ob);
         }
         coll.insert(ob);
         // TODO dupe exception
