@@ -374,6 +374,26 @@ public class TestSQLRepositoryProperties {
         assertComplexListElements(actual, 0, "baz", 333);
     }
 
+    @Test
+    public void testComplexListPartialUpdate() throws Exception {
+        List<Map<String, Serializable>> list = Arrays.asList(Collections.singletonMap("string", "foo"));
+        doc.setPropertyValue("tp:complexList", (Serializable) list);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // change just the int
+        Property prop = doc.getProperty("tp:complexList/0/int");
+        prop.setValue(Long.valueOf(1));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // refetch, the string should still be here
+        doc = session.getDocument(doc.getRef());
+        List<?> actual = (List<?>) doc.getPropertyValue("tp:complexList");
+        assertEquals(1, actual.size());
+        assertComplexListElements(actual, 0, "foo", 1);
+    }
+
     protected static void assertComplexListElements(List<?> list, int i, String string, int theint) {
         Map<String, Serializable> map = (Map<String, Serializable>) list.get(i);
         assertEquals(string, map.get("string"));
