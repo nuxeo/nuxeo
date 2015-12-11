@@ -155,8 +155,11 @@ public class WidgetTypeResource {
                     List<String> confCats = conf.getCategories();
                     if (confCats != null) {
                         hasCats = true;
-                        if (confCats.containsAll(catsList)) {
-                            res.add(def);
+                        for (String confCat : confCats) {
+                            if (catsList.contains(confCat)) {
+                                res.add(def);
+                                break;
+                            }
                         }
                     }
                 }
@@ -229,6 +232,11 @@ public class WidgetTypeResource {
         return Collections.emptyList();
     }
 
+    protected List<String> getStudioCategories() {
+        return Arrays.asList("aggregates", "decoration", "dev", "document", "listing", "search", "standalone",
+                "summary", "tab_designer");
+    }
+
     protected TemplateView getTemplate(String name, UriInfo uriInfo) {
         String baseURL = uriInfo.getAbsolutePath().toString();
         if (!baseURL.endsWith("/")) {
@@ -239,6 +247,7 @@ public class WidgetTypeResource {
         tv.arg("nuxeoVersions", getNuxeoVersions());
         tv.arg("widgetTypeCategory", category);
         tv.arg("widgetTypes", widgetTypes);
+        tv.arg("studioCategories", StringUtils.join(getStudioCategories(), " "));
         tv.arg("baseURL", baseURL);
         return tv;
     }
