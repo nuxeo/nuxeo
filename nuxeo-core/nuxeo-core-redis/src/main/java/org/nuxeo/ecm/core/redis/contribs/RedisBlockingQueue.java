@@ -122,7 +122,7 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
     @Override
     public Runnable pollElement() {
         try {
-            Work work = queuing.removeScheduledWork(queueId);
+            Work work = queuing.getWorkFromQueue(queueId);
             if (work != null) {
                 log.debug("Remove scheduled " + work);
             }

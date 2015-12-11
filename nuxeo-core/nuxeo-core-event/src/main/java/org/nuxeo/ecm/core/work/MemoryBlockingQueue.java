@@ -98,8 +98,6 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
         }
     }
 
-    protected final MemoryWorkQueuing queuing;
-
     protected final BlockingQueue<Runnable> queue;
 
     // @GuardedBy("itself")
@@ -112,10 +110,9 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
      *
      * @param capacity the capacity, or -1 for unbounded
      */
-    public MemoryBlockingQueue(MemoryWorkQueuing queuing, int capacity) {
-        this.queuing = queuing;
-        queue = new ReentrantLinkedBlockingQueue<Runnable>(capacity);
-        workIds = new HashSet<String>();
+    public MemoryBlockingQueue(int capacity) {
+        queue = new ReentrantLinkedBlockingQueue<>(capacity);
+        workIds = new HashSet<>();
     }
 
     /**

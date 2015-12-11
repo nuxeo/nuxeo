@@ -16,20 +16,23 @@
  */
 package org.nuxeo.ecm.core.work;
 
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+
 /**
  * Interface describing how the {@link WorkManager} implements queuing.
  * <p>
- * There are 3 structures maintained per-queue:
+ * There are 4 structures maintained per-queue:
  * <ul>
- * <li>the queue of scheduled work,</li>
+ * <li>the work queue managed by the {@link ThreadPoolExecutor},</li>
+ * <li>the set of scheduled work, this enables to list a work as being scheduled while it has been removed from the
+ * queue by the {@link ThreadPoolExecutor} and not yet executed (not yet running).</li>
  * <li>the set of running work,</li>
  * <li>the set of completed work.</li>
  *
@@ -39,29 +42,30 @@ public interface WorkQueuing {
 
     /**
      * Starts up this {@link WorkQueuing} and attempts to resume work previously suspended and saved at
-     * {@link #shutdown} time.
+     * shutdown time.
      */
     void init();
 
     /**
-     * @since 6.0
+     * Creates a blocking queue of work used by the {@link ThreadPoolExecutor}.
+     *
+     * @since 8.1
      * @param queueId
      * @return
      */
-    BlockingQueue<Runnable> initScheduleQueue(String queueId);
+    BlockingQueue<Runnable> initWorkQueue(String queueId);
 
     /**
-     * Gets the blocking queue for scheduled work, to be used in a {@link ThreadPoolExecutor}.
+     * Submit a work to the {@link ThreadPoolExecutor} and put it in the scheduled set.
      *
      * @param queueId the queue id
-     * @return the queue
-     * @since 5.8
+     * @param work the work instance
+     * @since 8.1
      */
-    BlockingQueue<Runnable> getScheduledQueue(String queueId);
+    boolean workSchedule(String queueId, Work work);
 
     /**
-     * Moves a work instance from the scheduled queue to the running set. When called, the work instance is already
-     * removed from the scheduled queue.
+     * Put the work instance into the running set.
      *
      * @param queueId the queue id
      * @param work the work instance
@@ -79,7 +83,7 @@ public interface WorkQueuing {
     void workCompleted(String queueId, Work work);
 
     /**
-     * Finds a work instance in the scheduled queue or running or completed sets.
+     * Finds a work instance in the scheduled or running or completed sets.
      *
      * @param workId the id of the work to find
      * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
@@ -89,7 +93,7 @@ public interface WorkQueuing {
     Work find(String workId, State state);
 
     /**
-     * Finds a scheduled work instance and removes it from the scheduled work.
+     * Finds a scheduled work instance and removes it from the scheduled queue.
      *
      * @param queueId the queue id
      * @param workId the id of the work to find
@@ -153,7 +157,7 @@ public interface WorkQueuing {
      * @return the number of scheduled work instances in the queue
      * @since 5.8
      */
-    int getQueueSize(String queueId, State state);
+    int count(String queueId, State state);
 
     /**
      * Notifies this queuing that all work should be suspending.
