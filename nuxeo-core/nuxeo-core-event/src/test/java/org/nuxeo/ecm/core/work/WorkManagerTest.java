@@ -40,6 +40,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
@@ -70,6 +71,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         @Override
         public void work() {
             FileEvent.onFile(this, file, this).send();
+            SequenceTracer.mark("send event");
         }
     }
 

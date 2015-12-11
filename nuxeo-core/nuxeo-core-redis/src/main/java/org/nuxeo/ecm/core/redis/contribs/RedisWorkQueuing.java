@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
+import org.nuxeo.ecm.core.work.WorkHolder;
 import org.nuxeo.ecm.core.work.WorkManagerImpl;
 import org.nuxeo.ecm.core.work.WorkQueueDescriptorRegistry;
 import org.nuxeo.ecm.core.work.WorkQueuing;
@@ -84,7 +85,12 @@ public class RedisWorkQueuing implements WorkQueuing {
     /**
      * Per-queue list of scheduled Work instance ids.
      */
-    protected static final String KEY_SCHEDULED_PREFIX = "queue:";
+    protected static final String KEY_QUEUE_PREFIX = "queue:";
+
+    /**
+     * Per-queue set of scheduled Work instance ids.
+     */
+    protected static final String KEY_SCHEDULED_PREFIX = "sched:";
 
     /**
      * Per-queue set of running Work instance ids.
@@ -115,7 +121,7 @@ public class RedisWorkQueuing implements WorkQueuing {
     protected final WorkManagerImpl mgr;
 
     // @GuardedBy("this")
-    protected Map<String, BlockingQueue<Runnable>> allScheduled = new HashMap<String, BlockingQueue<Runnable>>();
+    protected Map<String, BlockingQueue<Runnable>> allQueued = new HashMap<String, BlockingQueue<Runnable>>();
 
     protected RedisExecutor redisExecutor;
 
@@ -150,22 +156,27 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     @Override
-    public BlockingQueue<Runnable> initScheduleQueue(String queueId) {
-        if (allScheduled.containsKey(queueId)) {
+    public BlockingQueue<Runnable> initWorkQueue(String queueId) {
+        if (allQueued.containsKey(queueId)) {
             throw new IllegalStateException(queueId + " is already configured");
         }
-        final BlockingQueue<Runnable> scheduled = newBlockingQueue(queueId);
-        allScheduled.put(queueId, scheduled);
-        return scheduled;
+        final BlockingQueue<Runnable> queue = newBlockingQueue(queueId);
+        allQueued.put(queueId, queue);
+        return queue;
     }
 
     @Override
-    public BlockingQueue<Runnable> getScheduledQueue(String queueId) {
-        if (!allScheduled.containsKey(queueId)) {
+    public boolean workSchedule(String queueId, Work work) {
+        return getWorkQueue(queueId).offer(new WorkHolder(work));
+    }
+
+    public BlockingQueue<Runnable> getWorkQueue(String queueId) {
+        if (!allQueued.containsKey(queueId)) {
             throw new IllegalStateException(queueId + " was not configured yet");
         }
-        return allScheduled.get(queueId);
+        return allQueued.get(queueId);
     }
+
 
     @Override
     public void workRunning(String queueId, Work work) {
@@ -222,7 +233,7 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected List<Work> listScheduled(String queueId) {
         try {
-            return listWorkList(scheduledKey(queueId));
+            return listWorkList(queuedKey(queueId));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -246,7 +257,7 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected List<String> listScheduledIds(String queueId) {
         try {
-            return listWorkIdsList(scheduledKey(queueId));
+            return listWorkIdsList(queuedKey(queueId));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -275,7 +286,7 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     @Override
-    public int getQueueSize(String queueId, State state) {
+    public int count(String queueId, State state) {
         switch (state) {
         case SCHEDULED:
             return getScheduledSize(queueId);
@@ -290,7 +301,7 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected int getScheduledSize(String queueId) {
         try {
-            return getScheduledQueueSize(queueId);
+            return getRedisSetSize(scheduledKey(queueId));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -298,7 +309,7 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected int getRunningSize(String queueId) {
         try {
-            return getRunningQueueSize(queueId);
+            return getRedisSetSize(runningKey(queueId));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -306,7 +317,7 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected int getCompletedSize(String queueId) {
         try {
-            return getCompletedQueueSize(queueId);
+            return getRedisSetSize(completedKey(queueId));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -400,12 +411,16 @@ public class RedisWorkQueuing implements WorkQueuing {
         return keyBytes(KEY_SUSPENDED_PREFIX, queueId);
     }
 
-    protected byte[] scheduledKey(String queueId) {
-        return keyBytes(KEY_SCHEDULED_PREFIX, queueId);
+    protected byte[] queuedKey(String queueId) {
+        return keyBytes(KEY_QUEUE_PREFIX, queueId);
     }
 
     protected byte[] runningKey(String queueId) {
         return keyBytes(KEY_RUNNING_PREFIX, queueId);
+    }
+
+    protected byte[] scheduledKey(String queueId) {
+        return keyBytes(KEY_SCHEDULED_PREFIX, queueId);
     }
 
     protected byte[] completedKey(String queueId) {
@@ -455,38 +470,28 @@ public class RedisWorkQueuing implements WorkQueuing {
         }
     }
 
-    protected int getScheduledQueueSize(final String queueId) throws IOException {
+    protected int getRedisListSize(final byte[] key) throws IOException {
         return redisExecutor.execute(new RedisCallable<Long>() {
 
             @Override
             public Long call(Jedis jedis) {
-                return jedis.llen(scheduledKey(queueId));
+                return jedis.llen(key);
             }
 
         }).intValue();
     }
 
-    protected int getRunningQueueSize(final String queueId) throws IOException {
+    protected int getRedisSetSize(final byte[] key) throws IOException {
         return redisExecutor.execute(new RedisCallable<Long>() {
 
             @Override
             public Long call(Jedis jedis) {
-                return jedis.scard(runningKey(queueId));
+                return jedis.scard(key);
             }
 
         }).intValue();
     }
 
-    protected int getCompletedQueueSize(final String queueId) throws IOException {
-        return redisExecutor.execute(new RedisCallable<Long>() {
-
-            @Override
-            public Long call(Jedis jedis) {
-                return jedis.scard(completedKey(queueId));
-            }
-
-        }).intValue();
-    }
 
     /**
      * Persists a work instance and adds it to the scheduled queue.
@@ -510,12 +515,14 @@ public class RedisWorkQueuing implements WorkQueuing {
                     Pipeline pipe = jedis.pipelined();
                     pipe.hset(dataKey(), workIdBytes, workBytes);
                     pipe.hset(stateKey(), workIdBytes, STATE_SCHEDULED);
-                    pipe.lpush(scheduledKey(queueId), workIdBytes);
+                    pipe.lpush(queuedKey(queueId), workIdBytes);
+                    pipe.sadd(scheduledKey(queueId), workIdBytes);
                     pipe.sync();
                 } else {
                     jedis.hset(dataKey(), workIdBytes, workBytes);
                     jedis.hset(stateKey(), workIdBytes, STATE_SCHEDULED);
-                    jedis.lpush(scheduledKey(queueId), workIdBytes);
+                    jedis.lpush(queuedKey(queueId), workIdBytes);
+                    jedis.sadd(scheduledKey(queueId), workIdBytes);
                 }
                 return null;
             }
@@ -534,7 +541,7 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     protected Set<String> getScheduledQueueIds() {
-        return getQueueIds(KEY_SCHEDULED_PREFIX);
+        return getQueueIds(KEY_QUEUE_PREFIX);
     }
 
     protected Set<String> getRunningQueueIds() {
@@ -585,7 +592,7 @@ public class RedisWorkQueuing implements WorkQueuing {
             @Override
             public Integer call(Jedis jedis) {
                 for (int n = 0;; n++) {
-                    byte[] workIdBytes = jedis.rpoplpush(suspendedKey(queueId), scheduledKey(queueId));
+                    byte[] workIdBytes = jedis.rpoplpush(suspendedKey(queueId), queuedKey(queueId));
                     if (workIdBytes == null) {
                         return Integer.valueOf(n);
                     }
@@ -608,7 +615,7 @@ public class RedisWorkQueuing implements WorkQueuing {
             @Override
             public Integer call(Jedis jedis) {
                 for (int n = 0;; n++) {
-                    byte[] workIdBytes = jedis.rpoplpush(scheduledKey(queueId), suspendedKey(queueId));
+                    byte[] workIdBytes = jedis.rpoplpush(queuedKey(queueId), suspendedKey(queueId));
                     if (workIdBytes == null) {
                         return n;
                     }
@@ -632,10 +639,12 @@ public class RedisWorkQueuing implements WorkQueuing {
                 if (redisExecutor.supportPipelined()) {
                     Pipeline pipe = jedis.pipelined();
                     pipe.sadd(runningKey(queueId), workIdBytes);
+                    pipe.srem(scheduledKey(queueId), workIdBytes);
                     pipe.hset(stateKey(), workIdBytes, STATE_RUNNING);
                     pipe.sync();
                 } else {
                     jedis.sadd(runningKey(queueId), workIdBytes);
+                    jedis.srem(scheduledKey(queueId), workIdBytes);
                     jedis.hset(stateKey(), workIdBytes, STATE_RUNNING);
                 }
                 return null;
@@ -804,18 +813,18 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     /**
-     * Removes first work from scheduled queue.
+     * Removes first work from work queue.
      *
      * @param queueId the queue id
      * @return the work, or {@code null} if the scheduled queue is empty
      */
-    protected Work removeScheduledWork(final String queueId) throws IOException {
+    protected Work getWorkFromQueue(final String queueId) throws IOException {
         return redisExecutor.execute(new RedisCallable<Work>() {
 
             @Override
             public Work call(Jedis jedis) {
                 // pop from queue
-                byte[] workIdBytes = jedis.rpop(scheduledKey(queueId));
+                byte[] workIdBytes = jedis.rpop(queuedKey(queueId));
                 if (workIdBytes == null) {
                     return null;
                 }
@@ -828,7 +837,7 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     /**
-     * Removes a given work from scheduled queue and set state to completed.
+     * Removes a given work from queue, move the work from scheduled to completed set.
      *
      * @throws IOException
      */
@@ -839,10 +848,12 @@ public class RedisWorkQueuing implements WorkQueuing {
             @Override
             public Work call(Jedis jedis) {
                 // remove from queue
-                Long n = jedis.lrem(scheduledKey(queueId), 0, workIdBytes);
+                Long n = jedis.lrem(queuedKey(queueId), 0, workIdBytes);
                 if (n == null || n.intValue() == 0) {
                     return null;
                 }
+                // remove from set
+                jedis.srem(scheduledKey(queueId), workIdBytes);
                 // set state to completed at current time
                 byte[] completedBytes = bytes(String.valueOf(System.currentTimeMillis()));
                 jedis.hset(stateKey(), workIdBytes, completedBytes);

@@ -22,6 +22,9 @@
     </layout>
   </appender>
 
+    <category name="org.nuxeo.common.logging">
+      <priority value="DEBUG" />
+    </category>
 
   <root>
     <priority value="TRACE" />
