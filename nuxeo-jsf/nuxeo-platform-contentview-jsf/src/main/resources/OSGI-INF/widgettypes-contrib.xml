@@ -455,7 +455,7 @@
             <property name="layout">pageDirection</property>
             <property name="notDisplayDefaultOption">true</property>
             <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
-            <property name="directoryName">userDirectory</property>
+            <property name="directoryName">#{userManager.userDirectoryName}</property>
             <property name="moreLessLimit">6</property>
             <property name="emptyChoiceMessage">label.aggregate.emptyChoice</property>
           </defaultValues>
@@ -517,7 +517,7 @@
             <property name="itemCount">(#{item.docCount})</property>
             <property name="notDisplayDefaultOption">true</property>
             <property name="itemLabel">#{nxu:userDisplayName(itemEntry.user.username, itemEntry.user.firstName, itemEntry.user.lastName)}</property>
-            <property name="directoryName">userDirectory</property>
+            <property name="directoryName">#{userManager.userDirectoryName}</property>
             <property name="placeholder">#{messages['label.vocabulary.selectValue']}</property>
           </defaultValues>
           <layouts mode="edit">
