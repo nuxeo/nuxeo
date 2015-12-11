@@ -29,6 +29,7 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.TrashSubPage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -88,6 +89,23 @@ public class ITManageTest extends AbstractTest {
         // cleanup workspace
         asPage(DocumentBasePage.class).getNavigationSubPage().goToDocument("Workspaces");
         asPage(ContentTabSubPage.class).removeDocument(WORKSPACE_TITLE);
+    }
+
+    /**
+     * NXP-18328: Non-regression tests for ajaxified tabs cache issue when displaying subtabs.
+     *
+     * @since 8.1
+     */
+    @Test
+    public void testManageTabContent() throws UserNotConnectedException, IOException {
+        login().getManageTab();
+        assertEquals(1, driver.findElements(By.xpath("//a[contains(@id,'nxw_TAB_TRASH_CONTENT')]/span")).size());
+        assertEquals(1, driver.findElements(By.xpath("//a[contains(@id,'nxw_TAB_LOCAL_CONFIGURATION')]/span")).size());
+        assertEquals(0, driver.findElements(By.xpath("//a[contains(@id,'nxw_TAB_EVENTS')]/span")).size());
+        asPage(DocumentBasePage.class).getHistoryTab();
+        assertEquals(0, driver.findElements(By.xpath("//a[contains(@id,'nxw_TAB_TRASH_CONTENT')]/span")).size());
+        assertEquals(0, driver.findElements(By.xpath("//a[contains(@id,'nxw_TAB_LOCAL_CONFIGURATION')]/span")).size());
+        assertEquals(1, driver.findElements(By.xpath("//a[contains(@id,'nxw_TAB_EVENTS')]/span")).size());
     }
 
 }

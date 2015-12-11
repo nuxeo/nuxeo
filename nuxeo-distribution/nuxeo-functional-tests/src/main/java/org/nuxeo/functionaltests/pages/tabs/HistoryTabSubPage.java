@@ -16,7 +16,6 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -27,7 +26,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class HistoryTabSubPage extends DocumentBasePage {
 
-    @Required
+    // not required: not visible on domain for instance
     @FindBy(linkText = "Archived Versions")
     WebElement archivedVersionsLink;
 
