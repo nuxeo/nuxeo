@@ -145,8 +145,11 @@ public class WidgetTypeResource {
                     List<String> confCats = conf.getCategories();
                     if (confCats != null) {
                         hasCats = true;
-                        if (confCats.containsAll(catsList)) {
-                            res.add(def);
+                        for (String confCat : confCats) {
+                            if (catsList.contains(confCat)) {
+                                res.add(def);
+                                break;
+                            }
                         }
                     }
                 }
@@ -171,7 +174,7 @@ public class WidgetTypeResource {
         String[] components1 = ref.split("\\.");
         String[] components2 = version.split("\\.");
         int length = Math.min(components1.length, components2.length);
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             int result = Integer.compare(Integer.valueOf(components1[i]), Integer.valueOf(components2[i]));
             if (result != 0) {
                 return result < 0;
@@ -224,6 +227,11 @@ public class WidgetTypeResource {
         return Collections.emptyList();
     }
 
+    protected List<String> getStudioCategories() {
+        return Arrays.asList("aggregates", "decoration", "dev", "document", "listing", "search", "standalone",
+                "summary", "tab_designer");
+    }
+
     protected TemplateView getTemplate(String name, UriInfo uriInfo) {
         String baseURL = uriInfo.getAbsolutePath().toString();
         if (!baseURL.endsWith("/")) {
@@ -234,6 +242,7 @@ public class WidgetTypeResource {
         tv.arg("nuxeoVersions", getNuxeoVersions());
         tv.arg("widgetTypeCategory", category);
         tv.arg("widgetTypes", widgetTypes);
+        tv.arg("studioCategories", StringUtils.join(getStudioCategories(), " "));
         tv.arg("baseURL", baseURL);
         return tv;
     }
