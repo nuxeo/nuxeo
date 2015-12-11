@@ -2,6 +2,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:h="http://java.sun.com/jsf/html"
   id="#{widget.id}">
 
   <c:if test="#{!empty widget.label and widget.handlingLabels}">
@@ -21,13 +22,13 @@
         <source src="#{sound_url}" />
       </audio>
       <c:if test="#{field_1.mimeType == 'audio/mpeg'}">
-        <script type="text/javascript">
+        <h:outputScript target="#{pageJsTarget}">
           var audioTag = document.createElement('audio');
           if (!(!!(audioTag.canPlayType) &amp;&amp; ("no" != audioTag.canPlayType("audio/mpeg")) &amp;&amp; ("" != audioTag.canPlayType("audio/mpeg")))) {
               AudioPlayer.setup("#{baseURL}scripts/wpaudioplayer/player.swf", {width: "#{width}", initialvolume: 100});
               AudioPlayer.embed("audioplayer_#{widget.id}", {soundFile: "#{sound_url}"});
           }
-        </script>
+        </h:outputScript>
       </c:if>
 
     </nxu:set>
