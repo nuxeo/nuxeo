@@ -42,9 +42,9 @@
                   <c:if test="#{(not empty mp4URL) or (not empty webmURL and (chromeHTML5 or firefoxHTML5))}">
                     <div class="video-js-box">
                       <!-- Unless using the CDN hosted version, update the URL to the Flash SWF -->
-                      <script>
+                      <h:outputScript target="#{pageJsTarget}">
                         videojs.options.flash.swf = "#{baseURL}swf/video-js.swf";
-                      </script>
+                      </h:outputScript>
                       <video id="videoJs" width="#{width}" height="#{height}" class="video-js vjs-default-skin" controls="controls" preload="auto"
                           poster="#{staticPreview}">
                         <c:if test="#{not empty mp4URL}">
@@ -56,7 +56,7 @@
                       </video>
                     </div>
 
-                    <script>
+                    <h:outputScript target="#{pageJsTarget}">
                       (function() {
                         var v;
                         if (typeof vjs !== 'undefined') {
@@ -72,7 +72,7 @@
                         }
                         v('videoJs');
                       })()
-                    </script>
+                    </h:outputScript>
 
                   </c:if>
 
