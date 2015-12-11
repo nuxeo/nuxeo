@@ -89,7 +89,7 @@
     </a4j:outputPanel>
 
     <h:form rendered="#{!empty directoryUIActions.currentDirectoryEntries}"
-      id="viewDirectoryEntries">
+      id="viewDirectoryEntries" styleClass="table-overflow">
 
       <table class="dataTable">
         <nxu:repeat var="entry" value="#{directoryUIActions.currentDirectoryEntries}"
