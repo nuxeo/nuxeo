@@ -127,7 +127,8 @@ public class WebActionsBean implements WebActions, Serializable {
     }
 
     @Override
-    public List<Action> getActionsListForDocument(String category, DocumentModel document, boolean hideUnavailableAction) {
+    public List<Action> getActionsListForDocument(String category, DocumentModel document,
+            boolean hideUnavailableAction) {
         return getActionsList(category, createActionContext(document), hideUnavailableAction);
     }
 
@@ -292,14 +293,21 @@ public class WebActionsBean implements WebActions, Serializable {
     protected void resetSubTabs() {
         subTabsCategory = null;
         subTabsActionsList = null;
+        // make sure event context is cleared so that factory is called again
+        Contexts.getEventContext().remove("subTabsActionsList");
+        Contexts.getEventContext().remove("currentSubTabAction");
     }
 
-    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED, EventNames.LOCATION_SELECTION_CHANGED }, create = false)
+    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
+            EventNames.LOCATION_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetTabList() {
         tabsActionsList = null;
         resetSubTabs();
         resetCurrentTab();
+        // make sure event context is cleared so that factory is called again
+        Contexts.getEventContext().remove("tabsActionsList");
+        Contexts.getEventContext().remove("currentTabAction");
     }
 
     @Factory(value = "tabsActionsList", scope = EVENT)
