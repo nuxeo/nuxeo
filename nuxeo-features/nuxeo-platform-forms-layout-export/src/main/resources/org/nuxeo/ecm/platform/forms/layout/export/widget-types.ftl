@@ -118,6 +118,12 @@ pre {
             </div>
           </#list>
           <div class="export_link">
+            <a href="${baseURL}widgetTypes/${studioCategories}?all=true&widgetTypeCategory=${widgetTypeCategory}">All Studio JSON definitions</a>
+              <#list nuxeoVersions as nxv>
+                <a href="${baseURL}widgetTypes/${studioCategories}?version=${nxv}&all=true&widgetTypeCategory=${widgetTypeCategory}">${nxv}</a>
+              </#list>
+          </div>
+          <div class="export_link">
             <a href="${baseURL}widgetTypes?all=true&widgetTypeCategory=${widgetTypeCategory}">All JSON definitions</a>
               <#list nuxeoVersions as nxv>
                 <a href="${baseURL}widgetTypes?version=${nxv}&all=true&widgetTypeCategory=${widgetTypeCategory}">${nxv}</a>
