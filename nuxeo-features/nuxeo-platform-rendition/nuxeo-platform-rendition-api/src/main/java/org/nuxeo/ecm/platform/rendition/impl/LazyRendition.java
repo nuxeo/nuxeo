@@ -31,6 +31,8 @@ public abstract class LazyRendition extends AbstractRendition implements Renditi
 
     public static final String EMPTY_MARKER = "empty=true";
 
+    public static final String ERROR_MARKER = "error=true";
+
     protected List<Blob> blobs = null;
 
     public LazyRendition(RenditionDefinition definition) {

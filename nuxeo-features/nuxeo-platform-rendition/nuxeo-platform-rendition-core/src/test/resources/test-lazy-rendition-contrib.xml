@@ -23,6 +23,18 @@
       </filters>
     </renditionDefinition>
 
+    <renditionDefinition name="lazyAutomation" enabled="true"
+        class="org.nuxeo.ecm.platform.rendition.lazy.AutomationLazyRenditionProvider">
+      <operationChain>Dummy</operationChain>
+      <allowEmptyBlob>true</allowEmptyBlob>
+    </renditionDefinition>
+
+    <renditionDefinition name="lazyDelayedErrorAutomationRendition" enabled="true"
+        class="org.nuxeo.ecm.platform.rendition.lazy.AutomationLazyRenditionProvider">
+      <operationChain>DelayedError</operationChain>
+      <allowEmptyBlob>true</allowEmptyBlob>
+    </renditionDefinition>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" point="store">
