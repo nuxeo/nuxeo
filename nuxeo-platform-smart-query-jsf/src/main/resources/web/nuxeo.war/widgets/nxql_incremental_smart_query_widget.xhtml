@@ -35,9 +35,9 @@
                   actionListener="#{smartNXQLQueryActions.buildQueryPart}"
                   render="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
                   styleClass="button">
-                  <a4j:actionparam name="queryPartComponentId"
+                  <a4j:param name="queryPartComponentId"
                     value="#{widget.id}_smartQueryPart" />
-                  <a4j:actionparam name="updateQueryPart"
+                  <a4j:param name="updateQueryPart"
                     value="#{widgetProperty_updateQueryPart}" />
                 </a4j:commandButton>
                 <a4j:status>
@@ -80,9 +80,9 @@
                 render="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
                 immediate="true" styleClass="button"
                 disabled="#{!smartNXQLQueryActions.canUndoQueryPartChanges}">
-                <a4j:actionparam name="queryPartComponentId"
+                <a4j:param name="queryPartComponentId"
                   value="#{widget.id}_smartQueryPart" />
-                <a4j:actionparam name="updateQueryPart"
+                <a4j:param name="updateQueryPart"
                   value="#{widgetProperty_updateQueryPart}" />
               </a4j:commandButton>
               <a4j:commandButton value="#{messages['label.smart.query.redoChanges']}"
@@ -90,9 +90,9 @@
                 render="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
                 immediate="true" styleClass="button"
                 disabled="#{!smartNXQLQueryActions.canRedoQueryPartChanges}">
-                <a4j:actionparam name="queryPartComponentId"
+                <a4j:param name="queryPartComponentId"
                   value="#{widget.id}_smartQueryPart" />
-                <a4j:actionparam name="updateQueryPart"
+                <a4j:param name="updateQueryPart"
                   value="#{widgetProperty_updateQueryPart}" />
               </a4j:commandButton>
             </a4j:outputPanel>
@@ -101,9 +101,9 @@
               render="#{widget.id}_smartSearchAjaxPanel, #{widget.id}_smartQueryPartPanel, #{widget.id}_smartQueryUndoPanel"
               immediate="true"
               styleClass="button">
-              <a4j:actionparam name="queryPartComponentId"
+              <a4j:param name="queryPartComponentId"
                 value="#{widget.id}_smartQueryPart" />
-              <a4j:actionparam name="updateQueryPart"
+              <a4j:param name="updateQueryPart"
                 value="#{widgetProperty_updateQueryPart}" />
             </a4j:commandButton>
             <a4j:status>
