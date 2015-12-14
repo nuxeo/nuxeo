@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -54,6 +54,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
 
     public static final String DELTA_OGV = "DELTA.ogv";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -65,18 +66,16 @@ public class VideoConversionTest extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.platform.video.convert");
     }
 
-    protected static BlobHolder getBlobFromPath(String path, String mimeType)
-            throws IOException {
-        InputStream is = VideoConvertersTest.class.getResourceAsStream("/"
-                + path);
+    protected static BlobHolder getBlobFromPath(String path, String mimeType) throws IOException {
+        InputStream is = VideoConvertersTest.class.getResourceAsStream("/" + path);
         assertNotNull(String.format("Failed to load resource: " + path), is);
         Blob blob = StreamingBlob.createFromStream(is, mimeType);
         blob.setFilename(FilenameUtils.getName(path));
         return new SimpleBlobHolder(blob.persist());
     }
 
-    protected BlobHolder applyConverter(String converter, String fileName,
-            String mimeType, long newHeight) throws Exception {
+    protected BlobHolder applyConverter(String converter, String fileName, String mimeType, long newHeight)
+            throws Exception {
         ConversionService cs = Framework.getService(ConversionService.class);
         assertNotNull(cs.getRegistredConverters().contains(converter));
         BlobHolder in = getBlobFromPath(fileName, mimeType);
@@ -101,8 +100,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
             return;
         }
 
-        BlobHolder result = applyConverter(Constants.TO_WEBM_CONVERTER,
-                DELTA_MP4, "video/x-msvideo", 480);
+        BlobHolder result = applyConverter(Constants.TO_WEBM_CONVERTER, DELTA_MP4, "video/x-msvideo", 480);
         List<Blob> blobs = result.getBlobs();
         assertFalse(blobs.isEmpty());
         assertEquals(1, blobs.size());
@@ -121,8 +119,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
             return;
         }
 
-        BlobHolder result = applyConverter(Constants.TO_OGG_CONVERTER,
-                DELTA_MP4, "video/x-msvideo", 480);
+        BlobHolder result = applyConverter(Constants.TO_OGG_CONVERTER, DELTA_MP4, "video/x-msvideo", 480);
         List<Blob> blobs = result.getBlobs();
         assertFalse(blobs.isEmpty());
         assertEquals(1, blobs.size());
@@ -141,8 +138,7 @@ public class VideoConversionTest extends NXRuntimeTestCase {
             return;
         }
 
-        BlobHolder result = applyConverter(Constants.TO_MP4_CONVERTER,
-                DELTA_OGV, "video/ogg", 480);
+        BlobHolder result = applyConverter(Constants.TO_MP4_CONVERTER, DELTA_OGV, "video/ogg", 480);
         List<Blob> blobs = result.getBlobs();
         assertFalse(blobs.isEmpty());
         assertEquals(1, blobs.size());

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 package org.nuxeo.ecm.platform.video.convert;
 
@@ -124,8 +123,7 @@ public class StoryboardConverter extends BaseVideoConverter implements
             outFolder.mkdir();
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER,
-                    inputFile.file.getAbsolutePath());
+            params.addNamedParameter(INPUT_FILE_PATH_PARAMETER, inputFile.file.getAbsolutePath());
 
             Double duration = (Double) parameters.get("duration");
             if (duration == null) {
@@ -148,17 +146,11 @@ public class StoryboardConverter extends BaseVideoConverter implements
                         String.format("%04d", i));
                 outSubFolder.mkdir();
                 File outFile = new File(outSubFolder, "video-thumb-%04d.jpeg");
-                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER,
-                        outFile.getAbsolutePath());
-                params.addNamedParameter(POSITION_PARAMETER,
-                        String.valueOf(timecode));
-                params.addNamedParameter(WIDTH_PARAM,
-                        commonParams.get(WIDTH_PARAM));
-                params.addNamedParameter(HEIGHT_PARAM,
-                        commonParams.get(HEIGHT_PARAM));
-                ExecResult result = cleService.execCommand(
-                        FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
-
+                params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
+                params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
+                params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
+                params.addNamedParameter(HEIGHT_PARAM, commonParams.get(HEIGHT_PARAM));
+                ExecResult result = cleService.execCommand(FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
                 if (!result.isSuccessful()) {
                     throw result.getError();
                 }

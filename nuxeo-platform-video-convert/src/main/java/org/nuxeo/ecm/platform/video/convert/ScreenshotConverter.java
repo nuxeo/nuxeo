@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 package org.nuxeo.ecm.platform.video.convert;
 
@@ -79,8 +77,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements
                     ".tmp.jpeg");
 
             CmdParameters params = new CmdParameters();
-            params.addNamedParameter("inFilePath",
-                    inputFile.file.getAbsolutePath());
+            params.addNamedParameter("inFilePath", inputFile.file.getAbsolutePath());
             params.addNamedParameter("outFilePath", outFile.getAbsolutePath());
             Double position = 0.0;
             if (parameters != null) {
@@ -90,10 +87,8 @@ public class ScreenshotConverter extends BaseVideoConverter implements
                 }
             }
             long positionParam = Math.round(position);
-            params.addNamedParameter(POSITION_PARAMETER,
-                    String.valueOf(positionParam));
-            ExecResult res = cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND,
-                    params);
+            params.addNamedParameter(POSITION_PARAMETER, String.valueOf(positionParam));
+            ExecResult res = cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
             if (!res.isSuccessful()) {
                 throw res.getError();
             }
@@ -103,12 +98,10 @@ public class ScreenshotConverter extends BaseVideoConverter implements
             outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg",
                     positionParam));
             return new SimpleCachableBlobHolder(outBlob);
-        } catch (CommandNotAvailable | IOException | ClientException
-                | CommandException e) {
+        } catch (CommandNotAvailable | IOException | ClientException | CommandException e) {
             String msg;
             if (blob != null) {
-                msg = "error extracting screenshot from '" + blob.getFilename()
-                        + "'";
+                msg = "error extracting screenshot from '" + blob.getFilename() + "'";
             } else {
                 msg = "conversion failed";
             }

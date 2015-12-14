@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -238,8 +238,7 @@ public class VideoHelper {
             params.addNamedParameter("inFilePath", file.getAbsolutePath());
 
             // read the duration with a first command to adjust the best rate:
-            ExecResult result = cleService.execCommand(
-                    FFMPEG_INFO_COMMAND_LINE, params);
+            ExecResult result = cleService.execCommand(FFMPEG_INFO_COMMAND_LINE, params);
             if (!result.isSuccessful()) {
                 throw result.getError();
             }
