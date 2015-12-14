@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 
 /**
  * A class that exposes the fields from user schema
@@ -79,6 +78,13 @@ public class UserAdapterImpl implements UserAdapter {
     @SuppressWarnings("unchecked")
     public List<String> getGroups() {
         return (List<String>) dataModel.getValue(userConfig.groupsKey);
+    }
+
+    /**
+     * @since 8.1
+     */
+    public String getTenantId() {
+        return (String) dataModel.getValue(userConfig.tenantIdKey);
     }
 
     @Override

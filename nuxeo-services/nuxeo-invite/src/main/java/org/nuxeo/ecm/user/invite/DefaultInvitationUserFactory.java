@@ -65,6 +65,8 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
                     registrationDoc.getPropertyValue(configuration.getUserInfoCompanyField()));
             newUserDoc.setPropertyValue(UserConfig.GROUPS_COLUMN,
                     registrationDoc.getPropertyValue(configuration.getUserInfoGroupsField()));
+            newUserDoc.setPropertyValue(UserConfig.TENANT_ID_COLUMN,
+                    registrationDoc.getPropertyValue(configuration.getUserInfoTenantIdField()));
             userManager.createUser(newUserDoc);
             user = userManager.getPrincipal(login);
 

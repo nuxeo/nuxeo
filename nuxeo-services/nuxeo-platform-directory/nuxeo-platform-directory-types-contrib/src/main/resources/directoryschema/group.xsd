@@ -17,6 +17,9 @@
   <!-- inverse reference -->
   <xs:element name="parentGroups" type="nxs:stringList" />
 
+  <!-- multi tenant -->
+  <xs:element name="tenantId" type="xs:string" />
+
 </xs:schema>
 
 

@@ -47,6 +47,11 @@ public class UserRegistrationInfo {
      */
     protected List<String> groups;
 
+    /**
+     * @since 8.1
+     */
+    protected String tenantId;
+
     public List<String> getGroups() {
         return groups;
     }
@@ -119,4 +124,11 @@ public class UserRegistrationInfo {
         this.country = country;
     }
 
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
 }

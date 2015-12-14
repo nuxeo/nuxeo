@@ -69,6 +69,9 @@ public class UserRegistrationConfiguration {
     @XNode("userInfo/groupsField")
     private String userInfoGroupsField = "userinfo:groups";
 
+    @XNode("userInfo/tenantIdField")
+    private String userInfoTenantIdField = "userinfo:tenantId";
+
     @XNode("container/docType")
     private String containerDocType;
 
@@ -213,6 +216,10 @@ public class UserRegistrationConfiguration {
         return userInfoGroupsField;
     }
 
+    public String getUserInfoTenantIdField() {
+        return userInfoTenantIdField;
+    }
+
     public String getName() {
         return name;
     }
@@ -348,6 +355,10 @@ public class UserRegistrationConfiguration {
 
         if (!StringUtils.isEmpty(other.userInfoGroupsField)) {
             this.userInfoGroupsField = other.userInfoGroupsField;
+        }
+
+        if (!StringUtils.isEmpty(other.userInfoTenantIdField)) {
+            this.userInfoTenantIdField = other.userInfoTenantIdField;
         }
     }
 }

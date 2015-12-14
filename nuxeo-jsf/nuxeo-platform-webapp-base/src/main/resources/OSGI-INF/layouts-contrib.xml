@@ -5268,6 +5268,17 @@
       </properties>
     </widget>
 
+
+    <widget name="userAdditionalWidgets" type="documentActions">
+      <properties widgetMode="any">
+        <property name="category">USER_ADDITIONAL_WIDGETS</property>
+        <property name="widgetMode">#{layout.mode}</property>
+      </properties>
+      <controls mode="any">
+        <control name="handleLabels">true</control>
+      </controls>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -5337,6 +5348,9 @@
         </row>
         <row>
           <widget>passwordMatcher</widget>
+        </row>
+        <row>
+          <widget>userAdditionalWidgets</widget>
         </row>
       </rows>
       <widget name="username" type="text">
