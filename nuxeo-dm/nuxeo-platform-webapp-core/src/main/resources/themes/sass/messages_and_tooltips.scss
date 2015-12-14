@@ -205,6 +205,19 @@ a.ambiance-close {
   top: -2px;
 }
 
+.noscriptMessage {
+  background-color: $warning-background;
+  font-weight: bold;
+  color: $font-color;
+  left: 0;
+  padding: .4em 0;
+  position: fixed;
+  right: 0;
+  text-align: center;
+  text-transform: none;
+  z-index: 10000;
+}
+
 .label,
 .chip {
   background-color: $shade-strong-10;
