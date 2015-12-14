@@ -50,6 +50,11 @@ public class UserConfig implements Serializable {
 
     public static final String GROUPS_COLUMN = "groups";
 
+    /**
+     * @since 8.1
+     */
+    public static final String TENANT_ID_COLUMN = "tenantId";
+
     public static final String SCHEMA_NAME = "user";
 
     public String nameKey = USERNAME_COLUMN;
@@ -66,6 +71,11 @@ public class UserConfig implements Serializable {
 
     public String groupsKey = GROUPS_COLUMN;
 
+    /**
+     * @since 8.1
+     */
+    public String tenantIdKey = TENANT_ID_COLUMN;
+
     public String schemaName = SCHEMA_NAME;
 
     @Override
@@ -79,6 +89,7 @@ public class UserConfig implements Serializable {
         usrCfg.lastNameKey = lastNameKey;
         usrCfg.nameKey = nameKey;
         usrCfg.passwordKey = passwordKey;
+        usrCfg.tenantIdKey = tenantIdKey;
         usrCfg.schemaName = schemaName;
 
         return usrCfg;

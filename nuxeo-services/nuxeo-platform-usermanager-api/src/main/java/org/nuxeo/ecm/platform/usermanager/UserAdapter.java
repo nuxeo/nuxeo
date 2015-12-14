@@ -39,5 +39,10 @@ public interface UserAdapter {
 
     List<String> getGroups();
 
+    /**
+     * @since 8.1
+     */
+    String getTenantId();
+
     String getSchemaName();
 }

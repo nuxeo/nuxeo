@@ -300,8 +300,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
     public void validateUserName(FacesContext context, UIComponent component, Object value) {
         if (!(value instanceof String) || !StringUtils.containsOnly((String) value, VALID_CHARS)) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    ComponentUtils.translate(context, "label.userManager.wrong.username"), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                    "label.userManager.wrong.username"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
@@ -362,15 +362,15 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
      * @since 5.9.2
      */
     private void throwValidationException(FacesContext context, String message, Object... messageArgs) {
-        FacesMessage fmessage = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                ComponentUtils.translate(context, message, messageArgs), null);
+        FacesMessage fmessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                message, messageArgs), null);
         throw new ValidatorException(fmessage);
     }
 
     /**
      * Return the value of the JSF component who's id is references in an attribute of the componet passed in parameter.
      *
-     * @param string the attribute holding the target component id
+     * @param attribute the attribute holding the target component id
      * @param component the component holding the attribute
      * @return the UIInput component, null otherwise
      * @since 5.9.2
@@ -423,6 +423,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
                 newUserAdapter.getEmail());
         newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoGroupsField(),
                 newUserAdapter.getGroups().toArray());
+        newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoTenantIdField(),
+                newUserAdapter.getTenantId());
         newUserRegistration.setPropertyValue(userRegistrationService.getConfiguration().getUserInfoCompanyField(),
                 newUserAdapter.getCompany());
 

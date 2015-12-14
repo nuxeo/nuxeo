@@ -27,6 +27,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 
 /**
@@ -58,14 +59,19 @@ public class TestUserRegistration extends AbstractUserRegistration {
         userInfo.setPropertyValue("userinfo:firstName", "jolivier");
         userInfo.setPropertyValue("userinfo:lastName", "jolivier");
         userInfo.setPropertyValue("userinfo:email", "oolivier@dummy.com");
+        userInfo.setPropertyValue("userinfo:tenantId", "tenant-a");
 
-        assertEquals(0, userManager.searchUsers("jolivier").size());
+        DocumentModelList users = userManager.searchUsers("jolivier");
+        assertEquals(0, users.size());
 
         String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
                 new HashMap<String, Serializable>(), UserInvitationService.ValidationMethod.NONE, true);
         userRegistrationService.validateRegistration(requestId, new HashMap<String, Serializable>());
 
+        users = userManager.searchUsers("jolivier");
+        DocumentModel jolivier = users.get(0);
         assertEquals(1, userManager.searchUsers("jolivier").size());
+        assertEquals("tenant-a", jolivier.getPropertyValue("tenantId"));
     }
 
     @Test

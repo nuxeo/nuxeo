@@ -51,7 +51,7 @@ public class NuxeoPrincipalJsonWriterTest extends
         json.has("id").isEquals("Administrator");
         json.has("isAdministrator").isTrue();
         json.has("isAnonymous").isFalse();
-        JsonAssert model = json.has("properties").properties(7);
+        JsonAssert model = json.has("properties").properties(8);
         model.has("lastName").isEmptyStringOrNull();
         model.has("username").isEquals("Administrator");
         model.has("email").isEquals("devnull@nuxeo.com");

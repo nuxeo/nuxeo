@@ -20,4 +20,6 @@
   <!-- inverse reference -->
   <xs:element name="groups" type="nxs:stringList" />
 
+  <xs:element name="tenantId" type="xs:string"/>
+
 </xs:schema>
