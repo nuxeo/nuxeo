@@ -30,10 +30,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.redis.RedisFeature;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.DirectoryCache;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -65,6 +67,7 @@ public class TestCachedSQLDirectory extends SQLDirectoryTestSuite {
 
         if (RedisFeature.setup(harness)) {
             harness.deployTestContrib("org.nuxeo.ecm.directory.sql.tests", REDIS_CACHE_CONFIG);
+            Framework.getService(WorkManager.class).init();
         }
 
         AbstractDirectory dir = getSQLDirectory();
