@@ -33,6 +33,17 @@
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <documentation>
+      <strong>nuxeo.jsf.ajax.disableErrorFeedback</strong>: disables JavaScript hook displaying
+      an error message in the JSF UI when an empty response is received from server.
+      Disabling this hook is not recommended, but this can be useful on a slow server
+      when users do not want to see this message on some concurrent requests (when
+      server is down, no message will be displayed on Ajax actions).
+    </documentation>
+    <property name="nuxeo.jsf.ajax.disableErrorFeedback">false</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
       Properties controlling resources management:
       <ul>
         <li><strong>nuxeo.jsf.combinePageResources</strong>: serve all js and CSS resources
