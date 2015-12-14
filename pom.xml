@@ -130,6 +130,7 @@
     <module>nuxeo-showcase-content-sample</module>
     <module>nuxeo-travel-expenses</module>
     <module>nuxeo-agenda</module>
+    <module>nuxeo-platform-smart-search</module>
   </modules>
 
   <dependencyManagement>
