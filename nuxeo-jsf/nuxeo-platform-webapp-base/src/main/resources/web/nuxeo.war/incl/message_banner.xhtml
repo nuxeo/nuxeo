@@ -22,14 +22,28 @@
         </h:outputScript>
       </c:if>
       <h:outputScript target="#{pageJsTarget}">
+      //<![CDATA[
         jsf.ajax.addOnError(function(data) {
-          jQuery.ambiance({
-            title: data.description,
-            type: "error",
-            className: "errorFeedback",
-            timeout: 0
-          });
+          if (data.status == 'httpError' && data.responseCode === 0) {
+              var disabled = #{configurationService.isBooleanPropertyTrue('nuxeo.jsf.ajax.disableErrorFeedback')};
+              if (!disabled){
+                jQuery.ambiance({
+                  title: "#{messages['feedback.ajax.emptyResponse']}",
+                  type: "error",
+                  className: "warningFeedback",
+                  timeout: 1
+                });
+              }
+            } else {
+              jQuery.ambiance({
+                title: data.description,
+                type: "error",
+                className: "errorFeedback",
+                timeout: 0
+              });
+            }
         });
+      //]]>
       </h:outputScript>
     </div>
 
