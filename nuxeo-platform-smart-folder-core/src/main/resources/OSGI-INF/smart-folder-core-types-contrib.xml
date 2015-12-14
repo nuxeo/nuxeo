@@ -13,7 +13,7 @@
     <doctype name="SmartFolder" extends="Document">
       <schema name="common" />
       <schema name="dublincore" />
-      <schema name="content_view_display" />
+      <facet name="ContentViewDisplay" />
       <schema name="smart_folder" />
     </doctype>
 
