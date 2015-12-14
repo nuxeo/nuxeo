@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -37,8 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 public abstract class AbstractExecutor implements Executor {
 
     /**
-     * @deprecated since 5.7. See
-     *             {@link CommandLineExecutorService#checkParameter(String)}.
+     * @deprecated since 5.7. See {@link CommandLineExecutorService#checkParameter(String)}.
      */
     @Deprecated
     public static final Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ]+");
@@ -49,15 +48,13 @@ public abstract class AbstractExecutor implements Executor {
     }
 
     /**
-     * Returns parameters as a String after having replaced parameterized values
-     * inside.
+     * Returns parameters as a String after having replaced parameterized values inside.
      *
      * @param cmdDesc CommandLineDescriptor containing parameters
      * @param params parameterized values
      * @return Parameters as a String
      */
-    public static String getParametersString(CommandLineDescriptor cmdDesc,
-            CmdParameters params) {
+    public static String getParametersString(CommandLineDescriptor cmdDesc, CmdParameters params) {
         String paramString = cmdDesc.getParametersString();
         Map<String, String> paramsValues = params.getParameters();
         paramString = replaceParams(paramsValues, paramString);
@@ -65,16 +62,14 @@ public abstract class AbstractExecutor implements Executor {
     }
 
     /**
-     * Returns parameters as a String array after having replaced parameterized
-     * values inside.
+     * Returns parameters as a String array after having replaced parameterized values inside.
      *
      * @param cmdDesc CommandLineDescriptor containing parameters
      * @param params parameterized values
      * @return Parameters as a String array
      * @since 5.5
      */
-    public static String[] getParametersArray(CommandLineDescriptor cmdDesc,
-            CmdParameters params) {
+    public static String[] getParametersArray(CommandLineDescriptor cmdDesc, CmdParameters params) {
         List<String> res = new ArrayList<String>();
         String[] paramsArray = cmdDesc.getParametersString().split(" ");
         Map<String, String> paramsValues = params.getParameters();
@@ -84,16 +79,14 @@ public abstract class AbstractExecutor implements Executor {
         return res.toArray(new String[] {});
     }
 
-    private static String replaceParams(Map<String, String> paramsValues,
-            String paramString) {
+    private static String replaceParams(Map<String, String> paramsValues, String paramString) {
         CommandLineExecutorService commandLineExecutorService = Framework.getLocalService(CommandLineExecutorService.class);
         for (String pname : paramsValues.keySet()) {
             String param = "#{" + pname + "}";
             if (paramString.contains(param)) {
                 String value = paramsValues.get(pname);
                 commandLineExecutorService.checkParameter(value);
-                paramString = paramString.replace("#{" + pname + "}",
-                        String.format("\"%s\"", value));
+                paramString = paramString.replace("#{" + pname + "}", String.format("\"%s\"", value));
             }
         }
         return paramString;

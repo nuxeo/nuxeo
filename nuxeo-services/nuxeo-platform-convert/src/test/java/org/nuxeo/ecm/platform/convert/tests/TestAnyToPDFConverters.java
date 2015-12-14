@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,19 +36,17 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
 
     private static final Log log = LogFactory.getLog(TestAnyToPDFConverters.class);
 
-    protected void doTestPDFConverter(String srcMT, String fileName)
-            throws Exception {
+    protected void doTestPDFConverter(String srcMT, String fileName) throws Exception {
         doTestPDFConverter(srcMT, fileName, false); // normal PDF
         doTestPDFConverter(srcMT, fileName, true); // PDF/A-1
     }
 
-    protected String doTestPDFConverter(String srcMT, String fileName,
-            boolean pdfa) throws Exception {
+    protected String doTestPDFConverter(String srcMT, String fileName, boolean pdfa) throws Exception {
         return doTestPDFConverter(srcMT, fileName, pdfa, false);
     }
 
-    protected String doTestPDFConverter(String srcMT, String fileName,
-            boolean pdfa, boolean updateIndex) throws Exception {
+    protected String doTestPDFConverter(String srcMT, String fileName, boolean pdfa, boolean updateIndex)
+            throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
@@ -59,8 +57,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping JOD based converter tests since OOo is not installed");
-            log.warn("  converter check output : "
-                    + check.getInstallationMessage());
+            log.warn("  converter check output : " + check.getInstallationMessage());
             log.warn("  converter check output : " + check.getErrorMessage());
             return null;
         }
@@ -99,34 +96,24 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping JOD based converter tests since OOo is not installed");
-            log.warn("  converter check output : "
-                    + check.getInstallationMessage());
+            log.warn("  converter check output : " + check.getInstallationMessage());
             log.warn("  converter check output : " + check.getErrorMessage());
             return;
         }
 
         doTestPDFConverter("text/html", "hello.html");
-//        doTestPDFConverter("text/xml", "hello.xml");
+        // doTestPDFConverter("text/xml", "hello.xml");
         doTestPDFConverter("application/vnd.ms-excel", "hello.xls");
         doTestPDFConverter("application/vnd.sun.xml.writer", "hello.sxw");
-        doTestPDFConverter("application/vnd.oasis.opendocument.text",
-                "hello.odt");
+        doTestPDFConverter("application/vnd.oasis.opendocument.text", "hello.odt");
         doTestPDFConverter("application/vnd.sun.xml.calc", "hello.sxc");
-        doTestPDFConverter("application/vnd.oasis.opendocument.spreadsheet",
-                "hello.ods");
+        doTestPDFConverter("application/vnd.oasis.opendocument.spreadsheet", "hello.ods");
         doTestPDFConverter("application/vnd.sun.xml.impress", "hello.sxi");
-        doTestPDFConverter("application/vnd.oasis.opendocument.presentation",
-                "hello.odp");
+        doTestPDFConverter("application/vnd.oasis.opendocument.presentation", "hello.odp");
 
-        doTestPDFConverter(
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "hello.docx");
-        doTestPDFConverter(
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "hello.xlsx");
-        doTestPDFConverter(
-                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                "hello.pptx");
+        doTestPDFConverter("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "hello.docx");
+        doTestPDFConverter("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "hello.xlsx");
+        doTestPDFConverter("application/vnd.openxmlformats-officedocument.presentationml.presentation", "hello.pptx");
 
     }
 
@@ -137,23 +124,18 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping JOD based converter tests since OOo is not installed");
-            log.warn("  converter check output : "
-                    + check.getInstallationMessage());
+            log.warn("  converter check output : " + check.getInstallationMessage());
             log.warn("  converter check output : " + check.getErrorMessage());
             return;
         }
 
         // generate without TOC
-        String textContent = doTestPDFConverter(
-                "application/vnd.oasis.opendocument.text", "toc.odt", false,
-                false);
+        String textContent = doTestPDFConverter("application/vnd.oasis.opendocument.text", "toc.odt", false, false);
         // check that there is no TOC generated
         assertFalse(textContent.contains("..........."));
 
         // generate with TOC
-        textContent = doTestPDFConverter(
-                "application/vnd.oasis.opendocument.text", "toc.odt", false,
-                true);
+        textContent = doTestPDFConverter("application/vnd.oasis.opendocument.text", "toc.odt", false, true);
         assertTrue(textContent.contains("..........."));
 
     }

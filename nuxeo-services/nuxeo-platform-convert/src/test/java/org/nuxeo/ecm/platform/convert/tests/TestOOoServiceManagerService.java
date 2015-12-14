@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.convert.tests;
@@ -41,8 +40,7 @@ public class TestOOoServiceManagerService extends Assert {
         tc.setUp();
         tc.deployBundle("org.nuxeo.ecm.platform.convert");
         tc.deployBundle("org.nuxeo.ecm.platform.convert.test");
-        tc.deployContrib("org.nuxeo.ecm.platform.convert.test",
-                "test-ooo-manager-contrib.xml");
+        tc.deployContrib("org.nuxeo.ecm.platform.convert.test", "test-ooo-manager-contrib.xml");
     }
 
     @After
@@ -76,7 +74,7 @@ public class TestOOoServiceManagerService extends Assert {
     @Test
     public void testSocketConnection() throws Exception {
         Framework.getProperties().load(
-                new FileInputStream(tc.getResource("jodSocket.properties").getFile()));
+                new FileInputStream(NXRuntimeTestCase.getResource("jodSocket.properties").getFile()));
         ods = Framework.getLocalService(OOoManagerService.class);
         assertNotNull(ods);
 
@@ -88,7 +86,7 @@ public class TestOOoServiceManagerService extends Assert {
     @Test
     public void testPipeConnection() throws Exception {
         Framework.getProperties().load(
-                new FileInputStream(tc.getResource("jodPipe.properties").getFile()));
+                new FileInputStream(NXRuntimeTestCase.getResource("jodPipe.properties").getFile()));
         ods = Framework.getLocalService(OOoManagerService.class);
         assertNotNull(ods);
 

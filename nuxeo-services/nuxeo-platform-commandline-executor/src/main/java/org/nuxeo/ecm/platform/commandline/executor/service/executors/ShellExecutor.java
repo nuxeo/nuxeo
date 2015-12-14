@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -35,8 +35,7 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 
 /**
- * Default implementation of the {@link Executor} interface. Use simple shell
- * exec.
+ * Default implementation of the {@link Executor} interface. Use simple shell exec.
  *
  * @author tiry
  */
@@ -56,8 +55,7 @@ public class ShellExecutor extends AbstractExecutor {
             cmd = (String[]) ArrayUtils.addAll(cmd, paramsArray);
         } else {
             String paramsString = getParametersString(cmdDesc, params);
-            cmd = new String[] { "/bin/sh", "-c",
-                    cmdDesc.getCommand() + " " + paramsString };
+            cmd = new String[] { "/bin/sh", "-c", cmdDesc.getCommand() + " " + paramsString };
         }
         String commandLine = StringUtils.join(cmd, " ");
 
@@ -76,10 +74,8 @@ public class ShellExecutor extends AbstractExecutor {
             out = new ThreadedStreamGobbler(p1.getInputStream(), output);
             err = new ThreadedStreamGobbler(p1.getErrorStream(), output);
         } else {
-            out = new ThreadedStreamGobbler(p1.getInputStream(),
-                    SimpleLog.LOG_LEVEL_DEBUG);
-            err = new ThreadedStreamGobbler(p1.getErrorStream(),
-                    SimpleLog.LOG_LEVEL_ERROR);
+            out = new ThreadedStreamGobbler(p1.getInputStream(), SimpleLog.LOG_LEVEL_DEBUG);
+            err = new ThreadedStreamGobbler(p1.getErrorStream(), SimpleLog.LOG_LEVEL_ERROR);
         }
 
         err.start();

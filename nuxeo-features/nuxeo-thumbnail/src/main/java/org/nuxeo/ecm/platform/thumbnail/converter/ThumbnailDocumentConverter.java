@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -51,8 +51,7 @@ public class ThumbnailDocumentConverter implements Converter {
     public static final String THUMBNAIL_COMMAND = "toThumbnail";
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         File tmpFile = null;
         try {
             // Make sure the toThumbnail command is available
@@ -73,8 +72,7 @@ public class ThumbnailDocumentConverter implements Converter {
             }
 
             CmdParameters params = new CmdParameters();
-            File outputFile = File.createTempFile("nuxeoImageTarget", "."
-                    + "png");
+            File outputFile = File.createTempFile("nuxeoImageTarget", "." + "png");
             String size = THUMBNAIL_DEFAULT_SIZE;
             if (parameters != null) {
                 if (parameters.containsKey(THUMBNAIL_SIZE_PARAMETER_NAME)) {
@@ -92,8 +90,7 @@ public class ThumbnailDocumentConverter implements Converter {
             Blob targetBlob = new FileBlob(outputFile);
             Framework.trackFile(outputFile, targetBlob);
             return new SimpleCachableBlobHolder(targetBlob);
-        } catch (CommandNotAvailable | IOException | ClientException
-                | CommandException e) {
+        } catch (CommandNotAvailable | IOException | ClientException | CommandException e) {
             throw new ConversionException("Thumbnail conversion failed", e);
         } finally {
             if (tmpFile != null) {

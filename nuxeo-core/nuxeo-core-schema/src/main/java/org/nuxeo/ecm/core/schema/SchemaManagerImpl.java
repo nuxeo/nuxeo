@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -47,16 +47,15 @@ import org.xml.sax.SAXException;
 /**
  * Schema Manager implementation.
  * <p>
- * Holds basic types (String, Integer, etc.), schemas, document types and
- * facets.
+ * Holds basic types (String, Integer, etc.), schemas, document types and facets.
  */
 public class SchemaManagerImpl implements SchemaManager {
 
     private static final Log log = LogFactory.getLog(SchemaManagerImpl.class);
 
     /**
-     * Whether there have been changes to the registered schemas, facets or
-     * document types that require recomputation of the effective ones.
+     * Whether there have been changes to the registered schemas, facets or document types that require recomputation of
+     * the effective ones.
      */
     protected boolean dirty = true;
 
@@ -225,17 +224,14 @@ public class SchemaManagerImpl implements SchemaManager {
     public synchronized void unregisterProxies(ProxiesDescriptor pd) {
         if (allProxies.remove(pd)) {
             dirty = true;
-            log.info("Unregistered proxies descriptor for schemas: "
-                    + pd.getSchemas());
+            log.info("Unregistered proxies descriptor for schemas: " + pd.getSchemas());
         } else {
-            log.error("Unregistering unknown proxies descriptor for schemas: "
-                    + pd.getSchemas());
+            log.error("Unregistering unknown proxies descriptor for schemas: " + pd.getSchemas());
         }
     }
 
     /**
-     * Checks if something has to be recomputed if a dynamic register/unregister
-     * happened.
+     * Checks if something has to be recomputed if a dynamic register/unregister happened.
      */
     protected synchronized void checkDirty() {
         if (!dirty) {
@@ -386,14 +382,12 @@ public class SchemaManagerImpl implements SchemaManager {
         for (String schemaName : schemaNames) {
             Schema schema = schemas.get(schemaName);
             if (schema == null) {
-                log.error("Facet: " + name + " uses unknown schema: "
-                        + schemaName);
+                log.error("Facet: " + name + " uses unknown schema: " + schemaName);
                 continue;
             }
             facetSchemas.add(schema);
         }
-        CompositeType ct = new CompositeTypeImpl(null, SchemaNames.FACETS,
-                name, facetSchemas);
+        CompositeType ct = new CompositeTypeImpl(null, SchemaNames.FACETS, name, facetSchemas);
         facets.put(name, ct);
         return ct;
     }
@@ -441,8 +435,7 @@ public class SchemaManagerImpl implements SchemaManager {
             for (String facet : docType.getFacets()) {
                 Set<String> set = documentTypesForFacet.get(facet);
                 if (set == null) {
-                    documentTypesForFacet.put(facet,
-                            set = new HashSet<String>());
+                    documentTypesForFacet.put(facet, set = new HashSet<String>());
                 }
                 set.add(docType.getName());
             }
@@ -450,27 +443,24 @@ public class SchemaManagerImpl implements SchemaManager {
 
     }
 
-    protected DocumentTypeDescriptor mergeDocumentTypeDescriptors(
-            DocumentTypeDescriptor src, DocumentTypeDescriptor dst) {
+    protected DocumentTypeDescriptor mergeDocumentTypeDescriptors(DocumentTypeDescriptor src, DocumentTypeDescriptor dst) {
         return dst.clone().merge(src);
     }
 
-    protected DocumentType recomputeDocumentType(String name,
-            Set<String> stack, Map<String, DocumentTypeDescriptor> dtds) {
+    protected DocumentType recomputeDocumentType(String name, Set<String> stack,
+            Map<String, DocumentTypeDescriptor> dtds) {
         DocumentTypeImpl docType = documentTypes.get(name);
         if (docType != null) {
             // already done
             return docType;
         }
         if (stack.contains(name)) {
-            log.error("Document type: " + name
-                    + " used in parent inheritance loop: " + stack);
+            log.error("Document type: " + name + " used in parent inheritance loop: " + stack);
             return null;
         }
         DocumentTypeDescriptor dtd = dtds.get(name);
         if (dtd == null) {
-            log.error("Document type: " + name
-                    + " does not exist, used as parent by type: " + stack);
+            log.error("Document type: " + name + " does not exist, used as parent by type: " + stack);
             return null;
         }
 
@@ -497,8 +487,7 @@ public class SchemaManagerImpl implements SchemaManager {
         return recomputeDocumentType(name, dtd, parent);
     }
 
-    protected DocumentType recomputeDocumentType(String name,
-            DocumentTypeDescriptor dtd, DocumentType parent) {
+    protected DocumentType recomputeDocumentType(String name, DocumentTypeDescriptor dtd, DocumentType parent) {
         // find the facets and schemas names
         Set<String> facetNames = new HashSet<String>();
         Set<String> schemaNames = SchemaDescriptor.getSchemaNames(dtd.schemas);
@@ -514,8 +503,7 @@ public class SchemaManagerImpl implements SchemaManager {
         for (String facetName : facetNames) {
             CompositeType ct = facets.get(facetName);
             if (ct == null) {
-                log.warn("Undeclared facet: " + facetName
-                        + " used in document type: " + name);
+                log.warn("Undeclared facet: " + facetName + " used in document type: " + name);
                 // register it with no schemas
                 ct = registerFacet(facetName, Collections.<String> emptySet());
             }
@@ -527,18 +515,15 @@ public class SchemaManagerImpl implements SchemaManager {
         for (String schemaName : schemaNames) {
             Schema schema = schemas.get(schemaName);
             if (schema == null) {
-                log.error("Document type: " + name + " uses unknown schema: "
-                        + schemaName);
+                log.error("Document type: " + name + " uses unknown schema: " + schemaName);
                 continue;
             }
             docTypeSchemas.add(schema);
         }
 
         // create doctype
-        PrefetchInfo prefetch = dtd.prefetch == null ? prefetchInfo
-                : new PrefetchInfo(dtd.prefetch);
-        DocumentTypeImpl docType = new DocumentTypeImpl(name, parent,
-                docTypeSchemas, facetNames, prefetch);
+        PrefetchInfo prefetch = dtd.prefetch == null ? prefetchInfo : new PrefetchInfo(dtd.prefetch);
+        DocumentTypeImpl docType = new DocumentTypeImpl(name, parent, docTypeSchemas, facetNames, prefetch);
         registerDocumentType(docType);
 
         return docType;
@@ -547,8 +532,7 @@ public class SchemaManagerImpl implements SchemaManager {
     protected void registerDocumentType(DocumentTypeImpl docType) {
         String name = docType.getName();
         documentTypes.put(name, docType);
-        documentTypesExtending.put(name,
-                new HashSet<String>(Collections.singleton(name)));
+        documentTypesExtending.put(name, new HashSet<String>(Collections.singleton(name)));
     }
 
     @Override
@@ -599,8 +583,7 @@ public class SchemaManagerImpl implements SchemaManager {
         Set<String> nameSet = new HashSet<String>();
         for (ProxiesDescriptor pd : allProxies) {
             if (!pd.getType().equals("*")) {
-                log.error("Proxy descriptor for specific type not supported: "
-                        + pd);
+                log.error("Proxy descriptor for specific type not supported: " + pd);
             }
             for (String schemaName : pd.getSchemas()) {
                 if (nameSet.contains(schemaName)) {

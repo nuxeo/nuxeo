@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -23,16 +23,15 @@ import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 
 /**
- * Interface for class that provide a way to execute a
- * {@link CommandLineDescriptor}.
+ * Interface for class that provide a way to execute a {@link CommandLineDescriptor}.
  *
  * @author tiry
  */
 public interface Executor {
 
     /**
-     * No exception is thrown but the returned {@link ExecResult} contains
-     * everything about the command execution, including an optional exception.
+     * No exception is thrown but the returned {@link ExecResult} contains everything about the command execution,
+     * including an optional exception.
      *
      * @param cmdDesc Command to run. Cannot be null.
      * @param params Parameters passed to the command. Cannot be null.
