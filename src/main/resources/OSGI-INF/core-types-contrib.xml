@@ -10,11 +10,6 @@
       point="schema">
     <schema name="tenantconfig" prefix="tenantconfig" src="schemas/tenantconfig.xsd"/>
 
-    <!-- override default user schema -->
-    <schema name="user" src="schemas/multi_tenant_user.xsd" override="true"/>
-    <!-- override default group schema -->
-    <schema name="group" src="schemas/multi_tenant_group.xsd" override="true"/>
-
     <!-- multi tenant vocabulary -->
     <schema name="multitenantvocabulary" src="schemas/multi_tenant_vocabulary.xsd"/>
     <schema name="multitenantxvocabulary" src="schemas/multi_tenant_xvocabulary.xsd"/>
