@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -50,19 +50,17 @@ public class ExecResult implements Serializable {
 
     protected int returnCode;
 
-    public ExecResult(String commandLine, List<String> output, long execTime,
-            int returnCode) {
+    public ExecResult(String commandLine, List<String> output, long execTime, int returnCode) {
         this.commandLine = commandLine;
         this.execTime = execTime;
         this.output = output;
         this.returnCode = returnCode;
         success = returnCode == 0;
         if (!success) {
-            this.error = new CommandException(String.format(
-                    "Error code %d return by command: %s\n%s", returnCode,
+            error = new CommandException(String.format("Error code %d return by command: %s\n%s", returnCode,
                     commandLine, StringUtils.join(output, "\n  ")));
         } else {
-            this.error = null;
+            error = null;
         }
     }
 
@@ -71,8 +69,7 @@ public class ExecResult implements Serializable {
         execTime = 0;
         output = null;
         success = false;
-        this.error = new CommandException(String.format(
-                "Error while running command: %s", commandLine), error);
+        this.error = new CommandException(String.format("Error while running command: %s", commandLine), error);
     }
 
     public List<String> getOutput() {
@@ -88,14 +85,10 @@ public class ExecResult implements Serializable {
     }
 
     /**
-     * Rather rely on {@link #isSuccessful()} to check for the execution
-     * success. Note however that since 5.7.3, the {@link #getError()} method
-     * cannot return null even if the execution failed (it was not the case
-     * before).
+     * Rather rely on {@link #isSuccessful()} to check for the execution success. Note however that since 5.7.3, the
+     * {@link #getError()} method cannot return null even if the execution failed (it was not the case before).
      *
-     * @return CommandException attached to the result, optionally wrapping the
-     *         root cause.
-     *
+     * @return CommandException attached to the result, optionally wrapping the root cause.
      */
     public CommandException getError() {
         return error;

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  *
  */
 
@@ -43,6 +41,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestCommands extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -54,8 +53,7 @@ public class TestCommands extends NXRuntimeTestCase {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
         assertNotNull(cles);
 
-        deployContrib("org.nuxeo.ecm.platform.commandline.executor",
-                "OSGI-INF/commandline-aspell-test-contribs.xml");
+        deployContrib("org.nuxeo.ecm.platform.commandline.executor", "OSGI-INF/commandline-aspell-test-contribs.xml");
         List<String> cmds = cles.getRegistredCommands();
         assertNotNull(cmds);
         assertEquals(1, cmds.size());
@@ -74,20 +72,16 @@ public class TestCommands extends NXRuntimeTestCase {
 
         // test String params
         params.addNamedParameter("textFile", textFilePath);
-        String parsedParamString = AbstractExecutor.getParametersString(
-                cmdDesc, params);
-        assertEquals(
-                "-a --lang=\"fr_FR\" --encoding=\"utf-8\" -H --rem-sgml-check=alt < \"/tmp/textMe.txt\"",
+        String parsedParamString = AbstractExecutor.getParametersString(cmdDesc, params);
+        assertEquals("-a --lang=\"fr_FR\" --encoding=\"utf-8\" -H --rem-sgml-check=alt < \"/tmp/textMe.txt\"",
                 parsedParamString);
 
         // test with File param
         params.addNamedParameter("textFile", textFile);
-        parsedParamString = AbstractExecutor.getParametersString(cmdDesc,
-                params);
+        parsedParamString = AbstractExecutor.getParametersString(cmdDesc, params);
         // System.out.println("command:" + parsedParamString);
         assertTrue(parsedParamString.startsWith("-a --lang=\"fr_FR\" --encoding=\"utf-8\" -H --rem-sgml-check=alt < "));
-        assertTrue(parsedParamString.contains(System.getProperties().getProperty(
-                "java.io.tmpdir")));
+        assertTrue(parsedParamString.contains(System.getProperties().getProperty("java.io.tmpdir")));
 
         String[] res = AbstractExecutor.getParametersArray(cmdDesc, params);
         assertEquals(7, res.length);
@@ -97,8 +91,7 @@ public class TestCommands extends NXRuntimeTestCase {
         assertEquals("-H", res[3]);
         assertEquals("--rem-sgml-check=alt", res[4]);
         assertEquals("<", res[5]);
-        assertTrue(res[6].startsWith("\""
-                + System.getProperties().getProperty("java.io.tmpdir")));
+        assertTrue(res[6].startsWith("\"" + System.getProperties().getProperty("java.io.tmpdir")));
         assertTrue(res[6].contains("testMe"));
     }
 

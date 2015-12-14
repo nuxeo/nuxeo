@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.convert.tests;
@@ -79,8 +78,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
     }
 
     public void testiWorkConverter(String blobPath) throws Exception {
-        String converterName = cs.getConverterName(
-                "application/vnd.apple.iwork", "application/pdf");
+        String converterName = cs.getConverterName("application/vnd.apple.iwork", "application/pdf");
         assertEquals("iwork2pdf", converterName);
 
         BlobHolder pagesBH = getBlobFromPath(blobPath);
@@ -105,8 +103,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
 
     @Test
     public void testHTMLConverter() throws Exception {
-        String converterName = cs.getConverterName(
-                "application/vnd.apple.pages", "text/html");
+        String converterName = cs.getConverterName("application/vnd.apple.pages", "text/html");
         assertEquals("iwork2html", converterName);
 
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
@@ -116,8 +113,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
         assertNotNull(check);
         if (!check.isAvailable()) {
             log.warn("Skipping PDF2Html tests since commandLine is not installed");
-            log.warn(" converter check output : "
-                    + check.getInstallationMessage());
+            log.warn(" converter check output : " + check.getInstallationMessage());
             log.warn(" converter check output : " + check.getErrorMessage());
             return;
         }
@@ -150,8 +146,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
 
     @Test
     public void testPagesWithoutPreviewConverter() throws ClientException {
-        String converterName = cs.getConverterName(
-                "application/vnd.apple.pages", "application/pdf");
+        String converterName = cs.getConverterName("application/vnd.apple.pages", "application/pdf");
         assertEquals("iwork2pdf", converterName);
 
         BlobHolder pagesBH = getBlobFromPath("test-docs/hello-without-preview.pages");

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -40,13 +40,11 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
- * POJO implementation of the {@link CommandLineExecutorService} interface. Also
- * handles the Extension Point logic.
+ * POJO implementation of the {@link CommandLineExecutorService} interface. Also handles the Extension Point logic.
  *
  * @author tiry
  */
-public class CommandLineExecutorComponent extends DefaultComponent implements
-        CommandLineExecutorService {
+public class CommandLineExecutorComponent extends DefaultComponent implements CommandLineExecutorService {
 
     public static final String EP_ENV = "environment";
 
@@ -86,8 +84,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
 
         if (EP_ENV.equals(extensionPoint)) {
@@ -113,19 +110,16 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
             CommandTester tester = testers.get(testerName);
             boolean cmdAvailable = false;
             if (tester == null) {
-                log.error("Unable to find tester '" + testerName
-                        + "', command will not be available: " + name);
+                log.error("Unable to find tester '" + testerName + "', command will not be available: " + name);
             } else {
-                log.debug("Using tester '" + testerName + "' for command: "
-                        + name);
+                log.debug("Using tester '" + testerName + "' for command: " + name);
                 CommandTestResult testResult = tester.test(desc);
                 cmdAvailable = testResult.succeed();
                 if (cmdAvailable) {
                     log.info("Registered command: " + name);
                 } else {
                     desc.setInstallErrorMessage(testResult.getErrorMessage());
-                    log.warn("Command not available: " + name + " ("
-                            + desc.getInstallErrorMessage() + ". "
+                    log.warn("Command not available: " + name + " (" + desc.getInstallErrorMessage() + ". "
                             + desc.getInstallationDirective() + ')');
                 }
             }
@@ -139,8 +133,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
     }
 
@@ -148,8 +141,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
      * Service interface
      */
     @Override
-    public ExecResult execCommand(String commandName, CmdParameters params)
-            throws CommandNotAvailable {
+    public ExecResult execCommand(String commandName, CmdParameters params) throws CommandNotAvailable {
         CommandAvailability availability = getCommandAvailability(commandName);
         if (!availability.isAvailable()) {
             throw new CommandNotAvailable(availability);
@@ -163,16 +155,14 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
     @Override
     public CommandAvailability getCommandAvailability(String commandName) {
         if (!commandDescriptors.containsKey(commandName)) {
-            return new CommandAvailability(commandName
-                    + " is not a registered command");
+            return new CommandAvailability(commandName + " is not a registered command");
         }
 
         CommandLineDescriptor desc = commandDescriptors.get(commandName);
         if (desc.isAvailable()) {
             return new CommandAvailability();
         } else {
-            return new CommandAvailability(desc.getInstallationDirective(),
-                    desc.getInstallErrorMessage());
+            return new CommandAvailability(desc.getInstallationDirective(), desc.getInstallErrorMessage());
         }
     }
 
@@ -221,8 +211,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements
             } else {
                 VALID_PATTERN = VALID_PARAMETER_PATTERN;
             }
-            throw new IllegalArgumentException(String.format(
-                    "'%s' contains illegal characters. It should match: %s",
+            throw new IllegalArgumentException(String.format("'%s' contains illegal characters. It should match: %s",
                     parameter, VALID_PATTERN));
         }
     }

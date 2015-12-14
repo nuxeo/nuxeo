@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  *
  */
 
@@ -31,20 +29,19 @@ import java.util.regex.Pattern;
 public interface CommandLineExecutorService {
 
     Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ]+");
+
     Pattern VALID_PARAMETER_PATTERN_WIN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ()]+");
 
     CommandAvailability getCommandAvailability(String commandName);
 
-    ExecResult execCommand(String commandName, CmdParameters params)
-            throws CommandNotAvailable;
+    ExecResult execCommand(String commandName, CmdParameters params) throws CommandNotAvailable;
 
     List<String> getRegistredCommands();
 
     List<String> getAvailableCommands();
 
     /**
-     * Returns true if the given {@code parameter} is valid to be used in a
-     * command.
+     * Returns true if the given {@code parameter} is valid to be used in a command.
      *
      * @since 5.7
      */

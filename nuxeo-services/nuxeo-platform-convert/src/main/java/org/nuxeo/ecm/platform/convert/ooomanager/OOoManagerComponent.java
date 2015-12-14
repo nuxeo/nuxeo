@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,8 +39,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
-public class OOoManagerComponent extends DefaultComponent implements
-        OOoManagerService {
+public class OOoManagerComponent extends DefaultComponent implements OOoManagerService {
 
     protected static final Log log = LogFactory.getLog(OOoManagerComponent.class);
 
@@ -77,8 +76,7 @@ public class OOoManagerComponent extends DefaultComponent implements
     }
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (CONFIG_EP.equals(extensionPoint)) {
             OOoManagerDescriptor desc = (OOoManagerDescriptor) contribution;
@@ -91,6 +89,7 @@ public class OOoManagerComponent extends DefaultComponent implements
         stopOOoManager();
     }
 
+    @Override
     public OfficeDocumentConverter getDocumentConverter() {
         if (isOOoManagerStarted()) {
             return new OfficeDocumentConverter(officeManager);
@@ -108,6 +107,7 @@ public class OOoManagerComponent extends DefaultComponent implements
         }
     }
 
+    @Override
     public void stopOOoManager() {
         if (isOOoManagerStarted() && !shutingdown) {
             shutingdown = true;
@@ -120,6 +120,7 @@ public class OOoManagerComponent extends DefaultComponent implements
         }
     }
 
+    @Override
     public void startOOoManager() throws IOException {
         DefaultOfficeManagerConfiguration configuration = new DefaultOfficeManagerConfiguration();
 
@@ -129,18 +130,15 @@ public class OOoManagerComponent extends DefaultComponent implements
             // Properties configuration
             String connectionProtocol = Framework.getProperty(CONNECTION_PROTOCOL_PROPERTY_KEY);
             if (connectionProtocol != null && !"".equals(connectionProtocol)) {
-                if (OfficeConnectionProtocol.PIPE.toString().equals(
-                        connectionProtocol)) {
+                if (OfficeConnectionProtocol.PIPE.toString().equals(connectionProtocol)) {
                     ConfigBuilderHelper.hackClassLoader();
                     configuration.setConnectionProtocol(OfficeConnectionProtocol.PIPE);
-                } else if (OfficeConnectionProtocol.SOCKET.toString().equals(
-                        connectionProtocol)) {
+                } else if (OfficeConnectionProtocol.SOCKET.toString().equals(connectionProtocol)) {
                     configuration.setConnectionProtocol(OfficeConnectionProtocol.SOCKET);
                 }
             }
             String maxTasksPerProcessProperty = Framework.getProperty(MAX_TASKS_PER_PROCESS_PROPERTY_KEY);
-            if (maxTasksPerProcessProperty != null
-                    && !"".equals(maxTasksPerProcessProperty)) {
+            if (maxTasksPerProcessProperty != null && !"".equals(maxTasksPerProcessProperty)) {
                 Integer maxTasksPerProcess = Integer.valueOf(maxTasksPerProcessProperty);
                 configuration.setMaxTasksPerProcess(maxTasksPerProcess);
             }
@@ -150,14 +148,12 @@ public class OOoManagerComponent extends DefaultComponent implements
             }
 
             String taskExecutionTimeoutProperty = Framework.getProperty(TASK_EXECUTION_TIMEOUT_PROPERTY_KEY);
-            if (taskExecutionTimeoutProperty != null
-                    && !"".equals(taskExecutionTimeoutProperty)) {
+            if (taskExecutionTimeoutProperty != null && !"".equals(taskExecutionTimeoutProperty)) {
                 Long taskExecutionTimeout = Long.valueOf(taskExecutionTimeoutProperty);
                 configuration.setTaskExecutionTimeout(taskExecutionTimeout);
             }
             String taskQueueTimeoutProperty = Framework.getProperty(TASK_QUEUE_TIMEOUT_PROPERTY_KEY);
-            if (taskQueueTimeoutProperty != null
-                    && !"".equals(taskQueueTimeoutProperty)) {
+            if (taskQueueTimeoutProperty != null && !"".equals(taskQueueTimeoutProperty)) {
                 Long taskQueueTimeout = Long.valueOf(taskQueueTimeoutProperty);
                 configuration.setTaskQueueTimeout(taskQueueTimeout);
             }
@@ -168,8 +164,7 @@ public class OOoManagerComponent extends DefaultComponent implements
                     try {
                         FileUtils.forceMkdir(templateDirectory);
                     } catch (IOException e) {
-                        throw new RuntimeException(
-                                "I/O Error: could not create JOD templateDirectory");
+                        throw new RuntimeException("I/O Error: could not create JOD templateDirectory");
                     }
                 }
                 configuration.setTemplateProfileDir(templateDirectory);
@@ -204,8 +199,7 @@ public class OOoManagerComponent extends DefaultComponent implements
                     try {
                         portList.add(Integer.parseInt(portStrings[i].trim()));
                     } catch (NumberFormatException e) {
-                        log.error("Ignoring malformed port number: "
-                                + portStrings[i]);
+                        log.error("Ignoring malformed port number: " + portStrings[i]);
                     }
                 }
                 portNumbers = ArrayUtils.toPrimitive(portList.toArray(new Integer[0]));
@@ -223,8 +217,7 @@ public class OOoManagerComponent extends DefaultComponent implements
             } catch (Exception e) {
                 started = false;
                 Throwable t = unwrapException(e);
-                log.warn("OpenOffice was not found, JOD Converter "
-                        + "won't be available: " + t.getMessage());
+                log.warn("OpenOffice was not found, JOD Converter " + "won't be available: " + t.getMessage());
             }
         } finally {
             starting = false;
@@ -268,6 +261,7 @@ public class OOoManagerComponent extends DefaultComponent implements
         log.info("Started OOo Manager");
     }
 
+    @Override
     public boolean isOOoManagerStarted() {
         if (shutingdown) {
             return false;

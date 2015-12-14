@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -55,8 +55,7 @@ import org.nuxeo.runtime.services.streaming.FileSource;
 import com.sun.star.uno.RuntimeException;
 
 /**
- * Converter based on JOD which uses an external OpenOffice process to do actual
- * conversions.
+ * Converter based on JOD which uses an external OpenOffice process to do actual conversions.
  */
 public class JODBasedConverter implements ExternalConverter {
 
@@ -100,44 +99,36 @@ public class JODBasedConverter implements ExternalConverter {
      * @param sourceFormat the source format
      * @param pdfa1 true if PDF/A-1 is required
      */
-    protected DocumentFormat getDestinationFormat(
-            OfficeDocumentConverter documentConverter,
+    protected DocumentFormat getDestinationFormat(OfficeDocumentConverter documentConverter,
             DocumentFormat sourceFormat, boolean pdfa1) {
         String mimeType = getDestinationMimeType();
-        DocumentFormat destinationFormat = documentConverter.getFormatRegistry().getFormatByMediaType(
-                mimeType);
+        DocumentFormat destinationFormat = documentConverter.getFormatRegistry().getFormatByMediaType(mimeType);
         if ("application/pdf".equals(mimeType)) {
-            destinationFormat = extendPDFFormat(sourceFormat,
-                    destinationFormat, pdfa1);
+            destinationFormat = extendPDFFormat(sourceFormat, destinationFormat, pdfa1);
         }
         return destinationFormat;
     }
 
-    protected DocumentFormat extendPDFFormat(DocumentFormat sourceFormat,
-            DocumentFormat defaultFormat, boolean pdfa1) {
+    protected DocumentFormat extendPDFFormat(DocumentFormat sourceFormat, DocumentFormat defaultFormat, boolean pdfa1) {
         DocumentFamily sourceFamily = sourceFormat.getInputFamily();
         String sourceMediaType = sourceFormat.getMediaType();
-        DocumentFormat pdfFormat = new DocumentFormat(
-                pdfa1 ? "PDF/A-1" : "PDF", "pdf", "application/pdf");
+        DocumentFormat pdfFormat = new DocumentFormat(pdfa1 ? "PDF/A-1" : "PDF", "pdf", "application/pdf");
         Map<DocumentFamily, Map<String, ?>> storePropertiesByFamily = new HashMap<DocumentFamily, Map<String, ?>>();
         Map<DocumentFamily, Map<String, ?>> defaultStorePropertiesByFamily = defaultFormat.getStorePropertiesByFamily();
         for (DocumentFamily family : defaultStorePropertiesByFamily.keySet()) {
             if (family.equals(sourceFamily)) {
                 continue;
             }
-            storePropertiesByFamily.put(family,
-                    defaultStorePropertiesByFamily.get(family));
+            storePropertiesByFamily.put(family, defaultStorePropertiesByFamily.get(family));
         }
-        storePropertiesByFamily.put(
-                sourceFamily,
-                extendPDFStoreProperties(sourceMediaType, pdfa1,
-                        defaultStorePropertiesByFamily.get(sourceFamily)));
+        storePropertiesByFamily.put(sourceFamily,
+                extendPDFStoreProperties(sourceMediaType, pdfa1, defaultStorePropertiesByFamily.get(sourceFamily)));
         pdfFormat.setStorePropertiesByFamily(storePropertiesByFamily);
         return pdfFormat;
     }
 
-    protected Map<String, Object> extendPDFStoreProperties(String mediatype,
-            boolean pdfa1, Map<String, ?> originalProperties) {
+    protected Map<String, Object> extendPDFStoreProperties(String mediatype, boolean pdfa1,
+            Map<String, ?> originalProperties) {
         Map<String, Object> extendedProperties = new HashMap<String, Object>();
         for (Map.Entry<String, ?> entry : originalProperties.entrySet()) {
             extendedProperties.put(entry.getKey(), entry.getValue());
@@ -161,13 +152,11 @@ public class JODBasedConverter implements ExternalConverter {
      *
      * @return DocumentFormat for the given file
      */
-    private static DocumentFormat getSourceFormat(
-            OfficeDocumentConverter documentConverter, File file)
+    private static DocumentFormat getSourceFormat(OfficeDocumentConverter documentConverter, File file)
             throws Exception {
         MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         String mimetypeStr = mimetypeRegistry.getMimetypeFromFile(file);
-        DocumentFormat format = documentConverter.getFormatRegistry().getFormatByMediaType(
-                mimetypeStr);
+        DocumentFormat format = documentConverter.getFormatRegistry().getFormatByMediaType(mimetypeStr);
         return format;
     }
 
@@ -176,10 +165,8 @@ public class JODBasedConverter implements ExternalConverter {
      *
      * @return DocumentFormat for the given mimetype
      */
-    private static DocumentFormat getSourceFormat(
-            OfficeDocumentConverter documentConverter, String mimetype) {
-        return documentConverter.getFormatRegistry().getFormatByMediaType(
-                mimetype);
+    private static DocumentFormat getSourceFormat(OfficeDocumentConverter documentConverter, String mimetype) {
+        return documentConverter.getFormatRegistry().getFormatByMediaType(mimetype);
     }
 
     @Override
@@ -189,8 +176,7 @@ public class JODBasedConverter implements ExternalConverter {
 
     @SuppressWarnings("unchecked")
     @Override
-    public BlobHolder convert(BlobHolder blobHolder,
-            Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         blobHolder = new UTF8CharsetConverter().convert(blobHolder, parameters);
         Blob inputBlob;
         String blobPath;
@@ -208,8 +194,7 @@ public class JODBasedConverter implements ExternalConverter {
         // This plugin do deal only with one input source.
         String sourceMimetype = inputBlob.getMimeType();
 
-        boolean pdfa1 = parameters != null
-                && Boolean.TRUE.equals(parameters.get(PDFA1_PARAM));
+        boolean pdfa1 = parameters != null && Boolean.TRUE.equals(parameters.get(PDFA1_PARAM));
 
         File sourceFile = null;
         File outFile = null;
@@ -241,8 +226,7 @@ public class JODBasedConverter implements ExternalConverter {
             DocumentFormat sourceFormat = null;
             if (sourceMimetype != null) {
                 // Try to fetch it from the registry.
-                sourceFormat = getSourceFormat(documentConverter,
-                        sourceMimetype);
+                sourceFormat = getSourceFormat(documentConverter, sourceMimetype);
             }
             // If not found in the registry or not given as a parameter.
             // Try to sniff ! What does that smell ? :)
@@ -252,8 +236,7 @@ public class JODBasedConverter implements ExternalConverter {
 
             // From plugin settings because we know the destination
             // mimetype.
-            DocumentFormat destinationFormat = getDestinationFormat(
-                    documentConverter, sourceFormat, pdfa1);
+            DocumentFormat destinationFormat = getDestinationFormat(documentConverter, sourceFormat, pdfa1);
 
             // allow HTML2PDF filtering
 
@@ -261,15 +244,13 @@ public class JODBasedConverter implements ExternalConverter {
 
             if (descriptor.getDestinationMimeType().equals("text/html")) {
                 String tmpDirPath = getTmpDirectory();
-                File myTmpDir = new File(tmpDirPath + "/JODConv_"
-                        + System.currentTimeMillis());
+                File myTmpDir = new File(tmpDirPath + "/JODConv_" + System.currentTimeMillis());
                 boolean created = myTmpDir.mkdir();
                 if (!created) {
                     throw new ConversionException("Unable to create temp dir");
                 }
 
-                outFile = new File(myTmpDir.getAbsolutePath() + "/"
-                        + "NXJOOoConverterDocumentOut."
+                outFile = new File(myTmpDir.getAbsolutePath() + "/" + "NXJOOoConverterDocumentOut."
                         + destinationFormat.getExtension());
 
                 created = outFile.createNewFile();
@@ -280,22 +261,18 @@ public class JODBasedConverter implements ExternalConverter {
                 log.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
                 log.debug("Input File = " + outFile.getAbsolutePath());
                 // Perform the actual conversion.
-                documentConverter.convert(sourceFile, outFile,
-                        destinationFormat);
+                documentConverter.convert(sourceFile, outFile, destinationFormat);
 
                 files = myTmpDir.listFiles();
                 for (File file : files) {
-                    Blob blob = StreamingBlob.createFromByteArray(new FileSource(
-                            file).getBytes());
+                    Blob blob = StreamingBlob.createFromByteArray(new FileSource(file).getBytes());
                     blob.setFilename(file.getName());
                     blobs.add(blob);
                     // add a blob for the index
                     if (file.getName().equals(outFile.getName())) {
-                        File indexFile = File.createTempFile("idx-",
-                                file.getName());
+                        File indexFile = File.createTempFile("idx-", file.getName());
                         FileUtils.copy(file, indexFile);
-                        Blob indexBlob = StreamingBlob.createFromByteArray(new FileSource(
-                                indexFile).getBytes());
+                        Blob indexBlob = StreamingBlob.createFromByteArray(new FileSource(indexFile).getBytes());
                         indexBlob.setFilename("index.html");
                         blobs.add(0, indexBlob);
                         indexFile.delete();
@@ -303,25 +280,22 @@ public class JODBasedConverter implements ExternalConverter {
                 }
 
             } else {
-                outFile = File.createTempFile("NXJOOoConverterDocumentOut",
-                        '.' + destinationFormat.getExtension());
+                outFile = File.createTempFile("NXJOOoConverterDocumentOut", '.' + destinationFormat.getExtension());
 
                 // Perform the actual conversion.
-                documentConverter.convert(sourceFile, outFile,
-                        destinationFormat, parameters);
+                documentConverter.convert(sourceFile, outFile, destinationFormat, parameters);
 
                 // load the content in the file since it will be deleted
                 // soon: TODO: find a way to stream it to the streaming
                 // server without loading it all in memory
-                Blob blob = StreamingBlob.createFromByteArray(new FileSource(
-                        outFile).getBytes(), getDestinationMimeType());
+                Blob blob = StreamingBlob.createFromByteArray(new FileSource(outFile).getBytes(),
+                        getDestinationMimeType());
                 blobs.add(blob);
             }
             return new SimpleCachableBlobHolder(blobs);
         } catch (Exception e) {
-            String msg = String.format(
-                    "An error occurred trying to convert file %s to from %s to %s",
-                    blobPath, sourceMimetype, getDestinationMimeType());
+            String msg = String.format("An error occurred trying to convert file %s to from %s to %s", blobPath,
+                    sourceMimetype, getDestinationMimeType());
             throw new ConversionException(msg, e);
         } finally {
             if (sourceFile != null) {
@@ -342,8 +316,7 @@ public class JODBasedConverter implements ExternalConverter {
 
     }
 
-    protected OfficeDocumentConverter newDocumentConverter()
-            throws ConversionException {
+    protected OfficeDocumentConverter newDocumentConverter() throws ConversionException {
         OfficeDocumentConverter documentConverter = null;
         try {
             OOoManagerService oooManagerService = Framework.getService(OOoManagerService.class);
@@ -351,8 +324,7 @@ public class JODBasedConverter implements ExternalConverter {
         } catch (Exception e) {
         }
         if (documentConverter == null) {
-            throw new ConversionException(
-                    "Could not connect to the remote OpenOffice server");
+            throw new ConversionException("Could not connect to the remote OpenOffice server");
         }
         return documentConverter;
     }
@@ -389,8 +361,7 @@ public class JODBasedConverter implements ExternalConverter {
     }
 
     /**
-     * Checks if the {@code inputBlob} string contains a {@code charset} meta
-     * tag. If not, add it.
+     * Checks if the {@code inputBlob} string contains a {@code charset} meta tag. If not, add it.
      *
      * @param inputBlob the input blob
      * @throws IOException Signals that an I/O exception has occurred.
@@ -399,17 +370,14 @@ public class JODBasedConverter implements ExternalConverter {
 
         String charset = inputBlob.getEncoding();
         if (!StringUtils.isEmpty(charset)) {
-            Pattern charsetMetaPattern = Pattern.compile(String.format(
-                    "content=\"text/html;\\s*charset=%s\"", charset));
+            Pattern charsetMetaPattern = Pattern.compile(String.format("content=\"text/html;\\s*charset=%s\"", charset));
             Matcher charsetMetaMatcher = charsetMetaPattern.matcher(inputBlob.getString());
             if (!charsetMetaMatcher.find()) {
                 String charsetMetaTag = String.format(
-                        "<META http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">",
-                        charset);
+                        "<META http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">", charset);
                 StringBuilder sb = new StringBuilder(charsetMetaTag);
                 sb.append(new String(inputBlob.getByteArray(), charset));
-                Blob blobWithCharsetMetaTag = new StringBlob(sb.toString(),
-                        "text/html", charset);
+                Blob blobWithCharsetMetaTag = new StringBlob(sb.toString(), "text/html", charset);
                 blobWithCharsetMetaTag.setFilename(inputBlob.getFilename());
                 return blobWithCharsetMetaTag;
             }
