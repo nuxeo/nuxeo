@@ -151,6 +151,23 @@
         </propertyList>
       </properties>
       <subWidgets>
+        <widget name="created" type="datetimeRange">
+          <fields>
+            <field>dateValue</field>
+            <field>otherDateValue</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+            <property name="format">#{nxu:basicDateFormatter()}</property>
+          </properties>
+          <widgetModes>
+            <mode value="any">
+              <![CDATA[
+              #{(empty value.conditionalOperator or value.conditionalOperator=='BETWEEN' or value.conditionalOperator=='NOT BETWEEN')?'edit':'hidden'}
+              ]]>
+            </mode>
+          </widgetModes>
+        </widget>
         <widget name="created_before" type="datetime">
           <fields>
             <field>dateValue</field>
@@ -159,41 +176,13 @@
             <property name="required">true</property>
             <property name="format">#{nxu:basicDateFormatter()}</property>
           </properties>
-        </widget>
-        <widget name="and" type="text">
           <widgetModes>
             <mode value="any">
               <![CDATA[
-              #{not empty value.conditionalOperator
-              and value.conditionalOperator!='BETWEEN'
-              and value.conditionalOperator!='NOT BETWEEN'?'hidden':'view'}
+              #{(empty value.conditionalOperator or value.conditionalOperator=='BETWEEN' or value.conditionalOperator=='NOT BETWEEN')?'hidden':'edit'}
               ]]>
             </mode>
           </widgetModes>
-          <properties mode="any">
-            <property name="value">
-              &amp;nbsp;#{messages['label.and']}&amp;nbsp;
-            </property>
-            <property name="escape">false</property>
-          </properties>
-        </widget>
-        <widget name="created_after" type="datetime">
-          <fields>
-            <field>otherDateValue</field>
-          </fields>
-          <widgetModes>
-            <mode value="any">
-              <![CDATA[
-              #{not empty value.conditionalOperator
-              and value.conditionalOperator!='BETWEEN'
-              and value.conditionalOperator!='NOT BETWEEN'?'hidden':mode}
-              ]]>
-            </mode>
-          </widgetModes>
-          <properties widgetMode="edit">
-            <property name="required">true</property>
-            <property name="format">#{nxu:basicDateFormatter()}</property>
-          </properties>
         </widget>
       </subWidgets>
     </widget>
@@ -214,6 +203,23 @@
         </propertyList>
       </properties>
       <subWidgets>
+        <widget name="modified" type="datetimeRange">
+          <fields>
+            <field>dateValue</field>
+            <field>otherDateValue</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+            <property name="format">#{nxu:basicDateFormatter()}</property>
+          </properties>
+          <widgetModes>
+            <mode value="any">
+              <![CDATA[
+              #{(empty value.conditionalOperator or value.conditionalOperator=='BETWEEN' or value.conditionalOperator=='NOT BETWEEN')?'edit':'hidden'}
+              ]]>
+            </mode>
+          </widgetModes>
+        </widget>
         <widget name="modified_before" type="datetime">
           <fields>
             <field>dateValue</field>
@@ -222,41 +228,13 @@
             <property name="required">true</property>
             <property name="format">#{nxu:basicDateFormatter()}</property>
           </properties>
-        </widget>
-        <widget name="and" type="text">
           <widgetModes>
             <mode value="any">
               <![CDATA[
-              #{not empty value.conditionalOperator
-              and value.conditionalOperator!='BETWEEN'
-              and value.conditionalOperator!='NOT BETWEEN'?'hidden':'view'}
+              #{(empty value.conditionalOperator or value.conditionalOperator=='BETWEEN' or value.conditionalOperator=='NOT BETWEEN')?'hidden':'edit'}
               ]]>
             </mode>
           </widgetModes>
-          <properties mode="any">
-            <property name="value">
-              &amp;nbsp;#{messages['label.and']}&amp;nbsp;
-            </property>
-            <property name="escape">false</property>
-          </properties>
-        </widget>
-        <widget name="modified_after" type="datetime">
-          <fields>
-            <field>otherDateValue</field>
-          </fields>
-          <widgetModes>
-            <mode value="any">
-              <![CDATA[
-              #{not empty value.conditionalOperator
-              and value.conditionalOperator!='BETWEEN'
-              and value.conditionalOperator!='NOT BETWEEN'?'hidden':mode}
-              ]]>
-            </mode>
-          </widgetModes>
-          <properties widgetMode="edit">
-            <property name="required">true</property>
-            <property name="format">#{nxu:basicDateFormatter()}</property>
-          </properties>
         </widget>
       </subWidgets>
     </widget>
@@ -277,6 +255,23 @@
         </propertyList>
       </properties>
       <subWidgets>
+        <widget name="expired" type="datetimeRange">
+          <fields>
+            <field>dateValue</field>
+            <field>otherDateValue</field>
+          </fields>
+          <properties widgetMode="edit">
+            <property name="required">true</property>
+            <property name="format">#{nxu:basicDateFormatter()}</property>
+          </properties>
+          <widgetModes>
+            <mode value="any">
+              <![CDATA[
+              #{(empty value.conditionalOperator or value.conditionalOperator=='BETWEEN' or value.conditionalOperator=='NOT BETWEEN')?'edit':'hidden'}
+              ]]>
+            </mode>
+          </widgetModes>
+        </widget>
         <widget name="expired_before" type="datetime">
           <fields>
             <field>dateValue</field>
@@ -285,41 +280,13 @@
             <property name="required">true</property>
             <property name="format">#{nxu:basicDateFormatter()}</property>
           </properties>
-        </widget>
-        <widget name="and" type="text">
           <widgetModes>
             <mode value="any">
               <![CDATA[
-              #{not empty value.conditionalOperator
-              and value.conditionalOperator!='BETWEEN'
-              and value.conditionalOperator!='NOT BETWEEN'?'hidden':'view'}
+              #{(empty value.conditionalOperator or value.conditionalOperator=='BETWEEN' or value.conditionalOperator=='NOT BETWEEN')?'hidden':'edit'}
               ]]>
             </mode>
           </widgetModes>
-          <properties mode="any">
-            <property name="value">
-              &amp;nbsp;#{messages['label.and']}&amp;nbsp;
-            </property>
-            <property name="escape">false</property>
-          </properties>
-        </widget>
-        <widget name="expired_after" type="datetime">
-          <fields>
-            <field>otherDateValue</field>
-          </fields>
-          <widgetModes>
-            <mode value="any">
-              <![CDATA[
-              #{not empty value.conditionalOperator
-              and value.conditionalOperator!='BETWEEN'
-              and value.conditionalOperator!='NOT BETWEEN'?'hidden':mode}
-              ]]>
-            </mode>
-          </widgetModes>
-          <properties widgetMode="edit">
-            <property name="required">true</property>
-            <property name="format">#{nxu:basicDateFormatter()}</property>
-          </properties>
         </widget>
       </subWidgets>
     </widget>
