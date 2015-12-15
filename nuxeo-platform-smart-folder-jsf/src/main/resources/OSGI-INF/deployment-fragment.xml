@@ -12,16 +12,6 @@
 
   </extension>
 
-  <extension target="faces-config#NAVIGATION">
-
-    <navigation-case>
-      <from-outcome>save_smart_query_as_document</from-outcome>
-      <to-view-id>/save_smart_query_as_document.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-
-  </extension>
-
   <install>
 
     <!--  unzip the war template -->

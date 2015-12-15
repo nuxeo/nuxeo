@@ -6,10 +6,7 @@
     point="contentViews">
 
     <documentation>
-      Content view definition for the global smart query results.
-
-      It is bound to smartNXQLQueryActions component for the query part, the
-      sort information, and the selected layout columns retrieval.
+      Content view definition for smart search on main search tab.
     </documentation>
 
     <contentView name="nxql_incremental_smart_query">

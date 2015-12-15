@@ -30,13 +30,16 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.smart.query.jsf.SmartNXQLQueryActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
+import org.nuxeo.runtime.logging.DeprecationLogger;
 
 /**
  * Provides methods to save a global smart search in a document.
  *
  * @author Anahide Tchertchian
  * @since 5.4
+ * @deprecated since 8.1: use generic methods on SearchUIActionsBean
  */
+@Deprecated
 @Name("smartNXQLFolderActions")
 @Scope(ScopeType.CONVERSATION)
 public class SmartNXQLFolderActions implements Serializable {
@@ -59,6 +62,9 @@ public class SmartNXQLFolderActions implements Serializable {
      * Assumes the document type holds the 'content_view_display' and 'smart_folder' schemas.
      */
     public String saveQueryAsDocument(String docType) {
+        DeprecationLogger.log(
+                "Seam component names 'smartNXQLFolderActions' is deprecated, use component named 'searchUIActions' instead.",
+                "8.1");
         documentActions.createDocument(docType);
         // fill in information from smart search
         DocumentModel doc = navigationContext.getChangeableDocument();
