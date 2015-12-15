@@ -72,12 +72,13 @@ public class TestPermissionsPurge {
         assertEquals("Read", ace.getPermission());
         assertTrue(ace.isEffective());
 
-        TransactionHelper.commitOrRollbackTransaction();
-
         DocumentModel searchDocument = session.createDocumentModel("PermissionsSearch");
         List<String> usernames = Collections.singletonList("leela");
         searchDocument.setPropertyValue("rs:ace_username", (Serializable) usernames);
         PermissionsPurgeWork work = new PermissionsPurgeWork(searchDocument);
+
+        TransactionHelper.commitOrRollbackTransaction();
+
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
         workManager.awaitCompletion(10000, TimeUnit.SECONDS);
 

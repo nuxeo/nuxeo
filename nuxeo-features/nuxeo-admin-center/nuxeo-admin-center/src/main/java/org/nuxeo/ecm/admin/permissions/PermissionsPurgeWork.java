@@ -24,6 +24,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -62,8 +63,9 @@ public class PermissionsPurgeWork extends AbstractWork {
 
     @Override
     public String getTitle() {
-        return String.format("Permissions purge for: %s, %s", searchDocument.getPropertyValue("rs:ace_username"),
-                searchDocument.getPropertyValue("rs:ecm_path"));
+        return String.format("Permissions purge for '%s' user and %s document ids",
+                searchDocument.getPropertyValue("rs:ace_username"),
+                StringUtils.join((List<String>) searchDocument.getPropertyValue("rs:ecm_ancestorIds"), ","));
     }
 
     @Override
