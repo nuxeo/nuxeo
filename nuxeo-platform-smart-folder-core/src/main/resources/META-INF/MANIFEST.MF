@@ -4,5 +4,5 @@ Bundle-Name: Nuxeo Platform Smart Folder Core
 Bundle-SymbolicName: org.nuxeo.ecm.platform.smart.folder.core;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
-Nuxeo-Component: OSGI-INF/smart-folder-core-types-contrib.xml
-
+Nuxeo-Component: OSGI-INF/smart-folder-core-types-contrib.xml,
+  OSGI-INF/smart-folder-migration-component-contrib.xml
