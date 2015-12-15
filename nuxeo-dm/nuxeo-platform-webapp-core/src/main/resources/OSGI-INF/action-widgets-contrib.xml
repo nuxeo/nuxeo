@@ -82,6 +82,7 @@
         <property name="actionsDisplay">links</property>
         <property name="overallDisplay">rollover_menu</property>
         <property name="styleClass">userMenuActions</property>
+        <property name="labelStyleClass">#{currentUser.name}</property>
       </properties>
     </widget>
 

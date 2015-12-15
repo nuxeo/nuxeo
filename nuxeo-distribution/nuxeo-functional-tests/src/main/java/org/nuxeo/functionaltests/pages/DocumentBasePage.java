@@ -145,13 +145,15 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     /**
-     * Check if the user is connected by looking for the text: You are logged as Username
+     * Check if the user is connected by looking for an element with the {@code username} as a class.
      *
      * @param username
      * @throws UserNotConnectedException
      */
     public void checkUserConnected(String username) throws UserNotConnectedException {
-        if (!(getHeaderLinks().getText().contains(username))) {
+        try {
+            findElementWithTimeout(By.cssSelector("span." + username));
+        } catch (NoSuchElementException e) {
             throw new UserNotConnectedException(username);
         }
     }
@@ -323,8 +325,8 @@ public class DocumentBasePage extends AbstractPage {
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                return StringUtils.isBlank(
-                        driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute("disabled"));
+                return StringUtils.isBlank(driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute(
+                        "disabled"));
             }
         }, StaleElementReferenceException.class);
         AjaxRequestManager arm = new AjaxRequestManager(driver);
@@ -352,8 +354,9 @@ public class DocumentBasePage extends AbstractPage {
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                return !userMenuActions.findElement(By.xpath("//ul[@class='actionSubList']")).getAttribute("style").equals(
-                        "display: none;");
+                return !userMenuActions.findElement(By.xpath("//ul[@class='actionSubList']"))
+                                       .getAttribute("style")
+                                       .equals("display: none;");
             }
         }, StaleElementReferenceException.class);
     }
