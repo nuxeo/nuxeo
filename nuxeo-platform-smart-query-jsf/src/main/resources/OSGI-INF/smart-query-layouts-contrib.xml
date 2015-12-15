@@ -331,12 +331,16 @@
         </propertyList>
       </properties>
       <subWidgets>
-        <widget name="subjects" type="template">
+        <widget name="subjects" type="suggestManyDirectory">
           <fields>
             <field>stringArrayValue</field>
           </fields>
           <properties mode="any">
-            <property name="template">/widgets/subjects_widget.xhtml</property>
+            <property name="width">100%</property>
+            <property name="dbl10n">true</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="directoryName">l10nsubjects</property>
           </properties>
         </widget>
       </subWidgets>
@@ -362,9 +366,9 @@
         </propertyList>
       </properties>
       <subWidgets>
-        <widget name="coverage_select_multi" type="template">
+        <widget name="coverage_select_multi" type="suggestManyDirectory">
           <fields>
-            <field>stringArrayValue</field>
+            <field>stringListValue</field>
           </fields>
           <widgetModes>
             <!-- to show only when using 'IN' or 'NOT IN' -->
@@ -377,12 +381,14 @@
             </mode>
           </widgetModes>
           <properties mode="any">
-            <property name="template">
-              /widgets/query_multi_coverage_widget.xhtml
-            </property>
+            <property name="width">100%</property>
+            <property name="dbl10n">true</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="directoryName">l10ncoverage</property>
           </properties>
         </widget>
-        <widget name="coverage_select" type="template">
+        <widget name="coverage_select" type="suggestOneDirectory">
           <fields>
             <field>stringValue</field>
           </fields>
@@ -395,9 +401,11 @@
             </mode>
           </widgetModes>
           <properties mode="any">
-            <property name="template">
-              /widgets/query_coverage_widget.xhtml
-            </property>
+            <property name="width">100%</property>
+            <property name="dbl10n">true</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="directoryName">l10ncoverage</property>
           </properties>
         </widget>
         <widget name="coverage" type="text">
