@@ -14,8 +14,10 @@
 
   <c:if test="#{widget.mode == 'edit'}">
 
-    <c:if test="#{not facesContext.clientIdsWithMessages.hasNext()}">
-      #{smartNXQLQueryActions.initCurrentSmartQuery(field)}
+    <c:if test="#{not facesContext.getPartialViewContext().isAjaxRequest()}">
+      <nxu:set var="initCurrentQuerySoonEnough"
+        value="#{smartNXQLQueryActions.initCurrentSmartQuery(field)}"
+        cache="true" />
     </c:if>
 
     <a4j:region id="#{widget.id}_smartSearchAjaxRegion">
