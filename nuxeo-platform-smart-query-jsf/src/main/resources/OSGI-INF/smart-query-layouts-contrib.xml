@@ -84,8 +84,7 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="widgets">
 
-    <widget name="nxql_smart_query_condition_fulltext"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_fulltext" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">content</label>
       </labels>
@@ -109,8 +108,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_title"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_title" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">title</label>
       </labels>
@@ -135,8 +133,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_created"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_created" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.created</label>
       </labels>
@@ -187,8 +184,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_modified"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_modified" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.modified</label>
       </labels>
@@ -239,8 +235,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_expired"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_expired" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.expired</label>
       </labels>
@@ -291,8 +286,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_nature"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_nature" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.nature</label>
       </labels>
@@ -317,8 +311,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_subjects"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_subjects" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.subjects</label>
       </labels>
@@ -342,8 +335,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_coverage"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_coverage" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.coverage</label>
       </labels>
@@ -420,8 +412,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_description"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_description" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">description</label>
       </labels>
@@ -446,8 +437,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_rights"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_rights" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.rights</label>
       </labels>
@@ -472,8 +462,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_source"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_source" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.source</label>
       </labels>
@@ -498,8 +487,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_format"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_format" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.format</label>
       </labels>
@@ -524,8 +512,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_language"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_language" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.language</label>
       </labels>
@@ -550,8 +537,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_contributors"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_contributors" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.dublincore.contributors</label>
       </labels>
@@ -582,8 +568,7 @@
       </subWidgets>
     </widget>
 
-    <widget name="nxql_smart_query_condition_path"
-      type="incremental_smart_query_condition">
+    <widget name="nxql_smart_query_condition_path" type="incremental_smart_query_condition">
       <labels>
         <label mode="any">label.advanced_search.searchpath</label>
       </labels>
