@@ -69,8 +69,8 @@
           </paper-dropdown-menu>
         </div>
         <div>
-          <div>[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
           <template is="dom-if" if="{{!shareWithExternal}}">
+            <div>[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
             <paper-radio-group selected="{{selectedTimeFrame}}">
               <paper-radio-button name="permanent" on-change="toggleTimeFrame">[[i18n('label.permissions.permanent',
                 'Permanent')]]
