@@ -830,6 +830,7 @@ public class SessionImpl implements Session, XAResource {
         if (list.contains(mixin)) {
             return false; // already present in node
         }
+        Set<String> otherChildrenNames = getChildrenNames(node.getPrimaryType(), list);
         list.add(mixin);
         String[] mixins = list.toArray(new String[list.size()]);
         node.hierFragment.put(Model.MAIN_MIXIN_TYPES_KEY, mixins);
@@ -839,6 +840,10 @@ public class SessionImpl implements Session, XAResource {
         for (Entry<String, String> es : childrenTypes.entrySet()) {
             String childName = es.getKey();
             String childType = es.getValue();
+            // child may already exist if the schema is part of the primary type or another facet
+            if (otherChildrenNames.contains(childName)) {
+                continue;
+            }
             addChildNode(node, childName, null, childType, true);
         }
         return true;
@@ -855,14 +860,36 @@ public class SessionImpl implements Session, XAResource {
             mixins = null;
         }
         node.hierFragment.put(Model.MAIN_MIXIN_TYPES_KEY, mixins);
-        // remove child nodes
+        Set<String> otherChildrenNames = getChildrenNames(node.getPrimaryType(), list);
         Map<String, String> childrenTypes = model.getMixinComplexChildren(mixin);
         for (String childName : childrenTypes.keySet()) {
+            // child must be kept if the schema is part of primary type or another facet
+            if (otherChildrenNames.contains(childName)) {
+                continue;
+            }
             Node child = getChildNode(node, childName, true);
             removePropertyNode(child);
         }
         node.clearCache();
         return true;
+    }
+
+    /**
+     * Gets complex children names defined by the primary type and the list of mixins.
+     */
+    protected Set<String> getChildrenNames(String primaryType, List<String> mixins) {
+        Map<String, String> cc = model.getTypeComplexChildren(primaryType);
+        if (cc == null) {
+            cc = Collections.emptyMap();
+        }
+        Set<String> childrenNames = new HashSet<>(cc.keySet());
+        for (String mixin : mixins) {
+            cc = model.getMixinComplexChildren(mixin);
+            if (cc != null) {
+                childrenNames.addAll(cc.keySet());
+            }
+        }
+        return childrenNames;
     }
 
     @Override
