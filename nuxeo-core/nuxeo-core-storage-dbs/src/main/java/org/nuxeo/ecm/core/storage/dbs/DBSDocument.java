@@ -1217,16 +1217,35 @@ public class DBSDocument implements Document {
             mixins = null;
         }
         docState.put(KEY_MIXIN_TYPES, mixins);
-        // remove the fields from the facet
+        // remove the fields belonging to the facet
+        // except for schemas still present due to the primary type or another facet
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         CompositeType ft = schemaManager.getFacet(facet);
-        for (Field field : ft.getFields()) {
-            String name = field.getName().getPrefixedName();
-            if (docState.containsKey(name)) {
-                docState.put(name, null);
+        Set<String> otherSchemas = getSchemas(getType(), list);
+        for (Schema schema : ft.getSchemas()) {
+            if (otherSchemas.contains(schema.getName())) {
+                continue;
+            }
+            for (Field field : schema.getFields()) {
+                String name = field.getName().getPrefixedName();
+                if (docState.containsKey(name)) {
+                    docState.put(name, null);
+                }
             }
         }
         return true;
+    }
+
+    protected static Set<String> getSchemas(DocumentType type, List<Object> facets) {
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        Set<String> schemas = new HashSet<>(Arrays.asList(type.getSchemaNames()));
+        for (Object facet : facets) {
+            CompositeType ft = schemaManager.getFacet((String) facet);
+            if (ft != null) {
+                schemas.addAll(Arrays.asList(ft.getSchemaNames()));
+            }
+        }
+        return schemas;
     }
 
     @Override

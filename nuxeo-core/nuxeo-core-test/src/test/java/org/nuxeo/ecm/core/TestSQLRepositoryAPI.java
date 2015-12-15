@@ -2174,6 +2174,84 @@ public class TestSQLRepositoryAPI extends SQLRepositoryTestCase {
     }
 
     @Test
+    public void testFacetAddRemoveWhenSchemaAlreadyPresent() throws Exception {
+        DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
+        doc.setPropertyValue("file:content", new StringBlob("hello"));
+        doc = session.createDocument(doc);
+        session.save();
+
+        doc = session.getDocument(doc.getRef());
+        Blob blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals("hello", blob.getString());
+
+        // add WithFile facet, where file schema is already present in doc
+        assertTrue(doc.addFacet("WithFile"));
+        doc = session.saveDocument(doc);
+        session.save();
+        closeSession();
+        openSession();
+
+        // check getting the blob works (complex child "file:content" not re-added)
+        doc = session.getDocument(doc.getRef());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertNotNull(blob);
+        assertEquals("hello", blob.getString());
+
+        // now remove facet
+        doc.removeFacet("WithFile");
+        doc = session.saveDocument(doc);
+        session.save();
+        closeSession();
+        openSession();
+
+        // schema still present because of primary type
+        doc = session.getDocument(doc.getRef());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertNotNull(blob);
+        assertEquals("hello", blob.getString());
+
+        /*
+         * two facets with the same schema
+         */
+
+        doc = new DocumentModelImpl("/", "bar", "Folder");
+        doc.addFacet("WithFile2");
+        doc.setPropertyValue("file:content", new StringBlob("hello"));
+        doc = session.createDocument(doc);
+        session.save();
+
+        doc = session.getDocument(doc.getRef());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals("hello", blob.getString());
+
+        // add WithFile facet, where file schema is already present in doc
+        assertTrue(doc.addFacet("WithFile"));
+        doc = session.saveDocument(doc);
+        session.save();
+        closeSession();
+        openSession();
+
+        // check getting the blob works (complex child "file:content" not re-added)
+        doc = session.getDocument(doc.getRef());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertNotNull(blob);
+        assertEquals("hello", blob.getString());
+
+        // now remove facet, but other facet WithFile2 is still present
+        doc.removeFacet("WithFile");
+        doc = session.saveDocument(doc);
+        session.save();
+        closeSession();
+        openSession();
+
+        // schema still present because of other facet
+        doc = session.getDocument(doc.getRef());
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertNotNull(blob);
+        assertEquals("hello", blob.getString());
+    }
+
+    @Test
     public void testFacetWithSamePropertyName() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "foo", "File");
         doc.setPropertyValue("dc:title", "bar");
