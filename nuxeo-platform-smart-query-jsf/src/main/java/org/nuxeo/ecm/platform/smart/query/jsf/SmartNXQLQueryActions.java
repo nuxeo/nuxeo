@@ -18,14 +18,13 @@ package org.nuxeo.ecm.platform.smart.query.jsf;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
 
 import org.jboss.seam.ScopeType;
@@ -84,12 +83,15 @@ public class SmartNXQLQueryActions implements Serializable {
      * decide whether the backing object should be updated when performing ajax
      * calls.
      * <p>
-     * For instance, on the smart search form, any ajax action should update
-     * the backing property {@link #queryPart}. When the query part is held by
-     * a document property, it should not be updated on ajax actions: only the
-     * global submit of the form should impact it.
+     * For instance, on the smart search form, any ajax action should update the backing property {@link #queryPart}.
+     * When the query part is held by a document property, it should not be updated on ajax actions: only the global
+     * submit of the form should impact it.
+     *
+     * @deprecated since 8.1: query part is now held by the content view search document model, consider it does not
+     *             need to be updated until user clicks on "filter".
      */
     @RequestParameter
+    @Deprecated
     protected Boolean updateQueryPart;
 
     /**
@@ -188,28 +190,18 @@ public class SmartNXQLQueryActions implements Serializable {
     /**
      * Updates the current {@link #currentSmartQuery} instance according to
      * changes on the existing query part.
-     * <p>
-     * if request parameters {@link #updateQueryPart} is true, the field
-     * {@link #queryPart} will also be edited.
      */
-    public void queryPartChanged(ActionEvent event) throws ClientException {
+    public void queryPartChanged(AjaxBehaviorEvent event) {
         UIComponent comp = event.getComponent();
-        UIComponent parent = comp.getParent();
-        if (parent instanceof EditableValueHolder) {
-            EditableValueHolder queryComp = (EditableValueHolder) parent;
+        if (comp instanceof EditableValueHolder) {
+            EditableValueHolder queryComp = (EditableValueHolder) comp;
             String newQuery = (String) queryComp.getSubmittedValue();
             // set local value in case of validation error in ajax region
             // when adding a new item to the query
             queryComp.setValue(newQuery);
             // update query
             currentSmartQuery.setExistingQueryPart(newQuery);
-            if (Boolean.TRUE.equals(updateQueryPart)) {
-                // also set it on source component in case user navigates
-                // somewhere else
-                setQueryPart(newQuery);
-            } else {
-                addToQueryPartHistory(newQuery);
-            }
+            addToQueryPartHistory(newQuery);
         } else {
             throw new ClientException("Component not found");
         }
@@ -217,9 +209,6 @@ public class SmartNXQLQueryActions implements Serializable {
 
     /**
      * Updates the JSF component holding the query part.
-     * <p>
-     * if request parameters {@link #updateQueryPart} is true, the field
-     * {@link #queryPart} will also be edited.
      *
      * @param event the JSF event that will give an anchor on the JSF tree to
      *            find the target component.
@@ -252,13 +241,7 @@ public class SmartNXQLQueryActions implements Serializable {
                 } else {
                     currentSmartQuery.setExistingQueryPart(newQuery);
                 }
-                if (Boolean.TRUE.equals(updateQueryPart)) {
-                    // also set current query part in case user navigates
-                    // somewhere else
-                    setQueryPart(newQuery);
-                } else {
-                    addToQueryPartHistory(newQuery);
-                }
+                addToQueryPartHistory(newQuery);
             } else {
                 throw new ClientException("Component not found");
             }
@@ -409,14 +392,7 @@ public class SmartNXQLQueryActions implements Serializable {
     public boolean isAjaxRequest() {
         FacesContext context = FacesContext.getCurrentInstance();
         if (context != null) {
-            ExternalContext eContext = context.getExternalContext();
-            Map<String, String> requestMap = eContext.getRequestParameterMap();
-            if (requestMap != null) {
-                String ajax = requestMap.get("AJAXREQUEST");
-                if (ajax != null) {
-                    return true;
-                }
-            }
+            return context.getPartialViewContext().isAjaxRequest();
         }
         return false;
     }
