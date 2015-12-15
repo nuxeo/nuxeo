@@ -9,9 +9,11 @@
       Adds a link to display the global smart search form.
     </documentation>
 
-    <action id="smart_search" link="smart_search_form"
-      label="command.smartSearch" order="20">
-      <category>SEARCH_ACTIONS</category>
+    <action id="smartSearchContentView" order="500">
+      <category>SEARCH_CONTENT_VIEWS</category>
+      <properties>
+        <property name="contentViewName">nxql_incremental_smart_query</property>
+      </properties>
     </action>
 
   </extension>

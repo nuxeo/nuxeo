@@ -14,23 +14,32 @@
 
     <contentView name="nxql_incremental_smart_query">
 
+      <title>label.search.smart</title>
+      <translateTitle>true</translateTitle>
+      <showTitle>false</showTitle>
       <emptySentence>label.content.empty.search</emptySentence>
       <translateEmptySentence>true</translateEmptySentence>
 
       <coreQueryPageProvider>
+        <trackUsage>true</trackUsage>
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <property name="coreSession">#{documentManager}</property>
+        <searchDocumentType>SmartFolder</searchDocumentType>
         <pattern quoteParameters="false" escapeParameters="false">
           SELECT * FROM Document WHERE (?) AND ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
           ecm:currentLifeCycleState != 'deleted'
         </pattern>
-        <parameter>#{smartNXQLQueryActions.queryPart}</parameter>
+        <parameter>#{searchDocument.sf.queryPart}</parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
-        <sortInfosBinding>
-          #{smartNXQLQueryActions.searchSortInfos}
-        </sortInfosBinding>
+        <sortInfosBinding>#{searchDocument.cvd.sortInfos}</sortInfosBinding>
       </coreQueryPageProvider>
+
+      <waitForExecution>true</waitForExecution>
+      <waitForExecutionSentence>
+        label.search.waitForExecution
+      </waitForExecutionSentence>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>
@@ -51,9 +60,13 @@
           translateTitle="true" iconPath="/icons/document_listing_icon.png"
           showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
       </resultLayouts>
+
       <resultColumns>
-        #{smartNXQLQueryActions.selectedLayoutColumns}
+        #{searchDocument.cvd.selectedLayoutColumns}
       </resultColumns>
+      <resultLayout>
+        #{searchDocument.cvd.resultLayoutName}
+      </resultLayout>
 
       <selectionList>CURRENT_SELECTION</selectionList>
       <actions category="CURRENT_SELECTION_LIST" />
