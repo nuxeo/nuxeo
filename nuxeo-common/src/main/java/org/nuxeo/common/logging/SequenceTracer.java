@@ -147,4 +147,7 @@ public class SequenceTracer {
         return sanitize(Thread.currentThread().getName());
     }
 
+    public static boolean isEnabled() {
+        return log.isDebugEnabled();
+    }
 }

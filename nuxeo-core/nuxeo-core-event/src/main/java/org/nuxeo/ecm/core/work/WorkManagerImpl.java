@@ -23,6 +23,7 @@ import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
@@ -872,6 +873,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean awaitCompletion(String queueId, long duration, TimeUnit unit) throws InterruptedException {
+        SequenceTracer.start("awaitCompletion on " + ((queueId == null) ? "all queues" : queueId));
         long durationInMs = TimeUnit.MILLISECONDS.convert(duration, unit);
         long deadline = getTimestampAfter(durationInMs);
         int pause = (int) Math.min(duration, 500L);
@@ -880,11 +882,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (noScheduledOrRunningWork(queueId)) {
                 log.debug("Completed");
                 completionSynchronizer.signalCompletedWork();
+                SequenceTracer.stop("done");
                 return true;
             }
             completionSynchronizer.waitForCompletedWork(pause);
         } while (System.currentTimeMillis() < deadline);
         log.info("awaitCompletion timeout after " + durationInMs + " ms");
+        SequenceTracer.destroy("timeout after " + durationInMs + " ms");
         return false;
     }
 
@@ -910,8 +914,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         for (String id : getWorkQueueIds()) {
             if (getQueueSize(id, null) > 0) {
                 if (log.isTraceEnabled()) {
-                    log.trace(queueId + " not empty, sched: " + getQueueSize(queueId, State.SCHEDULED) +
-                            ", running: " + getQueueSize(queueId, State.RUNNING));
+                    log.trace(id + " not empty, sched: " + getQueueSize(id, State.SCHEDULED) +
+                            ", running: " + getQueueSize(id, State.RUNNING));
                 }
                 return false;
             }

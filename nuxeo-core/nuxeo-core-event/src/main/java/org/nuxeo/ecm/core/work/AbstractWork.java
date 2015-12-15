@@ -323,7 +323,9 @@ public abstract class AbstractWork implements Work {
             suspended();
             return;
         }
-        SequenceTracer.startFrom(callerThread, "Work " + getTitle(), " #7acde9");
+        if (SequenceTracer.isEnabled()) {
+            SequenceTracer.startFrom(callerThread, "Work " + getTitleOr("unknown"), " #7acde9");
+        }
         Exception suppressed = null;
         int retryCount = getRetryCount(); // may be 0
         for (int i = 0; i <= retryCount; i++) {
@@ -349,6 +351,14 @@ public abstract class AbstractWork implements Work {
                     + getClass() + " id=" + getId() + " category=" + getCategory() + " title=" + getTitle();
             SequenceTracer.destroy("Work failure " + (completionTime - startTime) + " ms");
             throw new RuntimeException(msg, suppressed);
+        }
+    }
+
+    private String getTitleOr(String defaultTitle) {
+        try {
+            return getTitle();
+        } catch (Exception e) {
+            return defaultTitle;
         }
     }
 
