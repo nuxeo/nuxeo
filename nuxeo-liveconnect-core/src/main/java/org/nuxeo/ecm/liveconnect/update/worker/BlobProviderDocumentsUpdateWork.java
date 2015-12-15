@@ -53,11 +53,6 @@ public class BlobProviderDocumentsUpdateWork extends AbstractWork {
     }
 
     @Override
-    public String getId() {
-        return repositoryName + ":" + providerName;
-    }
-
-    @Override
     public String getTitle() {
         return TITLE;
     }
