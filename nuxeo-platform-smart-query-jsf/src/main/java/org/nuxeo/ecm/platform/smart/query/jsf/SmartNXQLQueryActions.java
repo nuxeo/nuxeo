@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.smart.query.HistoryList;
 import org.nuxeo.ecm.platform.smart.query.SmartQuery;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+import org.nuxeo.runtime.logging.DeprecationLogger;
 
 /**
  * Seam component handling a {@link IncrementalSmartNXQLQuery} instance created
@@ -56,6 +57,9 @@ public class SmartNXQLQueryActions implements Serializable {
 
     public static final int HISTORY_CAPACITY = 20;
 
+    /**
+     * @deprecated since 8.1: query part held/set directly on the content view search document model
+     */
     protected String queryPart;
 
     protected HistoryList<String> queryPartHistory;
@@ -64,8 +68,16 @@ public class SmartNXQLQueryActions implements Serializable {
 
     protected IncrementalSmartNXQLQuery currentSmartQuery;
 
+    /**
+     * @deprecated since 8.1: selected columns directly held/set on the content view search document model
+     */
+    @Deprecated
     protected List<String> selectedLayoutColumns;
 
+    /**
+     * @deprecated since 8.1: search sort infos directly held/set on the content view search document model
+     */
+    @Deprecated
     protected List<SortInfo> searchSortInfos;
 
     /**
@@ -88,32 +100,66 @@ public class SmartNXQLQueryActions implements Serializable {
     @RequestParameter
     protected String queryPartComponentId;
 
+    /**
+     * @deprecated since 8.1: query part held/set directly on the content view search document model
+     */
+    @Deprecated
     public String getQueryPart() {
+        DeprecationLogger.log("Query part held/set directly on the content view search document model", "8.1");
         return queryPart;
     }
 
+    /**
+     * @deprecated since 8.1: query part held/set directly on the content view search document model
+     */
     public void setQueryPart(String queryPart) {
+        DeprecationLogger.log("Query part held/set directly on the content view search document model", "8.1");
         this.queryPart = queryPart;
         addToQueryPartHistory(queryPart);
     }
 
+    /**
+     * @deprecated since 8.1: selected columns directly held/set on the content view search document model
+     */
+    @Deprecated
     public List<String> getSelectedLayoutColumns() {
+        DeprecationLogger.log("Selected columns held/set directly on the content view search document model", "8.1");
         return selectedLayoutColumns;
     }
 
+    /**
+     * @deprecated since 8.1: selected columns directly held/set on the content view search document model
+     */
+    @Deprecated
     public void setSelectedLayoutColumns(List<String> selectedLayoutColumns) {
+        DeprecationLogger.log("Selected columns held/set directly on the content view search document model", "8.1");
         this.selectedLayoutColumns = selectedLayoutColumns;
     }
 
+    /**
+     * @deprecated since 8.1: selected columns directly held/set on the content view search document model
+     */
+    @Deprecated
     public void resetSelectedLayoutColumns() {
+        DeprecationLogger.log("Selected columns held/set directly on the content view search document model", "8.1");
         setSelectedLayoutColumns(null);
     }
 
+    /**
+     * @deprecated since 8.1: search sort infos directly held/set on the content view search document model
+     */
+    @Deprecated
     public List<SortInfo> getSearchSortInfos() {
+        DeprecationLogger.log("Search sort infos held/set directly on the content view search document model", "8.1");
         return searchSortInfos;
     }
 
+    /**
+     * @deprecated since 8.1: search sort infos directly held/set on the content view search document model
+     */
+    @Deprecated
     public void setSearchSortInfos(List<SortInfo> searchSortInfos) {
+        DeprecationLogger.log("Search sort infos held/set directly on the content view search document model", "8.1");
         this.searchSortInfos = searchSortInfos;
     }
 

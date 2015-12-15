@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.smart.query.jsf;
 
 import java.text.SimpleDateFormat;
 
-import org.nuxeo.common.utils.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
