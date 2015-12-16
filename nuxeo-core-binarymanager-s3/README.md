@@ -32,7 +32,7 @@ temporary credentials from the instance role (if any).
 
 - nuxeo.s3storage.cachesize : size of the local cache (default is 100MB).
 
-  nuxeo.s3storage.bucket.prefix : bucket prefix
+  nuxeo.s3storage.bucket_prefix : bucket prefix
 
 # Crypto parameters
 
