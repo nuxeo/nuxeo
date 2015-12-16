@@ -136,7 +136,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
             BlobManager blobManager = Framework.getService(BlobManager.class);
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             BlobProvider blobProvider = blobManager.getBlobProvider(bh.getBlob());
-            if (blobProvider != null && !blobProvider.supportsUserUpdate()) {
+            if (blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
                             "Blob for Document %s is backed by a BlobProvider preventing updates, it cannot be adapted as a FileSystemItem.",
