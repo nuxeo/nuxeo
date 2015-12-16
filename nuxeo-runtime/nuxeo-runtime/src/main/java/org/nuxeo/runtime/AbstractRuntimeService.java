@@ -26,7 +26,6 @@ import java.util.logging.Level;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.common.utils.TextTemplate;
@@ -37,7 +36,6 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
-
 import org.osgi.framework.Bundle;
 
 /**

@@ -21,16 +21,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ListenerList;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FileChangeNotifier {
-
-    private static final Log log = LogFactory.getLog(FileChangeNotifier.class);
 
     private final ListenerList listeners = new ListenerList();
 

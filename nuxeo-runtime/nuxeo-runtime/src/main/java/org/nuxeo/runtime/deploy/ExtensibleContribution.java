@@ -14,15 +14,10 @@
 
 package org.nuxeo.runtime.deploy;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public abstract class ExtensibleContribution extends Contribution {
-
-    private static final Log log = LogFactory.getLog(ExtensibleContribution.class);
 
     protected ExtensibleContribution baseContribution;
 

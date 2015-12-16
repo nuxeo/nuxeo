@@ -45,7 +45,7 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
     public String documentation;
 
     @XNodeList(value = "object@class", type = Class[].class, componentType = Class.class)
-    public transient Class[] contributions;
+    public transient Class<?>[] contributions;
 
     public transient XMap xmap;
 
@@ -53,7 +53,7 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
     public transient RegistrationInfo ri;
 
     @Override
-    public Class[] getContributions() {
+    public Class<?>[] getContributions() {
         return contributions;
     }
 
@@ -86,7 +86,7 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
         if (contributions != null) {
             if (xmap == null) {
                 xmap = new XMap();
-                for (Class contrib : contributions) {
+                for (Class<?> contrib : contributions) {
                     if (contrib != null) {
                         xmap.register(contrib);
                     } else {

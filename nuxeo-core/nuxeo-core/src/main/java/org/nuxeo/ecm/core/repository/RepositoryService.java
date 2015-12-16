@@ -20,7 +20,6 @@ import javax.transaction.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.local.LocalException;
@@ -115,14 +114,13 @@ public class RepositoryService extends DefaultComponent {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.isAssignableFrom(getClass())) {
-            return (T) this;
+            return adapter.cast(this);
         }
         if (adapter.isAssignableFrom(CoreSession.class)) {
-            return (T) LocalSession.createInstance();
+            return adapter.cast(LocalSession.createInstance());
         }
         return null;
     }

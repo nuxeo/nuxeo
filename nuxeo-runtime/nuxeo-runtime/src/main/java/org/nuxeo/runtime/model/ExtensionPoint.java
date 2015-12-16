@@ -38,7 +38,7 @@ public interface ExtensionPoint {
      *
      * @return the accepted contribution types
      */
-    Class[] getContributions();
+    Class<?>[] getContributions();
 
     /**
      * Gets the comment attached to this extension point if any.

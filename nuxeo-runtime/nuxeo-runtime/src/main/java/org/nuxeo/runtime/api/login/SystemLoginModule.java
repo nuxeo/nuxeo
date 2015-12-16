@@ -16,6 +16,7 @@ package org.nuxeo.runtime.api.login;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.security.auth.Subject;
@@ -40,33 +41,37 @@ public class SystemLoginModule implements LoginModule {
 
     protected CallbackHandler callbackHandler;
 
-    protected Map sharedState;
+    protected Map<String, Object> sharedState = new HashMap<>();
 
     protected boolean trace;
 
     @Override
-    public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options) {
+    public void initialize(Subject subject, CallbackHandler callbackHandler,
+            Map<String, ?> sharedState, Map<String, ?> options) {
         this.subject = subject;
-        this.sharedState = sharedState;
+        this.sharedState.putAll(sharedState);
         this.callbackHandler = callbackHandler;
         trace = log.isTraceEnabled();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean login() throws LoginException {
         if (trace) {
             log.trace("begin system login");
         }
-        LoginService loginService = Framework.getLocalService(LoginService.class);
+        LoginService loginService =
+                Framework.getLocalService(LoginService.class);
         if (loginService == null) {
-            throw new LoginException("Nuxeo Login Service is not running - cannot do system login");
+            throw new LoginException(
+                    "Nuxeo Login Service is not running - cannot do system login");
         }
         CredentialsCallback cb = new CredentialsCallback();
         try {
             callbackHandler.handle(new Callback[] { cb });
-        } catch (RuntimeException | IOException | UnsupportedCallbackException e) {
-            LoginException ee = new LoginException("System login failed - callback failed");
+        } catch (RuntimeException | IOException
+                | UnsupportedCallbackException e) {
+            LoginException ee =
+                    new LoginException("System login failed - callback failed");
             ee.initCause(e);
             throw ee;
         }

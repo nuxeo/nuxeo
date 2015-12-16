@@ -49,7 +49,7 @@ public class DependencyTree<K, T> implements Iterable<DependencyTree.Entry<K, T>
         return registry.values().iterator();
     }
 
-    public Entry<K, T> add(K key, T object, K... requires) {
+    public Entry<K, T> add(K key, T object, @SuppressWarnings("unchecked") K... requires) {
         return add(key, object, Arrays.asList(requires));
     }
 
