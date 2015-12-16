@@ -39,6 +39,11 @@ table td {
   max-width: 55em;
 }
 
+.containerWidgetPanel .dataInput,
+.studioFormTable.dataInput {
+  max-width: none;
+}
+
 .dataTable th,
 .dataTableLine th,
 .dataTableLine th,
