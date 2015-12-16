@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.smart.query.HistoryList;
 import org.nuxeo.ecm.platform.smart.query.SmartQuery;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.runtime.logging.DeprecationLogger;
 
 /**
  * Seam component handling a {@link IncrementalSmartNXQLQuery} instance created
@@ -105,7 +104,6 @@ public class SmartNXQLQueryActions implements Serializable {
      */
     @Deprecated
     public String getQueryPart() {
-        DeprecationLogger.log("Query part held/set directly on the content view search document model", "8.1");
         return queryPart;
     }
 
@@ -113,7 +111,6 @@ public class SmartNXQLQueryActions implements Serializable {
      * @deprecated since 8.1: query part held/set directly on the content view search document model
      */
     public void setQueryPart(String queryPart) {
-        DeprecationLogger.log("Query part held/set directly on the content view search document model", "8.1");
         this.queryPart = queryPart;
         addToQueryPartHistory(queryPart);
     }
@@ -123,7 +120,6 @@ public class SmartNXQLQueryActions implements Serializable {
      */
     @Deprecated
     public List<String> getSelectedLayoutColumns() {
-        DeprecationLogger.log("Selected columns held/set directly on the content view search document model", "8.1");
         return selectedLayoutColumns;
     }
 
@@ -132,7 +128,6 @@ public class SmartNXQLQueryActions implements Serializable {
      */
     @Deprecated
     public void setSelectedLayoutColumns(List<String> selectedLayoutColumns) {
-        DeprecationLogger.log("Selected columns held/set directly on the content view search document model", "8.1");
         this.selectedLayoutColumns = selectedLayoutColumns;
     }
 
@@ -141,7 +136,6 @@ public class SmartNXQLQueryActions implements Serializable {
      */
     @Deprecated
     public void resetSelectedLayoutColumns() {
-        DeprecationLogger.log("Selected columns held/set directly on the content view search document model", "8.1");
         setSelectedLayoutColumns(null);
     }
 
@@ -150,7 +144,6 @@ public class SmartNXQLQueryActions implements Serializable {
      */
     @Deprecated
     public List<SortInfo> getSearchSortInfos() {
-        DeprecationLogger.log("Search sort infos held/set directly on the content view search document model", "8.1");
         return searchSortInfos;
     }
 
@@ -159,7 +152,6 @@ public class SmartNXQLQueryActions implements Serializable {
      */
     @Deprecated
     public void setSearchSortInfos(List<SortInfo> searchSortInfos) {
-        DeprecationLogger.log("Search sort infos held/set directly on the content view search document model", "8.1");
         this.searchSortInfos = searchSortInfos;
     }
 

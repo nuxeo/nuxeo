@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.smart.query.jsf.SmartNXQLQueryActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
-import org.nuxeo.runtime.logging.DeprecationLogger;
 
 /**
  * Provides methods to save a global smart search in a document.
