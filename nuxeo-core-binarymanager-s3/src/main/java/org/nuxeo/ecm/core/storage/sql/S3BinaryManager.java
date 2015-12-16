@@ -103,7 +103,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String BUCKET_NAME_PROPERTY = "bucket";
 
-    public static final String BUCKET_PREFIX_PROPERTY = "bucket.prefix";
+    public static final String BUCKET_PREFIX_PROPERTY = "bucket_prefix";
 
     public static final String BUCKET_REGION_PROPERTY = "region";
 
