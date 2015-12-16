@@ -128,6 +128,7 @@
     <module>nuxeo-platform-spreadsheet</module>
     <module>nuxeo-segment.io-connector</module>
     <module>nuxeo-datadog-reporter</module>
+    <module>nuxeo-platform-smart-search</module>
   </modules>
 
   <dependencyManagement>
