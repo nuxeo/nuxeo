@@ -14,7 +14,7 @@
 
   <c:if test="#{widget.mode == 'edit'}">
 
-    <c:if test="#{not facesContext.getPartialViewContext().isAjaxRequest()}">
+    <c:if test="#{not facesContext.getPartialViewContext().isAjaxRequest() and not facesContext.postback}">
       <nxu:set var="initCurrentQuerySoonEnough"
         value="#{smartNXQLQueryActions.initCurrentSmartQuery(field)}"
         cache="true" />
