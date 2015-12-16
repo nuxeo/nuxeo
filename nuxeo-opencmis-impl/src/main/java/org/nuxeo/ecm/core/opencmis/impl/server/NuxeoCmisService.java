@@ -138,6 +138,7 @@ import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
+import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -311,6 +312,10 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         return callContext;
     }
 
+    protected TypeManagerImpl getTypeManager() {
+        return repository.getTypeManager(getCallContext().getCmisVersion());
+    }
+
     @Override
     public void setCallContext(CallContext callContext) {
         close();
@@ -371,7 +376,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
 
     @Override
     public TypeDefinition getTypeDefinition(String repositoryId, String typeId, ExtensionsData extension) {
-        TypeDefinition type = repository.getTypeDefinition(typeId);
+        TypeDefinition type = getTypeManager().getTypeDefinition(typeId);
         if (type == null) {
             throw new CmisInvalidArgumentException("No such type: " + typeId);
         }
@@ -384,7 +389,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     @Override
     public TypeDefinitionList getTypeChildren(String repositoryId, String typeId, Boolean includePropertyDefinitions,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
-        TypeDefinitionList types = repository.getTypeChildren(typeId, includePropertyDefinitions, maxItems, skipCount);
+        TypeDefinitionList types = getTypeManager().getTypeChildren(typeId, includePropertyDefinitions, maxItems,
+                skipCount);
         // TODO copy only when local binding
         // clone
         return WSConverter.convert(WSConverter.convert(types));
@@ -394,7 +400,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     public List<TypeDefinitionContainer> getTypeDescendants(String repositoryId, String typeId, BigInteger depth,
             Boolean includePropertyDefinitions, ExtensionsData extension) {
         int d = depth == null ? DEFAULT_TYPE_LEVELS : depth.intValue();
-        List<TypeDefinitionContainer> types = repository.getTypeDescendants(typeId, d, includePropertyDefinitions);
+        List<TypeDefinitionContainer> types = getTypeManager().getTypeDescendants(typeId, d,
+                includePropertyDefinitions);
         // clone
         // TODO copy only when local binding
         List<CmisTypeContainer> tmp = new ArrayList<CmisTypeContainer>(types.size());
@@ -504,7 +511,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 && (d = p.get(PropertyIds.OBJECT_TYPE_ID)) != null) {
             typeId = (String) d.getFirstValue();
             if (baseType == null) {
-                type = repository.getTypeDefinition(typeId);
+                type = getTypeManager().getTypeDefinition(typeId);
                 if (type == null) {
                     throw new IllegalArgumentException(typeId);
                 }
@@ -530,7 +537,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             }
         }
         if (type == null) {
-            type = repository.getTypeDefinition(typeId);
+            type = getTypeManager().getTypeDefinition(typeId);
         }
         if (type == null || type.getBaseTypeId() != baseType) {
             throw new CmisInvalidArgumentException(typeId);
@@ -1330,7 +1337,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
      */
     protected ObjectData getLogEntryObjectData(LogEntry logEntry) {
         String docType = logEntry.getDocType();
-        if (!repository.hasType(docType)) {
+        if (!getTypeManager().hasType(docType)) {
             // ignore types present in the log but not exposed through CMIS
             return null;
         }
@@ -1589,7 +1596,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 NXQL.ECM_ISPROXY);
         if (!StringUtils.isBlank(orderBy)) {
             CMISQLtoNXQL converter = new CMISQLtoNXQL();
-            query += " ORDER BY " + converter.convertOrderBy(orderBy, repository.getTypeManager());
+            query += " ORDER BY " + converter.convertOrderBy(orderBy, getTypeManager());
         }
 
         long limit = maxItems == null ? 0 : maxItems.longValue();

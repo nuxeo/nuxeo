@@ -231,7 +231,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             Boolean searchAllVersions = (Boolean) params[2];
             searchLatestVersion = Boolean.FALSE.equals(searchAllVersions);
         }
-        TypeManagerImpl typeManager = service.repository.getTypeManager();
+        TypeManagerImpl typeManager = service.getTypeManager();
 
         boolean addSystemColumns = true; // TODO
 
@@ -1083,6 +1083,7 @@ public class CMISQLQueryMaker implements QueryMaker {
 
             // virtual values
             // map to store actual data for each qualifier
+            TypeManagerImpl typeManager = service.getTypeManager();
             Map<String, NuxeoObjectData> datas = null;
             for (Entry<String, ColumnReference> vc : virtualColumns.entrySet()) {
                 String key = vc.getKey();
@@ -1091,7 +1092,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 if (col.getPropertyId().equals(PropertyIds.BASE_TYPE_ID)) {
                     // special case, no need to get full Nuxeo Document
                     String typeId = (String) map.get(getPropertyKey(qual, PropertyIds.OBJECT_TYPE_ID));
-                    TypeDefinitionContainer type = service.repository.getTypeManager().getTypeById(typeId);
+                    TypeDefinitionContainer type = typeManager.getTypeById(typeId);
                     String baseTypeId = type.getTypeDefinition().getBaseTypeId().value();
                     map.put(key, baseTypeId);
                     continue;

@@ -158,10 +158,10 @@ public class NuxeoObjectData implements ObjectData {
         this.includePolicyIds = includePolicyIds;
         this.includeAcl = includeAcl;
         nuxeoCmisService = NuxeoCmisService.extractFromCmisService(service);
-        type = nuxeoCmisService.repository.getTypeDefinition(NuxeoTypeHelper.mappedId(doc.getType()));
+        type = nuxeoCmisService.getTypeManager().getTypeDefinition(NuxeoTypeHelper.mappedId(doc.getType()));
         secondaryTypes = new ArrayList<>();
         for (String secondaryTypeId : NuxeoPropertyData.getSecondaryTypeIds(doc)) {
-            TypeDefinition td = nuxeoCmisService.repository.getTypeDefinition(secondaryTypeId);
+            TypeDefinition td = nuxeoCmisService.getTypeManager().getTypeDefinition(secondaryTypeId);
             if (td != null) {
                 secondaryTypes.add(td);
             } // else doc has old facet not declared in types anymore, ignore
