@@ -182,6 +182,7 @@
                       user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                       share-with-external="true"
                       on-aceupdated="refresh"></popup-permission>
+                    <paper-icon-button icon="send" on-click="sendEmailExternalSharing"></paper-icon-button>
                     <paper-icon-button icon="delete" on-click="localRightsDel"></paper-icon-button>
                     <popup-confirm id="confirmation" delete-label="[[i18n('command.delete', 'Delete')]]"
                       cancel-label="[[i18n('label.permissions.cancel', 'Cancel')]]">
@@ -224,6 +225,8 @@
     <nuxeo-operation id="blockOp" op="Document.BlockPermissionInheritance" input={{docId}}
       on-response="refresh"></nuxeo-operation>
     <nuxeo-operation id="unblockOp" op="Document.UnblockPermissionInheritance" input={{docId}}
+      on-response="refresh"></nuxeo-operation>
+    <nuxeo-operation id="sendNotificationEmailPermissionOp" op="Document.SendNotificationEmailForPermission" input={{docId}}
       on-response="refresh"></nuxeo-operation>
   </template>
 </dom-module>
@@ -516,6 +519,14 @@
 
     aclRowClass: function (ace) {
       return 'acl-table-row' + ' ' + ace.status;
+    },
+
+    sendEmailExternalSharing: function(e, i) {
+      var item = e.model.dataHost.dataHost.ace;
+      this.$.sendNotificationEmailPermissionOp.params = {
+        id: item.id
+      };
+      this.$.sendNotificationEmailPermissionOp.execute();
     }
   });
 </script>

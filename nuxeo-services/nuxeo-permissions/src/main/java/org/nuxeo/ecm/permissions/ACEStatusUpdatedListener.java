@@ -105,7 +105,7 @@ public class ACEStatusUpdatedListener implements PostCommitFilteringEventListene
                         if (notify) {
                             // send the event for the notification
                             ace.putContextData(COMMENT_KEY, comment);
-                            firePermissionNotificationEvent(session, doc, aclName, ace);
+                            PermissionHelper.firePermissionNotificationEvent(session, doc, aclName, ace);
                         }
                     }
                 }
@@ -115,14 +115,6 @@ public class ACEStatusUpdatedListener implements PostCommitFilteringEventListene
                 break;
             }
         }
-    }
-
-    protected void firePermissionNotificationEvent(CoreSession session, DocumentModel doc, String aclName, ACE ace) {
-        DocumentEventContext docCtx = new DocumentEventContext(session, session.getPrincipal(), doc);
-        docCtx.setProperty(ACE_KEY, ace);
-        docCtx.setProperty(ACL_NAME_KEY, aclName);
-        EventService eventService = Framework.getService(EventService.class);
-        eventService.fireEvent(PERMISSION_NOTIFICATION_EVENT, docCtx);
     }
 
     @Override

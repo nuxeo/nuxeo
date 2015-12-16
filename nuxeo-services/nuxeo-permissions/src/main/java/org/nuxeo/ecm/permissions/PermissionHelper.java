@@ -26,12 +26,19 @@ import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DOC_ID;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_ID;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFY;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_REPOSITORY_NAME;
+import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
+import static org.nuxeo.ecm.permissions.Constants.ACL_NAME_KEY;
+import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 7.4
@@ -57,5 +64,13 @@ public class PermissionHelper {
         m.put(ACE_INFO_NOTIFY, notify);
         m.put(ACE_INFO_COMMENT, comment);
         return m;
+    }
+
+    public static void firePermissionNotificationEvent(CoreSession session, DocumentModel doc, String aclName, ACE ace) {
+        DocumentEventContext docCtx = new DocumentEventContext(session, session.getPrincipal(), doc);
+        docCtx.setProperty(ACE_KEY, ace);
+        docCtx.setProperty(ACL_NAME_KEY, aclName);
+        EventService eventService = Framework.getService(EventService.class);
+        eventService.fireEvent(PERMISSION_NOTIFICATION_EVENT, docCtx);
     }
 }
