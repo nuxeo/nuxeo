@@ -28,6 +28,9 @@
         font-weight: bold;
       }
     </style>
+
+    <paper-toast id="toast"></paper-toast>
+
     <nuxeo-document id="doc" auto doc-id="{{docId}}" doc-path="{{docPath}}" response="{{doc}}"
       enrichers="acls, permissions, userVisiblePermissions" params="{{params}}"></nuxeo-document>
 
@@ -37,7 +40,7 @@
         <template is="dom-if" if="{{hasEverythingRight}}">
           <popup-permission doc-id="{{doc.uid}}"
             user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
-            on-acecreated="refresh"></popup-permission>
+            on-acecreated="onACECreated"></popup-permission>
         </template>
       </div>
       <template is="dom-if" if="{{hasLocalAces}}">
@@ -62,7 +65,7 @@
                   <template is="dom-if" if="{{hasEverythingRight}}">
                     <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}"
                       user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
-                      on-aceupdated="refresh"></popup-permission>
+                      on-aceupdated="onACEUpdated"></popup-permission>
                     <paper-icon-button icon="delete" on-click="localRightsDel"></paper-icon-button>
                     <popup-confirm id="confirmation" delete-label="[[i18n('command.delete', 'Delete')]]"
                       cancel-label="[[i18n('label.permissions.cancel', 'Cancel')]]">
@@ -155,7 +158,7 @@
           <popup-permission doc-id="{{doc.uid}}"
             user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
             share-with-external="true"
-            on-acecreated="refresh"></popup-permission>
+            on-acecreated="onACECreated"></popup-permission>
         </template>
       </div>
       <template is="dom-if" if="{{hasExternalAces}}">
@@ -181,7 +184,7 @@
                     <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}"
                       user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                       share-with-external="true"
-                      on-aceupdated="refresh"></popup-permission>
+                      on-aceupdated="onACEUpdated"></popup-permission>
                     <paper-icon-button icon="send" on-click="sendEmailExternalSharing"></paper-icon-button>
                     <paper-icon-button icon="delete" on-click="localRightsDel"></paper-icon-button>
                     <popup-confirm id="confirmation" delete-label="[[i18n('command.delete', 'Delete')]]"
@@ -308,6 +311,18 @@
       this.$.doc.get();
     },
 
+    onACECreated: function() {
+      this.$.toast.text = this.i18n('label.permissions.permissionCreated', 'Permission Created');
+      this.$.toast.show();
+      this.refresh();
+    },
+
+    onACEUpdated: function() {
+      this.$.toast.text = this.i18n('label.permissions.permissionUpdated', 'Permission Updated');
+      this.$.toast.show();
+      this.refresh();
+    },
+
     formatTimeFrame: function (ace) {
       var now = moment();
       var begin = ace.begin;
@@ -346,7 +361,10 @@
         self.$.rmPermission.params = {
           id: item.id
         };
-        self.$.rmPermission.execute();
+        self.$.rmPermission.execute().then(function() {
+          self.$.toast.text = self.i18n('label.permissions.permissionDeleted', 'Permission Deleted');
+          self.$.toast.show();
+        });
       });
     },
 
@@ -526,7 +544,11 @@
       this.$.sendNotificationEmailPermissionOp.params = {
         id: item.id
       };
-      this.$.sendNotificationEmailPermissionOp.execute();
+      var self = this;
+      this.$.sendNotificationEmailPermissionOp.execute().then(function() {
+        self.$.toast.text = self.i18n('label.permissions.permissionNotificationSent', 'Notification Email Sent');
+        self.$.toast.show();
+      });
     }
   });
 </script>

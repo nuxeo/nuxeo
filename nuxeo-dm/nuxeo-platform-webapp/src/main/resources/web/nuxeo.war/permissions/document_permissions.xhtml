@@ -45,6 +45,10 @@
           'label.permissions.blocked': "#{messages['label.permissions.blocked']}",
           'label.permissions.dateBased': "#{messages['label.permissions.dateBased']}",
           'label.permissions.blockDescription': "#{messages['label.permissions.blockDescription']}",
+          'label.permissions.permissionCreated': "#{messages['label.permissions.permissionCreated']}",
+          'label.permissions.permissionUpdated': "#{messages['label.permissions.permissionUpdated']}",
+          'label.permissions.permissionDeleted': "#{messages['label.permissions.permissionDeleted']}",
+          'label.permissions.permissionNotificationSent': "#{messages['label.permissions.permissionNotificationSent']}",
           'command.delete': "#{messages['command.delete']}",
           <c:forEach var="permissionToLabel" items="#{securityActions.permissionsToLabels.entrySet()}" varStatus="status">
           '#{permissionToLabel.key}': "#{messages[permissionToLabel.value]}"<c:if test="#{not status.last}">,</c:if>
