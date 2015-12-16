@@ -33,6 +33,7 @@ object NuxeoImporter {
       .queryParam("interactive", "true")
       .queryParam("fileSizeKB", "1")
       .queryParam("nbNodes", nbNodes)
+      .queryParam("transactionTimeout", "3600")
       .headers(Headers.base)
       .basicAuth("${adminId}", "${adminPassword}")
   }
