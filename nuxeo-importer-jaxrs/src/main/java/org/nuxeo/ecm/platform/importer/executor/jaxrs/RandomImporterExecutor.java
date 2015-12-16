@@ -5,6 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import groovy.util.IFileNameFinder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
@@ -12,8 +13,10 @@ import org.nuxeo.ecm.platform.importer.base.ImporterRunner;
 import org.nuxeo.ecm.platform.importer.base.ImporterRunnerConfiguration;
 import org.nuxeo.ecm.platform.importer.filter.EventServiceConfiguratorFilter;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
+import org.nuxeo.ecm.platform.importer.service.DefaultImporterService;
 import org.nuxeo.ecm.platform.importer.source.RandomTextSourceNode;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import org.nuxeo.runtime.api.Framework;
 
 @Path("randomImporter")
 public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
@@ -34,7 +37,8 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("interactive") Boolean interactive, @QueryParam("nbNodes") Integer nbNodes,
             @QueryParam("fileSizeKB") Integer fileSizeKB, @QueryParam("onlyText") Boolean onlyText,
             @QueryParam("blockSyncPostCommitProcessing") Boolean blockSyncPostCommitProcessing,
-            @QueryParam("blockAsyncProcessing") Boolean blockAsyncProcessing, @QueryParam("bulkMode") Boolean bulkMode) {
+            @QueryParam("blockAsyncProcessing") Boolean blockAsyncProcessing, @QueryParam("bulkMode") Boolean bulkMode,
+            @QueryParam("transactionTimeout") Integer transactionTimeout) {
 
         if (onlyText == null) {
             onlyText = true;
@@ -43,7 +47,6 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
         if (bulkMode == null) {
             bulkMode = true;
         }
-
         getLogger().info("Init Random text generator");
         SourceNode source = RandomTextSourceNode.init(nbNodes, fileSizeKB, onlyText);
         getLogger().info("Random text generator initialized");
@@ -56,7 +59,9 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
         ImporterFilter filter = new EventServiceConfiguratorFilter(blockSyncPostCommitProcessing, blockAsyncProcessing,
                 !onlyText, bulkMode);
         runner.addFilter(filter);
-
+        if (transactionTimeout != null) {
+            Framework.getService(DefaultImporterService.class).setTransactionTimeout(transactionTimeout);
+        }
         String res = run(runner, interactive);
         return res;
     }
