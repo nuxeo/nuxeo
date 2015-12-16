@@ -135,6 +135,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String KEYSTORE_PASS_PROPERTY = "crypt.keystore.password";
 
+    public static final String SERVERSIDE_ENCRYPTION_PROPERTY = "crypt.serverside";
+
     public static final String PRIVKEY_ALIAS_PROPERTY = "crypt.key.alias";
 
     public static final String PRIVKEY_PASS_PROPERTY = "crypt.key.password";
@@ -160,6 +162,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
     protected boolean isEncrypted;
 
     protected CryptoConfiguration cryptoConfiguration;
+
+    protected boolean userServerSideEncryption;
 
     protected AmazonS3 amazonS3;
 
@@ -213,6 +217,10 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         String privkeyAlias = getProperty(PRIVKEY_ALIAS_PROPERTY);
         String privkeyPass = getProperty(PRIVKEY_PASS_PROPERTY);
         String endpoint = getProperty(ENDPOINT_PROPERTY);
+        String sseprop = getProperty(SERVERSIDE_ENCRYPTION_PROPERTY);
+        if (isNotBlank(sseprop)) {
+            userServerSideEncryption = Boolean.parseBoolean(sseprop);
+        }
 
         // Fallback on default env keys for ID and secret
         if (isBlank(awsID)) {
@@ -411,6 +419,11 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 PutObjectRequest request;
                 if (!isEncrypted) {
                     request = new PutObjectRequest(bucketName, key, file);
+                    if (userServerSideEncryption) {
+                        ObjectMetadata objectMetadata = new ObjectMetadata();
+                        objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+                        request.setMetadata(objectMetadata);
+                    }
                 } else {
                     request = new EncryptedPutObjectRequest(bucketName, key, file);
                 }

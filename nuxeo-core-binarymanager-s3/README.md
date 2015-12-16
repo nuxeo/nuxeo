@@ -66,6 +66,14 @@ mandatory once you specify a keystore) :
 - nuxeo.s3storage.crypt.key.alias = the key alias
 - nuxeo.s3storage.crypt.key.password = the key password
 
+# Server-side encryption
+
+S3 allows you to use server-side encryption to encrypt data at rest with keys managed
+by S3 itself. To activate-this mode, use:
+
+- nuxeo.s3storage.crypt.serverside = true
+
+See http://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html for more.
 
 # Building
 
