@@ -68,9 +68,7 @@ import org.apache.chemistry.opencmis.commons.data.ExtensionFeature;
 import org.apache.chemistry.opencmis.commons.data.PermissionMapping;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
 import org.apache.chemistry.opencmis.commons.definitions.PermissionDefinition;
-import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
-import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionList;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.CapabilityAcl;
@@ -138,9 +136,7 @@ public class NuxeoRepository {
 
     protected boolean useElasticsearch;
 
-    protected TypeManagerImpl typeManager;
-
-    protected CmisVersion cmisVersion;
+    protected Map<CmisVersion, TypeManagerImpl> typeManagerByCmisVersion = new HashMap<>();
 
     public NuxeoRepository(String repositoryId, String rootFolderId) {
         this.repositoryId = repositoryId;
@@ -174,14 +170,16 @@ public class NuxeoRepository {
     }
 
     // no need to have it synchronized
-    public TypeManagerImpl getTypeManager() {
+    public TypeManagerImpl getTypeManager(CmisVersion cmisVersion) {
+        TypeManagerImpl typeManager = typeManagerByCmisVersion.get(cmisVersion);
         if (typeManager == null) {
-            typeManager = initializeTypes();
+            typeManager = initializeTypes(cmisVersion);
+            typeManagerByCmisVersion.put(cmisVersion, typeManager);
         }
         return typeManager;
     }
 
-    protected TypeManagerImpl initializeTypes() {
+    protected TypeManagerImpl initializeTypes(CmisVersion cmisVersion) {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         // scan the types to find super/inherited relationships
         Map<String, List<String>> typesChildren = new HashMap<>();
@@ -207,17 +205,18 @@ public class NuxeoRepository {
         if (cmisVersion != CmisVersion.CMIS_1_0) {
             typeManager.addTypeDefinition(NuxeoTypeHelper.constructCmisBase(BaseTypeId.CMIS_SECONDARY, schemaManager, cmisVersion));
         }
-        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_DOCUMENT, typesChildren, done, schemaManager);
-        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER, typesChildren, done, schemaManager);
-        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_RELATION, typesChildren, done, schemaManager);
+        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_DOCUMENT, typesChildren, done, schemaManager, cmisVersion);
+        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_FOLDER, typesChildren, done, schemaManager, cmisVersion);
+        addTypesRecursively(typeManager, NuxeoTypeHelper.NUXEO_RELATION, typesChildren, done, schemaManager, cmisVersion);
         if (cmisVersion != CmisVersion.CMIS_1_0) {
-            addSecondaryTypes(typeManager, schemaManager);
+            addSecondaryTypes(typeManager, schemaManager, cmisVersion);
         }
         return typeManager;
     }
 
     protected void addTypesRecursively(TypeManagerImpl typeManager, String name,
-            Map<String, List<String>> typesChildren, Set<String> done, SchemaManager schemaManager) {
+            Map<String, List<String>> typesChildren, Set<String> done, SchemaManager schemaManager,
+            CmisVersion cmisVersion) {
         if (done.contains(name)) {
             return;
         }
@@ -244,11 +243,12 @@ public class NuxeoRepository {
             return;
         }
         for (String sub : children) {
-            addTypesRecursively(typeManager, sub, typesChildren, done, schemaManager);
+            addTypesRecursively(typeManager, sub, typesChildren, done, schemaManager, cmisVersion);
         }
     }
 
-    protected void addSecondaryTypes(TypeManagerImpl typeManager, SchemaManager schemaManager) {
+    protected void addSecondaryTypes(TypeManagerImpl typeManager, SchemaManager schemaManager,
+            CmisVersion cmisVersion) {
         for (CompositeType type : schemaManager.getFacets()) {
             typeManager.addTypeDefinition(NuxeoTypeHelper.constructSecondaryType(type, cmisVersion), false);
         }
@@ -259,7 +259,7 @@ public class NuxeoRepository {
     }
 
     public RepositoryInfo getRepositoryInfo(String latestChangeLogToken, CallContext callContext) {
-        cmisVersion = callContext.getCmisVersion();
+        CmisVersion cmisVersion = callContext.getCmisVersion();
 
         RepositoryInfoImpl repositoryInfo = new RepositoryInfoImpl();
         repositoryInfo.setId(repositoryId);
@@ -405,26 +405,6 @@ public class NuxeoRepository {
         pm.setKey(key);
         pm.setPermissions(Collections.singletonList(permission));
         permMap.put(key, pm);
-    }
-
-    // Structures are not copied when returned
-    public TypeDefinition getTypeDefinition(String typeId) {
-        TypeDefinitionContainer typec = getTypeManager().getTypeById(typeId);
-        return typec == null ? null : typec.getTypeDefinition();
-    }
-
-    public boolean hasType(String typeId) {
-        return getTypeManager().hasType(typeId);
-    }
-
-    // Structures are not copied when returned
-    public TypeDefinitionList getTypeChildren(String typeId, Boolean includePropertyDefinitions, BigInteger maxItems,
-            BigInteger skipCount) {
-        return getTypeManager().getTypeChildren(typeId, includePropertyDefinitions, maxItems, skipCount);
-    }
-
-    public List<TypeDefinitionContainer> getTypeDescendants(String typeId, int depth, Boolean includePropertyDefinitions) {
-        return getTypeManager().getTypeDescendants(typeId, depth, includePropertyDefinitions);
     }
 
     /** Returns the server base URL (including context). */

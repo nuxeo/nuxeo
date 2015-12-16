@@ -55,6 +55,11 @@ public class TypeManagerImpl implements TypeManager {
         return typesMap.get(typeId);
     }
 
+    public TypeDefinition getTypeDefinition(String typeId) {
+        TypeDefinitionContainer typec = getTypeById(typeId);
+        return typec == null ? null : typec.getTypeDefinition();
+    }
+
     /**
      * Checks if a type is known.
      *

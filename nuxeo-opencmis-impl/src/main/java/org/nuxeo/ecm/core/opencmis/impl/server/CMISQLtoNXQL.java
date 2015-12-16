@@ -137,7 +137,7 @@ public class CMISQLtoNXQL {
             boolean searchAllVersions) throws QueryParseException {
         this.typeInfo = typeInfo;
         boolean searchLatestVersion = !searchAllVersions;
-        TypeManagerImpl typeManager = service.repository.getTypeManager();
+        TypeManagerImpl typeManager = service.getTypeManager();
         coreSession = service.coreSession;
 
         query = new QueryObject(typeManager);
@@ -925,6 +925,7 @@ public class CMISQLtoNXQL {
             // virtual values
             // map to store actual data for each qualifier
             Map<String, NuxeoObjectData> datas = null;
+            TypeManagerImpl typeManager = service.getTypeManager();
             for (Entry<String, ColumnReference> vc : virtualColumns.entrySet()) {
                 String key = vc.getKey();
                 ColumnReference col = vc.getValue();
@@ -935,7 +936,7 @@ public class CMISQLtoNXQL {
                     if (typeId == null) {
                         throw new NullPointerException();
                     }
-                    TypeDefinitionContainer type = service.repository.getTypeManager().getTypeById(typeId);
+                    TypeDefinitionContainer type = typeManager.getTypeById(typeId);
                     String baseTypeId = type.getTypeDefinition().getBaseTypeId().value();
                     cmisMap.put(key, baseTypeId);
                     continue;
