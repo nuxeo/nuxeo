@@ -52,4 +52,5 @@ class Sim00Setup extends Simulation {
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
   val scn = ScnSetup.get(userCount, Parameters.getPause())
   setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol).exponentialPauses
+    .assertions(global.successfulRequests.percent.is(100))
 }

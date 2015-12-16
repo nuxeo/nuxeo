@@ -49,4 +49,5 @@ class Sim10CreateFolders extends Simulation {
   val scn = ScnCreateFolders.get(folders, Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers(1)).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
+    .assertions(global.successfulRequests.percent.is(100))
 }
