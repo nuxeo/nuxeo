@@ -52,7 +52,8 @@
             <div>
               <div><span class="required">[[i18n('label.permissions.email', 'Email')]]</span></div>
               <div>
-                <paper-input value="{{params.email}}"></paper-input>
+                <gold-email-input id="email" label="" placeholder="name@company.com" value="{{params.email}}"
+                  required auto-validate></gold-email-input>
               </div>
             </div>
           </template>
@@ -197,6 +198,11 @@
         return;
       }
       if (!this.shareWithExternal && !this.params.username) {
+        return;
+      }
+
+      // not a valid email
+      if (this.params.email && !document.querySelector("#email").validate()) {
         return;
       }
 
