@@ -276,7 +276,7 @@ object NuxeoRest {
       .header("Content-Type", "application/json")
       .basicAuth("${adminId}", "${adminPassword}")
       .body(StringBody( """{"params":{"permission": "ReadWrite", "user": """" + principal + """"}}""".stripMargin))
-      .check(status.in(200).disableResponseChunksDiscarding)
+      .check(status.in(200)).disableResponseChunksDiscarding
   }
 
   def waitForAsyncJobs = () => {
