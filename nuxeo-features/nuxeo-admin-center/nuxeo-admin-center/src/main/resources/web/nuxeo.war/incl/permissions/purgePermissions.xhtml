@@ -5,6 +5,12 @@
     xmlns:c="http://java.sun.com/jstl/core"
     xmlns:a4j="http://richfaces.org/a4j">
 
+  <h:outputScript target="#{pageJsTarget}">
+    function confirmPurgePermissions() {
+      return confirm("#{messages['label.permissions.purge.confirmPurgePermissions']}");
+    }
+  </h:outputScript>
+
   <a4j:region>
 
     <a4j:outputPanel id="permissions_purge_panel" layout="block">
@@ -54,7 +60,8 @@
                             action="#{adminPermissionsActions.doPurge()}"
                             render="permissions_purge_panel"
                             disabled="#{empty contentView.currentPageProvider.currentPage}"
-                            styleClass="button primary"/>
+                            styleClass="button primary"
+                            onclick="if (!confirmPurgePermissions()) { return false; }"/>
                         <span class="detail">#{messages['label.permissions.purge.confirm']}</span>
                       </h:form>
                     </c:if>
