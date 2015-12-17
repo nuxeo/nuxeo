@@ -1860,7 +1860,7 @@
           <field>#{messages[securityActions.getLabel(layoutValue.data["ecm:acl/*1/permission"])]}</field>
         </fields>
       </widget>
-      <widget name="ace_username" type="text">
+      <widget name="ace_username" type="singleUserSuggestion">
         <labels>
           <label mode="any">label.permissions.userGroup</label>
         </labels>
