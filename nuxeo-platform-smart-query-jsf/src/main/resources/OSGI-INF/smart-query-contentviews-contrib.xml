@@ -23,11 +23,13 @@
         <property name="coreSession">#{documentManager}</property>
         <searchDocumentType>SmartFolder</searchDocumentType>
         <pattern quoteParameters="false" escapeParameters="false">
-          SELECT * FROM Document WHERE (?) AND ecm:mixinType !=
+          SELECT * FROM Document ? ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
           ecm:currentLifeCycleState != 'deleted'
         </pattern>
-        <parameter>#{searchDocument.sf.queryPart}</parameter>
+        <parameter>
+          #{smartNXQLQueryActions.getWhereClause(searchDocument.sf.queryPart, true)}
+        </parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
         <sortInfosBinding>#{searchDocument.cvd.sortInfos}</sortInfosBinding>
