@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -1261,8 +1262,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
             List<String> actors) throws ClientException {
         final List<String> actorIds = new ArrayList<String>();
         for (String actor : actors) {
-            if (actor.contains(":")) {
-                actorIds.add(actor.split(":")[1]);
+            if (actor.startsWith(NuxeoPrincipal.PREFIX)) {
+                actorIds.add(actor.substring(NuxeoPrincipal.PREFIX.length()));
+            } else if (actor.startsWith(NuxeoGroup.PREFIX)) {
+                actorIds.add(actor.substring(NuxeoGroup.PREFIX.length()));
             } else {
                 actorIds.add(actor);
             }
