@@ -306,6 +306,7 @@
       <refresh>
         <event>documentChanged</event>
         <event>documentChildrenChanged</event>
+        <event>searchSaved</event>
       </refresh>
       <cacheKey>only_one_cache</cacheKey>
       <cacheSize>1</cacheSize>
