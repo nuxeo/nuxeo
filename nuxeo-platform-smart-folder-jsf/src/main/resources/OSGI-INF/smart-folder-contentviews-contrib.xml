@@ -22,11 +22,13 @@
         <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
         <property name="coreSession">#{documentManager}</property>
         <pattern quoteParameters="false" escapeParameters="false">
-          SELECT * FROM Document WHERE (?) AND ecm:mixinType !=
+          SELECT * FROM Document ? ecm:mixinType !=
           'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND
           ecm:currentLifeCycleState != 'deleted'
         </pattern>
-        <parameter>#{currentDocument.sf.queryPart}</parameter>
+        <parameter>
+          #{smartNXQLQueryActions.getWhereClause(currentDocument.sf.queryPart, true)}
+        </parameter>
         <sort column="dc:title" ascending="true" />
         <pageSize>20</pageSize>
         <pageSizeBinding>#{currentDocument.cvd.pageSize}</pageSizeBinding>
