@@ -63,7 +63,7 @@
             <a4j:outputPanel id="#{widget.id}_smartQueryPartPanel" layout="block">
               <h:inputTextarea id="#{widget.id}_smartQueryPart"
                 value="#{field}"
-                required="#{widget.required}"
+                required="#{widgetProperty_required}"
                 validator="#{smartNXQLQueryActions.validateQueryPart}"
                 rows="4">
                 <a4j:ajax event="change"
