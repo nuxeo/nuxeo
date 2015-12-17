@@ -299,15 +299,19 @@
         </propertyList>
       </properties>
       <subWidgets>
-        <widget name="nature" type="selectManyDirectory">
+        <widget name="nature" type="suggestManyDirectory">
           <fields>
-            <field>stringArrayValue</field>
+            <field>stringListValue</field>
           </fields>
           <properties mode="any">
+            <property name="width">100%</property>
+            <property name="minChars">0</property>
+            <property name="hideHelpLabel">true</property>
             <property name="directoryName">nature</property>
             <property name="localize">true</property>
           </properties>
         </widget>
+
       </subWidgets>
     </widget>
 
@@ -569,8 +573,11 @@
             <property name="template">
               /widgets/user_suggestion_widget_template.xhtml
             </property>
+            <property name="width">100%</property>
             <property name="userSuggestionSearchType">USER_TYPE</property>
             <property name="hideVirtualGroups">true</property>
+            <property name="hideHelpLabel">true</property>
+            <property name="minChars">0</property>
           </properties>
         </widget>
       </subWidgets>
