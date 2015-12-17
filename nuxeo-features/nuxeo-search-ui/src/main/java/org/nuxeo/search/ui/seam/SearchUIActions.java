@@ -646,4 +646,16 @@ public class SearchUIActions implements Serializable {
     public String getSearchTermParameter() {
         return SEARCH_TERM_PARAMETER;
     }
+
+    /**
+     * Triggers content view refresh/reset on saved search.
+     *
+     * @since 8.1
+     */
+    @Observer(value = { SEARCH_SAVED_EVENT })
+    public void onSearchSaved() {
+        contentViewActions.refreshOnSeamEvent(SEARCH_SAVED_EVENT);
+        contentViewActions.resetPageProviderOnSeamEvent(SEARCH_SAVED_EVENT);
+    }
+
 }

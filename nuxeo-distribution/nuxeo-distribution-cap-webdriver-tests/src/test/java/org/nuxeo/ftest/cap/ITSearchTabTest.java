@@ -27,10 +27,13 @@ import java.util.Map.Entry;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
+import org.nuxeo.functionaltests.pages.HomePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.search.DefaultSearchSubPage;
@@ -39,6 +42,7 @@ import org.nuxeo.functionaltests.pages.search.SearchResultsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.AccessRightsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 /**
  * @since 6.0
@@ -117,7 +121,13 @@ public class ITSearchTabTest extends AbstractTest {
     @Test
     public void testSearch() throws UserNotConnectedException, IOException {
         DocumentBasePage documentBasePage = loginAsTestUser();
-        SearchPage searchPage = documentBasePage.goToSearchPage();
+
+        // navigate to saved searches tab to init cache (non regression test for NXP-18624)
+        HomePage home = documentBasePage.goToHomePage().goToSavedSearches();
+        // no searches
+        assertEquals(1, driver.findElements(By.className("emptyResult")).size());
+
+        SearchPage searchPage = home.goToSearchPage();
         SearchResultsSubPage resultPanelSubPage = searchPage.getSearchResultsSubPage();
         final int nbCurrentDoc = resultPanelSubPage.getNumberOfDocumentInCurrentPage();
         assertTrue(nbCurrentDoc > 1);
@@ -151,6 +161,28 @@ public class ITSearchTabTest extends AbstractTest {
         searchPage = searchLayoutSubPage.filter();
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+
+        // save this search
+        String saveAsPath = "//input[contains(@id, 'nxw_searchResultsActions_saveSearch_link')]";
+        assertEquals(1, driver.findElements(By.xpath(saveAsPath)).size());
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        driver.findElement(By.xpath(saveAsPath)).click();
+        arm.end();
+
+        WebElement fancybox = Locator.findElementWithTimeout(By.id("nxw_searchResultsActions_saveSearch_box"));
+        String ssTitle = "Test Saved Search " + new Date().getTime();
+        fancybox.findElement(By.xpath(".//input[@type='text']")).sendKeys(ssTitle);
+        arm.begin();
+        fancybox.findElement(By.xpath(".//input[@value='Save']")).click();
+        arm.end();
+
+        SearchPage sp = asPage(SearchPage.class);
+        assertEquals(ssTitle, sp.getSelectedSearch());
+
+        // check that search was saved in home
+        sp.goToHomePage().goToSavedSearches();
+        assertEquals(1, driver.findElements(By.linkText(ssTitle)).size());
 
         logout();
         tearDown();
