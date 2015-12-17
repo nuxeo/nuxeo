@@ -19,7 +19,11 @@
 
       <h:inputText value="#{searchUIActions.savedSearchTitle}"
         placeholder="#{messages['label.search.save.placeholder']}"
-        required="true" />
+        required="true" styleClass="savedSearchTitle" />
+      <h:outputScript target="#{pageJsTarget}">
+        jQuery('.savedSearchTitle').focus();jQuery('.savedSearchTitle').select();
+      </h:outputScript>
+
     </div>
 
     <div class="buttonsGadget">
