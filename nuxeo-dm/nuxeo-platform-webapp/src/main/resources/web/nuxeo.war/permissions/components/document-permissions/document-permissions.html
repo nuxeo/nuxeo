@@ -70,8 +70,9 @@
                     <popup-confirm id="confirmation" delete-label="[[i18n('command.delete', 'Delete')]]"
                       cancel-label="[[i18n('label.permissions.cancel', 'Cancel')]]">
                       <paper-dialog-scrollable>
-                        <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be
-                          deleted')]]</h2>
+                        <h2>
+                          [[i18n('label.permissions.deleteConfirmation', 'The following permission will be deleted')]]
+                        </h2>
 
                         <div class="acl-table">
                           <div class="acl-table-row acl-table-headers">
@@ -120,10 +121,8 @@
       </div>
       <div>
         <template is="dom-if" if="{{hasInheritedAces}}">
-          <div class="tips">[[i18n('label.permissions.blockDescription', 'If you want to explicitly control the access
-            to this document you can block the permissions inheritance. Any change made on parent document will not
-            affect the access conditions to this document. You and the administrators will be added to local
-            permissions.')]]
+          <div class="tips">
+            [[i18n('label.permissions.blockDescription', 'If you want to explicitly control the access to this document you can block the permissions inheritance. Any change made on parent document will not affect the access conditions to this document. You and the administrators will be added to local permissions.')]]
           </div>
           <div class="acl-table">
             <div class="acl-table-row acl-table-headers">
@@ -145,8 +144,9 @@
           </div>
         </template>
         <template is="dom-if" if="{{!hasInheritedAces}}">
-          <p class="emptyResult">[[i18n('label.permissions.noInheritedText', 'Only local permissions are applied.
-            Unblock to restore the permissions inheritance from upper levels.')]]</p>
+          <p class="emptyResult">
+            [[i18n('label.permissions.noInheritedText', 'Only local permissions are applied. Unblock to restore the permissions inheritance from upper levels.')]]
+          </p>
         </template>
       </div>
     </div>
@@ -190,8 +190,9 @@
                     <popup-confirm id="confirmation" delete-label="[[i18n('command.delete', 'Delete')]]"
                       cancel-label="[[i18n('label.permissions.cancel', 'Cancel')]]">
                       <paper-dialog-scrollable>
-                        <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be
-                          deleted')]]</h2>
+                        <h2>
+                          [[i18n('label.permissions.deleteConfirmation', 'The following permission will be deleted')]]
+                        </h2>
 
                         <div class="acl-table">
                           <div class="acl-table-row acl-table-headers">

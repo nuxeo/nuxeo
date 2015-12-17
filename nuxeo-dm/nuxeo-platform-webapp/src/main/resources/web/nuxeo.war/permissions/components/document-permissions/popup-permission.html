@@ -72,11 +72,11 @@
           <template is="dom-if" if="{{!shareWithExternal}}">
             <div>[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
             <paper-radio-group selected="{{selectedTimeFrame}}">
-              <paper-radio-button name="permanent" on-change="toggleTimeFrame">[[i18n('label.permissions.permanent',
-                'Permanent')]]
+              <paper-radio-button name="permanent" on-change="toggleTimeFrame">
+                [[i18n('label.permissions.permanent', 'Permanent')]]
               </paper-radio-button>
-              <paper-radio-button name="datebased" on-change="toggleTimeFrame">[[i18n('label.permissions.dateBased',
-                'Date based')]]
+              <paper-radio-button name="datebased" on-change="toggleTimeFrame">
+                [[i18n('label.permissions.dateBased', 'Date based')]]
               </paper-radio-button>
             </paper-radio-group>
           </template>
@@ -283,7 +283,6 @@
       // force datebased and notification for external share
       if (shareWithExternal) {
         this.set('selectedTimeFrame', 'datebased');
-        this.set('notify', true);
       }
 
       if (ace !== null) {
