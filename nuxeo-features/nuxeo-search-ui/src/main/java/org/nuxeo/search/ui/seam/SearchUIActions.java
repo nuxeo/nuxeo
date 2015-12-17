@@ -47,6 +47,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -121,6 +122,20 @@ public class SearchUIActions implements Serializable {
     public static final String CONTENT_VIEW_STATE_PARAMETER = "state";
 
     public static final String SEARCH_TERM_PARAMETER = "searchTerm";
+
+    /**
+     * Event name for search selection change, raised with selected corresponding content view name.
+     *
+     * @since 8.1
+     */
+    public static final String SEARCH_SELECTED_EVENT = "searchSelected";
+
+    /**
+     * Event name for search selection change, raised with saved document model.
+     *
+     * @since 8.1
+     */
+    public static final String SEARCH_SAVED_EVENT = "searchSaved";
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
@@ -242,6 +257,7 @@ public class SearchUIActions implements Serializable {
             if (contentViewHeader.getName().equals(selectedSavedSearchId)) {
                 contentViewActions.reset(currentContentViewName);
                 currentContentViewName = selectedSavedSearchId;
+                Events.instance().raiseEvent(SEARCH_SELECTED_EVENT, currentContentViewName);
                 currentSelectedSavedSearchId = null;
                 return;
             }
@@ -263,6 +279,7 @@ public class SearchUIActions implements Serializable {
         if (contentViewState != null) {
             ContentView contentView = contentViewActions.restoreContentView(contentViewState);
             currentContentViewName = contentView.getName();
+            Events.instance().raiseEvent(SEARCH_SELECTED_EVENT, currentContentViewName);
         }
         currentSelectedSavedSearchId = searchDocument.getId();
     }
@@ -380,12 +397,10 @@ public class SearchUIActions implements Serializable {
             DocumentModel savedSearch = searchUIService.saveSearch(documentManager, state, savedSearchTitle);
             currentSelectedSavedSearchId = savedSearch.getId();
 
+            Events.instance().raiseEvent(SEARCH_SAVED_EVENT, savedSearch);
+
             savedSearchTitle = null;
             facesMessages.add(StatusMessage.Severity.INFO, messages.get(SEARCH_SAVED_LABEL));
-
-            // Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED,
-            // uws);
-
         }
         return null;
     }
