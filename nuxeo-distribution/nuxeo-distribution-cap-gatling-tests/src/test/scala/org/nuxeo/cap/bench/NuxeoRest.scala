@@ -127,7 +127,7 @@ object NuxeoRest {
               """{ "entity-type": "document", "name":"""" + name + """", "type": """" + docType +
                 """","properties": {"dc:title":"""" + name +
                 """", "dc:description": "Gatling bench folder"}}""".stripMargin))
-            .check(status.in(201)).disableResponseChunksDiscarding)
+            .check(status.in(201)))
     }
   }
 
@@ -224,7 +224,7 @@ object NuxeoRest {
               """{"entity-type":"user","id":"${user}","properties":{"firstName":null,"lastName":null,"password":"${password}","groups":["""" +
                 groupName +
                 """"],"company":null,"email":"devnull@nuxeo.com","username":"${user}"},"extendedGroups":[{"name":"members","label":"Members group","url":"group/members"}],"isAdministrator":false,"isAnonymous":false}"""))
-            .check(status.in(201)).disableResponseChunksDiscarding)
+            .check(status.in(201)))
     }
   }
 
@@ -254,7 +254,7 @@ object NuxeoRest {
             .basicAuth("${adminId}", "${adminPassword}")
             .body(StringBody(
               """{"entity-type":"group","groupname":"""" + groupName + """", "groupLabel": "Gatling group"}"""))
-            .check(status.in(201)).disableResponseChunksDiscarding)
+            .check(status.in(201)))
     }
   }
 
@@ -276,7 +276,7 @@ object NuxeoRest {
       .header("Content-Type", "application/json")
       .basicAuth("${adminId}", "${adminPassword}")
       .body(StringBody( """{"params":{"permission": "ReadWrite", "user": """" + principal + """"}}""".stripMargin))
-      .check(status.in(200)).disableResponseChunksDiscarding
+      .check(status.in(200))
   }
 
   def waitForAsyncJobs = () => {
