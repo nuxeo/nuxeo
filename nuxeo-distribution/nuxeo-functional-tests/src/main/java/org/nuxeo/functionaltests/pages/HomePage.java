@@ -28,6 +28,10 @@ import org.openqa.selenium.support.FindBy;
  */
 public class HomePage extends DocumentBasePage {
 
+    static final String COLLECTIONS_LABEL = "Collections";
+
+    static final String SEARCHES_LABEL = "Searches";
+
     @Required
     @FindBy(id = "nxw_homeTabs_panel")
     protected WebElement menu;
@@ -37,15 +41,27 @@ public class HomePage extends DocumentBasePage {
     }
 
     public CollectionsPage goToCollections() {
+        goTo(COLLECTIONS_LABEL);
+        return asPage(CollectionsPage.class);
+    }
+
+    /**
+     * @since 8.1
+     */
+    public HomePage goToSavedSearches() {
+        goTo(SEARCHES_LABEL);
+        return asPage(HomePage.class);
+    }
+
+    private void goTo(String label) {
         if (useAjaxTabs()) {
             AjaxRequestManager arm = new AjaxRequestManager(driver);
             arm.begin();
-            menu.findElement(By.linkText("Collections")).click();
+            menu.findElement(By.linkText(label)).click();
             arm.end();
         } else {
-            menu.findElement(By.linkText("Collections")).click();
+            menu.findElement(By.linkText(label)).click();
         }
-        return asPage(CollectionsPage.class);
     }
 
 }
