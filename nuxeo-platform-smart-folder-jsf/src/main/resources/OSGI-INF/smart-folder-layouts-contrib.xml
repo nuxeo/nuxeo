@@ -49,9 +49,6 @@
           </property>
           <property name="updateQueryPart">false</property>
         </properties>
-        <properties widgetMode="edit">
-          <property name="required">true</property>
-        </properties>
       </widget>
       <widget name="selected_rows" type="layout">
         <labels>

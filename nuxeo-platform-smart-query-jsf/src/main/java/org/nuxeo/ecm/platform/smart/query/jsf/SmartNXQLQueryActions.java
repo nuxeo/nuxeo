@@ -27,6 +27,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.validator.ValidatorException;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
@@ -364,15 +365,20 @@ public class SmartNXQLQueryActions implements Serializable {
      */
     public void validateQueryPart(FacesContext context, UIComponent component,
             Object value) {
-        if (value == null || !(value instanceof String)) {
-            FacesMessage message = new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
-                            context, "error.smart.query.invalidQuery"), null);
+        if (value == null) {
+            return;
+        }
+        if (!(value instanceof String)) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    ComponentUtils.translate(context, "error.smart.query.invalidQuery"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
         }
         String query = (String) value;
+        if (StringUtils.isBlank(query)) {
+            return;
+        }
         if (!IncrementalSmartNXQLQuery.isValid(query)) {
             FacesMessage message = new FacesMessage(
                     FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
@@ -395,6 +401,24 @@ public class SmartNXQLQueryActions implements Serializable {
             return context.getPartialViewContext().isAjaxRequest();
         }
         return false;
+    }
+
+    /**
+     * Returns a valid where clause from a query part.
+     * <p>
+     * Useful to avoid generating an invalid query if query part is empty (especially if content view is not marked as
+     * waiting for first execution).
+     *
+     * @since 8.1
+     */
+    public String getWhereClause(String queryPart, boolean followedByClause) {
+        if (StringUtils.isBlank(queryPart)) {
+            if (followedByClause) {
+                return "WHERE ";
+            }
+            return "";
+        }
+        return "WHERE (" + queryPart + ")" + (followedByClause ? " AND " : "");
     }
 
 }
