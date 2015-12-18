@@ -299,7 +299,7 @@ public class AnnotationManagerPanel extends VerticalPanel implements AnnotationC
                                                               }-*/;
 
     private native int getSelectedAnnotationIndex() /*-{
-                                                    if (typeof top['selectedAnnotationIndex'] != "undefined") {
+                                                    if (top && typeof top['selectedAnnotationIndex'] != "undefined") {
                                                     return top['selectedAnnotationIndex'];
                                                     } else {
                                                     return -1;

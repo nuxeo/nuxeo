@@ -378,7 +378,7 @@ public class AnnotationController {
     }
 
     public native boolean isAnnotationsVisible() /*-{
-                                                 if (typeof top['annotationsShown'] != "undefined") {
+                                                 if (top && typeof top['annotationsShown'] != "undefined") {
                                                  return top['annotationsShown'];
                                                  } else {
                                                  return true;
