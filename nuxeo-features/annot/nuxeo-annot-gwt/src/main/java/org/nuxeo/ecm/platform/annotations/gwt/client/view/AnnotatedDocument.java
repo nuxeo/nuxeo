@@ -223,7 +223,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
     }
 
     private native int getSelectedAnnotationIndex() /*-{
-                                                    if (typeof top['selectedAnnotationIndex'] != "undefined") {
+                                                    if (top && typeof top['selectedAnnotationIndex'] != "undefined") {
                                                     return top['selectedAnnotationIndex'];
                                                     } else {
                                                     return -1;
@@ -293,7 +293,7 @@ public class AnnotatedDocument implements AnnotationChangeListener {
     }
 
     public native boolean isAnnotationsVisible() /*-{
-                                                 if (typeof top['annotationsShown'] != "undefined") {
+                                                 if (top && typeof top['annotationsShown'] != "undefined") {
                                                  return top['annotationsShown'];
                                                  } else {
                                                  return true;
