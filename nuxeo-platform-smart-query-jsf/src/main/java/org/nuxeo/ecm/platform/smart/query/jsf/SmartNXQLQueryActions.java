@@ -30,7 +30,9 @@ import javax.faces.validator.ValidatorException;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.platform.smart.query.HistoryList;
 import org.nuxeo.ecm.platform.smart.query.SmartQuery;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.runtime.logging.DeprecationLogger;
+import org.nuxeo.search.ui.seam.SearchUIActions;
 
 /**
  * Seam component handling a {@link IncrementalSmartNXQLQuery} instance created for a given existing query string.
@@ -48,7 +51,7 @@ import org.nuxeo.runtime.logging.DeprecationLogger;
  * @author Anahide Tchertchian
  */
 @Name("smartNXQLQueryActions")
-@Scope(ScopeType.CONVERSATION)
+@Scope(ScopeType.PAGE)
 public class SmartNXQLQueryActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -413,6 +416,22 @@ public class SmartNXQLQueryActions implements Serializable {
             return "";
         }
         return "WHERE (" + queryPart + ")" + (followedByClause ? " AND " : "");
+    }
+
+    /**
+     * @since 8.1
+     */
+    public boolean isInitialized() {
+        return currentSmartQuery != null;
+    }
+
+    /**
+     * @since 8.1
+     */
+    @Observer(value = { SearchUIActions.SEARCH_SELECTED_EVENT }, create = false)
+    @BypassInterceptors
+    public void resetCurrentSmartQuery() {
+        currentSmartQuery = null;
     }
 
 }
