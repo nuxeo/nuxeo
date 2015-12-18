@@ -48,7 +48,7 @@ class Sim00Setup extends Simulation {
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
-    .connection("keep-alive").shareConnections
+    .connection("keep-alive")
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
   val scn = ScnSetup.get(userCount, Parameters.getPause())
   setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol).exponentialPauses
