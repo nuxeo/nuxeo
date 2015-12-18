@@ -82,7 +82,7 @@
                 actionListener="#{smartNXQLQueryActions.undoQueryPartChanges}"
                 render="#{widget.id}_smartSearchAjaxPanel #{widget.id}_smartQueryPartPanel #{widget.id}_smartQueryUndoPanel"
                 execute="@this" styleClass="button"
-                disabled="#{!smartNXQLQueryActions.canUndoQueryPartChanges}">
+                rendered="#{smartNXQLQueryActions.canUndoQueryPartChanges}">
                 <a4j:param name="queryPartComponentId"
                   value="#{widget.id}_smartQueryPart" />
                 <a4j:param name="updateQueryPart"
@@ -92,7 +92,7 @@
                 actionListener="#{smartNXQLQueryActions.redoQueryPartChanges}"
                 render="#{widget.id}_smartSearchAjaxPanel #{widget.id}_smartQueryPartPanel #{widget.id}_smartQueryUndoPanel"
                 execute="@this" styleClass="button"
-                disabled="#{!smartNXQLQueryActions.canRedoQueryPartChanges}">
+                rendered="#{smartNXQLQueryActions.canRedoQueryPartChanges}">
                 <a4j:param name="queryPartComponentId"
                   value="#{widget.id}_smartQueryPart" />
                 <a4j:param name="updateQueryPart"
