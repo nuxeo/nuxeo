@@ -79,7 +79,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
         try {
             ErrorHandler handler = getHandler(t);
             Integer code = handler.getCode();
-            boolean is404 = Integer.valueOf(404).equals(code);
+            int status = code == null ? HttpServletResponse.SC_INTERNAL_SERVER_ERROR : code.intValue();
             parameters.getListener().startHandling(t, request, response);
 
             Throwable unwrappedException = unwrapException(t);
@@ -87,8 +87,8 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             PrintWriter pwriter = new PrintWriter(swriter);
             t.printStackTrace(pwriter);
             String stackTrace = swriter.getBuffer().toString();
-            if (is404) {
-                log.debug(t.getMessage());
+            if (status < HttpServletResponse.SC_INTERNAL_SERVER_ERROR) { // 500
+                log.debug(t.getMessage(), t);
             } else {
                 log.error(stackTrace);
                 parameters.getLogger().error(stackTrace);
@@ -102,16 +102,14 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             request.setAttribute("messageBundle", ResourceBundle.getBundle(parameters.getBundleName(),
                     request.getLocale(), Thread.currentThread().getContextClassLoader()));
             String dumpedRequest = parameters.getRequestDumper().getDump(request);
-            if (!is404) {
+            if (status >= HttpServletResponse.SC_INTERNAL_SERVER_ERROR) { // 500
                 parameters.getLogger().error(dumpedRequest);
             }
             request.setAttribute("request_dump", dumpedRequest);
 
             parameters.getListener().beforeForwardToErrorPage(unwrappedException, request, response);
             if (!response.isCommitted()) {
-                if (code != null) {
-                    response.setStatus(code);
-                }
+                response.setStatus(status);
                 String errorPage = handler.getPage();
                 errorPage = (errorPage == null) ? parameters.getDefaultErrorPage() : errorPage;
                 RequestDispatcher requestDispatcher = request.getRequestDispatcher(errorPage);
