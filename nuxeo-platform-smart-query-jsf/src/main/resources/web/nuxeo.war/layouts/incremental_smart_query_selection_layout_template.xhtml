@@ -1,4 +1,7 @@
-<f:subview xmlns:a4j="http://richfaces.org/a4j"
+<f:subview
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -81,23 +84,21 @@
       </a4j:outputPanel>
     </a4j:region>
 
-    <div>
-      <f:subview rendered="#{layoutValue.showOpenParenthesis}">
-        <h:selectBooleanCheckbox value="#{layoutValue.openParenthesis}"
-          id="#{layout.id}_open_parenthesis" />
-        <h:outputLabel for="#{layout.id}_open_parenthesis"
-          value="#{messages['label.smart.query.openParenthesis']}" />
-        <h:message for="#{layout.id}_open_parenthesis" class="errorMessage" />
-      </f:subview>
+    <a4j:outputPanel rendered="#{layoutValue.showOpenParenthesis}" layout="block">
+      <h:selectBooleanCheckbox value="#{layoutValue.openParenthesis}"
+        id="#{layout.id}_open_parenthesis" />
+      <h:outputLabel for="#{layout.id}_open_parenthesis"
+        value="#{messages['label.smart.query.openParenthesis']}" />
+      <h:message for="#{layout.id}_open_parenthesis" class="errorMessage" />
+    </a4j:outputPanel>
 
-      <f:subview rendered="#{layoutValue.showCloseParenthesis}">
-        <h:selectBooleanCheckbox value="#{layoutValue.closeParenthesis}"
-          id="#{layout.id}_close_parenthesis" />
-        <h:outputLabel for="#{layout.id}_close_parenthesis"
-          value="#{messages['label.smart.query.closeParenthesis']}" />
-        <h:message for="#{layout.id}_close_parenthesis" class="errorMessage" />
-      </f:subview>
-    </div>
+    <a4j:outputPanel rendered="#{layoutValue.showOpenParenthesis}" layout="block">
+      <h:selectBooleanCheckbox value="#{layoutValue.closeParenthesis}"
+        id="#{layout.id}_close_parenthesis" />
+      <h:outputLabel for="#{layout.id}_close_parenthesis"
+        value="#{messages['label.smart.query.closeParenthesis']}" />
+      <h:message for="#{layout.id}_close_parenthesis" class="errorMessage" />
+    </a4j:outputPanel>
 
   </c:if>
 
