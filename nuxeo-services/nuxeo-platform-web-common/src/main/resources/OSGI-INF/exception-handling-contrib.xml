@@ -15,10 +15,12 @@
     <errorHandlers bundle="messages" loggerName="nuxeo-error-log"
       defaultpage="/nuxeo_error.jsp">
       <handlers>
-        <handler error=".*NoSuchDocumentException"
-          message="Error.Document.Not.Found" code="404" />
-        <handler error=".*SecurityException" message="Error.Insuffisant.Rights" page="/nuxeo_error_security.jsp" />
-        <handler error=".*" message="Error.Unknown" />
+        <handler error=".*NoSuchDocumentException" code="404"
+          message="Error.Document.Not.Found" />
+        <handler error=".*SecurityException" code="403"
+          message="Error.Insuffisant.Rights" page="/nuxeo_error_security.jsp" />
+        <handler error=".*" code="500"
+          message="Error.Unknown" />
       </handlers>
     </errorHandlers>
   </extension>

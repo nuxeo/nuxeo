@@ -196,7 +196,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             return;
         }
         if (!hasPermission(doc, permission)) {
-            log.error("Permission '" + permission + "' is not granted to '"
+            log.debug("Permission '" + permission + "' is not granted to '"
                     + getPrincipal().getName() + "' on document "
                     + doc.getPath() + " (" + doc.getUUID() + " - "
                     + doc.getType().getName() + ")");

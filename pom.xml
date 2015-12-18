@@ -3449,6 +3449,12 @@
         </exclusions>
       </dependency>
       <dependency>
+        <!-- needed by htmlunit -->
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-mime4j</artifactId>
+        <version>0.6</version>
+      </dependency>
+      <dependency>
         <groupId>org.jsecurity</groupId>
         <artifactId>jsecurity</artifactId>
         <version>0.9.0</version>

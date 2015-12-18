@@ -64,6 +64,11 @@
       <groupId>net.jsourcerer.webdriver</groupId>
       <artifactId>JSErrorCollector</artifactId>
     </dependency>
+    <dependency>
+      <!-- needed by htmlunit -->
+      <groupId>org.apache.james</groupId>
+      <artifactId>apache-mime4j</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
