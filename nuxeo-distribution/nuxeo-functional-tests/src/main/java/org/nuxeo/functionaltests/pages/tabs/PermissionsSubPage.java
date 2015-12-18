@@ -18,8 +18,6 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
@@ -29,7 +27,6 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.pagefactory.ByChained;
 
 /**
  * @since 7.10
@@ -45,15 +42,17 @@ public class PermissionsSubPage extends AbstractPage {
     }
 
     public boolean hasPermissionForUser(String permission, String username) {
-        List<WebElement> elements = driver.findElements(By.className("acl-table-row"));
+        List<WebElement> elements = driver.findElements(By.xpath("//div[contains(@class, 'acl-table-row effective')]"));
         boolean hasPermission = false;
         for (WebElement element : elements) {
-            List<WebElement> spans = element.findElements(new ByChained(By.tagName("div"), By.tagName("span")));
-            if (spans.size() > 3) {
-                String aceUsernameTitle = spans.get(0).getAttribute("title");
-                String aceRight = spans.get(1).getText();
-                if (aceUsernameTitle.startsWith(username) && permission.equalsIgnoreCase(aceRight)) {
+            List<WebElement> names = element.findElements(By.xpath(".//span[contains(@class, 'tag user')]"));
+            List<WebElement> perms = element.findElements(By.className("label"));
+            if (names.size() > 0 && perms.size() > 0) {
+                String title = names.get(0).getAttribute("title");
+                String perm = perms.get(0).getText();
+                if (title.startsWith(username) && permission.equalsIgnoreCase(perm)) {
                     hasPermission = true;
+                    break;
                 }
             }
         }
