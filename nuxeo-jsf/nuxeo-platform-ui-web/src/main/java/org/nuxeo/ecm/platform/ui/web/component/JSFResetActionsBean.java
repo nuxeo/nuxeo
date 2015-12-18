@@ -89,46 +89,17 @@ public class JSFResetActionsBean {
      * @since 5.9.1
      */
     public void resetComponentsFor(ActionEvent event) {
-        resetComponentsFor((FacesEvent) event);
-    }
-
-    /**
-     * Looks up the parent naming container for the corresponding ajax behavior event, and reset components recursively
-     * within this container.
-     *
-     * @since 8.1
-     */
-    public void resetComponentsFor(AjaxBehaviorEvent event) {
-        resetComponentsFor((FacesEvent) event);
-    }
-
-    protected void resetComponentsFor(FacesEvent event) {
         UIComponent component = event.getComponent();
         if (component == null) {
             return;
         }
-        String baseCompId = getStringAttribute(component, "target", false);
-        if (baseCompId == null) {
-            // compat
-            baseCompId = getBaseComponentId();
-        }
+        String baseCompId = getBaseComponentId();
         if (baseCompId != null) {
             UIComponent anchor = ComponentRenderUtils.getComponent(component, baseCompId);
             resetComponentResursive(anchor);
         } else {
             log.error("No base component id given => cannot reset " + "components state.");
         }
-    }
-
-    protected String getStringAttribute(UIComponent component, String name, boolean required) {
-        Object value = component.getAttributes().get(name);
-        if (required && value == null) {
-            throw new IllegalArgumentException("Component attribute with name '" + name + "' cannot be null: " + value);
-        }
-        if (value == null || value instanceof String) {
-            return (String) value;
-        }
-        throw new IllegalArgumentException("Component attribute with name '" + name + "' is not a String: " + value);
     }
 
     /**
