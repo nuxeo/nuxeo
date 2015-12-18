@@ -34,6 +34,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.faces.validator.ValidatorException;
@@ -64,6 +65,7 @@ import org.nuxeo.ecm.platform.contentview.json.JSONContentViewState;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.component.JSFResetActionsBean;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -159,6 +161,9 @@ public class SearchUIActions implements Serializable {
 
     @In(create = true)
     protected DocumentsListsManager documentsListsManager;
+
+    @In(create = true)
+    protected JSFResetActionsBean jsfResetActions;
 
     @In(create = true, required = false)
     protected FacesMessages facesMessages;
@@ -305,6 +310,16 @@ public class SearchUIActions implements Serializable {
             contentViewActions.refreshAndRewind(contentViewName);
             resetCurrentContentViewWorkingList();
         }
+    }
+
+    /**
+     * Refreshes the current content view, and resets components state on the search layout (see NXP-18639).
+     *
+     * @since 8.1
+     */
+    public void refreshAndRewindAjax(AjaxBehaviorEvent event) {
+        jsfResetActions.resetComponentsFor(event);
+        refreshAndRewind();
     }
 
     public void refreshAndRewindAndResetAggregates() {
