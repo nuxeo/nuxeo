@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static java.lang.Long.max;
+import static java.lang.Math.max;
 
 /**
  * Wait for Elasticsearch indexing background job
