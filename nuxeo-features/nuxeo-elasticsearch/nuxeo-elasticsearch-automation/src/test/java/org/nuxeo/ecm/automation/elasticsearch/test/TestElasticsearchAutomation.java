@@ -30,6 +30,7 @@ import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
+import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -45,10 +46,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy({"org.nuxeo.ecm.automation.core", "org.nuxeo.elasticsearch.core", "org.nuxeo.elasticsearch.automation"})
+@Features({RepositoryElasticSearchFeature.class})
+@Deploy({"org.nuxeo.ecm.automation.core", "org.nuxeo.elasticsearch.automation"})
 @LocalDeploy({"org.nuxeo.ecm.automation.elasticsearch.test:elasticsearch-test-contrib.xml",
         "org.nuxeo.ecm.automation.elasticsearch.test:chain-test-contrib.xml"})
 public class TestElasticsearchAutomation {
