@@ -53,6 +53,10 @@
           'label.permissions.permissionUpdated': "#{messages['label.permissions.permissionUpdated']}",
           'label.permissions.permissionDeleted': "#{messages['label.permissions.permissionDeleted']}",
           'label.permissions.permissionNotificationSent': "#{messages['label.permissions.permissionNotificationSent']}",
+          'label.permissions.shareWithExternalUser': "#{messages['label.permissions.shareWithExternalUser']}",
+          'label.permissions.external': "#{messages['label.permissions.external']}",
+          'label.permissions.externalDescription': "#{messages['label.permissions.externalDescription']}",
+          'label.permissions.noExternalPermission': "#{messages['label.permissions.noExternalPermission']}",
           'command.delete': "#{messages['command.delete']}",
           <c:forEach var="permissionToLabel" items="#{securityActions.permissionsToLabels.entrySet()}" varStatus="status">
           '#{permissionToLabel.key}': "#{messages[permissionToLabel.value]}"<c:if test="#{not status.last}">,</c:if>

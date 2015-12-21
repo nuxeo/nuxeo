@@ -36,7 +36,7 @@ import org.openqa.selenium.support.FindBy;
 public class PermissionsSubPage extends AbstractPage {
 
     @Required
-    @FindBy(xpath = "//paper-button[text()='New Permission']")
+    @FindBy(xpath = "//div[contains(@class, 'jsLocalPermissions')]/*/paper-button")
     WebElement newPermission;
 
     public PermissionsSubPage(WebDriver driver) {

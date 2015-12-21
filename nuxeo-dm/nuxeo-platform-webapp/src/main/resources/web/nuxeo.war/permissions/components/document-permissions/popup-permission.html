@@ -11,14 +11,7 @@
       on-response="handleResponse"></nuxeo-operation>
 
     <template is="dom-if" if="{{!updatingACE}}">
-      <template is="dom-if" if="{{!shareWithExternal}}">
-        <paper-button on-click="togglePopup">[[i18n('label.permissions.newPermission', 'New Permission')]]
-        </paper-button>
-      </template>
-      <template is="dom-if" if="{{shareWithExternal}}">
-        <paper-button on-click="togglePopup">[[i18n('label.permissions.shareWithExternal', 'Share With External')]]
-        </paper-button>
-      </template>
+      <paper-button on-click="togglePopup">[[i18n('label.permissions.newPermission', 'New')]]</paper-button>
     </template>
     <template is="dom-if" if="{{updatingACE}}">
       <paper-icon-button on-click="togglePopup" icon="editor:mode-edit"></paper-icon-button>
@@ -30,7 +23,7 @@
           <h2>[[i18n('label.permissions.addPermission', 'Add a Permission')]]</h2>
         </template>
         <template is="dom-if" if="{{shareWithExternal}}">
-          <h2>[[i18n('label.permissions.shareWithExternal', 'Share With External')]]</h2>
+          <h2>[[i18n('label.permissions.shareWithExternalUser', 'Share With External User')]]</h2>
         </template>
       </template>
       <template is="dom-if" if="{{updatingACE}}">
