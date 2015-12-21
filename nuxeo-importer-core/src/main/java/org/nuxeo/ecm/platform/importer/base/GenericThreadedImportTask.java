@@ -151,7 +151,7 @@ public class GenericThreadedImportTask implements Runnable {
         if (uploadedFiles % batchSize == 0 || force) {
             Stopwatch stopwatch = SimonManager.getStopwatch("org.nuxeo.ecm.platform.importer.session_save");
             Split split = stopwatch.start();
-            fslog("Comiting Core Session after " + uploadedFiles + " files", true);
+            fslog("Committing Core Session after " + uploadedFiles + " files", true);
             session.save();
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction(transactionTimeout);
