@@ -30,6 +30,7 @@ import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.ServicePassivator;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -130,22 +131,24 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             return;
         }
         isShuttingDown = true;
-        try {
-            log.info("Stopping Nuxeo Runtime service " + getName() + "; version: " + getVersion());
-            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
+        ServicePassivator.proceed(() -> {
             try {
-                stopExtensions();
-                doStop();
-                manager.shutdown();
+                log.info("Stopping Nuxeo Runtime service " + getName() + "; version: " + getVersion());
+                Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
+                try {
+                    stopExtensions();
+                    doStop();
+                    manager.shutdown();
+                } finally {
+                    isStarted = false;
+                    Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STOPPED, this));
+                    manager = null;
+                }
+                JavaUtilLoggingHelper.reset();
             } finally {
-                isStarted = false;
-                Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STOPPED, this));
-                manager = null;
+                isShuttingDown = false;
             }
-            JavaUtilLoggingHelper.reset();
-        } finally {
-            isShuttingDown = false;
-        }
+        });
     }
 
     @Override
