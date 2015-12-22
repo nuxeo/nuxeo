@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,22 +16,23 @@
  */
 package org.nuxeo.ecm.liveconnect.google.drive;
 
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.json.GenericJson;
-import com.google.api.client.json.JsonObjectParser;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.oauth2.providers.AbstractOAuth2UserEmailProvider;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.json.GenericJson;
+import com.google.api.client.json.JsonObjectParser;
 
 /**
  * @since 7.3
@@ -43,7 +44,7 @@ public class GoogleOAuth2ServiceProvider extends AbstractOAuth2UserEmailProvider
     private static final String TOKEN_INFO_URL = "https://www.googleapis.com/oauth2/v1/tokeninfo";
 
     private static final HttpRequestFactory requestFactory =
-        HTTP_TRANSPORT.createRequestFactory(request -> request.setParser(new JsonObjectParser(JSON_FACTORY)));
+            HTTP_TRANSPORT.createRequestFactory(request -> request.setParser(new JsonObjectParser(JSON_FACTORY)));
 
     protected String getUserEmail(String accessToken) throws IOException {
         GenericUrl url = new GenericUrl(TOKEN_INFO_URL);

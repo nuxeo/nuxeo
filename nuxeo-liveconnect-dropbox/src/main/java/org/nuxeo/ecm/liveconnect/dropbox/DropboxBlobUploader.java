@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,7 +16,24 @@
  */
 package org.nuxeo.ecm.liveconnect.dropbox;
 
-import com.dropbox.core.DbxException;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.faces.application.Application;
+import javax.faces.component.NamingContainer;
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
+import javax.faces.component.html.HtmlInputText;
+import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseWriter;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,22 +50,7 @@ import org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploader;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.runtime.api.Framework;
 
-import javax.faces.application.Application;
-import javax.faces.component.NamingContainer;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
-import javax.faces.component.html.HtmlInputText;
-import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import com.dropbox.core.DbxException;
 
 /**
  * JSF Blob Upload based on Dropbox blobs.
@@ -83,7 +85,7 @@ public class DropboxBlobUploader implements JSFBlobUploader {
     public void hookSubComponent(UIInput parent) {
         Application app = FacesContext.getCurrentInstance().getApplication();
         ComponentUtils.initiateSubComponent(parent, UPLOAD_DROPBOX_FACET_NAME,
-            app.createComponent(HtmlInputText.COMPONENT_TYPE));
+                app.createComponent(HtmlInputText.COMPONENT_TYPE));
     }
 
     @Override
@@ -115,9 +117,9 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         // this prevents users from using the picker if some configuration is missing
         if (isProviderAvailable) {
             String onButtonClick = onClick
-                + ";"
-                + String.format("new nuxeo.utils.DropboxPicker('%s', '%s','%s', '%s')",
-                inputId, infoId, authorizationUrl, getClientId());
+                    + ";"
+                    + String.format("new nuxeo.utils.DropboxPicker('%s', '%s','%s', '%s')", inputId, infoId,
+                            authorizationUrl, getClientId());
             writer.writeAttribute("onclick", onButtonClick, null);
         }
 
@@ -140,9 +142,10 @@ public class DropboxBlobUploader implements JSFBlobUploader {
             // if oauth service provider not properly setup, add warning message
             writer.startElement("span", parent);
             writer.writeAttribute("class", "processMessage completeWarning", null);
-            writer.writeAttribute("style",
-                "margin: 0 0 .5em 0; font-size: 11px; padding: 0.4em 0.5em 0.5em 2.2em; background-position-y: 0.6em",
-                null);
+            writer.writeAttribute(
+                    "style",
+                    "margin: 0 0 .5em 0; font-size: 11px; padding: 0.4em 0.5em 0.5em 2.2em; background-position-y: 0.6em",
+                    null);
             message = I18NUtils.getMessageString("messages", "error.dropbox.providerUnavailable", null, locale);
             writer.write(message);
             writer.endElement("span");
@@ -170,9 +173,8 @@ public class DropboxBlobUploader implements JSFBlobUploader {
             return;
         }
         if (StringUtils.isBlank(string)) {
-            String message = context.getPartialViewContext().isAjaxRequest() ?
-                InputFileInfo.INVALID_WITH_AJAX_MESSAGE :
-                InputFileInfo.INVALID_FILE_MESSAGE;
+            String message = context.getPartialViewContext().isAjaxRequest() ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
+                    : InputFileInfo.INVALID_FILE_MESSAGE;
             ComponentUtils.addErrorMessage(context, parent, message);
             parent.setValid(false);
             return;
@@ -191,10 +193,13 @@ public class DropboxBlobUploader implements JSFBlobUploader {
             return;
         }
 
-        String serviceUserId = getServiceUserId(filePath,
-            FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal());
+        String serviceUserId = getServiceUserId(filePath, FacesContext.getCurrentInstance()
+                                                                      .getExternalContext()
+                                                                      .getUserPrincipal());
         if (StringUtils.isBlank(serviceUserId)) {
-            String link = String.format("<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.", getOAuthAuthorizationUrl());
+            String link = String.format(
+                    "<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.",
+                    getOAuthAuthorizationUrl());
             ComponentUtils.addErrorMessage(context, parent, "error.inputFile.invalidPermissions", new Object[] { link });
             parent.setValid(false);
             return;
@@ -258,9 +263,9 @@ public class DropboxBlobUploader implements JSFBlobUploader {
     }
 
     /**
-     * Iterates all registered Dropbox tokens of a {@link Principal} to get the serviceLogin of a token
-     * with access to a Dropbox file. We need this because Dropbox file picker doesn't provide any information about
-     * the account that was used to select the file, and therefore we need to "guess".
+     * Iterates all registered Dropbox tokens of a {@link Principal} to get the serviceLogin of a token with access to a
+     * Dropbox file. We need this because Dropbox file picker doesn't provide any information about the account that was
+     * used to select the file, and therefore we need to "guess".
      *
      * @param filePath
      * @param principal
@@ -270,8 +275,9 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("nuxeoLogin", principal.getName());
 
-        DocumentModelList userTokens = getDropboxBlobProvider().getOAuth2Provider().getCredentialDataStore().query(
-            filter);
+        DocumentModelList userTokens = getDropboxBlobProvider().getOAuth2Provider()
+                                                               .getCredentialDataStore()
+                                                               .query(filter);
         for (DocumentModel entry : userTokens) {
             NuxeoOAuth2Token token = new NuxeoOAuth2Token(entry);
             if (hasAccessToFile(filePath, token.getAccessToken())) {
@@ -297,15 +303,19 @@ public class DropboxBlobUploader implements JSFBlobUploader {
     }
 
     private boolean hasServiceAccount() {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        HttpServletRequest request = getHttpServletRequest();
         String username = request.getUserPrincipal().getName();
         DropboxOAuth2ServiceProvider provider = getDropboxBlobProvider().getOAuth2Provider();
         return provider != null && provider.getServiceUser(username) != null;
     }
 
     private String getOAuthAuthorizationUrl() {
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        HttpServletRequest request = getHttpServletRequest();
         DropboxOAuth2ServiceProvider provider = getDropboxBlobProvider().getOAuth2Provider();
         return (provider != null && provider.getClientId() != null) ? provider.getAuthorizationUrl(request) : "";
+    }
+
+    private HttpServletRequest getHttpServletRequest() {
+        return (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -16,16 +16,17 @@
  */
 package org.nuxeo.ecm.liveconnect.dropbox;
 
-import com.dropbox.core.DbxClient;
-import com.dropbox.core.DbxEntry;
-import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.DbxThumbnailFormat;
-import com.dropbox.core.DbxThumbnailSize;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -47,17 +48,16 @@ import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxEntry;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.DbxThumbnailFormat;
+import com.dropbox.core.DbxThumbnailSize;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpResponse;
 
 /**
  * Provider for blobs getting information from Dropbox.
@@ -139,8 +139,9 @@ public class DropboxBlobProvider extends AbstractBlobProvider implements BatchUp
         String user = getUser(fileInfo);
         String filePath = getFilePath(fileInfo);
         try {
-            DbxClient.Downloader downloader = getDropboxClient(getCredential(user)).startGetThumbnail(DbxThumbnailSize.w64h64,
-                DbxThumbnailFormat.bestForFileName(filePath, DbxThumbnailFormat.JPEG), filePath, null);
+            DbxClient.Downloader downloader = getDropboxClient(getCredential(user)).startGetThumbnail(
+                    DbxThumbnailSize.w64h64, DbxThumbnailFormat.bestForFileName(filePath, DbxThumbnailFormat.JPEG),
+                    filePath, null);
 
             if (downloader == null) {
                 return null;
@@ -201,8 +202,7 @@ public class DropboxBlobProvider extends AbstractBlobProvider implements BatchUp
         if (colon < 0) {
             throw new IllegalArgumentException(key);
         }
-        String fileInfo = key.substring(colon + 1);
-        return fileInfo;
+        return key.substring(colon + 1);
     }
 
     protected String getUser(String fileInfo) {
@@ -296,14 +296,13 @@ public class DropboxBlobProvider extends AbstractBlobProvider implements BatchUp
     }
 
     protected DropboxOAuth2ServiceProvider getOAuth2Provider() {
-        return (DropboxOAuth2ServiceProvider) Framework.getLocalService(
-            OAuth2ServiceProviderRegistry.class).getProvider(blobProviderId);
+        return (DropboxOAuth2ServiceProvider) Framework.getLocalService(OAuth2ServiceProviderRegistry.class)
+                                                       .getProvider(blobProviderId);
     }
 
     private String getMimetypeFromFilename(String filename) {
-        MimetypeRegistryService mimetypeRegistryService = (MimetypeRegistryService) Framework.getLocalService(
-            MimetypeRegistry.class);
-        return mimetypeRegistryService.getMimetypeFromFilename(filename);
+        MimetypeRegistryService service = (MimetypeRegistryService) Framework.getLocalService(MimetypeRegistry.class);
+        return service.getMimetypeFromFilename(filename);
     }
 
     @Override
@@ -341,8 +340,7 @@ public class DropboxBlobProvider extends AbstractBlobProvider implements BatchUp
         if (fileMetadata == null) {
             return null;
         }
-        DbxEntry.File file = fileMetadata.asFile();
-        return file;
+        return fileMetadata.asFile();
     }
 
     @Override

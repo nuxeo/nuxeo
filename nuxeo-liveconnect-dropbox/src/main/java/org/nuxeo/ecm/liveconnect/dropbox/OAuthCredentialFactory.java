@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -15,13 +15,11 @@
  *      Nelson Silva
  *      Andre Justo
  */
-
 package org.nuxeo.ecm.liveconnect.dropbox;
 
-import com.google.api.client.auth.oauth2.Credential;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
+
+import com.google.api.client.auth.oauth2.Credential;
 
 /**
  * Credential factory.
@@ -29,8 +27,6 @@ import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
  * @since 7.3
  */
 public class OAuthCredentialFactory {
-
-    private static final Log log = LogFactory.getLog(OAuthCredentialFactory.class);
 
     private OAuth2ServiceProvider provider;
 
