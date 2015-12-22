@@ -933,8 +933,9 @@ public class NuxeoAuthenticationFilter implements Filter {
     protected static String getRequestedPage(HttpServletRequest httpRequest) {
         String requestURI = httpRequest.getRequestURI();
         String context = httpRequest.getContextPath() + '/';
-
-        return requestURI.substring(context.length());
+        String requestedPage = requestURI.substring(context.length());
+        int i = requestedPage.indexOf(';');
+        return i == -1 ? requestedPage : requestedPage.substring(0, i);
     }
 
     protected boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
