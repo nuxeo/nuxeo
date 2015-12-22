@@ -17,7 +17,6 @@
  *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
  *
  */
-
 package org.nuxeo.ecm.liveconnect.update;
 
 import java.io.IOException;
@@ -56,7 +55,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public interface BatchUpdateBlobProvider {
 
-    static final long MAX_RESULT = 50;
+    long MAX_RESULT = 50;
 
     /**
      * Check the given list of document for change and update if needed. Note that session.save still needs to be called
@@ -66,7 +65,7 @@ public interface BatchUpdateBlobProvider {
      * @return the list of DocumentModel that have changed
      * @throws IOException
      */
-    List<DocumentModel> checkChangesAndUpdateBlob(List<DocumentModel> doc);
+    List<DocumentModel> checkChangesAndUpdateBlob(List<DocumentModel> documents);
 
     String getPageProviderNameForUpdate();
 
@@ -79,9 +78,7 @@ public interface BatchUpdateBlobProvider {
         final RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         final WorkManager workManager = Framework.getLocalService(WorkManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            CoreSession session = null;
-            try {
-                session = CoreInstance.openCoreSessionSystem(repositoryName);
+            try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
 
                 long offset = 0;
                 List<DocumentModel> nextDocumentsToBeUpdated;
@@ -104,17 +101,13 @@ public interface BatchUpdateBlobProvider {
                     for (DocumentModel doc : nextDocumentsToBeUpdated) {
                         docIds.add(doc.getId());
                     }
-                    BlobProviderDocumentsUpdateWork work = new BlobProviderDocumentsUpdateWork(
-                            getBlobProviderId() + ":" + repositoryName + ":" + offset, getBlobProviderId());
+                    BlobProviderDocumentsUpdateWork work = new BlobProviderDocumentsUpdateWork(getBlobProviderId()
+                            + ":" + repositoryName + ":" + offset, getBlobProviderId());
                     work.setDocuments(repositoryName, docIds);
                     workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
                     offset += maxResult;
                 } while (nextDocumentsToBeUpdated.size() == maxResult);
 
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
             }
         }
     }
