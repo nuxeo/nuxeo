@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
 
 /**
@@ -264,7 +265,11 @@ public class UIDirectorySelectItems extends UISelectItems {
                 // now
                 String defaultPattern = "label_en";
                 String pattern = "label_" + locale.getLanguage();
-                label = (String) docEntry.getProperty(schema, pattern);
+                try {
+                    label = (String) docEntry.getProperty(schema, pattern);
+                } catch (PropertyNotFoundException e) {
+                    // prop may not exist for current language
+                }
                 if (StringUtils.isBlank(label)) {
                     label = (String) docEntry.getProperty(schema, defaultPattern);
                 }
