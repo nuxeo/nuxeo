@@ -48,6 +48,10 @@ public class UserLocaleProvider implements LocaleProvider {
 
     @Override
     public Locale getLocale(DocumentModel userProfileDoc) {
+        if (userProfileDoc == null) {
+            return null;
+        }
+
         String locale = (String) userProfileDoc.getPropertyValue(UserProfileConstants.USER_PROFILE_LOCALE);
         if (locale == null || locale.trim().length() == 0) {
             // undefined if not set

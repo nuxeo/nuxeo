@@ -77,6 +77,10 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     @Override
     public DocumentModel getUserProfileDocument(CoreSession session) {
         DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session, null);
+        if (userWorkspace == null) {
+            return null;
+        }
+
         String uid = profileUidCache.getIfPresent(session.getPrincipal().getName());
         final IdRef ref = new IdRef(uid);
         if (uid != null && session.exists(ref)) {
@@ -92,6 +96,9 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     public DocumentModel getUserProfileDocument(String userName, CoreSession session) {
         DocumentModel userWorkspace = getUserWorkspaceService().getUserPersonalWorkspace(userName,
                 session.getRootDocument());
+        if (userWorkspace == null) {
+            return null;
+        }
 
         String uid = profileUidCache.getIfPresent(userName);
         final IdRef ref = new IdRef(uid);
@@ -107,6 +114,10 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     @Override
     public DocumentModel getUserProfile(DocumentModel userModel, CoreSession session) {
         DocumentModel userProfileDoc = getUserProfileDocument(userModel.getId(), session);
+        if (userProfileDoc == null) {
+            return null;
+        }
+
         userProfileDoc.detach(true);
         userProfileDoc.getDataModels().putAll(userModel.getDataModels());
         return userProfileDoc;
