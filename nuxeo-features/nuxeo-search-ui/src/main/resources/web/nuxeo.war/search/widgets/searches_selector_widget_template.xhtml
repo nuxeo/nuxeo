@@ -1,18 +1,14 @@
-<h:panelGroup layout="block"
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:h="http://java.sun.com/jsf/html"
+<div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  styleClass="searchesSelector">
+  class="searchesSelector">
 
   <a4j:region id="#{widget.id}_region">
     <h:selectOneMenu
       value="#{searchUIActions.currentSelectedSavedSearchId}"
       id="#{widget.id}" styleClass="langSelect">
-      <f:attribute name="target" value="#{widgetProperty_ajaxReRender}" />
       <f:ajax execute="@this"
-        listener="#{searchUIActions.refreshAndRewindAjax}"
+        listener="#{searchUIActions.refreshAndRewind()}"
         render="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}" />
       <f:selectItems value="#{searchUIActions.allSavedSearchesSelectItems}" />
     </h:selectOneMenu>
@@ -22,4 +18,4 @@
     jQuery("[id$='#{widget.id}']").select2({width:"100%"});
   </script>
 
-</h:panelGroup>
+</div>
