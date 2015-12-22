@@ -67,6 +67,8 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.TagAttributeImpl;
 import com.sun.faces.facelets.tag.TagAttributesImpl;
+import com.sun.faces.facelets.tag.ui.ComponentRef;
+import com.sun.faces.facelets.tag.ui.ComponentRefHandler;
 
 /**
  * Helpers for layout/widget handlers.
@@ -589,10 +591,7 @@ public final class FaceletHandlerHelper {
             List<String> blockedPatterns, FaceletHandler nextHandler) {
         FaceletHandler currentHandler = nextHandler;
         if (variables != null) {
-            // XXX also set id? cache? anchor?
-            ComponentConfig config = TagConfigFactory.createAliasTagConfig(tagConfig, tagConfigId, getTagAttributes(),
-                    nextHandler);
-            currentHandler = new AliasTagHandler(config, variables, blockedPatterns);
+            currentHandler = getBareAliasTagHandler(tagConfigId, variables, blockedPatterns, nextHandler);
         }
         return currentHandler;
     }
@@ -604,12 +603,22 @@ public final class FaceletHandlerHelper {
             List<String> blockedPatterns, TagHandler nextHandler) {
         TagHandler currentHandler = nextHandler;
         if (variables != null) {
-            // XXX also set id? cache? anchor?
-            ComponentConfig config = TagConfigFactory.createAliasTagConfig(tagConfig, tagConfigId, getTagAttributes(),
-                    nextHandler);
-            currentHandler = new AliasTagHandler(config, variables, blockedPatterns);
+            currentHandler = getBareAliasTagHandler(tagConfigId, variables, blockedPatterns, nextHandler);
         }
         return currentHandler;
+    }
+
+    protected TagHandler getBareAliasTagHandler(String tagConfigId, Map<String, ValueExpression> variables,
+            List<String> blockedPatterns, FaceletHandler nextHandler) {
+        // XXX also set id? cache? anchor?
+        ComponentConfig config = TagConfigFactory.createAliasTagConfig(tagConfig, tagConfigId, getTagAttributes(),
+                nextHandler);
+        AliasTagHandler alias = new AliasTagHandler(config, variables, blockedPatterns);
+        // NXP-18639: always wrap next alias handler in a component ref for tagConfigId to be taken into account and
+        // anchored in the view with this id.
+        ComponentConfig ref = TagConfigFactory.createComponentConfig(tagConfig, tagConfigId, getTagAttributes(), alias,
+                ComponentRef.COMPONENT_TYPE, null);
+        return new ComponentRefHandler(ref);
     }
 
     /**
