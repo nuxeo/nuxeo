@@ -26,6 +26,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.FacesEvent;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -113,10 +114,18 @@ public class JSFResetActionsBean {
             baseCompId = getBaseComponentId();
         }
         if (baseCompId != null) {
-            UIComponent anchor = ComponentRenderUtils.getComponent(component, baseCompId);
-            resetComponentResursive(anchor);
+            String[] split = baseCompId.split("\\s");
+            if (split != null) {
+                for (String item : split) {
+                    if (!StringUtils.isBlank(item)) {
+                        UIComponent anchor = ComponentRenderUtils.getComponent(component, item);
+                        log.error(anchor);
+                        resetComponentResursive(anchor);
+                    }
+                }
+            }
         } else {
-            log.error("No base component id given => cannot reset " + "components state.");
+            log.error("No base component id given => cannot reset components state.");
         }
     }
 
