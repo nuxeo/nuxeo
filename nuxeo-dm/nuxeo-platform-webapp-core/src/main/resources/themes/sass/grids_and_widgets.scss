@@ -154,6 +154,7 @@
 // Display of thumbnail in Content views Listing mode
 .dataOutput td .thumbnailContainer {
   background-position: top left;
+  background-repeat: no-repeat;
   background-size: contain;
   height: 3rem;
   margin: 0;
