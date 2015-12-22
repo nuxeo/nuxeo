@@ -17,6 +17,7 @@
     <module>nuxeo-liveconnect-core</module>
     <module>nuxeo-liveconnect-google-drive</module>
     <module>nuxeo-liveconnect-dropbox</module>
+    <module>nuxeo-liveconnect-box</module>
   </modules>
 
   <repositories>
