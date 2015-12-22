@@ -1,6 +1,12 @@
 var nbTinyMceEditor = 0;
 
+// BBB
 function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
+  initTinyMCE(width, height, eltId, plugins, lang, toolbar, "{}");
+}
+
+// @since 8.1
+function initTinyMCE(width, height, eltId, plugins, lang, toolbar, localConfString) {
   var loaded = false;
   var $el = jQuery(document.getElementById(eltId));
   if ($el.hasClass("disableMCEInit")) {
@@ -26,46 +32,43 @@ function initTinyMCE(width, height, eltId, plugins, lang, toolbar) {
       // The post restore is common for all editors of the page, so just
       // register once
       $parentForm.registerPostRestoreCallBacks(function(data) {
-        $parentForm.processRestore($parentForm
-            .find("textarea.mceEditor,div.mce-edit-area>iframe"), data);
+        $parentForm.processRestore($parentForm.find("textarea.mceEditor,div.mce-edit-area>iframe"), data);
       });
     }
   }
 
   nbTinyMceEditor++;
 
-  tinyMCE
-      .init({
-        width : width,
-        height : height,
-        mode : "exact",
-        theme : "modern",
-        elements : eltId,
-        plugins : ["link image code searchreplace paste visualchars charmap table fullscreen preview nuxeoimageupload nuxeolink"],
-        language : lang,
+  var defaultConf = {
+    width : width,
+    height : height,
+    mode : "exact",
+    theme : "modern",
+    elements : eltId,
+    plugins : [ "link image code searchreplace paste visualchars charmap table preview " + plugins ],
+    language : lang,
 
-        // Img insertion fixes
-        relative_urls : false,
-        remove_script_host : false,
+    // Img insertion fixes
+    relative_urls : false,
+    remove_script_host : false,
 
-        toolbar1 : "bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | formatselect fontselect fontsizeselect",
-        toolbar2 : "paste pastetext searchreplace | bullist numlist | outdent indent | undo redo | link unlink anchor image code",
-        toolbar3 : "table | hr removeformat visualchars | subscript superscript | charmap preview | fullscreen nuxeoimageupload nuxeolink",
-        menubar: false,
-        
-        // TODO : upgrade the skin "o2k7" with the new version
-        /*skin : "o2k7",
-        skin_variant : "silver",
-        theme_advanced_disable : "styleselect",
-        theme_advanced_buttons3 : "hr,removeformat,visualaid,|,sub,sup,|,charmap,|",
-        theme_advanced_buttons3_add : toolbar, */
-        
-        setup : function(ed) {
-          ed.on('init', function(ed) {
-            loaded = true;
-          });
-        }
+    toolbar1 : "bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | formatselect fontselect fontsizeselect",
+    toolbar2 : "paste pastetext searchreplace | bullist numlist | outdent indent | undo redo | link unlink anchor image code",
+    toolbar3 : "table | hr removeformat visualchars | subscript superscript | charmap preview | " + toolbar,
+    menubar : false,
+
+    setup : function(ed) {
+      ed.on('init', function(ed) {
+        loaded = true;
       });
+    }
+  };
+
+  // merge default conf with conf passed via String property
+  var localConf = JSON.parse(localConfString);
+  var conf = jQuery.extend(true, {}, defaultConf, localConf);
+
+  tinyMCE.init(conf);
 }
 
 function toggleTinyMCE(id) {

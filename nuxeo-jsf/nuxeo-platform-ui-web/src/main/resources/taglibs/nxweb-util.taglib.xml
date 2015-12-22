@@ -1609,7 +1609,7 @@
     </component>
     <description>
       <![CDATA[
-      <p>Tag rendering a HTML editor relying on tinyMCE library.<p>
+      <p>Tag rendering a HTML editor relying on TinyMCE library.</p>
       Example:
       <pre>
         &lt;nxu:editor
@@ -1669,7 +1669,7 @@
       <type>java.lang.String</type>
       <description>
         The class to use to identify text areas to turn into html editors.
-        Defaults to "mceEditor". See the editor_selector option in tiny_mce
+        Defaults to "mceEditor". See the editor_selector option in TinyMCE
         (http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/editor_selector).
       </description>
     </attribute>
@@ -1698,6 +1698,14 @@
       <description>
         If set to true, the default display will be the text display (not html
         editor). Available since 5.3.1.
+      </description>
+    </attribute>
+    <attribute>
+      <name>configuration</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        JSON configuration for TinyMCE initialization, merged with default configuration.
       </description>
     </attribute>
   </tag>

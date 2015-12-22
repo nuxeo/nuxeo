@@ -604,7 +604,7 @@
         <label mode="any">
           The class to use to identify text areas to turn into
           html editors. Defaults to "mceEditor". See the editor_selector option
-          in tiny_mce
+          in TinyMCE
           (http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/editor_selector).
         </label>
       </helpLabels>
@@ -615,6 +615,25 @@
         <mode value="any">hidden</mode>
         <mode value="view_reference">view</mode>
       </widgetModes>
+    </widget>
+
+    <widget name="htmltext_configuration" type="textarea">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">JSON configuration</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          JSON configuration map for TinyMCE initialization, that will be merged
+          with default configuration (available since 8.1).
+          Example: {toolbar4: "paste"}
+        </label>
+      </helpLabels>
+      <fields>
+        <field>configuration</field>
+      </fields>
     </widget>
 
     <widget name="directoryName" type="selectOneResource">
@@ -1993,6 +2012,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">htmltext_editorSelector</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">htmltext_configuration</widget>
                 </row>
               </rows>
             </layout>
