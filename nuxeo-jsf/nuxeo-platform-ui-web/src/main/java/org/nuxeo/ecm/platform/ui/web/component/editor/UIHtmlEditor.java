@@ -39,9 +39,10 @@ public class UIHtmlEditor extends HtmlInputText {
         setRendererType(COMPONENT_TYPE);
     }
 
-    // attributes TODO: add more.
     protected enum PropertyKeys {
-        width, height, cols, rows, editorSelector, disableHtmlInit;
+        width, height, cols, rows, editorSelector, disableHtmlInit,
+        // json string for additional configuration to pass through to tinymce editor
+        configuration;
     }
 
     // setters & getters
@@ -92,6 +93,22 @@ public class UIHtmlEditor extends HtmlInputText {
 
     public void setEditorSelector(String editorSelector) {
         getStateHelper().put(PropertyKeys.editorSelector, editorSelector);
+    }
+
+    /**
+     * Returns JSON configuration map to pass to tinyMCE
+     *
+     * @since 8.1
+     */
+    public String getConfiguration() {
+        return (String) getStateHelper().eval(PropertyKeys.configuration);
+    }
+
+    /**
+     * @since 8.1
+     */
+    public void setConfiguration(String configuration) {
+        getStateHelper().put(PropertyKeys.configuration, configuration);
     }
 
 }

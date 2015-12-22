@@ -62,15 +62,13 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         ResponseWriter writer = context.getResponseWriter();
         Locale locale = context.getViewRoot().getLocale();
 
-        // tiny MCE generic scripts now included in every page header
-
-        // script to actually init tinyMCE with configured options
-        String editorSelector = editorComp.getEditorSelector();
-        // plugins registration
         if (pluginsOptions == null) {
             final HtmlEditorPluginService pluginService = Framework.getLocalService(HtmlEditorPluginService.class);
             pluginsOptions = new HashMap<String, String>();
             pluginsOptions.put("plugins", pluginService.getFormattedPluginsNames());
+        }
+        if (toolbarPluginsOptions == null) {
+            final HtmlEditorPluginService pluginService = Framework.getLocalService(HtmlEditorPluginService.class);
             toolbarPluginsOptions = new HashMap<String, String>();
             toolbarPluginsOptions.put("toolbar", pluginService.getFormattedToolbarsButtonsNames());
         }
@@ -82,6 +80,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         writer.startElement("textarea", editorComp);
         writer.writeAttribute("id", clientId, null);
         writer.writeAttribute("name", clientId, null);
+        String editorSelector = editorComp.getEditorSelector();
         if (Boolean.TRUE.equals(editorComp.getDisableHtmlInit())) {
             writer.writeAttribute("class", editorSelector + ",disableMCEInit", null);
         } else {
@@ -100,6 +99,10 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
         if (!disableHtmlInit) {
             writer.startElement("script", editorComp);
             writer.writeAttribute("type", "text/javascript", null);
+            String compConfiguration = editorComp.getConfiguration();
+            if (StringUtils.isBlank(compConfiguration)) {
+                compConfiguration = "{}";
+            }
             // Since 5.7.3, use unique clientId instead of editorSelector value
             // so that tiny mce editors are initialized individually: no need
             // anymore to specify a class to know which one should or should
@@ -116,6 +119,8 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
                                                       .append(locale.getLanguage())
                                                       .append("', '")
                                                       .append(toolbarPluginsOptions.get("toolbar"))
+                                                      .append("', '")
+                                                      .append(compConfiguration)
                                                       .append("');")
                                                       .toString();
             writer.writeText(scriptContent, null);
