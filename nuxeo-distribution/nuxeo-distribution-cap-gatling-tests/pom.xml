@@ -159,12 +159,30 @@
                 </configuration>
               </execution>
               <execution>
+                <id>waitForAsync</id>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim25WaitForAsync</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
                 <id>updateDocuments</id>
                 <goals>
                   <goal>execute</goal>
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim30UpdateDocuments</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
+                <id>waitForAsync2</id>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim35WaitForAsync</simulationClass>
                 </configuration>
               </execution>
               <execution>

@@ -20,33 +20,23 @@ package org.nuxeo.cap.bench
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
-import scala.concurrent.duration.Duration
+object ScnWaitForAsync2 {
 
-object ScnUpdateDocuments {
-
-  def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
-    scenario("UpdateDocuments").exec(
-      during(duration, "counterName") {
-        feed(documents)
-          .feed(Feeders.usersCircular)
-          .exec(NuxeoRest.updateDocument())
-          .pause(pause)
-      }
-    ).feed(Feeders.admins)
+  def get = () => {
+    scenario("WaitForAsync2")
+      .feed(Feeders.admins)
+      .exec(NuxeoRest.waitForAsyncJobs())
   }
 
 }
 
-
-class Sim30UpdateDocuments extends Simulation {
+class Sim35WaitForAsync extends Simulation {
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
-  val documents = Feeders.createRandomDocFeeder()
-  val scn = ScnUpdateDocuments.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
-  setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
-    .protocols(httpProtocol).exponentialPauses
-    .assertions(global.successfulRequests.percent.is(80))
+  val scn = ScnWaitForAsync.get()
+  setUp(scn.inject(atOnceUsers(1)))
+    .protocols(httpProtocol)
 }
