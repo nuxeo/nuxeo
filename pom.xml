@@ -172,6 +172,7 @@
     <google.api.client.version>1.19.1</google.api.client.version>
     <google.api.drive.version>v2-rev161-1.19.1</google.api.drive.version>
     <dropbox.api.version>1.7.7</dropbox.api.version>
+    <box.api.version>1.1.0</box.api.version>
     <selenium.version>2.45.0</selenium.version>
     <cxf.version>3.1.3</cxf.version>
     <cxf.nx.version>3.1.3-NX2</cxf.nx.version>
@@ -3748,6 +3749,11 @@
         <groupId>com.dropbox.core</groupId>
         <artifactId>dropbox-core-sdk</artifactId>
         <version>${dropbox.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.box</groupId>
+        <artifactId>box-java-sdk</artifactId>
+        <version>${box.api.version}</version>
       </dependency>
 
       <dependency>
