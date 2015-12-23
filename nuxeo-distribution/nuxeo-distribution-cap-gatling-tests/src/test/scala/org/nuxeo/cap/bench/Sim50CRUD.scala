@@ -54,5 +54,5 @@ class Sim50CRUD extends Simulation {
   val scn = ScnCRUD.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
-    .assertions(global.successfulRequests.percent.is(80))
+    .assertions(global.successfulRequests.percent.greaterThan(80))
 }

@@ -46,6 +46,6 @@ class Sim50Bench extends Simulation {
     scnUpdate.inject(rampUsers(Parameters.getConcurrentUsers(5, prefix = "upd."))
       .over(Parameters.getRampDuration(prefix = "upd."))).exponentialPauses
   ).protocols(httpProtocol)
-    .assertions(global.successfulRequests.percent.is(80))
+    .assertions(global.successfulRequests.percent.greaterThan(80))
 
 }

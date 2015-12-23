@@ -51,5 +51,5 @@ class Sim20CreateDocuments extends Simulation {
   val scn = ScnCreateDocuments.get(documents, Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
-    .assertions(global.successfulRequests.percent.is(90))
+    .assertions(global.successfulRequests.percent.greaterThan(90))
 }

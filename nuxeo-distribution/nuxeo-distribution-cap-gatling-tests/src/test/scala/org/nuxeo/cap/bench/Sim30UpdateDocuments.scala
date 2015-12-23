@@ -48,5 +48,5 @@ class Sim30UpdateDocuments extends Simulation {
   val scn = ScnUpdateDocuments.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
-    .assertions(global.successfulRequests.percent.is(80))
+    .assertions(global.successfulRequests.percent.greaterThan(80))
 }
