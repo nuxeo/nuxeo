@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.internal.AssumptionViolatedException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -88,8 +89,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot-resize");
         if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping test");
-            return;
+            throw new AssumptionViolatedException("ffmpeg-screenshot-resize is not available, skipping test");
         }
 
         BlobHolder result = applyConverter(Constants.STORYBOARD_CONVERTER, ELEPHANTS_DREAM, null, 653.53);
@@ -106,8 +106,7 @@ public class VideoConvertersTest extends NXRuntimeTestCase {
         assertNotNull(cles);
         CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
         if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping test");
-            return;
+            throw new AssumptionViolatedException("ffmpeg-screenshot is not available, skipping test");
         }
         BlobHolder result = applyConverter(Constants.SCREENSHOT_CONVERTER, ELEPHANTS_DREAM, null, null);
         List<Blob> blobs = result.getBlobs();

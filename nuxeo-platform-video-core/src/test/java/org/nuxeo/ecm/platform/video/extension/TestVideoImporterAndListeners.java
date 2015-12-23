@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.platform.video.extension;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.video.VideoConstants.DURATION_PROPERTY;
 
 import java.io.File;
@@ -26,13 +30,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.internal.AssumptionViolatedException;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -60,8 +61,6 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
 
     // http://www.elephantsdream.org/
     public static final String ELEPHANTS_DREAM = "elephantsdream-160-mpeg4-su-ac3.avi";
-
-    public static final Log log = LogFactory.getLog(TestVideoImporterAndListeners.class);
 
     protected static final String VIDEO_TYPE = "Video";
 
@@ -185,8 +184,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
                 "ffmpeg-storyboard");
         if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping the end of the test");
-            return;
+            throw new AssumptionViolatedException("ffmpeg-storyboard is not available, skipping test");
         }
 
         Framework.getService(EventService.class).waitForAsyncCompletion();
@@ -204,8 +202,7 @@ public class TestVideoImporterAndListeners extends SQLRepositoryTestCase {
         CommandAvailability ca = Framework.getService(CommandLineExecutorService.class).getCommandAvailability(
                 "ffmpeg-storyboard");
         if (!ca.isAvailable()) {
-            log.warn("ffmpeg is not avalaible, skipping the end of the test");
-            return;
+            throw new AssumptionViolatedException("ffmpeg-storyboard is not available, skipping test");
         }
         DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
         assertNotNull(docModel);

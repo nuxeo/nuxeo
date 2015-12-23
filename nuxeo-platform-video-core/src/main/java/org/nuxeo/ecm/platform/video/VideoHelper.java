@@ -228,17 +228,18 @@ public class VideoHelper {
 
         File file = null;
         try {
-            CommandLineExecutorService cleService = Framework.getLocalService(CommandLineExecutorService.class);
+            ExecResult result;
+            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
 
             file = File.createTempFile("ffmpegInfo",
                     "." + FilenameUtils.getExtension(video.getFilename()));
             video.transferTo(file);
 
-            CmdParameters params = new CmdParameters();
+            CmdParameters params = cles.getDefaultCmdParameters();
             params.addNamedParameter("inFilePath", file.getAbsolutePath());
 
             // read the duration with a first command to adjust the best rate:
-            ExecResult result = cleService.execCommand(FFMPEG_INFO_COMMAND_LINE, params);
+            result = cles.execCommand(FFMPEG_INFO_COMMAND_LINE, params);
             if (!result.isSuccessful()) {
                 throw result.getError();
             }

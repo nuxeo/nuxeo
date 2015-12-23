@@ -72,11 +72,15 @@ public class ScreenshotConverter extends BaseVideoConverter implements
         InputFile inputFile = null;
         try {
             blob = blobHolder.getBlob();
+            if (blob == null) {
+                throw new ConversionException("conversion failed (null blob)");
+            }
             inputFile = new InputFile(blob);
             outFile = File.createTempFile("ScreenshotConverter-out-",
                     ".tmp.jpeg");
 
-            CmdParameters params = new CmdParameters();
+            CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
+            CmdParameters params = cles.getDefaultCmdParameters();
             params.addNamedParameter("inFilePath", inputFile.file.getAbsolutePath());
             params.addNamedParameter("outFilePath", outFile.getAbsolutePath());
             Double position = 0.0;
@@ -88,7 +92,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements
             }
             long positionParam = Math.round(position);
             params.addNamedParameter(POSITION_PARAMETER, String.valueOf(positionParam));
-            ExecResult res = cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
+            ExecResult res = cles.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
             if (!res.isSuccessful()) {
                 throw res.getError();
             }
