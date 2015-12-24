@@ -5,14 +5,14 @@
     point="listener">
 
     <listener name="vscanListener" async="false" postCommit="false"
-      class="org.nuxeo.ecm.core.event.test.virusscan.listeners.VirusScanSyncListener" order="100">
+      class="org.nuxeo.ecm.core.event.test.virusscan.listeners.VirusScanSyncListener" priority="100">
       <event>documentCreated</event>
       <event>beforeDocumentModification</event>
       <event>aboutToCreate</event>
     </listener>
 
     <listener name="vscanProcessor" async="true"
-      class="org.nuxeo.ecm.core.event.test.virusscan.listeners.VirusScannerProcessor" order="100">
+      class="org.nuxeo.ecm.core.event.test.virusscan.listeners.VirusScannerProcessor" priority="100">
       <event>virusScanNeeded</event>
     </listener>
 

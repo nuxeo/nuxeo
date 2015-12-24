@@ -183,14 +183,14 @@
     point="listener">
 
     <listener name="emptyNameFixer"
-        class="org.nuxeo.ecm.core.model.EmptyNameFixer" order="1000">
+        class="org.nuxeo.ecm.core.model.EmptyNameFixer" priority="1000">
       <event>aboutToImport</event>
       <event>aboutToCreate</event>
       <event>aboutToMove</event>
     </listener>
 
     <listener name="duplicatedNameFixer"
-        class="org.nuxeo.ecm.core.model.DuplicatedNameFixer" order="2000">
+        class="org.nuxeo.ecm.core.model.DuplicatedNameFixer" priority="2000">
       <event>aboutToImport</event>
       <event>aboutToCreate</event>
       <event>aboutToMove</event>
