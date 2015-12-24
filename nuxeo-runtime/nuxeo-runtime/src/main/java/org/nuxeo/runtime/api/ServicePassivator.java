@@ -71,9 +71,9 @@ public class ServicePassivator {
 
     public static Termination proceed(Runnable runnable) {
         return passivate()
-                        .monitor()
-                        .await()
-                        .proceed(runnable);
+                .monitor()
+                .await()
+                .proceed(runnable);
     }
 
     /**
@@ -94,19 +94,19 @@ public class ServicePassivator {
         void run() {
             installed = Optional.ofNullable(DefaultServiceProvider.getProvider());
             ServiceProvider passthrough = installed.map(
-                            (Function<ServiceProvider, ServiceProvider>) DelegateProvider::new).orElseGet(
-                                            (Supplier<ServiceProvider>) RuntimeProvider::new);
+                    (Function<ServiceProvider, ServiceProvider>) DelegateProvider::new).orElseGet(
+                            (Supplier<ServiceProvider>) RuntimeProvider::new);
             ServiceProvider waitfor = new WaitForProvider(achieved, passthrough);
             PassivateProvider passivator = new PassivateProvider(Thread.currentThread(), accounting, waitfor,
-                            passthrough);
+                    passthrough);
             DefaultServiceProvider.setProvider(passivator);
         }
 
         void resetProvider() {
             PassivateProvider passivator = (PassivateProvider) DefaultServiceProvider.getProvider();
             ServiceProvider previous = passivator.passthrough instanceof DelegateProvider
-                            ? ((DelegateProvider) passivator.passthrough).next
-                            : null;
+                    ? ((DelegateProvider) passivator.passthrough).next
+                    : null;
             DefaultServiceProvider.setProvider(previous);
 
         }
@@ -149,7 +149,7 @@ public class ServicePassivator {
             Optional<InScopeOfContext> take(Class<?> serviceof) {
                 Class<?>[] callstack = dumper.dump();
                 Optional<InScopeOfContext> snapshot = inscopeof(callstack)
-                                .map(inscopeof -> new InScopeOfContext(inscopeof, Thread.currentThread(), callstack));
+                        .map(inscopeof -> new InScopeOfContext(inscopeof, Thread.currentThread(), callstack));
                 snapshot.ifPresent(this::register);
                 return snapshot;
             }
@@ -265,9 +265,9 @@ public class ServicePassivator {
 
         void run() {
             timer.scheduleAtFixedRate(
-                            scheduledTask,
-                            0,
-                            TimeUnit.MILLISECONDS.convert(quietDelay.get(ChronoUnit.SECONDS), TimeUnit.SECONDS));
+                    scheduledTask,
+                    0,
+                    TimeUnit.MILLISECONDS.convert(quietDelay.get(ChronoUnit.SECONDS), TimeUnit.SECONDS));
         }
 
         /**
@@ -295,8 +295,7 @@ public class ServicePassivator {
 
         /**
          * Installs the timer task which monitor the service lookups. Once there will be no more lookups in the
-         * scheduled
-         * period, notifies the runner for proceeding.
+         * scheduled period, notifies the runner for proceeding.
          *
          * @param next
          * @return
@@ -333,8 +332,7 @@ public class ServicePassivator {
          * <li>and then runs the operation,</li>
          * <li>and then notifies the blocked lookup to proceed.</li>
          *
-         * @param runnable
-         *        the runnable to execute
+         * @param runnable the runnable to execute
          * @return the termination interface
          */
         public Termination proceed(Runnable runnable) {
@@ -344,8 +342,8 @@ public class ServicePassivator {
                     runnable.run();
                 }
                 return monitor.passivator.accounting.last
-                                .<Termination>map(Failure::new)
-                                .orElseGet(Success::new);
+                        .<Termination> map(Failure::new)
+                        .orElseGet(Success::new);
             } catch (InterruptedException cause) {
                 Thread.currentThread().interrupt();
                 throw new AssertionError("Interrupted while waiting for passivation", cause);
@@ -372,11 +370,9 @@ public class ServicePassivator {
 
         /**
          * Recover the failure if the passivation was a failure, ie: some activity has been detected during the
-         * protected
-         * operation.
+         * protected operation.
          *
-         * @param runnable
-         *        the failure action
+         * @param runnable the failure action
          */
         default Termination onFailure(Consumer<InScopeOfContext> recoverer) {
             return this;
@@ -419,7 +415,7 @@ public class ServicePassivator {
     static class PassivateProvider implements ServiceProvider {
 
         PassivateProvider(Thread ownerThread, Accounting accounting, ServiceProvider waitfor,
-                        ServiceProvider passthrough) {
+                ServiceProvider passthrough) {
             this.ownerThread = ownerThread;
             this.accounting = accounting;
             this.waitfor = waitfor;
@@ -440,10 +436,10 @@ public class ServicePassivator {
                 return passthrough.getService(typeof);
             }
             return accounting
-                            .take(typeof)
-                            .map(snapshot -> passthrough)
-                            .orElse(waitfor)
-                            .getService(typeof);
+                    .take(typeof)
+                    .map(snapshot -> passthrough)
+                    .orElse(waitfor)
+                    .getService(typeof);
         }
     }
 
