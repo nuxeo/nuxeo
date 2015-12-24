@@ -5,7 +5,7 @@
     point="listener">
 
     <listener name="quotaStatsListener" async="false" postCommit="false"
-      class="org.nuxeo.ecm.quota.QuotaStatsListener" order="100">
+      class="org.nuxeo.ecm.quota.QuotaStatsListener" priority="100">
       <event>documentCreated</event>
       <event>aboutToRemove</event>
       <event>documentCreatedByCopy</event>
@@ -21,12 +21,12 @@
     </listener>
 
     <listener name="quotaProcessor" async="true"
-      class="org.nuxeo.ecm.quota.size.QuotaComputerProcessor" order="100">
+      class="org.nuxeo.ecm.quota.size.QuotaComputerProcessor" priority="100">
       <event>quotaUpdateNeeded</event>
     </listener>
 
      <listener name="quotaUserWorkspaceSetter" async="false"
-      class="org.nuxeo.ecm.quota.QuotaUserWorkspaceListener" order="110">
+      class="org.nuxeo.ecm.quota.QuotaUserWorkspaceListener" priority="110">
       <event>userWorkspaceCreated</event>
     </listener>
 
