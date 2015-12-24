@@ -202,6 +202,18 @@ public class ServicePassivator {
 
                 final Class<?>[] callstack;
 
+                @Override
+                public String toString() {
+                    StringBuilder builder = new StringBuilder().append("on ")
+                            .append(thread)
+                            .append(" in scope of ")
+                            .append(serviceof)
+                            .append(System.lineSeparator());
+                    for (Class<?> typeof : callstack) {
+                        builder = builder.append("  ").append(typeof).append(System.lineSeparator());
+                    }
+                    return builder.toString();
+                }
             }
 
             /**

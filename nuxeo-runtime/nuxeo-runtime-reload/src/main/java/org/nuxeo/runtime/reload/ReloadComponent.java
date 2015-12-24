@@ -323,7 +323,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                         setFlushedNow();
                     }
                 }).onFailure(snapshot -> {
-                    throw new UnsupportedOperationException("Should initiate a reboot");
+                    throw new UnsupportedOperationException("Detected access, should initiate a reboot " + snapshot.toString());
                 });
     }
 
