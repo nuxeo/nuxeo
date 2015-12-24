@@ -55,13 +55,13 @@
              point="listener">
     <listener name="binaryMetadataSyncListener"
               class="org.nuxeo.binary.metadata.internals.listeners.BinaryMetadataSyncListener"
-              order="100">
+              priority="100">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
     </listener>
     <listener name="binaryMetadataWorkSyncListener"
               class="org.nuxeo.binary.metadata.internals.listeners.BinaryMetadataWorkListener"
-              order="100">
+              priority="100">
       <event>documentCreated</event>
       <event>documentModified</event>
     </listener>
