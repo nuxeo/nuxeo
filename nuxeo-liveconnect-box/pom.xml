@@ -53,6 +53,11 @@
 
     <!-- Box libraries -->
 
+    <dependency>
+      <groupId>com.box</groupId>
+      <artifactId>box-java-sdk</artifactId>
+    </dependency>
+
     <!-- other libraries -->
 
     <dependency>

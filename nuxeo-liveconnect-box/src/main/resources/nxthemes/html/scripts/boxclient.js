@@ -8,18 +8,18 @@ nuxeo.utils = nuxeo.utils || {};
 // infoId: element id of span to fill with doc info
 // authorizationUrl: OAuth flow url
 nuxeo.utils.BoxPicker = function(clientId, inputId, infoId, authorizationUrl) {
+  this.clientId = clientId;
   this.inputId = inputId;
   this.infoId = infoId;
   this.authorizationUrl = authorizationUrl;
 
-  if (window.Box) {
+  if (window.BoxSelect) {
     this.init();
   } else {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.id = "dropboxjs";
-    script.setAttribute("data-app-key", clientId);
-    script.src = "https://www.dropbox.com/static/api/2/dropins.js";
+    script.id = "boxjs";
+    script.src = "https://app.box.com/js/static/select.js";
     script.onload = this.init.bind(this);
     document.head.appendChild(script);
   }
@@ -28,10 +28,10 @@ nuxeo.utils.BoxPicker = function(clientId, inputId, infoId, authorizationUrl) {
 nuxeo.utils.BoxPicker.prototype = {
 
   init: function() {
-    if (this.url == "" || nuxeo.utils.BoxPicker.ignoreOAuthPopup == true) {
+    if (this.authorizationUrl == "" || nuxeo.utils.BoxPicker.ignoreOAuthPopup == true) {
       this.showPicker.call(this);
     } else {
-      openPopup(this.url, {
+      openPopup(this.authorizationUrl, {
         onMessageReceive: this.parseMessage.bind(this),
         onClose: this.onOAuthPopupClose.bind(this)
       });
@@ -52,27 +52,26 @@ nuxeo.utils.BoxPicker.prototype = {
 
   showPicker: function () {
     var options = {
-      success: function(files) {
-        var doc = files[0];
-        if (this.inputId) {
-          document.getElementById(this.inputId).value = doc.link ;
-        }
-        if (this.infoId) {
-          document.getElementById(this.infoId).innerHTML = '<img width="16" height="16" src="' + doc.icon
-            + '"/> ' + doc.name;
-        }
-      }.bind(this),
-
-      cancel: function() {
-      },
-
-      // "preview" is a preview link to the document for sharing,
+      clientId: this.clientId,
+      // "shared" is a shared link to the document for sharing,
       // "direct" is an expiring link to download the contents of the file.
-      linkType: "direct"
+      linkType: "direct",
+      multiselect: false
     };
+    var boxSelect = new BoxSelect(options);
+
+    boxSelect.success(function(response) {
+      var file = response[0];
+      if (this.inputId) {
+        document.getElementById(this.inputId).value = file.url;
+      }
+      if (this.infoId) {
+        document.getElementById(this.infoId).innerHTML = file.name;
+      }
+    }.bind(this));
 
     // open picker
-    Box.choose(options);
+    boxSelect.launchPopup();
   }
 
 };
