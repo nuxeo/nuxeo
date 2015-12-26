@@ -1,5 +1,3 @@
-package org.nuxeo.ecm.core.opencmis.impl;
-
 /*
  * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
@@ -11,6 +9,7 @@ package org.nuxeo.ecm.core.opencmis.impl;
  * Contributors:
  *     Florent Guillaume
  */
+package org.nuxeo.ecm.core.opencmis.impl;
 
 import static org.junit.Assume.assumeTrue;
 
