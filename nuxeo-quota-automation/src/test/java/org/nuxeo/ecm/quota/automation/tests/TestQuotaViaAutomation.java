@@ -1,5 +1,3 @@
-package org.nuxeo.ecm.quota.automation.tests;
-
 /*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
@@ -16,6 +14,8 @@ package org.nuxeo.ecm.quota.automation.tests;
  * Contributors:
  *     Nuxeo
  */
+package org.nuxeo.ecm.quota.automation.tests;
+
 import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
