@@ -1,10 +1,4 @@
 /*
- * $Id: HtmlResponseWriter.java,v 1.47.4.13 2008/12/11 17:53:22 rlubke Exp $
- */
-
-/*
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
  * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
@@ -36,6 +30,8 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * Portions Copyrighted 2013 Nuxeo
  */

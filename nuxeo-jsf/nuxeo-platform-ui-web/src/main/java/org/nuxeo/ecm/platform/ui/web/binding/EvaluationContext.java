@@ -1,4 +1,6 @@
 /*
+ * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ *
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License
  * (the "License").  You may not use this file except
@@ -17,8 +19,6 @@
  * fields enclosed by brackets "[]" replaced with your
  * own identifying information: Portions Copyright [yyyy]
  * [name of copyright owner]
- *
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  */
 
 package org.nuxeo.ecm.platform.ui.web.binding;

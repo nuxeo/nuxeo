@@ -1,5 +1,4 @@
 //
-// JOOConverter - The Open Source Java/OpenOffice Document Converter
 // Copyright (C) 2004-2006 - Mirko Nasato <mirko@artofsolving.com>
 //
 // This library is free software; you can redistribute it and/or
@@ -12,6 +11,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 // http://www.gnu.org/copyleft/lesser.html
+//
+// JOOConverter - The Open Source Java/OpenOffice Document Converter
 //
 package org.nuxeo.ecm.platform.convert.tests;
 
