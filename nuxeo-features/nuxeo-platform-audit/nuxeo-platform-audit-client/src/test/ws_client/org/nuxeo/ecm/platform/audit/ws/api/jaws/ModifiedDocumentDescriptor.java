@@ -29,7 +29,7 @@ public class ModifiedDocumentDescriptor  implements java.io.Serializable {
 
     /**
      * Gets the UUID value for this ModifiedDocumentDescriptor.
-     * 
+     *
      * @return UUID
      */
     public java.lang.String getUUID() {
@@ -39,7 +39,7 @@ public class ModifiedDocumentDescriptor  implements java.io.Serializable {
 
     /**
      * Sets the UUID value for this ModifiedDocumentDescriptor.
-     * 
+     *
      * @param UUID
      */
     public void setUUID(java.lang.String UUID) {
@@ -49,7 +49,7 @@ public class ModifiedDocumentDescriptor  implements java.io.Serializable {
 
     /**
      * Gets the modified value for this ModifiedDocumentDescriptor.
-     * 
+     *
      * @return modified
      */
     public java.lang.String getModified() {
@@ -59,7 +59,7 @@ public class ModifiedDocumentDescriptor  implements java.io.Serializable {
 
     /**
      * Sets the modified value for this ModifiedDocumentDescriptor.
-     * 
+     *
      * @param modified
      */
     public void setModified(java.lang.String modified) {
@@ -69,7 +69,7 @@ public class ModifiedDocumentDescriptor  implements java.io.Serializable {
 
     /**
      * Gets the type value for this ModifiedDocumentDescriptor.
-     * 
+     *
      * @return type
      */
     public java.lang.String getType() {
@@ -79,7 +79,7 @@ public class ModifiedDocumentDescriptor  implements java.io.Serializable {
 
     /**
      * Sets the type value for this ModifiedDocumentDescriptor.
-     * 
+     *
      * @param type
      */
     public void setType(java.lang.String type) {
@@ -97,14 +97,14 @@ public class ModifiedDocumentDescriptor  implements java.io.Serializable {
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true && 
-            ((this.UUID==null && other.getUUID()==null) || 
+        _equals = true &&
+            ((this.UUID==null && other.getUUID()==null) ||
              (this.UUID!=null &&
               this.UUID.equals(other.getUUID()))) &&
-            ((this.modified==null && other.getModified()==null) || 
+            ((this.modified==null && other.getModified()==null) ||
              (this.modified!=null &&
               this.modified.equals(other.getModified()))) &&
-            ((this.type==null && other.getType()==null) || 
+            ((this.type==null && other.getType()==null) ||
              (this.type!=null &&
               this.type.equals(other.getType())));
         __equalsCalc = null;
@@ -168,10 +168,10 @@ public class ModifiedDocumentDescriptor  implements java.io.Serializable {
      * Get Custom Serializer
      */
     public static org.apache.axis.encoding.Serializer getSerializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
+           java.lang.String mechType,
+           java.lang.Class _javaType,
            javax.xml.namespace.QName _xmlType) {
-        return 
+        return
           new  org.apache.axis.encoding.ser.BeanSerializer(
             _javaType, _xmlType, typeDesc);
     }
@@ -180,10 +180,10 @@ public class ModifiedDocumentDescriptor  implements java.io.Serializable {
      * Get Custom Deserializer
      */
     public static org.apache.axis.encoding.Deserializer getDeserializer(
-           java.lang.String mechType, 
-           java.lang.Class _javaType,  
+           java.lang.String mechType,
+           java.lang.Class _javaType,
            javax.xml.namespace.QName _xmlType) {
-        return 
+        return
           new  org.apache.axis.encoding.ser.BeanDeserializer(
             _javaType, _xmlType, typeDesc);
     }

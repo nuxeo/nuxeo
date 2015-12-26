@@ -9,7 +9,7 @@ import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinderFactory;
 
 /**
  * Descriptor used to register {@link RootSectionFinder} factories.
- * 
+ *
  * @author tiry
  */
 @XObject("rootSectionFinderFactory")

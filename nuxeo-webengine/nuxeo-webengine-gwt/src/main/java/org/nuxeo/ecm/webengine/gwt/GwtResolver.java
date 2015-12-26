@@ -36,7 +36,7 @@ public class GwtResolver {
 
         File resolve(String path);
     }
-    
+
     public final File GWT_ROOT = locateRoot();
 
     private static File locateRoot() {

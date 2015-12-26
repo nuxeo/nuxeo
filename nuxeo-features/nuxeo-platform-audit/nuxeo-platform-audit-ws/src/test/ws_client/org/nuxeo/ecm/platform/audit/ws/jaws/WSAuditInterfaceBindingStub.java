@@ -39,7 +39,7 @@ public class WSAuditInterfaceBindingStub extends org.apache.axis.client.Stub imp
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://ws.audit.platform.ecm.nuxeo.org/jaws", "ClientException"),
                       "org.nuxeo.ecm.platform.audit.ws.jaws.ClientException",
-                      new javax.xml.namespace.QName("http://ws.audit.platform.ecm.nuxeo.org/jaws", "ClientException"), 
+                      new javax.xml.namespace.QName("http://ws.audit.platform.ecm.nuxeo.org/jaws", "ClientException"),
                       true
                      ));
         _operations[0] = oper;
@@ -55,7 +55,7 @@ public class WSAuditInterfaceBindingStub extends org.apache.axis.client.Stub imp
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://ws.audit.platform.ecm.nuxeo.org/jaws", "ClientException"),
                       "org.nuxeo.ecm.platform.audit.ws.jaws.ClientException",
-                      new javax.xml.namespace.QName("http://ws.audit.platform.ecm.nuxeo.org/jaws", "ClientException"), 
+                      new javax.xml.namespace.QName("http://ws.audit.platform.ecm.nuxeo.org/jaws", "ClientException"),
                       true
                      ));
         _operations[1] = oper;
@@ -76,7 +76,7 @@ public class WSAuditInterfaceBindingStub extends org.apache.axis.client.Stub imp
         oper.addFault(new org.apache.axis.description.FaultDesc(
                       new javax.xml.namespace.QName("http://ws.audit.platform.ecm.nuxeo.org/jaws", "AuditException"),
                       "org.nuxeo.ecm.platform.audit.ws.jaws.AuditException",
-                      new javax.xml.namespace.QName("http://ws.audit.platform.ecm.nuxeo.org/jaws", "AuditException"), 
+                      new javax.xml.namespace.QName("http://ws.audit.platform.ecm.nuxeo.org/jaws", "AuditException"),
                       true
                      ));
         _operations[2] = oper;
