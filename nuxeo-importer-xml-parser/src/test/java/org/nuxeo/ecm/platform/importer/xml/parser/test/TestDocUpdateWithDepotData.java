@@ -1,3 +1,21 @@
+/*
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Harlan Brown
+ */
 package org.nuxeo.ecm.platform.importer.xml.parser.test;
 
 import static org.junit.Assert.*;
@@ -50,26 +68,26 @@ public class TestDocUpdateWithDepotData {
         Assert.assertNotNull(xml);
 
         DocumentModel root = session.getRootDocument();
-        
+
         XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
         Assert.assertNotNull(importer);
         importer.importDocuments(root, xml);
         session.save();
 
-        List<DocumentModel> docs = session.query("select * from Document where ecm:primaryType='File'");        
+        List<DocumentModel> docs = session.query("select * from Document where ecm:primaryType='File'");
         //without overwrite, 59-DELIB_0001.pdf and 37-DELIB_0003.pdf go in twice
         //Assert.assertEquals("we should have 12 files", 12, docs.size());
         Assert.assertEquals("we should have 10 files", 10, docs.size());
-        
+
         DocumentRef ref = new PathRef("/Workspace-1/pv.pdf");
         DocumentModel doc = session.getDocument(ref);
         Assert.assertEquals("File pv.pdf should have 2 subjects", 2, ((String[]) doc.getPropertyValue("dc:subjects")).length);
         Assert.assertEquals("File pv.pdf should have 1 contributor", 1, ((String[]) doc.getPropertyValue("dc:contributors")).length);
-        
+
         ref = new PathRef("/Workspace-1/odj.pdf");
         doc = session.getDocument(ref);
         Assert.assertEquals("File odj.pdf should have 0 subjects", 0, ((String[]) doc.getPropertyValue("dc:subjects")).length);
-        Assert.assertEquals("File odj.pdf should have 2 Actors", 2, ((ArrayList<?>) doc.getPropertyValue("complx:Actors")).size());     
+        Assert.assertEquals("File odj.pdf should have 2 Actors", 2, ((ArrayList<?>) doc.getPropertyValue("complx:Actors")).size());
 
         ref = new PathRef("/Workspace-1/pvcomplet.pdf");
         doc = session.getDocument(ref);
@@ -82,12 +100,12 @@ public class TestDocUpdateWithDepotData {
         Assert.assertEquals("File DECISION.pdf should have 5 contributors", 5, ((String[]) doc.getPropertyValue("dc:contributors")).length);
         Boolean b = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors")).contains("Waldo King");
         Assert.assertFalse("File DECISION.pdf should NOT contain a contributor named Waldo King",b);
-        
+
         xml = FileUtils.getResourceFileFromContext("depot4.xml");
         Assert.assertNotNull(xml);
         importer.importDocuments(root, xml);
         session.save();
-        
+
         docs = session.query("select * from Workspace");
         Assert.assertEquals("we should have only one Seance", 1, docs.size());
         DocumentModel seanceDoc = docs.get(0);
@@ -95,21 +113,21 @@ public class TestDocUpdateWithDepotData {
         docs = session.query("select * from Document where ecm:primaryType='Folder'");
         Assert.assertEquals("we should have 4 actes", 4, docs.size());
 
-        docs = session.query("select * from Document where ecm:primaryType='File'");        
+        docs = session.query("select * from Document where ecm:primaryType='File'");
         //without overwrite, 59-DELIB_0001.pdf and 37-DELIB_0003.pdf go in twice
         //Assert.assertEquals("we should have 12 files", 12, docs.size());
         Assert.assertEquals("we should have 10 files", 10, docs.size());
-        
+
         ref = new PathRef("/Workspace-1/odj.pdf");
         doc = session.getDocument(ref);
         Assert.assertEquals("File odj.pdf should have 0 subjects", 0, ((String[]) doc.getPropertyValue("dc:subjects")).length);
-        Assert.assertEquals("File odj.pdf should have 3 Actors", 3, ((ArrayList<?>) doc.getPropertyValue("complx:Actors")).size());     
-        
+        Assert.assertEquals("File odj.pdf should have 3 Actors", 3, ((ArrayList<?>) doc.getPropertyValue("complx:Actors")).size());
+
         ref = new PathRef("/Workspace-1/pv.pdf");
         doc = session.getDocument(ref);
         Assert.assertEquals("File pv.pdf should have 2 subjects", 2, ((String[]) doc.getPropertyValue("dc:subjects")).length);
         Assert.assertEquals("File pv.pdf should have 2 contributors", 2, ((String[]) doc.getPropertyValue("dc:contributors")).length);
-        
+
         ref = new PathRef("/Workspace-1/pvcomplet.pdf");
         doc = session.getDocument(ref);
         Assert.assertEquals("File pvcomplet.pdf should have 0 subjects", 0, ((String[]) doc.getPropertyValue("dc:subjects")).length);
@@ -125,7 +143,7 @@ public class TestDocUpdateWithDepotData {
         Assert.assertEquals("File DECISION.pdf should have 6 contributors", 6, ((String[]) doc.getPropertyValue("dc:contributors")).length);
         b = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors")).contains("Waldo King");
         Assert.assertTrue("File DECISION.pdf should contain a contributor named Waldo King",b);
-                
+
         docs = session.query("select * from Document where ecm:primaryType='Section'");
         Assert.assertEquals("we should have 1 Section", 1, docs.size());
 
@@ -140,7 +158,7 @@ public class TestDocUpdateWithDepotData {
         docs = session.query("select * from Document where ecm:primaryType in ('File', 'Section')  AND ecm:parentId='"
                 + seanceDoc.getId() + "'");
         Assert.assertEquals("we should have only 4 files in the seance", 4, docs.size());
-        
+
 	}
 
 }

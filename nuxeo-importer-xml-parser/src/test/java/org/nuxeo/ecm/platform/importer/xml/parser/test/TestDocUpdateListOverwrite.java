@@ -1,3 +1,21 @@
+/*
+ * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Thierry Delprat
+ */
 package org.nuxeo.ecm.platform.importer.xml.parser.test;
 
 import java.io.File;
@@ -52,12 +70,12 @@ public class TestDocUpdateListOverwrite {
         Property property = fileDoc.getProperty("dc:subjects");
         Object[] subjects = (Object[]) property.getValue();
         Assert.assertEquals("The property dc:subjects should contain 2 values", 2, subjects.length);
-              
+
         xml = FileUtils.getResourceFileFromContext("docupdate.xml");
         Assert.assertNotNull(xml);
         importer.importDocuments(root, xml, true);
         session.save();
-        
+
         // UPDATE DOCUMENT, OVERWRITE LIST
         docs = session.query("select * from Document where dc:title='MultiValue'");
         Assert.assertEquals("we should have only one File", 1, docs.size());
@@ -65,7 +83,7 @@ public class TestDocUpdateListOverwrite {
         property = fileDoc.getProperty("dc:subjects");
         subjects = (Object[]) property.getValue();
         Assert.assertEquals("The property dc:subjects should contain 4 values", 4, subjects.length);
-        
+
 	}
 
 }
