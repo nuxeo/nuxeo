@@ -1,11 +1,3 @@
-package org.nuxeo.ecm.core.redis;
-
-import org.junit.Test;
-import org.nuxeo.ecm.core.redis.contribs.RedisInvalidations;
-import org.nuxeo.ecm.core.storage.sql.Invalidations;
-import org.nuxeo.ecm.core.storage.sql.RowId;
-
-import static org.junit.Assert.*;
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -22,6 +14,14 @@ import static org.junit.Assert.*;
  * Contributors:
  *     Delbosc Benoit
  */
+package org.nuxeo.ecm.core.redis;
+
+import org.junit.Test;
+import org.nuxeo.ecm.core.redis.contribs.RedisInvalidations;
+import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.RowId;
+
+import static org.junit.Assert.*;
 
 /**
  * @since 7.4

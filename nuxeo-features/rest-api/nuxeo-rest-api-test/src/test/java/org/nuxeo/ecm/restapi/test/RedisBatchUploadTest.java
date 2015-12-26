@@ -1,5 +1,3 @@
-package org.nuxeo.ecm.restapi.test;
-
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -16,6 +14,7 @@ package org.nuxeo.ecm.restapi.test;
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
+package org.nuxeo.ecm.restapi.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
@@ -27,7 +26,7 @@ import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * Tests the {@link BatchUploadObject} endpoints against a Redis implementation of the {@link TransientStore}.
- * 
+ *
  * @since 7.10
  */
 @RunWith(ContributableFeaturesRunner.class)

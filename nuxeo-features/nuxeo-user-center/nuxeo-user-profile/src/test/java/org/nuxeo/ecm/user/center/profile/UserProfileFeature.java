@@ -1,4 +1,3 @@
-package org.nuxeo.ecm.user.center.profile;
 /*
  * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
  *
@@ -14,6 +13,7 @@ package org.nuxeo.ecm.user.center.profile;
  *
  * Contributors:
  */
+package org.nuxeo.ecm.user.center.profile;
 
 import java.io.File;
 import java.io.IOException;

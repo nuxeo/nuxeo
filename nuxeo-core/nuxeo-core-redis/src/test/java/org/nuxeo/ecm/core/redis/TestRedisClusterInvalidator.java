@@ -1,4 +1,3 @@
-package org.nuxeo.ecm.core.redis;
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -15,6 +14,7 @@ package org.nuxeo.ecm.core.redis;
  * Contributors:
  *     bdelbosc
  */
+package org.nuxeo.ecm.core.redis;
 
 import org.junit.Assume;
 import org.junit.Test;

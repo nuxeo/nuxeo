@@ -1,5 +1,3 @@
-package org.nuxeo.elasticsearch.http.readonly;
-
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -16,6 +14,7 @@ package org.nuxeo.elasticsearch.http.readonly;
  * Contributors:
  *     Benoit Delbosc
  */
+package org.nuxeo.elasticsearch.http.readonly;
 
 import javax.validation.constraints.NotNull;
 

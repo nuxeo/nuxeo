@@ -1,10 +1,3 @@
-package org.nuxeo.runtime.tomcat.dev;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Enumeration;
-
 /*
  * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -21,6 +14,12 @@ import java.util.Enumeration;
  * Contributors:
  *     bstefanescu
  */
+package org.nuxeo.runtime.tomcat.dev;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

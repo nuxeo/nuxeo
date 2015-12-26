@@ -1,18 +1,3 @@
-package org.nuxeo.runtime.osgi.util.jar.tests;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.jar.JarOutputStream;
-import java.util.zip.ZipEntry;
-
 /*
  * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -29,6 +14,20 @@ import java.util.zip.ZipEntry;
  * Contributors:
  *     matic
  */
+package org.nuxeo.runtime.osgi.util.jar.tests;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 
 /**
  * @author matic

@@ -1,15 +1,3 @@
-package org.nuxeo.runtime.tomcat.dev;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-
 /*
  * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
@@ -26,10 +14,21 @@ import java.util.ArrayList;
  * Contributors:
  *     slacoin
  */
+package org.nuxeo.runtime.tomcat.dev;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Bundle descriptor for hot deployment
- * 
+ *
  * @since 5.5
  */
 public class DevBundle implements Serializable {
