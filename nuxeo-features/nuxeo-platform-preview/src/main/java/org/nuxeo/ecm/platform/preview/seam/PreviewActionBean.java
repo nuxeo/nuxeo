@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
  * (C) Copyright 2006-2007 YSEngineers Soc. Coop. And. (http://www.yerbabuena.es/) and contributors.
 
  * All rights reserved. This program and the accompanying materials

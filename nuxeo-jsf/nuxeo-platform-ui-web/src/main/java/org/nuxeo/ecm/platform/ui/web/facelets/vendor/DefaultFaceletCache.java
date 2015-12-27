@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+ * (C) Copyright 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development

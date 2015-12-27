@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2000-2003 Yale University. All rights reserved.
+ *  (C) Copyright 2000-2003 Yale University. All rights reserved.
  *
  *  THIS SOFTWARE IS PROVIDED "AS IS," AND ANY EXPRESS OR IMPLIED
  *  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
