@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2002-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
  */
 
 package org.nuxeo.ecm.platform.importer.xml.parser;
@@ -52,10 +51,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -76,7 +72,7 @@ public class XMLImporterServiceImpl {
 
     private static final String MSG_UPDATE = "**DOCUMENT UPDATE**\n"
             + "Try to update document in %s with name %s based on \"%s\" fragment " + "with the following conf: %s\n";
-    
+
     private static final String MSG_UPDATE_PROPERTY_TRACE = "**PROPERTY UPDATE**\n"
             + "Value found for %s in %s is \"%s\". With the following conf: %s";
 
@@ -92,7 +88,7 @@ public class XMLImporterServiceImpl {
     protected DocumentModel rootDoc;
 
     protected Stack<DocumentModel> docsStack;
-    
+
     protected Map<String, List<String>> deletedAttributes = new HashMap<>();
 
     protected Map<String, Object> mvelCtx = new HashMap<>();
@@ -100,14 +96,15 @@ public class XMLImporterServiceImpl {
     protected Map<Element, DocumentModel> elToDoc = new HashMap<>();
 
     protected ParserConfigRegistry registry;
-    
+
     protected Boolean deferSave = false;
 
     public XMLImporterServiceImpl(DocumentModel rootDoc, ParserConfigRegistry registry) {
         this(rootDoc, registry, null, false);
     }
 
-    public XMLImporterServiceImpl(DocumentModel rootDoc, ParserConfigRegistry registry, Map<String, Object> mvelContext, boolean deferSave) {
+    public XMLImporterServiceImpl(DocumentModel rootDoc, ParserConfigRegistry registry,
+            Map<String, Object> mvelContext, boolean deferSave) {
         if (mvelContext != null) {
             mvelCtx.putAll(mvelContext);
         }
@@ -115,7 +112,7 @@ public class XMLImporterServiceImpl {
         session = rootDoc.getCoreSession();
         this.rootDoc = rootDoc;
         this.deferSave = deferSave;
-        
+
         docsStack = new Stack<>();
         pushInStack(rootDoc);
         mvelCtx.put("root", rootDoc);
@@ -214,20 +211,20 @@ public class XMLImporterServiceImpl {
         mvelCtx.put("xml", doc);
         mvelCtx.put("map", elToDoc);
         process(root);
-        
+
         // defer saveDocument to end of operation
         if (deferSave) {
-        	ArrayList<DocumentModel> a = new ArrayList<DocumentModel>();
-        	DocumentModel d = null;
-        	while(docsStack.size()>0){
-        		d = popStack();
-        		d.putContextData(XML_IMPORTER_INITIALIZATION, Boolean.TRUE);
-        		d = session.saveDocument(d);
-        		a.add(d);
-        	}        
-        	return a;
+            ArrayList<DocumentModel> a = new ArrayList<>();
+            DocumentModel d = null;
+            while (docsStack.size() > 0) {
+                d = popStack();
+                d.putContextData(XML_IMPORTER_INITIALIZATION, Boolean.TRUE);
+                d = session.saveDocument(d);
+                a.add(d);
+            }
+            return a;
         } else {
-        	return new ArrayList<>(docsStack);
+            return new ArrayList<>(docsStack);
         }
     }
 
@@ -464,73 +461,74 @@ public class XMLImporterServiceImpl {
     }
 
     protected void createNewDocument(Element el, DocConfigDescriptor conf) {
-    	DocumentModel doc = session.createDocumentModel(conf.getDocType());
+        DocumentModel doc = session.createDocumentModel(conf.getDocType());
 
-    	String path = resolvePath(el, conf.getParent());
-    	Object nameOb = resolveName(el, conf.getName());
-    	String name = null;
-    	if (nameOb == null) {
-    		if (log.isDebugEnabled()) {
-    			log.debug(String.format(MSG_NO_ELEMENT_FOUND, conf.getName(), el.getUniquePath()));
-    		}
-    		int idx = 1;
-    		for (int i = 0; i < docsStack.size(); i++) {
-    			if (docsStack.get(i).getType().equals(conf.getDocType())) {
-    				idx++;
-    			}
-    		}
-    		name = conf.getDocType() + "-" + idx;
-    	} else {
-    		name = nameOb.toString();
-    	}
-    	doc.setPathInfo(path, name);
+        String path = resolvePath(el, conf.getParent());
+        Object nameOb = resolveName(el, conf.getName());
+        String name = null;
+        if (nameOb == null) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(MSG_NO_ELEMENT_FOUND, conf.getName(), el.getUniquePath()));
+            }
+            int idx = 1;
+            for (int i = 0; i < docsStack.size(); i++) {
+                if (docsStack.get(i).getType().equals(conf.getDocType())) {
+                    idx++;
+                }
+            }
+            name = conf.getDocType() + "-" + idx;
+        } else {
+            name = nameOb.toString();
+        }
+        doc.setPathInfo(path, name);
 
-    	if (log.isDebugEnabled()) {
-    		if (conf.getUpdate()){
-    			log.debug(String.format(MSG_UPDATE, path, name, el.getUniquePath(), conf.toString()));
-    		} else {
-    			log.debug(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
-    		}
-    	}
+        if (log.isDebugEnabled()) {
+            if (conf.getUpdate()) {
+                log.debug(String.format(MSG_UPDATE, path, name, el.getUniquePath(), conf.toString()));
+            } else {
+                log.debug(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
+            }
+        }
 
-    	try {
-    		if (conf.getUpdate() && session.exists(doc.getRef())){
-    			DocumentModel existingDoc = session.getDocument(doc.getRef());
-    			
-    			// get attributes, if attribute needs to be overwritten, empty in the document
-    			for (Object e : el.elements()) {
-    				List<AttributeConfigDescriptor> configs = getAttributConfigs((Element) e);
-    				if (configs != null) {
-						if (!deletedAttributes.containsKey(existingDoc.getId())){
-							deletedAttributes.put(existingDoc.getId(), new ArrayList<String>());
-						}
-    					for (AttributeConfigDescriptor config : configs) {
-							String targetDocProperty = config.getTargetDocProperty();
-    						// check deletedAttributes for attribute which should be overwritten
-							// if it is there, don't empty it a second time
-							if (config.overwrite && !deletedAttributes.get(existingDoc.getId()).contains(targetDocProperty)){
-    							deletedAttributes.get(existingDoc.getId()).add(targetDocProperty); 
-    							existingDoc.setPropertyValue(targetDocProperty,new ArrayList<>());
-    						}
-    					}
-    				} 
-    			}
-    			doc = existingDoc;
-    		} else {
-    			doc = session.createDocument(doc);
-    		}
-    	} catch (NuxeoException e) {
-    		e.addInfo(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
-    		throw e;
-    	}
-    	pushInStack(doc);
-    	elToDoc.put(el, doc);
+        try {
+            if (conf.getUpdate() && session.exists(doc.getRef())) {
+                DocumentModel existingDoc = session.getDocument(doc.getRef());
+
+                // get attributes, if attribute needs to be overwritten, empty in the document
+                for (Object e : el.elements()) {
+                    List<AttributeConfigDescriptor> configs = getAttributConfigs((Element) e);
+                    if (configs != null) {
+                        if (!deletedAttributes.containsKey(existingDoc.getId())) {
+                            deletedAttributes.put(existingDoc.getId(), new ArrayList<String>());
+                        }
+                        for (AttributeConfigDescriptor config : configs) {
+                            String targetDocProperty = config.getTargetDocProperty();
+                            // check deletedAttributes for attribute which should be overwritten
+                            // if it is there, don't empty it a second time
+                            if (config.overwrite
+                                    && !deletedAttributes.get(existingDoc.getId()).contains(targetDocProperty)) {
+                                deletedAttributes.get(existingDoc.getId()).add(targetDocProperty);
+                                existingDoc.setPropertyValue(targetDocProperty, new ArrayList<>());
+                            }
+                        }
+                    }
+                }
+                doc = existingDoc;
+            } else {
+                doc = session.createDocument(doc);
+            }
+        } catch (NuxeoException e) {
+            e.addInfo(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
+            throw e;
+        }
+        pushInStack(doc);
+        elToDoc.put(el, doc);
     }
 
     protected void process(Element el) {
         DocConfigDescriptor createConf = getDocCreationConfig(el);
         if (createConf != null) {
-        	createNewDocument(el, createConf);
+            createNewDocument(el, createConf);
         }
         List<AttributeConfigDescriptor> configs = getAttributConfigs(el);
         if (configs != null) {
@@ -541,7 +539,7 @@ public class XMLImporterServiceImpl {
             DocumentModel doc = popStack();
             doc.putContextData(XML_IMPORTER_INITIALIZATION, Boolean.TRUE);
             if (!deferSave) {
-            	doc = session.saveDocument(doc);
+                doc = session.saveDocument(doc);
             }
             pushInStack(doc);
 
@@ -581,5 +579,5 @@ public class XMLImporterServiceImpl {
         mvelCtx.put("changeableDocument", doc);
         return doc;
     }
-    
+
 }

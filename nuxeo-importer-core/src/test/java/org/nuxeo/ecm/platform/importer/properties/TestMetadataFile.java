@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2009-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.importer.properties;
 import java.io.File;
 import java.io.Serializable;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -168,7 +167,7 @@ public class TestMetadataFile {
         return file;
     }
 
-    protected Calendar formatDate(String value) throws ParseException {
+    protected Calendar formatDate(String value) {
         return (Calendar) new DateType().decode(value);
     }
 
