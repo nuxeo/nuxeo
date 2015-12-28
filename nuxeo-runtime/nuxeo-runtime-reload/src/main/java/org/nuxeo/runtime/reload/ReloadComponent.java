@@ -90,6 +90,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         } catch (IOException e) {
             throw new RuntimeServiceException(e);
         }
+        flush();
         triggerReloadWithNewTransaction(RELOAD_EVENT_ID);
     }
 
@@ -318,6 +319,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     protected void triggerReload(String id) {
+        Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "before-reload", this, null));
+        try {
         ServicePassivator
                 .proceed(() -> {
                     Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
@@ -327,6 +330,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 }).onFailure(snapshot -> {
                     throw new UnsupportedOperationException("Detected access, should initiate a reboot " + snapshot.toString());
                 });
+        } finally {
+            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "after-reload", this, null));
+        }
     }
 
     protected void triggerReloadWithNewTransaction(String id) {
