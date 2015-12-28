@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.opencmis.impl;
 
 import static org.junit.Assume.assumeTrue;
 
-import java.io.File;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -41,6 +40,8 @@ import org.apache.chemistry.opencmis.commons.spi.RepositoryService;
 import org.apache.chemistry.opencmis.commons.spi.VersioningService;
 import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
 import org.apache.chemistry.opencmis.server.shared.ThresholdOutputStreamFactory;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
@@ -151,8 +152,8 @@ public abstract class TestCmisBindingBase {
 
         NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
         NuxeoCmisServiceFactory serviceFactory = manager.getNuxeoCmisServiceFactory();
-        ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance(
-                new File(System.getProperty("java.io.tmpdir")), THRESHOLD, MAX_SIZE, false);
+        ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance( //
+                Environment.getDefault().getTemp(), THRESHOLD, MAX_SIZE, false);
         HttpServletRequest request = null;
         HttpServletResponse response = null;
         CallContextImpl context = new CallContextImpl(CallContext.BINDING_LOCAL, CmisVersion.CMIS_1_1, repositoryId,

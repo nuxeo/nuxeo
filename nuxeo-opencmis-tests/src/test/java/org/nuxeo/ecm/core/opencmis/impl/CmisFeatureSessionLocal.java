@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
-import java.io.File;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,6 +27,8 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.server.impl.CallContextImpl;
 import org.apache.chemistry.opencmis.server.shared.ThresholdOutputStreamFactory;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoBinding;
@@ -82,8 +82,8 @@ public class CmisFeatureSessionLocal extends CmisFeatureSession {
     public Session setUpCmisSession(String repositoryName) {
         NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
         NuxeoCmisServiceFactory serviceFactory = manager.getNuxeoCmisServiceFactory();
-        ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance(
-                new File(System.getProperty("java.io.tmpdir")), THRESHOLD, MAX_SIZE, false);
+        ThresholdOutputStreamFactory streamFactory = ThresholdOutputStreamFactory.newInstance( //
+                Environment.getDefault().getTemp(), THRESHOLD, MAX_SIZE, false);
         HttpServletRequest request = null;
         HttpServletResponse response = null;
         CallContextImpl context = new CallContextImpl(CallContext.BINDING_LOCAL, CmisVersion.CMIS_1_1, repositoryName,
