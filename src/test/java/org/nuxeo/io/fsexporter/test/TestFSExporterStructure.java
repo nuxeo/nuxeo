@@ -28,6 +28,8 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -99,7 +101,7 @@ public class TestFSExporterStructure {
 
         session.save();
 
-        String tmp = System.getProperty("java.io.tmpdir");
+        String tmp = Environment.getDefault().getTemp().getPath();
         service.export(session, "/default-domain/", tmp, "");
 
         String pathPrefix = StringUtils.removeEnd(tmp, "/");
