@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,11 @@ import java.util.Map;
 import net.sf.jxls.exception.ParsePropertyException;
 import net.sf.jxls.transformer.XLSTransformer;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.nuxeo.common.utils.FileUtils;
+
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -43,7 +44,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements ExcelExp
 
     public static final String EXCEL_EXPORT_EP = "excelExportFactory";
 
-    protected static final Map<String, ExcelExportServiceDescriptor> exportExcelRegistry = new HashMap<String, ExcelExportServiceDescriptor>();
+    protected static final Map<String, ExcelExportServiceDescriptor> exportExcelRegistry = new HashMap<>();
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
@@ -70,8 +71,9 @@ public class ExcelExportServiceImpl extends DefaultComponent implements ExcelExp
             resultReport = new File(getWorkingDir(), "audit-groups.xls");
             resultReport.createNewFile();
             ExcelExportServiceDescriptor descriptor = exportExcelRegistry.get(exportName);
-            transformer.transformXLS(descriptor.getTemplate().getAbsolutePath(),
-                    descriptor.getFactory().getDataToInject(), resultReport.getAbsolutePath());
+            transformer.transformXLS(descriptor.getTemplate().getAbsolutePath(), descriptor.getFactory()
+                                                                                           .getDataToInject(),
+                    resultReport.getAbsolutePath());
         } catch (IOException | ParsePropertyException | InvalidFormatException e) {
             log.error("Unable to create excel report result file:", e);
         }
@@ -100,7 +102,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements ExcelExp
         String dirPath = System.getProperty("java.io.tmpdir") + "/NXExcelExport" + System.currentTimeMillis();
         File workingDir = new File(dirPath);
         if (workingDir.exists()) {
-            FileUtils.deleteTree(workingDir);
+            FileUtils.deleteQuietly(workingDir);
         }
         workingDir.mkdir();
         return workingDir;
