@@ -80,14 +80,14 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
 
     @Test
     public void testDialectSubclassing() throws Exception {
-        Framework.getProperties().put(Dialect.DIALECT_CLASS, DialectDummy.class.getName());
+        Framework.getProperties().setProperty(Dialect.DIALECT_CLASS, DialectDummy.class.getName());
         Dialect dialect = Dialect.createDialect(connection, repositoryDescriptor);
         assertEquals(DialectDummy.class, dialect.getClass());
     }
 
     @Test
     public void testDialectSubclassingSpecific() throws Exception {
-        Framework.getProperties().put(Dialect.DIALECT_CLASS + ".Dummy", DialectDummy.class.getName());
+        Framework.getProperties().setProperty(Dialect.DIALECT_CLASS + ".Dummy", DialectDummy.class.getName());
         Dialect dialect = Dialect.createDialect(connection, repositoryDescriptor);
         assertEquals(DialectDummy.class, dialect.getClass());
     }
