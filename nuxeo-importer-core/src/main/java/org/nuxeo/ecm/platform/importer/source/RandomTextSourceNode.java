@@ -46,7 +46,7 @@ public class RandomTextSourceNode implements SourceNode {
 
     public static int maxDepth = 8;
 
-    public static int defaultNbDataNodesPerFolder = 15;
+    public static int defaultNbDataNodesPerFolder = 100;
 
     protected static int minGlobalFolders = 0;
 
