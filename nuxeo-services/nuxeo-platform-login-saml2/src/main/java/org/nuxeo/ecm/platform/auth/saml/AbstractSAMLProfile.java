@@ -227,7 +227,7 @@ public abstract class AbstractSAMLProfile {
     }
 
     protected String newUUID() {
-        return UUID.randomUUID().toString();
+        return "_" + UUID.randomUUID().toString();
     }
 
     protected String getBaseURL(ServletRequest request) {
