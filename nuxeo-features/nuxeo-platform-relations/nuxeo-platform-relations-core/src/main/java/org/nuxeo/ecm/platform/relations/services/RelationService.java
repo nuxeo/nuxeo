@@ -1,15 +1,17 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
  *     Anahide Tchertchian
@@ -28,10 +30,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.Transaction;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.platform.relations.api.DocumentRelationManager;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.GraphDescription;
@@ -44,6 +49,7 @@ import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphTypeDescriptor;
 import org.nuxeo.ecm.platform.relations.descriptors.ResourceAdapterDescriptor;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -517,18 +523,34 @@ public class RelationService extends DefaultComponent implements
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
-        Thread t = new Thread("relation-service-init") {
-            @Override
-            public void run() {
-                Thread.currentThread().setContextClassLoader(
-                        RelationService.class.getClassLoader());
-                log.info("Relation Service initialization");
+    public void applicationStarted(ComponentContext context) {
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        if (repositoryService == null) {
+            // RepositoryService failed to start, no need to go further
+            return;
+        }
+        Transaction tx = TransactionHelper.suspendTransaction();
+        try {
+            log.info("Relation Service initialization");
 
-                // init jena Graph outside of Tx
+            // init jena Graph outside of Tx
+            for (String graphName : graphDescriptions.keySet()) {
+                GraphDescription desc = graphDescriptions.get(graphName);
+                if (desc.getGraphType()
+                        .equalsIgnoreCase("jena")) {
+                    log.info("create RDF Graph " + graphName);
+                    Graph graph = getGraphByName(graphName);
+                    graph.size();
+                }
+            }
+
+            // init non jena Graph inside a Tx
+            TransactionHelper.startTransaction();
+            try {
                 for (String graphName : graphDescriptions.keySet()) {
                     GraphDescription desc = graphDescriptions.get(graphName);
-                    if (desc.getGraphType().equalsIgnoreCase("jena")) {
+                    if (!desc.getGraphType()
+                            .equalsIgnoreCase("jena")) {
                         log.info("create RDF Graph " + graphName);
                         try {
                             Graph graph = getGraphByName(graphName);
@@ -539,34 +561,11 @@ public class RelationService extends DefaultComponent implements
                         }
                     }
                 }
-
-                // init non jena Graph inside a Tx
-                TransactionHelper.startTransaction();
-                try {
-                    for (String graphName : graphDescriptions.keySet()) {
-                        GraphDescription desc = graphDescriptions.get(graphName);
-                        if (!desc.getGraphType().equalsIgnoreCase("jena")) {
-                            log.info("create RDF Graph " + graphName);
-                            try {
-                                Graph graph = getGraphByName(graphName);
-                                graph.size();
-                            } catch (ClientException e) {
-                                log.error("Error while initializing graph "
-                                        + graphName, e);
-                                TransactionHelper.setTransactionRollbackOnly();
-                            }
-                        }
-                    }
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
             }
-        };
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            log.error("Cannot join init thread", e);
+        } finally {
+            TransactionHelper.resumeTransaction(tx);
         }
     }
 

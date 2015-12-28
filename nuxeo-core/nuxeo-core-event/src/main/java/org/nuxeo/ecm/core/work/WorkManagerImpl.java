@@ -22,11 +22,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -285,6 +284,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected volatile boolean started = false;
 
+    protected volatile boolean shutdownInProgress = false;
+
     @Override
     public void init() {
         if (started) {
@@ -336,22 +337,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         for (WorkThreadPoolExecutor executor : list) {
             executor.shutdownAndSuspend();
         }
-
-        long t0 = System.currentTimeMillis();
-        long delay = unit.toMillis(timeout);
-
-        // wait for termination or suspension
-        boolean terminated = true;
-        for (WorkThreadPoolExecutor executor : list) {
-            long remaining = remainingMillis(t0, delay);
-            if (!executor.awaitTerminationOrSave(remaining, TimeUnit.MILLISECONDS)) {
-                terminated = false;
-                // hard shutdown for remaining tasks
-                executor.shutdownNow();
-            }
-        }
-
-        return terminated;
+        // don't wait anymore, running will always abort
+        return true;
     }
 
     protected long remainingMillis(long t0, long delay) {
@@ -368,10 +355,14 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean shutdown(long timeout, TimeUnit unit) throws InterruptedException {
-        List<WorkThreadPoolExecutor> executorList = new ArrayList<>(executors.values());
-        executors.clear();
-        started = false;
-        return shutdownExecutors(executorList, timeout, unit);
+        shutdownInProgress = true;
+        try {
+            return shutdownExecutors(executors.values(), timeout, unit);
+        } finally {
+            shutdownInProgress = false;
+            started = false;
+            executors.clear();
+        }
     }
 
     protected class ShutdownListener implements RuntimeServiceListener {
@@ -448,19 +439,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 }
             });
             return thread;
-        }
-    }
-
-    /**
-     * A handler for rejected tasks that discards them.
-     */
-    public static class CancelingPolicy implements RejectedExecutionHandler {
-
-        public static final CancelingPolicy INSTANCE = new CancelingPolicy();
-
-        @Override
-        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            ((WorkThreadPoolExecutor) executor).removedFromQueue(r);
         }
     }
 
@@ -550,7 +528,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          * List of running Work instances, in order to be able to interrupt them if requested.
          */
         // @GuardedBy("itself")
-        protected final List<Work> running;
+        protected final ConcurrentLinkedQueue<Work> running;
 
         // metrics
 
@@ -569,7 +547,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             super(corePoolSize, maximumPoolSize, keepAliveTime, unit, queuing.initScheduleQueue(queueId), threadFactory);
             this.queueId = queueId;
             completionSynchronizer = new WorkCompletionSynchronizer(queueId);
-            running = new LinkedList<Work>();
+            running = new ConcurrentLinkedQueue<Work>();
             // init metrics
             scheduledCount = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "scheduled", "count"));
             scheduledMax = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "scheduled", "max"));
@@ -629,40 +607,32 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         @Override
         protected void beforeExecute(Thread t, Runnable r) {
             Work work = WorkHolder.getWork(r);
+            if (started == false || shutdownInProgress == true) {
+                work.setWorkInstanceState(State.SCHEDULED);
+                submit(r);
+                return;
+            }
             work.setWorkInstanceState(State.RUNNING);
             queuing.workRunning(queueId, work);
-            synchronized (running) {
-                running.add(work);
-            }
-            // metrics
-            scheduledCount.dec();
+            running.add(work);
             runningCount.inc();
         }
 
         @Override
         protected void afterExecute(Runnable r, Throwable t) {
+            Work work = WorkHolder.getWork(r);
             try {
-                Work work = WorkHolder.getWork(r);
-                synchronized (running) {
-                    running.remove(work);
+                if (work.isSuspending()) {
+                    return;
                 }
-                State state;
-                if (t == null) {
-                    if (work.isWorkInstanceSuspended()) {
-                        state = State.SCHEDULED;
-                    } else {
-                        state = State.COMPLETED;
-                    }
-                } else {
-                    state = State.FAILED;
-                }
-                work.setWorkInstanceState(state);
+                work.setWorkInstanceState(t == null ? State.COMPLETED : State.FAILED);
                 queuing.workCompleted(queueId, work);
+            } finally {
                 // metrics
+                running.remove(work);
                 runningCount.dec();
                 completedCount.inc();
                 workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
-            } finally {
                 completionSynchronizer.signalCompletion();
             }
         }
@@ -677,24 +647,22 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
 
         /**
-         * Initiates a shutdown of this executor and asks for work instances to suspend themselves. The scheduled work
-         * instances are drained and suspended.
+         * Initiates a shutdown of this executor and asks for work instances to suspend themselves.
          */
         public void shutdownAndSuspend() {
-            // rejected tasks will be discarded
-            setRejectedExecutionHandler(CancelingPolicy.INSTANCE);
+            // don't consume the queue anymore
+            ((NuxeoBlockingQueue) getQueue()).setActive(false);
             // shutdown the executor
-            // if a new task is scheduled it will be rejected -> discarded
             shutdown();
-            // request all scheduled work instances to suspend (cancel)
-            int n = queuing.setSuspending(queueId);
-            completionSynchronizer.scheduledOrRunning.addAndGet(-n);
-            // request all running work instances to suspend (stop)
+            // suspend and reschedule all running work
             synchronized (running) {
                 for (Work work : running) {
+                    work.setWorkInstanceState(State.SCHEDULED);
+                    submit(new WorkHolder(work));
                     work.setWorkInstanceSuspending();
                 }
             }
+            shutdownNow();
         }
 
         /**
@@ -915,6 +883,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean awaitCompletion(String queueId, long duration, TimeUnit unit) throws InterruptedException {
+        if (!isStarted()) {
+            return true;
+        }
         return getExecutor(queueId).completionSynchronizer.await(unit.toNanos(duration)) > 0;
     }
 
@@ -954,7 +925,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean isStarted() {
-        return started;
+        return started && !shutdownInProgress;
     }
 
 }

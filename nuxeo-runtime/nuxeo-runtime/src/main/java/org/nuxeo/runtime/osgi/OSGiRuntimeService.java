@@ -43,6 +43,7 @@ import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.ServicePassivator;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -516,9 +517,17 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     @Override
     public void frameworkEvent(FrameworkEvent event) {
-        if (event.getType() == FrameworkEvent.STARTED) {
-            fireApplicationStarted();
+        if (event.getType() != FrameworkEvent.STARTED) {
+            return;
         }
+        ServicePassivator.proceed(0L, 0L, false, new Runnable() {
+
+			@Override
+			public void run() {
+				fireApplicationStarted();	
+			}
+        	
+        });
     }
 
     private void printStatusMessage() {

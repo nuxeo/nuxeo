@@ -496,8 +496,7 @@ public class RedisWorkQueuing implements WorkQueuing {
      * @param work the work instance
      * @throws IOException
      */
-    public void addScheduledWork(final String queueId, Work work) throws IOException {
-        log.debug("Add scheduled " + work);
+    public void addScheduledWork(final String queueId, final Work work) throws IOException {
         final byte[] workIdBytes = bytes(work.getId());
 
         // serialize Work
@@ -518,6 +517,7 @@ public class RedisWorkQueuing implements WorkQueuing {
                     jedis.hset(stateKey(), workIdBytes, STATE_SCHEDULED);
                     jedis.lpush(scheduledKey(queueId), workIdBytes);
                 }
+                log.debug("Add scheduled " + work);
                 return null;
             }
 
@@ -859,7 +859,9 @@ public class RedisWorkQueuing implements WorkQueuing {
                 jedis.hset(stateKey(), workIdBytes, completedBytes);
                 // get data
                 byte[] workBytes = jedis.hget(dataKey(), workIdBytes);
-                return deserializeWork(workBytes);
+                Work work = deserializeWork(workBytes);
+                log.debug("Remove scheduled " + work);
+                return work;
             }
 
         });
