@@ -39,9 +39,13 @@ class InjectorArbre(Injector):
                 continue
             props = {}
             parentPath = self.createPathFromGeoHash(name)
+            pDate = row[7]
+            if pDate.startswith('17'):
+                # mssql don't like date before 1753
+                pDate = pDate.replace('17', '18')
             props["dc:title"] = row[5] + ((" - " + row[6]) if row[6] != "" else "")
             props["dc:description"] = row[1] + " " + row[2] +  " plantation: " + row[7]
-            props["dc:issued"] = row[7]
+            props["dc:issued"] = pDate
             props["dc:format"] = "Hauteur: " + row[4] + "m, circonférence: " + row[3] + " cm"
             props["dc:source"] = row[0]
             writer.addDocument(name, "File", parentPath, props)
