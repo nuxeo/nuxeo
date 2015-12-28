@@ -189,7 +189,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
     }
 
     @Override
-    public AuthnRequest buildAuthRequest(HttpServletRequest httpRequest) throws SAMLException {
+    public AuthnRequest buildAuthRequest(HttpServletRequest httpRequest, String... authnContexts) throws SAMLException {
 
         AuthnRequest request = build(AuthnRequest.DEFAULT_ELEMENT_NAME);
         request.setID(newUUID());
@@ -209,16 +209,19 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
         nameIDPolicy.setFormat(NameIDType.UNSPECIFIED);
         request.setNameIDPolicy(nameIDPolicy);
 
-        RequestedAuthnContext requestedAuthnContext = build(RequestedAuthnContext.DEFAULT_ELEMENT_NAME);
-        requestedAuthnContext.setComparison(AuthnContextComparisonTypeEnumeration.EXACT);
-        request.setRequestedAuthnContext(requestedAuthnContext);
-
-        AuthnContextClassRef authnContextClassRef = build(AuthnContextClassRef.DEFAULT_ELEMENT_NAME);
-        authnContextClassRef.setAuthnContextClassRef(AuthnContext.PPT_AUTHN_CTX);
-        requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRef);
+        // fill the AuthNContext
+        if (authnContexts.length > 0) {
+            RequestedAuthnContext requestedAuthnContext = build(RequestedAuthnContext.DEFAULT_ELEMENT_NAME);
+            requestedAuthnContext.setComparison(AuthnContextComparisonTypeEnumeration.EXACT);
+            request.setRequestedAuthnContext(requestedAuthnContext);
+            for (String context : authnContexts) {
+                AuthnContextClassRef authnContextClassRef = build(AuthnContextClassRef.DEFAULT_ELEMENT_NAME);
+                authnContextClassRef.setAuthnContextClassRef(context);
+                requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRef);
+            }
+        }
 
         return request;
-
     }
 
     @Override

@@ -40,7 +40,7 @@ public interface WebSSOProfile {
 
     SAMLCredential processAuthenticationResponse(SAMLMessageContext context) throws SAMLException;
 
-    AuthnRequest buildAuthRequest(HttpServletRequest request) throws SAMLException;
+    AuthnRequest buildAuthRequest(HttpServletRequest request, String... authnContexts) throws SAMLException;
 
     Endpoint getEndpoint();
 
