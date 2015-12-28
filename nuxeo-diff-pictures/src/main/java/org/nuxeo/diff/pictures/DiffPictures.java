@@ -65,8 +65,6 @@ public class DiffPictures {
 
     public static final String DEFAULT_LOWLIGHT_COLOR = "None";
 
-    protected static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir");
-
     // See nuxeo-diff-pictures-template.html
     protected static final String TMPL_PREFIX = "{{";
 
