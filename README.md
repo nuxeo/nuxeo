@@ -27,35 +27,32 @@ changes are still needed on maintenance branches.
 
 1. Set the new language as a new target language on Crowdin, and download the corresponding file.
 
-Rename this translation file to `messages_xx_XX.properties`, where `xx_XX` is the 4 letters codename for your language, and reference it in the `crowdin.ini` file.
+  Rename this translation file to `messages_xx_XX.properties`, where `xx_XX` is the 4 letters codename for your language, and reference it in the `crowdin.ini` file.
 
 2. Create a Nuxeo Bundle and put your file under
 
-
-    src/main/resources/web/nuxeo.war/WEB-INF/classes/
-
+        src/main/resources/web/nuxeo.war/WEB-INF/classes/
 
 3. Modify the deployment-fragment.xml file accordingly:
 
-
-    <?xml version="1.0"?>
-    <fragment version="1">
-      <require>org.nuxeo.ecm.platform.lang.ext</require>
-      <extension target="faces-config#APPLICATION_LOCALE">
-        <locale-config>
-          <supported-locale>xx_XX</supported-locale> <!-- Your custom locale -->
-        </locale-config>
-      </extension>
-      <install>
-        <!-- Unzip the contents of our nuxeo.war into the real nuxeo.war on the server -->
-        <unzip from="${bundle.fileName}" to="/" prefix="web">
-          <include>web/nuxeo.war/**</include>
-        </unzip>
-        <!-- Add fallback to two letters locale for browser compatibility if needed -->
-        <copy from="nuxeo.war/WEB-INF/classes/messages_xx_XX.properties"
-              to="nuxeo.war/WEB-INF/classes/messages_xx.properties"/>
-      </install>
-    </fragment>
+        <?xml version="1.0"?>
+        <fragment version="1">
+          <require>org.nuxeo.ecm.platform.lang.ext</require>
+          <extension target="faces-config#APPLICATION_LOCALE">
+            <locale-config>
+              <supported-locale>xx_XX</supported-locale> <!-- Your custom locale -->
+            </locale-config>
+          </extension>
+          <install>
+            <!-- Unzip the contents of our nuxeo.war into the real nuxeo.war on the server -->
+            <unzip from="${bundle.fileName}" to="/" prefix="web">
+              <include>web/nuxeo.war/**</include>
+            </unzip>
+            <!-- Add fallback to two letters locale for browser compatibility if needed -->
+            <copy from="nuxeo.war/WEB-INF/classes/messages_xx_XX.properties"
+                  to="nuxeo.war/WEB-INF/classes/messages_xx.properties"/>
+          </install>
+        </fragment>
 
 ## Where to add your existing translations?
 
@@ -89,33 +86,30 @@ translations.
 
 2. Create a Nuxeo Bundle and put your file under:
 
-
-    src/main/resources/web/nuxeo.war/WEB-INF/classes/
+        src/main/resources/web/nuxeo.war/WEB-INF/classes/
 
 3. Modify the deployment-fragment.xml file accordingly:
 
-
-    <?xml version="1.0"?>
-    <fragment version="1">
-      <require>org.nuxeo.ecm.platform.lang.ext</require>
-      <install>
-        <delete path="${bundle.fileName}.tmp" />
-        <mkdir path="${bundle.fileName}.tmp" />
-        <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
-        <!-- Add the content of messages_xx_XX.properties at the end of the existing file -->
-        <append from="${bundle.fileName}.tmp/web/nuxeo.war/WEB-INF/classes/messages_xx_XX.properties"
-                to="nuxeo.war/WEB-INF/classes/messages_xx_XX.properties" addNewLine="true" />
-        <!-- Add fallback to two letters locale for browser compatibility if needed -->
-        <append from="${bundle.fileName}.tmp/web/nuxeo.war/WEB-INF/classes/messages_xx_XX.properties"
-                to="nuxeo.war/WEB-INF/classes/messages_xx.properties" addNewLine="true" />
-        <delete path="${bundle.fileName}.tmp" />
-      </install>
-    </fragment>
-
+        <?xml version="1.0"?>
+        <fragment version="1">
+          <require>org.nuxeo.ecm.platform.lang.ext</require>
+          <install>
+            <delete path="${bundle.fileName}.tmp" />
+            <mkdir path="${bundle.fileName}.tmp" />
+            <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
+            <!-- Add the content of messages_xx_XX.properties at the end of the existing file -->
+            <append from="${bundle.fileName}.tmp/web/nuxeo.war/WEB-INF/classes/messages_xx_XX.properties"
+                    to="nuxeo.war/WEB-INF/classes/messages_xx_XX.properties" addNewLine="true" />
+            <!-- Add fallback to two letters locale for browser compatibility if needed -->
+            <append from="${bundle.fileName}.tmp/web/nuxeo.war/WEB-INF/classes/messages_xx_XX.properties"
+                    to="nuxeo.war/WEB-INF/classes/messages_xx.properties" addNewLine="true" />
+            <delete path="${bundle.fileName}.tmp" />
+          </install>
+        </fragment>
 
 ## How to override existing translations?
 
 The same procedure as above can be used to override some existing
 translations. Just make sure you also require any bundle that would
-define them (like bundle "org.nuxeo.ecm.platform.lang.ext" above): the
+define them (like bundle "`org.nuxeo.ecm.platform.lang.ext`" above): the
 last definition in the file wins over the others.
