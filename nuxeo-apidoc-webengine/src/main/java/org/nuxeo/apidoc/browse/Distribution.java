@@ -53,6 +53,7 @@ import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -310,11 +311,9 @@ public class Distribution extends ModuleRoot {
     }
 
     protected File getExportTmpFile() {
-        String fPath = System.getProperty("java.io.tmpdir") + "/export.zip";
-        File tmpFile = new File(fPath);
+        File tmpFile = new File(Environment.getDefault().getTemp(), "export.zip");
         if (tmpFile.exists()) {
             tmpFile.delete();
-            tmpFile = new File(fPath);
         }
         tmpFile.deleteOnExit();
         return tmpFile;
