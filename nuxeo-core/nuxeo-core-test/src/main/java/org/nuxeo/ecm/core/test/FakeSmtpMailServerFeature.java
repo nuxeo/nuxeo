@@ -51,8 +51,8 @@ public class FakeSmtpMailServerFeature extends SimpleFeature {
             mailProperties.add(String.format("mail.smtp.port = %s", SERVER_PORT));
             FileUtils.writeLines(file, mailProperties);
 
-            Framework.getProperties().put("mail.transport.host", SERVER_HOST);
-            Framework.getProperties().put("mail.transport.port", String.valueOf(SERVER_PORT));
+            Framework.getProperties().setProperty("mail.transport.host", SERVER_HOST);
+            Framework.getProperties().setProperty("mail.transport.port", String.valueOf(SERVER_PORT));
         }
 
     }

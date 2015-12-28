@@ -108,7 +108,7 @@ public class StorageConfiguration {
         if (value == null || value.equals("") || value.equals("${" + name + "}")) {
             value = def;
         }
-        Framework.getProperties().put(name, value);
+        Framework.getProperties().setProperty(name, value);
         return value;
     }
 

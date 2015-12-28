@@ -66,7 +66,7 @@ public class UserProfileFeature extends SimpleFeature {
         File dst = File.createTempFile("nuxeoImportTest", ".dir");
         dst.delete();
         dst.mkdir();
-        Framework.getProperties().put(UserProfileImporter.BLOB_FOLDER_PROPERTY,
+        Framework.getProperties().setProperty(UserProfileImporter.BLOB_FOLDER_PROPERTY,
                 dst.getPath() + "/data");
         FileUtils.copyDirectoryToDirectory(src, dst);
         return dst.getPath();

@@ -52,30 +52,30 @@ public class TestSystemLoginRestriction {
         assertTrue(srm.isRemoteSystemLoginRestricted());
 
         srm = new SystemLoginRestrictionManager();
-        Framework.getProperties().put(SystemLoginRestrictionManager.RESTRICT_REMOTE_SYSTEM_LOGIN_PROP, "false");
+        Framework.getProperties().setProperty(SystemLoginRestrictionManager.RESTRICT_REMOTE_SYSTEM_LOGIN_PROP, "false");
         assertFalse(srm.isRemoteSystemLoginRestricted());
 
         srm = new SystemLoginRestrictionManager();
-        Framework.getProperties().put(SystemLoginRestrictionManager.RESTRICT_REMOTE_SYSTEM_LOGIN_PROP, "true");
+        Framework.getProperties().setProperty(SystemLoginRestrictionManager.RESTRICT_REMOTE_SYSTEM_LOGIN_PROP, "true");
         assertTrue(srm.isRemoteSystemLoginRestricted());
 
         srm = new SystemLoginRestrictionManager();
         assertFalse(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost"));
 
         srm = new SystemLoginRestrictionManager();
-        Framework.getProperties().put(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP,
+        Framework.getProperties().setProperty(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP,
                 "RemoteHost");
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost"));
 
         srm = new SystemLoginRestrictionManager();
-        Framework.getProperties().put(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP,
+        Framework.getProperties().setProperty(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP,
                 "RemoteHost,RemoteHost2");
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost"));
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost2"));
         assertFalse(srm.isRemoveSystemLoginAllowedForInstance(""));
 
         srm = new SystemLoginRestrictionManager();
-        Framework.getProperties().put(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP,
+        Framework.getProperties().setProperty(SystemLoginRestrictionManager.REMOTE_SYSTEM_LOGIN_TRUSTED_INSTANCES_PROP,
                 "RemoteHost,RemoteHost2,");
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost"));
         assertTrue(srm.isRemoveSystemLoginAllowedForInstance("RemoteHost2"));
