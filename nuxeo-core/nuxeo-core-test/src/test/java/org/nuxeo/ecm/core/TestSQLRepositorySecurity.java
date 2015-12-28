@@ -88,7 +88,7 @@ public class TestSQLRepositorySecurity {
     @Before
     public void setUp() {
         if (allowNegativeAcl()) {
-            Framework.getProperties().put(SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY, "true");
+            Framework.getProperties().setProperty(SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY, "true");
         }
     }
 
