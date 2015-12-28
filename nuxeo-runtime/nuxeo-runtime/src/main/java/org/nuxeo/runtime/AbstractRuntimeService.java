@@ -31,6 +31,7 @@ import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.ServicePassivator;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;

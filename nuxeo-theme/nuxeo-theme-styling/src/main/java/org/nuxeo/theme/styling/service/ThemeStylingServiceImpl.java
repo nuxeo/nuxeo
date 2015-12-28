@@ -157,7 +157,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             unregisterResource(getResourceFromStyle(style));
         } else if (contribution instanceof PageDescriptor) {
             PageDescriptor page = (PageDescriptor) contribution;
-            if (page.hasResources() && !Framework.getRuntime().isShuttingDown()) {
+            if (page.hasResources()) {
                 WebResourceManager wrm = Framework.getService(WebResourceManager.class);
                 wrm.unregisterResourceBundle(page.getComputedResourceBundle());
             }

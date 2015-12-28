@@ -1,15 +1,17 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
  *     bstefanescu
@@ -20,8 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
 import java.util.jar.Manifest;
 
 import javax.transaction.Transaction;
@@ -34,9 +36,8 @@ import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
-import org.nuxeo.runtime.api.DefaultServiceProvider;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.ServiceProvider;
+import org.nuxeo.runtime.api.ServicePassivator;
 import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -120,8 +121,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void flushJaasCache() {
         log.info("Flush the JAAS cache");
-        Framework.getLocalService(EventService.class).sendEvent(
-                new Event("usermanager", "user_changed", this, "Deployer"));
+        Framework.getLocalService(EventService.class)
+                .sendEvent(new Event("usermanager", "user_changed", this, "Deployer"));
         setFlushedNow();
     }
 
@@ -318,49 +319,40 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     protected void triggerReload(String id) {
-        final CountDownLatch reloadAchieved = new CountDownLatch(1);
-        final Thread ownerThread = Thread.currentThread();
+        if (id.equals(RELOAD_SEAM_EVENT_ID)) {
+            log.info("about to send " + id);
+            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
+            return;
+        }
+        log.info("about to passivate for " + id);
+        Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "before-reload", this, null));
         try {
-            ServiceProvider next = DefaultServiceProvider.getProvider();
-            DefaultServiceProvider.setProvider(new ServiceProvider() {
-
-                @Override
-                public <T> T getService(Class<T> serviceClass) {
-                    if (Thread.currentThread() != ownerThread) {
-                        try {
-                            reloadAchieved.await();
-                        } catch (InterruptedException cause) {
-                            Thread.currentThread().interrupt();
-                            throw new AssertionError(serviceClass + "was interruped while waiting for reloading",
-                                    cause);
+            ServicePassivator
+                    .proceed(Duration.ofSeconds(5), Duration.ofSeconds(30), true,
+                            () -> {
+                        log.info("about to send " + id);
+                        Framework.getLocalService(EventService.class)
+                                .sendEvent(new Event(RELOAD_TOPIC, id, this, null));
+                        if (id.startsWith(FLUSH_EVENT_ID)) {
+                            setFlushedNow();
                         }
-                    }
-                    if (next != null) {
-                        return next.getService(serviceClass);
-                    }
-                    return  Framework.getRuntime().getService(serviceClass);
-                }
-            });
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug("triggering reload("+id+")");
-                }
-                Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
-                if (id.startsWith(FLUSH_EVENT_ID) || FLUSH_SEAM_EVENT_ID.equals(id)) {
-                    setFlushedNow();
-                }
-            } finally {
-                DefaultServiceProvider.setProvider(next);
-            }
+                    })
+                    .onFailure(snapshot -> {
+                        throw new UnsupportedOperationException(
+                                "Detected access, should initiate a reboot " + snapshot.toString());
+                    });
         } finally {
-            reloadAchieved.countDown();
+            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "after-reload", this, null));
+            log.info("returning from " + id);
         }
     }
 
     protected void triggerReloadWithNewTransaction(String id) {
         if (TransactionHelper.isTransactionMarkedRollback()) {
-            throw new AssertionError("The calling transaction is marked rollback=");
-        } else if (TransactionHelper.isTransactionActive()) { // should flush the calling transaction
+            throw new AssertionError("The calling transaction is marked rollback");
+        } else if (TransactionHelper.isTransactionActive()) { // should flush
+                                                              // the calling
+                                                              // transaction
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
