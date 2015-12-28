@@ -74,7 +74,7 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
         deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-permissions-contrib.xml");
         if (allowNegativeAcl()) {
-            Framework.getProperties().put(
+            Framework.getProperties().setProperty(
                     SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY, "true");
         }
         openSession();
