@@ -1,4 +1,4 @@
-package org.nuxeo.elasticsearch.test;/*
+/*
  * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@ package org.nuxeo.elasticsearch.test;/*
  * Contributors:
  *     Delbosc Benoit
  */
-
+package org.nuxeo.elasticsearch.test;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;

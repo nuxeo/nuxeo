@@ -1,4 +1,4 @@
-/*******************************************************************************
+/*
  * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *******************************************************************************/
+ */
 package org.nuxeo.runtime.datasource;
 
 import java.sql.Connection;

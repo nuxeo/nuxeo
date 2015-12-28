@@ -1,4 +1,4 @@
-package org.nuxeo.ecm.core.redis.contribs;/*
+/*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@ package org.nuxeo.ecm.core.redis.contribs;/*
  * Contributors:
  *     Delbosc Benoit
  */
+package org.nuxeo.ecm.core.redis.contribs;
 
 import org.apache.commons.codec.binary.Base64;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;

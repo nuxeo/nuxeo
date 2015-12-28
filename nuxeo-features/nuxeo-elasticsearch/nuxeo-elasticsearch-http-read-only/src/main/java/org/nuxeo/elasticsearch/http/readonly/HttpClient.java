@@ -1,4 +1,4 @@
-package org.nuxeo.elasticsearch.http.readonly;/*
+/*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@ package org.nuxeo.elasticsearch.http.readonly;/*
  * Contributors:
  *     Benoit Delbosc
  */
+package org.nuxeo.elasticsearch.http.readonly;
 
 import java.io.IOException;
 
