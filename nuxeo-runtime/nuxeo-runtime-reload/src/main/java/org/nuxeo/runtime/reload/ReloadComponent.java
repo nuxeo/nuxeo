@@ -341,6 +341,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                     return  Framework.getRuntime().getService(serviceClass);
                 }
             });
+            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "before-reload", this, null));
             try {
                 if (log.isDebugEnabled()) {
                     log.debug("triggering reload("+id+")");
@@ -354,6 +355,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             }
         } finally {
             reloadAchieved.countDown();
+            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "after-reload", this, null));
         }
     }
 
