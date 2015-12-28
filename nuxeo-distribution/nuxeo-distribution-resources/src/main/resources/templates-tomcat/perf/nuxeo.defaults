@@ -21,3 +21,6 @@ nuxeo.vcs.optimizations.path.enabled=false
 
 # When in cluster mode use Redis invalidation
 repository.clustering.invalidation=redis
+
+# Do not use Redis for directory cache
+nuxeo.cache.type=memory
