@@ -45,6 +45,7 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -406,15 +407,29 @@ public class UserRegistrationActions implements Serializable {
 
     public void validateUsernameEmail(FacesContext context, UIComponent component, Object value) {
         String email = (String) ((UIInput) component.findComponent(WIDGET_COMPONENT_EMAIL_ID)).getLocalValue();
-        NuxeoPrincipal principal = userManager.getPrincipal((String) value);
-        if (principal == null || email == null) {
-            return;
-        }
-        if (!email.equals(principal.getEmail())) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                    "label.unicity.usernamepwd"), null);
-            context.addMessage(null, message);
-            throw new ValidatorException(message);
+        if (email != null) {
+            if (value == null) {
+                value = email;
+            }
+            NuxeoPrincipal principal = userManager.getPrincipal((String) value);
+            if (principal != null) {
+                if (!email.equals(principal.getEmail())) {
+                    FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(
+                            context, "label.unicity.usernamepwd"), null);
+                    context.addMessage(null, message);
+                    throw new ValidatorException(message);
+                }
+                return;
+            }
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("email", email);
+            DocumentModelList users = userManager.searchUsers(filter, filter.keySet());
+            if (users.size() != 0) {
+                FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
+                        "label.unicity.sameemail", users.get(0).getPropertyValue("user:username")), null);
+                context.addMessage(null, message);
+                throw new ValidatorException(message);
+            }
         }
     }
 }
