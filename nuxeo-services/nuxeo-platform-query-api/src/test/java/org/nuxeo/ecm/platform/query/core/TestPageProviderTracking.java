@@ -84,7 +84,7 @@ public class TestPageProviderTracking {
     @Test
     public void testTrackingProperty() throws Exception {
 
-        Framework.getProperties().put(AbstractPageProvider.PAGEPROVIDER_TRACK_PROPERTY_NAME, "CURRENT_DOCUMENT_CHILDREN2");
+        Framework.getProperties().setProperty(AbstractPageProvider.PAGEPROVIDER_TRACK_PROPERTY_NAME, "CURRENT_DOCUMENT_CHILDREN2");
 
         PageProviderDefinition def = pps.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN2");
         assertFalse(def.isUsageTrackingEnabled());
