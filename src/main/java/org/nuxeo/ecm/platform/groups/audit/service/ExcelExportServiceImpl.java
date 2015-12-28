@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -99,12 +100,11 @@ public class ExcelExportServiceImpl extends DefaultComponent implements ExcelExp
     }
 
     protected File getWorkingDir() {
-        String dirPath = System.getProperty("java.io.tmpdir") + "/NXExcelExport" + System.currentTimeMillis();
-        File workingDir = new File(dirPath);
+        File workingDir = new File(Environment.getDefault().getTemp(), "NXExcelExport" + System.currentTimeMillis());
         if (workingDir.exists()) {
             FileUtils.deleteQuietly(workingDir);
         }
-        workingDir.mkdir();
+        workingDir.mkdirs();
         return workingDir;
     }
 
