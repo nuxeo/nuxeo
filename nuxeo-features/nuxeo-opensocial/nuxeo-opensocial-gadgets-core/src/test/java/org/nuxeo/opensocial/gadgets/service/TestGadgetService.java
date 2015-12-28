@@ -55,7 +55,7 @@ public class TestGadgetService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.opensocial.gadgets.core.test",
         "OSGI-INF/directory-test-config.xml");
 
-        Framework.getProperties().put(NUXEO_LOOPBACK_URL, "http://localhost:8080/nuxeo");
+        Framework.getProperties().setProperty(NUXEO_LOOPBACK_URL, "http://localhost:8080/nuxeo");
     }
 
     @Override
@@ -86,7 +86,7 @@ public class TestGadgetService extends NXRuntimeTestCase {
 
     @Test
     public void testSpecParsing() throws Exception {
-        Framework.getProperties().put(NUXEO_LOOPBACK_URL, "http://localhost:8080/nuxeo");
+        Framework.getProperties().setProperty(NUXEO_LOOPBACK_URL, "http://localhost:8080/nuxeo");
 
         GadgetService service = Framework.getService(GadgetService.class);
         assertNotNull(service);

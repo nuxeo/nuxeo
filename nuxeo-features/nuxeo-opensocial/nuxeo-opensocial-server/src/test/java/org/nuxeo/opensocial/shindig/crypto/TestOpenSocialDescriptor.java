@@ -35,23 +35,23 @@ public class TestOpenSocialDescriptor {
 
     @Test
     public void trustedHostShouldBeEqualsToLoopbackIP() {
-        Framework.getProperties().put(PARAM_LOOPBACK_URL,
+        Framework.getProperties().setProperty(PARAM_LOOPBACK_URL,
                 "http://127.0.0.1:8080/nuxeo");
         OpenSocialDescriptor openSocialDescriptor = new OpenSocialDescriptor();
         String trustedHost = openSocialDescriptor.getTrustedHostFromLoopbackURL();
         assertEquals("127.0.0.1", trustedHost);
 
-        Framework.getProperties().put(PARAM_LOOPBACK_URL,
+        Framework.getProperties().setProperty(PARAM_LOOPBACK_URL,
                 "http://10.213.2.105:8080/nuxeo");
         trustedHost = openSocialDescriptor.getTrustedHostFromLoopbackURL();
         assertEquals("10.213.2.105", trustedHost);
 
-        Framework.getProperties().put(PARAM_LOOPBACK_URL,
+        Framework.getProperties().setProperty(PARAM_LOOPBACK_URL,
                 "http://[0:0:0:0:0:0:0:1]:8080/nuxeo");
         trustedHost = openSocialDescriptor.getTrustedHostFromLoopbackURL();
         assertEquals("0:0:0:0:0:0:0:1", trustedHost);
 
-        Framework.getProperties().put(PARAM_LOOPBACK_URL,
+        Framework.getProperties().setProperty(PARAM_LOOPBACK_URL,
                 "http://[2a01:240:fe8e:0:226:bbff:fe09:55cd]:8080/nuxeo");
         trustedHost = openSocialDescriptor.getTrustedHostFromLoopbackURL();
         assertEquals("2a01:240:fe8e:0:226:bbff:fe09:55cd", trustedHost);
@@ -59,7 +59,7 @@ public class TestOpenSocialDescriptor {
 
     @Test
     public void loopbackIPShouldBeAddedTotheConfiguredListOfTrustedHosts() {
-        Framework.getProperties().put(PARAM_LOOPBACK_URL,
+        Framework.getProperties().setProperty(PARAM_LOOPBACK_URL,
                 "http://10.213.2.105:8080/nuxeo");
         OpenSocialDescriptor openSocialDescriptor = new OpenSocialDescriptor();
         String trustedHost = openSocialDescriptor.getTrustedHostFromLoopbackURL();
