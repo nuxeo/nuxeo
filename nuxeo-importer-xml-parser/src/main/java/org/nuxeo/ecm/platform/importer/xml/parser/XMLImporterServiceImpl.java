@@ -43,6 +43,8 @@ import org.dom4j.Text;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.DefaultText;
 import org.mvel2.MVEL;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -189,7 +191,7 @@ public class XMLImporterServiceImpl {
             doc = new SAXReader().read(file);
             workingDirectory = file.getParentFile();
         } catch (DocumentException e) {
-            File tmp = new File(System.getProperty("java.io.tmpdir"));
+            File tmp = Environment.getDefault().getTemp();
             directory = new File(tmp, file.getName() + System.currentTimeMillis());
             directory.mkdir();
             ZipUtils.unzip(file, directory);
