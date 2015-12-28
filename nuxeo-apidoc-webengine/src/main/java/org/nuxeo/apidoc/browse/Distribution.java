@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.export.ArchiveFile;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -52,7 +53,6 @@ import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -140,7 +140,7 @@ public class Distribution extends ModuleRoot {
     public Resource getLatest() {
         List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots((ctx.getCoreSession()));
 
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (DistributionSnapshot snap : snaps) {
             if (snap.getName().equalsIgnoreCase("Nuxeo Platform")) {
                 keys.add(snap.getKey());
@@ -217,8 +217,8 @@ public class Distribution extends ModuleRoot {
     @POST
     @Path("save")
     @Produces("text/html")
-    public Object doSave() throws NamingException, NotSupportedException, SystemException, OperationException,
-            RollbackException, HeuristicMixedException, HeuristicRollbackException {
+    public Object doSave() throws NamingException, NotSupportedException, SystemException, RollbackException,
+            HeuristicMixedException, HeuristicRollbackException {
         if (!isEditor()) {
             return null;
         }
@@ -254,8 +254,8 @@ public class Distribution extends ModuleRoot {
     @POST
     @Path("saveExtended")
     @Produces("text/html")
-    public Object doSaveExtended() throws NamingException, NotSupportedException, SystemException, OperationException,
-            SecurityException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+    public Object doSaveExtended() throws NamingException, NotSupportedException, SystemException, SecurityException,
+            RollbackException, HeuristicMixedException, HeuristicRollbackException {
         if (!isEditor()) {
             return null;
         }
@@ -331,8 +331,10 @@ public class Distribution extends ModuleRoot {
         out.flush();
         out.close();
         ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
-        return Response.ok(aFile).header("Content-Disposition", "attachment;filename=" + "nuxeo-documentation.zip").type(
-                "application/zip").build();
+        return Response.ok(aFile)
+                       .header("Content-Disposition", "attachment;filename=" + "nuxeo-documentation.zip")
+                       .type("application/zip")
+                       .build();
     }
 
     @GET
@@ -346,7 +348,10 @@ public class Distribution extends ModuleRoot {
         String fName = "nuxeo-distribution-" + distribId + ".zip";
         fName = fName.replace(" ", "_");
         ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
-        return Response.ok(aFile).header("Content-Disposition", "attachment;filename=" + fName).type("application/zip").build();
+        return Response.ok(aFile)
+                       .header("Content-Disposition", "attachment;filename=" + fName)
+                       .type("application/zip")
+                       .build();
     }
 
     @POST
