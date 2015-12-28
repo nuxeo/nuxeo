@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableFile;
@@ -264,6 +265,7 @@ public class DiffPictures {
         return StringUtils.isBlank(inValue) || inValue.toLowerCase().equals("default");
     }
 
+    @SuppressWarnings("null")
     public static String buildDiffHtml(DocumentModel leftDoc, DocumentModel rightDoc, String xpath) throws IOException {
         String html = "";
         InputStream in = null;
@@ -293,7 +295,7 @@ public class DiffPictures {
                 rightLabel = "Version " + rightDoc.getVersionLabel();
             }
         }
-        
+
         // Assuming the documents each have a valid blob.
         ImagingService imagingService = Framework.getService(ImagingService.class);
         String leftFormat = null;
@@ -303,7 +305,7 @@ public class DiffPictures {
 
         Blob bLeft = DiffPicturesUtils.getDocumentBlob(leftDoc, xpath);
         ImageInfo imgInfo = imagingService.getImageInfo(bLeft);
-        if(imgInfo != null) {
+        if (imgInfo != null) {
             leftFormat = imgInfo.getFormat();
             leftW = imgInfo.getWidth();
             leftH = imgInfo.getHeight();
@@ -311,7 +313,7 @@ public class DiffPictures {
 
         Blob bRight = DiffPicturesUtils.getDocumentBlob(rightDoc, xpath);
         imgInfo = imagingService.getImageInfo(bRight);
-        if(imgInfo != null) {
+        if (imgInfo != null) {
             rightFormat = imgInfo.getFormat();
             rightW = imgInfo.getWidth();
             rightH = imgInfo.getHeight();
@@ -327,8 +329,7 @@ public class DiffPictures {
             leftLabel += " (" + leftFormat + ", " + leftW + "x" + leftH + ")";
             rightLabel += " (" + rightFormat + ", " + rightW + "x" + rightH + ")";
 
-            if (leftFormat.toLowerCase().equals(rightFormat.toLowerCase()) && leftW == rightW
-                    && leftH == rightH) {
+            if (leftFormat.equalsIgnoreCase(rightFormat) && leftW == rightW && leftH == rightH) {
                 useProCommand = false;
             } else {
                 useProCommand = true;
