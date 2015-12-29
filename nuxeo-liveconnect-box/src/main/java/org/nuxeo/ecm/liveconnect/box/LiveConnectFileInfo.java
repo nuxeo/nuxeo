@@ -22,6 +22,9 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
+
 /**
  * @since 8.1
  */
@@ -55,5 +58,14 @@ public class LiveConnectFileInfo implements Serializable {
 
     public Optional<String> getRevisionId() {
         return Optional.ofNullable(revisionId);
+    }
+
+    @Override
+    public String toString() {
+        ToStringHelper helper = MoreObjects.toStringHelper(this);
+        helper.add("user", user);
+        helper.add("fileId", fileId);
+        getRevisionId().ifPresent(rev -> helper.add("revisionId", rev));
+        return helper.toString();
     }
 }

@@ -22,11 +22,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -136,8 +138,37 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
     }
 
     @Override
-    public List<DocumentModel> checkChangesAndUpdateBlob(List<DocumentModel> doc) {
-        return null;
+    public List<DocumentModel> checkChangesAndUpdateBlob(List<DocumentModel> docs) {
+        List<DocumentModel> changedDocuments = new ArrayList<>();
+        for (DocumentModel doc : docs) {
+            final SimpleManagedBlob blob = (SimpleManagedBlob) doc.getProperty("content").getValue();
+            if (blob == null || isVersion(blob)) {
+                continue;
+            }
+            LiveConnectFileInfo fileInfo = toFileInfo(blob);
+            try {
+                LiveConnectFile file = retrieveFile(fileInfo);
+                if (hasChanged(blob, file)) {
+                    if (log.isTraceEnabled()) {
+                        log.trace("Updating blob=" + blob.key);
+                    }
+                    getFileCache().put(fileInfo.getFileId(), file);
+                    doc.setPropertyValue("content", toBlob(file));
+                    changedDocuments.add(doc);
+                }
+            } catch (IOException e) {
+                log.error("Could not update document=" + fileInfo, e);
+            }
+
+        }
+        return changedDocuments;
+    }
+
+    /**
+     * Should be overriden by subclasses wanting to rely on a different fields.
+     */
+    protected boolean hasChanged(SimpleManagedBlob blob, LiveConnectFile file) {
+        return StringUtils.isBlank(blob.getDigest()) || !blob.getDigest().equals(file.getDigest());
     }
 
     @Override
@@ -150,10 +181,14 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
         return blobProviderId;
     }
 
-    protected ManagedBlob toBlob(LiveConnectFileInfo fileInfo) throws IOException {
+    protected SimpleManagedBlob toBlob(LiveConnectFileInfo fileInfo) throws IOException {
         LiveConnectFile file = getFile(fileInfo);
+        return toBlob(file);
+    }
+
+    private SimpleManagedBlob toBlob(LiveConnectFile file) {
         BlobInfo blobInfo = new BlobInfo();
-        blobInfo.key = buildBlobKey(fileInfo);
+        blobInfo.key = buildBlobKey(file.getInfo());
         blobInfo.mimeType = file.getMimeType();
         blobInfo.encoding = file.getEncoding();
         blobInfo.filename = file.getFilename().replace('/', '-');
