@@ -11,7 +11,7 @@
     <environment name="exiftool">
       <parameters>
         <!-- See http://search.cpan.org/dist/PAR/lib/PAR.pm#Notes -->
-        <parameter name="PAR_GLOBAL_TMPDIR">${java.io.tmpdir}</parameter>
+        <parameter name="PAR_GLOBAL_TMPDIR">${nuxeo.tmp.dir}</parameter>
         <!-- set PAR_CLEAN cleaning PAR_GLOBAL_TEMP after execution -->
         <!-- <parameter name="PAR_CLEAN">0</parameter> -->
       </parameters>
