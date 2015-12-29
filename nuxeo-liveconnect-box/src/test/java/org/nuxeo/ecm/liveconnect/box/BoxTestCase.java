@@ -29,14 +29,14 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Ignore
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.cache", //
-})
+@Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.mimetype", "org.nuxeo.ecm.platform.oauth" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
         "org.nuxeo.ecm.liveconnect.box:OSGI-INF/cache-config.xml",
-        "org.nuxeo.ecm.liveconnect.box:OSGI-INF/core-types-contrib.xml",
-        "org.nuxeo.ecm.liveconnect:OSGI-INF/liveconnect-workmanager-contrib.xml",
         "org.nuxeo.ecm.liveconnect.box:OSGI-INF/test-box-config.xml",
+        "org.nuxeo.ecm.liveconnect:OSGI-INF/liveconnect-workmanager-contrib.xml",
         "org.nuxeo.ecm.liveconnect.box:OSGI-INF/box-pageprovider-contrib.xml" })
 public class BoxTestCase {
+
+    protected static final String USERID = "tester@example.com";
 
 }
