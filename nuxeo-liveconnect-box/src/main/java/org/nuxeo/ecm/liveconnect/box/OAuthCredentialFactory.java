@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.liveconnect.box;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -33,7 +35,7 @@ public class OAuthCredentialFactory {
         this.provider = provider;
     }
 
-    public Credential build(String user) {
+    public Credential build(String user) throws IOException {
         return provider.loadCredential(user);
     }
 }

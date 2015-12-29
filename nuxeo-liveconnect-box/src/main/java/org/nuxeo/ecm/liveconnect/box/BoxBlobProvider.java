@@ -34,12 +34,18 @@ import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
+import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.runtime.api.Framework;
 
 import com.box.sdk.BoxAPIConnection;
+import com.box.sdk.BoxAPIException;
+import com.box.sdk.BoxFile;
+import com.box.sdk.BoxFile.Info;
+import com.google.api.client.auth.oauth2.Credential;
 
 /**
  * Provider for blobs getting information from Box.
@@ -94,12 +100,8 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
         return blobProviderId;
     }
 
-    protected LiveconnectFile getFile(LiveconnectFileInfo fileInfo) {
-        return null;
-    }
-
-    protected ManagedBlob createBlob(LiveconnectFileInfo fileInfo) throws IOException {
-        LiveconnectFile file = getFile(fileInfo);
+    protected ManagedBlob createBlob(LiveConnectFileInfo fileInfo) throws IOException {
+        LiveConnectFile file = getFile(fileInfo);
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = buildBlobKey(fileInfo);
         blobInfo.mimeType = file.getMimeType();
@@ -110,7 +112,7 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
         return new SimpleManagedBlob(blobInfo);
     }
 
-    private String buildBlobKey(LiveconnectFileInfo fileInfo) {
+    private String buildBlobKey(LiveConnectFileInfo fileInfo) {
         StringBuilder key = new StringBuilder(blobProviderId);
         key.append(':');
         key.append(fileInfo.getUser());
@@ -123,8 +125,24 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
         return key.toString();
     }
 
-    protected BoxAPIConnection getBoxClient(String accessToken) {
-        return new BoxAPIConnection(accessToken);
+    protected Credential getCredential(String user) throws IOException {
+        return getCredentialFactory().build(user);
+    }
+
+    protected OAuthCredentialFactory getCredentialFactory() {
+        return new OAuthCredentialFactory(getOAuth2Provider());
+    }
+
+    protected BoxAPIConnection getBoxClient(NuxeoOAuth2Token token) throws IOException {
+        return getBoxClient(getCredential(token.getServiceLogin()));
+    }
+
+    protected BoxAPIConnection getBoxClient(Credential credential) throws IOException {
+        Long expiresInSeconds = credential.getExpiresInSeconds();
+        if (expiresInSeconds != null && expiresInSeconds <= 0) {
+            credential.refreshToken();
+        }
+        return new BoxAPIConnection(credential.getAccessToken());
     }
 
     /**
@@ -141,9 +159,46 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
         }
     }
 
-    protected Optional<BoxOAuth2ServiceProvider> getOAuth2Provider() {
-        return Optional.ofNullable((BoxOAuth2ServiceProvider) Framework.getLocalService(
-                OAuth2ServiceProviderRegistry.class).getProvider(blobProviderId));
+    protected BoxOAuth2ServiceProvider getOAuth2Provider() {
+        return (BoxOAuth2ServiceProvider) Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(
+                blobProviderId);
+    }
+
+    /**
+     * Returns the {@link LiveConnectFile} from cache, if it doesn't exist retrieves it with API and cache it.
+     *
+     * @param fileInfo The file info.
+     * @return The {@link LiveConnectFile} from cache, if it doesn't exist retrieves it with API and cache it.
+     */
+    protected LiveConnectFile getFile(LiveConnectFileInfo fileInfo) throws IOException {
+        LiveConnectFile file = (LiveConnectFile) getFileCache().get(fileInfo.getFileId());
+        if (file == null) {
+            file = retrieveFile(fileInfo);
+            getFileCache().put(fileInfo.getFileId(), file);
+        }
+        return file;
+    }
+
+    /**
+     * Retrieves the file with API.
+     *
+     * @param fileInfo The file info.
+     * @return The file retrieved from API.
+     */
+    private LiveConnectFile retrieveFile(LiveConnectFileInfo fileInfo) throws IOException {
+        try {
+            Info boxFile = new BoxFile(getBoxClient(getCredential(fileInfo.getUser())), fileInfo.getFileId()).getInfo();
+            return new BoxLiveConnectFile(boxFile);
+        } catch (BoxAPIException e) {
+            throw new IOException("Failed to retrieve Box file metadata", e);
+        }
+    }
+
+    private Cache getFileCache() {
+        if (cache == null) {
+            cache = Framework.getService(CacheService.class).getCache(FILE_CACHE_NAME);
+        }
+        return cache;
     }
 
 }

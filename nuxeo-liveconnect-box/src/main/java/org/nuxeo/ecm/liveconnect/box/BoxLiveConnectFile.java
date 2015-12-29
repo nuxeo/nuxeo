@@ -17,38 +17,33 @@
 package org.nuxeo.ecm.liveconnect.box;
 
 import java.util.Objects;
-import java.util.Optional;
+
+import com.box.sdk.BoxFile;
+import com.box.sdk.BoxFile.Info;
 
 /**
  * @since 8.1
  */
-public class LiveConnectFileInfo {
+public class BoxLiveConnectFile extends AbstractLiveConnectFile {
 
-    private final String user;
+    private final BoxFile.Info file;
 
-    private final String fileId;
-
-    private final String revisionId;
-
-    public LiveConnectFileInfo(String user, String fileId) {
-        this(user, fileId, null);
+    public BoxLiveConnectFile(Info file) {
+        this.file = Objects.requireNonNull(file);
     }
 
-    public LiveConnectFileInfo(String user, String fileId, String revisionId) {
-        this.user = Objects.requireNonNull(user);
-        this.fileId = Objects.requireNonNull(fileId);
-        this.revisionId = revisionId;
+    @Override
+    public String getFilename() {
+        return file.getName();
     }
 
-    public String getUser() {
-        return user;
+    @Override
+    public long getFileSize() {
+        return file.getSize();
     }
 
-    public String getFileId() {
-        return fileId;
-    }
-
-    public Optional<String> getRevisionId() {
-        return Optional.ofNullable(revisionId);
+    @Override
+    public String getDigest() {
+        return file.getSha1();
     }
 }
