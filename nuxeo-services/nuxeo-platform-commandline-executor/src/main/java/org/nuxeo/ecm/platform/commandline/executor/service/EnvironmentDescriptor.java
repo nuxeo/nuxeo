@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -50,7 +51,7 @@ public class EnvironmentDescriptor implements Serializable {
 
     public String getWorkingDirectory() {
         if (workingDirectory == null) {
-            workingDirectory = System.getProperty("java.io.tmpdir");
+            workingDirectory = Environment.getDefault().getTemp().getPath();
         }
         if (!workingDirectory.endsWith("/")) {
             workingDirectory += "/";

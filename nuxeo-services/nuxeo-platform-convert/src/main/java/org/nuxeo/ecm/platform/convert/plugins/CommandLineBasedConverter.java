@@ -30,6 +30,8 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -73,7 +75,7 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             tmp = (String) parameters.get(TMP_PATH_PARAMETER);
         }
         if (tmp == null) {
-            tmp = System.getProperty("java.io.tmpdir");
+            tmp = Environment.getDefault().getTemp().getPath();
         }
         return tmp;
     }

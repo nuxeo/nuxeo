@@ -8,10 +8,10 @@
         <!-- TMPDIR is the canonical Unix environment variable specified in various Unix and similar standards -->
         <!-- TMP, TEMP and TEMPDIR are alternatively used by non-POSIX OS or non-standard programs -->
         <!-- Windows/DOS programs randomly use TMP or TEMP environment variables -->
-        <parameter name="TMPDIR">${java.io.tmpdir}</parameter>
-        <parameter name="TMP">${java.io.tmpdir}</parameter>
-        <parameter name="TEMP">${java.io.tmpdir}</parameter>
-        <parameter name="TEMPDIR">${java.io.tmpdir}</parameter>
+        <parameter name="TMPDIR">${nuxeo.tmp.dir}</parameter>
+        <parameter name="TMP">${nuxeo.tmp.dir}</parameter>
+        <parameter name="TEMP">${nuxeo.tmp.dir}</parameter>
+        <parameter name="TEMPDIR">${nuxeo.tmp.dir}</parameter>
       </parameters>
     </environment>
   </extension>

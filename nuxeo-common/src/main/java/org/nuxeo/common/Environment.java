@@ -339,7 +339,11 @@ public class Environment {
 
     public File getTemp() {
         if (temp == null) {
-            temp = new File(home, DEFAULT_TMP_DIR);
+            if (properties.containsKey(NUXEO_TMP_DIR)) {
+                temp = new File(properties.getProperty(NUXEO_TMP_DIR));
+            } else {
+                setTemp(new File(home, DEFAULT_TMP_DIR));
+            }
         }
         return temp;
     }
@@ -347,11 +351,16 @@ public class Environment {
     public void setTemp(File temp) {
         this.temp = temp;
         properties.setProperty(NUXEO_TMP_DIR, temp.getAbsolutePath());
+        temp.mkdirs();
     }
 
     public File getConfig() {
         if (config == null) {
-            config = new File(home, DEFAULT_CONFIG_DIR);
+            if (properties.containsKey(NUXEO_CONFIG_DIR)) {
+                config = new File(properties.getProperty(NUXEO_CONFIG_DIR));
+            } else {
+                setConfig(new File(home, DEFAULT_CONFIG_DIR));
+            }
         }
         return config;
     }
@@ -359,11 +368,16 @@ public class Environment {
     public void setConfig(File config) {
         this.config = config;
         properties.setProperty(NUXEO_CONFIG_DIR, config.getAbsolutePath());
+        config.mkdirs();
     }
 
     public File getLog() {
         if (log == null) {
-            log = new File(home, DEFAULT_LOG_DIR);
+            if (properties.containsKey(NUXEO_LOG_DIR)) {
+                log = new File(properties.getProperty(NUXEO_LOG_DIR));
+            } else {
+                setLog(new File(home, DEFAULT_LOG_DIR));
+            }
         }
         return log;
     }
@@ -371,11 +385,16 @@ public class Environment {
     public void setLog(File log) {
         this.log = log;
         properties.setProperty(NUXEO_LOG_DIR, log.getAbsolutePath());
+        log.mkdirs();
     }
 
     public File getData() {
         if (data == null) {
-            data = new File(home, DEFAULT_DATA_DIR);
+            if (properties.containsKey(NUXEO_DATA_DIR)) {
+                data = new File(properties.getProperty(NUXEO_DATA_DIR));
+            } else {
+                setData(new File(home, DEFAULT_DATA_DIR));
+            }
         }
         return data;
     }
@@ -383,11 +402,16 @@ public class Environment {
     public void setData(File data) {
         this.data = data;
         properties.setProperty(NUXEO_DATA_DIR, data.getAbsolutePath());
+        data.mkdirs();
     }
 
     public File getWeb() {
         if (web == null) {
-            web = new File(home, DEFAULT_WEB_DIR);
+            if (properties.containsKey(NUXEO_WEB_DIR)) {
+                web = new File(properties.getProperty(NUXEO_WEB_DIR));
+            } else {
+                setWeb(new File(home, DEFAULT_WEB_DIR));
+            }
         }
         return web;
     }
@@ -490,9 +514,9 @@ public class Environment {
     private void initRuntimeHome() {
         String runtimeDir = System.getProperty(NUXEO_RUNTIME_HOME);
         if (runtimeDir != null && !runtimeDir.isEmpty()) {
-            runtimeHome = new File(runtimeDir);
+            setRuntimeHome(new File(runtimeDir));
         } else {
-            runtimeHome = home;
+            setRuntimeHome(home);
         }
     }
 
@@ -521,11 +545,11 @@ public class Environment {
     private void initServerHome() {
         String homeDir = System.getProperty(NUXEO_HOME, System.getProperty(NUXEO_HOME_DIR));
         if (homeDir != null && !homeDir.isEmpty()) {
-            serverHome = new File(homeDir);
+            setServerHome(new File(homeDir));
         } else {
             logger.warn(String.format("Could not get %s neither %s system properties, will use %s", NUXEO_HOME,
                     NUXEO_HOME_DIR, home));
-            serverHome = home;
+            setServerHome(home);
         }
         logger.debug(this);
     }

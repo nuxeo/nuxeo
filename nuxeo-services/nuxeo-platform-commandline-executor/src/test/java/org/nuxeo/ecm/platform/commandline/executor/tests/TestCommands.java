@@ -27,11 +27,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
@@ -60,8 +63,10 @@ public class TestCommands extends NXRuntimeTestCase {
         CmdParameters params = cles.getDefaultCmdParameters();
 
         // test default param
-        List<String> res = ShellExecutor.replaceParams("-tmp=#{java.io.tmpdir}", params);
-        assertEquals(Arrays.asList("-tmp=" + System.getProperty("java.io.tmpdir")), res);
+        List<String> res = ShellExecutor.replaceParams("-tmp=#{java.io.tmpdir} -nuxeo.tmp=#{nuxeo.tmp.dir}", params);
+        List<String> exp = Collections.singletonList(String.format("-tmp=%s -nuxeo.tmp=%s",
+                System.getProperty("java.io.tmpdir"), Environment.getDefault().getTemp().getPath()));
+        assertEquals(exp, res);
 
         // test String param
         params.addNamedParameter("foo", "/some/path");
@@ -98,7 +103,10 @@ public class TestCommands extends NXRuntimeTestCase {
         ExecResult result = cles.execCommand("echo", cles.getDefaultCmdParameters());
         assertTrue(result.isSuccessful());
         assertSame(0, result.getReturnCode());
-        assertTrue(String.join("", result.getOutput()).contains(System.getProperty("java.io.tmpdir")));
+        assertTrue(
+                String.format("Output should contain %s:\n%s", Environment.getDefault().getTemp().getPath(),
+                        result.getOutput()),
+                String.join("", result.getOutput()).contains(Environment.getDefault().getTemp().getPath()));
     }
 
     @Test

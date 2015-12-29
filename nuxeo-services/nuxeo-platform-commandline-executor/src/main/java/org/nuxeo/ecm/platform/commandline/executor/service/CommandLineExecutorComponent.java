@@ -218,7 +218,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
     public CmdParameters getDefaultCmdParameters() {
         CmdParameters params = new CmdParameters();
         params.addNamedParameter("java.io.tmpdir", System.getProperty("java.io.tmpdir"));
-        params.addNamedParameter(Environment.NUXEO_TMP_DIR, Framework.getProperty(Environment.NUXEO_TMP_DIR));
+        params.addNamedParameter(Environment.NUXEO_TMP_DIR, Environment.getDefault().getTemp().getPath());
         return params;
     }
 

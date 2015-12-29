@@ -58,7 +58,6 @@ public class FileEventsTrackingFeature extends SimpleFeature {
     @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
         File temp = Environment.getDefault().getTemp();
-        temp.mkdirs();
         tempPath = temp.toPath();
         tracked.clear();
         created.clear();

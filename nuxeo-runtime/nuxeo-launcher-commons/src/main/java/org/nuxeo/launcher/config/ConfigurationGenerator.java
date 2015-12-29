@@ -342,15 +342,15 @@ public class ConfigurationGenerator {
     public ConfigurationGenerator(boolean quiet, boolean debug) {
         this.quiet = quiet;
         this.debug = debug;
-        String nuxeoHomePath = Environment.getDefault().getServerHome().getAbsolutePath();
-        if (nuxeoHomePath != null) {
-            nuxeoHome = new File(nuxeoHomePath);
+        File serverHome = Environment.getDefault().getServerHome();
+        if (serverHome != null) {
+            nuxeoHome = serverHome.getAbsoluteFile();
         } else {
             File userDir = new File(System.getProperty("user.dir"));
             if ("bin".equalsIgnoreCase(userDir.getName())) {
-                nuxeoHome = userDir.getParentFile();
+                nuxeoHome = userDir.getParentFile().getAbsoluteFile();
             } else {
-                nuxeoHome = userDir;
+                nuxeoHome = userDir.getAbsoluteFile();
             }
         }
         String nuxeoConfPath = System.getProperty(NUXEO_CONF);

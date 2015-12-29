@@ -46,7 +46,6 @@ public class FakeSmtpMailServerFeature extends SimpleFeature {
         server = SimpleSmtpServer.start(SERVER_PORT);
         if (Framework.isInitialized()) {
             File file = new File(Environment.getDefault().getConfig(), "mail.properties");
-            file.getParentFile().mkdirs();
             List<String> mailProperties = new ArrayList<>();
             mailProperties.add(String.format("mail.smtp.host = %s", SERVER_HOST));
             mailProperties.add(String.format("mail.smtp.port = %s", SERVER_PORT));

@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.types.AnyType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -125,10 +126,8 @@ public class SchemaManagerImpl implements SchemaManager {
     public static final String SCHEMAS_DIR_NAME = "schemas";
 
     public SchemaManagerImpl() {
-        schemaDir = new File(System.getProperty("java.io.tmpdir"), SCHEMAS_DIR_NAME);
-        if (!schemaDir.isDirectory()) {
-            schemaDir.mkdirs();
-        }
+        schemaDir = new File(Environment.getDefault().getTemp(), SCHEMAS_DIR_NAME);
+        schemaDir.mkdirs();
         clearSchemaDir();
         registerBuiltinTypes();
     }

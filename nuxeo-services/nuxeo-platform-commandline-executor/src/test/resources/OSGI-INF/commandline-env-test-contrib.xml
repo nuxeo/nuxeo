@@ -4,9 +4,9 @@
   <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent" point="command">
     <command name="echo" enabled="true">
       <commandLine>echo</commandLine>
-      <parameterString>#{java.io.tmpdir}</parameterString>
+      <parameterString>#{nuxeo.tmp.dir}</parameterString>
       <winCommand>cmd</winCommand>
-      <winParameterString>/C echo #{java.io.tmpdir}</winParameterString>
+      <winParameterString>/C echo #{nuxeo.tmp.dir}</winParameterString>
     </command>
   </extension>
 

@@ -29,6 +29,7 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.connect.update.LocalPackage;
@@ -95,8 +96,7 @@ public class TestPackageBuildAndParse extends PackageTestCase {
 
         // test on real unziped package
         File zipFile = builder.build();
-        String tmpDirPath = System.getProperty("java.io.tmpdir") + "/TestPkg" + System.currentTimeMillis();
-        File tmpDir = new File(tmpDirPath);
+        File tmpDir = new File(Environment.getDefault().getTemp(), "TestPkg" + System.currentTimeMillis());
         tmpDir.mkdirs();
         ZipUtils.unzip(zipFile, tmpDir);
         LocalPackage pkg = new LocalPackageImpl(tmpDir, PackageState.REMOTE, service);

@@ -30,6 +30,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.convert.cache.CachableBlobHolder;
@@ -55,9 +57,7 @@ public class TestBlobHolderPersistence {
         }
 
         CachableBlobHolder holder = new SimpleCachableBlobHolder(blobs);
-
-        String storagePath = System.getProperty("java.io.tmpdir");
-
+        String storagePath = Environment.getDefault().getTemp().getPath();
         String persistedPath = holder.persist(storagePath);
 
         // check persistence

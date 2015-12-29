@@ -31,6 +31,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -121,9 +123,9 @@ public class TestService extends NXRuntimeTestCase {
         PictureTilingService pts = Framework.getLocalService(PictureTilingService.class);
         assertNotNull(pts);
 
-        String wdirPath = System.getProperty("java.io.tmpdir") + "/testMe";
-        new File(wdirPath).mkdir();
-        pts.setWorkingDirPath(wdirPath);
+        File wdir = new File(Environment.getDefault().getTemp(), "testMe");
+        wdir.mkdirs();
+        pts.setWorkingDirPath(wdir.getPath());
 
         File file = FileUtils.getResourceFileFromContext("test.jpg");
         Blob image = Blobs.createBlob(file);

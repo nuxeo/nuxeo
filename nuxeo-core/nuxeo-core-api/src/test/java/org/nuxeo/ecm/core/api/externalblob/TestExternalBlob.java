@@ -33,6 +33,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
@@ -64,17 +65,15 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         assertNotNull(service);
         ExternalBlobAdapter adapter = service.getExternalBlobAdapterForPrefix("fs");
         Map<String, String> props = new HashMap<>();
-        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n" + System.getProperty("java.io.tmpdir")
-                + " ");
+        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
+                + Environment.getDefault().getTemp().getPath() + " ");
         adapter.setProperties(props);
     }
 
     protected File createTempFile() throws Exception {
-        File tempDir = new File(System.getProperty("java.io.tmpdir"), TEMP_DIRECTORY_NAME);
-        if (!tempDir.exists()) {
-            tempDir.mkdir();
-            Framework.trackFile(tempDir, this);
-        }
+        File tempDir = new File(Environment.getDefault().getTemp(), TEMP_DIRECTORY_NAME);
+        tempDir.mkdirs();
+        Framework.trackFile(tempDir, this);
         File file = File.createTempFile("testExternalBlob", ".txt", tempDir);
         Framework.trackFile(file, file);
         FileWriter fstream = new FileWriter(file);
@@ -96,7 +95,7 @@ public class TestExternalBlob extends NXRuntimeTestCase {
         assertNotNull(adapter);
         assertEquals("fs", adapter.getPrefix());
         assertTrue(adapter instanceof FileSystemExternalBlobAdapter);
-        assertEquals(System.getProperty("java.io.tmpdir"),
+        assertEquals(Environment.getDefault().getTemp().getPath(),
                 adapter.getProperty(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME));
 
         File file = createTempFile();

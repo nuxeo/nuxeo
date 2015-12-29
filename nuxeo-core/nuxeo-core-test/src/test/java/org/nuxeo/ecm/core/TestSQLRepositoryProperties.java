@@ -47,6 +47,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -130,8 +132,8 @@ public class TestSQLRepositoryProperties {
         // due to xml parsing
         ExternalBlobAdapter adapter = blobHolderAdapterService.getExternalBlobAdapterForPrefix("fs");
         Map<String, String> props = new HashMap<>();
-        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n" + System.getProperty("java.io.tmpdir")
-                + " ");
+        props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n"
+                + Environment.getDefault().getTemp().getPath() + " ");
         adapter.setProperties(props);
 
         doc = session.createDocumentModel("TestDocument");

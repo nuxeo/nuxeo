@@ -36,6 +36,8 @@ import javax.inject.Inject;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -123,10 +125,7 @@ public class TestFSPublishing {
     }
 
     protected void createFSDirs() {
-        String tmpPath = new Path(System.getProperty("java.io.tmpdir")).append(
-                "TestFSSections" + System.currentTimeMillis()).toString();
-
-        rootFolder = new File(tmpPath);
+        rootFolder = new File(Environment.getDefault().getTemp(), "TestFSSections" + System.currentTimeMillis());
         rootFolder.mkdirs();
 
         new File(new Path(rootFolder.getAbsolutePath()).append("section1").toString()).mkdirs();

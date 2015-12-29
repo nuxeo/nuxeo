@@ -40,6 +40,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -226,7 +228,7 @@ public class DownloadServlet extends HttpServlet {
             throws IOException {
         String[] pathParts = filePath.split("/");
         String tmpFileName = pathParts[0];
-        File tmpZip = new File(System.getProperty("java.io.tmpdir") + "/" + tmpFileName);
+        File tmpZip = new File(Environment.getDefault().getTemp(), tmpFileName);
         try {
             Blob zipBlob = Blobs.createBlob(tmpZip);
             DownloadService downloadService = Framework.getService(DownloadService.class);

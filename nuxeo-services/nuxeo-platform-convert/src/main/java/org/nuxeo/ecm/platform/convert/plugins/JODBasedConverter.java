@@ -40,6 +40,7 @@ import org.artofsolving.jodconverter.StandardConversionTask;
 import org.artofsolving.jodconverter.document.DocumentFamily;
 import org.artofsolving.jodconverter.document.DocumentFormat;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -339,7 +340,7 @@ public class JODBasedConverter implements ExternalConverter {
             tmp = parameters.get(TMP_PATH_PARAMETER);
         }
         if (tmp == null) {
-            tmp = System.getProperty("java.io.tmpdir");
+            tmp = Environment.getDefault().getTemp().getPath();
         }
         return tmp;
     }

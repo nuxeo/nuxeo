@@ -13,7 +13,7 @@
         <parameter name="IMIdentify">identify</parameter>
         <parameter name="IMStream">stream</parameter>
         <!-- global env variables -->
-        <parameter name="WorkingDirPath">${java.io.tmpdir}</parameter>
+        <parameter name="WorkingDirPath">${nuxeo.tmp.dir}</parameter>
         <!-- Max Disk cache usage in KB -->
         <parameter name="MaxDiskSpaceUsageForCache">50000</parameter>
         <!-- GC Interval in Minutes -->
