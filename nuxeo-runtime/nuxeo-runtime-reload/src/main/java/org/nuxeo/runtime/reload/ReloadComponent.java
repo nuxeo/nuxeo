@@ -90,7 +90,6 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         } catch (IOException e) {
             throw new RuntimeServiceException(e);
         }
-        flush();
         triggerReloadWithNewTransaction(RELOAD_EVENT_ID);
     }
 
@@ -321,7 +320,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     protected void triggerReload(String id) {
         Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "before-reload", this, null));
         try {
-        ServicePassivator
+            ServicePassivator
                 .proceed(() -> {
                     Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
                     if (id.startsWith(FLUSH_EVENT_ID) || FLUSH_SEAM_EVENT_ID.equals(id)) {
