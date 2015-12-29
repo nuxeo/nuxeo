@@ -95,7 +95,7 @@
         <repository>
           <id>internal-releases</id>
           <url>
-            http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
+            http://mavenin.nuxeo.com/nexus/content/groups/internal-releases
           </url>
           <releases>
             <enabled>true</enabled>
@@ -107,7 +107,7 @@
         <repository>
           <id>internal-snapshots</id>
           <url>
-            http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
+            http://mavenin.nuxeo.com/nexus/content/groups/internal-snapshots
           </url>
           <releases>
             <enabled>false</enabled>
@@ -122,7 +122,7 @@
         <pluginRepository>
           <id>internal-releases</id>
           <url>
-            http://maven.in.nuxeo.com/nexus/content/groups/internal-releases
+            http://mavenin.nuxeo.com/nexus/content/groups/internal-releases
           </url>
           <name>Nuxeo virtual release repository</name>
           <releases>
@@ -135,7 +135,7 @@
         <pluginRepository>
           <id>internal-snapshots</id>
           <url>
-            http://maven.in.nuxeo.com/nexus/content/groups/internal-snapshots
+            http://mavenin.nuxeo.com/nexus/content/groups/internal-snapshots
           </url>
           <name>Nuxeo virtual snapshot repository</name>
           <releases>
@@ -151,7 +151,7 @@
         <snapshotRepository>
           <id>daily-snapshots</id>
           <url>
-            http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots
+            http://mavenin.nuxeo.com/nexus/content/repositories/daily-snapshots
           </url>
           <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
