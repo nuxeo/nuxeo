@@ -16,10 +16,14 @@
  */
 package org.nuxeo.ecm.liveconnect.box;
 
+import java.io.Serializable;
+
 /**
  * A liveconnect file exposing some information from an external API file.
+ *
+ * @since 8.1
  */
-public interface LiveconnectFile {
+public interface LiveConnectFile extends Serializable {
 
     String getMimeType();
 

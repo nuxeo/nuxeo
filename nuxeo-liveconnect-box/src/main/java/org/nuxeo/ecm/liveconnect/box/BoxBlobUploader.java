@@ -20,11 +20,9 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
@@ -49,7 +47,10 @@ import org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploader;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.runtime.api.Framework;
 
+import com.box.sdk.BoxAPIConnection;
+import com.box.sdk.BoxAPIException;
 import com.box.sdk.BoxFile;
+import com.google.api.client.http.HttpStatusCodes;
 
 /**
  * JSF Blob Upload based on box blobs.
@@ -98,7 +99,7 @@ public class BoxBlobUploader implements JSFBlobUploader {
         // not ours to close
         @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
-        Optional<BoxOAuth2ServiceProvider> provider = getBoxBlobProvider().getOAuth2Provider();
+        BoxOAuth2ServiceProvider provider = getBoxBlobProvider().getOAuth2Provider();
 
         String inputId = facet.getClientId(context);
         String prefix = parent.getClientId(context) + UINamingContainer.getSeparatorChar(context);
@@ -107,7 +108,7 @@ public class BoxBlobUploader implements JSFBlobUploader {
         String authorizationUrl = hasServiceAccount(provider) ? "" : getOAuthAuthorizationUrl(provider);
         Locale locale = context.getViewRoot().getLocale();
         String message;
-        boolean isProviderAvailable = provider.isPresent() && provider.get().isProviderAvailable();
+        boolean isProviderAvailable = provider != null && provider.isProviderAvailable();
 
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
@@ -178,8 +179,8 @@ public class BoxBlobUploader implements JSFBlobUploader {
             return;
         }
 
-        Optional<BoxOAuth2ServiceProvider> provider = getBoxBlobProvider().getOAuth2Provider();
-        if (!provider.isPresent()) {
+        BoxOAuth2ServiceProvider provider = getBoxBlobProvider().getOAuth2Provider();
+        if (provider == null) {
             ComponentUtils.addErrorMessage(context, parent, "error.inputFile.boxInvalidConfiguration");
             parent.setValid(false);
             return;
@@ -198,7 +199,7 @@ public class BoxBlobUploader implements JSFBlobUploader {
             return;
         }
 
-        LiveconnectFileInfo fileInfo = new LiveconnectFileInfo(serviceUserId.get(), fileId);
+        LiveConnectFileInfo fileInfo = new LiveConnectFileInfo(serviceUserId.get(), fileId);
         Blob blob = createBlob(fileInfo);
         submitted.setBlob(blob);
         submitted.setFilename(blob.getFilename());
@@ -212,8 +213,8 @@ public class BoxBlobUploader implements JSFBlobUploader {
      */
     @Override
     public boolean isEnabled() {
-        Optional<BoxOAuth2ServiceProvider> provider = getBoxBlobProvider().getOAuth2Provider();
-        return provider.isPresent() && provider.get().isEnabled();
+        BoxOAuth2ServiceProvider provider = getBoxBlobProvider().getOAuth2Provider();
+        return provider != null && provider.isEnabled();
     }
 
     /**
@@ -222,7 +223,7 @@ public class BoxBlobUploader implements JSFBlobUploader {
      * @param fileInfo the Box file info
      * @return the blob
      */
-    protected Blob createBlob(LiveconnectFileInfo fileInfo) {
+    protected Blob createBlob(LiveConnectFileInfo fileInfo) {
         try {
             return getBoxBlobProvider().createBlob(fileInfo);
         } catch (IOException e) {
@@ -230,8 +231,8 @@ public class BoxBlobUploader implements JSFBlobUploader {
         }
     }
 
-    protected String getClientId(Optional<BoxOAuth2ServiceProvider> provider) {
-        return provider.map(BoxOAuth2ServiceProvider::getClientId).orElse("");
+    protected String getClientId(BoxOAuth2ServiceProvider provider) {
+        return Optional.ofNullable(provider).map(BoxOAuth2ServiceProvider::getClientId).orElse("");
     }
 
     protected BoxBlobProvider getBoxBlobProvider() {
@@ -248,16 +249,15 @@ public class BoxBlobUploader implements JSFBlobUploader {
      * @param principal
      * @return
      */
-    private Optional<String> getServiceUserId(Optional<BoxOAuth2ServiceProvider> provider, String fileId,
-            Principal principal) {
+    private Optional<String> getServiceUserId(BoxOAuth2ServiceProvider provider, String fileId, Principal principal) {
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("nuxeoLogin", principal.getName());
 
-        return provider.map(p -> p.getCredentialDataStore().query(filter))
-                       .map(List::stream)
-                       .orElseGet(Stream::empty)
+        return provider.getCredentialDataStore()
+                       .query(filter)
+                       .stream()
                        .map(NuxeoOAuth2Token::new)
-                       .filter(token -> hasAccessToFile(fileId, token.getAccessToken()))
+                       .filter(token -> hasAccessToFile(token, fileId))
                        .map(NuxeoOAuth2Token::getServiceLogin)
                        .findFirst();
     }
@@ -265,24 +265,31 @@ public class BoxBlobUploader implements JSFBlobUploader {
     /**
      * Attempts to retrieve a Box file's metadata to check if an accessToken has permissions to access the file.
      *
+     * @param token
      * @param fileId
-     * @param accessToken
      * @return true if metadata was successfully retrieved, or false otherwise.
      */
-    private boolean hasAccessToFile(String fileId, String accessToken) {
-        // throws BoxAPIException
-        return new BoxFile(getBoxBlobProvider().getBoxClient(accessToken), fileId).getInfo("size") != null;
+    private boolean hasAccessToFile(NuxeoOAuth2Token token, String fileId) {
+        try {
+            BoxAPIConnection client = getBoxBlobProvider().getBoxClient(token);
+            return new BoxFile(client, fileId).getInfo("size") != null;
+        } catch (IOException e) {
+            throw new RuntimeException(e); // TODO better feedback
+        } catch (BoxAPIException e) {
+            // Unauthorized
+            return e.getResponseCode() == HttpStatusCodes.STATUS_CODE_UNAUTHORIZED;
+        }
     }
 
-    private boolean hasServiceAccount(Optional<BoxOAuth2ServiceProvider> provider) {
+    private boolean hasServiceAccount(BoxOAuth2ServiceProvider provider) {
         HttpServletRequest request = getHttpServletRequest();
         String username = request.getUserPrincipal().getName();
-        return provider.isPresent() && provider.get().getServiceUser(username) != null;
+        return provider != null && provider.getServiceUser(username) != null;
     }
 
-    private String getOAuthAuthorizationUrl(Optional<BoxOAuth2ServiceProvider> provider) {
+    private String getOAuthAuthorizationUrl(BoxOAuth2ServiceProvider provider) {
         HttpServletRequest request = getHttpServletRequest();
-        return provider.filter(p -> p.getClientId() != null).map(p -> p.getAuthorizationUrl(request)).orElse("");
+        return (provider != null && provider.getClientId() != null) ? provider.getAuthorizationUrl(request) : "";
     }
 
     private HttpServletRequest getHttpServletRequest() {

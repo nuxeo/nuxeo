@@ -63,7 +63,7 @@ nuxeo.utils.BoxPicker.prototype = {
     boxSelect.success(function(response) {
       var file = response[0];
       if (this.inputId) {
-        document.getElementById(this.inputId).value = file.url;
+        document.getElementById(this.inputId).value = file.id;
       }
       if (this.infoId) {
         document.getElementById(this.infoId).innerHTML = file.name;
