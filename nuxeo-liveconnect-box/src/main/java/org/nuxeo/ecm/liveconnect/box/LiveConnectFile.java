@@ -18,26 +18,25 @@
  */
 package org.nuxeo.ecm.liveconnect.box;
 
-import java.io.IOException;
-
-import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
-
-import com.google.api.client.auth.oauth2.Credential;
+import java.io.Serializable;
 
 /**
- * Credential factory.
+ * A live connect file exposing some information from an external API file.
  *
  * @since 8.1
  */
-public class OAuthCredentialFactory {
+public interface LiveConnectFile extends Serializable {
 
-    private OAuth2ServiceProvider provider;
+    LiveConnectFileInfo getInfo();
 
-    public OAuthCredentialFactory(OAuth2ServiceProvider provider) {
-        this.provider = provider;
-    }
+    String getMimeType();
 
-    public Credential build(String user) throws IOException {
-        return provider.loadCredential(user);
-    }
+    String getEncoding();
+
+    String getFilename();
+
+    long getFileSize();
+
+    String getDigest();
+
 }
