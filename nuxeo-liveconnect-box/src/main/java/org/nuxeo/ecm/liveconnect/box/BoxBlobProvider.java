@@ -227,7 +227,7 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
      * @param fileInfo the file info
      * @return the file retrieved from API
      */
-    private LiveConnectFile retrieveFile(LiveConnectFileInfo fileInfo) throws IOException {
+    protected LiveConnectFile retrieveFile(LiveConnectFileInfo fileInfo) throws IOException {
         try {
             return new BoxLiveConnectFile(fileInfo, prepareBoxFile(fileInfo).getInfo());
         } catch (BoxAPIException e) {

@@ -211,7 +211,7 @@ public class BoxBlobUploader implements JSFBlobUploader {
     /**
      * Box upload button is added to the file widget if and only if Box OAuth service provider is enabled
      *
-     * @return true if Box OAuth service provider is enabled or false otherwise
+     * @return {@code true} if Box OAuth service provider is enabled or {@code false} otherwise
      */
     @Override
     public boolean isEnabled() {
@@ -269,7 +269,7 @@ public class BoxBlobUploader implements JSFBlobUploader {
      *
      * @param token
      * @param fileId
-     * @return true if metadata was successfully retrieved, or false otherwise
+     * @return {@code true} if metadata was successfully retrieved, or {@code false} otherwise
      */
     private boolean hasAccessToFile(NuxeoOAuth2Token token, String fileId) {
         try {
