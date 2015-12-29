@@ -81,7 +81,7 @@
       <distributionManagement>
         <snapshotRepository>
           <id>daily-snapshots</id>
-          <url>dav:http://maven.in.nuxeo.com/nexus/content/repositories/daily-snapshots</url>
+          <url>dav:http://mavenin.nuxeo.com/nexus/content/repositories/daily-snapshots</url>
         </snapshotRepository>
       </distributionManagement>
     </profile>
@@ -90,7 +90,7 @@
       <distributionManagement>
         <repository>
           <id>public-releases</id>
-          <url>dav:http://maven.in.nuxeo.com/nexus/content/repositories/public-releases</url>
+          <url>dav:http://mavenin.nuxeo.com/nexus/content/repositories/public-releases</url>
         </repository>
       </distributionManagement>
       <build>
@@ -110,7 +110,7 @@
       <distributionManagement>
         <repository>
           <id>nightly-staging</id>
-          <url>dav:http://maven.in.nuxeo.com/nexus/content/repositories/nightly-staging</url>
+          <url>dav:http://mavenin.nuxeo.com/nexus/content/repositories/nightly-staging</url>
           <uniqueVersion>true</uniqueVersion>
         </repository>
       </distributionManagement>
