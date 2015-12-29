@@ -41,7 +41,8 @@ public class TestLRUFileCache {
         dir.delete();
         dir.mkdir();
         oldMinAgeMillis = LRUFileCache.MIN_AGE_MILLIS;
-        LRUFileCache.MIN_AGE_MILLIS = 1000; // filesystem timee often has 1s granularity
+        LRUFileCache.MIN_AGE_MILLIS = 1000; // filesystem time often has 1s granularity
+        LRUFileCache.CLEAR_OLD_ENTRIES_INTERVAL_MILLIS = 0; // clear immediately
     }
 
     @After
