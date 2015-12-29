@@ -30,6 +30,8 @@ import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
@@ -57,6 +59,9 @@ public class LRUFileCache implements FileCache {
     // not final for tests
     public static long MIN_AGE_MILLIS = 3600 * 1000; // 1h
 
+    // not final for tests
+    public static long CLEAR_OLD_ENTRIES_INTERVAL_MILLIS = 5000; // 5 s
+
     protected static class PathInfo implements Comparable<PathInfo> {
 
         protected final Path path;
@@ -80,6 +85,10 @@ public class LRUFileCache implements FileCache {
     protected final Path dir;
 
     protected final long maxSize;
+
+    protected Lock clearOldEntriesLock = new ReentrantLock();
+
+    protected long clearOldEntriesLast;
 
     /**
      * Constructs a cache in the given directory with the given maximum size (in bytes).
@@ -139,7 +148,7 @@ public class LRUFileCache implements FileCache {
     }
 
     @Override
-    public synchronized void clear() {
+    public void clear() {
         try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir, RegularFileFilter.INSTANCE)) {
             for (Path path : ds) {
                 try {
@@ -157,6 +166,21 @@ public class LRUFileCache implements FileCache {
      * Clears cache entries if they are old enough and their size makes the cache bigger than its maximum size.
      */
     protected void clearOldEntries() {
+        if (clearOldEntriesLock.tryLock()) {
+            try {
+                if (System.currentTimeMillis() > clearOldEntriesLast + CLEAR_OLD_ENTRIES_INTERVAL_MILLIS) {
+                    doClearOldEntries();
+                    clearOldEntriesLast = System.currentTimeMillis();
+                    return;
+                }
+            } finally {
+                clearOldEntriesLock.unlock();
+            }
+        }
+        // else don't do anything, another thread is already clearing old entries
+    }
+
+    protected void doClearOldEntries() {
         List<PathInfo> files = new ArrayList<>();
         try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir, RegularFileFilter.INSTANCE)) {
             for (Path path : ds) {
@@ -207,7 +231,7 @@ public class LRUFileCache implements FileCache {
      * The key is used as a file name in the directory cache.
      */
     @Override
-    public synchronized File putFile(String key, InputStream in) throws IOException {
+    public File putFile(String key, InputStream in) throws IOException {
         File tmp;
         try {
             // check the cache
@@ -235,7 +259,7 @@ public class LRUFileCache implements FileCache {
      * The key is used as a file name in the directory cache.
      */
     @Override
-    public synchronized File putFile(String key, File file) throws IllegalArgumentException, IOException {
+    public File putFile(String key, File file) throws IllegalArgumentException, IOException {
         Path source = file.toPath();
 
         // put file in cache
@@ -259,7 +283,7 @@ public class LRUFileCache implements FileCache {
     }
 
     @Override
-    public synchronized File getFile(String key) {
+    public File getFile(String key) {
         checkKey(key);
         Path path = dir.resolve(key);
         if (!Files.exists(path)) {
