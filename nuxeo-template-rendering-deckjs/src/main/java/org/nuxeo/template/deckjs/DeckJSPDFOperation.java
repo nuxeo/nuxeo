@@ -24,6 +24,8 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -54,12 +56,9 @@ public class DeckJSPDFOperation {
         DocumentModel templateBasedDocument = (DocumentModel) ctx.get("templateBasedDocument");
         String templateName = (String) ctx.get("templateName");
 
-        String workingDirPath = System.getProperty("java.io.tmpdir") + "/nuxeo-deckJS-cache/"
-                + templateBasedDocument.getId();
-        File workingDir = new File(workingDirPath);
-        if (!workingDir.exists()) {
-            workingDir.mkdirs();
-        }
+        File workingDir = new File(Environment.getDefault().getTemp(), "nuxeo-deckJS-cache/"
+                + templateBasedDocument.getId());
+        workingDir.mkdirs();
         JAXRSExtensions jaxRsExtensions = new JAXRSExtensions(templateBasedDocument, null, templateName);
         BlobHolder sourceBh = templateSourceDocument.getAdapter(BlobHolder.class);
         for (Blob b : sourceBh.getBlobs()) {

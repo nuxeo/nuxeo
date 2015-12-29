@@ -21,10 +21,11 @@ package org.nuxeo.template.processors;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateProcessor;
@@ -42,12 +43,12 @@ public abstract class AbstractTemplateProcessor implements TemplateProcessor {
     protected static final Log log = LogFactory.getLog(AbstractTemplateProcessor.class);
 
     protected File getWorkingDir() {
-        String dirPath = System.getProperty("java.io.tmpdir") + "/NXTemplateProcessor" + System.currentTimeMillis();
-        File workingDir = new File(dirPath);
+        File workingDir = new File(Environment.getDefault().getTemp(), "NXTemplateProcessor"
+                + System.currentTimeMillis());
         if (workingDir.exists()) {
-            FileUtils.deleteTree(workingDir);
+            FileUtils.deleteQuietly(workingDir);
         }
-        workingDir.mkdir();
+        workingDir.mkdirs();
         Framework.trackFile(workingDir, workingDir);
         return workingDir;
     }
