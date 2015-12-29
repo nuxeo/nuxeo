@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.liveconnect.box;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -52,6 +53,7 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpStatusCodes;
@@ -73,6 +75,8 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
     private static final String BOX_DOCUMENT_TO_BE_UPDATED_PP = "box_document_to_be_updated";
 
     private static final String DOWNLOAD_CONTENT_URL = "https://api.box.com/2.0/files/%s/content";
+
+    private static final String THUMBNAIL_CONTENT_URL = "https://api.box.com/2.0/files/%s/thumbnail.png";
 
     private static final char BLOB_KEY_SEPARATOR = ':';
 
@@ -106,10 +110,29 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
             url = retrieveSharedLink(fileInfo).getURL();
             break;
         case EMBED:
-            // Soon supported, please see : NXP-
+            // Soon supported, please see : NXP-18676
             break;
         }
         return Optional.ofNullable(url).flatMap(this::asURI).orElse(null);
+    }
+
+    @Override
+    public InputStream getStream(ManagedBlob blob) throws IOException {
+        URI uri = getURI(blob, UsageHint.STREAM, null);
+        return uri == null ? null : doGet(uri.toString()).getContent();
+    }
+
+    @Override
+    public InputStream getThumbnail(ManagedBlob blob) throws IOException {
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
+        String url = String.format(THUMBNAIL_CONTENT_URL, fileInfo.getFileId());
+
+        HttpResponse response = doGet(url);
+        if (response.getStatusCode() == 202) {
+            response.disconnect();
+            return doGet(response.getHeaders().getLocation()).getContent();
+        }
+        return response.getContent();
     }
 
     @Override
@@ -255,25 +278,35 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
      * @return the temporary download url for input file
      */
     private String getDownloadUrl(LiveConnectFileInfo fileInfo) throws IOException {
-        try {
-            Credential credential = getCredential(fileInfo.getUser());
+        GenericUrl url = new GenericUrl(String.format(DOWNLOAD_CONTENT_URL, fileInfo.getFileId()));
 
-            GenericUrl url = new GenericUrl(String.format(DOWNLOAD_CONTENT_URL, fileInfo.getFileId()));
-            HttpRequest request = getOAuth2Provider().getRequestFactory().buildGetRequest(url);
-            request.setHeaders(new HttpHeaders().setAuthorization("Bearer " + credential.getAccessToken()));
-            request.setFollowRedirects(false);
-            request.setThrowExceptionOnExecuteError(false);
-
-            HttpResponse response = request.execute();
-            response.disconnect();
-            if (!HttpStatusCodes.isRedirect(response.getStatusCode())) {
-                throw new HttpResponseException(response);
-            }
-
-            return response.getHeaders().getLocation();
-        } catch (BoxAPIException e) {
-            throw new IOException("Failed to retrieve Box file download url.", e);
+        HttpResponse response = executeWithoutFollowRedirects(fileInfo, url);
+        response.disconnect();
+        if (!HttpStatusCodes.isRedirect(response.getStatusCode())) {
+            throw new HttpResponseException(response);
         }
+
+        return response.getHeaders().getLocation();
+    }
+
+    private HttpResponse executeWithoutFollowRedirects(LiveConnectFileInfo fileInfo, GenericUrl url)
+            throws IOException {
+        Credential credential = getCredential(fileInfo.getUser());
+
+        HttpRequest request = getOAuth2Provider().getRequestFactory().buildGetRequest(url);
+        request.setHeaders(new HttpHeaders().setAuthorization("Bearer " + credential.getAccessToken()));
+        request.setFollowRedirects(false);
+        request.setThrowExceptionOnExecuteError(false);
+
+        return request.execute();
+    }
+
+    /**
+     * Executes a GET request
+     */
+    private HttpResponse doGet(String url) throws IOException {
+        HttpRequestFactory requestFactory = getOAuth2Provider().getRequestFactory();
+        return requestFactory.buildGetRequest(new GenericUrl(url)).execute();
     }
 
     private Cache getFileCache() {
