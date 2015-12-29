@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  *
- * $Id: IOManagerImpl.java 27208 2007-11-14 19:59:25Z dmihalache $
  */
 
 package org.nuxeo.ecm.platform.io.impl;
@@ -40,6 +39,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -76,7 +76,7 @@ public class IOManagerImpl implements IOManager {
     protected final Map<String, IOResourceAdapter> adaptersRegistry;
 
     public IOManagerImpl() {
-        adaptersRegistry = new HashMap<String, IOResourceAdapter>();
+        adaptersRegistry = new HashMap<>();
     }
 
     @Override
@@ -100,7 +100,6 @@ public class IOManagerImpl implements IOManager {
 
     public void exportDocumentsAndResources(OutputStream out, String repo, final String format,
             Collection<String> ioAdapters, final DocumentReader customDocReader) throws IOException {
-
         DocumentsExporter docsExporter = new DocumentsExporter() {
             @Override
             public DocumentTranslationMap exportDocs(OutputStream out) throws IOException {
@@ -109,14 +108,12 @@ public class IOManagerImpl implements IOManager {
                 return map;
             }
         };
-
         exportDocumentsAndResources(out, repo, docsExporter, ioAdapters);
     }
 
     @Override
     public void exportDocumentsAndResources(OutputStream out, final String repo, final Collection<DocumentRef> sources,
             final boolean recurse, final String format, final Collection<String> ioAdapters) throws IOException {
-
         DocumentsExporter docsExporter = new DocumentsExporter() {
             @Override
             public DocumentTranslationMap exportDocs(OutputStream out) throws IOException {
@@ -125,14 +122,12 @@ public class IOManagerImpl implements IOManager {
                 return map;
             }
         };
-
         exportDocumentsAndResources(out, repo, docsExporter, ioAdapters);
     }
 
     void exportDocumentsAndResources(OutputStream out, String repo, DocumentsExporter docsExporter,
             Collection<String> ioAdapters) throws IOException {
-
-        List<String> doneAdapters = new ArrayList<String>();
+        List<String> doneAdapters = new ArrayList<>();
 
         ZipOutputStream zip = new ZipOutputStream(out);
         zip.setMethod(ZipOutputStream.DEFLATED);
@@ -184,7 +179,6 @@ public class IOManagerImpl implements IOManager {
     @Override
     public void importDocumentsAndResources(InputStream in, final String repo, final DocumentRef root)
             throws IOException {
-
         DocumentsImporter docsImporter = new DocumentsImporter() {
 
             @Override
@@ -194,13 +188,11 @@ public class IOManagerImpl implements IOManager {
             }
 
         };
-
         importDocumentsAndResources(docsImporter, in, repo);
     }
 
     public void importDocumentsAndResources(InputStream in, final String repo, final DocumentRef root,
             final DocumentWriter customDocWriter) throws IOException {
-
         DocumentsImporter docsImporter = new DocumentsImporter() {
 
             @Override
@@ -210,12 +202,10 @@ public class IOManagerImpl implements IOManager {
             }
 
         };
-
         importDocumentsAndResources(docsImporter, in, repo);
     }
 
     void importDocumentsAndResources(DocumentsImporter docsImporter, InputStream in, String repo) throws IOException {
-
         ZipInputStream zip = new ZipInputStream(in);
 
         // first entry will be documents
@@ -280,7 +270,7 @@ public class IOManagerImpl implements IOManager {
             throw new NuxeoException("Cannot copy to different server");
         }
 
-        List<DocumentRef> roots = new ArrayList<DocumentRef>();
+        List<DocumentRef> roots = new ArrayList<>();
         try (CoreSession session = CoreInstance.openCoreSession(repo)) {
             for (DocumentRef source : sources) {
                 DocumentTranslationMap map = new DocumentTranslationMapImpl(repo, repo);
@@ -320,10 +310,8 @@ public class IOManagerImpl implements IOManager {
         return roots;
     }
 
-    private static DocumentWriter createDocWriter(String docWriterFactoryName, Map<String, Object> factoryParams)
-            {
+    private static DocumentWriter createDocWriter(String docWriterFactoryName, Map<String, Object> factoryParams) {
         // create a custom writer using factory instance
-
         Object factoryObj;
         try {
             Class<?> clazz = Class.forName(docWriterFactoryName);
@@ -346,10 +334,8 @@ public class IOManagerImpl implements IOManager {
         return customDocWriter;
     }
 
-    private static DocumentReader createDocReader(String docReaderFactoryName, Map<String, Object> factoryParams)
-            {
+    private static DocumentReader createDocReader(String docReaderFactoryName, Map<String, Object> factoryParams) {
         // create a custom reader using factory instance
-
         Object factoryObj;
         try {
             Class<?> clazz = Class.forName(docReaderFactoryName);
@@ -374,15 +360,13 @@ public class IOManagerImpl implements IOManager {
 
     @Override
     public void importFromStream(InputStream in, DocumentLocation targetLocation, String docReaderFactoryClassName,
-            Map<String, Object> rFactoryParams, String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
-            {
-
+            Map<String, Object> rFactoryParams, String docWriterFactoryClassName, Map<String, Object> wFactoryParams) {
         DocumentWriter customDocWriter = createDocWriter(docWriterFactoryClassName, wFactoryParams);
         DocumentReader customDocReader = null;
 
         try {
             if (rFactoryParams == null) {
-                rFactoryParams = new HashMap<String, Object>();
+                rFactoryParams = new HashMap<>();
             }
             rFactoryParams.put("source_stream", in);
             customDocReader = createDocReader(docReaderFactoryClassName, rFactoryParams);

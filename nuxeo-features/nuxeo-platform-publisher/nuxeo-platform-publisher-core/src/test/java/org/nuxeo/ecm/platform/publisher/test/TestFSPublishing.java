@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ public class TestFSPublishing {
         assertNotNull(foundDocs);
         assertEquals(1, foundDocs.size());
 
-        PublishedDocument pubDoc2 = tree.publish(doc2Publish, section2);
+        tree.publish(doc2Publish, section2);
         foundDocs = tree.getExistingPublishedDocument(doc2publishLocation);
         assertNotNull(foundDocs);
         assertEquals(2, foundDocs.size());
@@ -220,7 +220,7 @@ public class TestFSPublishing {
 
         // dynamic contrib
         PublicationTreeConfigDescriptor desc = new PublicationTreeConfigDescriptor();
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(AbstractBasePublicationTree.ROOT_PATH_KEY, rootFolder.getAbsolutePath());
         desc.setName(treeName);
         desc.setTree("LocalFSTree");

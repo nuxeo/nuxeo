@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.RemoteException;
@@ -93,8 +94,11 @@ public abstract class AbstractAutomationClientTest {
         Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
         assertNotNull(root);
         assertEquals("/", root.getPath());
-        automationTestFolder = (Document) session.newRequest(CreateDocument.ID).setInput(root).set("type", "Folder").set(
-                "name", "automation-test-folder").execute();
+        automationTestFolder = (Document) session.newRequest(CreateDocument.ID)
+                                                 .setInput(root)
+                                                 .set("type", "Folder")
+                                                 .set("name", "automation-test-folder")
+                                                 .execute();
         assertNotNull(automationTestFolder);
     }
 
@@ -149,16 +153,23 @@ public abstract class AbstractAutomationClientTest {
         // client.connect("http://localhost:18080/automation");
         // Session cs = client.getSession("Administrator", "Administrator");
 
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
-                "Folder").set("name", "myfolder").set("properties", "dc:title=My Folder").execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setInput(automationTestFolder)
+                                            .set("type", "Folder")
+                                            .set("name", "myfolder")
+                                            .set("properties", "dc:title=My Folder")
+                                            .execute();
 
         assertNotNull(folder);
         assertEquals("/automation-test-folder/myfolder", folder.getPath());
         assertEquals("My Folder", folder.getTitle());
 
         // update folder properties
-        folder = (Document) session.newRequest(UpdateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                folder).set("properties", "dc:title=My Folder2\ndc:description=test").execute();
+        folder = (Document) session.newRequest(UpdateDocument.ID)
+                                   .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                   .setInput(folder)
+                                   .set("properties", "dc:title=My Folder2\ndc:description=test")
+                                   .execute();
 
         assertNotNull(folder);
         assertEquals("/automation-test-folder/myfolder", folder.getPath());
@@ -168,8 +179,12 @@ public abstract class AbstractAutomationClientTest {
         // remove folder
         session.newRequest(DeleteDocument.ID).setInput(folder).execute();
 
-        Document folder1 = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
-                "Folder").set("name", "myfolder").set("properties", "dc:title=My Folder").execute();
+        Document folder1 = (Document) session.newRequest(CreateDocument.ID)
+                                             .setInput(automationTestFolder)
+                                             .set("type", "Folder")
+                                             .set("name", "myfolder")
+                                             .set("properties", "dc:title=My Folder")
+                                             .execute();
         Documents folders = new Documents();
         folders.add(folder1);
 
@@ -191,34 +206,56 @@ public abstract class AbstractAutomationClientTest {
     @Test
     public void testUpdateDocuments() throws Exception {
         // create a folder
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
-                "Folder").set("name", "docsInput").set("properties", "dc:title=Query Test").execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setInput(automationTestFolder)
+                                            .set("type", "Folder")
+                                            .set("name", "docsInput")
+                                            .set("properties", "dc:title=Query Test")
+                                            .execute();
         // create 2 files
-        session.newRequest(CreateDocument.ID).setInput(folder).set("type", "Note").set("name", "note1").set(
-                "properties", "dc:title=Note1").execute();
-        session.newRequest(CreateDocument.ID).setInput(folder).set("type", "Note").set("name", "note2").set(
-                "properties", "dc:title=Note2").execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput(folder)
+               .set("type", "Note")
+               .set("name", "note1")
+               .set("properties", "dc:title=Note1")
+               .execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput(folder)
+               .set("type", "Note")
+               .set("name", "note2")
+               .set("properties", "dc:title=Note2")
+               .execute();
 
         DocRefs refs = new DocRefs();
         refs.add(new DocRef("/automation-test-folder/docsInput/note1"));
         refs.add(new DocRef("/automation-test-folder/docsInput/note2"));
-        Documents docs = (Documents) session.newRequest(UpdateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                refs).set("properties", "dc:description=updated").execute();
+        Documents docs = (Documents) session.newRequest(UpdateDocument.ID)
+                                            .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                            .setInput(refs)
+                                            .set("properties", "dc:description=updated")
+                                            .execute();
         assertEquals(2, docs.size());
         // returned docs doesn't contains all properties.
         // TODO should we return all schemas?
 
-        Document doc = (Document) session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set(
-                "value", "/automation-test-folder/docsInput/note1").execute();
+        Document doc = (Document) session.newRequest(FetchDocument.ID)
+                                         .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                         .set("value", "/automation-test-folder/docsInput/note1")
+                                         .execute();
         assertEquals("updated", doc.getString("dc:description"));
 
-        doc = (Document) session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set("value",
-                "/automation-test-folder/docsInput/note2").execute();
+        doc = (Document) session.newRequest(FetchDocument.ID)
+                                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                .set("value", "/automation-test-folder/docsInput/note2")
+                                .execute();
         assertEquals("updated", doc.getString("dc:description"));
 
         String now = DateUtils.formatDate(new Date());
-        doc = (Document) session.newRequest(UpdateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                new DocRef("/automation-test-folder/docsInput/note1")).set("properties", "dc:valid=" + now).execute();
+        doc = (Document) session.newRequest(UpdateDocument.ID)
+                                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                .setInput(new DocRef("/automation-test-folder/docsInput/note1"))
+                                .set("properties", "dc:valid=" + now)
+                                .execute();
         // TODO this test will not work if the client date writer and the server
         // date writer
         // are encoding differently the date (for instance the client add the
@@ -229,10 +266,16 @@ public abstract class AbstractAutomationClientTest {
 
     @Test
     public void testNullProperties() throws Exception {
-        Document note = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
-                "Note").set("name", "note1").set("properties", "dc:title=Note1").execute();
-        note = (Document) session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set("value",
-                note.getPath()).execute();
+        Document note = (Document) session.newRequest(CreateDocument.ID)
+                                          .setInput(automationTestFolder)
+                                          .set("type", "Note")
+                                          .set("name", "note1")
+                                          .set("properties", "dc:title=Note1")
+                                          .execute();
+        note = (Document) session.newRequest(FetchDocument.ID)
+                                 .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                 .set("value", note.getPath())
+                                 .execute();
 
         PropertyMap props = note.getProperties();
         assertTrue(props.getKeys().contains("dc:source"));
@@ -245,17 +288,31 @@ public abstract class AbstractAutomationClientTest {
     @Test
     public void testQuery() throws Exception {
         // create a folder
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
-                "Folder").set("name", "queryTest").set("properties", "dc:title=Query Test").execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setInput(automationTestFolder)
+                                            .set("type", "Folder")
+                                            .set("name", "queryTest")
+                                            .set("properties", "dc:title=Query Test")
+                                            .execute();
         // create 2 files
-        session.newRequest(CreateDocument.ID).setInput(folder).set("type", "Note").set("name", "note1").set(
-                "properties", "dc:title=Note1").execute();
-        session.newRequest(CreateDocument.ID).setInput(folder).set("type", "Note").set("name", "note2").set(
-                "properties", "dc:title=Note2").execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput(folder)
+               .set("type", "Note")
+               .set("name", "note1")
+               .set("properties", "dc:title=Note1")
+               .execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput(folder)
+               .set("type", "Note")
+               .set("name", "note2")
+               .set("properties", "dc:title=Note2")
+               .execute();
 
         // now query the two files
-        Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID).set("query",
-                "SELECT * FROM Note WHERE ecm:path STARTSWITH '/automation-test-folder/queryTest' ").execute();
+        Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID)
+                                            .set("query",
+                                                    "SELECT * FROM Note WHERE ecm:path STARTSWITH '/automation-test-folder/queryTest' ")
+                                            .execute();
         assertEquals(2, docs.size());
         String title1 = docs.get(0).getTitle();
         String title2 = docs.get(1).getTitle();
@@ -274,18 +331,31 @@ public abstract class AbstractAutomationClientTest {
     @Test
     public void testQueryAndFetch() throws Exception {
         // create a folder
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
-                "Folder").set("name", "queryTest").set("properties", "dc:title=Query Test").execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setInput(automationTestFolder)
+                                            .set("type", "Folder")
+                                            .set("name", "queryTest")
+                                            .set("properties", "dc:title=Query Test")
+                                            .execute();
         // create 2 files
-        session.newRequest(CreateDocument.ID).setInput(folder).set("type", "Note").set("name", "note1").set(
-                "properties", "dc:title=Note1\ndc:description=Desc1").execute();
-        session.newRequest(CreateDocument.ID).setInput(folder).set("type", "Note").set("name", "note2").set(
-                "properties", "dc:title=Note2\ndc:description=Desc2").execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput(folder)
+               .set("type", "Note")
+               .set("name", "note1")
+               .set("properties", "dc:title=Note1\ndc:description=Desc1")
+               .execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput(folder)
+               .set("type", "Note")
+               .set("name", "note2")
+               .set("properties", "dc:title=Note2\ndc:description=Desc2")
+               .execute();
 
         // now query the two files
-        RecordSet result = (RecordSet) session.newRequest(ResultSetPageProviderOperation.ID).set(
-                "query",
-                "SELECT dc:title, ecm:uuid, dc:description FROM Note WHERE ecm:path STARTSWITH '/automation-test-folder/queryTest' order by dc:title ").execute();
+        RecordSet result = (RecordSet) session.newRequest(ResultSetPageProviderOperation.ID)
+                                              .set("query",
+                                                      "SELECT dc:title, ecm:uuid, dc:description FROM Note WHERE ecm:path STARTSWITH '/automation-test-folder/queryTest' order by dc:title ")
+                                              .execute();
 
         assertEquals(2, result.size());
         String title1 = (String) result.get(0).get("dc:title");
@@ -313,17 +383,26 @@ public abstract class AbstractAutomationClientTest {
         // fb.setFileName("test.xml");
         fb.setMimeType("text/xml");
         // create a file
-        session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type", "File").set("name", "myfile").set(
-                "properties", "dc:title=My File").execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput(automationTestFolder)
+               .set("type", "File")
+               .set("name", "myfile")
+               .set("properties", "dc:title=My File")
+               .execute();
 
-        FileBlob blob = (FileBlob) session.newRequest("Blob.Attach").setHeader(Constants.HEADER_NX_VOIDOP, "true").setInput(
-                fb).set("document", "/automation-test-folder/myfile").execute();
+        FileBlob blob = (FileBlob) session.newRequest("Blob.Attach")
+                                          .setHeader(Constants.HEADER_NX_VOIDOP, "true")
+                                          .setInput(fb)
+                                          .set("document", "/automation-test-folder/myfile")
+                                          .execute();
         // test that output was avoided using Constants.HEADER_NX_VOIDOP
         assertNull(blob);
 
         // get the file where blob was attached
-        Document doc = (Document) session.newRequest(DocumentService.FetchDocument).setHeader(
-                Constants.HEADER_NX_SCHEMAS, "*").set("value", "/automation-test-folder/myfile").execute();
+        Document doc = (Document) session.newRequest(DocumentService.FetchDocument)
+                                         .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                         .set("value", "/automation-test-folder/myfile")
+                                         .execute();
 
         PropertyMap map = doc.getProperties().getMap("file:content");
         assertEquals(filename, map.getString("name"));
@@ -353,8 +432,12 @@ public abstract class AbstractAutomationClientTest {
     @Test
     public void testGetBlobs() throws Exception {
         // create a note
-        Document note = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
-                "Note").set("name", "blobs").set("properties", "dc:title=Blobs Test").execute();
+        Document note = (Document) session.newRequest(CreateDocument.ID)
+                                          .setInput(automationTestFolder)
+                                          .set("type", "Note")
+                                          .set("name", "blobs")
+                                          .set("properties", "dc:title=Blobs Test")
+                                          .execute();
         // attach 2 files to that note
         File file1 = newFile("<doc>mydoc1</doc>");
         File file2 = newFile("<doc>mydoc2</doc>");
@@ -368,20 +451,30 @@ public abstract class AbstractAutomationClientTest {
         Blobs blobs = new Blobs();
         // blobs.add(fb1);
         // blobs.add(fb2);
-        FileBlob blob = (FileBlob) session.newRequest(AttachBlob.ID).setHeader(Constants.HEADER_NX_VOIDOP, "true").setInput(
-                fb1).set("document", "/automation-test-folder/blobs").set("xpath", "files:files").execute();
+        FileBlob blob = (FileBlob) session.newRequest(AttachBlob.ID)
+                                          .setHeader(Constants.HEADER_NX_VOIDOP, "true")
+                                          .setInput(fb1)
+                                          .set("document", "/automation-test-folder/blobs")
+                                          .set("xpath", "files:files")
+                                          .execute();
         // test that output was avoided using Constants.HEADER_NX_VOIDOP
         assertNull(blob);
 
         // attach second blob
-        blob = (FileBlob) session.newRequest(AttachBlob.ID).setHeader(Constants.HEADER_NX_VOIDOP, "true").setInput(fb2).set(
-                "document", "/automation-test-folder/blobs").set("xpath", "files:files").execute();
+        blob = (FileBlob) session.newRequest(AttachBlob.ID)
+                                 .setHeader(Constants.HEADER_NX_VOIDOP, "true")
+                                 .setInput(fb2)
+                                 .set("document", "/automation-test-folder/blobs")
+                                 .set("xpath", "files:files")
+                                 .execute();
         // test that output was avoided using Constants.HEADER_NX_VOIDOP
         assertNull(blob);
 
         // now retrieve the note with full schemas
-        note = (Document) session.newRequest(DocumentService.FetchDocument).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set(
-                "value", "/automation-test-folder/blobs").execute();
+        note = (Document) session.newRequest(DocumentService.FetchDocument)
+                                 .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                 .set("value", "/automation-test-folder/blobs")
+                                 .execute();
 
         PropertyList list = note.getProperties().getList("files:files");
         assertEquals(2, list.size());
@@ -450,7 +543,10 @@ public abstract class AbstractAutomationClientTest {
         blobs.add(fb1);
         blobs.add(fb2);
 
-        FileBlob zip = (FileBlob) session.newRequest(CreateZip.ID).set("filename", "test.zip").setInput(blobs).execute();
+        FileBlob zip = (FileBlob) session.newRequest(CreateZip.ID)
+                                         .set("filename", "test.zip")
+                                         .setInput(blobs)
+                                         .execute();
         assertNotNull(zip);
 
         try (ZipFile zf = new ZipFile(zip.getFile())) {
@@ -478,21 +574,33 @@ public abstract class AbstractAutomationClientTest {
     @Test
     public void queriesArePaginable() throws Exception {
         // craete 1 folder
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
-                "Folder").set("name", "docsInput").set("properties", "dc:title=Query Test").execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setInput(automationTestFolder)
+                                            .set("type", "Folder")
+                                            .set("name", "docsInput")
+                                            .set("properties", "dc:title=Query Test")
+                                            .execute();
         Document[] notes = new Document[15];
         // create 15 notes
         for (int i = 0; i < 14; i++) {
-            notes[i] = (Document) session.newRequest(CreateDocument.ID).setInput(folder).set("type", "Note").set(
-                    "name", "note" + i).set("properties", "dc:title=Note" + i).execute();
+            notes[i] = (Document) session.newRequest(CreateDocument.ID)
+                                         .setInput(folder)
+                                         .set("type", "Note")
+                                         .set("name", "note" + i)
+                                         .set("properties", "dc:title=Note" + i)
+                                         .execute();
         }
 
-        Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID).set("query",
-                "SELECT * from Document WHERE ecm:path STARTSWITH '/automation-test-folder/'").execute();
+        Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID)
+                                            .set("query",
+                                                    "SELECT * from Document WHERE ecm:path STARTSWITH '/automation-test-folder/'")
+                                            .execute();
 
-        PaginableDocuments cursor = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID).set(
-                "query", "SELECT * from Document WHERE ecm:path STARTSWITH '/automation-test-folder/'").set("pageSize",
-                2).execute();
+        PaginableDocuments cursor = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID)
+                                                                .set("query",
+                                                                        "SELECT * from Document WHERE ecm:path STARTSWITH '/automation-test-folder/'")
+                                                                .set("pageSize", 2)
+                                                                .execute();
         final int pageSize = cursor.getPageSize();
         final int pageCount = cursor.getNumberOfPages();
         final int totalSize = cursor.getResultsCount();
@@ -510,8 +618,13 @@ public abstract class AbstractAutomationClientTest {
         props.set("dc:title", "My Test Folder");
         props.set("dc:description", "test");
         props.set("dc:subjects", "art,sciences,biology");
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                automationTestFolder).set("type", "Folder").set("name", "myfolder2").set("properties", props).execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                            .setInput(automationTestFolder)
+                                            .set("type", "Folder")
+                                            .set("name", "myfolder2")
+                                            .set("properties", props)
+                                            .execute();
 
         assertEquals("My Test Folder", folder.getString("dc:title"));
         assertEquals("test", folder.getString("dc:description"));
@@ -536,8 +649,10 @@ public abstract class AbstractAutomationClientTest {
             assertTrue(root.getProperties().size() > 15);
 
             // set at request level with only common schema + dc:title
-            root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").setHeader(
-                    Constants.HEADER_NX_SCHEMAS, "common").execute();
+            root = (Document) session.newRequest(FetchDocument.ID)
+                                     .set("value", "/")
+                                     .setHeader(Constants.HEADER_NX_SCHEMAS, "common")
+                                     .execute();
             assertEquals(4, root.getProperties().size());
 
             // reset
@@ -562,19 +677,28 @@ public abstract class AbstractAutomationClientTest {
 
     @Test
     public void testLock() throws Exception {
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
-                "Folder").set("name", "myfolder").set("properties", "dc:title=My Folder").execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setInput(automationTestFolder)
+                                            .set("type", "Folder")
+                                            .set("name", "myfolder")
+                                            .set("properties", "dc:title=My Folder")
+                                            .execute();
 
         // Getting the document
-        Document doc = (Document) session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set(
-                "value", folder.getPath()).execute();
+        Document doc = (Document) session.newRequest(FetchDocument.ID)
+                                         .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                         .set("value", folder.getPath())
+                                         .execute();
 
         assertNull(doc.getLock());
 
         session.newRequest(LockDocument.ID).setHeader(Constants.HEADER_NX_VOIDOP, "*").setInput(doc).execute();
 
-        doc = (Document) session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setHeader(
-                "X-NXfetch.document", "lock").set("value", doc.getPath()).execute();
+        doc = (Document) session.newRequest(FetchDocument.ID)
+                                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                .setHeader("X-NXfetch.document", "lock")
+                                .set("value", doc.getPath())
+                                .execute();
 
         assertNotNull(doc.getLock());
         assertEquals("Administrator", doc.getLockOwner());
@@ -587,11 +711,17 @@ public abstract class AbstractAutomationClientTest {
         // java source code to avoid issues when working with developers who do
         // not configure there editor charset to UTF-8).
         String title = "\u00e9\u00e8\u00ea\u00eb\u00e0\u00e0\u00e4\u00ec\u00ee\u00ef\u00f9\u00fb\u00f9";
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(automationTestFolder).set("type",
-                "Folder").set("name", "myfolder").set("properties", "dc:title=" + title).execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setInput(automationTestFolder)
+                                            .set("type", "Folder")
+                                            .set("name", "myfolder")
+                                            .set("properties", "dc:title=" + title)
+                                            .execute();
 
-        folder = (Document) session.newRequest(FetchDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").set(
-                "value", folder.getPath()).execute();
+        folder = (Document) session.newRequest(FetchDocument.ID)
+                                   .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                   .set("value", folder.getPath())
+                                   .execute();
 
         assertEquals(folder.getTitle(), title);
     }

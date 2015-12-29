@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,17 +70,13 @@ public class PackagePersistence {
     public PackagePersistence(PackageUpdateService pus) throws IOException {
         Environment env = Environment.getDefault();
         File mpDir = new File(env.getProperty(Environment.NUXEO_MP_DIR, Environment.DEFAULT_MP_DIR));
-        if (mpDir.isAbsolute()) {
-            root = mpDir;
-        } else {
-            root = new File(env.getServerHome(), mpDir.getPath());
-        }
+        root = env.getServerHome().toPath().resolve(mpDir.toPath()).toFile();
         root.mkdirs();
         store = new File(root, "store");
         store.mkdirs();
         temp = new File(root, "tmp");
         temp.mkdirs();
-        this.service = pus;
+        service = pus;
         states = loadStates();
     }
 

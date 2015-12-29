@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,12 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -103,16 +106,16 @@ public class TestCoreGraph {
 
     @Before
     public void setUp() throws Exception {
-        statements = new ArrayList<Statement>();
-        doc1 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE,
-                session.getRepositoryName() + "/00010000-2c86-46fa-909e-02494bcb0001");
-        doc2 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE,
-                session.getRepositoryName() + "/00020000-2c86-46fa-909e-02494bcb0002");
+        statements = new ArrayList<>();
+        doc1 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, session.getRepositoryName()
+                + "/00010000-2c86-46fa-909e-02494bcb0001");
+        doc2 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, session.getRepositoryName()
+                + "/00020000-2c86-46fa-909e-02494bcb0002");
         isBasedOn = new QNameResourceImpl(DC_TERMS_NS, "IsBasedOn");
         references = new QNameResourceImpl(DC_TERMS_NS, "References");
         statements.add(new StatementImpl(doc2, isBasedOn, doc1));
-        statements.add(new StatementImpl(doc1, references,
-                new ResourceImpl("http://www.wikipedia.com/Enterprise_Content_Management")));
+        statements.add(new StatementImpl(doc1, references, new ResourceImpl(
+                "http://www.wikipedia.com/Enterprise_Content_Management")));
         statements.add(new StatementImpl(doc2, references, new LiteralImpl("NXRuntime")));
         Collections.sort(statements);
 
@@ -130,7 +133,7 @@ public class TestCoreGraph {
 
     @Test
     public void testSetOptions() {
-        Map<String, String> options = new HashMap<String, String>();
+        Map<String, String> options = new HashMap<>();
         options.put(CoreGraph.OPTION_DOCTYPE, "Foo");
         try {
             graph.setOptions(options);
@@ -141,10 +144,6 @@ public class TestCoreGraph {
         options.put(CoreGraph.OPTION_DOCTYPE, "Relation");
         graph.setOptions(options);
     }
-
-    // public static void assertEquals(int expected, Long actual) {
-    // assertEquals(Long.valueOf(expected), actual);
-    // }
 
     @Test
     public void testAdd() {
@@ -214,7 +213,7 @@ public class TestCoreGraph {
         assertEquals(Long.valueOf(0), graph.size());
         graph.add(statements);
         assertEquals(Long.valueOf(3), graph.size());
-        List<Statement> stmts = new ArrayList<Statement>();
+        List<Statement> stmts = new ArrayList<>();
         stmts.add(new StatementImpl(doc2, references, new LiteralImpl("NXRuntime")));
         graph.remove(stmts);
         assertEquals(Long.valueOf(2), graph.size());
@@ -228,7 +227,7 @@ public class TestCoreGraph {
 
     @Test
     public void testStatementProperties() {
-        List<Statement> stmts = new ArrayList<Statement>();
+        List<Statement> stmts = new ArrayList<>();
         Node p;
         Calendar cal = Calendar.getInstance();
         cal.set(2012, 12 - 1, 21, 1, 2, 3);
@@ -256,7 +255,7 @@ public class TestCoreGraph {
 
     @Test
     public void testGetStatements() {
-        List<Statement> stmts = new ArrayList<Statement>();
+        List<Statement> stmts = new ArrayList<>();
         assertEquals(stmts, graph.getStatements());
         graph.add(statements);
         stmts = graph.getStatements();
@@ -266,7 +265,7 @@ public class TestCoreGraph {
 
     @Test
     public void testGetStatementsPattern() {
-        List<Statement> expected = new ArrayList<Statement>();
+        List<Statement> expected = new ArrayList<>();
         assertEquals(expected, graph.getStatements());
         graph.add(statements);
 
@@ -277,37 +276,36 @@ public class TestCoreGraph {
 
         stmts = graph.getStatements(new StatementImpl(doc1, null, null));
         Collections.sort(stmts);
-        expected = new ArrayList<Statement>();
-        expected.add(new StatementImpl(doc1, references,
-                new ResourceImpl("http://www.wikipedia.com/Enterprise_Content_Management")));
+        expected = new ArrayList<>();
+        expected.add(new StatementImpl(doc1, references, new ResourceImpl(
+                "http://www.wikipedia.com/Enterprise_Content_Management")));
         assertEquals(expected, stmts);
 
         stmts = graph.getStatements(new StatementImpl(null, references, null));
         Collections.sort(stmts);
-        expected = new ArrayList<Statement>();
-        expected.add(new StatementImpl(doc1, references,
-                new ResourceImpl("http://www.wikipedia.com/Enterprise_Content_Management")));
+        expected = new ArrayList<>();
+        expected.add(new StatementImpl(doc1, references, new ResourceImpl(
+                "http://www.wikipedia.com/Enterprise_Content_Management")));
         expected.add(new StatementImpl(doc2, references, new LiteralImpl("NXRuntime")));
         assertEquals(expected, stmts);
 
         stmts = graph.getStatements(new StatementImpl(doc2, null, doc1));
         Collections.sort(stmts);
-        expected = new ArrayList<Statement>();
+        expected = new ArrayList<>();
         expected.add(new StatementImpl(doc2, isBasedOn, doc1));
         assertEquals(expected, stmts);
 
         // test with unknown nodes
-        expected = new ArrayList<Statement>();
-        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"),
-                new ResourceImpl("http://propertty"), new ResourceImpl("http://object")));
+        expected = new ArrayList<>();
+        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"), new ResourceImpl(
+                "http://propertty"), new ResourceImpl("http://object")));
         assertEquals(expected, stmts);
 
-        stmts = graph.getStatements(
-                new StatementImpl(new ResourceImpl("http://subject"), null, new LiteralImpl("literal")));
+        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"), null, new LiteralImpl(
+                "literal")));
         assertEquals(expected, stmts);
 
-        stmts = graph.getStatements(
-                new StatementImpl(new ResourceImpl("http://subject"), null, new BlankImpl("blank")));
+        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"), null, new BlankImpl("blank")));
         assertEquals(expected, stmts);
     }
 
@@ -328,12 +326,12 @@ public class TestCoreGraph {
         res = graph.getSubjects(null, doc1);
         assertEquals(Collections.singletonList(doc2), res);
 
-        Set<Node> docs = new HashSet<Node>(Arrays.asList(doc1, doc2));
+        Set<Node> docs = new HashSet<>(Arrays.asList(doc1, doc2));
         res = graph.getSubjects(references, null);
-        assertEquals(docs, new HashSet<Node>(res));
+        assertEquals(docs, new HashSet<>(res));
 
         res = graph.getSubjects(null, null);
-        assertEquals(docs, new HashSet<Node>(res));
+        assertEquals(docs, new HashSet<>(res));
     }
 
     @Test
@@ -347,12 +345,12 @@ public class TestCoreGraph {
         res = graph.getPredicates(null, doc1);
         assertEquals(Collections.singletonList(isBasedOn), res);
 
-        Set<Node> both = new HashSet<Node>(Arrays.asList(isBasedOn, references));
+        Set<Node> both = new HashSet<>(Arrays.asList(isBasedOn, references));
         res = graph.getPredicates(doc2, null);
-        assertEquals(both, new HashSet<Node>(res));
+        assertEquals(both, new HashSet<>(res));
 
         res = graph.getPredicates(null, null);
-        assertEquals(both, new HashSet<Node>(res));
+        assertEquals(both, new HashSet<>(res));
     }
 
     @Test
@@ -366,13 +364,13 @@ public class TestCoreGraph {
         assertEquals(Collections.singletonList(doc1), res);
 
         res = graph.getObjects(doc2, null);
-        assertEquals(new HashSet<Node>(Arrays.asList(doc1, lit)), new HashSet<Node>(res));
+        assertEquals(new HashSet<>(Arrays.asList(doc1, lit)), new HashSet<>(res));
 
         res = graph.getObjects(null, references);
-        assertEquals(new HashSet<Node>(Arrays.asList(reswiki, lit)), new HashSet<Node>(res));
+        assertEquals(new HashSet<>(Arrays.asList(reswiki, lit)), new HashSet<>(res));
 
         res = graph.getObjects(null, null);
-        assertEquals(new HashSet<Node>(Arrays.asList(doc1, reswiki, lit)), new HashSet<Node>(res));
+        assertEquals(new HashSet<>(Arrays.asList(doc1, reswiki, lit)), new HashSet<>(res));
     }
 
     @Test
@@ -399,7 +397,7 @@ public class TestCoreGraph {
     @Test
     public void testSize() {
         assertEquals(Long.valueOf(0), graph.size());
-        List<Statement> stmts = new ArrayList<Statement>();
+        List<Statement> stmts = new ArrayList<>();
         stmts.add(new StatementImpl(doc1, isBasedOn, new LiteralImpl("foo")));
         graph.add(stmts);
         assertEquals(Long.valueOf(1), graph.size());
@@ -424,7 +422,7 @@ public class TestCoreGraph {
                 + "       }";
         QueryResult res = graph.query(queryString, "sparql", null);
         assertEquals(3, res.getCount().intValue());
-        List<String> variableNames = new ArrayList<String>();
+        List<String> variableNames = new ArrayList<>();
         variableNames.add("subj");
         variableNames.add("pred");
         variableNames.add("obj");
@@ -524,7 +522,8 @@ public class TestCoreGraph {
         graph.write(out, null, null);
         InputStream written = new ByteArrayInputStream(out.toByteArray());
         InputStream expected = new FileInputStream(getTestFile());
-        assertEquals(FileUtils.read(expected).replaceAll("\r?\n", ""), FileUtils.read(written).replaceAll("\r?\n", ""));
+        assertEquals(IOUtils.toString(expected, Charsets.UTF_8).replaceAll("\r?\n", ""),
+                IOUtils.toString(written, Charsets.UTF_8).replaceAll("\r?\n", ""));
     }
 
     public void TODOtestWritePath() throws Exception {
@@ -535,8 +534,8 @@ public class TestCoreGraph {
         InputStream written = new FileInputStream(new File(path));
         InputStream expected = new FileInputStream(getTestFile());
 
-        String expectedString = FileUtils.read(expected).replaceAll("\r?\n", "");
-        String writtenString = FileUtils.read(written).replaceAll("\r?\n", "");
+        String expectedString = IOUtils.toString(expected, Charsets.UTF_8).replaceAll("\r?\n", "");
+        String writtenString = IOUtils.toString(written, Charsets.UTF_8).replaceAll("\r?\n", "");
         assertEquals(expectedString, writtenString);
     }
 

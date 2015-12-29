@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,10 @@ import javax.inject.Inject;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
+
 import org.osgi.framework.Bundle;
 
 import com.google.common.base.Supplier;
@@ -48,14 +50,14 @@ import com.google.common.collect.SetMultimap;
  */
 public class RuntimeDeployment {
 
-    Set<String> bundles = new HashSet<String>();
+    Set<String> bundles = new HashSet<>();
 
     Map<String, Collection<String>> mainContribs = new HashMap<>();
 
     SetMultimap<String, String> mainIndex = Multimaps.newSetMultimap(mainContribs, new Supplier<Set<String>>() {
         @Override
         public Set<String> get() {
-            return new HashSet<String>();
+            return new HashSet<>();
         }
     });
 
@@ -64,11 +66,11 @@ public class RuntimeDeployment {
     SetMultimap<String, String> localIndex = Multimaps.newSetMultimap(localContribs, new Supplier<Set<String>>() {
         @Override
         public Set<String> get() {
-            return new HashSet<String>();
+            return new HashSet<>();
         }
     });
 
-    protected LinkedList<RuntimeContext> contexts = new LinkedList<RuntimeContext>();
+    protected LinkedList<RuntimeContext> contexts = new LinkedList<>();
 
     protected void index(Class<?> clazz) {
         AnnotationScanner scanner = FeaturesRunner.scanner;

@@ -44,6 +44,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
@@ -146,6 +147,7 @@ public class ShellExecutor implements Executor {
         }
 
         // get result from last process
+        @SuppressWarnings("null")
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
         List<String> output = new ArrayList<>();
@@ -232,8 +234,7 @@ public class ShellExecutor implements Executor {
     }
 
     /**
-     * Returns the absolute path of a command looked up on the PATH
-     * or the initial string if not found.
+     * Returns the absolute path of a command looked up on the PATH or the initial string if not found.
      *
      * @since 7.10
      */
@@ -250,7 +251,7 @@ public class ShellExecutor implements Executor {
                 Path path = Paths.get(sp);
                 if (Files.exists(path.resolve(command + ext))) {
                     return path.resolve(command + ext).toString();
-                 }
+                }
             }
         }
         // not found : return the initial string

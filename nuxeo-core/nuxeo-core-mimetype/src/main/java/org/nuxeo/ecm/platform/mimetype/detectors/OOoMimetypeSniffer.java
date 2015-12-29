@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: OOoMimetypeSniffer.java 20548 2007-06-15 13:08:36Z ogrisel $
  */
 
 package org.nuxeo.ecm.platform.mimetype.detectors;
@@ -31,6 +30,7 @@ import net.sf.jmimemagic.MagicDetector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
 
@@ -38,15 +38,18 @@ public class OOoMimetypeSniffer implements MagicDetector {
 
     private static final Log log = LogFactory.getLog(OOoMimetypeSniffer.class);
 
+    @Override
     public String getDisplayName() {
         return "OOo 1.x & OpenDocument MimeType Detector";
     }
 
+    @Override
     public String[] getHandledExtensions() {
         return new String[] { "ods", "ots", "odt", "ott", "odp", "otp", "odg", "otg", "otm", "oth", "odi", "oti",
                 "odf", "otf", "odc", "otc", "sxw", "stw", "sxg", "sxc", "stc", "sxi", "sti", "sxd", "std", "sxm", };
     }
 
+    @Override
     public String[] getHandledTypes() {
         return new String[] { "application/vnd.oasis.opendocument.spreadsheet",
                 "application/vnd.oasis.opendocument.spreadsheet-template", "application/vnd.oasis.opendocument.text",
@@ -68,14 +71,17 @@ public class OOoMimetypeSniffer implements MagicDetector {
                 "application/vnd.sun.xml.draw.template", "application/vnd.sun.xml.math", };
     }
 
+    @Override
     public String getName() {
         return "ooodetector";
     }
 
+    @Override
     public String getVersion() {
         return "0.2";
     }
 
+    @Override
     public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
             Map params) {
         String[] mimetypes = {};
@@ -94,6 +100,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
         return mimetypes;
     }
 
+    @Override
     public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
             Map params) {
         return guessOOo(file);

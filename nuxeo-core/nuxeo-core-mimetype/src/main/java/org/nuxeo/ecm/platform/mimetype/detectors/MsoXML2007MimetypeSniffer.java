@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: MsoXML2007MimetypeSniffer.java 20591 2007-06-16 16:26:40Z sfermigier $
  */
 
 package org.nuxeo.ecm.platform.mimetype.detectors;
@@ -30,21 +29,25 @@ import net.sf.jmimemagic.MagicDetector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.FileUtils;
 
 public class MsoXML2007MimetypeSniffer implements MagicDetector {
 
     private static final Log log = LogFactory.getLog(MsoXML2007MimetypeSniffer.class);
 
+    @Override
     public String getDisplayName() {
         return "Microsoft 2007 files MimeType Detector";
     }
 
+    @Override
     public String[] getHandledExtensions() {
         return new String[] { "docm", "docx", "dotm", "dotx", "ppsm", "ppsx", "pptm", "pptx", "xlsb", "xlsm", "xlsx",
                 "xps" };
     }
 
+    @Override
     public String[] getHandledTypes() {
         return new String[] { "application/vnd.ms-word.document.macroEnabled.12",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -59,14 +62,17 @@ public class MsoXML2007MimetypeSniffer implements MagicDetector {
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-xpsdocument", };
     }
 
+    @Override
     public String getName() {
         return "mso2007detector";
     }
 
+    @Override
     public String getVersion() {
         return "0.1";
     }
 
+    @Override
     public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
             Map params) {
         String[] mimetypes = {};
@@ -85,6 +91,7 @@ public class MsoXML2007MimetypeSniffer implements MagicDetector {
         return mimetypes;
     }
 
+    @Override
     public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
             Map params) {
         return guessMsoXML2007(file);

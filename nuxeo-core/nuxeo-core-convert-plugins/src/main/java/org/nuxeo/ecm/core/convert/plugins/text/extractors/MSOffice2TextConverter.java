@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,12 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.poi.POITextExtractor;
 import org.apache.poi.extractor.ExtractorFactory;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.xmlbeans.XmlException;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -68,12 +70,7 @@ public class MSOffice2TextConverter implements Converter {
         } catch (IOException | OpenXML4JException | XmlException e) {
             throw new ConversionException("Error during MSOffice2Text conversion", e);
         } finally {
-            if (fas != null) {
-                try {
-                    fas.close();
-                } catch (IOException e) {
-                }
-            }
+            IOUtils.closeQuietly(fas);
             if (f != null) {
                 f.delete();
             }

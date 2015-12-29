@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,14 @@ package org.nuxeo.common.file;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.common.file.LRUFileCache;
-import org.nuxeo.common.utils.FileUtils;
 
 public class TestLRUFileCache {
 
@@ -43,7 +44,7 @@ public class TestLRUFileCache {
 
     @After
     public void tearDown() throws Exception {
-        FileUtils.deleteTree(dir);
+        FileUtils.deleteQuietly(dir);
     }
 
     public long getDirSize() {

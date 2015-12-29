@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: TestBlob2.java 28196 2007-12-16 17:48:58Z sfermigier $
  */
 
 package org.nuxeo.ecm.core.api.impl.blob;
@@ -33,6 +32,7 @@ import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 
@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.Blobs;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 // XXX: Second blob testcase -> merge it with the other one ?
-@SuppressWarnings({ "IOResourceOpenedButNotSafelyClosed" })
 public class TestBlob2 {
 
     @Test

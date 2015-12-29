@@ -128,8 +128,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         } else {
             workingDir = bundleContext.getDataFile("/");
         }
-        // environment may not be set by some bootstrappers (like tests) - we
-        // create it now if not yet created
+        // environment may not be set by some bootstrappers (like tests) - we create it now if not yet created
         Environment env = Environment.getDefault();
         if (env == null) {
             Environment.setDefault(new Environment(workingDir));
@@ -334,13 +333,9 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             printDeploymentOrderInfo(names);
             for (String name : names) {
                 if (name.endsWith("-config.xml") || name.endsWith("-bundle.xml")) {
-                    // TODO
-                    // because of some dep bugs (regarding the deployment of
-                    // demo-ds.xml)
-                    // we cannot let the runtime deploy config dir at
-                    // beginning...
-                    // until fixing this we deploy config dir from
-                    // NuxeoDeployer
+                    // TODO because of some dep bugs (regarding the deployment of demo-ds.xml), we cannot let the
+                    // runtime deploy config dir at beginning...
+                    // until fixing this we deploy config dir from NuxeoDeployer
                     if (isNotJBoss4) {
                         File file = new File(dir, name);
                         log.debug("Configuration: deploy config component: " + name);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,8 +90,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
      * @see #initializeCache(String, String, String, FileStorage)
      * @since 6.0
      */
-    public void initializeCache(String maxSizeStr, FileStorage fileStorage)
-            throws IOException {
+    public void initializeCache(String maxSizeStr, FileStorage fileStorage) throws IOException {
         String maxCountStr = "10000"; // default for legacy code
         String minAgeStr = "3600"; // default for legacy code
         initializeCache(maxSizeStr, maxCountStr, minAgeStr, fileStorage);

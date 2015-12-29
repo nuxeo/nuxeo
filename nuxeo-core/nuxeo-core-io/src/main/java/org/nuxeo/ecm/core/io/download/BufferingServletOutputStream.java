@@ -54,7 +54,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
     /** Used for 0-length writes. */
     private final static OutputStream EMPTY = new ByteArrayOutputStream(0);
 
-    protected static ThreadLocal<BufferingServletOutputStream> threadLocal = new ThreadLocal<BufferingServletOutputStream>();
+    protected static ThreadLocal<BufferingServletOutputStream> threadLocal = new ThreadLocal<>();
 
     /** Have we stopped buffering to pass writes directly to the output stream. */
     protected boolean streaming;

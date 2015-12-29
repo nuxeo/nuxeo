@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ public abstract class PackageTestCase {
     /**
      * Calls {@link #setupService()} to setup the service
      *
-     * @see #setService(PackageUpdateService)
      * @see #setupService()
      */
     @Before

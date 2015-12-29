@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -159,7 +159,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
      */
     public void createDocumentWithComplexProperties(Document root) throws Exception {
         // Fill the document properties
-        Map<String, Object> creationProps = new HashMap<String, Object>();
+        Map<String, Object> creationProps = new HashMap<>();
         creationProps.put("ds:tableName", "MyTable");
         creationProps.put("ds:attachments", attachments);
 
@@ -173,8 +173,12 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         creationProps.put("dc:title", "testDoc");
 
         // Document creation
-        session.newRequest(CreateDocument.ID).setInput(root).set("type", "DataSet").set("name", "testDoc").set(
-                "properties", new PropertyMap(creationProps).toString()).execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput(root)
+               .set("type", "DataSet")
+               .set("name", "testDoc")
+               .set("properties", new PropertyMap(creationProps).toString())
+               .execute();
     }
 
     @BeforeClass
@@ -199,13 +203,21 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     public void testMultiValued() throws Exception {
         Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
 
-        Document note = (Document) session.newRequest(CreateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                root).set("type", "MV").set("name", "pfff").set("properties",
-                "mv:sl=s1,s2\nmv:ss=s1,s2\nmv:bl=true,false\nmv:b=true\n").execute();
+        Document note = (Document) session.newRequest(CreateDocument.ID)
+                                          .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                          .setInput(root)
+                                          .set("type", "MV")
+                                          .set("name", "pfff")
+                                          .set("properties", "mv:sl=s1,s2\nmv:ss=s1,s2\nmv:bl=true,false\nmv:b=true\n")
+                                          .execute();
         checkHasCorrectMultiValues(note);
 
-        PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID).setHeader(
-                Constants.HEADER_NX_SCHEMAS, "*").set("query", "SELECT * from MV").set("queryParams",new String[]{}).set("pageSize", 2).execute();
+        PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID)
+                                                              .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                                              .set("query", "SELECT * from MV")
+                                                              .set("queryParams", new String[] {})
+                                                              .set("pageSize", 2)
+                                                              .execute();
 
         assertThat(docs, notNullValue());
         assertThat(docs.size(), is(1));
@@ -252,8 +264,11 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // get the root
         Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
         // create a folder
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setInput(root).set("type", "Folder").set(
-                "name", "chainTest").execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setInput(root)
+                                            .set("type", "Folder")
+                                            .set("name", "chainTest")
+                                            .execute();
 
         Document doc = (Document) session.newRequest("testchain").setInput(folder).execute();
         assertEquals("/chainTest/chain.doc", doc.getPath());
@@ -364,7 +379,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // Set bad SMTP configuration
         File file = new File(Environment.getDefault().getConfig(), "mail.properties");
         file.getParentFile().mkdirs();
-        List<String> mailProperties = new ArrayList<String>();
+        List<String> mailProperties = new ArrayList<>();
         mailProperties.add(String.format("mail.smtp.host = %s", "badHostName"));
         mailProperties.add(String.format("mail.smtp.port = %s", "2525"));
         FileUtils.writeLines(file, mailProperties);
@@ -372,9 +387,12 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         Document rootDoc = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
         assertNotNull(rootDoc);
 
-        OperationRequest operationRequest = session.newRequest(SendMail.ID).setInput(rootDoc).set("from",
-                "sender@nuxeo.com").set("to", "recipient@nuxeo.com").set("subject", "My test mail").set("message",
-                "The message content.");
+        OperationRequest operationRequest = session.newRequest(SendMail.ID)
+                                                   .setInput(rootDoc)
+                                                   .set("from", "sender@nuxeo.com")
+                                                   .set("to", "recipient@nuxeo.com")
+                                                   .set("subject", "My test mail")
+                                                   .set("message", "The message content.");
 
         // Call SendMail with rollbackOnError = true (default value)
         // => should throw a RemoteException
@@ -440,8 +458,10 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // the repository init handler sould have created a sample doc in the
         // repo
         // Check that we see it
-        Document testDoc = (Document) session.newRequest(DocumentService.GetDocumentChild).setInput(new PathRef("/")).set(
-                "name", "testDoc").execute();
+        Document testDoc = (Document) session.newRequest(DocumentService.GetDocumentChild)
+                                             .setInput(new PathRef("/"))
+                                             .set("name", "testDoc")
+                                             .execute();
 
         assertNotNull(testDoc);
 
@@ -459,8 +479,10 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertNull(testDoc.getProperties().get("ds:fields"));
 
         // refetch the doc, but with the correct header
-        testDoc = (Document) session.newRequest(DocumentService.FetchDocument).setHeader(Constants.HEADER_NX_SCHEMAS,
-                "*").set("value", "/testDoc").execute();
+        testDoc = (Document) session.newRequest(DocumentService.FetchDocument)
+                                    .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                    .set("value", "/testDoc")
+                                    .execute();
 
         assertNotNull(testDoc);
 
@@ -479,7 +501,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         assertEquals("Score", dbField0.getList("roles").getString(1));
 
         // now update the doc
-        Map<String, Object> updateProps = new HashMap<String, Object>();
+        Map<String, Object> updateProps = new HashMap<>();
 
         updateProps.put("ds:tableName", "newTableName");
         updateProps.put("ds:attachments", "new1,new2,new3,new4");
@@ -492,8 +514,11 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         fieldsDataAsJSon = fieldsDataAsJSon.replaceAll("\r", "");
         updateProps.put("ds:fields", fieldsDataAsJSon);
 
-        testDoc = (Document) session.newRequest(UpdateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                new IdRef(testDoc.getId())).set("properties", new PropertyMap(updateProps).toString()).execute();
+        testDoc = (Document) session.newRequest(UpdateDocument.ID)
+                                    .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                    .setInput(new IdRef(testDoc.getId()))
+                                    .set("properties", new PropertyMap(updateProps).toString())
+                                    .execute();
 
         // check the returned doc
         assertEquals("testDoc", testDoc.getTitle());
@@ -525,9 +550,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         String obj1JSON = mapper.writeValueAsString(obj1);
         String obj2JSON = mapper.writeValueAsString(obj2);
 
-        @SuppressWarnings("unchecked")
         Map<String, Object> map1 = mapper.readValue(obj1JSON, Map.class);
-        @SuppressWarnings("unchecked")
         Map<String, Object> map2 = mapper.readValue(obj2JSON, Map.class);
 
         // Expected result when passing obj1 and obj2 as input to the
@@ -537,20 +560,27 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // The pojo and the map parameters can be passed as java objects
         // directly in the client call, the generic Jackson-based parser /
         // serialization will be used
-        POJOObject returnedObj12 = (POJOObject) session.newRequest(NestedJSONOperation.ID).set("pojo", obj1).set("map",
-                map2).execute();
+        POJOObject returnedObj12 = (POJOObject) session.newRequest(NestedJSONOperation.ID)
+                                                       .set("pojo", obj1)
+                                                       .set("map", map2)
+                                                       .execute();
         assertEquals(expectedObj12, returnedObj12);
 
         // It is also possible to pass alternative Java representation of the
         // input parameters as long as they share the same JSON representation
         // for the transport.
-        returnedObj12 = (POJOObject) session.newRequest(NestedJSONOperation.ID).set("pojo", map1).set("map", obj2).execute();
+        returnedObj12 = (POJOObject) session.newRequest(NestedJSONOperation.ID)
+                                            .set("pojo", map1)
+                                            .set("map", obj2)
+                                            .execute();
         assertEquals(expectedObj12, returnedObj12);
 
         // Check scalar parameters can be passed as argument
         POJOObject expectedObj1AndDouble = new POJOObject("Merged texts: [obj1 text]", Arrays.asList("1", "2", "3.0"));
-        POJOObject returnedObj1AndDouble = (POJOObject) session.newRequest(NestedJSONOperation.ID).set("pojo", map1).set(
-                "doubleParam", 3.0).execute();
+        POJOObject returnedObj1AndDouble = (POJOObject) session.newRequest(NestedJSONOperation.ID)
+                                                               .set("pojo", map1)
+                                                               .set("doubleParam", 3.0)
+                                                               .execute();
         assertEquals(expectedObj1AndDouble, returnedObj1AndDouble);
     }
 
@@ -560,8 +590,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // long as the JSON representation is a valid representation for the
         // expected input type of the operation
         POJOObject expectedListObj = new POJOObject("Merged texts: ", Arrays.asList("a", "b", "c"));
-        POJOObject returnedListObj = (POJOObject) session.newRequest(NestedJSONOperation.ID).setInput(
-                Arrays.asList("a", "b", "c")).execute();
+        POJOObject returnedListObj = (POJOObject) session.newRequest(NestedJSONOperation.ID)
+                                                         .setInput(Arrays.asList("a", "b", "c"))
+                                                         .execute();
         assertEquals(expectedListObj, returnedListObj);
 
         // Try with alternative input type datastructures to check input type
@@ -575,7 +606,6 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // Pojo can be mapped to java Map datastructure and passed as input to
         // operations
         ObjectMapper mapper = new ObjectMapper();
-        @SuppressWarnings("unchecked")
         Map<String, Object> mapInput = mapper.convertValue(pojoInput, Map.class);
         returnedListObj = (POJOObject) session.newRequest(NestedJSONOperation.ID).setInput(mapInput).execute();
         assertEquals(expectedListObj, returnedListObj);
@@ -599,25 +629,29 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         listList.add(list);
         SimplePojo[] simplePojos = list.toArray(new SimplePojo[list.size()]);
         SimplePojo result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
-                                                 .set("pojoList", list).set("whichPojo", "pojoList")
+                                                 .set("pojoList", list)
+                                                 .set("whichPojo", "pojoList")
                                                  .execute();
         assertEquals(result1.getName(), "test1");
         result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
-                                                 .set("pojo", new SimplePojo
-                                                         ("nico")).set("whichPojo", "pojo")
-                                                 .execute();
+                                      .set("pojo", new SimplePojo("nico"))
+                                      .set("whichPojo", "pojo")
+                                      .execute();
         assertEquals(result1.getName(), "nico");
         result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
-                .set("pojoListList", listList).set("whichPojo","pojoListList")
-                .execute();
+                                      .set("pojoListList", listList)
+                                      .set("whichPojo", "pojoListList")
+                                      .execute();
         assertEquals(result1.getName(), "test1");
         result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
-                .set("pojoArray", simplePojos).set("whichPojo","pojoArray")
-                .execute();
+                                      .set("pojoArray", simplePojos)
+                                      .set("whichPojo", "pojoArray")
+                                      .execute();
         assertEquals(result1.getName(), "test1");
         result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
-                .set("pojoArray", new SimplePojo[]{}).set("whichPojo","empty")
-                .execute();
+                                      .set("pojoArray", new SimplePojo[] {})
+                                      .set("whichPojo", "empty")
+                                      .execute();
         assertNull(result1);
     }
 
@@ -632,8 +666,10 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // Initialize repository for this test
         setupComplexDocuments();
 
-        Document testDoc = (Document) session.newRequest(DocumentService.GetDocumentChild).setInput(new PathRef("/")).set(
-                "name", "testDoc").execute();
+        Document testDoc = (Document) session.newRequest(DocumentService.GetDocumentChild)
+                                             .setInput(new PathRef("/"))
+                                             .set("name", "testDoc")
+                                             .execute();
 
         // No need to use PropertyMap object anymore
         testDoc.set("ds:tableName", "newTableName");
@@ -654,8 +690,11 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         Assert.assertFalse("The property dc:title should not be part of dirty properties",
                 dirties.getKeys().contains("dc:title"));
 
-        testDoc = (Document) session.newRequest(UpdateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                new IdRef(testDoc.getId())).set("properties", dirties.toString()).execute();
+        testDoc = (Document) session.newRequest(UpdateDocument.ID)
+                                    .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                    .setInput(new IdRef(testDoc.getId()))
+                                    .set("properties", dirties.toString())
+                                    .execute();
 
         // check the returned doc with properties not updated
         assertEquals("testDoc", testDoc.getTitle());
@@ -675,17 +714,23 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         document.set("dc:title", "My Test Folder");
         document.set("dc:description", "test");
         document.set("dc:subjects", "a,b,c\\,d");
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                automationTestFolder).set("type", document.getType()).set("name", document.getId()).set("properties",
-                document).execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                            .setInput(automationTestFolder)
+                                            .set("type", document.getType())
+                                            .set("name", document.getId())
+                                            .set("properties", document)
+                                            .execute();
 
         assertEquals("My Test Folder", folder.getString("dc:title"));
         assertEquals("test", folder.getString("dc:description"));
         // Initialize repository for this document update test
         setupComplexDocuments();
 
-        Document testDoc = (Document) session.newRequest(DocumentService.GetDocumentChild).setInput(new PathRef("/")).set(
-                "name", "testDoc").execute();
+        Document testDoc = (Document) session.newRequest(DocumentService.GetDocumentChild)
+                                             .setInput(new PathRef("/"))
+                                             .set("name", "testDoc")
+                                             .execute();
 
         // No need to use PropertyMap object anymore
         testDoc.set("ds:tableName", "newTableName");
@@ -701,8 +746,11 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
 
         // No need to get properties from the document, just pass document
         // testDoc into "properties" entry
-        testDoc = (Document) session.newRequest(UpdateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                new IdRef(testDoc.getId())).set("properties", testDoc).execute();
+        testDoc = (Document) session.newRequest(UpdateDocument.ID)
+                                    .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                    .setInput(new IdRef(testDoc.getId()))
+                                    .set("properties", testDoc)
+                                    .execute();
 
         // check the returned doc with properties not updated
         assertEquals("testDoc", testDoc.getTitle());
@@ -795,15 +843,17 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     public void testAutomationBusinessObjects() throws Exception {
         // Test for pojo <-> adapter automation creation
         BusinessBean note = new BusinessBean("Note", "File description", "Note Content", "Note", new String("object"));
-        @SuppressWarnings("unchecked")
         BusinessService<BusinessBean> businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
 
         // Marshaller for bean 'note' registration
         client.registerPojoMarshaller(note.getClass());
 
-        note = (BusinessBean) session.newRequest(BusinessCreateOperation.ID).setInput(note).set("name", note.getTitle()).set(
-                "parentPath", "/").execute();
+        note = (BusinessBean) session.newRequest(BusinessCreateOperation.ID)
+                                     .setInput(note)
+                                     .set("name", note.getTitle())
+                                     .set("parentPath", "/")
+                                     .execute();
         assertNotNull(note);
         // Test for pojo <-> adapter automation update
         // Fetching the business adapter model
@@ -821,7 +871,6 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     public void testAutomationBusinessObjectsWithService() throws Exception {
         // Test for pojo <-> adapter automation creation
         BusinessBean note = new BusinessBean("Note", "File description", "Note Content", "Note", new String("object"));
-        @SuppressWarnings("unchecked")
         BusinessService<BusinessBean> businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
 
@@ -866,7 +915,6 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     @Test
     public void testAutomationBusinessObjectsArray() throws Exception {
         BusinessBean[] businessBeans = new BusinessBean[2];
-        @SuppressWarnings("unchecked")
         BusinessService<BusinessBean> businessService = session.getAdapter(BusinessService.class);
         assertNotNull(businessService);
 
@@ -886,7 +934,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         try {
             // get a wrong doc
             Document wrongDoc = (Document) session.newRequest(FetchDocument.ID).set("value", "/test").execute();
-            fail();
+            fail("Unexpected " + wrongDoc);
         } catch (RemoteException e) {
             assertNotNull(e);
             assertNotNull(e.getRemoteStackTrace());
@@ -906,12 +954,11 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         } catch (RemoteException e) {
             assertNotNull(e);
             assertEquals("Exception Message", e.getRemoteCause().getCause().getMessage());
-            RemoteThrowable cause = (RemoteThrowable)e.getRemoteCause();
+            RemoteThrowable cause = (RemoteThrowable) e.getRemoteCause();
             while (cause.getCause() != null && cause.getCause() != cause) {
-                cause = (RemoteThrowable)cause.getCause();
+                cause = (RemoteThrowable) cause.getCause();
             }
-            assertEquals(ExceptionTest.class.getCanonicalName(),
-                    cause.getOtherNodes().get("className").getTextValue());
+            assertEquals(ExceptionTest.class.getCanonicalName(), cause.getOtherNodes().get("className").getTextValue());
             assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, e.getStatus());
         } catch (Exception e) {
             fail();
@@ -928,8 +975,11 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // Set document array list to inject into the context through automation client
         List<Document> list = new ArrayList<>();
         list.add(root);
-        request.setContextProperty("users", list).set("isolate", "true").set("id", "TestContext").set("list", "users").set(
-                "item", "document");
+        request.setContextProperty("users", list)
+               .set("isolate", "true")
+               .set("id", "TestContext")
+               .set("list", "users")
+               .set("item", "document");
         request.execute();
     }
 

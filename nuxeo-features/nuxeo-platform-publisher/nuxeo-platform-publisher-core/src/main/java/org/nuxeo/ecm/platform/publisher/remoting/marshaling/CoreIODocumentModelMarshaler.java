@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.dom4j.DocumentException;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -104,7 +105,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
 
     @Override
     public void setOriginatingServer(String serverName) {
-        this.originatingServer = serverName;
+        originatingServer = serverName;
     }
 
 }

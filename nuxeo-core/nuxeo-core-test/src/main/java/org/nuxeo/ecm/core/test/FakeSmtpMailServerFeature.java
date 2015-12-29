@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,9 @@ public class FakeSmtpMailServerFeature extends SimpleFeature {
     public void beforeSetup(FeaturesRunner runner) throws Exception {
         server = SimpleSmtpServer.start(SERVER_PORT);
         if (Framework.isInitialized()) {
-
             File file = new File(Environment.getDefault().getConfig(), "mail.properties");
             file.getParentFile().mkdirs();
-            List<String> mailProperties = new ArrayList<String>();
+            List<String> mailProperties = new ArrayList<>();
             mailProperties.add(String.format("mail.smtp.host = %s", SERVER_HOST));
             mailProperties.add(String.format("mail.smtp.port = %s", SERVER_PORT));
             FileUtils.writeLines(file, mailProperties);
@@ -56,7 +55,6 @@ public class FakeSmtpMailServerFeature extends SimpleFeature {
             Framework.getProperties().put("mail.transport.host", SERVER_HOST);
             Framework.getProperties().put("mail.transport.port", String.valueOf(SERVER_PORT));
         }
-
     }
 
     @Override

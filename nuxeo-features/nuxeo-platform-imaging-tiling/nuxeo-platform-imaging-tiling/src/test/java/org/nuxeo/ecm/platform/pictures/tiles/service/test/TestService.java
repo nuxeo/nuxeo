@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.pictures.tiles.service.test;
@@ -50,6 +49,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestService extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -332,7 +332,7 @@ public class TestService extends NXRuntimeTestCase {
         PictureTilingComponent.startGC();
 
         // System.out.println("waiting for GC to run");
-        Thread.currentThread().sleep(600);
+        Thread.sleep(600);
 
         int gcRuns2 = PictureTilingCacheGCManager.getGCRuns();
         int gcCalls2 = PictureTilingCacheGCManager.getGCCalls();

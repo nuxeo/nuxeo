@@ -129,7 +129,7 @@ public class TestSQLRepositoryProperties {
         // or machine configuration and add funny characters to avoid problems
         // due to xml parsing
         ExternalBlobAdapter adapter = blobHolderAdapterService.getExternalBlobAdapterForPrefix("fs");
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put(FileSystemExternalBlobAdapter.CONTAINER_PROPERTY_NAME, "\n" + System.getProperty("java.io.tmpdir")
                 + " ");
         adapter.setProperties(props);
@@ -281,8 +281,8 @@ public class TestSQLRepositoryProperties {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:complexList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:complexList")).size());
-        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> item = new HashMap<String, Serializable>();
+        ArrayList<Map<String, Serializable>> values = new ArrayList<>();
+        Map<String, Serializable> item = new HashMap<>();
         item.put("string", "foo");
         Calendar cal = Calendar.getInstance();
         cal.set(2008, 6, 10);
@@ -300,10 +300,10 @@ public class TestSQLRepositoryProperties {
 
     @Test
     public void testComplexListChange() throws Exception {
-        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> item1 = new HashMap<String, Serializable>();
-        Map<String, Serializable> item2 = new HashMap<String, Serializable>();
-        Map<String, Serializable> item3 = new HashMap<String, Serializable>();
+        ArrayList<Map<String, Serializable>> values = new ArrayList<>();
+        Map<String, Serializable> item1 = new HashMap<>();
+        Map<String, Serializable> item2 = new HashMap<>();
+        Map<String, Serializable> item3 = new HashMap<>();
         List<?> actual;
 
         item1.put("string", "foo");
@@ -436,7 +436,7 @@ public class TestSQLRepositoryProperties {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:fileList")).size());
-        ArrayList<Blob> values = new ArrayList<Blob>();
+        ArrayList<Blob> values = new ArrayList<>();
         Blob blob = Blobs.createBlob("My content");
         values.add(blob);
         doc.setPropertyValue("tp:fileList", values);
@@ -456,8 +456,8 @@ public class TestSQLRepositoryProperties {
         // not null on list
         assertTrue(doc.getPropertyValue("tp:fileComplexList") instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue("tp:fileComplexList")).size());
-        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> item = new HashMap<String, Serializable>();
+        ArrayList<Map<String, Serializable>> values = new ArrayList<>();
+        Map<String, Serializable> item = new HashMap<>();
         Blob blob = Blobs.createBlob("My content");
         item.put("blob", (Serializable) blob);
         item.put("filename", "My filename");
@@ -566,7 +566,7 @@ public class TestSQLRepositoryProperties {
         assertTrue(p.getValue() instanceof Map);
         assertEquals(2, ((Map) p.getValue()).size());
         p.setValue("string", "test");
-        Map<String, Serializable> map = new HashMap<String, Serializable>();
+        Map<String, Serializable> map = new HashMap<>();
         map.put("string", "test2");
         p.setValue("complex", map);
 
@@ -661,7 +661,7 @@ public class TestSQLRepositoryProperties {
         assumeTrue(coreFeature.getStorageConfiguration().isVCS());
 
         File file = createTempFile();
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         String uri = String.format("fs:%s", file.getName());
         map.put(ExternalBlobProperty.URI, uri);
         map.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
@@ -710,8 +710,8 @@ public class TestSQLRepositoryProperties {
         assertEquals(0, ((List) doc.getPropertyValue(propName)).size());
 
         File file = createTempFile();
-        ArrayList<Map> values = new ArrayList<Map>();
-        Map<String, String> map = new HashMap<String, String>();
+        ArrayList<Map> values = new ArrayList<>();
+        Map<String, String> map = new HashMap<>();
         String uri = String.format("fs:%s", file.getName());
         map.put(ExternalBlobProperty.URI, uri);
         map.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
@@ -743,11 +743,11 @@ public class TestSQLRepositoryProperties {
         // not null on list
         assertTrue(doc.getPropertyValue(propName) instanceof List);
         assertEquals(0, ((List) doc.getPropertyValue(propName)).size());
-        ArrayList<Map<String, Serializable>> values = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> item = new HashMap<String, Serializable>();
+        ArrayList<Map<String, Serializable>> values = new ArrayList<>();
+        Map<String, Serializable> item = new HashMap<>();
 
         File file = createTempFile();
-        HashMap<String, String> blobMap = new HashMap<String, String>();
+        HashMap<String, String> blobMap = new HashMap<>();
         String uri = String.format("fs:%s", file.getName());
         blobMap.put(ExternalBlobProperty.URI, uri);
         blobMap.put(ExternalBlobProperty.FILE_NAME, "hello.txt");
@@ -805,8 +805,8 @@ public class TestSQLRepositoryProperties {
     @Test
     public void testXPath1() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "File");
-        List<Object> files = new ArrayList<Object>(2);
-        Map<String, Object> f = new HashMap<String, Object>();
+        List<Object> files = new ArrayList<>(2);
+        Map<String, Object> f = new HashMap<>();
         f.put("filename", "f1");
         files.add(f);
         doc.setProperty("files", "files", files);
@@ -818,10 +818,10 @@ public class TestSQLRepositoryProperties {
     @Test
     public void testXPath2() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
-        HashMap<String, Object> attachedFile = new HashMap<String, Object>();
-        List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+        HashMap<String, Object> attachedFile = new HashMap<>();
+        List<Map<String, Object>> vignettes = new ArrayList<>();
         attachedFile.put("vignettes", vignettes);
-        Map<String, Object> vignette = new HashMap<String, Object>();
+        Map<String, Object> vignette = new HashMap<>();
         Long width = Long.valueOf(123);
         vignette.put("width", width);
         vignettes.add(vignette);
@@ -898,7 +898,7 @@ public class TestSQLRepositoryProperties {
         doc.setPropertyValue("participants", new String[] { "bar" });
         Blob blob = Blobs.createBlob("foo");
         blob.setFilename("fooname");
-        LinkedList<Object> blobs = new LinkedList<Object>();
+        LinkedList<Object> blobs = new LinkedList<>();
         blobs.add(blob);
         doc.setPropertyValue("attachments", blobs);
 

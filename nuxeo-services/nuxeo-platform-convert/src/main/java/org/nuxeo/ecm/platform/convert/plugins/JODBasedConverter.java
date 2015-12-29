@@ -76,7 +76,7 @@ public class JODBasedConverter implements ExternalConverter {
      */
     public static final String UPDATE_INDEX_PARAM = StandardConversionTask.UPDATE_DOCUMENT_INDEX;
 
-    protected static final Map<DocumentFamily, String> PDF_FILTER_NAMES = new HashMap<DocumentFamily, String>();
+    protected static final Map<DocumentFamily, String> PDF_FILTER_NAMES = new HashMap<>();
     {
         PDF_FILTER_NAMES.put(DocumentFamily.TEXT, "writer_pdf_Export");
         PDF_FILTER_NAMES.put(DocumentFamily.SPREADSHEET, "calc_pdf_Export");
@@ -112,7 +112,7 @@ public class JODBasedConverter implements ExternalConverter {
         DocumentFamily sourceFamily = sourceFormat.getInputFamily();
         String sourceMediaType = sourceFormat.getMediaType();
         DocumentFormat pdfFormat = new DocumentFormat(pdfa1 ? "PDF/A-1" : "PDF", "pdf", "application/pdf");
-        Map<DocumentFamily, Map<String, ?>> storePropertiesByFamily = new HashMap<DocumentFamily, Map<String, ?>>();
+        Map<DocumentFamily, Map<String, ?>> storePropertiesByFamily = new HashMap<>();
         Map<DocumentFamily, Map<String, ?>> defaultStorePropertiesByFamily = defaultFormat.getStorePropertiesByFamily();
         for (DocumentFamily family : defaultStorePropertiesByFamily.keySet()) {
             if (family.equals(sourceFamily)) {
@@ -128,7 +128,7 @@ public class JODBasedConverter implements ExternalConverter {
 
     protected Map<String, Object> extendPDFStoreProperties(String mediatype, boolean pdfa1,
             Map<String, ?> originalProperties) {
-        Map<String, Object> extendedProperties = new HashMap<String, Object>();
+        Map<String, Object> extendedProperties = new HashMap<>();
         for (Map.Entry<String, ?> entry : originalProperties.entrySet()) {
             extendedProperties.put(entry.getKey(), entry.getValue());
         }
@@ -136,7 +136,7 @@ public class JODBasedConverter implements ExternalConverter {
             extendedProperties.put("FilterName", "writer_web_pdf_Export");
         }
         if (pdfa1) {
-            Map<String, Object> filterData = new HashMap<String, Object>();
+            Map<String, Object> filterData = new HashMap<>();
             filterData.put("SelectPdfVersion", Integer.valueOf(1)); // PDF/A-1
             filterData.put("UseTaggedPDF", Boolean.TRUE); // per spec
             extendedProperties.put("FilterData", filterData);
@@ -229,7 +229,7 @@ public class JODBasedConverter implements ExternalConverter {
 
             // allow HTML2PDF filtering
 
-            List<Blob> blobs = new ArrayList<Blob>();
+            List<Blob> blobs = new ArrayList<>();
 
             if (descriptor.getDestinationMimeType().equals("text/html")) {
                 String tmpDirPath = getTmpDirectory();
@@ -316,6 +316,7 @@ public class JODBasedConverter implements ExternalConverter {
         return documentConverter;
     }
 
+    @SuppressWarnings("hiding")
     @Override
     public void init(ConverterDescriptor descriptor) {
         this.descriptor = descriptor;

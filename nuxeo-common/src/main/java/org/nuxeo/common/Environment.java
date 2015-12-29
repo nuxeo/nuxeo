@@ -285,7 +285,7 @@ public class Environment {
         if (properties != null) {
             loadProperties(properties);
         }
-        this.properties.put(HOME_DIR, this.home.getAbsolutePath());
+        this.properties.setProperty(HOME_DIR, this.home.getAbsolutePath());
     }
 
     public static synchronized void setDefault(Environment env) {
@@ -346,7 +346,7 @@ public class Environment {
 
     public void setTemp(File temp) {
         this.temp = temp;
-        properties.put(NUXEO_TMP_DIR, temp.getAbsolutePath());
+        properties.setProperty(NUXEO_TMP_DIR, temp.getAbsolutePath());
     }
 
     public File getConfig() {
@@ -358,7 +358,7 @@ public class Environment {
 
     public void setConfig(File config) {
         this.config = config;
-        properties.put(NUXEO_CONFIG_DIR, config.getAbsolutePath());
+        properties.setProperty(NUXEO_CONFIG_DIR, config.getAbsolutePath());
     }
 
     public File getLog() {
@@ -370,7 +370,7 @@ public class Environment {
 
     public void setLog(File log) {
         this.log = log;
-        properties.put(NUXEO_LOG_DIR, log.getAbsolutePath());
+        properties.setProperty(NUXEO_LOG_DIR, log.getAbsolutePath());
     }
 
     public File getData() {
@@ -382,7 +382,7 @@ public class Environment {
 
     public void setData(File data) {
         this.data = data;
-        properties.put(NUXEO_DATA_DIR, data.getAbsolutePath());
+        properties.setProperty(NUXEO_DATA_DIR, data.getAbsolutePath());
     }
 
     public File getWeb() {
@@ -394,7 +394,7 @@ public class Environment {
 
     public void setWeb(File web) {
         this.web = web;
-        properties.put(NUXEO_WEB_DIR, web.getAbsolutePath());
+        properties.setProperty(NUXEO_WEB_DIR, web.getAbsolutePath());
     }
 
     /**
@@ -412,7 +412,7 @@ public class Environment {
      */
     public void setRuntimeHome(File runtimeHome) {
         this.runtimeHome = runtimeHome;
-        properties.put(NUXEO_RUNTIME_HOME, runtimeHome.getAbsolutePath());
+        properties.setProperty(NUXEO_RUNTIME_HOME, runtimeHome.getAbsolutePath());
     }
 
     public String[] getCommandLineArguments() {
@@ -433,7 +433,7 @@ public class Environment {
     }
 
     public void setProperty(String key, String value) {
-        properties.put(key, value);
+        properties.setProperty(key, value);
     }
 
     public Properties getProperties() {

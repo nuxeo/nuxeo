@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import org.apache.pdfbox.util.PDFOperator;
 import org.apache.pdfbox.util.PDFStreamEngine;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -80,12 +81,11 @@ public class PDF2TextConverter implements Converter {
             return (Map<String, OperatorProcessor>) unrestrictedAccess("operators");
         }
 
-        final static Set<StackTraceElement> loggedStacks = new HashSet<StackTraceElement>();
+        final static Set<StackTraceElement> loggedStacks = new HashSet<>();
 
         @Override
         protected void processOperator(PDFOperator operator, List<COSBase> arguments) throws IOException {
             try {
-
                 String operation = operator.getOperation();
                 OperatorProcessor processor = operators().get(operation);
                 if (processor != null) {

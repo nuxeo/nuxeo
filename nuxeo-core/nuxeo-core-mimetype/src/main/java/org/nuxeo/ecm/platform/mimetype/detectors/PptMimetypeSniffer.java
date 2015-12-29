@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: PptMimetypeSniffer.java 20310 2007-06-11 15:54:14Z lgodard $
  */
 
 package org.nuxeo.ecm.platform.mimetype.detectors;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -33,32 +31,39 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hslf.HSLFSlideShow;
 import org.apache.poi.hslf.usermodel.SlideShow;
+
 import org.nuxeo.common.utils.FileUtils;
 
 public class PptMimetypeSniffer implements MagicDetector {
 
     private static final Log log = LogFactory.getLog(PptMimetypeSniffer.class);
 
+    @Override
     public String getDisplayName() {
         return "PPT MimeType Detector";
     }
 
+    @Override
     public String[] getHandledExtensions() {
         return new String[] { "ppt", "pps" };
     }
 
+    @Override
     public String[] getHandledTypes() {
         return new String[] { "application/vnd.ms-powerpoint" };
     }
 
+    @Override
     public String getName() {
         return "pptdetector";
     }
 
+    @Override
     public String getVersion() {
         return "0.1";
     }
 
+    @Override
     public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
             Map params) {
 
@@ -80,6 +85,7 @@ public class PptMimetypeSniffer implements MagicDetector {
         return mimetypes;
     }
 
+    @Override
     public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
             Map params) {
 
@@ -87,9 +93,7 @@ public class PptMimetypeSniffer implements MagicDetector {
     }
 
     public String[] guessPowerpoint(File file) {
-
         String[] mimetypes = {};
-
         try {
             FileInputStream stream = new FileInputStream(file);
             HSLFSlideShow ppt = new HSLFSlideShow(stream);
@@ -98,15 +102,8 @@ public class PptMimetypeSniffer implements MagicDetector {
             if (presentation.getSlides().length != 0) {
                 mimetypes = getHandledTypes();
             }
-        } catch (FileNotFoundException e) {
-            // This is not powerpoint file
-            log.debug("MimeType detector : Not a powerpoint file - FileNotFoundException");
-        } catch (IOException e) {
-            // This is not a powerpoint file
-            log.debug("MimeType detector : Not a powerpoint file - IOException");
-        } catch (RuntimeException e) {
-            // This is not a powerpoint file
-            log.debug("MimeType detector : Not a powerpoint file - RuntimeException");
+        } catch (IOException | RuntimeException e) {
+            log.debug("MimeType detector: Not a PowerPoint file", e);
         }
         return mimetypes;
     }

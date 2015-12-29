@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id: XlsMimetypeSniffer.java 20310 2007-06-11 15:54:14Z lgodard $
  */
 
 package org.nuxeo.ecm.platform.mimetype.detectors;
@@ -32,32 +31,39 @@ import net.sf.jmimemagic.MagicDetector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import org.nuxeo.common.utils.FileUtils;
 
 public class XlsMimetypeSniffer implements MagicDetector {
 
     private static final Log log = LogFactory.getLog(XlsMimetypeSniffer.class);
 
+    @Override
     public String getDisplayName() {
         return "XLS MimeType Detector";
     }
 
+    @Override
     public String[] getHandledExtensions() {
         return new String[] { "xls" };
     }
 
+    @Override
     public String[] getHandledTypes() {
         return new String[] { "application/vnd.ms-excel", "application/msexcel", "application/vnd.microsoft-excel" };
     }
 
+    @Override
     public String getName() {
         return "xlsdetector";
     }
 
+    @Override
     public String getVersion() {
         return "0.1";
     }
 
+    @Override
     public String[] process(byte[] data, int offset, int length, long bitmask, char comparator, String mimeType,
             Map params) {
 
@@ -79,6 +85,7 @@ public class XlsMimetypeSniffer implements MagicDetector {
         return mimetypes;
     }
 
+    @Override
     public String[] process(File file, int offset, int length, long bitmask, char comparator, String mimeType,
             Map params) {
 

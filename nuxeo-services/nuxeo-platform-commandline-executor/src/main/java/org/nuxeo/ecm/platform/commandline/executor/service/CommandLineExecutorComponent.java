@@ -38,7 +38,6 @@ import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTes
 import org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.CommandTester;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.Executor;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.ShellExecutor;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
