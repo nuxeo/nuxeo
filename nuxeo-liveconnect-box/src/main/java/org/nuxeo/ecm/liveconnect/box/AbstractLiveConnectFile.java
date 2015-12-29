@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.liveconnect.box;
 
+import java.util.Objects;
+
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.runtime.api.Framework;
@@ -25,7 +27,20 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractLiveConnectFile implements LiveConnectFile {
 
+    private static final long serialVersionUID = 1L;
+
+    private LiveConnectFileInfo info;
+
     private String mimeType;
+
+    public AbstractLiveConnectFile(LiveConnectFileInfo info) {
+        this.info = Objects.requireNonNull(info);
+    }
+
+    @Override
+    public final LiveConnectFileInfo getInfo() {
+        return info;
+    }
 
     /**
      * Should be overriden by subclasses wanting to rely on a different field as mime type.

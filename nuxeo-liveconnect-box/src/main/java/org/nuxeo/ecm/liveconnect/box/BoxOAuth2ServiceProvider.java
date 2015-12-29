@@ -72,4 +72,8 @@ public class BoxOAuth2ServiceProvider extends AbstractOAuth2UserEmailProvider {
         return (String) entries.get(0).getProperty(NuxeoOAuth2Token.SCHEMA, NuxeoOAuth2Token.KEY_SERVICE_LOGIN);
     }
 
+    protected HttpRequestFactory getRequestFactory() {
+        return requestFactory;
+    }
+
 }

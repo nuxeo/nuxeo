@@ -18,7 +18,6 @@ package org.nuxeo.ecm.liveconnect.box;
 
 import java.util.Objects;
 
-import com.box.sdk.BoxFile;
 import com.box.sdk.BoxFile.Info;
 
 /**
@@ -26,24 +25,33 @@ import com.box.sdk.BoxFile.Info;
  */
 public class BoxLiveConnectFile extends AbstractLiveConnectFile {
 
-    private final BoxFile.Info file;
+    private static final long serialVersionUID = 1L;
 
-    public BoxLiveConnectFile(Info file) {
-        this.file = Objects.requireNonNull(file);
+    private final String filename;
+
+    private final long fileSize;
+
+    private final String digest;
+
+    public BoxLiveConnectFile(LiveConnectFileInfo info, Info file) {
+        super(info);
+        this.filename = Objects.requireNonNull(file.getName());
+        this.fileSize = file.getSize();
+        this.digest = Objects.requireNonNull(file.getSha1());
     }
 
     @Override
     public String getFilename() {
-        return file.getName();
+        return filename;
     }
 
     @Override
     public long getFileSize() {
-        return file.getSize();
+        return fileSize;
     }
 
     @Override
     public String getDigest() {
-        return file.getSha1();
+        return digest;
     }
 }
