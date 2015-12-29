@@ -11,7 +11,7 @@
       of the command-line -->
     <command name="diff-pictures-default" enabled="true">
       <commandLine>compare</commandLine>
-      <parameterString>#{file1}[0] #{file2}[0] -fuzz #{fuzz} -highlight-color #{highlightColor} -define registry:temporary-path=#{java.io.tmpdir} #{targetFilePath}</parameterString>
+      <parameterString>#{file1}[0] #{file2}[0] -fuzz #{fuzz} -highlight-color #{highlightColor} -define registry:temporary-path=#{nuxeo.tmp.dir} #{targetFilePath}</parameterString>
       <installationDirective>You must install ImageMagick.</installationDirective>
     </command>
 
@@ -19,14 +19,14 @@
       the default background (original image with alpha) -->
     <command name="diff-pictures-default-with-params" enabled="true">
       <commandLine>compare</commandLine>
-      <parameterString>#{file1}[0] #{file2}[0] -fuzz #{fuzz} -highlight-color #{highlightColor} -lowlight-color #{lowlightColor} -define registry:temporary-path=#{java.io.tmpdir} #{targetFilePath}</parameterString>
+      <parameterString>#{file1}[0] #{file2}[0] -fuzz #{fuzz} -highlight-color #{highlightColor} -lowlight-color #{lowlightColor} -define registry:temporary-path=#{nuxeo.tmp.dir} #{targetFilePath}</parameterString>
       <installationDirective>You must install ImageMagick.</installationDirective>
     </command>
 
     <!-- Will compare pictures even if they are not of the same size or format, etc. -->
     <command name="diff-pictures-pro" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>#{file1}[0] #{file2}[0] -compose difference -composite -define registry:temporary-path=#{java.io.tmpdir} #{targetFilePath}</parameterString>
+      <parameterString>#{file1}[0] #{file2}[0] -compose difference -composite -define registry:temporary-path=#{nuxeo.tmp.dir} #{targetFilePath}</parameterString>
       <installationDirective>You must install ImageMagick.</installationDirective>
     </command>
 
