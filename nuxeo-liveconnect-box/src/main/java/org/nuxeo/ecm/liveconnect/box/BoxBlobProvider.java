@@ -44,8 +44,16 @@ import org.nuxeo.runtime.api.Framework;
 import com.box.sdk.BoxAPIConnection;
 import com.box.sdk.BoxAPIException;
 import com.box.sdk.BoxFile;
-import com.box.sdk.BoxFile.Info;
+import com.box.sdk.BoxSharedLink;
+import com.box.sdk.BoxSharedLink.Access;
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpStatusCodes;
+import com.google.common.base.Splitter;
 
 /**
  * Provider for blobs getting information from Box.
@@ -61,6 +69,10 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
     private static final String FILE_CACHE_NAME = "box";
 
     private static final String BOX_DOCUMENT_TO_BE_UPDATED_PP = "box_document_to_be_updated";
+
+    private static final String DOWNLOAD_CONTENT_URL = "https://api.box.com/2.0/files/%s/content";
+
+    private static final char BLOB_KEY_SEPARATOR = ':';
 
     /** Resource cache */
     private Cache cache;
@@ -81,7 +93,20 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
 
     @Override
     public URI getURI(ManagedBlob blob, UsageHint usage, HttpServletRequest servletRequest) throws IOException {
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
         String url = null;
+        switch (usage) {
+        case STREAM:
+        case DOWNLOAD:
+            url = getDownloadUrl(fileInfo);
+            break;
+        case VIEW:
+            url = retrieveSharedLink(fileInfo).getURL();
+            break;
+        case EMBED:
+            // Soon supported, please see : NXP-
+            break;
+        }
         return Optional.ofNullable(url).flatMap(this::asURI).orElse(null);
     }
 
@@ -100,7 +125,7 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
         return blobProviderId;
     }
 
-    protected ManagedBlob createBlob(LiveConnectFileInfo fileInfo) throws IOException {
+    protected ManagedBlob toBlob(LiveConnectFileInfo fileInfo) throws IOException {
         LiveConnectFile file = getFile(fileInfo);
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = buildBlobKey(fileInfo);
@@ -114,19 +139,38 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
 
     private String buildBlobKey(LiveConnectFileInfo fileInfo) {
         StringBuilder key = new StringBuilder(blobProviderId);
-        key.append(':');
+        key.append(BLOB_KEY_SEPARATOR);
         key.append(fileInfo.getUser());
-        key.append(':');
+        key.append(BLOB_KEY_SEPARATOR);
         key.append(fileInfo.getFileId());
         if (fileInfo.getRevisionId().isPresent()) {
-            key.append(':');
+            key.append(BLOB_KEY_SEPARATOR);
             key.append(fileInfo.getRevisionId().get());
         }
         return key.toString();
     }
 
+    protected LiveConnectFileInfo toFileInfo(ManagedBlob blob) {
+        String key = blob.getKey();
+        List<String> keyParts = Splitter.on(BLOB_KEY_SEPARATOR).splitToList(key);
+        // According to buildBlobKey we have :
+        // 0 - blobProviderId
+        // 1 - userId
+        // 2 - fileId
+        // 3 - revisionId (optional)
+        if (keyParts.size() < 3 || keyParts.size() > 4) {
+            throw new IllegalArgumentException("The key doesn't have a valid format=" + key);
+        }
+        return new LiveConnectFileInfo(keyParts.get(1), keyParts.get(2), keyParts.size() == 4 ? keyParts.get(3) : null);
+    }
+
     protected Credential getCredential(String user) throws IOException {
-        return getCredentialFactory().build(user);
+        Credential credential = getCredentialFactory().build(user);
+        Long expiresInSeconds = credential.getExpiresInSeconds();
+        if (expiresInSeconds != null && expiresInSeconds <= 0) {
+            credential.refreshToken();
+        }
+        return credential;
     }
 
     protected OAuthCredentialFactory getCredentialFactory() {
@@ -138,10 +182,6 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
     }
 
     protected BoxAPIConnection getBoxClient(Credential credential) throws IOException {
-        Long expiresInSeconds = credential.getExpiresInSeconds();
-        if (expiresInSeconds != null && expiresInSeconds <= 0) {
-            credential.refreshToken();
-        }
         return new BoxAPIConnection(credential.getAccessToken());
     }
 
@@ -187,10 +227,51 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
      */
     private LiveConnectFile retrieveFile(LiveConnectFileInfo fileInfo) throws IOException {
         try {
-            Info boxFile = new BoxFile(getBoxClient(getCredential(fileInfo.getUser())), fileInfo.getFileId()).getInfo();
-            return new BoxLiveConnectFile(boxFile);
+            return new BoxLiveConnectFile(fileInfo, prepareBoxFile(fileInfo).getInfo());
         } catch (BoxAPIException e) {
             throw new IOException("Failed to retrieve Box file metadata", e);
+        }
+    }
+
+    private BoxSharedLink retrieveSharedLink(LiveConnectFileInfo fileInfo) throws IOException {
+        try {
+            return prepareBoxFile(fileInfo).createSharedLink(Access.OPEN, null, null);
+        } catch (BoxAPIException e) {
+            throw new IOException("Failed to retrieve Box shared link", e);
+        }
+    }
+
+    private BoxFile prepareBoxFile(LiveConnectFileInfo fileInfo) throws IOException {
+        BoxAPIConnection boxClient = getBoxClient(getCredential(fileInfo.getUser()));
+        return new BoxFile(boxClient, fileInfo.getFileId());
+    }
+
+    /**
+     * Returns the temporary download url for input file.
+     *
+     * @param fileInfo The file info.
+     * @return The temporary download url for input file.
+     * @throws IOException In case of network/authentication error.
+     */
+    private String getDownloadUrl(LiveConnectFileInfo fileInfo) throws IOException {
+        try {
+            Credential credential = getCredential(fileInfo.getUser());
+
+            GenericUrl url = new GenericUrl(String.format(DOWNLOAD_CONTENT_URL, fileInfo.getFileId()));
+            HttpRequest request = getOAuth2Provider().getRequestFactory().buildGetRequest(url);
+            request.setHeaders(new HttpHeaders().setAuthorization("Bearer " + credential.getAccessToken()));
+            request.setFollowRedirects(false);
+            request.setThrowExceptionOnExecuteError(false);
+
+            HttpResponse response = request.execute();
+            response.disconnect();
+            if (!HttpStatusCodes.isRedirect(response.getStatusCode())) {
+                throw new HttpResponseException(response);
+            }
+
+            return response.getHeaders().getLocation();
+        } catch (BoxAPIException e) {
+            throw new IOException("Failed to retrieve Box file download url.", e);
         }
     }
 

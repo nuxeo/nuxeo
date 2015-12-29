@@ -200,7 +200,7 @@ public class BoxBlobUploader implements JSFBlobUploader {
         }
 
         LiveConnectFileInfo fileInfo = new LiveConnectFileInfo(serviceUserId.get(), fileId);
-        Blob blob = createBlob(fileInfo);
+        Blob blob = toBlob(fileInfo);
         submitted.setBlob(blob);
         submitted.setFilename(blob.getFilename());
         submitted.setMimeType(blob.getMimeType());
@@ -223,9 +223,9 @@ public class BoxBlobUploader implements JSFBlobUploader {
      * @param fileInfo the Box file info
      * @return the blob
      */
-    protected Blob createBlob(LiveConnectFileInfo fileInfo) {
+    protected Blob toBlob(LiveConnectFileInfo fileInfo) {
         try {
-            return getBoxBlobProvider().createBlob(fileInfo);
+            return getBoxBlobProvider().toBlob(fileInfo);
         } catch (IOException e) {
             throw new RuntimeException(e); // TODO better feedback
         }

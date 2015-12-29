@@ -25,6 +25,8 @@ import java.io.Serializable;
  */
 public interface LiveConnectFile extends Serializable {
 
+    LiveConnectFileInfo getInfo();
+
     String getMimeType();
 
     String getEncoding();

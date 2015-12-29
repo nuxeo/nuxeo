@@ -16,13 +16,16 @@
  */
 package org.nuxeo.ecm.liveconnect.box;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
 /**
  * @since 8.1
  */
-public class LiveConnectFileInfo {
+public class LiveConnectFileInfo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final String user;
 
