@@ -130,9 +130,12 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
         String url = String.format(THUMBNAIL_CONTENT_URL, fileInfo.getFileId());
 
         HttpResponse response = doGet(url);
-        if (response.getStatusCode() == 202) {
+        int statusCode = response.getStatusCode();
+        if (statusCode == 202) {
             response.disconnect();
             return doGet(response.getHeaders().getLocation()).getContent();
+        } else if (statusCode == HttpStatusCodes.STATUS_CODE_NOT_FOUND || statusCode == 400) {
+            throw new HttpResponseException(response);
         }
         return response.getContent();
     }
