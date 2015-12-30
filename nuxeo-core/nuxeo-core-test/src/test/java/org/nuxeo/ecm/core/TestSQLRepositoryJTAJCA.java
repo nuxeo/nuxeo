@@ -48,6 +48,12 @@ public class TestSQLRepositoryJTAJCA extends TXSQLRepositoryTestCase {
 
     private static final String NO_TX_CANNOT_RECONN = "No transaction, cannot reconnect";
 
+    @Override
+    protected void deployRepositoryContrib() throws Exception {
+        super.deployRepositoryContrib();
+        deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/disable-schedulers.xml");
+    }
+
     @Before
     public void checkAssumptions() {
         assumeTrue(hasPoolingConfig());
