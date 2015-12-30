@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
@@ -54,6 +55,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestSQLRepositoryReadAcls {
 
     @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     protected EventService eventService;
 
     @Inject
@@ -73,6 +77,8 @@ public class TestSQLRepositoryReadAcls {
 
     @Test
     public void testParallelPrepareUserReadAcls() throws Throwable {
+        assumeTrue(!coreFeature.getStorageConfiguration().isVCSOracle()); // NXP-18684
+
         doParallelPrepareUserReadAcls(0);
     }
 

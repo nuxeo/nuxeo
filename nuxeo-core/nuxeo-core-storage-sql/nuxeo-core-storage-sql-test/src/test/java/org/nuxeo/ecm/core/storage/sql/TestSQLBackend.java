@@ -3986,6 +3986,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testParallelPrepareUserReadAcls() throws Throwable {
+        assumeTrue(!(DatabaseHelper.DATABASE instanceof DatabaseOracle));  // NXP-18684
+
         Session session = repository.getConnection();
         Node root = session.getRootNode();
         session.addChildNode(root, "foo", null, "TestDoc", false);
