@@ -60,6 +60,7 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/disable-schedulers.xml")
 public class TestSQLRepositoryJTAJCA {
 
     @SuppressWarnings("deprecation")
