@@ -20,6 +20,7 @@ package org.nuxeo.ecm.liveconnect.box;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -72,7 +73,9 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
 
     private static final String APPLICATION_NAME = "Nuxeo/0";
 
-    private static final String FILE_CACHE_NAME = "box";
+    private static final String CACHE_NAME = "box";
+
+    private static final String FILE_CACHE_PREFIX = "file_";
 
     private static final String BOX_DOCUMENT_TO_BE_UPDATED_PP = "box_document_to_be_updated";
 
@@ -155,7 +158,7 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
                     if (log.isTraceEnabled()) {
                         log.trace("Updating blob=" + blob.key);
                     }
-                    getFileCache().put(fileInfo.getFileId(), file);
+                    putFileInCache(file);
                     doc.setPropertyValue("content", toBlob(file));
                     changedDocuments.add(doc);
                 }
@@ -274,10 +277,10 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
      * @return the {@link LiveConnectFile} from cache, if it doesn't exist retrieves it with API and cache it
      */
     protected LiveConnectFile getFile(LiveConnectFileInfo fileInfo) throws IOException {
-        LiveConnectFile file = (LiveConnectFile) getFileCache().get(fileInfo.getFileId());
+        LiveConnectFile file = getFileFromCache(fileInfo);
         if (file == null) {
             file = retrieveFile(fileInfo);
-            getFileCache().put(fileInfo.getFileId(), file);
+            putFileInCache(file);
         }
         return file;
     }
@@ -327,8 +330,7 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
         return response.getHeaders().getLocation();
     }
 
-    private HttpResponse executeWithoutFollowRedirects(LiveConnectFileInfo fileInfo, GenericUrl url)
-            throws IOException {
+    private HttpResponse executeWithoutFollowRedirects(LiveConnectFileInfo fileInfo, GenericUrl url) throws IOException {
         Credential credential = getCredential(fileInfo.getUser());
 
         HttpRequest request = getOAuth2Provider().getRequestFactory().buildGetRequest(url);
@@ -347,11 +349,28 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
         return requestFactory.buildGetRequest(new GenericUrl(url)).execute();
     }
 
-    private Cache getFileCache() {
+    private Cache getCache() {
         if (cache == null) {
-            cache = Framework.getService(CacheService.class).getCache(FILE_CACHE_NAME);
+            cache = Framework.getService(CacheService.class).getCache(CACHE_NAME);
         }
         return cache;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected final <R, T extends Serializable> T getFromCache(String prefix, R key) {
+        return (T) getCache().get(prefix + key);
+    }
+
+    protected final <R, T extends Serializable> void putInCache(String prefix, R key, T object) {
+        getCache().put(prefix + key, object);
+    }
+
+    protected final LiveConnectFile getFileFromCache(LiveConnectFileInfo fileInfo) {
+        return getFromCache(FILE_CACHE_PREFIX, fileInfo.getFileId());
+    }
+
+    protected final void putFileInCache(LiveConnectFile file) {
+        putInCache(FILE_CACHE_PREFIX, file.getInfo().getFileId(), file);
     }
 
 }
