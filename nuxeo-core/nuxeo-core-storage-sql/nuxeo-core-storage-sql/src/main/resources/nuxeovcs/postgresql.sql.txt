@@ -1098,12 +1098,10 @@ SELECT 1 FROM pg_indexes WHERE indexname = 'dublincore_modified_idx';
 CREATE INDEX dublincore_modified_idx ON dublincore USING btree(modified);
 
 
-#IF: fulltextEnabled
 #IF: ! create_table_fulltext
 #TEST:
 SELECT 1 FROM pg_indexes WHERE indexname = 'fulltext_jobid_idx';
 
-#IF: fulltextEnabled
 #IF: create_table_fulltext OR: emptyResult
 CREATE INDEX fulltext_jobid_idx ON fulltext USING btree(jobid);
 
