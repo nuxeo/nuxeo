@@ -41,15 +41,6 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 public class TestBoxBlobProvider extends BoxTestCase {
 
-    // same as in test XML contrib
-    private static final String PREFIX = "box";
-
-    private static final String FILE_1_ID_JPEG = "5000948880";
-
-    private static final int FILE_1_SIZE = 629644;
-
-    private static final String FILE_1_NAME = "tigers.jpeg";
-
     @Inject
     private RuntimeHarness harness;
 
@@ -60,7 +51,7 @@ public class TestBoxBlobProvider extends BoxTestCase {
 
     @Before
     public void before() {
-        blobProvider = (BoxBlobProvider) blobManager.getBlobProvider(PREFIX);
+        blobProvider = (BoxBlobProvider) blobManager.getBlobProvider(SERVICE_ID);
         assertNotNull(blobProvider);
     }
 
@@ -71,7 +62,7 @@ public class TestBoxBlobProvider extends BoxTestCase {
 
     @Test
     public void testGetBlob() throws Exception {
-        LiveConnectFileInfo fileInfo = new LiveConnectFileInfo(USERID, FILE_1_ID_JPEG);
+        LiveConnectFileInfo fileInfo = new LiveConnectFileInfo(USERID, FILE_1_ID);
         Blob blob = blobProvider.toBlob(fileInfo);
         assertEquals(FILE_1_SIZE, blob.getLength());
         assertEquals(FILE_1_NAME, blob.getFilename());
@@ -80,12 +71,12 @@ public class TestBoxBlobProvider extends BoxTestCase {
     @Test
     public void testCheckChangesAndUpdateBlobWithUpdate() {
         DocumentModel doc = new DocumentModelImpl("parent", "file-1", "File");
-        doc.setPropertyValue("content", createBlob(FILE_1_ID_JPEG, ""));
+        doc.setPropertyValue("content", createBlob(FILE_1_ID, ""));
         List<DocumentModel> docs = blobProvider.checkChangesAndUpdateBlob(Collections.singletonList(doc));
         assertFalse(docs.isEmpty());
 
         doc = new DocumentModelImpl("parent", "file-1", "File");
-        doc.setPropertyValue("content", createBlob(FILE_1_ID_JPEG));
+        doc.setPropertyValue("content", createBlob(FILE_1_ID));
         docs = blobProvider.checkChangesAndUpdateBlob(Collections.singletonList(doc));
         assertFalse(docs.isEmpty());
 
@@ -98,20 +89,9 @@ public class TestBoxBlobProvider extends BoxTestCase {
         assertTrue(docs.isEmpty());
 
         doc = new DocumentModelImpl("parent", "file-1", "File");
-        doc.setPropertyValue("content", createBlob(FILE_1_ID_JPEG, "134b65991ed521fcfe4724b7d814ab8ded5185dc"));
+        doc.setPropertyValue("content", createBlob(FILE_1_ID, "134b65991ed521fcfe4724b7d814ab8ded5185dc"));
         docs = blobProvider.checkChangesAndUpdateBlob(Collections.singletonList(doc));
         assertTrue(docs.isEmpty());
-    }
-
-    protected SimpleManagedBlob createBlob(String fileId) {
-        return createBlob(fileId, UUID.randomUUID().toString());
-    }
-
-    protected SimpleManagedBlob createBlob(String fileId, String digest) {
-        BlobInfo blobInfo = new BlobInfo();
-        blobInfo.key = PREFIX + ':' + USERID + ':' + fileId;
-        blobInfo.digest = digest;
-        return new SimpleManagedBlob(blobInfo);
     }
 
 }

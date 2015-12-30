@@ -18,8 +18,12 @@
  */
 package org.nuxeo.ecm.liveconnect.box;
 
+import java.util.UUID;
+
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -37,6 +41,26 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.liveconnect.box:OSGI-INF/box-pageprovider-contrib.xml" })
 public class BoxTestCase {
 
+    // same as in test XML contrib
+    protected static final String SERVICE_ID = "box";
+
     protected static final String USERID = "tester@example.com";
+
+    protected static final String FILE_1_ID = "5000948880";
+
+    protected static final int FILE_1_SIZE = 629644;
+
+    protected static final String FILE_1_NAME = "tigers.jpeg";
+
+    protected SimpleManagedBlob createBlob(String fileId) {
+        return createBlob(fileId, UUID.randomUUID().toString());
+    }
+
+    protected SimpleManagedBlob createBlob(String fileId, String digest) {
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = SERVICE_ID + ':' + USERID + ':' + fileId;
+        blobInfo.digest = digest;
+        return new SimpleManagedBlob(blobInfo);
+    }
 
 }
