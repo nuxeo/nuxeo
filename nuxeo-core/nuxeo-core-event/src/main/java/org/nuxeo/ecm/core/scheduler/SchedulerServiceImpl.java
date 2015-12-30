@@ -55,7 +55,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
 
     private static final Log log = LogFactory.getLog(SchedulerServiceImpl.class);
 
-    protected RuntimeContext context;
+    protected RuntimeContext bundle;
 
     protected Scheduler scheduler;
 
@@ -69,12 +69,12 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     @Override
     public void activate(ComponentContext context) {
         log.debug("Activate");
-        this.context = context.getRuntimeContext();
+        bundle = context.getRuntimeContext();
     }
 
-    protected void setupScheduler() throws IOException, SchedulerException {
+    protected void setupScheduler(ComponentContext context) throws IOException, SchedulerException {
         StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        URL cfg = context.getResource("config/quartz.properties");
+        URL cfg = context.getRuntimeContext().getResource("config/quartz.properties");
         if (cfg != null) {
             InputStream stream = cfg.openStream();
             try {
@@ -136,7 +136,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     public void applicationStarted(ComponentContext context) {
         Framework.addListener(this);
         try {
-            setupScheduler();
+            setupScheduler(context);
         } catch (IOException | SchedulerException e) {
             throw new NuxeoException(e);
         }
@@ -163,7 +163,7 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
     }
 
     public RuntimeContext getContext() {
-        return context;
+        return bundle;
     }
 
     @Override

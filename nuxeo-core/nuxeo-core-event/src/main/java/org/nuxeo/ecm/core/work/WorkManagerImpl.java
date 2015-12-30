@@ -283,8 +283,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected volatile boolean started = false;
 
-    protected volatile boolean shutdownInProgress = false;
-
     @Override
     public void init() {
         if (started) {
@@ -368,14 +366,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean shutdown(long timeout, TimeUnit unit) throws InterruptedException {
-        shutdownInProgress = true;
-        try {
-            return shutdownExecutors(executors.values(), timeout, unit);
-        } finally {
-            shutdownInProgress = false;
-            started = false;
-            executors.clear();
-        }
+        List<WorkThreadPoolExecutor> executorList = new ArrayList<>(executors.values());
+        executors.clear();
+        started = false;
+        return shutdownExecutors(executorList, timeout, unit);
     }
 
     protected class ShutdownListener implements RuntimeServiceListener {
@@ -970,7 +964,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean isStarted() {
-        return started && !shutdownInProgress;
+        return started;
     }
 
 }
