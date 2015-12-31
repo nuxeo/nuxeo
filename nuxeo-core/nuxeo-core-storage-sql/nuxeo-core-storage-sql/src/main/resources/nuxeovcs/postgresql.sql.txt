@@ -15,7 +15,6 @@
 # ${idNotPresent} '-' / '00000000-FFFF-FFFF-FFFF-FFFF00000000', a non-existing uuid to use as marker
 # ${idSequenceName}
 # ${fulltextAnalyzer} english, or depending on config
-# ${fulltextTable} fulltext
 # ${fulltextTriggerStatements} repeated for all suffixes SFX:
 #   NEW.fulltextSFX := COALESCE(NEW.simpletextSFX}, ''::TSVECTOR) || COALESCE(NEW.binarytextSFX, ''::TSVECTOR);
 # ${readPermissions} ('Browse'), ('Read'), ('ReadProperties'), ('ReadRemove'), ('ReadWrite'), ('Everything')
@@ -25,6 +24,7 @@
 # Conditions used:
 # sequenceEnabled
 # fulltextEnabled
+# fulltextSearchEnabled
 # aclOptimizationsEnabled
 # pathOptimizationsEnabled
 # softDeleteEnabled
@@ -115,7 +115,7 @@ END $$
 LANGUAGE plpgsql;
 
 
-#IF: fulltextEnabled
+#IF: fulltextSearchEnabled
 #PROC: nx_to_tsvector
 CREATE FUNCTION nx_to_tsvector(string VARCHAR)
 RETURNS TSVECTOR
@@ -280,7 +280,7 @@ VOLATILE;
 #CATEGORY: afterTableCreation
 
 
-#IF: fulltextEnabled
+#IF: fulltextSearchEnabled
 #PROC: nx_update_fulltext
 CREATE FUNCTION nx_update_fulltext()
 RETURNS trigger
@@ -293,14 +293,14 @@ LANGUAGE plpgsql
 VOLATILE;
 
 
-#IF: fulltextEnabled
+#IF: fulltextSearchEnabled
 #TEST:
 SELECT 1 FROM pg_trigger WHERE tgname = 'nx_trig_ft_update'
 
-#IF: fulltextEnabled
+#IF: fulltextSearchEnabled
 #IF: emptyResult
 CREATE TRIGGER NX_TRIG_FT_UPDATE
-  BEFORE INSERT OR UPDATE ON ${fulltextTable}
+  BEFORE INSERT OR UPDATE ON fulltext
   FOR EACH ROW EXECUTE PROCEDURE NX_UPDATE_FULLTEXT();
 
 
@@ -1093,10 +1093,12 @@ SELECT 1 FROM pg_indexes WHERE indexname = 'dublincore_modified_idx';
 CREATE INDEX dublincore_modified_idx ON dublincore USING btree(modified);
 
 
+#IF: fulltextEnabled
 #IF: ! create_table_fulltext
 #TEST:
 SELECT 1 FROM pg_indexes WHERE indexname = 'fulltext_jobid_idx';
 
+#IF: fulltextEnabled
 #IF: create_table_fulltext OR: emptyResult
 CREATE INDEX fulltext_jobid_idx ON fulltext USING btree(jobid);
 
