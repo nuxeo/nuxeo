@@ -35,7 +35,7 @@ object Parameters {
     Duration(pauseMs, "millisecond")
   }
 
-  def getSimulationDuration(default: Integer = 60): Duration = {
+  def getSimulationDuration(default: Integer = 120): Duration = {
     val duration: Long = 0L + Integer.getInteger("duration", default)
     Duration(duration, "second")
   }
