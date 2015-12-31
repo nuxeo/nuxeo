@@ -29,6 +29,7 @@
 # Conditions used:
 # sequenceEnabled
 # fulltextEnabled
+# fulltextSearchEnabled
 # aclOptimizationsEnabled
 # pathOptimizationsEnabled
 # proxiesEnabled
@@ -140,7 +141,7 @@ BEGIN
 END;
 
 
-#IF: fulltextEnabled
+#IF: fulltextSearchEnabled
 #PROC: NX_TRIG_FT_UPDATE
 CREATE TRIGGER NX_TRIG_FT_UPDATE
   BEFORE INSERT OR UPDATE ON "FULLTEXT"
@@ -204,10 +205,12 @@ SELECT 1 FROM USER_INDEXES WHERE index_name = 'DUBLINCORE_MODIFIED_IDX'
 CREATE INDEX DUBLINCORE_MODIFIED_IDX ON DUBLINCORE(MODIFIED)
 
 
+#IF: fulltextEnabled
 #IF: ! create_table_fulltext
 #TEST:
 SELECT 1 FROM USER_INDEXES WHERE index_name = 'FULLTEXT_JOBID_ID_IDX'
 
+#IF: fulltextEnabled
 #IF: create_table_fulltext OR: emptyResult
 CREATE INDEX FULLTEXT_JOBID_ID_IDX ON FULLTEXT(JOBID, ID)
 

@@ -373,7 +373,8 @@ public class DialectMySQL extends Dialect {
     public Map<String, Serializable> getSQLStatementsProperties(Model model, Database database) {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("idType", "varchar(36)");
-        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextSearchDisabled));
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("fulltextSearchEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         return properties;
     }

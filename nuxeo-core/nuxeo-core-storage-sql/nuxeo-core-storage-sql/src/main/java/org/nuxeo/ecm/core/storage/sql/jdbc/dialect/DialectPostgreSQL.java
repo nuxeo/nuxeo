@@ -1075,14 +1075,14 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("aclOptimizationsEnabled", Boolean.valueOf(aclOptimizationsEnabled));
         properties.put("pathOptimizationsEnabled", Boolean.valueOf(pathOptimizationsEnabled));
         properties.put("fulltextAnalyzer", fulltextAnalyzer);
-        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextSearchDisabled));
+        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
+        properties.put("fulltextSearchEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         properties.put("arrayColumnsEnabled", Boolean.valueOf(arrayColumnsEnabled));
-        if (!fulltextDisabled) {
+        if (!fulltextSearchDisabled) {
             Table ft = database.getTable(model.FULLTEXT_TABLE_NAME);
-            properties.put("fulltextTable", ft.getQuotedName());
             FulltextConfiguration fti = model.getFulltextConfiguration();
             List<String> lines = new ArrayList<String>(fti.indexNames.size());
             for (String indexName : fti.indexNames) {

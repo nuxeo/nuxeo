@@ -25,6 +25,7 @@
 # Conditions used:
 # sequenceEnabled
 # fulltextEnabled
+# fulltextSearchEnabled
 # aclOptimizationsEnabled
 # pathOptimizationsEnabled
 # softDeleteEnabled
@@ -47,11 +48,11 @@ SELECT 1 FROM sys.sequences WHERE name = '${idSequenceName}';
 CREATE SEQUENCE ${idSequenceName} START WITH 0;
 
 
-#IF: fulltextEnabled
+#IF: fulltextSearchEnabled
 #TEST:
 SELECT name FROM sys.fulltext_catalogs WHERE name = '${fulltextCatalog}'
 
-#IF: fulltextEnabled
+#IF: fulltextSearchEnabled
 #IF: emptyResult
 CREATE FULLTEXT CATALOG [${fulltextCatalog}];
 
@@ -1192,10 +1193,12 @@ SELECT 1 WHERE EXISTS (SELECT 1 FROM sys.tables WHERE name = 'NXP_LOGS')
 CREATE INDEX [NXP_LOGS_LOG_EVENT_DATE_idx] ON [dbo].[NXP_LOGS]([LOG_EVENT_DATE])
 
 
+#IF: fulltextEnabled
 #IF: ! create_table_fulltext
 #TEST:
 SELECT 1 FROM sys.indexes WHERE name = 'fulltext_jobid_idx';
 
+#IF: fulltextEnabled
 #IF: create_table_fulltext OR: emptyResult
 CREATE INDEX [fulltext_jobid_idx] ON [dbo].[fulltext]([jobid])
 
