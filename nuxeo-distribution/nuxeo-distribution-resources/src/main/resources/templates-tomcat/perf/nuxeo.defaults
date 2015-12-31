@@ -24,3 +24,9 @@ repository.clustering.invalidation=redis
 
 # Do not use Redis for directory cache
 nuxeo.cache.type=memory
+
+# Tune Elasticsearch indexing
+elasticsearch.indexing.maxThreads=6
+elasticsearch.reindex.bucketReadSize=1000
+elasticsearch.reindex.bucketWriteSize=200
+elasticsearch.indexing.clearCompletedAfterSeconds=30
