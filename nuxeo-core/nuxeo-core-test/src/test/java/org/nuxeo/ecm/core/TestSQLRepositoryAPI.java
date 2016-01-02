@@ -3215,6 +3215,7 @@ public class TestSQLRepositoryAPI {
         assertEquals("the title modified", doc.getProperty("dublincore", "title"));
 
         // make another proxy
+        maybeSleepToNextSecond();
         session.publishDocument(doc, root);
 
         DocumentModelList list = session.getChildren(root.getRef());
@@ -3238,7 +3239,6 @@ public class TestSQLRepositoryAPI {
         folder = session.getDocument(folder.getRef());
 
         // publishDocument API
-        maybeSleepToNextSecond();
         proxy = session.publishDocument(doc, root);
         session.save(); // needed for publish-by-copy to work
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
