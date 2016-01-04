@@ -133,8 +133,8 @@ public final class ACE implements Serializable, Cloneable {
         this.permission = permission;
         this.isGranted = isGranted;
         this.creator = creator;
-        this.begin = begin;
-        this.end = end;
+        setBegin(begin);
+        setEnd(end);
         if (contextData != null) {
             this.contextData = new HashMap<>(contextData);
         }
@@ -209,16 +209,32 @@ public final class ACE implements Serializable, Cloneable {
         return begin;
     }
 
+    /**
+     * Sets the begin date of this ACE.
+     * <p>
+     * Sets the {@code Calendar.MILLISECOND} part of the Calendar to 0.
+     */
     public void setBegin(Calendar begin) {
         this.begin = begin;
+        if (this.begin != null) {
+            this.begin.set(Calendar.MILLISECOND, 0);
+        }
     }
 
     public Calendar getEnd() {
         return end;
     }
 
+    /**
+     * Sets the end date of this ACE.
+     * <p>
+     * Sets the {@code Calendar.MILLISECOND} part of the Calendar to 0.
+     */
     public void setEnd(Calendar end) {
         this.end = end;
+        if (this.end!= null) {
+            this.end.set(Calendar.MILLISECOND, 0);
+        }
     }
 
     public String getCreator() {
