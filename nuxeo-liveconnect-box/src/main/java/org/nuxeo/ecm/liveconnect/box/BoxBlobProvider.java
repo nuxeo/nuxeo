@@ -347,6 +347,7 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
      */
     private String getDownloadUrl(LiveConnectFileInfo fileInfo) throws IOException {
         GenericUrl url = new GenericUrl(String.format(DOWNLOAD_CONTENT_URL, fileInfo.getFileId()));
+        fileInfo.getRevisionId().ifPresent(revId -> url.put("version", revId));
 
         HttpResponse response = executeAuthenticate(fileInfo, url, false);
         response.disconnect();
