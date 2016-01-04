@@ -19,8 +19,8 @@
  */
 package org.nuxeo.ecm.liveconnect.update.worker;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,10 +66,8 @@ public class BlobProviderDocumentsUpdateWork extends AbstractWork {
         if (session == null) {
             openSystemSession();
         }
-        final List<DocumentModel> results = new ArrayList<DocumentModel>();
-        for (String docId : docIds) {
-            results.add(session.getDocument(new IdRef(docId)));
-        }
+        final List<DocumentModel> results = docIds.stream().map(IdRef::new).map(session::getDocument)
+                .collect(Collectors.toList());
         log.trace("Updating");
         List<DocumentModel> changedDocuments = blobProvider.checkChangesAndUpdateBlob(results);
         if (changedDocuments != null) {

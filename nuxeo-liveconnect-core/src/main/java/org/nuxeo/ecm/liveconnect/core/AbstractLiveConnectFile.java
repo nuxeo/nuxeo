@@ -16,13 +16,16 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.liveconnect.box;
+package org.nuxeo.ecm.liveconnect.core;
 
 import java.util.Objects;
 
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.runtime.api.Framework;
+
+import com.google.common.base.MoreObjects;
+import com.google.common.base.MoreObjects.ToStringHelper;
 
 /**
  * Basic implementation of {@link LiveConnectFile}.
@@ -33,7 +36,7 @@ public abstract class AbstractLiveConnectFile implements LiveConnectFile {
 
     private static final long serialVersionUID = 1L;
 
-    private LiveConnectFileInfo info;
+    private final LiveConnectFileInfo info;
 
     private String mimeType;
 
@@ -65,5 +68,17 @@ public abstract class AbstractLiveConnectFile implements LiveConnectFile {
     public String getEncoding() {
         // TODO extract from mimeType
         return null;
+    }
+
+    @Override
+    public String toString() {
+        ToStringHelper helper = MoreObjects.toStringHelper(this);
+        helper.add("mimeType", getMimeType());
+        helper.add("encoding", getEncoding());
+        helper.add("filename", getFilename());
+        helper.add("fileSize", getFileSize());
+        helper.add("digest", getDigest());
+        helper.add("info", getInfo());
+        return helper.toString();
     }
 }

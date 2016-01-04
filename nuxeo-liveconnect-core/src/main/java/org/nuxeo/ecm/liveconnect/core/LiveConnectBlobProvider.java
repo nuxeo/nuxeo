@@ -16,28 +16,24 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.liveconnect.box;
+package org.nuxeo.ecm.liveconnect.core;
 
 import java.io.IOException;
 
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 
-import com.google.api.client.auth.oauth2.Credential;
-
 /**
- * Credential factory.
+ * Interface for common cases in live connect modules.
  *
+ * @param <O> The OAuth2 service provider type.
  * @since 8.1
  */
-public class OAuthCredentialFactory {
+public interface LiveConnectBlobProvider<O extends OAuth2ServiceProvider> extends BlobProvider {
 
-    private OAuth2ServiceProvider provider;
+    O getOAuth2Provider();
 
-    public OAuthCredentialFactory(OAuth2ServiceProvider provider) {
-        this.provider = provider;
-    }
+    Blob toBlob(LiveConnectFileInfo fileInfo) throws IOException;
 
-    public Credential build(String user) throws IOException {
-        return provider.loadCredential(user);
-    }
 }

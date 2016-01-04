@@ -16,7 +16,7 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.liveconnect.box;
+package org.nuxeo.ecm.liveconnect.core;
 
 import java.io.Serializable;
 

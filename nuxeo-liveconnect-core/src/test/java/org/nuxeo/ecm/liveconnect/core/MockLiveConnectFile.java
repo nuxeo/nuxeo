@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,33 +16,26 @@
  * Contributors:
  *     Kevin Leturc
  */
-package org.nuxeo.ecm.liveconnect.box;
-
-import java.util.Objects;
-
-import org.nuxeo.ecm.liveconnect.core.AbstractLiveConnectFile;
-import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
-
-import com.box.sdk.BoxFile.Info;
+package org.nuxeo.ecm.liveconnect.core;
 
 /**
  * @since 8.1
  */
-public class BoxLiveConnectFile extends AbstractLiveConnectFile {
+public class MockLiveConnectFile extends AbstractLiveConnectFile {
 
     private static final long serialVersionUID = 1L;
 
-    private final String filename;
+    private String filename;
 
-    private final long fileSize;
+    private long fileSize;
 
-    private final String digest;
+    private String digest;
 
-    public BoxLiveConnectFile(LiveConnectFileInfo info, Info file) {
+    public MockLiveConnectFile(LiveConnectFileInfo info, String filename, long fileSize, String digest) {
         super(info);
-        this.filename = Objects.requireNonNull(file.getName());
-        this.fileSize = file.getSize();
-        this.digest = Objects.requireNonNull(file.getSha1());
+        this.filename = filename;
+        this.fileSize = fileSize;
+        this.digest = digest;
     }
 
     @Override
@@ -59,4 +52,5 @@ public class BoxLiveConnectFile extends AbstractLiveConnectFile {
     public String getDigest() {
         return digest;
     }
+
 }
