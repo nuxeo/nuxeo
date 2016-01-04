@@ -79,9 +79,11 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
 
     private static final String BOX_DOCUMENT_TO_BE_UPDATED_PP = "box_document_to_be_updated";
 
-    private static final String DOWNLOAD_CONTENT_URL = "https://api.box.com/2.0/files/%s/content";
+    private static final String BOX_URL = "https://api.box.com/2.0/";
 
-    private static final String THUMBNAIL_CONTENT_URL = "https://api.box.com/2.0/files/%s/thumbnail.png";
+    private static final String DOWNLOAD_CONTENT_URL = BOX_URL + "files/%s/content";
+
+    private static final String THUMBNAIL_CONTENT_URL = BOX_URL + "files/%s/thumbnail.png?min_height=64&min_width=64";
 
     private static final char BLOB_KEY_SEPARATOR = ':';
 
@@ -130,17 +132,18 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
     @Override
     public InputStream getThumbnail(ManagedBlob blob) throws IOException {
         LiveConnectFileInfo fileInfo = toFileInfo(blob);
-        String url = String.format(THUMBNAIL_CONTENT_URL, fileInfo.getFileId());
+        GenericUrl url = new GenericUrl(String.format(THUMBNAIL_CONTENT_URL, fileInfo.getFileId()));
 
-        HttpResponse response = doGet(url);
+        HttpResponse response = executeWithoutFollowRedirects(fileInfo, url);
         int statusCode = response.getStatusCode();
-        if (statusCode == 202) {
+        if (statusCode == HttpStatusCodes.STATUS_CODE_OK) {
+            return response.getContent();
+        } else if (statusCode == HttpStatusCodes.STATUS_CODE_FOUND || statusCode == 202) {
             response.disconnect();
             return doGet(response.getHeaders().getLocation()).getContent();
-        } else if (statusCode == HttpStatusCodes.STATUS_CODE_NOT_FOUND || statusCode == 400) {
-            throw new HttpResponseException(response);
         }
-        return response.getContent();
+        response.disconnect();
+        throw new HttpResponseException(response);
     }
 
     @Override
