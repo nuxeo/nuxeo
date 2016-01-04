@@ -518,14 +518,14 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         // @GuardedBy("itself")
         protected final List<Work> running;
 
-        // metrics
-        // In cluster mode these counters must be aggregated, no logic should rely on them
+        // metrics, in cluster mode these counters must be aggregated, no logic should rely on them
+        // Number of work scheduled by this instance
         protected final Counter scheduledCount;
 
-        protected final Counter scheduledMax;
-
+        // Number of work currently running on this instance
         protected final Counter runningCount;
 
+        // Number of work completed by this instance
         protected final Counter completedCount;
 
         protected final Timer workTimer;
@@ -537,7 +537,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             running = new LinkedList<Work>();
             // init metrics
             scheduledCount = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "scheduled", "count"));
-            scheduledMax = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "scheduled", "max"));
             runningCount = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "running"));
             completedCount = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "completed"));
             workTimer = registry.timer(MetricRegistry.name("nuxeo", "works", queueId, "total"));
@@ -564,9 +563,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          */
         public void execute(Work work) {
             scheduledCount.inc();
-            if (scheduledCount.getCount() > scheduledMax.getCount()) {
-                scheduledMax.inc();
-            }
             submit(work);
         }
 
@@ -595,7 +591,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 running.add(work);
             }
             // metrics
-            scheduledCount.dec();
             runningCount.inc();
         }
 
