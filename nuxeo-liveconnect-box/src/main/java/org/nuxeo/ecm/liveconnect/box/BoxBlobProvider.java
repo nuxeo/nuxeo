@@ -176,6 +176,23 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
         return changedDocuments;
     }
 
+    @Override
+    public ManagedBlob freezeVersion(ManagedBlob blob, Document doc) throws IOException {
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
+        if (fileInfo.getRevisionId().isPresent()) {
+            // already frozen
+            return null;
+        }
+        BoxFile.Info boxFileInfo = retrieveBoxFileInfo(fileInfo);
+        // put the latest file version in cache
+        putFileInCache(new BoxLiveConnectFile(fileInfo, boxFileInfo));
+        String revisionId = boxFileInfo.getVersion().getVersionID();
+
+        fileInfo = new LiveConnectFileInfo(fileInfo.getUser(), fileInfo.getFileId(), revisionId);
+        BoxLiveConnectFile file = new BoxLiveConnectFile(fileInfo, boxFileInfo);
+        return toBlob(file);
+    }
+
     /**
      * Should be overriden by subclasses wanting to rely on a different fields.
      */
@@ -298,8 +315,12 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
      * @return the file retrieved from API
      */
     protected LiveConnectFile retrieveFile(LiveConnectFileInfo fileInfo) throws IOException {
+        return new BoxLiveConnectFile(fileInfo, retrieveBoxFileInfo(fileInfo));
+    }
+
+    protected BoxFile.Info retrieveBoxFileInfo(LiveConnectFileInfo fileInfo) throws IOException {
         try {
-            return new BoxLiveConnectFile(fileInfo, prepareBoxFile(fileInfo).getInfo());
+            return prepareBoxFile(fileInfo).getInfo();
         } catch (BoxAPIException e) {
             throw new IOException("Failed to retrieve Box file metadata", e);
         }
@@ -402,6 +423,11 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
 
     protected final void putFileInCache(LiveConnectFile file) {
         putInCache(FILE_CACHE_PREFIX, file.getInfo().getFileId(), file);
+    }
+
+    @Override
+    public boolean isVersion(ManagedBlob blob) {
+        return toFileInfo(blob).getRevisionId().isPresent();
     }
 
 }
