@@ -52,14 +52,17 @@ public class BoxTestCase {
 
     protected static final String FILE_1_NAME = "tigers.jpeg";
 
-    protected SimpleManagedBlob createBlob(String fileId) {
-        return createBlob(fileId, UUID.randomUUID().toString());
+    protected SimpleManagedBlob createBlob() {
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = SERVICE_ID + ':' + USERID + ':' + FILE_1_ID;
+        blobInfo.digest = UUID.randomUUID().toString();
+        return new SimpleManagedBlob(blobInfo);
     }
 
-    protected SimpleManagedBlob createBlob(String fileId, String digest) {
+    protected SimpleManagedBlob createBlob(String revision) {
         BlobInfo blobInfo = new BlobInfo();
-        blobInfo.key = SERVICE_ID + ':' + USERID + ':' + fileId;
-        blobInfo.digest = digest;
+        blobInfo.key = SERVICE_ID + ':' + USERID + ':' + FILE_1_ID + ':' + revision;
+        blobInfo.digest = UUID.randomUUID().toString();
         return new SimpleManagedBlob(blobInfo);
     }
 
