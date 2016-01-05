@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,8 @@ public class TestBlobHolderPersistence {
 
         // check persistence
         assertNotNull(persistedPath);
-        assertTrue(persistedPath.startsWith(storagePath));
+        assertTrue(String.format("%s must start with %s", persistedPath, storagePath),
+                persistedPath.startsWith(storagePath));
 
         File holderDir = new File(persistedPath);
         assertTrue(holderDir.isDirectory());

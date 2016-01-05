@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     bstefanescu, jcarsique
  *
- * $Id$
  */
 
 package org.nuxeo.osgi.application;
@@ -177,7 +176,7 @@ public class StandaloneApplication extends OSGiAdapter {
         if (bundlesString == null) {
             return null; // no bundles to load
         }
-        List<BundleFile> bundles = new ArrayList<BundleFile>();
+        List<BundleFile> bundles = new ArrayList<>();
         String[] ar = StringUtils.split(bundlesString, ':', true);
         for (String entry : ar) {
             File file;
@@ -309,7 +308,7 @@ public class StandaloneApplication extends OSGiAdapter {
             }
             val = options.getOption("bundles");
             if (val != null) {
-                env.setProperty(Environment.BUNDLES, val);
+                env.setPath(Environment.BUNDLES, new File(val).getCanonicalFile());
             }
             env.setHostApplicationName(Environment.NXSERVER_HOST);
             env.setHostApplicationVersion("1.0.0");

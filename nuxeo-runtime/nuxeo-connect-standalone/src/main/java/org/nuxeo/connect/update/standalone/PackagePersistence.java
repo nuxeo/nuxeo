@@ -69,8 +69,10 @@ public class PackagePersistence {
 
     public PackagePersistence(PackageUpdateService pus) throws IOException {
         Environment env = Environment.getDefault();
-        File mpDir = new File(env.getProperty(Environment.NUXEO_MP_DIR, Environment.DEFAULT_MP_DIR));
-        root = env.getServerHome().toPath().resolve(mpDir.toPath()).toFile();
+        root = env.getPath(Environment.NUXEO_MP_DIR);
+        if (!root.isAbsolute()) {
+            throw new RuntimeException();
+        }
         root.mkdirs();
         store = new File(root, "store");
         store.mkdirs();

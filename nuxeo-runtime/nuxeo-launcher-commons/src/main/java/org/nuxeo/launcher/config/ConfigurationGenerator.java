@@ -1730,11 +1730,6 @@ public class ConfigurationGenerator {
          */
         if (env == null) {
             env = new Environment(getRuntimeHome());
-            env.init();
-            env.setServerHome(getNuxeoHome());
-            env.setData(new File(userConfig.getProperty(Environment.NUXEO_DATA_DIR)));
-            env.setLog(new File(userConfig.getProperty(Environment.NUXEO_LOG_DIR)));
-            env.setTemp(new File(userConfig.getProperty(Environment.NUXEO_TMP_DIR)));
             File distribFile = new File(new File(nuxeoHome, TEMPLATES), "common/config/distribution.properties");
             if (distribFile.exists()) {
                 try {
@@ -1746,8 +1741,13 @@ public class ConfigurationGenerator {
                 }
             }
             env.loadProperties(userConfig);
-            env.setProperty(PARAM_MP_DIR, getDistributionMPDir().getAbsolutePath());
-            env.setProperty(Environment.NUXEO_MP_DIR, getPackagesDir().getAbsolutePath());
+            env.init();
+            env.setServerHome(getNuxeoHome());
+            env.setData(userConfig.getProperty(Environment.NUXEO_DATA_DIR));
+            env.setLog(userConfig.getProperty(Environment.NUXEO_LOG_DIR));
+            env.setTemp(userConfig.getProperty(Environment.NUXEO_TMP_DIR));
+            env.setPath(PARAM_MP_DIR, getDistributionMPDir(), env.getServerHome());
+            env.setPath(Environment.NUXEO_MP_DIR, getPackagesDir(), env.getServerHome());
         }
         return env;
     }

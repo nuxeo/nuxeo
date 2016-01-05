@@ -72,6 +72,7 @@ public abstract class PackageTestCase {
         FileUtils.forceDelete(tmpHome);
         tmpHome.mkdirs();
         Environment env = new Environment(tmpHome);
+        env.setServerHome(tmpHome);
         env.init();
         service = new StandaloneUpdateService(env);
         service.initialize();

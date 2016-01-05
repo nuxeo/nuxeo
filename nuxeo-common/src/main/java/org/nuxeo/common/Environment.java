@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -186,7 +186,7 @@ public class Environment {
     private File serverHome = null;
 
     // Handy parameter to distinguish from (Server)home
-    private File runtimeHome;
+    private File runtimeHome = null;
 
     public static final String SERVER_STATUS_KEY = "server.status.key";
 
@@ -280,7 +280,7 @@ public class Environment {
     }
 
     public Environment(File home, Properties properties) {
-        this.home = home;
+        this.home = home.getAbsoluteFile();
         this.properties = new Properties();
         if (properties != null) {
             loadProperties(properties);
@@ -339,95 +339,123 @@ public class Environment {
 
     public File getTemp() {
         if (temp == null) {
-            if (properties.containsKey(NUXEO_TMP_DIR)) {
-                temp = new File(properties.getProperty(NUXEO_TMP_DIR));
-            } else {
-                setTemp(new File(home, DEFAULT_TMP_DIR));
-            }
+            setTemp(properties.getProperty(NUXEO_TMP_DIR, DEFAULT_TMP_DIR));
         }
         return temp;
     }
 
+    /**
+     * Resolve the path against {@link Environment#home} if not absolute.
+     *
+     * @param temp
+     * @since 8.1
+     */
+    public void setTemp(String temp) {
+        setTemp(home.toPath().resolve(temp).toFile());
+    }
+
     public void setTemp(File temp) {
-        this.temp = temp;
-        properties.setProperty(NUXEO_TMP_DIR, temp.getAbsolutePath());
+        this.temp = temp.getAbsoluteFile();
+        setProperty(NUXEO_TMP_DIR, temp.getAbsolutePath());
         temp.mkdirs();
     }
 
     public File getConfig() {
         if (config == null) {
-            if (properties.containsKey(NUXEO_CONFIG_DIR)) {
-                config = new File(properties.getProperty(NUXEO_CONFIG_DIR));
-            } else {
-                setConfig(new File(home, DEFAULT_CONFIG_DIR));
-            }
+            setConfig(properties.getProperty(NUXEO_CONFIG_DIR, DEFAULT_CONFIG_DIR));
         }
         return config;
     }
 
+    /**
+     * Resolve the path against {@link Environment#home} if not absolute.
+     *
+     * @param config
+     * @since 8.1
+     */
+    public void setConfig(String config) {
+        setConfig(home.toPath().resolve(config).toFile());
+    }
+
     public void setConfig(File config) {
-        this.config = config;
-        properties.setProperty(NUXEO_CONFIG_DIR, config.getAbsolutePath());
+        this.config = config.getAbsoluteFile();
+        setProperty(NUXEO_CONFIG_DIR, config.getAbsolutePath());
         config.mkdirs();
     }
 
     public File getLog() {
         if (log == null) {
-            if (properties.containsKey(NUXEO_LOG_DIR)) {
-                log = new File(properties.getProperty(NUXEO_LOG_DIR));
-            } else {
-                setLog(new File(home, DEFAULT_LOG_DIR));
-            }
+            setLog(properties.getProperty(NUXEO_LOG_DIR, DEFAULT_LOG_DIR));
         }
         return log;
     }
 
+    /**
+     * Resolve the path against {@link Environment#home} if not absolute.
+     *
+     * @param log
+     * @since 8.1
+     */
+    public void setLog(String log) {
+        setLog(home.toPath().resolve(log).toFile());
+    }
+
     public void setLog(File log) {
-        this.log = log;
-        properties.setProperty(NUXEO_LOG_DIR, log.getAbsolutePath());
+        this.log = log.getAbsoluteFile();
+        setProperty(NUXEO_LOG_DIR, log.getAbsolutePath());
         log.mkdirs();
     }
 
     public File getData() {
         if (data == null) {
-            if (properties.containsKey(NUXEO_DATA_DIR)) {
-                data = new File(properties.getProperty(NUXEO_DATA_DIR));
-            } else {
-                setData(new File(home, DEFAULT_DATA_DIR));
-            }
+            setData(properties.getProperty(NUXEO_DATA_DIR, DEFAULT_DATA_DIR));
         }
         return data;
     }
 
+    /**
+     * Resolve the path against {@link Environment#home} if not absolute.
+     *
+     * @param data
+     * @since 8.1
+     */
+    public void setData(String data) {
+        setData(home.toPath().resolve(data).toFile());
+    }
+
     public void setData(File data) {
-        this.data = data;
-        properties.setProperty(NUXEO_DATA_DIR, data.getAbsolutePath());
+        this.data = data.getAbsoluteFile();
+        setProperty(NUXEO_DATA_DIR, data.getAbsolutePath());
         data.mkdirs();
     }
 
     public File getWeb() {
         if (web == null) {
-            if (properties.containsKey(NUXEO_WEB_DIR)) {
-                web = new File(properties.getProperty(NUXEO_WEB_DIR));
-            } else {
-                setWeb(new File(home, DEFAULT_WEB_DIR));
-            }
+            setWeb(properties.getProperty(NUXEO_WEB_DIR, DEFAULT_WEB_DIR));
         }
         return web;
     }
 
+    /**
+     * Resolve the path against {@link Environment#home} if not absolute.
+     *
+     * @param web
+     * @since 8.1
+     */
+    public void setWeb(String web) {
+        setWeb(home.toPath().resolve(web).toFile());
+    }
+
     public void setWeb(File web) {
         this.web = web;
-        properties.setProperty(NUXEO_WEB_DIR, web.getAbsolutePath());
+        setProperty(NUXEO_WEB_DIR, web.getAbsolutePath());
     }
 
     /**
      * @since 5.4.2
      */
     public File getRuntimeHome() {
-        if (runtimeHome == null) {
-            initRuntimeHome();
-        }
+        initRuntimeHome();
         return runtimeHome;
     }
 
@@ -435,8 +463,8 @@ public class Environment {
      * @since 5.4.2
      */
     public void setRuntimeHome(File runtimeHome) {
-        this.runtimeHome = runtimeHome;
-        properties.setProperty(NUXEO_RUNTIME_HOME, runtimeHome.getAbsolutePath());
+        this.runtimeHome = runtimeHome.getAbsoluteFile();
+        setProperty(NUXEO_RUNTIME_HOME, runtimeHome.getAbsolutePath());
     }
 
     public String[] getCommandLineArguments() {
@@ -456,6 +484,9 @@ public class Environment {
         return val == null ? defaultValue : val;
     }
 
+    /**
+     * If setting a path property, consider using {@link #setPath(String, String)}
+     */
     public void setProperty(String key, String value) {
         properties.setProperty(key, value);
     }
@@ -486,32 +517,37 @@ public class Environment {
      * @since 5.4.1
      */
     public void init() {
-        String dataDir = System.getProperty(NUXEO_DATA_DIR);
-        String configDir = System.getProperty(NUXEO_CONFIG_DIR);
-        String logDir = System.getProperty(NUXEO_LOG_DIR);
-        String tmpDir = System.getProperty(NUXEO_TMP_DIR);
-        String mpDir = System.getProperty(NUXEO_MP_DIR);
-
         initServerHome();
         initRuntimeHome();
+
+        String dataDir = System.getProperty(NUXEO_DATA_DIR);
         if (StringUtils.isNotEmpty(dataDir)) {
             setData(new File(dataDir));
         }
+
+        String configDir = System.getProperty(NUXEO_CONFIG_DIR);
         if (StringUtils.isNotEmpty(configDir)) {
             setConfig(new File(configDir));
         }
+
+        String logDir = System.getProperty(NUXEO_LOG_DIR);
         if (StringUtils.isNotEmpty(logDir)) {
             setLog(new File(logDir));
         }
+
+        String tmpDir = System.getProperty(NUXEO_TMP_DIR);
         if (StringUtils.isNotEmpty(tmpDir)) {
             setTemp(new File(tmpDir));
         }
-        if (StringUtils.isNotEmpty(mpDir)) {
-            properties.put(NUXEO_MP_DIR, mpDir);
-        }
+
+        String mpDir = System.getProperty(NUXEO_MP_DIR);
+        setPath(NUXEO_MP_DIR, StringUtils.isNotEmpty(mpDir) ? mpDir : DEFAULT_MP_DIR, getServerHome());
     }
 
     private void initRuntimeHome() {
+        if (runtimeHome != null) {
+            return;
+        }
         String runtimeDir = System.getProperty(NUXEO_RUNTIME_HOME);
         if (runtimeDir != null && !runtimeDir.isEmpty()) {
             setRuntimeHome(new File(runtimeDir));
@@ -528,9 +564,7 @@ public class Environment {
      * @return Server home
      */
     public File getServerHome() {
-        if (serverHome == null) {
-            initServerHome();
-        }
+        initServerHome();
         return serverHome;
     }
 
@@ -538,11 +572,14 @@ public class Environment {
      * @since 5.4.2
      */
     public void setServerHome(File serverHome) {
-        this.serverHome = serverHome;
-        properties.put(NUXEO_HOME_DIR, serverHome.getAbsolutePath());
+        this.serverHome = serverHome.getAbsoluteFile();
+        setProperty(NUXEO_HOME_DIR, serverHome.getAbsolutePath());
     }
 
     private void initServerHome() {
+        if (serverHome != null) {
+            return;
+        }
         String homeDir = System.getProperty(NUXEO_HOME, System.getProperty(NUXEO_HOME_DIR));
         if (homeDir != null && !homeDir.isEmpty()) {
             setServerHome(new File(homeDir));
@@ -565,5 +602,76 @@ public class Environment {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    /**
+     * Add a file path as a property
+     *
+     * @param key Property key
+     * @param value Property value: an absolute or relative file
+     * @param baseDir The directory against which the file will be resolved if not absolute
+     * @since 8.1
+     * @see #setProperty(String, String)
+     * @see #setPath(String, String, File)
+     * @see #setPath(String, File)
+     */
+    public void setPath(String key, File value, File baseDir) {
+        setProperty(key, baseDir.toPath().resolve(value.toPath()).toFile().getAbsolutePath());
+    }
+
+    /**
+     * Add a file path as a property
+     *
+     * @param key Property key
+     * @param value Property value: an absolute or relative file path
+     * @param baseDir The directory against which the file will be resolved if not absolute
+     * @since 8.1
+     * @see #setProperty(String, String)
+     * @see #setPath(String, File, File)
+     * @see #setPath(String, File)
+     */
+    public void setPath(String key, String value, File baseDir) {
+        setProperty(key, baseDir.toPath().resolve(value).toFile().getAbsolutePath());
+    }
+
+    /**
+     * Add a file path as a property
+     *
+     * @param key Property key
+     * @param value Property value: an absolute or relative file; if relative, it will be resolved against {@link #home}
+     * @since 8.1
+     * @see #setProperty(String, String)
+     * @see #setPath(String, File, File)
+     */
+    public void setPath(String key, File value) {
+        setPath(key, value, home);
+    }
+
+    /**
+     * Add a file path as a property
+     *
+     * @param key Property key
+     * @param value Property value: an absolute or relative file path; if relative, it will be resolved against
+     *            {@link #home}
+     * @since 8.1
+     * @see #setProperty(String, String)
+     * @see #setPath(String, String, File)
+     */
+    public void setPath(String key, String value) {
+        setPath(key, value, home);
+    }
+
+    /**
+     * @param key
+     * @return the file which path is associated with the given key. The file is guaranteed to be absolute if it has
+     *         been set with {@link #setPath(String, File)}
+     * @since 8.1
+     */
+    public File getPath(String key) {
+        String path = properties.getProperty(key);
+        if (path != null) {
+            return new File(path);
+        }
+        return null;
     }
 }
