@@ -590,10 +590,7 @@ public class BatchUploadFixture extends BaseTest {
 
         // Cancel batch
         response = getResponse(RequestType.DELETE, "upload/" + batchId);
-        assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(batchId, node.get("batchId").getValueAsText());
-        assertEquals("true", node.get("dropped").getValueAsText());
+        assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
     /**

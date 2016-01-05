@@ -254,10 +254,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
             return buildEmptyResponse(Status.NOT_FOUND);
         }
         bm.clean(batchId);
-        Map<String, String> result = new HashMap<String, String>();
-        result.put("batchId", batchId);
-        result.put("dropped", "true");
-        return buildResponse(Status.OK, result);
+        return buildEmptyResponse(Status.NO_CONTENT);
     }
 
     @POST
