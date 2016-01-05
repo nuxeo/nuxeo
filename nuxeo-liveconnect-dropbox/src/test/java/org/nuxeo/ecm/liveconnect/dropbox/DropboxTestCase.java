@@ -42,8 +42,6 @@ public class DropboxTestCase {
 
     protected static final String FILEID_DOC = "56785678";
 
-    protected static final String FILENAME_PDF = "document.pdf";
-
     protected static final int SIZE = 36830;
 
 }

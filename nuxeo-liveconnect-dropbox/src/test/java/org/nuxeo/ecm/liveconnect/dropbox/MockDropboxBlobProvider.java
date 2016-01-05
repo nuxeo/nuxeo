@@ -16,23 +16,25 @@
  */
 package org.nuxeo.ecm.liveconnect.dropbox;
 
-import com.dropbox.core.DbxEntry;
-import com.dropbox.core.DbxException;
-import com.dropbox.core.json.JsonReadException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
+import static org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.liveconnect.core.LiveConnectFile;
+import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
+
+import com.dropbox.core.DbxEntry;
+import com.dropbox.core.json.JsonReadException;
 
 /**
  * @since 7.3
@@ -67,13 +69,13 @@ public class MockDropboxBlobProvider extends DropboxBlobProvider {
             url = "http://example.com/download/" + blob.getFilename();
             break;
         }
-        return url != null ? asURI(url) : null;
+        return Optional.ofNullable(url).flatMap(this::asURI).orElse(null);
     }
 
     @Override
-    protected DbxEntry.File getFile(String user, String fileId) throws IOException {
+    protected LiveConnectFile getFile(LiveConnectFileInfo fileInfo) throws IOException {
         // ignore user
-        String name = String.format(FILE_FMT, fileId);
+        String name = String.format(FILE_FMT, fileInfo.getFileId());
         DbxEntry.File file;
         InputStream is = getClass().getResourceAsStream(name);
 
@@ -86,10 +88,11 @@ public class MockDropboxBlobProvider extends DropboxBlobProvider {
         } catch (JsonReadException e) {
             throw new UnsupportedOperationException(e);
         }
-        return file;
+        return new DropboxLiveConnectFile(fileInfo, file);
     }
 
-    protected DbxEntry.File getFileNoCache(String user, String filePath) throws DbxException, IOException {
-        return getFile(user, filePath);
+    @Override
+    protected LiveConnectFile retrieveFile(LiveConnectFileInfo fileInfo) throws IOException {
+        return getFile(fileInfo);
     }
 }

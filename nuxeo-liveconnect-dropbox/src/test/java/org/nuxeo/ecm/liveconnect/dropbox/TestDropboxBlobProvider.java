@@ -16,22 +16,23 @@
  */
 package org.nuxeo.ecm.liveconnect.dropbox;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.BlobProvider;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
-import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
-
-import javax.inject.Inject;
-import java.io.InputStream;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.io.InputStream;
+
+import javax.inject.Inject;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 public class TestDropboxBlobProvider extends DropboxTestCase {
 
@@ -74,11 +75,4 @@ public class TestDropboxBlobProvider extends DropboxTestCase {
         }
     }
 
-    @Test
-    public void testGetBlob() throws Exception {
-        String fileInfo = String.format("%s:%s", PREFIX, FILENAME_PDF);
-        Blob blob = ((DropboxBlobProvider) blobManager.getBlobProvider(PREFIX)).getBlob(fileInfo);
-        assertEquals(SIZE, blob.getLength());
-        assertEquals(FILENAME_PDF, blob.getFilename());
-    }
  }
