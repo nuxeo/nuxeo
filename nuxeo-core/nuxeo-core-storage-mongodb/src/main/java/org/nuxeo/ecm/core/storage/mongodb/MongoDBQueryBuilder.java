@@ -185,18 +185,14 @@ public class MongoDBQueryBuilder {
     }
 
     protected void walkProjection() {
-        if (selectClause.isEmpty()) {
-            selectClause.add(new Reference(NXQL.ECM_UUID));
-        }
-        SelectList elements = selectClause.elements;
         projection = new BasicDBObject();
         projection.put(KEY_ID, ONE); // always useful
-        projection.put(KEY_NAME, ONE); // used in order by path
-        projection.put(KEY_PARENT_ID, ONE); // used in order by path
+        projection.put(KEY_NAME, ONE); // used in ORDER BY ecm:path
+        projection.put(KEY_PARENT_ID, ONE); // used in ORDER BY ecm:path
         boolean projectionHasWildcard = false;
         boolean projectionOnFulltextScore = false;
-        for (int i = 0; i < elements.size(); i++) {
-            Operand op = elements.get(i);
+        for (int i = 0; i < selectClause.elements.size(); i++) {
+            Operand op = selectClause.elements.get(i);
             if (!(op instanceof Reference)) {
                 throw new QueryParseException("Projection not supported: " + op);
             }

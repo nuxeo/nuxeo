@@ -64,7 +64,6 @@ import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -78,8 +77,6 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.storage.sql.Node;
-import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -116,6 +113,10 @@ public class TestSQLRepositoryQuery {
         return coreFeature.getStorageConfiguration().isDBS();
     }
 
+    protected boolean isDBSMongoDB() {
+        return coreFeature.getStorageConfiguration().isDBSMongoDB();
+    }
+
     protected void waitForFulltextIndexing() {
         nextTransaction();
         coreFeature.getStorageConfiguration().waitForFulltextIndexing();
@@ -132,7 +133,15 @@ public class TestSQLRepositoryQuery {
      * Query of NOT (something) matches docs where (something) did not match because the field was null.
      */
     public boolean notMatchesNull() {
-        return isDBS();
+        return isDBSMongoDB();
+    }
+
+    public boolean supportsDistinct() {
+        return !isDBS();
+    }
+
+    public boolean supportsTags() {
+        return !isDBS();
     }
 
     // ---------------------------------------
@@ -858,7 +867,7 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testQueryConstantsLeft() throws Exception {
-        assumeTrue("DBS cannot query const = const", !isDBS());
+        assumeTrue("DBS MongoDB cannot query const = const", !isDBSMongoDB());
 
         String sql;
         DocumentModelList dml;
@@ -1473,8 +1482,10 @@ public class TestSQLRepositoryQuery {
         checkQueryACL(1, queryBase
                 + "ecm:acl/*1/principal = 'Everyone' AND ecm:acl/*1/permission = 'Everything' AND ecm:acl/*1/grant = 0");
 
-        // explicit array index
-        checkQueryACL(1, queryBase + "ecm:acl/1/principal = 'bob'");
+        if (!isDBS()) {
+            // explicit array index
+            checkQueryACL(1, queryBase + "ecm:acl/1/principal = 'bob'");
+        }
     }
 
     protected void checkQueryACL(int expected, String query) {
@@ -1539,17 +1550,18 @@ public class TestSQLRepositoryQuery {
         assertEquals(new HashSet<>(Arrays.asList("local:bob:Browse", "local:steve:Read")), set);
 
         // read full ACL
+        // ecm:pos in VCS-specific so not checked
         res = session.queryAndFetch(
-                "SELECT ecm:uuid, ecm:acl/*1/name, ecm:acl/*1/pos, ecm:acl/*1/principal, ecm:acl/*1/permission, ecm:acl/*1/grant, "
-                        + "ecm:acl/*1/creator, ecm:acl/*1/begin, ecm:acl/*1/end FROM Document WHERE ecm:isProxy = 0 AND "
-                        + "ecm:acl/*/principal = 'bob'",
+                "SELECT ecm:uuid, ecm:acl/*1/name, ecm:acl/*1/principal, ecm:acl/*1/permission, ecm:acl/*1/grant"
+                        + ", ecm:acl/*1/creator, ecm:acl/*1/begin, ecm:acl/*1/end FROM Document"
+                        + " WHERE ecm:isProxy = 0 AND " + "ecm:acl/*/principal = 'bob'",
                 "NXQL");
         assertEquals(5, res.size());
         set = new HashSet<>();
         for (Map<String, Serializable> map : res) {
-            String ace = map.get("ecm:acl/*1/name") + ":" + map.get("ecm:acl/*1/pos") + ":"
-                    + map.get("ecm:acl/*1/principal") + ":" + map.get("ecm:acl/*1/permission") + ":"
-                    + map.get("ecm:acl/*1/grant") + ":" + map.get("ecm:acl/*1/creator");
+            String ace = map.get("ecm:acl/*1/name") + ":" + map.get("ecm:acl/*1/principal") + ":"
+                    + map.get("ecm:acl/*1/permission") + ":" + map.get("ecm:acl/*1/grant") + ":"
+                    + map.get("ecm:acl/*1/creator");
             Calendar cal = (Calendar) map.get("ecm:acl/*1/begin");
             ace += ":" + (cal != null ? cal.getTimeInMillis() : null);
             cal = (Calendar) map.get("ecm:acl/*1/end");
@@ -1559,11 +1571,11 @@ public class TestSQLRepositoryQuery {
         res.close();
         assertEquals(
                 new HashSet<>(
-                        Arrays.asList("local:0:Administrator:Everything:true:null:null:null",
-                                "local:1:bob:Browse:true:null:null:null", "local:2:steve:Read:true:null:null:null",
-                                "local:3:leela:Write:true:Administrator:" + begin.getTimeInMillis() + ":"
+                        Arrays.asList("local:Administrator:Everything:true:null:null:null",
+                                "local:bob:Browse:true:null:null:null", "local:steve:Read:true:null:null:null",
+                                "local:leela:Write:true:Administrator:" + begin.getTimeInMillis() + ":"
                                         + end.getTimeInMillis(),
-                                "local:4:Everyone:Everything:false:null:null:null")),
+                                "local:Everyone:Everything:false:null:null:null")),
                 set);
     }
 
@@ -1685,9 +1697,12 @@ public class TestSQLRepositoryQuery {
         session.save();
 
         // doc has facet but not found by search
-        // because of repository config
-        DocumentModelList dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'NotPerDocFacet'");
-        assertEquals(0, dml.size());
+        DocumentModelList dml;
+        if (!isDBS()) {
+            // VCS compat in repository config
+            dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'NotPerDocFacet'");
+            assertEquals(0, dml.size());
+        }
         // same thing with type service
         dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'NotPerDocFacet2'");
         assertEquals(0, dml.size());
@@ -1799,14 +1814,6 @@ public class TestSQLRepositoryQuery {
         // we may need to actually commit and re-open a transaction (MySQL)
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-
-        /*
-         * ecm:lock (deprecated, uses ecm:lockOwner actually)
-         */
-        dml = session.query("SELECT * FROM Document WHERE ecm:lock <> '_'");
-        assertIdSet(dml, file1.getId());
-        dml = session.query("SELECT * FROM Document ORDER BY ecm:lock");
-        assertEquals(9, dml.size());
 
         /*
          * ecm:lockOwner
@@ -2169,6 +2176,8 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testSelectColumnsDistinct() throws Exception {
+        assumeTrue("DBS does not support DISTINCT in queries", supportsDistinct());
+
         String query;
         IterableQueryResult res;
 
@@ -2358,6 +2367,8 @@ public class TestSQLRepositoryQuery {
     }
 
     protected void testTags() throws Exception {
+        assumeTrue("DBS does not support tags", supportsTags());
+
         String nxql;
         DocumentModelList dml;
         IterableQueryResult res;
@@ -2889,7 +2900,7 @@ public class TestSQLRepositoryQuery {
         clause = "tst:subjects/*1 = 'foo' ORDER BY tst:subjects/*1";
         try {
             session.query(SELECT_WHERE + clause);
-            if (coreFeature.getStorageConfiguration().isVCS()) {
+            if (!isDBSMongoDB()) {
                 // ORDER BY tst:subjects works on MongoDB
                 fail();
             }
@@ -2908,7 +2919,7 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testQueryDistinct() throws Exception {
-        assumeTrue("DBS cannot do DISTINCT", !isDBS());
+        assumeTrue("DBS does not support DISTINCT in queries", supportsDistinct());
 
         makeComplexDoc();
 

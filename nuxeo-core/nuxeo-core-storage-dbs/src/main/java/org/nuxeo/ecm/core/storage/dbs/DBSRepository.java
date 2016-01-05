@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -173,10 +174,9 @@ public interface DBSRepository extends Repository, LockManager {
     boolean queryKeyValuePresence(String key, String value, Set<String> ignored);
 
     /**
-     * Queries the repository for documents matching a query.
+     * Queries the repository for documents matching a NXQL query, and returns a projection of the documents.
      *
-     * @param expression the query expression
-     * @param selectClause the projection to return (selected values)
+     * @param evaluator the map-based evaluator for the query
      * @param orderByClause an ORDER BY clause
      * @param limit the limit on the number of documents to return
      * @param offset the offset in the list of documents to return
@@ -184,12 +184,11 @@ public interface DBSRepository extends Repository, LockManager {
      *            If {@code 0}, don't count the total size, set it to {@code -1} .<br>
      *            If {@code n}, count the total number if there are less than n documents otherwise set the total size
      *            to {@code -2}.
-     * @param evaluator the map-based evaluator for the query
-     * @param deepCopy whether returned state should be a copy
-     * @return a partial list containing the limited documents required, and the total size according to countUpTo
+     * @return a partial list of maps containing the NXQL projections requested, and the total size according to
+     *         countUpTo
      */
-    PartialList<State> queryAndFetch(Expression expression, SelectClause selectClause, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, DBSExpressionEvaluator evaluator, boolean deepCopy);
+    PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
+            int limit, int offset, int countUpTo);
 
     /**
      * Gets the lock manager for this repository.

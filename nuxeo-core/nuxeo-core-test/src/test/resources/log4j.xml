@@ -22,6 +22,12 @@
     </layout>
   </appender>
 
+  <logger name="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository">
+    <level value="WARN" />
+  </logger>
+  <logger name="org.nuxeo.ecm.core.storage.mem.MemRepository">
+    <level value="WARN" />
+  </logger>
 
   <root>
     <priority value="WARN" />

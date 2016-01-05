@@ -64,6 +64,8 @@ public abstract class ExpressionEvaluator {
     /** pseudo NXQL to resolve read acls. */
     public static final String NXQL_ECM_READ_ACL = "ecm:__read_acl";
 
+    protected static final String DATE_CAST = "DATE";
+
     /**
      * Interface for a class that knows how to resolve a path into an id.
      */
@@ -86,11 +88,20 @@ public abstract class ExpressionEvaluator {
         this.principals = principals == null ? null : new HashSet<String>(Arrays.asList(principals));
     }
 
+    public ExpressionEvaluator() {
+        this(null, null);
+    }
+
     public Object walkExpression(Expression expr) {
         Operator op = expr.operator;
         Operand lvalue = expr.lvalue;
         Operand rvalue = expr.rvalue;
-        String name = lvalue instanceof Reference ? ((Reference) lvalue).name : null;
+        Reference ref = lvalue instanceof Reference ? (Reference) lvalue : null;
+        String name = ref != null ? ref.name : null;
+        String cast = ref != null ? ref.cast : null;
+        if (DATE_CAST.equals(cast)) {
+            checkDateLiteralForCast(rvalue, name);
+        }
         if (op == Operator.STARTSWITH) {
             return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
@@ -152,6 +163,12 @@ public abstract class ExpressionEvaluator {
         }
     }
 
+    protected void checkDateLiteralForCast(Operand value, String name) {
+        if (value instanceof DateLiteral && !((DateLiteral) value).onlyDate) {
+            throw new QueryParseException("DATE() cast must be used with DATE literal, not TIMESTAMP: " + name);
+        }
+    }
+
     protected Boolean walkEcmPath(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
             throw new QueryParseException(NXQL.ECM_PATH + " requires = or <> operator");
@@ -164,10 +181,11 @@ public abstract class ExpressionEvaluator {
             path = path.substring(0, path.length() - 1);
         }
         String id = pathResolver.getIdForPath(path);
+        Object right = walkReference(new Reference(NXQL.ECM_UUID));
         if (id == null) {
             return FALSE;
         }
-        Boolean eq = eq(id, walkReference(new Reference(NXQL.ECM_UUID)));
+        Boolean eq = eq(id, right);
         return op == Operator.EQ ? eq : not(eq);
     }
 
@@ -205,14 +223,12 @@ public abstract class ExpressionEvaluator {
         return Boolean.valueOf(walkOperand(value) != null);
     }
 
+    // ternary logic
     public Boolean walkMultiExpression(MultiExpression expr) {
         Boolean res = TRUE;
         for (Operand value : expr.values) {
             Boolean bool = bool(walkOperand(value));
-            if (bool == null) {
-                // null is absorbent
-                return null;
-            }
+            // don't short-circuit on null, we want to walk all references deterministically
             res = and(res, bool);
         }
         return res;
@@ -334,7 +350,18 @@ public abstract class ExpressionEvaluator {
     }
 
     public Calendar walkDateLiteral(DateLiteral lit) {
-        return lit.toCalendar(); // TODO onlyDate
+        if (lit.onlyDate) {
+            Calendar date = lit.toCalendar();
+            if (date != null) {
+                date.set(Calendar.HOUR_OF_DAY, 0);
+                date.set(Calendar.MINUTE, 0);
+                date.set(Calendar.SECOND, 0);
+                date.set(Calendar.MILLISECOND, 0);
+            }
+            return date;
+        } else {
+            return lit.toCalendar();
+        }
     }
 
     public Double walkDoubleLiteral(DoubleLiteral lit) {
@@ -376,7 +403,8 @@ public abstract class ExpressionEvaluator {
         }
         String name = ((Reference) lvalue).name;
         if (!(rvalue instanceof StringLiteral)) {
-            throw new QueryParseException("Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
+            throw new QueryParseException(
+                    "Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -393,11 +421,12 @@ public abstract class ExpressionEvaluator {
     protected Boolean walkStartsWithPath(String path) {
         // resolve path
         String ancestorId = pathResolver.getIdForPath(path);
+        // don't return early on null ancestorId, we want to walk all references deterministically
+        Object[] ancestorIds = (Object[]) walkReference(new Reference(NXQL_ECM_ANCESTOR_IDS));
         if (ancestorId == null) {
             // no such path
             return FALSE;
         }
-        Object[] ancestorIds = (Object[]) walkReference(new Reference(NXQL_ECM_ANCESTOR_IDS));
         if (ancestorIds == null) {
             // placeless
             return FALSE;

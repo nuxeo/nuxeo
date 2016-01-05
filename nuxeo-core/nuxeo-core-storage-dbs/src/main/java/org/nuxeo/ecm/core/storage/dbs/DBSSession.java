@@ -52,7 +52,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PATH_INTERNAL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_POS;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PREFIX;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
@@ -111,17 +110,22 @@ import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
+import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ListTypeImpl;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.StateHelper;
-import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator.OrderByComparator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -1362,7 +1366,7 @@ public class DBSSession implements Session {
     }
 
     protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo) {
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, countUpTo, true);
+        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, countUpTo);
         List<String> ids = new ArrayList<String>(pl.list.size());
         for (Map<String, Serializable> map : pl.list) {
             String id = (String) map.get(NXQL.ECM_UUID);
@@ -1373,11 +1377,6 @@ public class DBSSession implements Session {
 
     protected PartialList<Map<String, Serializable>> doQueryAndFetch(String query, String queryType,
             QueryFilter queryFilter, int countUpTo) {
-        return doQueryAndFetch(query, queryType, queryFilter, countUpTo, false);
-    }
-
-    protected PartialList<Map<String, Serializable>> doQueryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, int countUpTo, boolean onlyId) {
         if ("NXTAG".equals(queryType)) {
             // for now don't try to implement tags
             // and return an empty list
@@ -1390,10 +1389,12 @@ public class DBSSession implements Session {
         // security policies
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
         SelectClause selectClause = sqlQuery.select;
+        if (selectClause.isEmpty()) {
+            // turned into SELECT ecm:uuid
+            selectClause.add(new Reference(NXQL.ECM_UUID));
+        }
         if (selectClause.isDistinct()) {
-            if (selectClause.isEmpty()) {
-                // ok, turned into SELECT ecm:uuid
-            } else if (selectClause.getSelectList().size() == 1
+            if (selectClause.getSelectList().size() == 1
                     && (selectClause.get(0).equals(new Reference(NXQL.ECM_UUID)))) {
                 // ok, SELECT ecm:uuid
             } else {
@@ -1407,7 +1408,7 @@ public class DBSSession implements Session {
 
         QueryOptimizer optimizer = new QueryOptimizer();
         MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression,
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, orderByClause,
                 queryFilter.getPrincipals());
 
         int limit = (int) queryFilter.getLimit();
@@ -1437,11 +1438,10 @@ public class DBSSession implements Session {
         }
 
         // query the repository
-        boolean deepCopy = !onlyId;
-        PartialList<State> pl = repository.queryAndFetch(expression, selectClause, repoOrderByClause, repoLimit,
-                repoOffset, countUpTo, evaluator, deepCopy);
+        PartialList<Map<String, Serializable>> pl = repository.queryAndFetch(evaluator, repoOrderByClause, repoLimit,
+                repoOffset, countUpTo);
 
-        List<State> states = pl.list;
+        List<Map<String, Serializable>> projections = pl.list;
         long totalSize = pl.totalSize;
         if (totalSize >= 0) {
             if (countUpTo == -1) {
@@ -1460,31 +1460,20 @@ public class DBSSession implements Session {
         if (postFilter) {
             // ORDER BY
             if (orderByClause != null) {
-                doOrderBy(states, orderByClause, evaluator);
+                doOrderBy(projections, orderByClause);
             }
             // LIMIT / OFFSET
             if (limit != 0) {
-                int size = states.size();
-                states.subList(0, offset > size ? size : offset).clear();
-                size = states.size();
+                int size = projections.size();
+                projections.subList(0, offset > size ? size : offset).clear();
+                size = projections.size();
                 if (limit < size) {
-                    states.subList(limit, size).clear();
+                    projections.subList(limit, size).clear();
                 }
             }
         }
 
-        List<Map<String, Serializable>> flatList;
-        if (onlyId) {
-            // optimize because we just need the id
-            flatList = new ArrayList<>(states.size());
-            for (State state : states) {
-                flatList.add(Collections.singletonMap(NXQL.ECM_UUID, state.get(KEY_ID)));
-            }
-        } else {
-            flatList = flatten(states);
-        }
-
-        return new PartialList<Map<String, Serializable>>(flatList, totalSize);
+        return new PartialList<Map<String, Serializable>>(projections, totalSize);
     }
 
     /** Does an ORDER BY clause include ecm:path */
@@ -1500,87 +1489,85 @@ public class DBSSession implements Session {
         return false;
     }
 
-    protected String getPath(State state) {
+    protected String getPath(Map<String, Serializable> projection) {
+        String name = (String) projection.get(NXQL.ECM_NAME);
+        String parentId = (String) projection.get(NXQL.ECM_PARENTID);
+        State state;
+        if (parentId == null || (state = transaction.getStateForRead(parentId)) == null) {
+            if ("".equals(name)) {
+                return "/"; // root
+            } else {
+                return name; // placeless, no slash
+            }
+        }
         LinkedList<String> list = new LinkedList<String>();
-        for (boolean first = true;; first = false) {
-            String name = (String) state.get(KEY_NAME);
-            String parentId = (String) state.get(KEY_PARENT_ID);
+        list.addFirst(name);
+        for (;;) {
+            name = (String) state.get(KEY_NAME);
+            parentId = (String) state.get(KEY_PARENT_ID);
             list.addFirst(name);
             if (parentId == null || (state = transaction.getStateForRead(parentId)) == null) {
-                if (first) {
-                    if ("".equals(name)) {
-                        return "/"; // root
-                    } else {
-                        return name; // placeless, no slash
-                    }
-                } else {
-                    return StringUtils.join(list, '/');
-                }
+                return StringUtils.join(list, '/');
             }
         }
     }
 
-    protected void doOrderBy(List<State> states, OrderByClause orderByClause, DBSExpressionEvaluator evaluator) {
+    protected void doOrderBy(List<Map<String, Serializable>> projections, OrderByClause orderByClause) {
         if (isOrderByPath(orderByClause)) {
             // add path info to do the sort
-            for (State state : states) {
-                state.put(KEY_PATH_INTERNAL, getPath(state));
+            for (Map<String, Serializable> projection : projections) {
+                projection.put(ExpressionEvaluator.NXQL_ECM_PATH, getPath(projection));
             }
         }
-        Collections.sort(states, new OrderByComparator(orderByClause, evaluator));
+        Collections.sort(projections, new OrderByComparator(orderByClause));
     }
 
-    /**
-     * Flatten and convert from internal names to NXQL.
-     */
-    protected List<Map<String, Serializable>> flatten(List<State> states) {
-        List<Map<String, Serializable>> flatList = new ArrayList<>(states.size());
-        for (State state : states) {
-            Map<String, Serializable> map = new HashMap<>();
-            flatten(map, state, null);
-            flatList.add(map);
-        }
-        return flatList;
-    }
+    public static class OrderByComparator implements Comparator<Map<String, Serializable>> {
 
-    protected void flatten(Map<String, Serializable> map, State state, String prefix) {
-        for (Entry<String, Serializable> en : state.entrySet()) {
-            String key = en.getKey();
-            Serializable value = en.getValue();
-            String name;
-            if (key.startsWith(KEY_PREFIX)) {
-                name = convToNXQL(key);
-                if (name == null) {
-                    // present in state but not returned to caller
-                    continue;
+        protected final OrderByClause orderByClause;
+
+        public OrderByComparator(OrderByClause orderByClause) {
+            // replace ecm:path with ecm:__path for evaluation
+            // (we don't want to allow ecm:path to be usable anywhere else
+            // and resolve to a null value)
+            OrderByList obl = new OrderByList(null); // stupid constructor
+            obl.clear();
+            for (OrderByExpr ob : orderByClause.elements) {
+                if (ob.reference.name.equals(NXQL.ECM_PATH)) {
+                    ob = new OrderByExpr(new Reference(ExpressionEvaluator.NXQL_ECM_PATH), ob.isDescending);
                 }
-            } else {
-                name = key;
+                obl.add(ob);
             }
-            name = prefix == null ? name : prefix + name;
-            if (value instanceof State) {
-                flatten(map, (State) value, name + '/');
-            } else if (value instanceof List) {
-                String nameSlash = name + '/';
-                int i = 0;
-                for (Object v : (List<?>) value) {
-                    if (v instanceof State) {
-                        flatten(map, (State) v, nameSlash + i + '/');
-                    } else {
-                        map.put(nameSlash + i, (Serializable) v);
+            this.orderByClause = new OrderByClause(obl);
+        }
+
+        @Override
+        public int compare(Map<String, Serializable> map1, Map<String, Serializable> map2) {
+            for (OrderByExpr ob : orderByClause.elements) {
+                Reference ref = ob.reference;
+                boolean desc = ob.isDescending;
+                Object v1 = map1.get(ref.name);
+                Object v2 = map2.get(ref.name);
+                int cmp;
+                if (v1 == null) {
+                    cmp = v2 == null ? 0 : -1;
+                } else if (v2 == null) {
+                    cmp = 1;
+                } else {
+                    if (!(v1 instanceof Comparable)) {
+                        throw new QueryParseException("Not a comparable: " + v1);
                     }
-                    i++;
+                    cmp = ((Comparable<Object>) v1).compareTo(v2);
                 }
-            } else if (value instanceof Object[]) {
-                String nameSlash = name + '/';
-                int i = 0;
-                for (Object v : (Object[]) value) {
-                    map.put(nameSlash + i, (Serializable) v);
-                    i++;
+                if (desc) {
+                    cmp = -cmp;
                 }
-            } else {
-                map.put(name, value);
+                if (cmp != 0) {
+                    return cmp;
+                }
+                // loop for lexicographical comparison
             }
+            return 0;
         }
     }
 
@@ -1721,6 +1708,8 @@ public class DBSSession implements Session {
             return KEY_FULLTEXT_JOBID;
         case NXQL.ECM_FULLTEXT_SCORE:
             return KEY_FULLTEXT_SCORE;
+        case NXQL.ECM_ACL:
+            return KEY_ACP;
         case NXQL.ECM_FULLTEXT:
         case NXQL.ECM_TAG:
             throw new UnsupportedOperationException(name);
@@ -1730,6 +1719,8 @@ public class DBSSession implements Session {
 
     public static String convToInternalAce(String name) {
         switch (name) {
+        case NXQL.ECM_ACL_NAME:
+            return KEY_ACL_NAME;
         case NXQL.ECM_ACL_PRINCIPAL:
             return KEY_ACE_USER;
         case NXQL.ECM_ACL_PERMISSION:
@@ -1804,31 +1795,38 @@ public class DBSSession implements Session {
         case KEY_FULLTEXT_SIMPLE:
         case KEY_FULLTEXT_BINARY:
         case KEY_FULLTEXT_JOBID:
+        case KEY_PATH_INTERNAL:
             return null;
         }
         throw new QueryParseException("No such property: " + name);
     }
 
-    public static boolean isArray(String name) {
-        switch (name) {
-        case KEY_MIXIN_TYPES:
-        case KEY_ANCESTOR_IDS:
-        case KEY_PROXY_IDS:
-            return true;
-        }
-        return false;
+    public static boolean isBoolean(String name) {
+        return getType(name) instanceof BooleanType;
     }
 
-    public static boolean isBoolean(String name) {
+    protected static final Type STRING_ARRAY_TYPE = new ListTypeImpl("", "", StringType.INSTANCE);
+
+    public static Type getType(String name) {
         switch (name) {
         case KEY_IS_VERSION:
         case KEY_IS_CHECKED_IN:
         case KEY_IS_LATEST_VERSION:
         case KEY_IS_LATEST_MAJOR_VERSION:
         case KEY_IS_PROXY:
-            return true;
+        case KEY_ACE_GRANT:
+            return BooleanType.INSTANCE;
+        case KEY_VERSION_CREATED:
+        case KEY_LOCK_CREATED:
+        case KEY_ACE_BEGIN:
+        case KEY_ACE_END:
+            return DateType.INSTANCE;
+        case KEY_MIXIN_TYPES:
+        case KEY_ANCESTOR_IDS:
+        case KEY_PROXY_IDS:
+            return STRING_ARRAY_TYPE;
         }
-        return false;
+        return null;
     }
 
     @Override
