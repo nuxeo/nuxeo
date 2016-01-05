@@ -90,10 +90,9 @@ nuxeo.documentsImport = (function(m) {
         }
         this.cancelCB();
         if (this.batchId) {
-          var targetUrl = this.url + 'batch/drop/' + this.batchId;
+          var targetUrl = this.url + 'upload/' + this.batchId;
           jQuery.ajax({
-            type: 'GET',
-            contentType : 'application/json+nxrequest',
+            type: 'DELETE',
             url: targetUrl,
             timeout: 10000});
         }
