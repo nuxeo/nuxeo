@@ -89,9 +89,6 @@ public class ManagedConnectionImpl implements ManagedConnection, ManagedConnecti
      */
     public ManagedConnectionImpl(ManagedConnectionFactoryImpl managedConnectionFactory) throws ResourceException {
         log.debug("construct: " + this);
-        if (log.isTraceEnabled()) {
-            log.trace("debug stack trace", new Exception());
-        }
         out = managedConnectionFactory.getLogWriter();
         this.managedConnectionFactory = managedConnectionFactory;
         connections = new HashSet<ConnectionImpl>();
@@ -129,9 +126,6 @@ public class ManagedConnectionImpl implements ManagedConnection, ManagedConnecti
     @Override
     public void cleanup() {
         log.debug("cleanup: " + this);
-        if (log.isTraceEnabled()) {
-            log.trace("debug stack trace", new Exception());
-        }
         synchronized (connections) {
             // TODO session.cancel
             connections.clear();
