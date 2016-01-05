@@ -33,21 +33,16 @@ public class TestLRUFileCache {
 
     public File dir;
 
-    public long oldMinAgeMillis;
-
     @Before
     public void setUp() throws Exception {
         dir = File.createTempFile("nxtestlrufilecache.", "");
         dir.delete();
         dir.mkdir();
-        oldMinAgeMillis = LRUFileCache.MIN_AGE_MILLIS;
-        LRUFileCache.MIN_AGE_MILLIS = 1000; // filesystem time often has 1s granularity
         LRUFileCache.CLEAR_OLD_ENTRIES_INTERVAL_MILLIS = 0; // clear immediately
     }
 
     @After
     public void tearDown() throws Exception {
-        LRUFileCache.MIN_AGE_MILLIS = oldMinAgeMillis;
         FileUtils.deleteTree(dir);
     }
 
@@ -61,7 +56,7 @@ public class TestLRUFileCache {
 
     @Test
     public void testLRUFileCache() throws Exception {
-        LRUFileCache cache = new LRUFileCache(dir, 100);
+        LRUFileCache cache = new LRUFileCache(dir, 100, 9999, 1); // 100 bytes max
         assertEquals(0, cache.getSize());
         assertEquals(0, getDirSize());
         assertEquals(0, cache.getNumberOfItems());
@@ -119,6 +114,43 @@ public class TestLRUFileCache {
         assertEquals(0, cache.getNumberOfItems());
         assertEquals(0, cache.getSize());
         assertEquals(0, getDirSize());
+    }
+
+    @Test
+    public void testLRUFileCacheMaxCount() throws Exception {
+        LRUFileCache cache = new LRUFileCache(dir, 10000, 3, 1); // 3 files max
+        assertEquals(0, cache.getNumberOfItems());
+
+        byte[] buf = new byte[30];
+
+        cache.putFile("1", new ByteArrayInputStream(buf));
+        assertEquals(1, cache.getNumberOfItems());
+        assertTrue(new File(dir, "1").exists());
+
+        Thread.sleep(1000);
+        cache.putFile("2", new ByteArrayInputStream(buf));
+        assertEquals(2, cache.getNumberOfItems());
+        assertTrue(new File(dir, "1").exists());
+        assertTrue(new File(dir, "2").exists());
+
+        Thread.sleep(1000);
+        cache.putFile("3", new ByteArrayInputStream(buf));
+        assertEquals(3, cache.getNumberOfItems());
+        assertTrue(new File(dir, "1").exists());
+        assertTrue(new File(dir, "2").exists());
+        assertTrue(new File(dir, "3").exists());
+
+        Thread.sleep(2000);
+        cache.putFile("4", new ByteArrayInputStream(buf));
+        assertEquals(3, cache.getNumberOfItems());
+        assertFalse(new File(dir, "1").exists());
+        assertTrue(new File(dir, "2").exists());
+        assertTrue(new File(dir, "3").exists());
+        assertTrue(new File(dir, "4").exists());
+
+        // clear
+        cache.clear();
+        assertEquals(0, cache.getNumberOfItems());
     }
 
 }

@@ -72,31 +72,52 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
      *
      * @param dir the directory to use to store cached files
      * @param maxSize the maximum size of the cache (in bytes)
+     * @param maxCount the maximum number of files in the cache
+     * @param minAge the minimum age of a file in the cache to be eligible for removal (in seconds)
      * @param fileStorage the file storage mechanism to use to store and fetch files
      * @since 5.9.2
      */
-    public void initializeCache(File dir, long maxSize, @SuppressWarnings("hiding") FileStorage fileStorage) {
-        fileCache = new LRUFileCache(dir, maxSize);
+    protected void initializeCache(File dir, long maxSize, long maxCount, long minAge, FileStorage fileStorage) {
+        fileCache = new LRUFileCache(dir, maxSize, maxCount, minAge);
         this.fileStorage = fileStorage;
     }
 
     /**
      * Initialize the cache.
      *
-     * @param cacheSizeStr the maximum size of the cache (as a String)
+     * @param maxSizeStr the maximum size of the cache (as a String)
      * @param fileStorage the file storage mechanism to use to store and fetch files
+     * @see #initializeCache(String, String, String, FileStorage)
      * @since 6.0
-     * @see #initializeCache(File, long, FileStorage)
-     * @see SizeUtils#parseSizeInBytes(String)
      */
-    public void initializeCache(String cacheSizeStr, @SuppressWarnings("hiding") FileStorage fileStorage)
+    public void initializeCache(String maxSizeStr, FileStorage fileStorage)
+            throws IOException {
+        String maxCountStr = "10000"; // default for legacy code
+        String minAgeStr = "3600"; // default for legacy code
+        initializeCache(maxSizeStr, maxCountStr, minAgeStr, fileStorage);
+    }
+
+    /**
+     * Initializes the cache.
+     *
+     * @param maxSizeStr the maximum size of the cache (as a String)
+     * @param maxCountStr the maximum number of files in the cache
+     * @param minAgeStr the minimum age of a file in the cache to be eligible for removal (in seconds)
+     * @param fileStorage the file storage mechanism to use to store and fetch files
+     * @see SizeUtils#parseSizeInBytes(String)
+     * @since 7.10-HF03, 8.1
+     */
+    public void initializeCache(String maxSizeStr, String maxCountStr, String minAgeStr, FileStorage fileStorage)
             throws IOException {
         cachedir = File.createTempFile("nxbincache.", "", null);
         cachedir.delete();
         cachedir.mkdir();
-        long cacheSize = SizeUtils.parseSizeInBytes(cacheSizeStr);
-        initializeCache(cachedir, cacheSize, fileStorage);
-        log.info("Using binary cache directory: " + cachedir.getPath() + " size: " + cacheSizeStr);
+        long maxSize = SizeUtils.parseSizeInBytes(maxSizeStr);
+        long maxCount = Long.parseLong(maxCountStr);
+        long minAge = Long.parseLong(minAgeStr);
+        initializeCache(cachedir, maxSize, maxCount, minAge, fileStorage);
+        log.info("Using binary cache directory: " + cachedir.getPath() + " size: " + maxSizeStr + " maxCount: "
+                + maxCount + " minAge: " + minAge);
 
         // be sure FileTracker won't steal our files !
         FileEventTracker.registerProtectedPath(cachedir.getAbsolutePath());
