@@ -78,9 +78,17 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
     protected int directDownloadExpire;
 
-    public static final String CACHE_PROPERTY = "cache";
+    public static final String CACHE_SIZE_PROPERTY = "cachesize";
+
+    public static final String CACHE_COUNT_PROPERTY = "cachecount";
+
+    public static final String CACHE_MIN_AGE_PROPERTY = "cacheminage";
 
     public static final String DEFAULT_CACHE_SIZE = "100 mb";
+
+    public static final String DEFAULT_CACHE_COUNT = "10000";
+
+    public static final String DEFAULT_CACHE_MIN_AGE = "3600"; // 1h
 
     public static final String DIRECTDOWNLOAD_PROPERTY = "directdownload";
 
@@ -106,8 +114,10 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         setupCloudClient();
 
         // Set cache size
-        String cacheSizeStr = getProperty(CACHE_PROPERTY, DEFAULT_CACHE_SIZE);
-        initializeCache(cacheSizeStr, getFileStorage());
+        String cacheSizeStr = getProperty(CACHE_SIZE_PROPERTY, DEFAULT_CACHE_SIZE);
+        String cacheCountStr = getProperty(CACHE_COUNT_PROPERTY, DEFAULT_CACHE_COUNT);
+        String minAgeStr = getProperty(CACHE_MIN_AGE_PROPERTY, DEFAULT_CACHE_MIN_AGE);
+        initializeCache(cacheSizeStr, cacheCountStr, minAgeStr, getFileStorage());
 
         garbageCollector = instantiateGarbageCollector();
     }

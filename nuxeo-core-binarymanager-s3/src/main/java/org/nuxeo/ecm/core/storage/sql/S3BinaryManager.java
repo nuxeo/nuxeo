@@ -119,8 +119,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String AWS_SECRET_ENV = "AWS_SECRET_ACCESS_KEY";
 
-    public static final String CACHE_SIZE_PROPERTY = "cachesize";
-
     /** AWS ClientConfiguration default 50 */
     public static final String CONNECTION_MAX_PROPERTY = "connection.max";
 
