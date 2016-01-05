@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileChoice;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileInfo;
@@ -60,8 +61,6 @@ import com.dropbox.core.DbxException;
  * @since 7.3
  */
 public class DropboxBlobUploader implements JSFBlobUploader {
-
-    private static final Log log = LogFactory.getLog(DropboxBlobUploader.class);
 
     public static final String UPLOAD_DROPBOX_FACET_NAME = "uploadDropbox";
 
@@ -207,8 +206,8 @@ public class DropboxBlobUploader implements JSFBlobUploader {
             return;
         }
 
-        string = String.format("%s:%s", serviceUserId, filePath);
-        Blob blob = createBlob(string);
+        LiveConnectFileInfo fileInfo = new LiveConnectFileInfo(serviceUserId, filePath);
+        Blob blob = createBlob(fileInfo);
         submitted.setBlob(blob);
         submitted.setFilename(blob.getFilename());
         submitted.setMimeType(blob.getMimeType());
@@ -230,9 +229,9 @@ public class DropboxBlobUploader implements JSFBlobUploader {
      * @param fileInfo the Dropbox file info
      * @return the blob
      */
-    protected Blob createBlob(String fileInfo) {
+    protected Blob createBlob(LiveConnectFileInfo fileInfo) {
         try {
-            return getDropboxBlobProvider().getBlob(fileInfo);
+            return getDropboxBlobProvider().toBlob(fileInfo);
         } catch (IOException e) {
             throw new RuntimeException(e); // TODO better feedback
         }
