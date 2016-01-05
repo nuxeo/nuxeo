@@ -57,9 +57,6 @@ public class LRUFileCache implements FileCache {
     private static final String TMP_SUFFIX = ".tmp";
 
     // not final for tests
-    public static long MIN_AGE_MILLIS = 3600 * 1000; // 1h
-
-    // not final for tests
     public static long CLEAR_OLD_ENTRIES_INTERVAL_MILLIS = 5000; // 5 s
 
     protected static class PathInfo implements Comparable<PathInfo> {
@@ -86,6 +83,10 @@ public class LRUFileCache implements FileCache {
 
     protected final long maxSize;
 
+    protected final long maxCount;
+
+    protected final long minAgeMillis;
+
     protected Lock clearOldEntriesLock = new ReentrantLock();
 
     protected long clearOldEntriesLast;
@@ -95,10 +96,14 @@ public class LRUFileCache implements FileCache {
      *
      * @param dir the directory to use to store cached files
      * @param maxSize the maximum size of the cache (in bytes)
+     * @param maxCount the maximum number of files in the cache
+     * @param minAge the minimum age of a file in the cache to be eligible for removal (in seconds)
      */
-    public LRUFileCache(File dir, long maxSize) {
+    public LRUFileCache(File dir, long maxSize, long maxCount, long minAge) {
         this.dir = dir.toPath();
         this.maxSize = maxSize;
+        this.maxCount = maxCount;
+        this.minAgeMillis = minAge * 1000;
     }
 
     /**
@@ -196,16 +201,19 @@ public class LRUFileCache implements FileCache {
         Collections.sort(files); // sort by most recent first
 
         long size = 0;
-        long threshold = System.currentTimeMillis() - MIN_AGE_MILLIS;
+        long count = 0;
+        long threshold = System.currentTimeMillis() - minAgeMillis;
         for (PathInfo pi : files) {
             size += pi.size;
+            count++;
             if (pi.time < threshold) {
                 // old enough to be candidate
-                if (size > maxSize) {
+                if (size > maxSize || count > maxCount) {
                     // delete file
                     try {
                         Files.delete(pi.path);
                         size -= pi.size;
+                        count--;
                     } catch (IOException e) {
                         log.error(e, e);
                     }
