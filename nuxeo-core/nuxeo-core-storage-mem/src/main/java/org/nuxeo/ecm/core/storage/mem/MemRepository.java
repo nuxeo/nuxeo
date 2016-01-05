@@ -30,9 +30,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
@@ -48,19 +48,16 @@ import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
-import org.nuxeo.ecm.core.query.sql.model.SelectClause;
+import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
-import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
-import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator.OrderByComparator;
-import org.nuxeo.runtime.api.Framework;
-
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
+import org.nuxeo.ecm.core.storage.dbs.DBSSession.OrderByComparator;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * In-memory implementation of a {@link Repository}.
@@ -114,7 +111,7 @@ public class MemRepository extends DBSRepositoryBase {
         State state = states.get(id);
         if (state != null) {
             if (log.isTraceEnabled()) {
-                log.trace("read   " + id + ": " + state);
+                log.trace("Mem: READ  " + id + ": " + state);
             }
         }
         return state;
@@ -133,7 +130,7 @@ public class MemRepository extends DBSRepositoryBase {
     public void createState(State state) {
         String id = (String) state.get(KEY_ID);
         if (log.isTraceEnabled()) {
-            log.trace("create " + id + ": " + state);
+            log.trace("Mem: CREATE " + id + ": " + state);
         }
         if (states.containsKey(id)) {
             throw new NuxeoException("Already exists: " + id);
@@ -146,7 +143,7 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public void updateState(String id, StateDiff diff) {
         if (log.isTraceEnabled()) {
-            log.trace("update " + id + ": " + diff);
+            log.trace("Mem: UPDATE " + id + ": " + diff);
         }
         State state = states.get(id);
         if (state == null) {
@@ -158,7 +155,7 @@ public class MemRepository extends DBSRepositoryBase {
     @Override
     public void deleteStates(Set<String> ids) {
         if (log.isTraceEnabled()) {
-            log.trace("delete " + ids);
+            log.trace("Mem: REMOVE " + ids);
         }
         for (String id : ids) {
             if (states.remove(id) == null) {
@@ -192,6 +189,9 @@ public class MemRepository extends DBSRepositoryBase {
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
+        if (log.isTraceEnabled()) {
+            log.trace("Mem: QUERY " + key + " = " + value);
+        }
         List<State> list = new ArrayList<>();
         for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
@@ -203,11 +203,17 @@ public class MemRepository extends DBSRepositoryBase {
             }
             list.add(state);
         }
+        if (log.isTraceEnabled() && !list.isEmpty()) {
+            log.trace("Mem:    -> " + list.size());
+        }
         return list;
     }
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
+        if (log.isTraceEnabled()) {
+            log.trace("Mem: QUERY " + key1 + " = " + value1 + " AND " + key2 + " = " + value2);
+        }
         List<State> list = new ArrayList<>();
         for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
@@ -219,12 +225,18 @@ public class MemRepository extends DBSRepositoryBase {
             }
             list.add(state);
         }
+        if (log.isTraceEnabled() && !list.isEmpty()) {
+            log.trace("Mem:    -> " + list.size());
+        }
         return list;
     }
 
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
+        if (log.isTraceEnabled()) {
+            log.trace("Mem: QUERY " + key + " = " + value);
+        }
         STATE: for (State state : states.values()) {
             Object[] array = (Object[]) state.get(key);
             String id = (String) state.get(KEY_ID);
@@ -247,41 +259,62 @@ public class MemRepository extends DBSRepositoryBase {
                 }
             }
         }
+        if (log.isTraceEnabled() && !ids.isEmpty()) {
+            log.trace("Mem:    -> " + ids.size());
+        }
     }
 
     @Override
     public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
+        if (log.isTraceEnabled()) {
+            log.trace("Mem: QUERY " + key + " = " + value);
+        }
         for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
             if (ignored.contains(id)) {
                 continue;
             }
             if (value.equals(state.get(key))) {
+                if (log.isTraceEnabled()) {
+                    log.trace("Mem:    -> present");
+                }
                 return true;
             }
+        }
+        if (log.isTraceEnabled()) {
+            log.trace("Mem:    -> absent");
         }
         return false;
     }
 
     @Override
-    public PartialList<State> queryAndFetch(Expression expression, SelectClause selectClause, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, DBSExpressionEvaluator evaluator, boolean deepCopy) {
-        // TODO projection
-        List<State> maps = new ArrayList<>();
+    public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
+            OrderByClause orderByClause, int limit, int offset, int countUpTo) {
+        if (log.isTraceEnabled()) {
+            log.trace("Mem: QUERY " + evaluator + " OFFSET " + offset + " LIMIT " + limit);
+        }
+        evaluator.parse();
+        boolean wildcardProjection = evaluator.hasWildcardProjection();
+        List<Map<String, Serializable>> projections = new ArrayList<>();
         for (State state : states.values()) {
-            if (evaluator.matches(state)) {
-                if (deepCopy) {
-                    state = StateHelper.deepCopy(state);
+            List<Map<String, Serializable>> matches = evaluator.matches(state);
+            if (!matches.isEmpty()) {
+                if (wildcardProjection) {
+                    // all projections are relevant
+                    projections.addAll(matches);
+                } else {
+                    // no wildcard in projection, all projections are identical, keep the first
+                    projections.add(matches.get(0));
                 }
-                maps.add(state);
             }
         }
         // ORDER BY
+        // orderByClause may be null and different from evaluator.getOrderByClause() in case we want to post-filter
         if (orderByClause != null) {
-            Collections.sort(maps, new OrderByComparator(orderByClause, evaluator));
+            Collections.sort(projections, new OrderByComparator(orderByClause));
         }
         // LIMIT / OFFSET
-        int totalSize = maps.size();
+        int totalSize = projections.size();
         if (countUpTo == -1) {
             // count full size
         } else if (countUpTo == 0) {
@@ -294,16 +327,19 @@ public class MemRepository extends DBSRepositoryBase {
             }
         }
         if (limit != 0) {
-            int size = maps.size();
-            maps.subList(0, offset > size ? size : offset).clear();
-            size = maps.size();
+            int size = projections.size();
+            projections.subList(0, offset > size ? size : offset).clear();
+            size = projections.size();
             if (limit < size) {
-                maps.subList(limit, size).clear();
+                projections.subList(limit, size).clear();
             }
         }
         // TODO DISTINCT
 
-        return new PartialList<>(maps, totalSize);
+        if (log.isTraceEnabled() && !projections.isEmpty()) {
+            log.trace("Mem:    -> " + projections.size());
+        }
+        return new PartialList<>(projections, totalSize);
     }
 
     /**

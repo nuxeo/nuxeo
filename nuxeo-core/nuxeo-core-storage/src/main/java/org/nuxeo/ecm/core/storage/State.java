@@ -66,8 +66,8 @@ public class State implements StateAccessor, Serializable {
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     /** Initial key order for the {@link #toString} method. */
-    private static final Set<String> TO_STRING_KEY_ORDER = new LinkedHashSet<>(Arrays.asList(new String[] { "ecm:id",
-            "ecm:primaryType", "ecm:name", "ecm:parentId", "ecm:isVersion", "ecm:isProxy" }));
+    private static final Set<String> TO_STRING_KEY_ORDER = new LinkedHashSet<>(Arrays.asList(
+            new String[] { "ecm:id", "ecm:primaryType", "ecm:name", "ecm:parentId", "ecm:isVersion", "ecm:isProxy" }));
 
     /**
      * A diff for a {@link State}.
@@ -146,7 +146,6 @@ public class State implements StateAccessor, Serializable {
                     + (diff == null ? "" : ", DIFF " + diff) + (rpush == null ? "" : ", RPUSH " + rpush) + ')';
         }
     }
-
 
     // if map != null then use it
     protected Map<String, Serializable> map;
@@ -614,6 +613,11 @@ public class State implements StateAccessor, Serializable {
     @Override
     public void setArray(String name, Object[] value) {
         put(name, value);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return StateHelper.equalsStrict(this, other);
     }
 
 }

@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/ComplexSchema"
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/ComplexSchema">
+
+  <!-- list of addresses -->
+  <xs:element name="addresses" type="nxs:addresses" />
+
+  <!-- list of friend names and for each the list of their addresses -->
+  <xs:element name="friends" type="nxs:friends" />
+
+  <xs:complexType name="addresses">
+    <xs:sequence>
+      <xs:element name="address" type="nxs:address" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="address">
+    <xs:sequence>
+      <xs:element name="number" type="xs:integer" />
+      <xs:element name="street" type="xs:string" />
+      <xs:element name="city" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="friends">
+    <xs:sequence>
+      <xs:element name="friend" type="nxs:friend" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="friend">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="address" type="nxs:address" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

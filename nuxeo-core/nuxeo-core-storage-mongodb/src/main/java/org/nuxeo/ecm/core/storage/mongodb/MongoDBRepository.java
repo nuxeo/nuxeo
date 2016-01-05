@@ -29,6 +29,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PREFIX;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +73,7 @@ import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
+import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
@@ -691,10 +694,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public PartialList<State> queryAndFetch(Expression expression, SelectClause selectClause, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo, DBSExpressionEvaluator evaluator, boolean deepCopy) {
-        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(expression, selectClause, orderByClause,
-                evaluator.pathResolver);
+    public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
+            OrderByClause orderByClause, int limit, int offset, int countUpTo) {
+        // orderByClause may be null and different from evaluator.getOrderByClause() in case we want to post-filter
+        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(evaluator.getExpression(), evaluator.getSelectClause(),
+                orderByClause, evaluator.pathResolver);
         builder.walk();
         if (builder.hasFulltext && fulltextDisabled) {
             throw new RuntimeException("Fulltext disabled by configuration");
@@ -708,21 +712,21 @@ public class MongoDBRepository extends DBSRepositoryBase {
             logQuery(query, keys, orderBy, limit, offset);
         }
 
-        List<State> list;
+        List<State> states;
         long totalSize;
         DBCursor cursor = coll.find(query, keys).skip(offset).limit(limit);
         try {
             if (orderBy != null) {
-                cursor = cursor.sort(orderBy);
+                cursor.sort(orderBy);
             }
-            list = new ArrayList<>();
+            states = new ArrayList<>();
             for (DBObject ob : cursor) {
-                list.add(bsonToState(ob));
+                states.add(bsonToState(ob));
             }
             if (countUpTo == -1) {
                 // count full size
                 if (limit == 0) {
-                    totalSize = list.size();
+                    totalSize = states.size();
                 } else {
                     totalSize = cursor.count();
                 }
@@ -732,7 +736,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             } else {
                 // count only if less than countUpTo
                 if (limit == 0) {
-                    totalSize = list.size();
+                    totalSize = states.size();
                 } else {
                     totalSize = cursor.copy().limit(countUpTo + 1).count();
                 }
@@ -743,16 +747,70 @@ public class MongoDBRepository extends DBSRepositoryBase {
         } finally {
             cursor.close();
         }
-        if (log.isTraceEnabled() && list.size() != 0) {
-            log.trace("MongoDB:    -> " + list.size());
+        if (log.isTraceEnabled() && states.size() != 0) {
+            log.trace("MongoDB:    -> " + states.size());
         }
-        return new PartialList<>(list, totalSize);
+        return new PartialList<>(flatten(states), totalSize);
     }
 
     protected void addPrincipals(DBObject query, Set<String> principals) {
         if (principals != null) {
             DBObject inPrincipals = new BasicDBObject(QueryOperators.IN, new ArrayList<String>(principals));
             query.put(DBSDocument.KEY_READ_ACL, inPrincipals);
+        }
+    }
+
+    /**
+     * Flatten and convert from internal names to NXQL.
+     */
+    protected List<Map<String, Serializable>> flatten(List<State> states) {
+        List<Map<String, Serializable>> flatList = new ArrayList<>(states.size());
+        for (State state : states) {
+            Map<String, Serializable> map = new HashMap<>();
+            flatten(map, state, null);
+            flatList.add(map);
+        }
+        return flatList;
+    }
+
+    protected void flatten(Map<String, Serializable> map, State state, String prefix) {
+        for (Entry<String, Serializable> en : state.entrySet()) {
+            String key = en.getKey();
+            Serializable value = en.getValue();
+            String name;
+            if (key.startsWith(KEY_PREFIX)) {
+                name = DBSSession.convToNXQL(key);
+                if (name == null) {
+                    // present in state but not returned to caller
+                    continue;
+                }
+            } else {
+                name = key;
+            }
+            name = prefix == null ? name : prefix + name;
+            if (value instanceof State) {
+                flatten(map, (State) value, name + '/');
+            } else if (value instanceof List) {
+                String nameSlash = name + '/';
+                int i = 0;
+                for (Object v : (List<?>) value) {
+                    if (v instanceof State) {
+                        flatten(map, (State) v, nameSlash + i + '/');
+                    } else {
+                        map.put(nameSlash + i, (Serializable) v);
+                    }
+                    i++;
+                }
+            } else if (value instanceof Object[]) {
+                String nameSlash = name + '/';
+                int i = 0;
+                for (Object v : (Object[]) value) {
+                    map.put(nameSlash + i, (Serializable) v);
+                    i++;
+                }
+            } else {
+                map.put(name, value);
+            }
         }
     }
 
