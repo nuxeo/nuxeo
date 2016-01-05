@@ -579,14 +579,14 @@ public class BatchUploadFixture extends BaseTest {
      * @since 7.4
      */
     @Test
-    public void testDropBatch() throws IOException {
+    public void testCancelBatch() throws IOException {
 
         // Init batch
         ClientResponse response = getResponse(RequestType.POST, "upload");
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         String batchId = node.get("batchId").getValueAsText();
 
-        // Drop batch
+        // Cancel batch
         response = getResponse(RequestType.DELETE, "upload/" + batchId);
         assertEquals(Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
@@ -616,7 +616,7 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals(Status.NOT_FOUND.getStatusCode(),
                 getResponse(RequestType.GET, "upload/" + batchId + "/0").getStatus());
 
-        // Drop batch
+        // Cancel batch
         assertEquals(Status.NOT_FOUND.getStatusCode(),
                 getResponse(RequestType.DELETE, "upload/fakeBatchId").getStatus());
     }
