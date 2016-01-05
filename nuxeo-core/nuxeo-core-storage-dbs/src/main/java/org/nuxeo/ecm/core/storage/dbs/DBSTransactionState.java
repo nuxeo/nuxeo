@@ -355,6 +355,7 @@ public class DBSTransactionState {
         DBSDocumentState copyState = new DBSDocumentState(getStateForRead(id));
         String copyId = repository.generateNewId();
         copyState.put(KEY_ID, copyId);
+        copyState.put(KEY_PROXY_IDS, null); // no proxies to this new doc
         // other fields updated by the caller
         transientStates.put(copyId, copyState);
         transientCreated.add(copyId);
@@ -649,7 +650,6 @@ public class DBSTransactionState {
     protected void updateProxy(DBSDocumentState target, String proxyId) {
         DBSDocumentState proxy = getStateForUpdate(proxyId);
         if (proxy == null) {
-            rollback(); // XXX
             throw new ConcurrentUpdateException("Proxy " + proxyId + " concurrently deleted");
         }
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
