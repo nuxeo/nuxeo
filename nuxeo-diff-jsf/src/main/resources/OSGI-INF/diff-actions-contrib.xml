@@ -9,6 +9,7 @@
       link="#{diffActions.prepareCurrentDocumentSelectionDiff}" label="command.clipboard.diff"
       order="100">
       <category>CURRENT_SELECTION_LIST</category>
+      <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter-id>canDiffCurrentDocumentSelection</filter-id>
     </action>
 
