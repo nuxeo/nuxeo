@@ -335,8 +335,11 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
     protected Response buildResponse(StatusType status, String type, String message)
             throws UnsupportedEncodingException {
-        return Response.status(status).header("Content-Length", message.getBytes("UTF-8").length).type(
-                type + "; charset=UTF-8").entity(message).build();
+        return Response.status(status)
+                       .header("Content-Length", message.getBytes("UTF-8").length)
+                       .type(type + "; charset=UTF-8")
+                       .entity(message)
+                       .build();
     }
 
     protected Map<String, Object> getFileInfo(BatchFileEntry fileEntry) throws UnsupportedEncodingException {
