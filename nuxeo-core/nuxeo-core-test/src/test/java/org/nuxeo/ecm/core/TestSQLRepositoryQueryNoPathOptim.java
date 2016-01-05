@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -83,6 +84,8 @@ public class TestSQLRepositoryQueryNoPathOptim {
         // about repository configuration aren't ready yet
         runtimeHarness.deployContrib("org.nuxeo.ecm.core.test.tests",
                 "OSGI-INF/test-repo-no-pathoptimizations-contrib.xml");
+        // assume after deploy so that tearDown can undeploy
+        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
         newRepository(); // fully reread repo
         RepositoryDescriptor desc = sqlRepositoryService.getRepositoryDescriptor(session.getRepositoryName());
         assertFalse("Path optim should be disabled", desc.getPathOptimizationsEnabled());

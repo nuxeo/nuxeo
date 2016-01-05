@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,6 +63,11 @@ public class TestSQLRepositoryReadAcls {
 
     @Inject
     protected CoreSession session;
+
+    @Before
+    public void setUp() {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
+    }
 
     protected void waitForAsyncCompletion() {
         nextTransaction();

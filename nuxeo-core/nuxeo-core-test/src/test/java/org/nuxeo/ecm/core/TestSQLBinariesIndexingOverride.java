@@ -75,6 +75,7 @@ public class TestSQLBinariesIndexingOverride {
 
     @Before
     public void setUp() throws Exception {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
         // SQL Server fulltext indexes can't easily be updated by Nuxeo
         assumeTrue(!coreFeature.getStorageConfiguration().isVCSSQLServer());
 

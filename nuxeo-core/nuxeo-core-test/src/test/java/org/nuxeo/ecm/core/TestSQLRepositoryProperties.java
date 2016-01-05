@@ -590,6 +590,8 @@ public class TestSQLRepositoryProperties {
 
     @Test
     public void testComplexPropertySchemaUpdate() throws Exception {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
+
         // create a doc
         doc.setPropertyValue("tp:complex/string", "test");
         doc = session.saveDocument(doc);

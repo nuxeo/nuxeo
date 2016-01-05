@@ -53,6 +53,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestVersioningService {
 
     @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     protected VersioningService service;
 
     @Inject
@@ -60,6 +63,10 @@ public class TestVersioningService {
 
     @Inject
     protected CoreSession session;
+
+    protected void maybeSleepToNextSecond() {
+        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
+    }
 
     protected void waitForAsyncCompletion() {
         nextTransaction();
@@ -132,6 +139,7 @@ public class TestVersioningService {
         // change and save with new minor
         doc.setPropertyValue("dc:title", "C");
         doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+        maybeSleepToNextSecond();
         doc = session.saveDocument(doc);
         assertFalse(doc.isCheckedOut());
         assertVersion("0.1", doc);
@@ -150,6 +158,7 @@ public class TestVersioningService {
         // change and save with new major
         doc.setPropertyValue("dc:title", "D");
         doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
+        maybeSleepToNextSecond();
         doc = session.saveDocument(doc);
         assertFalse(doc.isCheckedOut());
         assertVersion("1.0", doc);
@@ -167,6 +176,7 @@ public class TestVersioningService {
         assertLatestVersion("1.0", doc);
 
         // checkin
+        maybeSleepToNextSecond();
         DocumentRef v11ref = doc.checkIn(VersioningOption.MINOR, "foo");
         assertFalse(doc.isCheckedOut());
         assertVersion("1.1", doc);
@@ -194,6 +204,7 @@ public class TestVersioningService {
         assertLatestVersion("1.1", doc);
 
         // publish (checks in first)
+        maybeSleepToNextSecond();
         DocumentModel proxy = session.publishDocument(doc, folder);
         assertFalse(doc.isCheckedOut());
         assertVersion("1.2", doc);
@@ -212,6 +223,7 @@ public class TestVersioningService {
         // do a change (autocheckout), and republish
         doc.setPropertyValue("dc:title", "F");
         session.saveDocument(doc);
+        maybeSleepToNextSecond();
         proxy = session.publishDocument(doc, folder);
         assertFalse(doc.isCheckedOut());
         assertVersion("1.3", doc);
@@ -230,6 +242,7 @@ public class TestVersioningService {
         DocumentModel doc = session.createDocumentModel("/", "testfile1", "File");
         doc = session.createDocument(doc);
         doc.setPropertyValue("dc:title", "A");
+        maybeSleepToNextSecond();
         doc = session.saveDocument(doc);
         DocumentRef docRef = doc.getRef();
         assertTrue(doc.isCheckedOut());
@@ -239,6 +252,7 @@ public class TestVersioningService {
         // snapshot A=1.0 and save B
         doc.setPropertyValue("dc:title", "B");
         doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+        maybeSleepToNextSecond();
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertVersion("1.1", doc);
@@ -246,6 +260,7 @@ public class TestVersioningService {
 
         // another snapshot for B=1.1, using major inc
         doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
+        maybeSleepToNextSecond();
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertVersion("2.0", doc);
@@ -263,8 +278,10 @@ public class TestVersioningService {
 
         // now dirty doc and snapshot+inc
         doc.setPropertyValue("dc:title", "C");
+        maybeSleepToNextSecond();
         doc = session.saveDocument(doc);
         doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+        maybeSleepToNextSecond();
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertVersion("2.1", doc);
@@ -273,12 +290,14 @@ public class TestVersioningService {
         // another save+inc, no snapshot
         doc.setPropertyValue("dc:title", "D");
         doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
+        maybeSleepToNextSecond();
         doc = session.saveDocument(doc);
         assertTrue(doc.isCheckedOut());
         assertVersion("3.0", doc);
         assertLatestVersion("2.1", doc);
 
         // checkin/checkout (old style)
+        maybeSleepToNextSecond();
         session.checkIn(docRef, null);
         session.checkOut(docRef);
         doc = session.getDocument(docRef);
@@ -291,6 +310,7 @@ public class TestVersioningService {
         waitForAsyncCompletion();
 
         // restore 1.1 -> 3.2 (snapshots 3.1)
+        maybeSleepToNextSecond();
         doc = session.restoreToVersion(docRef, v11.getRef());
         assertFalse(doc.isCheckedOut());
         assertVersion("1.1", doc);
