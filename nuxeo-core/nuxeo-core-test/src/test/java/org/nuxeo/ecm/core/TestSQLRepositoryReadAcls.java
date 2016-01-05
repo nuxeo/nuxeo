@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,10 +49,18 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class TestSQLRepositoryReadAcls {
 
     @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     protected EventService eventService;
 
     @Inject
     protected CoreSession session;
+
+    @Before
+    public void setUp() {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
+    }
 
     protected void waitForAsyncCompletion() {
         nextTransaction();

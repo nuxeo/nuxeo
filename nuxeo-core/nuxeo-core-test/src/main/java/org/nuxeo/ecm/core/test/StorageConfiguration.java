@@ -226,6 +226,13 @@ public class StorageConfiguration {
         } else {
             // DBS
         }
+        // sleep 1 ms nevertheless to have different timestamps
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // restore interrupted status
+            throw new RuntimeException(e);
+        }
     }
 
     /**

@@ -555,6 +555,13 @@ public class DBSSession implements Session {
         DBSDocumentState docState = transaction.getStateForUpdate(docId);
         State versionState = transaction.getStateForRead(versionId);
 
+        // clear all data
+        for (String key : docState.state.keyArray()) {
+            if (!keepWhenRestore(key)) {
+                docState.put(key, null);
+            }
+        }
+        // update from version
         for (Entry<String, Serializable> en : versionState.entrySet()) {
             String key = en.getKey();
             if (!keepWhenRestore(key)) {
@@ -659,6 +666,11 @@ public class DBSSession implements Session {
         }
         copy.put(KEY_BASE_VERSION_ID, null);
         copy.put(KEY_IS_CHECKED_IN, null);
+        if (parentId != null) {
+            // reset version
+            copy.put(KEY_MAJOR_VERSION, null);
+            copy.put(KEY_MINOR_VERSION, null);
+        }
         return copy.getId();
     }
 

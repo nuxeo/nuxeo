@@ -595,26 +595,31 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public boolean isLatestVersion() {
-        if (isProxy() || isVersion()) {
-            return TRUE.equals(docState.get(KEY_IS_LATEST_VERSION));
-        } else {
-            return false;
-        }
+        return isEqualOnVersion(TRUE, KEY_IS_LATEST_VERSION);
     }
 
     @Override
     public boolean isMajorVersion() {
-        if (isProxy() || isVersion()) {
-            return ZERO.equals(docState.get(KEY_MINOR_VERSION));
-        } else {
-            return false;
-        }
+        return isEqualOnVersion(ZERO, KEY_MINOR_VERSION);
     }
 
     @Override
     public boolean isLatestMajorVersion() {
-        if (isProxy() || isVersion()) {
-            return TRUE.equals(docState.get(KEY_IS_LATEST_MAJOR_VERSION));
+        return isEqualOnVersion(TRUE, KEY_IS_LATEST_MAJOR_VERSION);
+    }
+
+    protected boolean isEqualOnVersion(Object ob, String key) {
+        if (isProxy()) {
+            // TODO avoid getting the target just to check if it's a version
+            // use another specific property instead
+            if (getTargetDocument().isVersion()) {
+                return ob.equals(docState.get(key));
+            } else {
+                // if live version, return false
+                return false;
+            }
+        } else if (isVersion()) {
+            return ob.equals(docState.get(key));
         } else {
             return false;
         }
@@ -786,25 +791,37 @@ public class DBSDocument extends BaseDocument<State> {
         case KEY_FULLTEXT_SIMPLE:
         case KEY_FULLTEXT_BINARY:
         case KEY_FULLTEXT_JOBID:
+        case KEY_LIFECYCLE_POLICY:
+        case KEY_LIFECYCLE_STATE:
             return "__ecm__";
         }
-        int p = xpath.indexOf(':');
-        if (p == -1) {
-            throw new PropertyNotFoundException(xpath, "Schema not specified");
-        }
-        String prefix = xpath.substring(0, p);
-        if ("ecm".equals(prefix)) {
-            return "__ecm__";
-        }
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        Schema schema = schemaManager.getSchemaFromPrefix(prefix);
-        if (schema == null) {
-            schema = schemaManager.getSchema(prefix);
-            if (schema == null) {
-                throw new PropertyNotFoundException(xpath, "No schema for prefix");
+        String[] segments = xpath.split("/");
+        String segment = segments[0];
+        Field field = type.getField(segment);
+        if (field == null) {
+            // check facets
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            for (String facet : getFacets()) {
+                CompositeType facetType = schemaManager.getFacet(facet);
+                field = facetType.getField(segment);
+                if (field != null) {
+                    break;
+                }
             }
         }
-        return schema.getName();
+        if (field == null && getProxySchemas() != null) {
+            // check proxy schemas
+            for (Schema schema : getProxySchemas()) {
+                field = schema.getField(segment);
+                if (field != null) {
+                    break;
+                }
+            }
+        }
+        if (field == null) {
+            throw new PropertyNotFoundException(xpath);
+        }
+        return field.getDeclaringType().getName();
     }
 
     @Override

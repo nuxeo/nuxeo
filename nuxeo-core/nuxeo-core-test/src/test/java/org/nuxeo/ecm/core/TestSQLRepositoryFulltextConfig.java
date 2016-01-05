@@ -60,6 +60,7 @@ public class TestSQLRepositoryFulltextConfig {
 
     @Before
     public void setUp() {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
         // MySQL fulltext is funky with respect to what words it finds in small databases
         // so don't bother testing on MySQL, this is mostly a configuration test anyway
         assumeTrue(!coreFeature.getStorageConfiguration().isVCSMySQL());
