@@ -248,7 +248,7 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
 
     @DELETE
     @Path("{batchId}")
-    public Response dropBatch(@PathParam(REQUEST_BATCH_ID) String batchId) throws IOException {
+    public Response cancel(@PathParam(REQUEST_BATCH_ID) String batchId) throws IOException {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         if (!bm.hasBatch(batchId)) {
             return buildEmptyResponse(Status.NOT_FOUND);
