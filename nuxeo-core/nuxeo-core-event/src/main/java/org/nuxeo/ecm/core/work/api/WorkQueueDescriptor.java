@@ -36,7 +36,7 @@ public class WorkQueueDescriptor {
 
     public static final int DEFAULT_MAX_THREADS = 4;
 
-    public static final int DEFAULT_CLEAR_COMPLETED_AFTER_SECONDS = 3600;
+    public static final int DEFAULT_CLEAR_COMPLETED_AFTER_SECONDS = 600;
 
     public static final int DEFAULT_CAPACITY = -1;
 

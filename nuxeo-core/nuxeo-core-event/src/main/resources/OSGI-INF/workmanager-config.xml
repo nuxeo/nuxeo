@@ -11,8 +11,8 @@
     <queue id="default">
       <name>Default queue</name>
       <maxThreads>4</maxThreads>
-      <!-- clear completed work instances older than one hour -->
-      <clearCompletedAfterSeconds>3600</clearCompletedAfterSeconds>
+      <!-- clear completed work instances older than 10 minutes -->
+      <clearCompletedAfterSeconds>600</clearCompletedAfterSeconds>
     </queue>
     <queue id="fulltextUpdater">
       <name>Fulltext updater queue</name>
@@ -22,7 +22,7 @@
       <category>fulltextUpdater</category>
       <!-- clear completed work quickly as it contains (potentially large)
         text data -->
-      <clearCompletedAfterSeconds>600</clearCompletedAfterSeconds>
+      <clearCompletedAfterSeconds>300</clearCompletedAfterSeconds>
     </queue>
   </extension>
 
