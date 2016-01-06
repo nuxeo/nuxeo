@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.runtime.services.event;
@@ -25,8 +24,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.collections.ListenerList;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
@@ -51,9 +52,9 @@ public class EventService extends DefaultComponent {
     // private Executor threadPool = Executors.newCachedThreadPool();
 
     public EventService() {
-        topics = new HashMap<String, ListenerList>();
+        topics = new HashMap<>();
         // pendingEvents = new HashMap<String, Collection<Event>>();
-        contributions = new Hashtable<String, Object[]>();
+        contributions = new Hashtable<>();
     }
 
     @Override
@@ -65,7 +66,7 @@ public class EventService extends DefaultComponent {
     @Override
     public void registerExtension(Extension extension) {
         Object[] descriptors = extension.getContributions();
-        if (descriptors.length == 0) {
+        if (ArrayUtils.isEmpty(descriptors)) {
             return;
         }
         String name = extension.getId();
