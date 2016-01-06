@@ -19,7 +19,7 @@ module.exports = function (grunt) {
         },
         files: {
           '<%= config.target %>/permissions/components/elements.vulcanized.html': [
-            '<%= config.target %>/permissions/components/elements.html'
+            '<%= config.target %>/bower_components/nuxeo-document-permissions/nuxeo-document-permissions.html'
           ]
         },
       },
