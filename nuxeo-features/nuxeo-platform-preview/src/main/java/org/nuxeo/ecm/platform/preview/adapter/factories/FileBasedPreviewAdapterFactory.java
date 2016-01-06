@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.preview.adapter.factories;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterFactory;
 import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdapter;
@@ -29,6 +30,8 @@ import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
  */
 public class FileBasedPreviewAdapterFactory implements PreviewAdapterFactory {
 
+    private static final String FIRST_FILE_IN_FILES_PROPERTY = "files:files/0/file";
+
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
         ConverterBasedHtmlPreviewAdapter adapter = new ConverterBasedHtmlPreviewAdapter();
         adapter.setAdaptedDocument(doc);
@@ -38,7 +41,13 @@ public class FileBasedPreviewAdapterFactory implements PreviewAdapterFactory {
                 adapter.setDefaultPreviewFieldXPath("file:content");
             } else {
                 // Has "files" schema, set xpath to first blob as default
-                adapter.setDefaultPreviewFieldXPath("files:files/0/file");
+                try {
+                    doc.getProperty(FIRST_FILE_IN_FILES_PROPERTY);
+                    adapter.setDefaultPreviewFieldXPath(FIRST_FILE_IN_FILES_PROPERTY);
+                } catch (PropertyException e) {
+                    // the property does not exist for this document, then return null
+                    return null;
+                }
             }
         }
         return adapter;
