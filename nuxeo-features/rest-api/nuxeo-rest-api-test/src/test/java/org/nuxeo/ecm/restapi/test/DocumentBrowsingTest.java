@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -39,6 +40,8 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.collections.api.FavoritesManager;
+import org.nuxeo.ecm.collections.core.io.FavoritesJsonEnricher;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -52,6 +55,7 @@ import org.nuxeo.ecm.platform.preview.io.PreviewJsonEnricher;
 import org.nuxeo.ecm.platform.ui.web.io.ThumbnailJsonEnricher;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.DocumentModelJsonReaderLegacy;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -72,7 +76,7 @@ import com.sun.jersey.api.client.WebResource;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/marshallers-contrib.xml",
         "org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml",
-        "org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml" })
+        "org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml"})
 public class DocumentBrowsingTest extends BaseTest {
 
     @Test
@@ -405,6 +409,38 @@ public class DocumentBrowsingTest extends BaseTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(null,
                 node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get("thumbnail").get("url").getTextValue());
+    }
+
+    /**
+     * @since 8.1
+     */
+    @Test
+    public void iCanGetIsADocumentFavorite() throws Exception {
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", FavoritesJsonEnricher.NAME);
+
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        ClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertFalse(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(FavoritesJsonEnricher.NAME).get(FavoritesJsonEnricher.IS_FAVORITE).getBooleanValue());
+
+        FavoritesManager favoritesManager = Framework.getService(FavoritesManager.class);
+        favoritesManager.addToFavorites(note, session);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        assertTrue(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(FavoritesJsonEnricher.NAME).get(FavoritesJsonEnricher.IS_FAVORITE).getBooleanValue());
     }
 
     @Test
