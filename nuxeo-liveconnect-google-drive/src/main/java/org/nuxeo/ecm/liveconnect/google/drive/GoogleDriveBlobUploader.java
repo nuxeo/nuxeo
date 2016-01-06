@@ -36,7 +36,7 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobProvider.FileInfo;
+import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileChoice;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileInfo;
 import org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploader;
@@ -196,7 +196,7 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
             return;
         }
 
-        Blob blob = createBlob(new FileInfo(user, fileId, null)); // no revisionId
+        Blob blob = toBlob(new LiveConnectFileInfo(user, fileId)); // no revisionId
         submitted.setBlob(blob);
         submitted.setFilename(blob.getFilename());
         submitted.setMimeType(blob.getMimeType());
@@ -218,9 +218,9 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
      * @param fileInfo the Google Drive file info
      * @return the blob
      */
-    protected Blob createBlob(FileInfo fileInfo) {
+    protected Blob toBlob(LiveConnectFileInfo fileInfo) {
         try {
-            return getGoogleDriveBlobProvider().getBlob(fileInfo);
+            return getGoogleDriveBlobProvider().toBlob(fileInfo);
         } catch (IOException e) {
             throw new RuntimeException(e); // TODO better feedback
         }
@@ -259,13 +259,13 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     private boolean hasServiceAccount() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String username = request.getUserPrincipal().getName();
-        GoogleOAuth2ServiceProvider provider = (GoogleOAuth2ServiceProvider) getGoogleDriveBlobProvider().getOAuth2Provider();
+        GoogleOAuth2ServiceProvider provider = getGoogleDriveBlobProvider().getOAuth2Provider();
         return provider != null && provider.getServiceUser(username) != null;
     }
 
     private String getOAuthAuthorizationUrl() {
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        GoogleOAuth2ServiceProvider provider = (GoogleOAuth2ServiceProvider) getGoogleDriveBlobProvider().getOAuth2Provider();
+        GoogleOAuth2ServiceProvider provider = getGoogleDriveBlobProvider().getOAuth2Provider();
         return (provider != null && provider.getClientId() != null) ? provider.getAuthorizationUrl(request) : "";
     }
 }

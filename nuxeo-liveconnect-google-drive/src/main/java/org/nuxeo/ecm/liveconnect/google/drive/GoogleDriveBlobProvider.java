@@ -23,38 +23,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
-import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
-import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.liveconnect.google.drive.credential.CredentialFactory;
-import org.nuxeo.ecm.liveconnect.google.drive.credential.OAuth2CredentialFactory;
+import org.nuxeo.ecm.liveconnect.core.AbstractLiveConnectBlobProvider;
+import org.nuxeo.ecm.liveconnect.core.CredentialFactory;
+import org.nuxeo.ecm.liveconnect.core.LiveConnectFile;
+import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
+import org.nuxeo.ecm.liveconnect.core.OAuth2CredentialFactory;
 import org.nuxeo.ecm.liveconnect.google.drive.credential.ServiceAccountCredentialFactory;
-import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
-import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
-import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -81,34 +75,9 @@ import com.google.api.services.drive.model.RevisionList;
  *
  * @since 7.3
  */
-public class GoogleDriveBlobProvider extends AbstractBlobProvider implements BatchUpdateBlobProvider {
-
-    private static final String GOOGLEDRIVE_DOCUMENT_TO_BE_UPDATED_PP = "googledrive_document_to_be_updated";
+public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<GoogleOAuth2ServiceProvider> {
 
     public static final int PREFERRED_ICON_SIZE = 16;
-
-    private static final Log log = LogFactory.getLog(GoogleDriveBlobProvider.class);
-
-    /**
-     * Information about a file stored in Google Drive.
-     */
-    public static class FileInfo {
-        public final String user;
-
-        public final String fileId;
-
-        public final String revisionId;
-
-        public FileInfo(String user, String fileId, String revisionId) {
-            this.user = user;
-            this.fileId = fileId;
-            this.revisionId = revisionId;
-        }
-    }
-
-    private static final String APPLICATION_NAME = "Nuxeo/0";
-
-    private static final String FILE_CACHE_NAME = "googleDrive";
 
     // Service account details
     public static final String SERVICE_ACCOUNT_ID_PROP = "serviceAccountId";
@@ -131,14 +100,17 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
 
     protected static final ObjectParser JSON_PARSER = new JsonObjectParser(JacksonFactory.getDefaultInstance());
 
+    private static final String GOOGLEDRIVE_DOCUMENT_TO_BE_UPDATED_PP = "googledrive_document_to_be_updated";
+
+    private static final String APPLICATION_NAME = "Nuxeo/0";
+
+    private static final String FILE_CACHE_NAME = "googleDrive";
+
     private String serviceAccountId;
 
     private java.io.File serviceAccountP12File;
 
     private String clientId;
-
-    /** resource cache */
-    private Cache cache;
 
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
@@ -164,22 +136,13 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
     }
 
     @Override
-    public void close() {
+    protected String getCacheName() {
+        return FILE_CACHE_NAME;
     }
 
     @Override
-    public Blob readBlob(BlobInfo blobInfo) {
-        return new SimpleManagedBlob(blobInfo);
-    }
-
-    @Override
-    public boolean supportsUserUpdate() {
-        return supportsUserUpdateDefaultTrue();
-    }
-
-    @Override
-    public String writeBlob(Blob blob, Document doc) {
-        throw new UnsupportedOperationException("Writing a blob to Google Drive is not supported");
+    public String getPageProviderNameForUpdate() {
+        return GOOGLEDRIVE_DOCUMENT_TO_BE_UPDATED_PP;
     }
 
     @Override
@@ -200,7 +163,7 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
             url = getEmbedUrl(blob);
             break;
         }
-        return url == null ? null : asURI(url);
+        return Optional.ofNullable(url).flatMap(this::asURI).orElse(null);
     }
 
     // TODO remove unused hint from signature
@@ -212,7 +175,7 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
         }
         Map<String, URI> conversions = new HashMap<>();
         for (String mimeType : exportLinks.keySet()) {
-            conversions.put(mimeType, asURI(exportLinks.get(mimeType)));
+            conversions.put(mimeType, asURI(exportLinks.get(mimeType)).orElse(null));
         }
         return conversions;
     }
@@ -220,7 +183,7 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
     @Override
     public InputStream getThumbnail(ManagedBlob blob) throws IOException {
         String url = getThumbnailUrl(blob);
-        return getStream(blob, asURI(url));
+        return getStream(blob, asURI(url).orElse(null));
     }
 
     /**
@@ -229,13 +192,13 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
      * Will return {@code null} if this is a native Google document.
      */
     protected String getStreamUrl(ManagedBlob blob) throws IOException {
-        FileInfo fileInfo = getFileInfo(blob);
-        if (fileInfo.revisionId == null) {
-            File file = getFile(fileInfo);
-            return file.getDownloadUrl();
-        } else {
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
+        if (fileInfo.getRevisionId().isPresent()) {
             Revision revision = getRevision(fileInfo);
             return revision != null ? revision.getDownloadUrl() : null;
+        } else {
+            File file = getDriveFile(fileInfo);
+            return file.getDownloadUrl();
         }
     }
 
@@ -243,16 +206,9 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
      * Gets the URL to which we can redirect to let the user download the file.
      */
     protected String getDownloadUrl(ManagedBlob blob) throws IOException {
-        FileInfo fileInfo = getFileInfo(blob);
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
         String url = null;
-        if (fileInfo.revisionId == null) {
-            File file = getFile(fileInfo);
-            url = file.getWebContentLink();
-            if (url == null) {
-                // native Google document
-                url = file.getAlternateLink();
-            }
-        } else {
+        if (fileInfo.getRevisionId().isPresent()) {
             Revision revision = getRevision(fileInfo);
             if (revision != null) {
                 url = revision.getDownloadUrl();
@@ -264,15 +220,22 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
                     url = url.substring(0, url.length() - "&gd=true".length());
                 }
             }
+        } else {
+            File file = getDriveFile(fileInfo);
+            url = file.getWebContentLink();
+            if (url == null) {
+                // native Google document
+                url = file.getAlternateLink();
+            }
         }
         return url;
     }
 
     // TODO remove
     protected String getAlternateUrl(ManagedBlob blob) throws IOException {
-        FileInfo fileInfo = getFileInfo(blob);
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
         // ignore revisionId
-        File file = getFile(fileInfo);
+        File file = getDriveFile(fileInfo);
         return file.getAlternateLink();
     }
 
@@ -280,14 +243,14 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
      * Gets the URL to which we can redirect to let the user see a preview of the file.
      */
     protected String getEmbedUrl(ManagedBlob blob) throws IOException {
-        FileInfo fileInfo = getFileInfo(blob);
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
         // ignore revisionId
-        File file = getFile(fileInfo);
+        File file = getDriveFile(fileInfo);
         String url = file.getEmbedLink();
         if (url == null) {
             // uploaded file, switch to preview
             url = file.getAlternateLink();
-            url = asURI(url).resolve("./preview").toString();
+            url = asURI(url).get().resolve("./preview").toString();
         }
         return url;
     }
@@ -296,9 +259,9 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
      * Gets the URL from which we can stream a thumbnail.
      */
     protected String getThumbnailUrl(ManagedBlob blob) throws IOException {
-        FileInfo fileInfo = getFileInfo(blob);
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
         // ignore revisionId
-        File file = getFile(fileInfo);
+        File file = getDriveFile(fileInfo);
         return file.getThumbnailLink();
     }
 
@@ -306,14 +269,14 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
      * Gets the export link.
      */
     protected Map<String, String> getExportLinks(ManagedBlob blob) throws IOException {
-        FileInfo fileInfo = getFileInfo(blob);
-        if (fileInfo.revisionId == null) {
-            File file = getFile(fileInfo);
-            return file.getExportLinks();
-        } else {
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
+        if (fileInfo.getRevisionId().isPresent()) {
             Revision revision = getRevision(fileInfo);
             return revision != null && TRUE.equals(revision.getPinned()) ?
-                revision.getExportLinks() : Collections.emptyMap();
+                    revision.getExportLinks() : Collections.emptyMap();
+        } else {
+            File file = getDriveFile(fileInfo);
+            return file.getExportLinks();
         }
     }
 
@@ -339,18 +302,18 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
     }
 
     protected InputStream getStream(ManagedBlob blob, URI uri) throws IOException {
-        FileInfo fileInfo = getFileInfo(blob);
-        return doGet(fileInfo.user, uri);
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
+        return doGet(fileInfo, uri);
     }
 
     @Override
     public List<AppLink> getAppLinks(String username, ManagedBlob blob) throws IOException {
         List<AppLink> appLinks = new ArrayList<>();
 
-        FileInfo fileInfo = getFileInfo(blob);
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
 
         // application links do not work with revisions
-        if (fileInfo.revisionId != null) {
+        if (fileInfo.getRevisionId().isPresent()) {
             return appLinks;
         }
 
@@ -358,7 +321,7 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
         String user = getServiceUser(username);
 
         // fetch a partial file response
-        File file = getPartialFile(user, fileInfo.fileId, "openWithLinks", "defaultOpenWithLink");
+        File file = getPartialFile(user, fileInfo.getFileId(), "openWithLinks", "defaultOpenWithLink");
         if (file.isEmpty()) {
             return appLinks;
         }
@@ -373,7 +336,7 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
             appLink.setLink(entry.getValue());
 
             // pick an application icon
-            for (com.google.api.services.drive.model.App.Icons icon : app.getIcons()) {
+            for (App.Icons icon : app.getIcons()) {
                 if ("application".equals(icon.getCategory())) {
                     appLink.setIcon(icon.getIconUrl());
                     // break if we've got one with our preferred size
@@ -396,8 +359,7 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
     protected String getServiceUser(String username) {
         CredentialFactory credentialFactory = getCredentialFactory();
         if (credentialFactory instanceof OAuth2CredentialFactory) {
-            OAuth2ServiceProvider provider = ((OAuth2CredentialFactory) credentialFactory).getProvider();
-            return ((GoogleOAuth2ServiceProvider) provider).getServiceUser(username);
+            return getOAuth2Provider().getServiceUser(username);
         } else {
             UserManager userManager = Framework.getLocalService(UserManager.class);
             DocumentModel user = userManager.getUserModel(username);
@@ -415,19 +377,21 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
 
     @Override
     public ManagedBlob freezeVersion(ManagedBlob blob, Document doc) throws IOException {
-        FileInfo fileInfo = getFileInfo(blob);
-        if (fileInfo.revisionId != null) {
+        LiveConnectFileInfo fileInfo = toFileInfo(blob);
+        if (fileInfo.getRevisionId().isPresent()) {
             // already frozen
             return null;
         }
-        String user = fileInfo.user;
-        String fileId = fileInfo.fileId;
-        // find current revision for that doc
-        File file = getFile(fileInfo);
-        String revisionId = file.getHeadRevisionId();
+        String user = fileInfo.getUser();
+        String fileId = fileInfo.getFileId();
+        // force update of Drive and Live Connect cache
+        putFileInCache(retrieveFile(fileInfo));
+        // find current revision for that doc (from cache as previous line cached it)
+        File driveFile = getDriveFile(fileInfo);
+        String revisionId = driveFile.getHeadRevisionId();
         if (revisionId != null) {
             // uploaded file, there is a head revision
-            fileInfo = new FileInfo(user, fileId, revisionId);
+            fileInfo = new LiveConnectFileInfo(user, fileId, revisionId);
             Revision revision = getRevision(fileInfo);
             if (!TRUE.equals(revision.getPinned())) {
                 // pin the revision
@@ -445,19 +409,19 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
             Revision revision = list.get(list.size() - 1);
 
             // native Google document revision cannot be pinned so we store a conversion of the blob
-            URI uri = asURI(revision.getExportLinks().get(DEFAULT_EXPORT_MIMETYPE));
+            URI uri = asURI(revision.getExportLinks().get(DEFAULT_EXPORT_MIMETYPE)).orElse(null);
 
-            InputStream is = doGet(user, uri);
+            InputStream is = doGet(fileInfo, uri);
             Blob conversion = Blobs.createBlob(is);
             conversion.setFilename(blob.getFilename());
             conversion.setMimeType(DEFAULT_EXPORT_MIMETYPE);
 
-            fileInfo = new FileInfo(user, fileId, revision.getId());
+            fileInfo = new LiveConnectFileInfo(user, fileId, revision.getId());
 
             // store a conversion of this revision
-            storeBlobConversion(doc, getKey(fileInfo), conversion);
+            storeBlobConversion(doc, buildBlobKey(fileInfo), conversion);
         }
-        return getBlob(fileInfo);
+        return toBlob(new GoogleDriveLiveConnectFile(fileInfo, driveFile));
     }
 
     /**
@@ -508,83 +472,14 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
         return null;
     }
 
-    /**
-     * Gets the blob for a Google Drive file.
-     *
-     * @param fileInfo the file info
-     * @return the blob
-     */
-    protected ManagedBlob getBlob(FileInfo fileInfo) throws IOException {
-        String key = getKey(fileInfo);
-        File file = getFile(fileInfo);
-        String filename = file.getTitle().replace("/", "-");
-        BlobInfo blobInfo = new BlobInfo();
-        blobInfo.key = key;
-        blobInfo.mimeType = file.getMimeType();
-        blobInfo.encoding = null; // TODO extract from mimeType
-        blobInfo.filename = filename;
-        blobInfo.length = file.getFileSize();
-        // etag for native Google documents and md5 for everything else
-        String digest = getDigest(file);
-        blobInfo.digest = digest;
-        return new SimpleManagedBlob(blobInfo);
+    @Override
+    protected boolean hasChanged(SimpleManagedBlob blob, LiveConnectFile file) {
+        return !blob.getFilename().equals(file.getFilename().replace('/', '-')) && super.hasChanged(blob, file);
     }
 
-    protected String getDigest(File file) {
-        String digest = file.getMd5Checksum();
-        if (digest == null) {
-            digest = file.getEtag();
-        }
-        return digest;
-    }
-
-    protected boolean isDigestChanged(Blob blob, File file) {
-        final String digest = blob.getDigest();
-        String md5CheckSum = file.getMd5Checksum();
-        String eTag = file.getEtag();
-        if (md5CheckSum != null) {
-            return !md5CheckSum.equals(digest);
-        } else {
-            return eTag != null && !eTag.equals(digest);
-        }
-    }
-
-    protected boolean isFilenameChanged(Blob blob, File file) {
-        return !file.getTitle().replace("/", "-").equals(blob.getFilename());
-    }
-
-    protected boolean isChanged(Blob blob, File file) {
-        return isFilenameChanged(blob, file) || isDigestChanged(blob, file);
-    }
-
-    /** Adds the prefix to the key. */
-    protected String getKey(FileInfo fileInfo) {
-        return blobProviderId + ':' + fileInfo.user + ':' + fileInfo.fileId
-                + (fileInfo.revisionId == null ? "" : ':' + fileInfo.revisionId);
-    }
-
-    /** Removes the prefix from the key. */
-    protected FileInfo getFileInfo(ManagedBlob blob) {
-        String key = blob.getKey();
-        int colon = key.indexOf(':');
-        if (colon < 0) {
-            throw new IllegalArgumentException(key);
-        }
-        String suffix = key.substring(colon + 1);
-        String[] parts = suffix.split(":");
-        if (parts.length < 2 || parts.length > 3) {
-            throw new IllegalArgumentException(key);
-        }
-        return new FileInfo(parts[0], parts[1], parts.length < 3 ? null : parts[2]);
-    }
-
-    protected Credential getCredential(String user) throws IOException {
-        return getCredentialFactory().build(user);
-    }
-
+    @Override
     protected CredentialFactory getCredentialFactory() {
-        OAuth2ServiceProvider provider = Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(
-                blobProviderId);
+        GoogleOAuth2ServiceProvider provider = getOAuth2Provider();
         if (provider != null && provider.isEnabled()) {
             // Web application configuration
             return new OAuth2CredentialFactory(provider);
@@ -606,6 +501,14 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
         .build();
     }
 
+    @Override
+    protected LiveConnectFile retrieveFile(LiveConnectFileInfo fileInfo) throws IOException {
+        // First, invalidate the Drive file cache in order to force call to API
+        invalidateInCache("file_" + fileInfo.getFileId());
+        // Second, retrieve it and cache it
+        return new GoogleDriveLiveConnectFile(fileInfo, getDriveFile(fileInfo));
+    }
+
     /**
      * Retrieve a partial {@link File} resource.
      */
@@ -619,10 +522,11 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
      * @return a {@link File} resource
      */
     // subclassed for mock
-    protected File getFile(FileInfo fileInfo) throws IOException {
+    protected File getDriveFile(LiveConnectFileInfo fileInfo) throws IOException {
         // ignore revisionId
-        String cacheKey = "file_" + fileInfo.fileId;
-        DriveRequest<File> request = getService(fileInfo.user).files().get(fileInfo.fileId);
+        String fileId = fileInfo.getFileId();
+        String cacheKey = "file_" + fileId;
+        DriveRequest<File> request = getService(fileInfo.getUser()).files().get(fileId);
         return executeAndCache(cacheKey, request, File.class);
     }
 
@@ -632,13 +536,14 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
      * @return a {@link Revision} resource
      */
     // subclassed for mock
-    protected Revision getRevision(FileInfo fileInfo) throws IOException {
-        if (fileInfo.revisionId == null) {
-            throw new NullPointerException("null revisionId for " + fileInfo.fileId);
+    protected Revision getRevision(LiveConnectFileInfo fileInfo) throws IOException {
+        if (!fileInfo.getRevisionId().isPresent()) {
+            throw new NullPointerException("null revisionId for " + fileInfo.getFileId());
         }
-        String cacheKey = "rev_" + fileInfo.fileId + "_" + fileInfo.revisionId;
-        DriveRequest<Revision> request = getService(fileInfo.user).revisions().get(fileInfo.fileId,
-                fileInfo.revisionId);
+        String fileId = fileInfo.getFileId();
+        String revisionId = fileInfo.getRevisionId().get();
+        String cacheKey = "rev_" + fileId + "_" + revisionId;
+        DriveRequest<Revision> request = getService(fileInfo.getUser()).revisions().get(fileId, revisionId);
         try {
             return executeAndCache(cacheKey, request, Revision.class);
         } catch (HttpResponseException e) {
@@ -654,7 +559,7 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
      * Executes a {@link DriveRequest} and caches the unparsed response.
      */
     protected <T> T executeAndCache(String cacheKey, DriveRequest<T> request, Class<T> aClass) throws IOException {
-        String resource = (String) getCache().get(cacheKey);
+        String resource = getDriveFromCache(cacheKey);
 
         if (resource == null) {
             HttpResponse response = request.executeUnparsed();
@@ -663,7 +568,7 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
             }
             resource = response.parseAsString();
             if (cacheKey != null) {
-                getCache().put(cacheKey, resource);
+                putDriveInCache(cacheKey, resource);
             }
         }
         return JSON_PARSER.parseAndClose(new StringReader(resource), aClass);
@@ -675,89 +580,29 @@ public class GoogleDriveBlobProvider extends AbstractBlobProvider implements Bat
      * @return a list of {@link Revision} resources
      */
     // subclassed for mock
-    protected RevisionList getRevisionList(FileInfo fileInfo) throws IOException {
-        return getService(fileInfo.user).revisions().list(fileInfo.fileId).execute();
+    protected RevisionList getRevisionList(LiveConnectFileInfo fileInfo) throws IOException {
+        return getService(fileInfo.getUser()).revisions().list(fileInfo.getFileId()).execute();
     }
 
     /**
      * Executes a GET request with the user's credentials.
      */
-    protected InputStream doGet(String user, URI url) throws IOException {
-        HttpResponse response = getService(user).getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
+    protected InputStream doGet(LiveConnectFileInfo fileInfo, URI url) throws IOException {
+        HttpResponse response = getService(fileInfo.getUser()).getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
         return response.getContent();
     }
 
-    /**
-     * Parse a {@link URI}.
-     *
-     * @return the {@link URI} or null if it fails
-     */
-    protected static URI asURI(String link) {
-        try {
-            return new URI(link);
-        } catch (URISyntaxException e) {
-            log.error("Invalid URI: " + link, e);
-            return null;
-        }
-    }
-
-    protected Cache getCache() {
-        if (cache == null) {
-            cache = Framework.getService(CacheService.class).getCache(FILE_CACHE_NAME);
-        }
-        return cache;
-    }
-
     public String getClientId() {
-        OAuth2ServiceProvider provider = getOAuth2Provider();
+        GoogleOAuth2ServiceProvider provider = getOAuth2Provider();
         return (provider != null && provider.isEnabled()) ? provider.getClientId() : clientId;
     }
 
-    protected OAuth2ServiceProvider getOAuth2Provider() {
-        return Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(blobProviderId);
+    private String getDriveFromCache(String key) {
+        return getFromCache(key);
     }
 
-    @Override
-    public List<DocumentModel> checkChangesAndUpdateBlob(List<DocumentModel> docs) {
-        List<DocumentModel> changedDocuments = new ArrayList<>();
-        // TODO use google batch request here
-        for (DocumentModel doc : docs) {
-            final SimpleManagedBlob blob = (SimpleManagedBlob) doc.getProperty("content").getValue();
-            FileInfo fileInfo = getFileInfo(blob);
-            if (isVersion(blob)) {
-                // assume that revisions never change
-                continue;
-            }
-            try {
-                File remote = getPartialFile(fileInfo.user, fileInfo.fileId, "id", "title", "etag", "md5Checksum");
-                if (isChanged(blob, remote)) {
-                    doc.setPropertyValue("content", (SimpleManagedBlob) getBlob(getFileInfo(blob)));
-                    String cacheKey = "file_" + fileInfo.fileId;
-                    getCache().invalidate(cacheKey);
-                    changedDocuments.add(doc);
-                }
-            } catch (IOException e) {
-                log.error("Could not update google drive document " + doc.getTitle(), e);
-            }
-
-        }
-        return changedDocuments;
-    }
-
-    @Override
-    public String getPageProviderNameForUpdate() {
-        return GOOGLEDRIVE_DOCUMENT_TO_BE_UPDATED_PP;
-    }
-
-    @Override
-    public String getBlobProviderId() {
-        return blobProviderId;
-    }
-
-    @Override
-    public boolean isVersion(ManagedBlob blob) {
-        FileInfo fileInfo = getFileInfo(blob);
-        return fileInfo.revisionId != null;
+    private void putDriveInCache(String key, String resource) {
+        putInCache(key, resource);
     }
 
 }
