@@ -148,7 +148,21 @@
       </properties>
     </widget>
 
-    <widget name="locale" type="selectOneDirectory">
+    <widget name="locale_view" type="text">
+      <labels>
+        <label mode="any">label.userpreferences.locale</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>userprofile:locale</field>
+      </fields>
+      <widgetModes>
+        <mode value="view">view</mode>
+        <mode value="any">hidden</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="locale" type="selectOneMenu">
       <labels>
         <label mode="any">label.userpreferences.locale</label>
       </labels>
@@ -157,11 +171,16 @@
         <field>userprofile:locale</field>
       </fields>
       <properties widgetMode="any">
-        <property name="localize">false</property>
-        <property name="directoryName">locale</property>
-        <property name="displayIdAndLabel">false</property>
-        <property name="required">false</property>
+        <property name="notDisplayDefaultOption">false</property>
       </properties>
+      <selectOptions>
+        <options value="#{localeSelector.supportedLocales}" var="item"
+          itemValue="#{item.value}" itemLabel="#{item.label}" ordering="label" />
+      </selectOptions>
+      <widgetModes>
+        <mode value="edit">edit</mode>
+        <mode value="any">hidden</mode>
+      </widgetModes>
     </widget>
 
     <widget name="timezone" type="template">
@@ -254,6 +273,9 @@
         </template>
       </templates>
       <rows>
+        <row>
+          <widget>locale_view</widget>
+        </row>
         <row>
           <widget>locale</widget>
         </row>
