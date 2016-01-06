@@ -6,6 +6,7 @@ Translations
 
 These translations have been contributed by the following people:
 
+Albanian: Amir Buzo, Saimir Pollogati
 Arabic: Taieb Felfel
 Basque: Jose Luis de la Rosa
 Catalan: Jose Luis de la Rosa, Jordi Mallach 

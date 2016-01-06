@@ -33,6 +33,7 @@
       <supported-locale>pt_BR</supported-locale><!-- Portuguese - Brazil -->
       <supported-locale>ru</supported-locale><!-- Russian - Russia -->
       <supported-locale>ru_RU</supported-locale><!-- Russian - Russia -->
+      <supported-locale>sq_AL</supported-locale><!-- Albanian -->
       <supported-locale>sr_SP</supported-locale><!-- Serbian(Cyrillic) - Serbia -->
       <supported-locale>tr_TR</supported-locale><!-- Turkish - Turkey -->
       <supported-locale>vi_VN</supported-locale><!-- Vietnamese - Vietnam -->
