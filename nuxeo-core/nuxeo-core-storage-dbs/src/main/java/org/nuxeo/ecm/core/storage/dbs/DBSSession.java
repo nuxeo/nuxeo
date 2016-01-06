@@ -1720,6 +1720,10 @@ public class DBSSession implements Session {
             return KEY_FULLTEXT_JOBID;
         case NXQL.ECM_FULLTEXT_SCORE:
             return KEY_FULLTEXT_SCORE;
+        case ExpressionEvaluator.NXQL_ECM_FULLTEXT_SIMPLE:
+            return KEY_FULLTEXT_SIMPLE;
+        case ExpressionEvaluator.NXQL_ECM_FULLTEXT_BINARY:
+            return KEY_FULLTEXT_BINARY;
         case NXQL.ECM_ACL:
             return KEY_ACP;
         case NXQL.ECM_FULLTEXT:

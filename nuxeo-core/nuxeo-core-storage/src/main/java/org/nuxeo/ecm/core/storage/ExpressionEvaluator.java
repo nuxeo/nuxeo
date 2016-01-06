@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.CharUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
@@ -48,6 +49,9 @@ import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.PeekingIterator;
+
 /**
  * Evaluator for an {@link Expression}.
  *
@@ -64,7 +68,15 @@ public abstract class ExpressionEvaluator {
     /** pseudo NXQL to resolve read acls. */
     public static final String NXQL_ECM_READ_ACL = "ecm:__read_acl";
 
+    public static final String NXQL_ECM_FULLTEXT_SIMPLE = "ecm:__fulltextSimple";
+
+    public static final String NXQL_ECM_FULLTEXT_BINARY = "ecm:__fulltextBinary";
+
     protected static final String DATE_CAST = "DATE";
+
+    protected static final String PHRASE_QUOTE = "\"";
+
+    protected static final String OR = "or";
 
     /**
      * Interface for a class that knows how to resolve a path into an id.
@@ -108,6 +120,8 @@ public abstract class ExpressionEvaluator {
             return walkEcmPath(op, rvalue);
         } else if (NXQL.ECM_ANCESTORID.equals(name)) {
             return walkAncestorId(op, rvalue);
+        } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
+            return walkEcmFulltext(name, op, rvalue);
         } else if (op == Operator.SUM) {
             throw new UnsupportedOperationException("SUM");
         } else if (op == Operator.SUB) {
@@ -209,6 +223,32 @@ public abstract class ExpressionEvaluator {
             }
         }
         return eq ? FALSE : TRUE;
+    }
+
+    protected Boolean walkEcmFulltext(String name, Operator op, Operand rvalue) {
+        if (op != Operator.EQ && op != Operator.LIKE) {
+            throw new QueryParseException(NXQL.ECM_FULLTEXT + " requires = or LIKE operator");
+        }
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new QueryParseException(NXQL.ECM_FULLTEXT + " requires literal string as right argument");
+        }
+        String query = ((StringLiteral) rvalue).value;
+        if (name.equals(NXQL.ECM_FULLTEXT)) {
+            // standard fulltext query
+            String simple = (String) walkReference(new Reference(NXQL_ECM_FULLTEXT_SIMPLE));
+            String binary = (String) walkReference(new Reference(NXQL_ECM_FULLTEXT_BINARY));
+            return fulltext(simple, binary, query);
+        } else {
+            // secondary index match with explicit field
+            // do a regexp on the field
+            if (name.charAt(NXQL.ECM_FULLTEXT.length()) != '.') {
+                throw new QueryParseException(name + " has incorrect syntax for a secondary fulltext index");
+            }
+            String prop = name.substring(NXQL.ECM_FULLTEXT.length() + 1);
+            String ft = query.replace(" ", "%");
+            rvalue = new StringLiteral(ft);
+            return walkLike(new Reference(prop), rvalue, true, true);
+        }
     }
 
     public Boolean walkNot(Operand value) {
@@ -673,5 +713,205 @@ public abstract class ExpressionEvaluator {
      * @since 7.4
      */
     public abstract Boolean walkMixinTypes(List<String> mixins, boolean include);
+
+    /*
+     * ----- simple parsing, don't try to be exhaustive -----
+     */
+
+    private static final Pattern WORD_PATTERN = Pattern.compile("[\\s\\p{Punct}]+");
+
+    private static final String UNACCENTED = "aaaaaaaceeeeiiii\u00f0nooooo\u00f7ouuuuy\u00fey";
+
+    private static final String STOP_WORDS_STR = "a an are and as at be by for from how " //
+            + "i in is it of on or that the this to was what when where who will with " //
+            + "car donc est il ils je la le les mais ni nous or ou pour tu un une vous " //
+            + "www com net org";
+
+    private static final Set<String> STOP_WORDS = new HashSet<>(Arrays.asList(StringUtils.split(STOP_WORDS_STR, ' ')));
+
+    /**
+     * Checks if the fulltext combination of string1 and string2 matches the query expression.
+     */
+    protected static Boolean fulltext(String string1, String string2, String queryString) {
+        if (queryString == null || (string1 == null && string2 == null)) {
+            return null;
+        }
+        // query
+        List<String> query = new ArrayList<String>();
+        String phrase = null;
+        for (String word : StringUtils.split(queryString.toLowerCase(), ' ')) {
+            if (WORD_PATTERN.matcher(word).matches()) {
+                continue;
+            }
+            if (phrase != null) {
+                if (word.endsWith(PHRASE_QUOTE)) {
+                    phrase += " " + word.substring(0, word.length() - 1);
+                    query.add(phrase);
+                    phrase = null;
+                } else {
+                    phrase += " " + word;
+                }
+            } else {
+                if (word.startsWith(PHRASE_QUOTE)) {
+                    phrase = word.substring(1);
+                } else {
+                    if (word.startsWith("+")) {
+                        word = word.substring(1);
+                    }
+                    query.add(word);
+                }
+            }
+        }
+        if (query.isEmpty()) {
+            return FALSE;
+        }
+        // fulltext
+        Set<String> fulltext = new HashSet<String>();
+        fulltext.addAll(parseFullText(string1));
+        fulltext.addAll(parseFullText(string2));
+
+        return Boolean.valueOf(fulltext(fulltext, query));
+    }
+
+    private static Set<String> parseFullText(String string) {
+        if (string == null) {
+            return Collections.emptySet();
+        }
+        Set<String> set = new HashSet<String>();
+        for (String word : WORD_PATTERN.split(string)) {
+            String w = parseWord(word);
+            if (w != null) {
+                set.add(w.toLowerCase());
+            }
+        }
+        return set;
+    }
+
+    private static String parseWord(String string) {
+        int len = string.length();
+        if (len < 3) {
+            return null;
+        }
+        StringBuilder buf = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            char c = Character.toLowerCase(string.charAt(i));
+            if (c == '\u00e6') {
+                buf.append("ae");
+            } else if (c >= '\u00e0' && c <= '\u00ff') {
+                buf.append(UNACCENTED.charAt((c) - 0xe0));
+            } else if (c == '\u0153') {
+                buf.append("oe");
+            } else {
+                buf.append(c);
+            }
+        }
+        // simple heuristic to remove plurals
+        int l = buf.length();
+        if (l > 3 && buf.charAt(l - 1) == 's') {
+            buf.setLength(l - 1);
+        }
+        String word = buf.toString();
+        if (STOP_WORDS.contains(word)) {
+            return null;
+        }
+        return word;
+    }
+
+    // matches "foo OR bar baz" as "foo OR (bar AND baz)"
+    protected static boolean fulltext(Set<String> fulltext, List<String> query) {
+        boolean andMatch = true;
+        for (PeekingIterator<String> it = Iterators.peekingIterator(query.iterator()); it.hasNext(); ) {
+            String word = it.next();
+            boolean match;
+            if (word.endsWith("*") || word.endsWith("%")) {
+                // prefix match
+                match = false;
+                String prefix = word.substring(0, word.length() - 2);
+                for (String candidate : fulltext) {
+                    if (candidate.startsWith(prefix)) {
+                        match = true;
+                        break;
+                    }
+                }
+            } else {
+                if (word.startsWith("-")) {
+                    word = word.substring(1);//
+                    match = !fulltext.contains(word);
+                } else {
+                    match = fulltext.contains(word);
+                }
+            }
+            if (!match) {
+                andMatch = false;
+            }
+            if (it.hasNext() && it.peek().equals(OR)) {
+                // end of AND group
+                // swallow OR
+                it.next();
+                // return if the previous AND group matched
+                if (andMatch) {
+                    return true;
+                }
+                // else start next AND group
+                andMatch = true;
+            }
+        }
+        return andMatch;
+    }
+
+    // matches "foo OR bar baz" as "(foo OR bar) AND baz"
+    protected static boolean fulltext1(Set<String> fulltext, List<String> query) {
+        boolean inOr = false; // if we're in a OR group
+        boolean orMatch = false; // value of the OR group
+        for (PeekingIterator<String> it = Iterators.peekingIterator(query.iterator()); it.hasNext(); ) {
+            String word = it.next();
+            if (it.hasNext() && it.peek().equals(OR)) {
+                inOr = true;
+                orMatch = false;
+            }
+            boolean match;
+            if (word.endsWith("*") || word.endsWith("%")) {
+                // prefix match
+                match = false;
+                String prefix = word.substring(0, word.length() - 2);
+                for (String candidate : fulltext) {
+                    if (candidate.startsWith(prefix)) {
+                        match = true;
+                        break;
+                    }
+                }
+            } else {
+                if (word.startsWith("-")) {
+                    word = word.substring(1);//
+                    match = !fulltext.contains(word);
+                } else {
+                    match = fulltext.contains(word);
+                }
+            }
+            if (inOr) {
+                if (match) {
+                    orMatch = true;
+                }
+                if (it.hasNext() && it.peek().equals(OR)) {
+                    // swallow OR and keep going in OR group
+                    it.next();
+                    continue;
+                }
+                // finish OR group
+                match = orMatch;
+                inOr = false;
+            }
+            if (!match) {
+                return false;
+            }
+        }
+        if (inOr) {
+            // trailing OR, ignore and finish previous group
+            if (!orMatch) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }
