@@ -70,7 +70,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
 
     private static final Log log = LogFactory.getLog(AbstractLiveConnectBlobProvider.class);
 
-    private static final String FILE_CACHE_PREFIX = "file_";
+    private static final String FILE_CACHE_PREFIX = "liveconnect_file_";
 
     private static final char BLOB_KEY_SEPARATOR = ':';
 
@@ -119,11 +119,11 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
             LiveConnectFileInfo fileInfo = toFileInfo(blob);
             try {
                 LiveConnectFile file = retrieveFile(fileInfo);
+                putFileInCache(file);
                 if (hasChanged(blob, file)) {
                     if (log.isTraceEnabled()) {
                         log.trace("Updating blob=" + blob.key);
                     }
-                    putFileInCache(file);
                     doc.setPropertyValue("content", toBlob(file));
                     changedDocuments.add(doc);
                 }
@@ -206,7 +206,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
         return new SimpleManagedBlob(blobInfo);
     }
 
-    private String buildBlobKey(LiveConnectFileInfo fileInfo) {
+    protected String buildBlobKey(LiveConnectFileInfo fileInfo) {
         StringBuilder key = new StringBuilder(blobProviderId);
         key.append(BLOB_KEY_SEPARATOR);
         key.append(fileInfo.getUser());
@@ -263,7 +263,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
         return getCredential(token.getServiceLogin());
     }
 
-    private Credential getCredential(String user) throws IOException {
+    public final Credential getCredential(String user) throws IOException {
         Credential credential = getCredentialFactory().build(user);
         Long expiresInSeconds = credential.getExpiresInSeconds();
         if (expiresInSeconds != null && expiresInSeconds <= 0) {
@@ -280,20 +280,24 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
     }
 
     @SuppressWarnings("unchecked")
-    protected final <R, T extends Serializable> T getFromCache(String prefix, R key) {
-        return (T) getCache().get(prefix + key);
+    protected final <T extends Serializable> T getFromCache(String key) {
+        return (T) getCache().get(key);
     }
 
-    protected final <R, T extends Serializable> void putInCache(String prefix, R key, T object) {
-        getCache().put(prefix + key, object);
+    protected final <T extends Serializable> void putInCache(String key, T object) {
+        getCache().put(key, object);
+    }
+
+    protected final void invalidateInCache(String key) {
+        getCache().invalidate(key);
     }
 
     protected final LiveConnectFile getFileFromCache(LiveConnectFileInfo fileInfo) {
-        return getFromCache(FILE_CACHE_PREFIX, fileInfo.getFileId());
+        return getFromCache(FILE_CACHE_PREFIX + fileInfo.getFileId());
     }
 
     protected final void putFileInCache(LiveConnectFile file) {
-        putInCache(FILE_CACHE_PREFIX, file.getInfo().getFileId(), file);
+        putInCache(FILE_CACHE_PREFIX + file.getInfo().getFileId(), file);
     }
 
     /**

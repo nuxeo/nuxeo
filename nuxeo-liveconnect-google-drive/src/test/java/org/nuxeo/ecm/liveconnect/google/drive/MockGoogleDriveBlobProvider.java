@@ -22,11 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
 
 import com.google.api.services.drive.model.App;
 import com.google.api.services.drive.model.File;
@@ -58,31 +58,31 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
     @Override
     protected File getPartialFile(String user, String fileId, String... fields) throws IOException {
         // ignore fields, return everything
-        return getFile(new FileInfo(user, fileId, null)); // no revisionId
+        return getDriveFile(new LiveConnectFileInfo(user, fileId, null)); // no revisionId
     }
 
     @Override
-    protected File getFile(FileInfo fileInfo) throws IOException {
+    protected File getDriveFile(LiveConnectFileInfo fileInfo) throws IOException {
         // ignore user
         // TODO revisionId
-        return getData(String.format(FILE_FMT, fileInfo.fileId), File.class);
+        return getData(String.format(FILE_FMT, fileInfo.getFileId()), File.class);
     }
 
     @Override
-    protected Revision getRevision(FileInfo fileInfo) throws IOException {
-        if (fileInfo.revisionId == null) {
-            throw new NullPointerException("null revisionId for " + fileInfo.fileId);
+    protected Revision getRevision(LiveConnectFileInfo fileInfo) throws IOException {
+        if (!fileInfo.getRevisionId().isPresent()) {
+            throw new NullPointerException("null revisionId for " + fileInfo.getFileId());
         }
-        return getData(String.format(REV_FMT, fileInfo.fileId, fileInfo.revisionId), Revision.class);
+        return getData(String.format(REV_FMT, fileInfo.getFileId(), fileInfo.getRevisionId().get()), Revision.class);
     }
 
     @Override
-    protected RevisionList getRevisionList(FileInfo fileInfo) throws IOException {
-        return getData(String.format(REVS_FMT, fileInfo.fileId), RevisionList.class);
+    protected RevisionList getRevisionList(LiveConnectFileInfo fileInfo) throws IOException {
+        return getData(String.format(REVS_FMT, fileInfo.getFileId()), RevisionList.class);
     }
 
     @Override
-    protected InputStream doGet(String user, URI uri) throws IOException {
+    protected InputStream doGet(LiveConnectFileInfo fileInfo, URI uri) throws IOException {
         Matcher m = DOWNLOAD_PAT.matcher(uri.toString());
         if (m.matches()) {
             String fileId = m.group(1);
@@ -106,7 +106,7 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
             }
             json = IOUtils.toString(is);
         }
-        return (T) JSON_PARSER.parseAndClose(new StringReader(json), klass);
+        return JSON_PARSER.parseAndClose(new StringReader(json), klass);
     }
 
 }
