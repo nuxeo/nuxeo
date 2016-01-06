@@ -73,8 +73,6 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
 
     private static final Log log = LogFactory.getLog(BoxBlobProvider.class);
 
-    private static final String APPLICATION_NAME = "Nuxeo/0";
-
     private static final String CACHE_NAME = "box";
 
     private static final String FILE_CACHE_PREFIX = "file_";
@@ -85,7 +83,8 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
 
     private static final String DOWNLOAD_CONTENT_URL = BOX_URL + "files/%s/content";
 
-    private static final String THUMBNAIL_CONTENT_URL = BOX_URL + "files/%s/thumbnail.png?min_height=64&min_width=64";
+    private static final String THUMBNAIL_CONTENT_URL = BOX_URL
+            + "files/%s/thumbnail.png?min_height=64&min_width=64&max_height=256&max_width=256";
 
     private static final String EMBED_URL = BOX_URL + "files/%s?fields=expiring_embed_link";
 

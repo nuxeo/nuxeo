@@ -36,8 +36,6 @@ import javax.faces.context.ResponseWriter;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -60,8 +58,6 @@ import com.google.api.client.http.HttpStatusCodes;
  * @since 8.1
  */
 public class BoxBlobUploader implements JSFBlobUploader {
-
-    private static final Log log = LogFactory.getLog(BoxBlobUploader.class);
 
     public static final String UPLOAD_BOX_FACET_NAME = InputFileChoice.UPLOAD + "Box";
 
@@ -201,11 +197,29 @@ public class BoxBlobUploader implements JSFBlobUploader {
             return;
         }
 
-        LiveConnectFileInfo fileInfo = new LiveConnectFileInfo(serviceUserId.get(), fileId);
-        Blob blob = toBlob(fileInfo);
-        submitted.setBlob(blob);
-        submitted.setFilename(blob.getFilename());
-        submitted.setMimeType(blob.getMimeType());
+        try {
+            LiveConnectFileInfo fileInfo = new LiveConnectFileInfo(serviceUserId.get(), fileId);
+            Blob blob = getBoxBlobProvider().toBlob(fileInfo);
+            submitted.setBlob(blob);
+            submitted.setFilename(blob.getFilename());
+            submitted.setMimeType(blob.getMimeType());
+        } catch (IOException e) {
+            if (isCausedByUnauthorized(e)) {
+                String link = String.format(
+                        "<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.",
+                        getOAuthAuthorizationUrl(provider));
+                ComponentUtils.addErrorMessage(context, parent, "error.inputFile.invalidPermissions",
+                        new Object[] { link });
+                parent.setValid(false);
+                return;
+            }
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean isCausedByUnauthorized(IOException ioe) {
+        return ioe.getCause() instanceof BoxAPIException
+                && ((BoxAPIException) ioe.getCause()).getResponseCode() == HttpStatusCodes.STATUS_CODE_UNAUTHORIZED;
     }
 
     /**
@@ -217,20 +231,6 @@ public class BoxBlobUploader implements JSFBlobUploader {
     public boolean isEnabled() {
         BoxOAuth2ServiceProvider provider = getBoxBlobProvider().getOAuth2Provider();
         return provider != null && provider.isEnabled();
-    }
-
-    /**
-     * Creates a Box managed blob.
-     *
-     * @param fileInfo the Box file info
-     * @return the blob
-     */
-    protected Blob toBlob(LiveConnectFileInfo fileInfo) {
-        try {
-            return getBoxBlobProvider().toBlob(fileInfo);
-        } catch (IOException e) {
-            throw new RuntimeException(e); // TODO better feedback
-        }
     }
 
     protected String getClientId(BoxOAuth2ServiceProvider provider) {
@@ -245,11 +245,6 @@ public class BoxBlobUploader implements JSFBlobUploader {
      * Iterates all registered Box tokens of a {@link Principal} to get the serviceLogin of a token with access to a Box
      * file. We need this because Box file picker doesn't provide any information about the account that was used to
      * select the file, and therefore we need to "guess".
-     *
-     * @param provider
-     * @param fileId
-     * @param principal
-     * @return
      */
     private Optional<String> getServiceUserId(BoxOAuth2ServiceProvider provider, String fileId, Principal principal) {
         Map<String, Serializable> filter = new HashMap<>();
@@ -267,8 +262,6 @@ public class BoxBlobUploader implements JSFBlobUploader {
     /**
      * Attempts to retrieve a Box file's metadata to check if an accessToken has permissions to access the file.
      *
-     * @param token
-     * @param fileId
      * @return {@code true} if metadata was successfully retrieved, or {@code false} otherwise
      */
     private boolean hasAccessToFile(NuxeoOAuth2Token token, String fileId) {
