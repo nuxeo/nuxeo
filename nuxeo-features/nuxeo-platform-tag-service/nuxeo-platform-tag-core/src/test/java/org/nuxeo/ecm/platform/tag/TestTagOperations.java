@@ -44,6 +44,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class, AutomationFeature.class })
@@ -65,6 +66,9 @@ public class TestTagOperations {
     protected String docId;
 
     @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     CoreSession session;
 
     @Inject
@@ -75,6 +79,8 @@ public class TestTagOperations {
 
     @Test
     public void testTagOperationsSuite() throws Exception {
+        assumeTrue("DBS does not support tags", !coreFeature.getStorageConfiguration().isDBS());
+
         // quick init
         document = session.createDocumentModel("/", "File", "File");
         document = session.createDocument(document);

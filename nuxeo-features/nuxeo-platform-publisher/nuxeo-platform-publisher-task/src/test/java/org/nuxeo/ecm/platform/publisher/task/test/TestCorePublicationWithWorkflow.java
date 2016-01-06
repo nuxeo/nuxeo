@@ -103,7 +103,7 @@ public abstract class TestCorePublicationWithWorkflow {
     }
 
     private void createDocumentToPublish() throws Exception {
-        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("/default-domain/workspaces"));
 
         DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
@@ -122,7 +122,7 @@ public abstract class TestCorePublicationWithWorkflow {
     }
 
     private void initializeACP() throws Exception {
-        DocumentModel sectionsRoot = session.getDocument(new PathRef("default-domain/sections"));
+        DocumentModel sectionsRoot = session.getDocument(new PathRef("/default-domain/sections"));
         DocumentModel section1 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section1", "Section");
         section1.setProperty("dublincore", "title", "section1");
         section1 = session.createDocument(section1);
@@ -149,7 +149,7 @@ public abstract class TestCorePublicationWithWorkflow {
         acp.addACL(existingACL);
         session.setACP(sectionsRoot.getRef(), acp, true);
 
-        DocumentModel ws1 = session.getDocument(new PathRef("default-domain/workspaces/ws1"));
+        DocumentModel ws1 = session.getDocument(new PathRef("/default-domain/workspaces/ws1"));
         acp = session.getACP(ws1.getRef());
         existingACL = acp.getOrCreateACL();
         existingACL.clear();

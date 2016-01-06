@@ -72,7 +72,7 @@ public class TestRealRemoting {
 
     protected void createInitialDocs() throws Exception {
 
-        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("/default-domain/workspaces"));
 
         DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");

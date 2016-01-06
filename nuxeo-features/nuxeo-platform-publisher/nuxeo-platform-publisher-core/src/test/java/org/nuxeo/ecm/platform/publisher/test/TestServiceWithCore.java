@@ -70,13 +70,13 @@ public class TestServiceWithCore extends PublisherTestCase {
         @Override
         public void populate(CoreSession session) {
             self = this;
-            DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
+            DocumentModel wsRoot = session.getDocument(new PathRef("/default-domain/workspaces"));
 
             DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
             ws.setProperty("dublincore", "title", "test WS");
             ws = session.createDocument(ws);
 
-            DocumentModel sectionsRoot = session.getDocument(new PathRef("default-domain/sections"));
+            DocumentModel sectionsRoot = session.getDocument(new PathRef("/default-domain/sections"));
 
             DocumentModel section1 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section1", "Section");
             section1.setProperty("dublincore", "title", "section1");
@@ -197,10 +197,10 @@ public class TestServiceWithCore extends PublisherTestCase {
 
         PublicationTree tree = service.getPublicationTree(service.getAvailablePublicationTree().get(0), session, null);
 
-        DocumentModel ws1 = session.getDocument(new PathRef("default-domain/workspaces/ws1"));
+        DocumentModel ws1 = session.getDocument(new PathRef("/default-domain/workspaces/ws1"));
         assertFalse(tree.isPublicationNode(ws1));
 
-        DocumentModel section1 = session.getDocument(new PathRef("default-domain/sections/section1"));
+        DocumentModel section1 = session.getDocument(new PathRef("/default-domain/sections/section1"));
         assertTrue(tree.isPublicationNode(section1));
 
         PublicationNode targetNode = service.wrapToPublicationNode(section1, session);
@@ -216,8 +216,8 @@ public class TestServiceWithCore extends PublisherTestCase {
 
         RootSectionsManager rootSectionsManager = new RootSectionsManager(session);
 
-        DocumentModel section1 = session.getDocument(new PathRef("default-domain/sections/section1"));
-        DocumentModel ws1 = session.getDocument(new PathRef("default-domain/workspaces/ws1"));
+        DocumentModel section1 = session.getDocument(new PathRef("/default-domain/sections/section1"));
+        DocumentModel ws1 = session.getDocument(new PathRef("/default-domain/workspaces/ws1"));
 
         assertTrue(rootSectionsManager.canAddSection(section1, ws1));
 
@@ -238,8 +238,8 @@ public class TestServiceWithCore extends PublisherTestCase {
         sectionIdsArray = (String[]) ws1.getPropertyValue(RootSectionsManager.SECTIONS_PROPERTY_NAME);
         assertEquals(0, sectionIdsArray.length);
 
-        DocumentModel section2 = session.getDocument(new PathRef("default-domain/sections/section2"));
-        DocumentModel section11 = session.getDocument(new PathRef("default-domain/sections/section1/section11"));
+        DocumentModel section2 = session.getDocument(new PathRef("/default-domain/sections/section2"));
+        DocumentModel section11 = session.getDocument(new PathRef("/default-domain/sections/section1/section11"));
 
         rootSectionsManager.addSection(section2.getId(), ws1);
         rootSectionsManager.addSection(section11.getId(), ws1);
