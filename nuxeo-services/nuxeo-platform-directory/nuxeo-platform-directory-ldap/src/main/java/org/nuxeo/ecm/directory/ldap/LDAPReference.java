@@ -45,6 +45,7 @@ import javax.naming.ldap.Rdn;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.ArrayUtils;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -611,6 +612,8 @@ public class LDAPReference extends AbstractReference {
                 // step #2.2: find the list of entries that hold candidate
                 // dynamic links in the source directory
                 SearchControls sctls = sourceDirectory.getSearchControls();
+                sctls.setReturningAttributes(new String[] {
+                        sourceSession.idAttribute, dynamicAttributeId });
                 String filterExpr = String.format("%s=*", dynamicAttributeId);
 
                 if (log.isDebugEnabled()) {
