@@ -86,13 +86,13 @@ public class TestFSPublishing {
 
     protected void createInitialDocs() throws Exception {
 
-        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("/default-domain/workspaces"));
 
         DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
         ws = session.createDocument(ws);
 
-        DocumentModel sectionsRoot = session.getDocument(new PathRef("default-domain/sections"));
+        DocumentModel sectionsRoot = session.getDocument(new PathRef("/default-domain/sections"));
 
         DocumentModel section1 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section1", "Section");
         section1.setProperty("dublincore", "title", "section1");

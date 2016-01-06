@@ -57,7 +57,7 @@ public class TestVersionning {
     protected FileManager fm;
 
     private void createTestDocuments() throws Exception {
-        wsRoot = coreSession.getDocument(new PathRef("default-domain/workspaces"));
+        wsRoot = coreSession.getDocument(new PathRef("/default-domain/workspaces"));
 
         DocumentModel ws = coreSession.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");

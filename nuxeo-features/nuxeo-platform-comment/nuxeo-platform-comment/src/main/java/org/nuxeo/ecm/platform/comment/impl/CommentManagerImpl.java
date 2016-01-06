@@ -218,7 +218,7 @@ public class CommentManagerImpl implements CommentManager {
         String[] pathList = getCommentPathList(comment);
 
         if (path == null) {
-            domainPath = docModel.getPath().segment(0);
+            domainPath = "/" + docModel.getPath().segment(0);
         } else {
             domainPath = path;
         }

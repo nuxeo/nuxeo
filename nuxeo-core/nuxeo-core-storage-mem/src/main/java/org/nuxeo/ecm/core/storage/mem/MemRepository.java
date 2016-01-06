@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -388,10 +389,12 @@ public class MemRepository extends DBSRepositoryBase {
     public static Serializable applyDiff(Serializable value, ListDiff listDiff) {
         // internally work on a list
         // TODO this is costly, use a separate code path for arrays
+        Class<?> arrayComponentType = null;
         if (listDiff.isArray && value != null) {
             if (!(value instanceof Object[])) {
                 throw new UnsupportedOperationException("Cannot apply ListDiff on non-array: " + value);
             }
+            arrayComponentType = ((Object[]) value).getClass().getComponentType();
             value = new CopyOnWriteArrayList<>(Arrays.asList((Object[]) value));
         }
         if (value == null) {
@@ -428,7 +431,7 @@ public class MemRepository extends DBSRepositoryBase {
         }
         // convert back to array if needed
         if (listDiff.isArray) {
-            return list.isEmpty() ? null : list.toArray(new Object[0]);
+            return list.isEmpty() ? null : list.toArray((Object[]) Array.newInstance(arrayComponentType, list.size()));
         } else {
             return list.isEmpty() ? null : (Serializable) list;
         }

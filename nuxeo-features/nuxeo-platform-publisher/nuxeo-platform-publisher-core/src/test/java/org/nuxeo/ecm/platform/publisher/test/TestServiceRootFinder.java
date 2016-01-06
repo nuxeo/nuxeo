@@ -68,8 +68,8 @@ public class TestServiceRootFinder extends PublisherTestCase {
         @Override
         public void populate(CoreSession session) {
             self = this;
-            createInitialDocs(session, "default-domain", 1);
-            createInitialDocs(session, "another-default-domain", 2);
+            createInitialDocs(session, "/default-domain", 1);
+            createInitialDocs(session, "/another-default-domain", 2);
         }
 
         protected void createInitialDocs(CoreSession session, String domainPath, int idx) {

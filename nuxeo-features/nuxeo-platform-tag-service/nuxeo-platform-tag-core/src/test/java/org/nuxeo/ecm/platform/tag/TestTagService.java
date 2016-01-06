@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.tag;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -77,6 +79,11 @@ public class TestTagService {
 
     @Inject
     protected TrashService trashService;
+
+    @Before
+    public void checkTagsSupported() {
+        assumeTrue("DBS does not support tags", !coreFeature.getStorageConfiguration().isDBS());
+    }
 
     // Oracle fails if we do too many connections in a short time, sleep
     // here to prevent this.

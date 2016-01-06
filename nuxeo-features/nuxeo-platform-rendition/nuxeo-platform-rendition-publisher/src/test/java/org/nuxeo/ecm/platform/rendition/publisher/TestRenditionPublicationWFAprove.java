@@ -116,7 +116,7 @@ public class TestRenditionPublicationWFAprove {
     }
 
     private DocumentModel createDocumentToPublish() throws Exception {
-        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("/default-domain/workspaces"));
 
         DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
@@ -150,7 +150,7 @@ public class TestRenditionPublicationWFAprove {
 
         // give explicit CanAskForPublishing permission because
         // the users are not in the members group
-        DocumentModel sectionsRoot = session.getDocument(new PathRef("default-domain/sections"));
+        DocumentModel sectionsRoot = session.getDocument(new PathRef("/default-domain/sections"));
         acp = session.getACP(sectionsRoot.getRef());
         existingACL = acp.getOrCreateACL();
         existingACL.add(new ACE("myuser1", CAN_ASK_FOR_PUBLISHING, true));
@@ -160,7 +160,7 @@ public class TestRenditionPublicationWFAprove {
         acp.addACL(existingACL);
         session.setACP(sectionsRoot.getRef(), acp, true);
 
-        DocumentModel ws1 = session.getDocument(new PathRef("default-domain/workspaces/ws1"));
+        DocumentModel ws1 = session.getDocument(new PathRef("/default-domain/workspaces/ws1"));
         acp = session.getACP(ws1.getRef());
         existingACL = acp.getOrCreateACL();
         existingACL.clear();
@@ -169,7 +169,7 @@ public class TestRenditionPublicationWFAprove {
         acp.addACL(existingACL);
         session.setACP(ws1.getRef(), acp, true);
 
-        DocumentModel section1 = session.getDocument(new PathRef("default-domain/sections/section"));
+        DocumentModel section1 = session.getDocument(new PathRef("/default-domain/sections/section"));
 
         acp = session.getACP(section1.getRef());
         existingACL = acp.getOrCreateACL();

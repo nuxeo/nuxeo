@@ -76,13 +76,13 @@ public class TestFakeRemoting {
 
     protected void createInitialDocs() throws Exception {
 
-        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("/default-domain/workspaces"));
 
         workspace = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         workspace.setProperty("dublincore", "title", "test WS");
         workspace = session.createDocument(workspace);
 
-        DocumentModel sectionsRoot = session.getDocument(new PathRef("default-domain/sections"));
+        DocumentModel sectionsRoot = session.getDocument(new PathRef("/default-domain/sections"));
 
         DocumentModel section1 = session.createDocumentModel(sectionsRoot.getPathAsString(), "section1", "Section");
         section1.setProperty("dublincore", "title", "section1");

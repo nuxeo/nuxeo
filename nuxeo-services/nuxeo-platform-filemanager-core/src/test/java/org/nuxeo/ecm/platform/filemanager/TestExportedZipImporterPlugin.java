@@ -75,7 +75,7 @@ public class TestExportedZipImporterPlugin {
     private File archiveFile;
 
     public void createTestDocumentsAndArchive() throws Exception {
-        wsRoot = coreSession.getDocument(new PathRef("default-domain/workspaces"));
+        wsRoot = coreSession.getDocument(new PathRef("/default-domain/workspaces"));
 
         DocumentModel ws = coreSession.createDocumentModel(wsRoot.getPathAsString(), "sourceWS", "Workspace");
         ws.setProperty("dublincore", "title", "Source Workspace");

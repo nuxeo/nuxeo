@@ -74,8 +74,8 @@ public class TestServiceWithMultipleDomains extends PublisherTestCase {
 
     @Test
     public void testTreeRegistration() throws Exception {
-        createInitialDocs("default-domain");
-        createInitialDocs("another-default-domain");
+        createInitialDocs("/default-domain");
+        createInitialDocs("/another-default-domain");
 
         List<String> treeNames = publisherService.getAvailablePublicationTree();
         assertEquals(2, treeNames.size());

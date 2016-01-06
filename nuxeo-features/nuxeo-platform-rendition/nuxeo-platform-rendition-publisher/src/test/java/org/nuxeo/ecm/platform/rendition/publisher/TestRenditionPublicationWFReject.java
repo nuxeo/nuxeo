@@ -116,7 +116,7 @@ public class TestRenditionPublicationWFReject {
     }
 
     private DocumentModel createDocumentToPublish() throws Exception {
-        DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
+        DocumentModel wsRoot = session.getDocument(new PathRef("/default-domain/workspaces"));
 
         DocumentModel ws = session.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         ws.setProperty("dublincore", "title", "test WS");
@@ -148,7 +148,7 @@ public class TestRenditionPublicationWFReject {
         acp.addACL(existingACL);
         session.setACP(root.getRef(), acp, true);
 
-        DocumentModel ws1 = session.getDocument(new PathRef("default-domain/workspaces/ws1"));
+        DocumentModel ws1 = session.getDocument(new PathRef("/default-domain/workspaces/ws1"));
         acp = session.getACP(ws1.getRef());
         existingACL = acp.getOrCreateACL();
         existingACL.clear();
@@ -157,7 +157,7 @@ public class TestRenditionPublicationWFReject {
         acp.addACL(existingACL);
         session.setACP(ws1.getRef(), acp, true);
 
-        DocumentModel section1 = session.getDocument(new PathRef("default-domain/sections/section"));
+        DocumentModel section1 = session.getDocument(new PathRef("/default-domain/sections/section"));
 
         acp = session.getACP(section1.getRef());
         existingACL = acp.getOrCreateACL();
