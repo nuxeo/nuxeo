@@ -76,7 +76,9 @@ import com.sun.jersey.api.client.WebResource;
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Deploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/marshallers-contrib.xml",
         "org.nuxeo.ecm.platform.preview:OSGI-INF/marshallers-contrib.xml",
-        "org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml"})
+        "org.nuxeo.ecm.permissions:OSGI-INF/marshallers-contrib.xml",
+        "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.platform.userworkspace.core",
+        "org.nuxeo.ecm.platform.userworkspace.types"})
 public class DocumentBrowsingTest extends BaseTest {
 
     @Test
