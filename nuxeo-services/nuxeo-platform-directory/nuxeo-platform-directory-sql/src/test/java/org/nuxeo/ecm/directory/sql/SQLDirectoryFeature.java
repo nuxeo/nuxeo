@@ -81,7 +81,7 @@ public class SQLDirectoryFeature extends SimpleFeature {
 
     Granularity granularity;
 
-    protected final Map<String, Map<String, Map<String, Object>>> allDirectoryData = new HashMap<>();
+    protected Map<String, Map<String, Map<String, Object>>> allDirectoryData;
 
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
@@ -95,7 +95,7 @@ public class SQLDirectoryFeature extends SimpleFeature {
         }
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         // record all directories in their entirety
-        allDirectoryData.clear();
+        allDirectoryData = new HashMap<>();
         for (Directory dir : directoryService.getDirectories()) {
             Map<String, Map<String, Object>> data = new HashMap<>();
             try (Session session = dir.getSession()) {
@@ -118,6 +118,10 @@ public class SQLDirectoryFeature extends SimpleFeature {
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
         if (granularity != Granularity.METHOD) {
+            return;
+        }
+        if (allDirectoryData == null) {
+            // failure (exception or assumption failed) before any method was run
             return;
         }
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
@@ -149,5 +153,6 @@ public class SQLDirectoryFeature extends SimpleFeature {
                 }
             }
         }
+        allDirectoryData = null;
     }
 }
