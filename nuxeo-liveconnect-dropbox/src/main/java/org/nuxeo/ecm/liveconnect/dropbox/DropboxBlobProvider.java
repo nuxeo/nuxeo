@@ -24,7 +24,6 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -93,7 +92,7 @@ public class DropboxBlobProvider extends AbstractLiveConnectBlobProvider<Dropbox
         } catch (DbxException e) {
             throw new IOException("Failed to get Dropbox file URI " + e);
         }
-        return Optional.ofNullable(url).flatMap(this::asURI).orElse(null);
+        return url == null ? null : asURI(url);
     }
 
     @Override

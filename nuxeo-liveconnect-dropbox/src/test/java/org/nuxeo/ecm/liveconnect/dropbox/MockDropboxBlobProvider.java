@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -71,7 +70,7 @@ public class MockDropboxBlobProvider extends DropboxBlobProvider {
             url = "http://example.com/download/" + blob.getFilename();
             break;
         }
-        return Optional.ofNullable(url).flatMap(this::asURI).orElse(null);
+        return url == null ? null : asURI(url);
     }
 
     @Override

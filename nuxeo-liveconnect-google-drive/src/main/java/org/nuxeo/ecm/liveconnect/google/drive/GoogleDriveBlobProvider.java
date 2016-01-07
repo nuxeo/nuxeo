@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -165,7 +164,7 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
             url = getEmbedUrl(blob);
             break;
         }
-        return Optional.ofNullable(url).flatMap(this::asURI).orElse(null);
+        return url == null ? null : asURI(url);
     }
 
     // TODO remove unused hint from signature
@@ -177,7 +176,7 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
         }
         Map<String, URI> conversions = new HashMap<>();
         for (String mimeType : exportLinks.keySet()) {
-            conversions.put(mimeType, asURI(exportLinks.get(mimeType)).orElse(null));
+            conversions.put(mimeType, asURI(exportLinks.get(mimeType)));
         }
         return conversions;
     }
@@ -185,7 +184,7 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
     @Override
     public InputStream getThumbnail(ManagedBlob blob) throws IOException {
         String url = getThumbnailUrl(blob);
-        return getStream(blob, asURI(url).orElse(null));
+        return getStream(blob, asURI(url));
     }
 
     /**
@@ -252,7 +251,7 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
         if (url == null) {
             // uploaded file, switch to preview
             url = file.getAlternateLink();
-            url = asURI(url).get().resolve("./preview").toString();
+            url = asURI(url).resolve("./preview").toString();
         }
         return url;
     }
@@ -411,7 +410,7 @@ public class GoogleDriveBlobProvider extends AbstractLiveConnectBlobProvider<Goo
             Revision revision = list.get(list.size() - 1);
 
             // native Google document revision cannot be pinned so we store a conversion of the blob
-            URI uri = asURI(revision.getExportLinks().get(DEFAULT_EXPORT_MIMETYPE)).orElse(null);
+            URI uri = asURI(revision.getExportLinks().get(DEFAULT_EXPORT_MIMETYPE));
 
             InputStream is = doGet(fileInfo, uri);
             Blob conversion = Blobs.createBlob(is);
