@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.SelectList;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -586,6 +587,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         // canonical prefix used to find shared values (foo/*1 referenced twice always uses the same value)
         List<String> canonParts = new ArrayList<>(parts.length);
         List<Serializable> steps = new ArrayList<>(parts.length);
+        boolean firstPart = true;
         for (String part : parts) {
             int c = part.indexOf('[');
             if (c >= 0) {
@@ -596,9 +598,14 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             if (NumberUtils.isDigits(part)) {
                 // explicit list index
                 step = Integer.valueOf(part);
+                type = ((ListType) type).getFieldType();
             } else if (!part.startsWith("*")) {
                 // complex sub-property
                 step = part;
+                if (!firstPart) {
+                    // we already computed the type of the first part
+                    type = ((ComplexType) type).getField(part).getType();
+                }
             } else {
                 // wildcard
                 int corr;
@@ -618,9 +625,11 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                     }
                 }
                 step = Long.valueOf(corr);
+                type = ((ListType) type).getFieldType();
             }
             canonParts.add(part);
             steps.add(step);
+            firstPart = false;
         }
         String canonRef = StringUtils.join(canonParts, '/');
         ValueInfo valueInfo = new ValueInfo(steps, name, canonRef);

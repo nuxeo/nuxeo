@@ -831,7 +831,9 @@ public class DBSSession implements Session {
                 continue;
             }
             DBSDocumentState target = transaction.getStateForUpdate(targetId);
-            removeBackProxyIds(target, removedIds);
+            if (target != null) {
+                removeBackProxyIds(target, removedIds);
+            }
         }
 
         // recompute version series if needed
