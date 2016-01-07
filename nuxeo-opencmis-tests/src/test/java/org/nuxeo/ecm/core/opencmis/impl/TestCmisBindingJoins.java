@@ -11,6 +11,9 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl;
 
+import static org.junit.Assume.assumeTrue;
+
+import org.junit.Before;
 
 /**
  * Test the high-level session using a local connection.
@@ -18,6 +21,11 @@ package org.nuxeo.ecm.core.opencmis.impl;
  * Uses the QueryMaker that does CMISQL -> SQL, which allows JOINs.
  */
 public class TestCmisBindingJoins extends TestCmisBinding {
+
+    @Before
+    public void checkNotDBS() throws Exception {
+        assumeTrue("DBS does not support JOINs", !coreFeature.getStorageConfiguration().isDBS());
+    }
 
     @Override
     protected boolean supportsJoins() {
