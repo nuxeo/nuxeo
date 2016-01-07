@@ -134,6 +134,7 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
 
     @Override
     public InputStream getThumbnail(ManagedBlob blob) throws IOException {
+        // TODO update method when https://github.com/box/box-java-sdk/issues/54 will be done
         LiveConnectFileInfo fileInfo = toFileInfo(blob);
         GenericUrl url = new GenericUrl(String.format(THUMBNAIL_CONTENT_URL, fileInfo.getFileId()));
 
@@ -345,6 +346,7 @@ public class BoxBlobProvider extends AbstractBlobProvider implements BatchUpdate
      * @return the temporary download url for input file
      */
     private String getDownloadUrl(LiveConnectFileInfo fileInfo) throws IOException {
+        // TODO update method when https://github.com/box/box-java-sdk/issues/182 will be done
         GenericUrl url = new GenericUrl(String.format(DOWNLOAD_CONTENT_URL, fileInfo.getFileId()));
         fileInfo.getRevisionId().ifPresent(revId -> url.put("version", revId));
 
