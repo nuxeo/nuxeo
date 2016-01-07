@@ -270,6 +270,7 @@
           </predicate>
           <fixedPart>
             ecm:mixinType = 'SavedSearch'
+            AND cvd:contentViewName IS NOT NULL
             AND ecm:isProxy = 0 AND
             ecm:isCheckedInVersion = 0
             AND ecm:currentLifeCycleState != 'deleted'
