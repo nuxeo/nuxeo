@@ -29,7 +29,6 @@ import static org.mockito.Mockito.mock;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -242,14 +241,14 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
 
     @Test
     public void testAsUriError() {
-        Optional<URI> uri = blobProvider.asURI("http://");
-        assertFalse(uri.isPresent());
+        URI uri = blobProvider.asURI("http://");
+        assertTrue(uri == null);
     }
 
     @Test
     public void testAsUriValid() {
-        Optional<URI> uri = blobProvider.asURI("http://www.nuxeo.com/");
-        assertTrue(uri.isPresent());
+        URI uri = blobProvider.asURI("http://www.nuxeo.com/");
+        assertFalse(uri == null);
     }
 
     private DocumentModel createDocumentWithBlob(long id, String digest) {

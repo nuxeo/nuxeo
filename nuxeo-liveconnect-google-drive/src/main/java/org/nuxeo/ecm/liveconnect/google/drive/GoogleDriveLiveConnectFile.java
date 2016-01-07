@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.liveconnect.google.drive;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import org.nuxeo.ecm.liveconnect.core.AbstractLiveConnectFile;
 import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
@@ -70,7 +69,7 @@ public class GoogleDriveLiveConnectFile extends AbstractLiveConnectFile {
     }
 
     public static String getDigest(File file) {
-        return Optional.ofNullable(file.getMd5Checksum()).orElseGet(file::getEtag);
+        return file.getMd5Checksum() == null ? file.getEtag() : file.getMd5Checksum();
     }
 
 }

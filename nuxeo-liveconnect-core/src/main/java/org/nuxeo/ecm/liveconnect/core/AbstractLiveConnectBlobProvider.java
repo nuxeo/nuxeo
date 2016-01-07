@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -303,14 +302,14 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
     /**
      * Parse a {@link URI}.
      *
-     * @return the {@link Optional}<{@link URI}> or {@link Optional#empty()} if it fails
+     * @return the {@link URI} or null if it fails
      */
-    protected Optional<URI> asURI(String link) {
+    protected URI asURI(String link) {
         try {
-            return Optional.of(new URI(link));
+            return new URI(link);
         } catch (URISyntaxException e) {
             log.error("Invalid URI: " + link, e);
-            return Optional.empty();
+            return null;
         }
     }
 

@@ -21,10 +21,10 @@ package org.nuxeo.ecm.liveconnect.box;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.HttpStatus;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.model.Document;
@@ -45,7 +45,6 @@ import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.http.HttpStatusCodes;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.ArrayMap;
 
@@ -64,8 +63,7 @@ public class BoxBlobProvider extends AbstractLiveConnectBlobProvider<BoxOAuth2Se
 
     private static final String DOWNLOAD_CONTENT_URL = BOX_URL + "files/%s/content";
 
-    private static final String THUMBNAIL_CONTENT_URL = BOX_URL
-            + "files/%s/thumbnail.png?min_height=64&min_width=64&max_height=256&max_width=256";
+    private static final String THUMBNAIL_CONTENT_URL = BOX_URL + "files/%s/thumbnail.jpg?min_height=320&min_width=320";
 
     private static final String EMBED_URL = BOX_URL + "files/%s?fields=expiring_embed_link";
 
@@ -95,7 +93,7 @@ public class BoxBlobProvider extends AbstractLiveConnectBlobProvider<BoxOAuth2Se
             url = getEmbedUrl(fileInfo);
             break;
         }
-        return Optional.ofNullable(url).flatMap(this::asURI).orElse(null);
+        return url == null ? null : asURI(url);
     }
 
     @Override
@@ -112,9 +110,9 @@ public class BoxBlobProvider extends AbstractLiveConnectBlobProvider<BoxOAuth2Se
 
         HttpResponse response = executeAuthenticate(fileInfo, url, false);
         int statusCode = response.getStatusCode();
-        if (statusCode == HttpStatusCodes.STATUS_CODE_OK) {
+        if (statusCode == HttpStatus.SC_OK) {
             return response.getContent();
-        } else if (statusCode == HttpStatusCodes.STATUS_CODE_FOUND || statusCode == 202) {
+        } else if (statusCode == HttpStatus.SC_MOVED_TEMPORARILY || statusCode == HttpStatus.SC_ACCEPTED) {
             response.disconnect();
             return doGet(response.getHeaders().getLocation()).getContent();
         }
@@ -185,11 +183,10 @@ public class BoxBlobProvider extends AbstractLiveConnectBlobProvider<BoxOAuth2Se
 
         HttpResponse response = executeAuthenticate(fileInfo, url, false);
         response.disconnect();
-        if (!HttpStatusCodes.isRedirect(response.getStatusCode())) {
-            throw new HttpResponseException(response);
+        if (response.getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY) {
+            return response.getHeaders().getLocation();
         }
-
-        return response.getHeaders().getLocation();
+        throw new HttpResponseException(response);
     }
 
     /**
@@ -209,7 +206,7 @@ public class BoxBlobProvider extends AbstractLiveConnectBlobProvider<BoxOAuth2Se
             return ((ArrayMap<String, Object>) boxInfo.get("expiring_embed_link")).get("url").toString();
         } catch (HttpResponseException e) {
             // Extension not supported
-            if (e.getStatusCode() == 415) {
+            if (e.getStatusCode() == HttpStatus.SC_REQUEST_URI_TOO_LONG) {
                 return null;
             }
             throw e;
