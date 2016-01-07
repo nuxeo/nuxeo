@@ -37,6 +37,7 @@ import net.sf.jmimemagic.MagicMatchNotFoundException;
 import net.sf.jmimemagic.MagicParseException;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -281,11 +282,10 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
             throw new MimetypeNotFoundException("filename is null");
         }
         String extension = FilenameUtils.getExtension(filename);
-        String[] parts = filename.split("\\.");
-        if (parts.length < 2) {
+        if (StringUtils.isBlank(extension)) {
             throw new MimetypeNotFoundException(filename + "has no extension");
         }
-        return getMimetypeFromExtension(parts[parts.length - 1]);
+        return getMimetypeFromExtension(extension);
     }
 
     // the stream based detection is deprecated and should be replaced by
