@@ -76,7 +76,7 @@ public class CSVImportActions implements Serializable {
     public void uploadListener(FileUploadEvent event) throws Exception {
         UploadedFile item = event.getUploadedFile();
         // FIXME: check if this needs to be tracked for deletion
-        csvFile = File.createTempFile("FileManageActionsFile", null);
+        csvFile = Framework.createTempFile("FileManageActionsFile", null);
         InputStream in = event.getUploadedFile().getInputStream();
         org.nuxeo.common.utils.FileUtils.copyToFile(in, csvFile);
         csvFileName = FilenameUtils.getName(item.getName());
