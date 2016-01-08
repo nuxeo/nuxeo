@@ -53,7 +53,7 @@ public abstract class ImportTestCase {
 
     protected String deployTestFiles(String name) throws IOException {
         File src = new File(org.nuxeo.common.utils.FileUtils.getResourcePathFromContext("data/" + name));
-        File dst = File.createTempFile("nuxeoImportTestCase", ".dir");
+        File dst = Framework.createTempFile("nuxeoImportTestCase", ".dir");
         dst.delete();
         dst.mkdir();
         Framework.getProperties().put("nuxeo.import.tmpdir", dst.getPath());

@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -63,7 +64,7 @@ public class TestMetadataFile {
 
         MetadataFile mdFile = MetadataFile.createFromDocument(testFile);
 
-        File file = File.createTempFile("mdf", null);
+        File file = Framework.createTempFile("mdf", null);
         mdFile.writeTo(file);
 
         MetadataCollector collector = new MetadataCollector();
@@ -90,7 +91,7 @@ public class TestMetadataFile {
 
         MetadataFile mdFile = MetadataFile.createFromSchemas(testFile, Arrays.asList(new String[] { "dublincore" }));
 
-        File file = File.createTempFile("mdf", null);
+        File file = Framework.createTempFile("mdf", null);
         mdFile.writeTo(file);
 
         MetadataCollector collector = new MetadataCollector();
@@ -114,7 +115,7 @@ public class TestMetadataFile {
         MetadataFile mdFile = MetadataFile.createFromSchemasAndProperties(testFile,
                 Arrays.asList(new String[] { "common" }), Arrays.asList(new String[] { "dc:title" }));
 
-        File file = File.createTempFile("mdf", null);
+        File file = Framework.createTempFile("mdf", null);
         mdFile.writeTo(file);
 
         MetadataCollector collector = new MetadataCollector();
@@ -136,7 +137,7 @@ public class TestMetadataFile {
         MetadataFile mdFile = MetadataFile.createFromProperties(testFile,
                 Arrays.asList(new String[] { "dc:title", "common:icon", "dc:description", "common:size" }));
 
-        File file = File.createTempFile("mdf", null);
+        File file = Framework.createTempFile("mdf", null);
         mdFile.writeTo(file);
 
         MetadataCollector collector = new MetadataCollector();
