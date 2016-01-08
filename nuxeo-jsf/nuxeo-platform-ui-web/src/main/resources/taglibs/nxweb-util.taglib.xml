@@ -1705,7 +1705,8 @@
       <required>false</required>
       <type>java.lang.String</type>
       <description>
-        JSON configuration for TinyMCE initialization, merged with default configuration.
+        JSON configuration for TinyMCE initialization, merged with default
+        configuration. Available since 8.1. Example: {"toolbar4": "paste"}
       </description>
     </attribute>
   </tag>
