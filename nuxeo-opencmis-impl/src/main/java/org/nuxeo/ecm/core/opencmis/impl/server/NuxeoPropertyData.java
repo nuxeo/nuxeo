@@ -335,7 +335,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         OutputStream out = null;
         File file;
         try {
-            file = File.createTempFile("NuxeoCMIS-", null);
+            file = Framework.createTempFile("NuxeoCMIS-", null);
             out = new FileOutputStream(file);
             IOUtils.copy(in, out);
             Framework.trackFile(file, in);
