@@ -88,12 +88,12 @@ function addTinyMCE(id) {
 }
 
 function removeAllTinyMCEEditors() {
-  for ( var i = 0; i < tinyMCE.editors.length; i++) {
+  for (var i = 0; i < tinyMCE.editors.length; i++) {
     try {
-      tinyMCE.execCommand('mceRemoveEditor', false, tinymce.editors[i].id);
-    } finally {
+      tinyMCE.execCommand('mceRemoveEditor', false, tinyMCE.editors[i].id);
+    } catch (e) {
+      // ignore
     }
   }
-  ;
   return true;
 }
