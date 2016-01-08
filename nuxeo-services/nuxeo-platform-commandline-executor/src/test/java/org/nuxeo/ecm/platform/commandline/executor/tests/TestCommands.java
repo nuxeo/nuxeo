@@ -78,7 +78,7 @@ public class TestCommands extends NXRuntimeTestCase {
         assertEquals(Arrays.asList("320x200"), res);
 
         // test File param
-        File tmp = File.createTempFile("testCommands", "txt");
+        File tmp = Framework.createTempFile("testCommands", "txt");
         tmp.delete();
         params.addNamedParameter("foo", tmp);
         res = ShellExecutor.replaceParams("-file=#{foo}[0]", params);

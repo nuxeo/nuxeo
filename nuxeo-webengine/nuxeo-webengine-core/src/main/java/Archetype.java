@@ -393,7 +393,7 @@ public class Archetype {
     }
 
     public static File unzipArchetype(File zipFile) throws IOException {
-        File file = File.createTempFile("nuxeo_archetype_" + zipFile.getName(), ".tmp");
+        File file = Framework.createTempFile("nuxeo_archetype_" + zipFile.getName(), ".tmp");
         Framework.trackFile(file, file);
         file.delete();
         file.mkdirs();

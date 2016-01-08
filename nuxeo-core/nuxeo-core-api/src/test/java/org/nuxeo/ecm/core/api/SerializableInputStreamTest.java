@@ -51,7 +51,7 @@ public class SerializableInputStreamTest {
     public void testFileBlobSerialization() throws Exception {
         URL url = Thread.currentThread().getContextClassLoader().getResource("test.blob");
         InputStream sin = new SerializableInputStream(url.openStream());
-        File tmp = File.createTempFile("SerializableISTest-", ".tmp");
+        File tmp = Framework.createTempFile("SerializableISTest-", ".tmp");
         Framework.trackFile(tmp, this);
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(tmp))) {
             out.writeObject(sin);

@@ -53,6 +53,7 @@ import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestCleanupHandler;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -89,7 +90,7 @@ public class MultiPartFormRequestReader implements MessageBodyReader<ExecutionRe
             // happen that
             // javax.mail fail to receive some parts - I am not sure why -
             // perhaps the stream is no more available when javax.mail need it?
-            File tmp = File.createTempFile("nx-automation-mp-upload-", ".tmp");
+            File tmp = Framework.createTempFile("nx-automation-mp-upload-", ".tmp");
             FileUtils.copyToFile(in, tmp);
             // get the input from the saved file
             in = new SharedFileInputStream(tmp);
@@ -135,7 +136,7 @@ public class MultiPartFormRequestReader implements MessageBodyReader<ExecutionRe
         String ctype = part.getContentType();
         String fname = part.getFileName();
         InputStream pin = part.getInputStream();
-        final File tmp = File.createTempFile("nx-automation-upload-", ".tmp");
+        final File tmp = Framework.createTempFile("nx-automation-upload-", ".tmp");
         FileUtils.copyToFile(pin, tmp);
         Blob blob = Blobs.createBlob(tmp, ctype, null, fname);
         RequestContext.getActiveContext(request).addRequestCleanupHandler(new RequestCleanupHandler() {

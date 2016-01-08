@@ -50,6 +50,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.AESBinaryManager;
 import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestAESBinaryManager extends NXRuntimeTestCase {
@@ -106,7 +107,7 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
 
     @Test
     public void testEncryptDecryptWithKeyStore() throws Exception {
-        File keyStoreFile = File.createTempFile("nuxeoKeyStore_", "");
+        File keyStoreFile = Framework.createTempFile("nuxeoKeyStore_", "");
         keyStoreFile.delete();
         createKeyStore(keyStoreFile);
 

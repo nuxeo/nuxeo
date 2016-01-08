@@ -72,7 +72,7 @@ public class RFC822ToTextConverter implements Converter {
         OutputStream fo = null;
         try {
             MimeMessage msg = new MimeMessage((Session) null, blob.getStream());
-            f = File.createTempFile("rfc822totext", ".txt");
+            f = Framework.createTempFile("rfc822totext", ".txt");
             fo = new FileOutputStream(f);
             List<Part> parts = getAttachmentParts(msg);
             writeInfo(fo, msg.getSubject());

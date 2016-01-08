@@ -877,7 +877,7 @@ public abstract class AbstractTest {
     public static String getTmpFileToUploadPath(String filePrefix, String fileSuffix, String fileContent)
             throws IOException {
         // Create tmp file, deleted on exit
-        File tmpFile = File.createTempFile(filePrefix, fileSuffix);
+        File tmpFile = Framework.createTempFile(filePrefix, fileSuffix);
         tmpFile.deleteOnExit();
         FileUtils.writeFile(tmpFile, fileContent);
         assertTrue(tmpFile.exists());

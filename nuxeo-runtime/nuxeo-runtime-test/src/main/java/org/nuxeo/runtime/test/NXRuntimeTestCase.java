@@ -194,7 +194,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         wipeRuntime();
         if (workingDir != null) {
             if (!restart) {
-                if (!FileUtils.deleteQuietly(workingDir)) {
+                if (workingDir.exists() && !FileUtils.deleteQuietly(workingDir)) {
                     log.warn("Cannot delete " + workingDir);
                 }
                 workingDir = null;

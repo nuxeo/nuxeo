@@ -119,7 +119,7 @@ public class TestHelpers extends NXRuntimeTestCase {
         byte[] res = out.toByteArray();
 
         // for debug
-        File file = File.createTempFile("test", ".xml");
+        File file = Framework.createTempFile("test", ".xml");
         FileOutputStream fileOut = new FileOutputStream(file);
         fileOut.write(res);
         fileOut.close();

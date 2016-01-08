@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.runtime.api.Framework;
 
 public class MsoXML2007MimetypeSniffer implements MagicDetector {
 
@@ -78,7 +79,7 @@ public class MsoXML2007MimetypeSniffer implements MagicDetector {
         String[] mimetypes = {};
         File file = null;
         try {
-            file = File.createTempFile("magicdetector", ".xml");
+            file = Framework.createTempFile("magicdetector", ".xml");
             FileUtils.writeFile(file, data);
             mimetypes = guessMsoXML2007(file);
         } catch (IOException e) {

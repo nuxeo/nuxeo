@@ -77,7 +77,7 @@ import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOp
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-
+import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractAutomationClientTest {
 
@@ -108,7 +108,7 @@ public abstract class AbstractAutomationClientTest {
     }
 
     protected File newFile(String content) throws IOException {
-        File file = File.createTempFile("automation-test-", ".xml");
+        File file = Framework.createTempFile("automation-test-", ".xml");
         FileUtils.writeFile(file, content);
         return file;
     }

@@ -73,14 +73,14 @@ public class TestCopyDir extends AbstractCommandTest {
 
     @Override
     protected void updatePackage(PackageBuilder builder) throws Exception {
-        File jarFile = File.createTempFile("test-commands-", ".jar");
+        File jarFile = Framework.createTempFile("test-commands-", ".jar");
         Framework.trackFile(jarFile, builder);
         FileUtils.writeFile(jarFile, "anything");
         builder.addEntry("bundles/" + newFilename, new FileInputStream(jarFile));
         FileUtils.writeFile(jarFile, "new SNAPSHOT content");
         builder.addEntry("bundles/" + snapshotFilename, new FileInputStream(jarFile));
         builder.addEntry("bundles/" + notToDeployFilename, new FileInputStream(jarFile));
-        File xmlFile = File.createTempFile("test-config", ".xml");
+        File xmlFile = Framework.createTempFile("test-config", ".xml");
         Framework.trackFile(xmlFile, builder);
         FileUtils.writeFile(xmlFile, "anything");
         builder.addEntry("templates/collaboration/config/" + testConfigFilename, new FileInputStream(xmlFile));

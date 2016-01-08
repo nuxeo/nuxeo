@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.runtime.api.Framework;
 
 public class MSOffice2TextConverter implements Converter {
 
@@ -59,7 +60,7 @@ public class MSOffice2TextConverter implements Converter {
             String extractedText = extractor.getText().replace("\r\n", "\n");
 
             byte[] bytes = extractedText.getBytes("UTF-8");
-            f = File.createTempFile("po-msoffice2text", ".txt");
+            f = Framework.createTempFile("po-msoffice2text", ".txt");
             fas = new FileOutputStream(f);
             fas.write(bytes);
 

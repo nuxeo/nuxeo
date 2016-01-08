@@ -45,7 +45,6 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.admin.setup.TestSetupWizardActionBean.CustomLogFilter;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
@@ -79,16 +78,8 @@ public class TestSetupWizardActionBean {
 
     @Before
     public void setUp() throws Exception {
-        nuxeoHome = File.createTempFile("nuxeo", null);
-        Framework.trackFile(nuxeoHome, nuxeoHome);
-        nuxeoHome.delete();
-        nuxeoHome.mkdirs();
-        System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
-
-        // Properties required by ConfigurationGenerator
-        System.setProperty(Environment.NUXEO_DATA_DIR, new File(nuxeoHome, "data").getPath());
-        System.setProperty(Environment.NUXEO_LOG_DIR, new File(nuxeoHome, "log").getPath());
-
+        Environment env = Environment.getDefault();
+        nuxeoHome = env.getServerHome();
         nuxeoConf = new File(nuxeoHome, "bin");
         nuxeoConf.mkdirs();
         nuxeoConf = new File(nuxeoConf, ConfigurationGenerator.NUXEO_CONF);
@@ -102,11 +93,12 @@ public class TestSetupWizardActionBean {
         // simulate Seam injection of variable setupConfigGenerator
         setupWizardActionBean.getConfigurationGenerator();
 
-        /*
-         * WARN [UnknownServerConfigurator] Unknown server. WARN [ConfigurationGenerator] Server will be considered as
-         * not configurable. ERROR [ConfigurationGenerator] Template 'oldchange' not found with relative or absolute
-         * path (...) WARN [ConfigurationGenerator] Missing value for nuxeo.db.type, using default
-         */
+        // WARN [UnknownServerConfigurator] Unknown server.
+        // WARN [ConfigurationGenerator] Server will be considered as not configurable.
+        // WARN [ConfigurationGenerator] Parameter mail.transport.username is deprecated ...
+        // ERROR [ConfigurationGenerator] Template 'oldchange' not found ...
+        // WARN [ConfigurationGenerator] Parameter mail.transport.username is deprecated ...
+        // WARN [ConfigurationGenerator] Missing value for nuxeo.db.type, using default
         capturedLog.assertHasEvent();
         assertEquals(6, capturedLog.getCaughtEvents().size());
     }

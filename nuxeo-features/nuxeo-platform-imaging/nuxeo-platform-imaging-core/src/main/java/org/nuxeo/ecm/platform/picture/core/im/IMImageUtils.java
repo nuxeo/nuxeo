@@ -113,11 +113,11 @@ public class IMImageUtils implements ImageUtils {
             if (targetExt == null) {
                 targetExt = ext;
             }
-            targetFile = File.createTempFile("nuxeoImageTarget", "." + targetExt);
+            targetFile = Framework.createTempFile("nuxeoImageTarget", "." + targetExt);
         }
 
         protected File createTempSource(Blob blob, String ext) throws IOException {
-            tmpFile = File.createTempFile("nuxeoImageSource", "." + ext);
+            tmpFile = Framework.createTempFile("nuxeoImageSource", "." + ext);
             blob.transferTo(tmpFile);
             return tmpFile;
         }

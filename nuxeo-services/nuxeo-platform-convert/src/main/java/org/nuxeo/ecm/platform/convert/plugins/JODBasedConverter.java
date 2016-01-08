@@ -208,7 +208,7 @@ public class JODBasedConverter implements ExternalConverter {
                 ext = ext.substring(dotPosition);
             }
             // Copy in a file to be able to read it several time
-            sourceFile = File.createTempFile("NXJOOoConverterDocumentIn", ext);
+            sourceFile = Framework.createTempFile("NXJOOoConverterDocumentIn", ext);
             InputStream stream = inputBlob.getStream();
             FileUtils.copyToFile(stream, sourceFile);
             stream.close();
@@ -273,7 +273,7 @@ public class JODBasedConverter implements ExternalConverter {
                 }
 
             } else {
-                outFile = File.createTempFile("NXJOOoConverterDocumentOut", '.' + destinationFormat.getExtension());
+                outFile = Framework.createTempFile("NXJOOoConverterDocumentOut", '.' + destinationFormat.getExtension());
 
                 // Perform the actual conversion.
                 documentConverter.convert(sourceFile, outFile, destinationFormat, parameters);

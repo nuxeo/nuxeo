@@ -73,7 +73,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
         File file = blob.getFile();
         if (file == null) {
-            file = File.createTempFile("nuxeoImage", ".jpg");
+            file = Framework.createTempFile("nuxeoImage", ".jpg");
             Framework.trackFile(file, this);
             blob.transferTo(file);
             // use a persistent blob with our file

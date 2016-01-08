@@ -55,7 +55,7 @@ public class DocumentListZipExporter {
             throws IOException {
         StringBuilder blobList = new StringBuilder();
 
-        File tmpFile = File.createTempFile("NX-BigZipFile-", ".zip");
+        File tmpFile = Framework.createTempFile("NX-BigZipFile-", ".zip");
         tmpFile.deleteOnExit(); // file is deleted after being downloaded in
                                 // DownloadServlet
         FileOutputStream fout = new FileOutputStream(tmpFile);

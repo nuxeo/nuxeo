@@ -20,7 +20,6 @@
 
 package org.nuxeo.runtime.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -30,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 
 /**
@@ -51,7 +51,7 @@ public class TestRuntime extends AbstractRuntimeService {
     public TestRuntime() {
         super(new DefaultRuntimeContext());
         try {
-            workingDir = File.createTempFile("NXTestFramework", generateId());
+            workingDir = Framework.createTempFile("NXTestFramework", generateId());
             workingDir.delete();
         } catch (IOException e) {
             log.error(e, e);

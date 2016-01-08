@@ -328,7 +328,7 @@ public class PackageBuilder {
     public File build() throws IOException {
         try {
             String mf = buildManifest();
-            File file = File.createTempFile(def.getId(), ".zip");
+            File file = Framework.createTempFile(def.getId(), ".zip");
             Framework.trackFile(file, file);
             ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(file));
             try {

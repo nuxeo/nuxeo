@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 
 /**
@@ -50,7 +51,7 @@ public class SimpleRuntime extends AbstractRuntimeService {
     public SimpleRuntime() {
         this((File) null);
         try {
-            workingDir = File.createTempFile("NXTestFramework", generateId());
+            workingDir = Framework.createTempFile("NXTestFramework", generateId());
             workingDir.delete();
         } catch (IOException e) {
             log.error(e, e);

@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropper;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageCropperAndResizer;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -67,7 +68,7 @@ public class TestMagickExecutors {
 
     @Test
     public void testJpegSimplier() throws Exception {
-        File out = File.createTempFile(TMP_FILE_PREFIX, ".test_small.jpg");
+        File out = Framework.createTempFile(TMP_FILE_PREFIX, ".test_small.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageInfo info = ImageResizer.resize(file.getAbsolutePath(), out.getAbsolutePath(), 20, 20, 8);
@@ -80,7 +81,7 @@ public class TestMagickExecutors {
 
     @Test
     public void testCropper() throws Exception {
-        File out = File.createTempFile(TMP_FILE_PREFIX, ".test_crop.jpg");
+        File out = Framework.createTempFile(TMP_FILE_PREFIX, ".test_crop.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageCropper.crop(file.getAbsolutePath(), out.getAbsolutePath(), 255, 255, 10, 10);
@@ -97,7 +98,7 @@ public class TestMagickExecutors {
 
     @Test
     public void testCropperAndResize() throws Exception {
-        File out = File.createTempFile(TMP_FILE_PREFIX, ".test_crop_resized.jpg");
+        File out = Framework.createTempFile(TMP_FILE_PREFIX, ".test_crop_resized.jpg");
         File file = FileUtils.getResourceFileFromContext("images/test.jpg");
 
         ImageCropperAndResizer.cropAndResize(file.getAbsolutePath(), out.getAbsolutePath(), 255, 255, 10, 10, 200, 200);
@@ -116,7 +117,7 @@ public class TestMagickExecutors {
     @Test
     public void testConverterWithBmp() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/andy.bmp");
-        File out = File.createTempFile(TMP_FILE_PREFIX, ".andy.jpg");
+        File out = Framework.createTempFile(TMP_FILE_PREFIX, ".andy.jpg");
 
         ImageConverter.convert(file.getAbsolutePath(), out.getAbsolutePath());
 
@@ -130,7 +131,7 @@ public class TestMagickExecutors {
     @Test
     public void testConverterWithGif() throws Exception {
         File file = FileUtils.getResourceFileFromContext("images/cat.gif");
-        File out = File.createTempFile(TMP_FILE_PREFIX, ".cat.jpg");
+        File out = Framework.createTempFile(TMP_FILE_PREFIX, ".cat.jpg");
 
         ImageConverter.convert(file.getAbsolutePath(), out.getAbsolutePath());
 

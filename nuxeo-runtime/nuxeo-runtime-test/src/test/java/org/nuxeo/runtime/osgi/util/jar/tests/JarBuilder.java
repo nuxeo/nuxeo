@@ -31,6 +31,8 @@ import java.util.StringTokenizer;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * @author matic
  */
@@ -84,7 +86,7 @@ public class JarBuilder {
     File rootFile = createRootFile();
 
     protected static File createRootFile() throws IOException {
-        File tempdir = File.createTempFile("bundles", ".lib");
+        File tempdir = Framework.createTempFile("bundles", ".lib");
         tempdir.delete();
         tempdir.mkdir();
         return tempdir;

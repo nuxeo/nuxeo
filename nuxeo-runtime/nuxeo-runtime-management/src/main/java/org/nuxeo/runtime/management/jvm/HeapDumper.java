@@ -24,6 +24,8 @@ import java.lang.management.ManagementFactory;
 
 import javax.management.MBeanServer;
 
+import org.nuxeo.runtime.api.Framework;
+
 import com.sun.management.HotSpotDiagnosticMXBean;
 
 /**
@@ -53,7 +55,7 @@ public class HeapDumper {
      * @throws IOException
      */
     public File dumpHeap() throws IOException {
-        File file = File.createTempFile("heapdump", ".hprof");
+        File file = Framework.createTempFile("heapdump", ".hprof");
         file.delete();
         newDiag().dumpHeap(file.getAbsolutePath(), true);
         return file;

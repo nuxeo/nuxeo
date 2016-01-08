@@ -33,6 +33,7 @@ import org.apache.poi.hslf.HSLFSlideShow;
 import org.apache.poi.hslf.usermodel.SlideShow;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.runtime.api.Framework;
 
 public class PptMimetypeSniffer implements MagicDetector {
 
@@ -71,7 +72,7 @@ public class PptMimetypeSniffer implements MagicDetector {
         File file = null;
 
         try {
-            file = File.createTempFile("magicdetector", ".ppt");
+            file = Framework.createTempFile("magicdetector", ".ppt");
             FileUtils.writeFile(file, data);
             mimetypes = guessPowerpoint(file);
         } catch (IOException e) {

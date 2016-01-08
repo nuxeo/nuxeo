@@ -23,8 +23,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
-
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -70,7 +68,7 @@ public class ExportDocument {
             exportAsZip = true;
         }
 
-        File tempFile = Files.createTempFile(null, null).toFile();
+        File tempFile = Framework.createTempFilePath(null, null).toFile();
         Framework.trackFile(tempFile, tempFile);
 
         DocumentReader documentReader = null;

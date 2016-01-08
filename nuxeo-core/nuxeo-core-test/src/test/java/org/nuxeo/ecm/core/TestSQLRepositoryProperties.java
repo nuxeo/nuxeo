@@ -162,7 +162,7 @@ public class TestSQLRepositoryProperties {
     }
 
     protected File createTempFile() throws Exception {
-        File file = File.createTempFile("testExternalBlob", ".txt");
+        File file = Framework.createTempFile("testExternalBlob", ".txt");
         Framework.trackFile(file, file);
         FileWriter fstream = new FileWriter(file);
         BufferedWriter out = new BufferedWriter(fstream);

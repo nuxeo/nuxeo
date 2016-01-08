@@ -243,7 +243,7 @@ public class TestIORelationAdapter {
         assertNotNull(adapter);
         List<DocumentRef> sources = Arrays.asList(new DocumentRef[] { new IdRef(doc1Ref) });
         IORelationResources ioRes = (IORelationResources) adapter.extractResources(repoName, sources);
-        // File tmp = File.createTempFile("test", ".xml");
+        // File tmp = Framework.createTempFile("test", ".xml");
         // OutputStream out = new FileOutputStream(tmp);
         // adapter.getResourcesAsXML(out, ioRes);
         ByteArrayOutputStream out = new ByteArrayOutputStream();

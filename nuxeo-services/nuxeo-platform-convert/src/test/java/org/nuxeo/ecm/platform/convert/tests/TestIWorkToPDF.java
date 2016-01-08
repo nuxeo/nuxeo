@@ -92,7 +92,7 @@ public class TestIWorkToPDF extends NXRuntimeTestCase {
         assertNotNull(blobs);
         assertEquals(1, blobs.size());
 
-        File pdfFile = File.createTempFile("testingPDFConverter", ".pdf");
+        File pdfFile = Framework.createTempFile("testingPDFConverter", ".pdf");
         try {
             result.getBlob().transferTo(pdfFile);
             String text = BaseConverterTest.readPdfText(pdfFile).toLowerCase();

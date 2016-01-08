@@ -275,10 +275,45 @@ public class Environment {
      */
     public static final String JAVA_DEFAULT_KEYSTORE_PASS = "javax.net.ssl.keyStorePassword";
 
+    /**
+     * Call to that constructor should be followed by a call to {@link #init()}. Depending on the available System
+     * properties, you may want to also call {@link #loadProperties(Properties)} or {@link #setServerHome(File)} methods
+     * before {@link #init()}; here is the recommended order:
+     *
+     * <pre>
+     * Environment env = new Environment(home);
+     * Environment.setDefault(env);
+     * env.loadProperties(properties);
+     * env.setServerHome(home);
+     * env.init();
+     * </pre>
+     *
+     * @param home Root path used for most defaults. It is recommended to make it match the server home rather than the
+     *            runtime home.
+     * @see #init()
+     */
     public Environment(File home) {
         this(home, null);
     }
 
+    /**
+     * Call to that constructor should be followed by a call to {@link #init()}. Depending on the available System
+     * properties, you may want to also call {@link #setServerHome(File)} method before {@link #init()}; here is the
+     * recommended order:
+     *
+     * <pre>
+     * Environment env = new Environment(home, properties);
+     * Environment.setDefault(env);
+     * env.setServerHome(home);
+     * env.init();
+     * </pre>
+     *
+     * @param home Root path used for most defaults. It is recommended to make it match the server home rather than the
+     *            runtime home.
+     * @param properties Source properties for initialization. It is used as an {@code Hashtable}: ie only the custom
+     *            values are read, the properties default values are ignored if any.
+     * @see #init()
+     */
     public Environment(File home, Properties properties) {
         this.home = home.getAbsoluteFile();
         this.properties = new Properties();
@@ -305,6 +340,7 @@ public class Environment {
             File home = new File(homeDir);
             if (home.isDirectory()) {
                 DEFAULT = new Environment(home);
+                DEFAULT.init();
             }
         }
     }
@@ -513,6 +549,8 @@ public class Environment {
 
     /**
      * Initialization with System properties to avoid issues due to home set with runtime home instead of server home.
+     * If {@link #NUXEO_HOME} System property is not set, or if you want to set a custom server home, then you should
+     * call {@link #setServerHome(File)} before.
      *
      * @since 5.4.1
      */
@@ -557,8 +595,7 @@ public class Environment {
     }
 
     /**
-     * This method always returns the server home (or null if {@link #NUXEO_HOME_DIR} is not set), whereas
-     * {@link #getHome()} may return runtime home.
+     * This method always returns the server home (or {@link #getHome()} if {@link #NUXEO_HOME_DIR} is not set).
      *
      * @since 5.4.2
      * @return Server home
@@ -584,8 +621,8 @@ public class Environment {
         if (homeDir != null && !homeDir.isEmpty()) {
             setServerHome(new File(homeDir));
         } else {
-            logger.warn(String.format("Could not get %s neither %s system properties, will use %s", NUXEO_HOME,
-                    NUXEO_HOME_DIR, home));
+            logger.warn(String.format("Could not set the server home from %s or %s system properties, will use %s",
+                    NUXEO_HOME, NUXEO_HOME_DIR, home));
             setServerHome(home);
         }
         logger.debug(this);

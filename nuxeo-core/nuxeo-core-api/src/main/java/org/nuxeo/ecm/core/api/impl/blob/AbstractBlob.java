@@ -135,7 +135,7 @@ public abstract class AbstractBlob implements Blob, Serializable {
         if (file != null && (ext == null || file.getName().endsWith(ext))) {
             return new CloseableFile(file, false);
         }
-        File tmp = File.createTempFile("nxblob-", ext);
+        File tmp = Framework.createTempFile("nxblob-", ext);
         tmp.delete();
         if (file != null) {
             // attempt to create a symbolic link, which would be cheaper than a copy

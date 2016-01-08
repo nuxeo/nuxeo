@@ -96,7 +96,7 @@ public class TestTextTemplate {
     public void testCryptoFreemarker() throws IOException, TemplateException {
         TextTemplate tt = getTextTemplateWithCryptoVariables();
         File ftl = new File(getClass().getClassLoader().getResource("freemarkerTemplate.ftl").getPath());
-        File tmpFile = File.createTempFile("ftl", null);
+        File tmpFile = File.createTempFile("ftl", null, new File(System.getProperty("java.io.tmpdir")));
         tt.processFreemarker(ftl, tmpFile);
         try (BufferedReader reader = new BufferedReader(new FileReader(tmpFile))) {
             assertEquals(processedText, reader.readLine());

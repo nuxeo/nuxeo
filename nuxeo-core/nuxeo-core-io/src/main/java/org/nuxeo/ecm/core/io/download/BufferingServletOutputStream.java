@@ -34,6 +34,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * A {@link ServletOutputStream} that buffers everything until {@link #stopBuffering()} is called.
  * <p>
@@ -133,7 +135,7 @@ public class BufferingServletOutputStream extends ServletOutputStream {
     }
 
     protected void createTempFile() throws IOException {
-        tmp = File.createTempFile("nxout", null);
+        tmp = Framework.createTempFile("nxout", null);
     }
 
     @Override

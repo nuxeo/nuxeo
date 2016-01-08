@@ -74,7 +74,7 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         BlobHolder result = cs.convert(converterName, hg, parameters);
         assertNotNull(result);
 
-        File pdfFile = File.createTempFile("testingPDFConverter", ".pdf");
+        File pdfFile = Framework.createTempFile("testingPDFConverter", ".pdf");
         String text = null;
         try {
             result.getBlob().transferTo(pdfFile);

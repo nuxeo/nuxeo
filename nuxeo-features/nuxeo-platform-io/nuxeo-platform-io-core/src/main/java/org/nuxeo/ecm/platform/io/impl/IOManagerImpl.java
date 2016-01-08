@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.io.impl.IODocumentManagerImpl;
 import org.nuxeo.ecm.platform.io.api.IOManager;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.IOResources;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * IOManager implementation
@@ -217,7 +218,7 @@ public class IOManagerImpl implements IOManager {
         }
 
         // fill in a new stream
-        File temp = File.createTempFile("nuxeo-import-adapters-", ".zip");
+        File temp = Framework.createTempFile("nuxeo-import-adapters-", ".zip");
         FileOutputStream outDocs = new FileOutputStream(temp);
         try {
             FileUtils.copy(zip, outDocs);

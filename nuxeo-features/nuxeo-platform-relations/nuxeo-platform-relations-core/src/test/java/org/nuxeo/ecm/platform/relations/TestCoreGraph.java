@@ -70,6 +70,7 @@ import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -528,7 +529,7 @@ public class TestCoreGraph {
 
     public void TODOtestWritePath() throws Exception {
         graph.add(statements);
-        File file = File.createTempFile("test", ".rdf");
+        File file = Framework.createTempFile("test", ".rdf");
         String path = file.getPath();
         graph.write(path, null, null);
         InputStream written = new FileInputStream(new File(path));

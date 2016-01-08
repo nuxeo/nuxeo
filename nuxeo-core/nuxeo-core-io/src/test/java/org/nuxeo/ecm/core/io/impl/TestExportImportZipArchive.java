@@ -96,7 +96,7 @@ public class TestExportImportZipArchive {
     public void testExportAsZipAndReimport() throws Exception {
         createDocs();
 
-        File archive = File.createTempFile("core-io-archive", "zip");
+        File archive = Framework.createTempFile("core-io-archive", "zip");
 
         DocumentReader reader = new DocumentTreeReader(session, workspace);
         DocumentWriter writer = new NuxeoArchiveWriter(archive);

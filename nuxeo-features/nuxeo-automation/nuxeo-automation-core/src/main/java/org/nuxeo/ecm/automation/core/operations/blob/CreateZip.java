@@ -66,7 +66,7 @@ public class CreateZip {
         if (fileName == null || (fileName = fileName.trim()).length() == 0) {
             fileName = blob.getFilename();
         }
-        File file = File.createTempFile("nxops-createzip-", ".tmp");
+        File file = Framework.createTempFile("nxops-createzip-", ".tmp");
         ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file));
         Framework.trackFile(file, file);
         try {
@@ -83,7 +83,7 @@ public class CreateZip {
         if (fileName == null || (fileName = fileName.trim()).length() == 0) {
             fileName = blobs.isEmpty() ? null : blobs.get(0).getFilename();
         }
-        File file = File.createTempFile("nxops-createzip-", ".tmp");
+        File file = Framework.createTempFile("nxops-createzip-", ".tmp");
         ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file));
         Framework.trackFile(file, file);
         try {

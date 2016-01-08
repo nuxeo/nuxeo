@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,7 +131,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         // environment may not be set by some bootstrappers (like tests) - we create it now if not yet created
         Environment env = Environment.getDefault();
         if (env == null) {
-            Environment.setDefault(new Environment(workingDir));
+            env = new Environment(workingDir);
+            Environment.setDefault(env);
+            env.setServerHome(workingDir);
+            env.init();
         }
         workingDir.mkdirs();
         persistence = new ComponentPersistence(this);

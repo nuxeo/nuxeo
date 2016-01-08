@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @deprecated subsumed by MSOffice2TextConverter
@@ -58,7 +59,7 @@ public class Word2TextConverter implements Converter {
         try {
             extractor = new WordExtractor(blobHolder.getBlob().getStream());
             byte[] bytes = extractor.getText().getBytes();
-            f = File.createTempFile("po-word2text", ".txt");
+            f = Framework.createTempFile("po-word2text", ".txt");
             fas = new FileOutputStream(f);
             fas.write(bytes);
 

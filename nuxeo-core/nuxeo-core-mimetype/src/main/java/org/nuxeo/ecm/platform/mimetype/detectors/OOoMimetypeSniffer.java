@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.ZipUtils;
+import org.nuxeo.runtime.api.Framework;
 
 public class OOoMimetypeSniffer implements MagicDetector {
 
@@ -87,7 +88,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
         String[] mimetypes = {};
         File file = null;
         try {
-            file = File.createTempFile("magicdetector", ".xml");
+            file = Framework.createTempFile("magicdetector", ".xml");
             FileUtils.writeFile(file, data);
             mimetypes = guessOOo(file);
         } catch (IOException e) {
@@ -119,7 +120,7 @@ public class OOoMimetypeSniffer implements MagicDetector {
                 // we have an opendocument so lets unzip
 
                 // unzip file to process xml content
-                tempFile = File.createTempFile("nxMimeTypeDetector_", ".dir");
+                tempFile = Framework.createTempFile("nxMimeTypeDetector_", ".dir");
                 tempFile.delete(); // to be able to create a dir under this name
                 if (!tempFile.isDirectory()) {
                     tempFile.mkdir();

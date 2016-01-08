@@ -126,7 +126,7 @@ public class BlobOperationsTest {
         chain.add(CreateDocument.ID).set("type", "File").set("name", "file").set("properties", "dc:title=MyDoc");
         chain.add(SetDocumentBlob.ID).set("file", Blobs.createBlob("blob content"));
         chain.add(GetDocumentBlob.ID);
-        // chain.add(Operations.BLOB_POST).set("url", File.createTempFile("",
+        // chain.add(Operations.BLOB_POST).set("url", Framework.createTempFile("",
         // suffix));
 
         Blob out = (Blob) service.run(ctx, chain);
@@ -147,7 +147,7 @@ public class BlobOperationsTest {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
 
-        File file = File.createTempFile("nx-test-blob-", ".tmp");
+        File file = Framework.createTempFile("nx-test-blob-", ".tmp");
         try {
             CreateBlob.skipProtocolCheck = true;
             FileUtils.writeFile(file, "blob content");
@@ -233,7 +233,7 @@ public class BlobOperationsTest {
 
     @Test
     public void testExportBlobToFile() throws Exception {
-        File dir = File.createTempFile("autoamtion-test-", ".tmp");
+        File dir = Framework.createTempFile("autoamtion-test-", ".tmp");
         dir.delete();
         dir.mkdirs();
 
@@ -304,7 +304,7 @@ public class BlobOperationsTest {
         Map<String, Serializable> file = new HashMap<>();
         ArrayList<Map<String, Serializable>> files = new ArrayList<>();
         // Attach one file to the list
-        File tmpFile = File.createTempFile("test", ".txt");
+        File tmpFile = Framework.createTempFile("test", ".txt");
         FileUtils.writeFile(tmpFile, "Content");
         Blob blob = Blobs.createBlob(tmpFile);
         Framework.trackFile(tmpFile, blob);

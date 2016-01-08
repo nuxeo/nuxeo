@@ -67,11 +67,12 @@ public abstract class PackageTestCase {
      * @throws PackageException
      */
     protected void setupService() throws IOException, PackageException {
-        File tmpHome = File.createTempFile("tmphome", null);
+        File tmpHome = Framework.createTempFile("tmphome", null);
         Framework.trackFile(tmpHome, tmpHome);
         FileUtils.forceDelete(tmpHome);
         tmpHome.mkdirs();
         Environment env = new Environment(tmpHome);
+        Environment.setDefault(env);
         env.setServerHome(tmpHome);
         env.init();
         service = new StandaloneUpdateService(env);

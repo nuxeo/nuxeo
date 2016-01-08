@@ -55,15 +55,15 @@ public class TestCopy extends AbstractCommandTest {
 
     @Override
     protected void updatePackage(PackageBuilder builder) throws Exception {
-        File props = File.createTempFile("test-commands-", ".properties");
+        File props = Framework.createTempFile("test-commands-", ".properties");
         Framework.trackFile(props, builder);
         FileUtils.writeFile(props, "test=my value");
         builder.addEntry("test.properties", new FileInputStream(props));
-        props = File.createTempFile("test-commands-", ".properties");
+        props = Framework.createTempFile("test-commands-", ".properties");
         Framework.trackFile(props, builder);
         FileUtils.writeFile(props, "param2=value2");
         builder.addEntry("append.properties", new FileInputStream(props));
-        props = File.createTempFile("test-commands-", ".properties");
+        props = Framework.createTempFile("test-commands-", ".properties");
         Framework.trackFile(props, builder);
         FileUtils.writeFile(props, "param3=value3");
         builder.addEntry("append2.properties", new FileInputStream(props));

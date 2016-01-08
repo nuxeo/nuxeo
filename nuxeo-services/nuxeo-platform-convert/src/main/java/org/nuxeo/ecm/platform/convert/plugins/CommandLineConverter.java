@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Generic converter executing a contributed command line.
@@ -91,7 +92,7 @@ public class CommandLineConverter extends CommandLineBasedConverter {
         Path tmpDirPath = tmpDir != null ? Paths.get(tmpDir) : null;
         try {
             Path outDirPath = tmpDirPath != null ? Files.createTempDirectory(tmpDirPath, null)
-                    : Files.createTempDirectory(null);
+                    : Framework.createTempDirectory(null);
 
             Map<String, String> cmdStringParams = new HashMap<>();
             cmdStringParams.put(OUT_DIR_PATH_KEY, outDirPath.toString());
@@ -100,7 +101,7 @@ public class CommandLineConverter extends CommandLineBasedConverter {
             Path targetFilePath;
             if (targetFileName == null) {
                 targetFilePath = tmpDirPath != null ? Files.createTempFile(tmpDirPath, null, null)
-                        : Files.createTempFile(null, null);
+                        : Framework.createTempFilePath(null, null);
             } else {
                 targetFilePath = Paths.get(outDirPath.toString(), targetFileName);
             }

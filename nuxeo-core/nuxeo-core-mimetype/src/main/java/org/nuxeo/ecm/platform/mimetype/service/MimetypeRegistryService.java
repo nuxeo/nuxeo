@@ -47,6 +47,7 @@ import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -297,7 +298,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
             MimetypeDetectionException {
         File file = null;
         try {
-            file = File.createTempFile("NXMimetypeBean", ".bin");
+            file = Framework.createTempFile("NXMimetypeBean", ".bin");
             try {
                 FileUtils.copyToFile(stream, file);
                 return getMimetypeFromFile(file);
@@ -334,7 +335,7 @@ public class MimetypeRegistryService extends DefaultComponent implements Mimetyp
     public String getMimetypeFromBlob(Blob blob) throws MimetypeNotFoundException, MimetypeDetectionException {
         File file = null;
         try {
-            file = File.createTempFile("NXMimetypeBean", ".bin");
+            file = Framework.createTempFile("NXMimetypeBean", ".bin");
             try {
                 InputStream is = blob.getStream();
                 try {

@@ -515,7 +515,7 @@ public class TestContentViewState {
         Map<String, Serializable> file = new HashMap<>();
         ArrayList<Map<String, Serializable>> files = new ArrayList<>();
         // Attach one file to the list
-        File tmpFile = File.createTempFile("test", ".txt");
+        File tmpFile = Framework.createTempFile("test", ".txt");
         Framework.trackFile(tmpFile, this);
         FileUtils.writeFile(tmpFile, "Content");
         Blob blob = Blobs.createBlob(tmpFile);

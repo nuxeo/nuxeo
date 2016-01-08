@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.runtime.api.Framework;
 
 public class XlsMimetypeSniffer implements MagicDetector {
 
@@ -71,7 +72,7 @@ public class XlsMimetypeSniffer implements MagicDetector {
         File file = null;
 
         try {
-            file = File.createTempFile("magicdetector", ".xls");
+            file = Framework.createTempFile("magicdetector", ".xls");
             FileUtils.writeFile(file, data);
             mimetypes = guessExcel(file);
         } catch (IOException e) {

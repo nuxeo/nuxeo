@@ -97,7 +97,7 @@ public class MetricSerializer implements MetricSerializerMXBean {
     }
 
     private void createTempFile() throws IOException {
-        file = File.createTempFile("nx-samples-", ".xml");
+        file = Framework.createTempFile("nx-samples-", ".xml");
         Framework.trackFile(file, file);
     }
 

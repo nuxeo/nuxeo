@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -56,7 +57,7 @@ public class TestBlob2 {
 
     @Test
     public void testFileContentSource() throws Exception {
-        File file = File.createTempFile("~test_content_source", ".txt");
+        File file = Framework.createTempFile("~test_content_source", ".txt");
         file.deleteOnExit();
         FileWriter out = new FileWriter(file);
         out.write("some content");
@@ -70,7 +71,7 @@ public class TestBlob2 {
 
     @Test
     public void testURLContentSource() throws Exception {
-        File file = File.createTempFile("~test_content_source", ".txt");
+        File file = Framework.createTempFile("~test_content_source", ".txt");
         file.deleteOnExit();
         FileWriter out = new FileWriter(file);
         out.write("some content");

@@ -466,7 +466,7 @@ public class TestJenaGraph extends NXRuntimeTestCase {
     @Test
     public void testWritePath() throws Exception {
         graph.add(statements);
-        File file = File.createTempFile("test", ".rdf");
+        File file = Framework.createTempFile("test", ".rdf");
         String path = file.getPath();
         graph.write(path, null, null);
         InputStream written = new FileInputStream(new File(path));

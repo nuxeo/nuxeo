@@ -70,7 +70,7 @@ public class AspellTester {
         params.addNamedParameter("encoding", "utf-8");
 
         String text2Check = "this is a teste with a typo";
-        File file2Check = File.createTempFile("nuxeo-spell-check-in", "txt");
+        File file2Check = Framework.createTempFile("nuxeo-spell-check-in", "txt");
         PrintWriter printout = new PrintWriter(new BufferedWriter(new FileWriter(file2Check)));
         printout.print(text2Check);
         printout.flush();

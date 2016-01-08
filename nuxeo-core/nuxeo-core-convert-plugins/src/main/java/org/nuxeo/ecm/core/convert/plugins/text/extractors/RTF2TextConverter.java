@@ -38,19 +38,19 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.runtime.api.Framework;
 
 public class RTF2TextConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-
         File f = null;
         try {
             RTFEditorKit rtfParser = new RTFEditorKit();
             Document document = rtfParser.createDefaultDocument();
             rtfParser.read(blobHolder.getBlob().getStream(), document, 0);
             String text = document.getText(0, document.getLength());
-            f = File.createTempFile("swing-rtf2text", ".txt");
+            f = Framework.createTempFile("swing-rtf2text", ".txt");
             FileUtils.writeFile(f, text);
             Blob blob;
             try (InputStream in = new FileInputStream(f)) {

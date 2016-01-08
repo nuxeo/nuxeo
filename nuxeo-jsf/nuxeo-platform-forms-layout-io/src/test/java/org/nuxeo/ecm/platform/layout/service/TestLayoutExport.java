@@ -89,7 +89,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         LayoutTypeDefinition lTypeDef = service.getLayoutTypeDefinition(WebLayoutManager.JSF_CATEGORY, "listing");
         assertNotNull(lTypeDef);
 
-        File file = File.createTempFile("layouttype-export", ".json");
+        File file = Framework.createTempFile("layouttype-export", ".json");
         FileOutputStream out = new FileOutputStream(file);
         JSONLayoutExporter.exportLayoutType(lTypeDef, out);
 
@@ -136,7 +136,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(WebLayoutManager.JSF_CATEGORY, "test");
         assertNotNull(wTypeDef);
 
-        File file = File.createTempFile("widgettype-export", ".json");
+        File file = Framework.createTempFile("widgettype-export", ".json");
         FileOutputStream out = new FileOutputStream(file);
         JSONLayoutExporter.export(wTypeDef, out);
 
@@ -151,7 +151,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         WidgetTypeDefinition wTypeDef = service.getWidgetTypeDefinition(WebLayoutManager.JSF_CATEGORY, "test");
         assertNotNull(wTypeDef);
 
-        File file = File.createTempFile("widgettypes-export", ".json");
+        File file = Framework.createTempFile("widgettypes-export", ".json");
         FileOutputStream out = new FileOutputStream(file);
         List<WidgetTypeDefinition> wTypeDefs = new ArrayList<WidgetTypeDefinition>();
         wTypeDefs.add(wTypeDef);
@@ -554,7 +554,7 @@ public class TestLayoutExport extends NXRuntimeTestCase {
         LayoutDefinition lDef = service.getLayoutDefinition(WebLayoutManager.JSF_CATEGORY, "layoutColumnsTest");
         assertNotNull(lDef);
 
-        File file = File.createTempFile("layout-export", ".json");
+        File file = Framework.createTempFile("layout-export", ".json");
         JSONObject obj = JSONLayoutExporter.exportToJson(WebLayoutManager.JSF_CATEGORY, lDef, null, null);
 
         FileOutputStream out = new FileOutputStream(file);

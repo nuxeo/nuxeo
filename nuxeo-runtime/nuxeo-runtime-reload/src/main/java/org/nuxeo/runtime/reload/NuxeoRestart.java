@@ -97,7 +97,7 @@ public class NuxeoRestart {
         }
 
         // create lock file
-        File lock = File.createTempFile("nx-restart", ".lock").getCanonicalFile();
+        File lock = Framework.createTempFile("nx-restart", ".lock").getCanonicalFile();
         lock.deleteOnExit();
         cmd.add(lock.getAbsolutePath());
 

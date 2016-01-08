@@ -53,9 +53,9 @@ public class TestXmlCommands extends PackageTestCase {
         builder.installer(InstallTask.class.getName(), true);
         builder.uninstaller(UninstallTask.class.getName(), true);
         builder.addLicense("My test license. All rights reserved.");
-        File file = File.createTempFile("nxinstall-file-", ".tmp");
+        File file = Framework.createTempFile("nxinstall-file-", ".tmp");
         Framework.trackFile(file, this);
-        File tofile = File.createTempFile("nxinstall-tofile-", ".tmp");
+        File tofile = Framework.createTempFile("nxinstall-tofile-", ".tmp");
         Framework.trackFile(tofile, this);
         builder.addInstallScript("<install>\n  <copy file=\"" + file.getAbsolutePath() + "\" tofile=\""
                 + tofile.getAbsolutePath() + "\" overwrite=\"true\"/>\n</install>\n");

@@ -63,7 +63,7 @@ public class ZipReader extends AbstractDocumentReader {
         } else { // not a nuxeo archive file
             File root = null;
             try {
-                root = File.createTempFile("nuxeo-import-", ".unzip");
+                root = Framework.createTempFile("nuxeo-import-", ".unzip");
                 Framework.trackFile(root, root);
                 root.delete();
                 root.mkdirs();

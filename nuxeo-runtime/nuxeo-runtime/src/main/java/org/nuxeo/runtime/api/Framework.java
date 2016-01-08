@@ -21,8 +21,12 @@
 package org.nuxeo.runtime.api;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
 import java.util.List;
 import java.util.Properties;
 
@@ -529,6 +533,120 @@ public final class Framework {
     }
 
     public static void main(String[] args) {
+    }
+
+    /**
+     * Creates an empty file in the framework temporary-file directory ({@code nuxeo.tmp.dir} vs {@code java.io.tmpdir}
+     * ), using the given prefix and suffix to generate its name.
+     * <p>
+     * Invoking this method is equivalent to invoking
+     * <code>{@link File#createTempFile(java.lang.String, java.lang.String, java.io.File)
+     * File.createTempFile(prefix,&nbsp;suffix,&nbsp;Environment.getDefault().getTemp())}</code>.
+     * <p>
+     * The {@link #createTempFilePath(String, String, FileAttribute...)} method provides an alternative method to create
+     * an empty file in the framework temporary-file directory. Files created by that method may have more restrictive
+     * access permissions to files created by this method and so may be more suited to security-sensitive applications.
+     *
+     * @param prefix The prefix string to be used in generating the file's name; must be at least three characters long
+     * @param suffix The suffix string to be used in generating the file's name; may be <code>null</code>, in which case
+     *            the suffix <code>".tmp"</code> will be used
+     * @return An abstract pathname denoting a newly-created empty file
+     * @throws IllegalArgumentException If the <code>prefix</code> argument contains fewer than three characters
+     * @throws IOException If a file could not be created
+     * @throws SecurityException If a security manager exists and its <code>
+     *             {@link java.lang.SecurityManager#checkWrite(java.lang.String)}</code> method does not allow a file to
+     *             be created
+     * @since 8.1
+     * @see File#createTempFile(String, String, File)
+     * @see Environment#getTemp()
+     * @see #createTempFilePath(String, String, FileAttribute...)
+     * @see #createTempDirectory(String, FileAttribute...)
+     */
+    public static File createTempFile(String prefix, String suffix) throws IOException {
+        try {
+            return File.createTempFile(prefix, suffix, getTempDir());
+        } catch (IOException e) {
+            throw new IOException("Could not create temp file in " + getTempDir(), e);
+        }
+    }
+
+    /**
+     * @return the Nuxeo temp dir returned by {@link Environment#getTemp()}. If the Environment fails to initialize,
+     *         then returns the File denoted by {@code "nuxeo.tmp.dir"} System property, or {@code "java.io.tmpdir"}.
+     * @since 8.1
+     */
+    private static File getTempDir() {
+        Environment env = Environment.getDefault();
+        File temp = env != null ? env.getTemp() : new File(System.getProperty("nuxeo.tmp.dir",
+                System.getProperty("java.io.tmpdir")));
+        temp.mkdirs();
+        return temp;
+    }
+
+    /**
+     * Creates an empty file in the framework temporary-file directory ({@code nuxeo.tmp.dir} vs {@code java.io.tmpdir}
+     * ), using the given prefix and suffix to generate its name. The resulting {@code Path} is associated with the
+     * default {@code FileSystem}.
+     * <p>
+     * Invoking this method is equivalent to invoking
+     * {@link Files#createTempFile(Path, String, String, FileAttribute...)
+     * Files.createTempFile(Environment.getDefault().getTemp().toPath(),&nbsp;prefix,&nbsp;suffix,&nbsp;attrs)}.
+     *
+     * @param prefix the prefix string to be used in generating the file's name; may be {@code null}
+     * @param suffix the suffix string to be used in generating the file's name; may be {@code null}, in which case "
+     *            {@code .tmp}" is used
+     * @param attrs an optional list of file attributes to set atomically when creating the file
+     * @return the path to the newly created file that did not exist before this method was invoked
+     * @throws IllegalArgumentException if the prefix or suffix parameters cannot be used to generate a candidate file
+     *             name
+     * @throws UnsupportedOperationException if the array contains an attribute that cannot be set atomically when
+     *             creating the directory
+     * @throws IOException if an I/O error occurs or the temporary-file directory does not exist
+     * @throws SecurityException In the case of the default provider, and a security manager is installed, the
+     *             {@link SecurityManager#checkWrite(String) checkWrite} method is invoked to check write access to the
+     *             file.
+     * @since 8.1
+     * @see Files#createTempFile(Path, String, String, FileAttribute...)
+     * @see Environment#getTemp()
+     * @see #createTempFile(String, String)
+     */
+    public static Path createTempFilePath(String prefix, String suffix, FileAttribute<?>... attrs) throws IOException {
+        try {
+            return Files.createTempFile(getTempDir().toPath(), prefix, suffix, attrs);
+        } catch (IOException e) {
+            throw new IOException("Could not create temp file in " + getTempDir(), e);
+        }
+    }
+
+    /**
+     * Creates a new directory in the framework temporary-file directory ({@code nuxeo.tmp.dir} vs
+     * {@code java.io.tmpdir}), using the given prefix to generate its name. The resulting {@code Path} is associated
+     * with the default {@code FileSystem}.
+     * <p>
+     * Invoking this method is equivalent to invoking {@link Files#createTempDirectory(Path, String, FileAttribute...)
+     * Files.createTempDirectory(Environment.getDefault().getTemp().toPath(),&nbsp;prefix,&nbsp;suffix,&nbsp;attrs)}.
+     *
+     * @param prefix the prefix string to be used in generating the directory's name; may be {@code null}
+     * @param attrs an optional list of file attributes to set atomically when creating the directory
+     * @return the path to the newly created directory that did not exist before this method was invoked
+     * @throws IllegalArgumentException if the prefix cannot be used to generate a candidate directory name
+     * @throws UnsupportedOperationException if the array contains an attribute that cannot be set atomically when
+     *             creating the directory
+     * @throws IOException if an I/O error occurs or the temporary-file directory does not exist
+     * @throws SecurityException In the case of the default provider, and a security manager is installed, the
+     *             {@link SecurityManager#checkWrite(String) checkWrite} method is invoked to check write access when
+     *             creating the directory.
+     * @since 8.1
+     * @see Files#createTempDirectory(Path, String, FileAttribute...)
+     * @see Environment#getTemp()
+     * @see #createTempFile(String, String)
+     */
+    public static Path createTempDirectory(String prefix, FileAttribute<?>... attrs) throws IOException {
+        try {
+            return Files.createTempDirectory(getTempDir().toPath(), prefix, attrs);
+        } catch (IOException e) {
+            throw new IOException("Could not create temp directory in " + getTempDir(), e);
+        }
     }
 
 }

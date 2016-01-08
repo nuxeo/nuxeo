@@ -11,6 +11,10 @@
   <name>Nuxeo Forms Layout IO</name>
 
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
 
     <!-- minimal dependencies to be easily used by GWT code, for instance -->
     <dependency>

@@ -55,6 +55,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.deployment.NuxeoStarter;
 
 import org.w3c.dom.Document;
@@ -229,7 +230,7 @@ public class PackWar {
      * @since 5.9.3
      */
     private File listNuxeoBundles() throws IOException {
-        File nuxeoBundles = File.createTempFile(NuxeoStarter.NUXEO_BUNDLES_LIST, "");
+        File nuxeoBundles = Framework.createTempFile(NuxeoStarter.NUXEO_BUNDLES_LIST, "");
         File[] bundles = new File(nxserver, "bundles").listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {

@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.runtime.api.Framework;
 
 public class PDF2TextConverter implements Converter {
 
@@ -139,7 +140,7 @@ public class PDF2TextConverter implements Converter {
                 String text = textStripper.getText(document);
                 // replace non breaking space by regular spaces (why?)
                 // text = text.replace("\u00a0", " ");
-                f = File.createTempFile("pdfboplugin", ".txt");
+                f = Framework.createTempFile("pdfboplugin", ".txt");
                 fas = new FileOutputStream(f);
                 fas.write(text.getBytes("UTF-8"));
                 try (FileInputStream is = new FileInputStream(f)) {

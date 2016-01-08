@@ -128,7 +128,7 @@ public class SerializableInputStream extends InputStream implements Serializable
         // always perform the default de-serialization first
         in.defaultReadObject();
         // create a temp file where we will put the blob content
-        file = File.createTempFile("SerializableIS-", ".tmp");
+        file = Framework.createTempFile("SerializableIS-", ".tmp");
         Framework.trackFile(file, file);
         OutputStream out = null;
         try {

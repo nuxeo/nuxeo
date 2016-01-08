@@ -48,7 +48,7 @@ public class CryptoKeyStoreTest extends CryptoTest {
         crypto.clear();
 
         // Generate a keystore where to store the key
-        File keystoreFile = File.createTempFile("keystore", ".jceks");
+        File keystoreFile = File.createTempFile("keystore", ".jceks", new File(System.getProperty("java.io.tmpdir")));
         keystoreFile.delete(); // ensure new keystore creation
         for (SecretKey key : secretKeys.values()) {
             Crypto.setKeyInKeyStore(keystoreFile.getPath(), keystorePass, keyAlias + key.getAlgorithm(), keyPass, key);

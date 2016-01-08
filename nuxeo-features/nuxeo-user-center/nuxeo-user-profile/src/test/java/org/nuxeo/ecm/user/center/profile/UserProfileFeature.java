@@ -59,7 +59,7 @@ public class UserProfileFeature extends SimpleFeature {
 
     protected String deployDataFiles() throws IOException {
         File src = new File(org.nuxeo.common.utils.FileUtils.getResourcePathFromContext("data"));
-        File dst = File.createTempFile("nuxeoImportTest", ".dir");
+        File dst = Framework.createTempFile("nuxeoImportTest", ".dir");
         dst.delete();
         dst.mkdir();
         Framework.getProperties().setProperty(UserProfileImporter.BLOB_FOLDER_PROPERTY, dst.getPath() + "/data");

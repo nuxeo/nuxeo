@@ -25,10 +25,13 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.osgi.OSGiComponentLoader;
 import org.nuxeo.runtime.osgi.OSGiRuntimeActivator;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
+
 import org.osgi.framework.BundleContext;
 
 /**
@@ -43,6 +46,7 @@ public class OSGIRuntimeTestActivator extends OSGiRuntimeActivator {
         log.info("Starting Runtime Activator");
         // create the runtime
         runtime = new OSGiRuntimeService(context);
+        System.setProperty("java.io.tmpdir", Environment.getDefault().getTemp().getAbsolutePath());
 
         // load main config file if any
         URL config = context.getBundle().getResource("/OSGI-INF/nuxeo.properties");

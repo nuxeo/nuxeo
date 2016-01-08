@@ -38,6 +38,7 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentM
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleDocumentReaderWithInLineBlobs;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleShadowDocumentWriter;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleXMlDocumentReader;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * DocumentModel marshaler using Core IO services.
@@ -62,7 +63,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
 
         File tmpFile = null;
         try {
-            tmpFile = File.createTempFile("io-marshaling-", "xml");
+            tmpFile = Framework.createTempFile("io-marshaling-", "xml");
             DocumentWriter writer = new XMLDocumentWriter(tmpFile);
             DocumentPipe pipe = new DocumentPipeImpl();
             pipe.setReader(reader);

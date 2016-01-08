@@ -149,7 +149,7 @@ public class FileBlob extends AbstractBlob implements Serializable {
      */
     public FileBlob(String ext) throws IOException {
         isTemporary = true;
-        file = File.createTempFile("nxblob-", ext);
+        file = Framework.createTempFile("nxblob-", ext);
         Framework.trackFile(file, file);
         filename = file.getName();
     }

@@ -48,6 +48,7 @@ import org.mockito.Mock;
 
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
@@ -89,7 +90,7 @@ public class TestFilesystemBlobProvider {
 
     @Before
     public void setUp() throws Exception {
-        tmpFile = Files.createTempFile("tmp", ".txt");
+        tmpFile = Framework.createTempFilePath("tmp", ".txt");
         try (OutputStream out = Files.newOutputStream(tmpFile)) {
             InputStream in = new ByteArrayInputStream(CONTENT.getBytes());
             IOUtils.copy(in, out);

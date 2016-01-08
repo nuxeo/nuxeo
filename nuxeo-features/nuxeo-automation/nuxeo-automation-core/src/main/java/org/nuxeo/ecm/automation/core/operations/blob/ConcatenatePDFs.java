@@ -82,7 +82,7 @@ public class ConcatenatePDFs {
     }
 
     protected Blob appendPDFs(PDFMergerUtility ut) throws IOException, COSVisitorException {
-        File tempFile = File.createTempFile(filename, ".pdf");
+        File tempFile = Framework.createTempFile(filename, ".pdf");
         ut.setDestinationFileName(tempFile.getAbsolutePath());
         ut.mergeDocuments();
         Blob fb = Blobs.createBlob(tempFile);

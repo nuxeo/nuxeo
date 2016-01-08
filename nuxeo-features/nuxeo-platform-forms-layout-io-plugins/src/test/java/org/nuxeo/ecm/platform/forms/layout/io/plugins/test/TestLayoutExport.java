@@ -44,6 +44,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -96,7 +97,7 @@ public class TestLayoutExport {
         if (langFilePath == null) {
             langFilePath = "nolang";
         }
-        File file = File.createTempFile("layout-export-" + langFilePath, ".json");
+        File file = Framework.createTempFile("layout-export-" + langFilePath, ".json");
         FileOutputStream out = new FileOutputStream(file);
         JSONLayoutExporter.export(WebLayoutManager.JSF_CATEGORY, layoutDef, ctx, widgetConverters, out);
         out.close();
@@ -128,7 +129,7 @@ public class TestLayoutExport {
         if (langFilePath == null) {
             langFilePath = "nolang";
         }
-        File file = File.createTempFile("layout-instance-export-" + langFilePath, ".json");
+        File file = Framework.createTempFile("layout-instance-export-" + langFilePath, ".json");
         FileOutputStream out = new FileOutputStream(file);
         JSONObject res = JSONLayoutExporter.exportToJson(layout);
         out.write(res.toString(2).getBytes(JSONLayoutExporter.ENCODED_VALUES_ENCODING));

@@ -1741,8 +1741,8 @@ public class ConfigurationGenerator {
                 }
             }
             env.loadProperties(userConfig);
-            env.init();
             env.setServerHome(getNuxeoHome());
+            env.init();
             env.setData(userConfig.getProperty(Environment.NUXEO_DATA_DIR));
             env.setLog(userConfig.getProperty(Environment.NUXEO_LOG_DIR));
             env.setTemp(userConfig.getProperty(Environment.NUXEO_TMP_DIR));

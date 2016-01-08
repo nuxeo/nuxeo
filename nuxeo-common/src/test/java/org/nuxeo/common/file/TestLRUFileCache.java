@@ -36,7 +36,7 @@ public class TestLRUFileCache {
 
     @Before
     public void setUp() throws Exception {
-        dir = File.createTempFile("nxtestlrufilecache.", "");
+        dir = File.createTempFile("nxtestlrufilecache.", "", new File(System.getProperty("java.io.tmpdir")));
         dir.delete();
         dir.mkdir();
         LRUFileCache.CLEAR_OLD_ENTRIES_INTERVAL_MILLIS = 0; // clear immediately

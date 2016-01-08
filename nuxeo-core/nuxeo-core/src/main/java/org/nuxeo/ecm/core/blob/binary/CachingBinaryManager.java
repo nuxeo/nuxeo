@@ -108,7 +108,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
      */
     public void initializeCache(String maxSizeStr, String maxCountStr, String minAgeStr, FileStorage fileStorage)
             throws IOException {
-        cachedir = File.createTempFile("nxbincache.", "", null);
+        cachedir = Framework.createTempFile("nxbincache.", "");
         cachedir.delete();
         cachedir.mkdir();
         long maxSize = SizeUtils.parseSizeInBytes(maxSizeStr);
