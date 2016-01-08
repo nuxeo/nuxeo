@@ -141,6 +141,9 @@ public class RuntimeDeployment {
                 try {
                     harness.deployBundle(name);
                     bundle = harness.getOSGiAdapter().getBundle(name);
+                    if (bundle == null) {
+                        throw new UnsupportedOperationException("Should not occur");
+                    }
                 } catch (Exception error) {
                     errors.addSuppressed(error);
                     continue;
@@ -158,7 +161,7 @@ public class RuntimeDeployment {
                 }
                 // deploy local contribs
                 for (String resource : localIndex.removeAll(name)) {
-                    URL url = runner.getTargetTestResource(name);
+                    URL url = runner.getTargetTestResource(resource);
                     if (url == null) {
                         url = bundle.getEntry(resource);
                     }
