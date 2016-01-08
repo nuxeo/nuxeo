@@ -310,7 +310,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
         CertService certService = Framework.getLocalService(CertService.class);
         CUserService cUserService = Framework.getLocalService(CUserService.class);
         try {
-            File outputFile = File.createTempFile("signed-", ".pdf");
+            File outputFile = Framework.createTempFile("signed-", ".pdf");
             Blob blob = Blobs.createBlob(outputFile, MIME_TYPE_PDF);
             Framework.trackFile(outputFile, blob);
 
