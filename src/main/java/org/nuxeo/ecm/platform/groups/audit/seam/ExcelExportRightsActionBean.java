@@ -102,7 +102,7 @@ public class ExcelExportRightsActionBean implements Serializable {
     /* XLS REPORT */
 
     public void buildAndSendByMail() throws IOException {
-        File tmpFile = File.createTempFile("rights", ".xls");
+        File tmpFile = Framework.createTempFile("rights", ".xls");
         Framework.trackFile(tmpFile, tmpFile);
         buildAndSendByMail(tmpFile);
     }

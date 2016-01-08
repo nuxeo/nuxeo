@@ -27,9 +27,11 @@ import java.io.Serializable;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * XMap descriptor for contributed export service factory (and template).
@@ -61,7 +63,7 @@ public class ExcelExportServiceDescriptor implements Serializable {
     public void setTemplate(String templatePath) {
         URL templateUrl = ExcelExportServiceDescriptor.class.getResource("/" + templatePath);
         try {
-            template = File.createTempFile("ExcelTemplate", ".xls");
+            template = Framework.createTempFile("ExcelTemplate", ".xls");
             template.createNewFile();
             FileUtils.copyURLToFile(templateUrl, template);
         } catch (IOException e) {
