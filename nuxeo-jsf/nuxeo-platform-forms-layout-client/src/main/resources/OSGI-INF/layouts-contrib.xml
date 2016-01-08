@@ -627,8 +627,8 @@
       <helpLabels>
         <label mode="any">
           JSON configuration map for TinyMCE initialization, that will be merged
-          with default configuration (available since 8.1).
-          Example: {toolbar4: "paste"}
+          with default configuration. Available since 8.1.
+          Example: {"toolbar4": "paste"}
         </label>
       </helpLabels>
       <fields>
