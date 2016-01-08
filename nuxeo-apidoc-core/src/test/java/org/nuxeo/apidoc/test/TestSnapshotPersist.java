@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -177,7 +178,7 @@ public class TestSnapshotPersist {
      * @since 8.1
      */
     protected void testExportImport(DistributionSnapshot snapshot) throws IOException {
-        File tempFile = File.createTempFile("testExportImport", snapshot.getKey());
+        File tempFile = Framework.createTempFile("testExportImport", snapshot.getKey());
         try (OutputStream out = new FileOutputStream(tempFile)) {
             snapshotManager.exportSnapshot(session, snapshot.getKey(), out);
         }
