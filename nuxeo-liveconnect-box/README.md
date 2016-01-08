@@ -1,44 +1,24 @@
-# About Nuxeo Box
+# Nuxeo Live Connect - Box
 
-This module enables the use of remote Box files in Nuxeo.
+Nuxeo Live Connect connector for Box.
 
-When creating or editing a file, a new picker allows you to select a file in your Box.
+# Setting up OAuth with Box
 
-This is a work in progress, therefore it is not yet supported by Nuxeo.
+## Step 1: Preparing your application accounts on the Box App console
 
-# Configuration
-
-You must define in your `nuxeo.conf` a client id key:
-
-    nuxeo.box.clientid = <YOUR-CLIENT-ID>
-
-MORE INFO TBD
-
-# Requirements
-
-This module requires Java 8 and Maven 3.
-
-# Building
- 
-Get the source code:
-
-    git clone git@github.com:nuxeo/nuxeo-box.git
-    cd nuxeo-box
-
-Build using Maven:
-
-    mvn clean install
-
-See our [Core Developer Guide](http://doc.nuxeo.com/x/B4BH) for instructions and guidelines.
-
-TODO Marketplace package
-
-# Licensing
- 
-This module is licensed under the GNU Lesser General Public License (LGPL) version 2.1 (http://www.gnu.org/licenses/lgpl-2.1.html).
- 
-# About Nuxeo
- 
-Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with
-SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Netflix, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris.
-More information is available at [www.nuxeo.com](http://www.nuxeo.com).
+ 1. Go to https://app.box.com/developers/services
+ 2. Click on 'Create a Box Application'.
+ 3. Fill the name of your application and select Box Content.
+ 4. Click on 'Configure your application'.
+ 5. In 'redirect_uri' set the following URL, adapting the hostname and port to your case: https://localhost:8080/nuxeo/site/oauth2/box/callback
+ 6. Copy:
+    - client_id
+    - client_secret
+ 7. Save Application
+ 
+## Step 2: Configuring the Nuxeo Platform
+ 1. In the Nuxeo Platform go to the Admin Center > Cloud Services. 
+ 2. In the 'Service providers' tab, edit the 'box' service provider.
+    - Paste there your client id and secret.
+    - Make sure the 'Enabled' box is checked.
+ 3. Now go to the HOME tab and click 'Cloud Services' tab and click the 'Connect to Box' button or just create a new Box document.
