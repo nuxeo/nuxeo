@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.collections.core.listener;
 
+import static org.nuxeo.ecm.core.api.CoreSession.ALLOW_VERSION_WRITE;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
@@ -80,6 +82,9 @@ public class DuplicatedCollectionListener implements EventListener {
 
         } else if (collectionManager.isCollected(doc)) {
             doc.getAdapter(CollectionMember.class).setCollectionIds(null);
+            if (doc.isVersion()) {
+                doc.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
+            }
             ctx.getCoreSession().saveDocument(doc);
             doc.removeFacet(CollectionConstants.COLLECTABLE_FACET);
         }
