@@ -181,7 +181,11 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         if (isNotBlank(propValue)) {
             return propValue;
         }
-        return Framework.getProperty(getSystemPropertyName(propertyName), defaultValue);
+        propValue = Framework.getProperty(getSystemPropertyName(propertyName));
+        if (isNotBlank(propValue)) {
+            return propValue;
+        }
+        return defaultValue;
     }
 
     /**
