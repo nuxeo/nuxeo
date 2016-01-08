@@ -113,7 +113,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
             assertNotNull(node);
 
             // create a ZIP for the contrib
-            tmp = File.createTempFile("nuxeoRoutingTest", ".zip");
+            tmp = Framework.createTempFile("nuxeoRoutingTest", ".zip");
             ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(tmp));
             URL url = getClass().getResource("/routes/myRoute");
             File dir = new File(url.toURI().getPath());
