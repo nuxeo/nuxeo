@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
     @Override
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder,
             Map<String, Serializable> stringSerializableMap) throws ConversionException {
-        Map<String, Blob> cmdBlobParams = new HashMap<String, Blob>();
+        Map<String, Blob> cmdBlobParams = new HashMap<>();
         cmdBlobParams.put(INPUT_FILE_PATH_PARAMETER, blobHolder.getBlob());
         return cmdBlobParams;
     }
@@ -63,7 +63,7 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
     @Override
     protected Map<String, String> getCmdStringParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
-        Map<String, String> cmdStringParams = new HashMap<String, String>();
+        Map<String, String> cmdStringParams = new HashMap<>();
 
         String baseDir = getTmpDirectory(parameters);
         Path tmpPath = new Path(baseDir).append(getTmpDirectoryPrefix() + "_" + UUID.randomUUID());
@@ -110,7 +110,7 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
     protected BlobHolder buildResult(List<String> cmdOutput, CmdParameters cmdParameters) throws ConversionException {
         String outputPath = cmdParameters.getParameter(OUTPUT_FILE_PATH_PARAMETER);
         File outputFile = new File(outputPath);
-        List<Blob> blobs = new ArrayList<Blob>();
+        List<Blob> blobs = new ArrayList<>();
         String outFileName = cmdParameters.getParameter(OUTPUT_FILE_NAME_PARAMETER);
         if (outFileName == null) {
             outFileName = outputFile.getName();
@@ -125,7 +125,7 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
             throw new ConversionException("Cannot create blob", e);
         }
 
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        Map<String, Serializable> properties = new HashMap<>();
         properties.put("cmdOutput", (Serializable) cmdOutput);
         return new SimpleBlobHolderWithProperties(blobs, properties);
     }
