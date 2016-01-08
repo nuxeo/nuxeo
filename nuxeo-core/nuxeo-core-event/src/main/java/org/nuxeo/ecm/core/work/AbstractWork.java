@@ -75,9 +75,9 @@ public abstract class AbstractWork implements Work {
     /** Suspend acknowledged by the work instance. */
     protected transient volatile boolean suspended;
 
-    protected transient State state;
+    protected State state;
 
-    protected transient Progress progress;
+    protected Progress progress;
 
     /** Repository name for the Work instance, if relevant. */
     protected String repositoryName;
