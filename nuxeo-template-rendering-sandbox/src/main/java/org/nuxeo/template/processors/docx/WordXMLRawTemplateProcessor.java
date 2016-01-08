@@ -123,7 +123,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
 
         String newXMLContent = xmlDoc.asXML();
 
-        File newZipFile = File.createTempFile("newWordXMLTemplate", ".docx");
+        File newZipFile = Framework.createTempFile("newWordXMLTemplate", ".docx");
         xmlCustomFile.delete();
         File newXMLFile = new File(xmlCustomFile.getAbsolutePath());
         FileUtils.writeFile(newXMLFile, newXMLContent);

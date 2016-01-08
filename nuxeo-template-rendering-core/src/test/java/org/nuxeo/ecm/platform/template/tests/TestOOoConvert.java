@@ -42,14 +42,14 @@ public class TestOOoConvert extends BaseConverterTest {
 
             BlobHolder result = cs.convert(converterName, bh, null);
 
-            File odtFile = File.createTempFile("htmlfile", "odt");
+            File odtFile = Framework.createTempFile("htmlfile", "odt");
 
             result.getBlob().transferTo(odtFile);
 
             bh = getBlobFromPath("data/testMe.md", "text/x-web-markdown");
             assertEquals("any2odt", converterName);
 
-            File odtFile2 = File.createTempFile("mdfile", "odt");
+            File odtFile2 = Framework.createTempFile("mdfile", "odt");
 
             result = cs.convert(converterName, bh, null);
             result.getBlob().transferTo(odtFile2);
@@ -74,7 +74,7 @@ public class TestOOoConvert extends BaseConverterTest {
 
             BlobHolder result = cs.convert(converterName, bh, null);
 
-            File pdfFile = File.createTempFile("testfile", "pdf");
+            File pdfFile = Framework.createTempFile("testfile", "pdf");
 
             result.getBlob().transferTo(pdfFile);
 

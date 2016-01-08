@@ -54,7 +54,7 @@ public class DeckJSPDFConverter implements Converter {
         Blob blob = blobHolder.getBlob();
         File jsFile = null;
         try (CloseableFile inputFile = blob.getCloseableFile(".html")) {
-            jsFile = File.createTempFile("phantomJsScript", ".js");
+            jsFile = Framework.createTempFile("phantomJsScript", ".js");
             try (InputStream is = TemplateBundleActivator.getResourceAsStream(DeckJSConverterConstants.DECK_JS2PDF_JS_SCRIPT_PATH)) {
                 Files.copy(is, jsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
