@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.work.api.Work.State.CANCELED;
 import static org.nuxeo.ecm.core.work.api.Work.State.COMPLETED;
+import static org.nuxeo.ecm.core.work.api.Work.State.FAILED;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
 import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 
@@ -74,6 +75,20 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         public void work() {
             FileEvent.onFile(this, file, this).send();
             SequenceTracer.mark("send event");
+        }
+    }
+
+    protected static class SleepAndFailWork extends SleepWork {
+        private static final long serialVersionUID = 1L;
+
+        public SleepAndFailWork(long durationMillis, boolean debug, String id) {
+            super(durationMillis, debug, id);
+        }
+
+        @Override
+        public void work() {
+            super.work();
+            throw new RuntimeException(getTitle());
         }
     }
 
@@ -213,16 +228,21 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         service.schedule(work7, Scheduling.CANCEL_SCHEDULED);
         assertEquals(SCHEDULED, work7.getWorkInstanceState());
 
+        SleepAndFailWork work8 = new SleepAndFailWork(0, false, "4");
+        service.schedule(work8);
+
         boolean completed = service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS);
         assertTrue(completed);
 
         assertEquals(COMPLETED, service.getWorkState("1"));
         assertEquals(COMPLETED, service.getWorkState("2"));
         assertEquals(COMPLETED, service.getWorkState("3"));
+        assertEquals(COMPLETED, service.getWorkState("4"));
+        assertEquals(FAILED, service.find("4", COMPLETED).getWorkInstanceState());
         assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, SCHEDULED));
         assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, RUNNING));
         assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, null));
-        assertSetEquals(Arrays.asList("1", "2", "3"), service.listWorkIds(QUEUE, COMPLETED));
+        assertSetEquals(Arrays.asList("1", "2", "3", "4"), service.listWorkIds(QUEUE, COMPLETED));
     }
 
     @Test
