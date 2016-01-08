@@ -959,7 +959,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         for (String facet : getFacets()) {
             CompositeType facetType = schemaManager.getFacet(facet);
-            visit.visitBlobsComplex(state, facetType);
+            if (facetType != null) { // if not obsolete facet
+                visit.visitBlobsComplex(state, facetType);
+            }
         }
         // proxy schemas
         if (getProxySchemas() != null) {

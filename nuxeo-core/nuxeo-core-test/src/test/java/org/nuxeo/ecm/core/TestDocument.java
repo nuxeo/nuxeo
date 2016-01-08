@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,6 +54,8 @@ import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -80,6 +83,9 @@ public class TestDocument {
 
     @Inject
     protected CoreSession coreSession;
+
+    @Inject
+    protected SchemaManager schemaManager;
 
     protected Session session;
 
@@ -412,6 +418,36 @@ public class TestDocument {
         assertEquals("content1-updated", b1.getString());
         Blob b2 = (Blob) doc.getValue("cmpf:attachedFile/vignettes/1/content");
         assertEquals("content2-updated", b2.getString());
+    }
+
+    @Test
+    public void testBlobsVisitorWithOldFacet() throws Exception {
+        Document root = session.getRootDocument();
+        Document doc = root.addChild("doc", "ComplexDoc");
+        doc.addFacet("Aged");
+
+        Blob blob = Blobs.createBlob("content1", "text/plain");
+        doc.setValue("cmpf:attachedFile",
+                Collections.singletonMap("vignettes", Arrays.asList(Collections.singletonMap("content", blob))));
+
+        // simulate an obsolete Aged facet present on the document but not in the schema manager
+        Map<String, CompositeType> facets = getSchemaManagerFacets();
+        CompositeType agedFacet = facets.remove("Aged");
+        try {
+            // list the paths
+            List<String> paths = new ArrayList<>();
+            doc.visitBlobs(accessor -> paths.add(accessor.getXPath()));
+            assertEquals(Arrays.asList("cmpf:attachedFile/vignettes/0/content"), paths);
+        } finally {
+            facets.put("Aged", agedFacet);
+        }
+    }
+
+    /** Gets the facets internal datastructure from the schema manager. */
+    protected Map<String, CompositeType> getSchemaManagerFacets() throws Exception {
+        Field field = schemaManager.getClass().getDeclaredField("facets");
+        field.setAccessible(true);
+        return (Map<String, CompositeType>) field.get(schemaManager);
     }
 
     @Test
