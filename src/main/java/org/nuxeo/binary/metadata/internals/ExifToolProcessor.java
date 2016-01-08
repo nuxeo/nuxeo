@@ -217,7 +217,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         if (!VALID_EXT.matcher(ext).matches()) {
             ext = "tmp";
         }
-        File tmp = File.createTempFile("nxblob-", '.' + ext);
+        File tmp = Framework.createTempFile("nxblob-", '.' + ext);
         File file = blob.getFile();
         if (file == null) {
             // if we don't have an underlying File, use a temporary File
