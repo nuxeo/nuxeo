@@ -48,6 +48,7 @@
             incremental_smart_query_selection
           </property>
           <property name="updateQueryPart">false</property>
+          <property name="displayAddWaiter">true</property>
         </properties>
       </widget>
       <widget name="selected_rows" type="layout">

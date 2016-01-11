@@ -662,6 +662,7 @@
                 incremental_smart_query_selection
               </property>
               <property name="updateQueryPart">true</property>
+              <property name="displayAddWaiter">false</property>
             </properties>
           </widget>
         </subWidgets>
