@@ -131,5 +131,10 @@
       <artifactId>nuxeo-platform-userworkspace-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-user-dashboard</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
