@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,30 @@ import org.nuxeo.runtime.services.event.EventService;
 
 /**
  * Runtime events about transient files which should be deleted once the runtime leave the thread (
- * {@link FileEventTracker}. Producers should use the static {@link FileEvent#onEnter(Object, boolean)} and
- * {@link FileEvent#onLeave(Object)} factory methods and fire events by invoking the event's {@link FileEvent#send()}
- * method. Consumers should implements the {@link FileEventHandler} interface and register it in the
- * {@link EventService} using the {@link FileEventListener} wrapper.
+ * {@link FileEventTracker}).
+ * <p>
+ * Producers should use the static {@link FileEvent#onFile(Object, File, Object)} factory method and fire events by
+ * invoking the event's {@link FileEvent#send()} method:
+ *
+ * <pre>
+ * FileEvent.onFile(source, aFile, aMarker).send();
+ * </pre>
+ * <p>
+ * Consumers should implements the {@link FileEventHandler} interface and register in the {@link EventService} using the
+ * {@link FileEventListener} wrapper:
+ *
+ * <pre>
+ * FileEventListener filesListener = new FileEventListener(new FileEventHandler() {
+ *     &#064;Override
+ *     public void onFile(File file, Object marker) {
+ *         ...
+ *     }
+ * });
+ * ...
+ * filesListener.install();
+ * ...
+ * filesListener.uninstall();
+ * </pre>
  *
  * @author Stephane Lacoin at Nuxeo (aka matic)
  * @since 6.0

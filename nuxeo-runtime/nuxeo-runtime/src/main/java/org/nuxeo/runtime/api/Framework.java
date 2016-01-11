@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -503,14 +503,15 @@ public final class Framework {
     }
 
     /**
-     * Strategy is now always FileDeleteStrategy.FORCE unless you've specified another one
+     * Strategy is not customizable anymore.
      *
      * @deprecated
      * @since 6.0
      * @see #trackFile(File, Object)
+     * @see org.nuxeo.runtime.trackers.files.FileEventTracker.SafeFileDeleteStrategy
      * @param file The file to delete
      * @param marker the marker Object
-     * @param fileDeleteStrategy add a custom delete strategy
+     * @param fileDeleteStrategy ignored deprecated parameter
      */
     @Deprecated
     public static void trackFile(File file, Object marker, FileDeleteStrategy fileDeleteStrategy) {
