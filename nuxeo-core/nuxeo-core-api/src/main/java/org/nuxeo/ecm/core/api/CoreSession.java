@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,13 +140,11 @@ public interface CoreSession extends AutoCloseable {
 
     /**
      * Cancels any pending change made through this session.
-     *
      */
     void cancel();
 
     /**
      * Saves any pending changes done until now through this session.
-     *
      */
     void save();
 
@@ -173,20 +171,11 @@ public interface CoreSession extends AutoCloseable {
 
     /**
      * Checks if the principal that created the client session has the given privilege on the referred document.
-     *
-     * @param docRef
-     * @param permission
-     * @return
      */
     boolean hasPermission(DocumentRef docRef, String permission);
 
     /**
      * Checks if a given principal has the given privilege on the referred document.
-     *
-     * @param principal
-     * @param docRef
-     * @param permission
-     * @return
      */
     boolean hasPermission(Principal principal, DocumentRef docRef, String permission);
 
@@ -244,7 +233,6 @@ public interface CoreSession extends AutoCloseable {
      * @param parent the document
      * @param name the child name
      * @return {@code true} if the document has a child with the given name
-     *
      * @since 7.3
      */
     boolean hasChild(DocumentRef parent, String name);
@@ -285,7 +273,7 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param parent the parent reference
      * @param type the wanted document type
-     * @param type the permission the user must have
+     * @param perm the permission the user must have
      * @return the documents if any, an empty list if none were found or null if the parent document is not a folder
      */
     DocumentModelList getChildren(DocumentRef parent, String type, String perm);
@@ -317,12 +305,6 @@ public interface CoreSession extends AutoCloseable {
     /**
      * Gets the children of the given parent filtered according to the given document type and permission. Long result
      * sets are loaded frame by frame transparently by the DocumentModelIterator.
-     *
-     * @param parent
-     * @param type
-     * @param perm
-     * @param filter
-     * @return
      */
     DocumentModelIterator getChildrenIterator(DocumentRef parent, String type, String perm, Filter filter);
 
@@ -381,7 +363,7 @@ public interface CoreSession extends AutoCloseable {
      *
      * @since 5.4.2
      */
-    public DocumentRef getParentDocumentRef(DocumentRef docRef);
+    DocumentRef getParentDocumentRef(DocumentRef docRef);
 
     /**
      * Gets the parent document or null if this is the root document.
@@ -428,10 +410,9 @@ public interface CoreSession extends AutoCloseable {
      * <p>
      * Used to fetch initial datamodels from the type definition.
      * <p>
-     * DocumentModel creation notifies a {@link DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED} so that core event
+     * DocumentModel creation notifies a {@link DocumentEventTypes#EMPTY_DOCUMENTMODEL_CREATED} so that core event
      * listener can initialize its content with computed properties.
      *
-     * @param typeName
      * @return the initial document model
      */
     DocumentModel createDocumentModel(String typeName);
@@ -441,12 +422,12 @@ public interface CoreSession extends AutoCloseable {
      * <p>
      * Used to fetch initial datamodels from the type definition.
      * <p>
-     * DocumentModel creation notifies a {@link DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED} so that core event
+     * DocumentModel creation notifies a {@link DocumentEventTypes#EMPTY_DOCUMENTMODEL_CREATED} so that core event
      * listener can initialize its content with computed properties.
      *
-     * @param parentPath
+     * @param parentPath the parent path
      * @param name The destination name
-     * @param typeName
+     * @param typeName the type name
      * @return the initial document model
      */
     DocumentModel createDocumentModel(String parentPath, String name, String typeName);
@@ -456,10 +437,10 @@ public interface CoreSession extends AutoCloseable {
      * <p>
      * Used to fetch initial datamodels from the type definition.
      * <p>
-     * DocumentModel creation notifies a {@link DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED} so that core event
+     * DocumentModel creation notifies a {@link DocumentEventTypes#EMPTY_DOCUMENTMODEL_CREATED} so that core event
      * listener can initialize its content with computed properties.
      *
-     * @param typeName
+     * @param typeName the type name
      * @param options additional contextual data provided to core event listeners
      * @return the initial document model
      */
@@ -586,7 +567,6 @@ public interface CoreSession extends AutoCloseable {
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be preserved
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
-     * @return
      * @since 5.7
      */
     DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle);
@@ -605,7 +585,6 @@ public interface CoreSession extends AutoCloseable {
      * @param src the documents to copy
      * @param dst the destination folder
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
-     * @return
      * @since 5.7
      */
     List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle);
@@ -627,7 +606,6 @@ public interface CoreSession extends AutoCloseable {
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be preserved
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
-     * @return
      * @since 5.7
      */
     DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle);
@@ -646,7 +624,6 @@ public interface CoreSession extends AutoCloseable {
      * @param src the documents to copy
      * @param dst the destination folder
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
-     * @return
      * @since 5.7
      */
     List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle);
@@ -711,10 +688,6 @@ public interface CoreSession extends AutoCloseable {
      * true.
      * <p>
      * Setting a null ACP when <code>overwrite</code> is false will do nothing.
-     *
-     * @param docRef
-     * @param acp
-     * @param overwrite
      */
     void setACP(DocumentRef docRef, ACP acp, boolean overwrite);
 
@@ -840,7 +813,6 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param docRef the reference to the document
      * @param version the version for which we want the corresponding document
-     * @return
      */
     DocumentModel getDocumentWithVersion(DocumentRef docRef, VersionModel version);
 
@@ -930,7 +902,6 @@ public interface CoreSession extends AutoCloseable {
      * Returns whether the current document is checked-out or not.
      *
      * @param docRef the reference to the document
-     * @return
      */
     boolean isCheckedOut(DocumentRef docRef);
 
@@ -1027,7 +998,7 @@ public interface CoreSession extends AutoCloseable {
      *            If {@code n}, count the total number if there are less than n documents otherwise set the size to
      *            {@code -1}.
      * @return the query result
-     * @Since 5.6
+     * @since 5.6
      */
     DocumentModelList query(String query, Filter filter, long limit, long offset, long countUpTo);
 
@@ -1175,7 +1146,6 @@ public interface CoreSession extends AutoCloseable {
      * Creates an array with all parent refs starting from the given document up to the root. So the return value will
      * have [0] = parent ref; [1] = parent parent ref... etc.
      *
-     * @param docRef
      * @return an array with ancestor documents ref
      */
     DocumentRef[] getParentDocumentRefs(DocumentRef docRef);
@@ -1233,7 +1203,7 @@ public interface CoreSession extends AutoCloseable {
     /**
      * Sets a lock on the given document.
      *
-     * @param doc the document reference
+     * @param docRef the document reference
      * @return the lock info that was set
      * @throws LockException if the document is already locked
      * @since 5.4.2
@@ -1246,7 +1216,7 @@ public interface CoreSession extends AutoCloseable {
      * Lock info is never cached, and needs to use a separate transaction in a separate thread, so care should be taken
      * to not call this method needlessly.
      *
-     * @param doc the document reference
+     * @param docRef the document reference
      * @return the lock info if the document is locked, or {@code null} otherwise
      * @since 5.4.2
      */
@@ -1275,8 +1245,6 @@ public interface CoreSession extends AutoCloseable {
      * <p>
      * Usage: As an administrator, you may want to add new users or groups. This method needs to be called to grand
      * default reading permissions on the root document of the repository for the newly created users/groups.
-     *
-     * @param userOrGroupName
      */
     void applyDefaultPermissions(String userOrGroupName);
 
@@ -1294,8 +1262,6 @@ public interface CoreSession extends AutoCloseable {
      * Publishes the document in a section overwriting any existing proxy to the same document. This is simmilar to
      * publishDocument(docToPublish, section, true);
      *
-     * @param docToPublish
-     * @param section
      * @return The proxy document that was created
      * @since 1.4.1 for the case where docToPublish is a proxy
      */
@@ -1304,9 +1270,6 @@ public interface CoreSession extends AutoCloseable {
     /**
      * Publishes the document in a section.
      *
-     * @param docToPublish
-     * @param section
-     * @param overwriteExistingProxy
      * @return The proxy document that was created
      */
     DocumentModel publishDocument(DocumentModel docToPublish, DocumentModel section, boolean overwriteExistingProxy);
@@ -1343,16 +1306,12 @@ public interface CoreSession extends AutoCloseable {
     /**
      * Returns the type of his parent SuperSpace (workspace, section, etc.). SuperSpace is qualified by the SuperSpace
      * facet.
-     *
-     * @param doc
-     * @return
      */
     String getSuperParentType(DocumentModel doc);
 
     /**
      * Returns the parent SuperSpace (workspace, section, etc.). SuperSpace is qualified by the SuperSpace facet.
      *
-     * @param doc
      * @return DocumentModel of SuperSpace
      */
     DocumentModel getSuperSpace(DocumentModel doc);
@@ -1366,22 +1325,11 @@ public interface CoreSession extends AutoCloseable {
 
     /**
      * Gets system property of the specified type for the document ref.
-     *
-     * @param <T>
-     * @param ref
-     * @param systemProperty
-     * @param type
-     * @return
      */
     <T extends Serializable> T getDocumentSystemProp(DocumentRef ref, String systemProperty, Class<T> type);
 
     /**
      * Sets given value as a system property.
-     *
-     * @param <T>
-     * @param ref
-     * @param systemProperty
-     * @param value
      */
     <T extends Serializable> void setDocumentSystemProp(DocumentRef ref, String systemProperty, T value);
 
@@ -1420,7 +1368,6 @@ public interface CoreSession extends AutoCloseable {
      * Provides the full list of all permissions or groups of permissions that contain the given one (inclusive). It
      * makes the method {@link org.nuxeo.ecm.core.security.SecurityService#getPermissionsToCheck} available remote.
      *
-     * @param permission
      * @return the list, as an array of strings.
      */
     String[] getPermissionsToCheck(String permission);
@@ -1442,7 +1389,7 @@ public interface CoreSession extends AutoCloseable {
     /**
      * Gets the fulltext extracted from the binary fields.
      *
-     * @param doc the document reference
+     * @param ref the document reference
      * @return the fulltext map or {@code null} if not supported.
      * @since 5.9.3
      */

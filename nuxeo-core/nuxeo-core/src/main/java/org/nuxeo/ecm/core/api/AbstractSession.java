@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ import com.codahale.metrics.SharedMetricRegistries;
  */
 public abstract class AbstractSession implements CoreSession, Serializable {
 
-    public static final NuxeoPrincipal ANONYMOUS = new UserPrincipal("anonymous", new ArrayList<String>(), true, false);
+    public static final NuxeoPrincipal ANONYMOUS = new UserPrincipal("anonymous", new ArrayList<>(), true, false);
 
     private static final Log log = LogFactory.getLog(CoreSession.class);
 
@@ -150,12 +150,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     protected Counter updateDocumentCount;
 
     protected void createMetrics() {
-        createDocumentCount = registry.counter(
-                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "create"));
-        deleteDocumentCount = registry.counter(
-                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "delete"));
-        updateDocumentCount = registry.counter(
-                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "update"));
+        createDocumentCount = registry.counter(MetricRegistry.name("nuxeo.repositories", getRepositoryName(),
+                "documents", "create"));
+        deleteDocumentCount = registry.counter(MetricRegistry.name("nuxeo.repositories", getRepositoryName(),
+                "documents", "delete"));
+        updateDocumentCount = registry.counter(MetricRegistry.name("nuxeo.repositories", getRepositoryName(),
+                "documents", "update"));
     }
 
     /**
@@ -207,13 +207,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (!hasPermission(doc, permission)) {
             log.debug("Permission '" + permission + "' is not granted to '" + getPrincipal().getName()
                     + "' on document " + doc.getPath() + " (" + doc.getUUID() + " - " + doc.getType().getName() + ")");
-            throw new DocumentSecurityException(
-                    "Privilege '" + permission + "' is not granted to '" + getPrincipal().getName() + "'");
+            throw new DocumentSecurityException("Privilege '" + permission + "' is not granted to '"
+                    + getPrincipal().getName() + "'");
         }
     }
 
     protected Map<String, Serializable> getContextMapEventInfo(DocumentModel doc) {
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         if (doc != null) {
             ScopedMap ctxData = doc.getContextData();
             if (ctxData != null) {
@@ -231,8 +231,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         return ctx;
     }
 
-    protected void notifyEvent(String eventId, DocumentModel source, Map<String, Serializable> options, String category,
-            String comment, boolean withLifeCycle, boolean inline) {
+    protected void notifyEvent(String eventId, DocumentModel source, Map<String, Serializable> options,
+            String category, String comment, boolean withLifeCycle, boolean inline) {
 
         DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
 
@@ -277,13 +277,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * Sends change notifications to core event listeners. The event contains info with older document (before version
      * change) and newer doc (current document).
      *
-     * @param oldDocument
-     * @param newDocument
      * @param options additional info to pass to the event
      */
     protected void notifyVersionChange(DocumentModel oldDocument, DocumentModel newDocument,
             Map<String, Serializable> options) {
-        final Map<String, Serializable> info = new HashMap<String, Serializable>();
+        final Map<String, Serializable> info = new HashMap<>();
         if (options != null) {
             info.putAll(options);
         }
@@ -334,7 +332,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         case DocumentRef.PATH:
             return getSession().resolvePath((String) ref);
         case DocumentRef.INSTANCE:
-            return getSession().getDocumentByUUID(((DocumentModel)ref).getId());
+            return getSession().getDocumentByUUID(((DocumentModel) ref).getId());
         default:
             throw new IllegalArgumentException("Invalid type: " + type);
         }
@@ -378,7 +376,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             PathRef.checkName(name);
         }
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
 
         // add the destination name, destination, resetLifeCycle flag and
         // source references in
@@ -418,7 +416,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
-        List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
+        List<DocumentModel> newDocuments = new ArrayList<>();
 
         for (DocumentRef ref : src) {
             newDocuments.add(copy(ref, dst, null, resetLifeCycle));
@@ -450,7 +448,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         docModel = createDocument(docModel);
         Document doc = resolveReference(docModel.getRef());
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         // add resetLifeCycle flag to the event
         options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
         // notify document created by copy
@@ -471,7 +469,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
-        List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
+        List<DocumentModel> newDocuments = new ArrayList<>();
 
         for (DocumentRef ref : src) {
             newDocuments.add(copyProxyAsDocument(ref, dst, null, resetLifeCycle));
@@ -606,7 +604,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
         DocumentModel docModel = DocumentModelFactory.createDocumentModel(getSessionId(), docType);
         if (options == null) {
-            options = new HashMap<String, Serializable>();
+            options = new HashMap<>();
         }
         // do not forward this event on the JMS Bus
         options.put("BLOCK_JMS_PRODUCING", true);
@@ -616,13 +614,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModel createDocumentModel(String typeName) {
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         return createDocumentModelFromTypeName(typeName, options);
     }
 
     @Override
     public DocumentModel createDocumentModel(String parentPath, String name, String typeName) {
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         options.put(CoreEventConstants.PARENT_PATH, parentPath);
         options.put(CoreEventConstants.DOCUMENT_MODEL_ID, name);
         options.put(CoreEventConstants.DESTINATION_NAME, name);
@@ -634,7 +632,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModel createDocumentModel(String typeName, Map<String, Object> options) {
 
-        Map<String, Serializable> serializableOptions = new HashMap<String, Serializable>();
+        Map<String, Serializable> serializableOptions = new HashMap<>();
 
         for (Entry<String, Object> entry : options.entrySet()) {
             serializableOptions.put(entry.getKey(), (Serializable) entry.getValue());
@@ -876,7 +874,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document parent = resolveReference(parentRef);
         checkPermission(parent, READ_CHILDREN);
         List<String> ids = parent.getChildrenIds();
-        List<DocumentRef> refs = new ArrayList<DocumentRef>(ids.size());
+        List<DocumentRef> refs = new ArrayList<>(ids.size());
         for (String id : ids) {
             refs.add(new IdRef(id));
         }
@@ -908,7 +906,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModelList getDocuments(DocumentRef[] docRefs) {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>(docRefs.length);
+        List<DocumentModel> docs = new ArrayList<>(docRefs.length);
         for (DocumentRef docRef : docRefs) {
             Document doc;
             try {
@@ -1014,7 +1012,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             throw new IllegalArgumentException("null docRef");
         }
 
-        final List<DocumentModel> docsList = new ArrayList<DocumentModel>();
+        final List<DocumentModel> docsList = new ArrayList<>();
         Document doc = resolveReference(docRef);
         while (doc != null && !"/".equals(doc.getPath())) {
             // XXX OG: shouldn't we check BROWSE and READ_PROPERTIES
@@ -1130,8 +1128,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             String[] permissions = securityService.getPermissionsToCheck(permission);
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions,
                     filter instanceof FacetFilter ? (FacetFilter) filter : null,
-                    securityService.getPoliciesQueryTransformers(repoName), postFilter ? 0 : limit,
-                    postFilter ? 0 : offset);
+                    securityService.getPoliciesQueryTransformers(repoName), postFilter ? 0 : limit, postFilter ? 0
+                            : offset);
 
             // get document list with total size
             PartialList<Document> pl = getSession().query(query, queryType, queryFilter, postFilter ? -1 : countUpTo);
@@ -1272,8 +1270,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 if (baseVersion != null && !baseVersion.isCheckedOut() && baseVersion.getUUID().equals(doc.getUUID())) {
                     return "Working copy " + working.getUUID() + " is checked in with base version " + doc.getUUID();
                 }
-                return hasPermission(working, WRITE_VERSION) ? null
-                        : "Missing permission '" + WRITE_VERSION + "' on working copy " + working.getUUID();
+                return hasPermission(working, WRITE_VERSION) ? null : "Missing permission '" + WRITE_VERSION
+                        + "' on working copy " + working.getUUID();
             } else {
                 // no working document, only admins can remove
                 return isAdministrator() ? null : "No working copy and not an Administrator";
@@ -1289,8 +1287,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             if (parent == null) {
                 return null; // ok
             }
-            return hasPermission(parent, REMOVE_CHILDREN) ? null
-                    : "Missing permission '" + REMOVE_CHILDREN + "' on parent document " + parent.getUUID();
+            return hasPermission(parent, REMOVE_CHILDREN) ? null : "Missing permission '" + REMOVE_CHILDREN
+                    + "' on parent document " + parent.getUUID();
         }
     }
 
@@ -1304,8 +1302,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             String reason = canRemoveDocument(doc);
             if (reason != null) {
-                throw new DocumentSecurityException(
-                        "Permission denied: cannot remove document " + doc.getUUID() + ", " + reason);
+                throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID() + ", "
+                        + reason);
             }
             removeNotifyOneDoc(doc);
 
@@ -1319,7 +1317,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     protected void removeNotifyOneDoc(Document doc) {
         // XXX notify with options if needed
         DocumentModel docModel = readModel(doc);
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         if (docModel != null) {
             options.put("docTitle", docModel.getTitle());
         }
@@ -1385,7 +1383,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public void save() {
         try {
-            final Map<String, Serializable> options = new HashMap<String, Serializable>();
+            final Map<String, Serializable> options = new HashMap<>();
             getSession().save();
             notifyEvent(DocumentEventTypes.SESSION_SAVED, null, options, null, null, true, false);
         } catch (ConcurrentUpdateException e) {
@@ -1397,10 +1395,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModel saveDocument(DocumentModel docModel) {
         if (docModel.getRef() == null) {
-            throw new IllegalArgumentException(String.format(
-                    "cannot save document '%s' with null reference: " + "document has probably not yet been created "
-                            + "in the repository with " + "'CoreSession.createDocument(docModel)'",
-                    docModel.getTitle()));
+            throw new IllegalArgumentException(String.format("cannot save document '%s' with null reference: "
+                    + "document has probably not yet been created " + "in the repository with "
+                    + "'CoreSession.createDocument(docModel)'", docModel.getTitle()));
         }
         Document doc = resolveReference(docModel.getRef());
         checkPermission(doc, WRITE_PROPERTIES);
@@ -1429,8 +1426,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             doc = getSession().move(doc, doc.getParent(), name);
         }
 
-        VersioningOption versioningOption = (VersioningOption) docModel.getContextData(
-                VersioningService.VERSIONING_OPTION);
+        VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
         docModel.putContextData(VersioningService.VERSIONING_OPTION, null);
         String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
         docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
@@ -1438,12 +1434,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, null);
         options.put(VersioningService.DISABLE_AUTO_CHECKOUT, disableAutoCheckOut);
         // compat
-        boolean snapshot = Boolean.TRUE.equals(
-                docModel.getContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY));
+        boolean snapshot = Boolean.TRUE.equals(docModel.getContextData(ScopeType.REQUEST,
+                VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY));
         docModel.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
         if (versioningOption == null && snapshot && dirty) {
-            String key = String.valueOf(
-                    docModel.getContextData(ScopeType.REQUEST, VersioningDocument.KEY_FOR_INC_OPTION));
+            String key = String.valueOf(docModel.getContextData(ScopeType.REQUEST,
+                    VersioningDocument.KEY_FOR_INC_OPTION));
             docModel.putContextData(ScopeType.REQUEST, VersioningDocument.KEY_FOR_INC_OPTION, null);
             versioningOption = "inc_major".equals(key) ? VersioningOption.MAJOR : VersioningOption.MINOR;
         }
@@ -1560,7 +1556,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_VERSION);
         List<String> ids = doc.getVersionsIds();
-        List<DocumentRef> refs = new ArrayList<DocumentRef>(ids.size());
+        List<DocumentRef> refs = new ArrayList<>(ids.size());
         for (String id : ids) {
             refs.add(new IdRef(id));
         }
@@ -1572,7 +1568,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_VERSION);
         List<Document> docVersions = doc.getVersions();
-        List<DocumentModel> versions = new ArrayList<DocumentModel>(docVersions.size());
+        List<DocumentModel> versions = new ArrayList<>(docVersions.size());
         for (Document version : docVersions) {
             versions.add(readModel(version));
         }
@@ -1584,7 +1580,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_VERSION);
         List<Document> docVersions = doc.getVersions();
-        List<VersionModel> versions = new ArrayList<VersionModel>(docVersions.size());
+        List<VersionModel> versions = new ArrayList<>(docVersions.size());
         for (Document version : docVersions) {
             versions.add(getVersionModel(version));
         }
@@ -1627,7 +1623,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         DocumentModel docModel = readModel(doc);
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
 
         // we're about to overwrite the document, make sure it's archived
         if (!skipSnapshotCreation && doc.isCheckedOut()) {
@@ -1699,7 +1695,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         checkPermission(doc, WRITE_PROPERTIES);
         DocumentModel docModel = readModel(doc);
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
         writeModel(doc, docModel);
 
@@ -1720,12 +1716,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @param docModel work document that has been checked-in as a version
      * @param checkedInVersionRef document ref of the new checked-in version
      * @param options initial option map, or null
-     * @param checkinComment
      */
     protected void notifyCheckedInVersion(DocumentModel docModel, DocumentRef checkedInVersionRef,
             Map<String, Serializable> options, String checkinComment) {
         String label = getVersioningService().getVersionLabel(docModel);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         if (options != null) {
             props.putAll(options);
         }
@@ -1756,7 +1751,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // WRITE_PROPERTIES
         checkPermission(doc, WRITE_PROPERTIES);
         DocumentModel docModel = readModel(doc);
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
 
         notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options, null, null, true, true);
 
@@ -1837,7 +1832,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document fold = resolveReference(folderRef);
         checkPermission(doc, READ);
         checkPermission(fold, ADD_CHILDREN);
-        return createProxyInternal(doc, fold, new HashMap<String, Serializable>());
+        return createProxyInternal(doc, fold, new HashMap<>());
     }
 
     protected DocumentModel createProxyInternal(Document doc, Document folder, Map<String, Serializable> options) {
@@ -1857,7 +1852,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      */
     protected List<String> removeExistingProxies(Document doc, Document folder) {
         Collection<Document> otherProxies = getSession().getProxies(doc, folder);
-        List<String> removedProxyIds = new ArrayList<String>(otherProxies.size());
+        List<String> removedProxyIds = new ArrayList<>(otherProxies.size());
         for (Document otherProxy : otherProxies) {
             removedProxyIds.add(otherProxy.getUUID());
             removeNotifyOneDoc(otherProxy);
@@ -1913,7 +1908,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (children.isEmpty()) {
             return null;
         }
-        List<String> versions = new ArrayList<String>();
+        List<String> versions = new ArrayList<>();
         for (Document child : children) {
             if (hasPermission(child, READ)) {
                 Document target = child.getTargetDocument();
@@ -1981,7 +1976,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @param docRef a {@link DocumentRef}
      * @param transition the transition to follow
      * @param options an option map than can be used by callers to pass additional params
-     * @return
      * @since 5.9.3
      */
     private boolean followTransition(DocumentRef docRef, String transition, ScopedMap options)
@@ -1997,7 +1991,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         doc.followTransition(transition);
 
         // Construct a map holding meta information about the event.
-        Map<String, Serializable> eventOptions = new HashMap<String, Serializable>();
+        Map<String, Serializable> eventOptions = new HashMap<>();
         eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM, formerStateName);
         eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO, doc.getLifeCycleState());
         eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION, transition);
@@ -2055,7 +2049,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentRef[] getParentDocumentRefs(DocumentRef docRef) {
-        final List<DocumentRef> docRefs = new ArrayList<DocumentRef>();
+        final List<DocumentRef> docRefs = new ArrayList<>();
         final Document doc = resolveReference(docRef);
         Document parentDoc = doc.getParent();
         while (parentDoc != null) {
@@ -2083,8 +2077,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             return null;
         }
         // return deprecated format, like "someuser:Nov 29, 2010"
-        String lockCreationDate = (lock.getCreated() == null) ? null
-                : DateFormat.getDateInstance(DateFormat.MEDIUM).format(new Date(lock.getCreated().getTimeInMillis()));
+        String lockCreationDate = (lock.getCreated() == null) ? null : DateFormat.getDateInstance(DateFormat.MEDIUM)
+                                                                                 .format(new Date(
+                                                                                         lock.getCreated()
+                                                                                             .getTimeInMillis()));
         return lock.getOwner() + ':' + lockCreationDate;
     }
 
@@ -2120,7 +2116,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             throw new LockException("Document already locked by " + oldLock.getOwner() + ": " + docRef);
         }
         DocumentModel docModel = readModel(doc);
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         options.put("lock", lock);
         notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options, null, null, true, false);
         return lock;
@@ -2153,7 +2149,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             throw new LockException("Document already locked by " + lock.getOwner() + ": " + docRef);
         }
         DocumentModel docModel = readModel(doc);
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         options.put("lock", lock);
         notifyEvent(DocumentEventTypes.DOCUMENT_UNLOCKED, docModel, options, null, null, true, false);
         return lock;
@@ -2202,14 +2198,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel publishDocument(DocumentModel docModel, DocumentModel section,
-            boolean overwriteExistingProxy) {
+    public DocumentModel publishDocument(DocumentModel docModel, DocumentModel section, boolean overwriteExistingProxy) {
         Document doc = resolveReference(docModel.getRef());
         Document sec = resolveReference(section.getRef());
         checkPermission(doc, READ);
         checkPermission(sec, ADD_CHILDREN);
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         DocumentModel proxy = null;
         Document target;
         if (docModel.isProxy() || docModel.isVersion()) {
@@ -2256,8 +2251,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                     // notify proxy updates
                     notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, proxy, options, null, null, true, false);
                     notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED, proxy, options, null, null, true, false);
-                    notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED, section, options, null, null, true,
-                            false);
+                    notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED, section, options, null, null, true, false);
                 }
             }
         }
@@ -2326,7 +2320,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(ref);
         if (systemProperty != null && systemProperty.startsWith(BINARY_TEXT_SYS_PROP)) {
             DocumentModel docModel = readModel(doc);
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            Map<String, Serializable> options = new HashMap<>();
             options.put(systemProperty, value != null);
             notifyEvent(DocumentEventTypes.BINARYTEXT_UPDATED, docModel, options, null, null, false, true);
         }
@@ -2340,7 +2334,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
         Document doc = resolveReference(parent);
         doc.orderBefore(src, dest);
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
 
         // send event on container passing the reordered child as parameter
         DocumentModel docModel = readModel(doc);
@@ -2354,8 +2348,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(ref);
 
         // permission checks
-        if ((refreshFlags & (DocumentModel.REFRESH_PREFETCH | DocumentModel.REFRESH_STATE
-                | DocumentModel.REFRESH_CONTENT)) != 0) {
+        if ((refreshFlags & (DocumentModel.REFRESH_PREFETCH | DocumentModel.REFRESH_STATE | DocumentModel.REFRESH_CONTENT)) != 0) {
             checkPermission(doc, READ);
         }
         if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {

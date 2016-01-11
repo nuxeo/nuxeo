@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import static org.nuxeo.ecm.webapp.helpers.EventNames.DOMAIN_SELECTION_CHANGED;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -114,9 +113,8 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
             templates = tl;
         } else {
             templates = documentManager.getChildren(tl.get(0).getRef(), targetTypeName);
-            List<DocumentModel> deleted = new ArrayList<DocumentModel>();
-            for (Iterator<DocumentModel> it = templates.iterator(); it.hasNext();) {
-                DocumentModel current = it.next();
+            List<DocumentModel> deleted = new ArrayList<>();
+            for (DocumentModel current : templates) {
                 if (LifeCycleConstants.DELETED_STATE.equals(current.getCurrentLifeCycleState())) {
                     deleted.add(current);
                 }
