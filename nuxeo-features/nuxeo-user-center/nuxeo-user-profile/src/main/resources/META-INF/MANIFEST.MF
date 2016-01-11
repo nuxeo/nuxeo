@@ -10,4 +10,5 @@ Nuxeo-Component: OSGI-INF/actions-contrib.xml,
  OSGI-INF/listeners-contrib.xml,
  OSGI-INF/userprofile-framework.xml,
  OSGI-INF/theme-contrib.xml,
- OSGI-INF/user-locale-contrib.xml
+ OSGI-INF/user-locale-contrib.xml,
+ OSGI-INF/enricher-contrib.xml
