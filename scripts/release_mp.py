@@ -114,8 +114,8 @@ class ReleaseMP(object):
                                      self.mp_config.get(marketplace, "next_snapshot"),
                                      self.mp_config.get(marketplace, "maintenance_version"),
                                      is_final=True,
-                                     skipTests=False,
-                                     skipITs=False,
+                                     skipTests=self.mp_config.getboolean(marketplace, "skipTests"),
+                                     skipITs=self.mp_config.getboolean(marketplace, "skipTests"),
                                      other_versions=self.mp_config.get(marketplace, "other_versions", None))
                 mp_release.log_summary()
                 mp_release.prepare(dryrun=dryrun, upgrade_only=upgrade_only,
