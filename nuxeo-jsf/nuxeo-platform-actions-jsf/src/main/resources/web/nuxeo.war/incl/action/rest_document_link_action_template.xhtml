@@ -71,7 +71,7 @@
     <h:commandLink
       id="#{widget.id}"
       action="#{webActions.setCurrentTabIds(tabIds)}"
-      onclick="history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{onclick}"
+      onclick="if (!(jQuery(this).checkSafeEdit())){return false;};history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{onclick}"
       styleClass="#{actionStyleClass} #{action.properties.styleClass}"
       accessKey="#{action.accessKey}">
       <f:ajax execute="@this" render="#{ajaxReRender}" />
