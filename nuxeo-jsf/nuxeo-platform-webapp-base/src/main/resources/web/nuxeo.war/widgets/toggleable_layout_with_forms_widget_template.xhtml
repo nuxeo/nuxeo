@@ -147,7 +147,7 @@
               <ui:param name="formId" value="#{widget.id}_toggledForm" />
               <ui:param name="useAjaxForm" value="#{useAjaxForm}" />
               <ui:param name="onFormSubmit" value="#{nxu:test(useAjaxForm, 'onSubmitToggledForm(); return true;', '')}" />
-              <ui:param name="formStyleClass" value="#{nxu:test(useAjaxForm, safeEditEnabled, '')}" />
+              <ui:param name="formStyleClass" value="safeEditEnabled" />
               <ui:param name="disableDoubleClickShield" value="#{disableDoubleClickShield}" />
 
               <ui:define name="form_template_content">
