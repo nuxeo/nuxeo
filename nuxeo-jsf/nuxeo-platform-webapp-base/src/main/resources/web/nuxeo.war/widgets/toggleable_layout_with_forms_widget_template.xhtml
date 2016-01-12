@@ -153,13 +153,13 @@
               <ui:define name="form_template_content">
 
                 <c:if test="#{useAjaxForm}">
-                  <script>
+                  <h:outputScript target="#{pageJsTarget}">
                     function onSubmitToggledForm(form) {
                       jQuery(form).data('dirtyPage', false);
                       jQuery(window).unbind('beforeunload');
                       jQuery(form).cleanupSavedData();
                     }
-                  </script>
+                  </h:outputScript>
                 </c:if>
 
                 <nxu:set var="layoutWidgetMode" value="#{toggledMode}">
@@ -228,7 +228,7 @@
 
                 <script>
                   jQuery(document).ready(function(){
-                    var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");;
+                    var #{widget.id}_formId = jQuery('form[id$=#{widget.id}_toggledForm]').attr('id').split(":").join("\\:");
                     jQuery('#' + #{widget.id}_formId).initSafeEditOnForm('toggled-#{widget.id}-#{fieldOrValue}', "#{messages['safeedit.page.has.unsaved.changes']}");
                   });
                 </script>
