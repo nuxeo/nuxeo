@@ -52,4 +52,8 @@ $.fn.initSafeEditOnForm = function(key, message) {
 
 }
 
+$.fn.checkSafeEdit = function() {
+  return jQuery(this).checkSafeEditOnForms(nuxeo.safeEdit.unsavedChangesMessage);
+}
+
 })(jQuery);
