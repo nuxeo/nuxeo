@@ -194,7 +194,7 @@ public class ITSafeEditTest extends AbstractTest {
      * @throws UserNotConnectedException
      * @since 5.7.1
      */
-    private void restoreSate() throws Exception {
+    private void restoreState() throws Exception {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
         usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
@@ -323,7 +323,7 @@ public class ITSafeEditTest extends AbstractTest {
 
         checkSafeEditRestoreProvided();
 
-        triggerSafeEditResotre();
+        triggerSafeEditRestore();
 
         // We check that the title value has actually been restored
         titleElt = driver.findElement(By.name(TITLE_ELT_ID));
@@ -346,7 +346,7 @@ public class ITSafeEditTest extends AbstractTest {
         byPassLeavePagePopup(true);
 
         logout();
-        restoreSate();
+        restoreState();
     }
 
     /**
@@ -400,7 +400,7 @@ public class ITSafeEditTest extends AbstractTest {
 
         checkSafeEditRestoreProvided();
 
-        triggerSafeEditResotre();
+        triggerSafeEditRestore();
 
         waitForSavedNotification();
 
@@ -412,7 +412,7 @@ public class ITSafeEditTest extends AbstractTest {
         editTabSubPage.save();
         logout();
 
-        restoreSate();
+        restoreState();
     }
 
     private void waitForSavedNotification() {
@@ -432,7 +432,7 @@ public class ITSafeEditTest extends AbstractTest {
         }
     }
 
-    private void triggerSafeEditResotre() {
+    private void triggerSafeEditRestore() {
         // Let's restore
         WebElement confirmRestoreYes = driver.findElement(By.linkText("Use Draft"));
         // The following call randomly times out.
