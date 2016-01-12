@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.Session;
@@ -35,16 +36,15 @@ import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
-import org.nuxeo.ecm.automation.core.operations.services
-        .DocumentPageProviderOperation;
-import org.nuxeo.ecm.automation.core.operations.services.query
-        .DocumentPaginatedQuery;
+import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
+import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import javax.inject.Inject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -82,8 +82,8 @@ public class ITRemoteAutomationClientTCK {
         testBlobSuite();
         testPaginationSuite();
         // TODO: NXP-17000 (reactivate when NXBT-902 is resolved)
-        //testComplexPropertiesWithJSON();
-        //testAutomationBusinessObjects();
+        // testComplexPropertiesWithJSON();
+        // testAutomationBusinessObjects();
     }
 
     public void testCRUDSuite() throws Exception {
@@ -113,34 +113,47 @@ public class ITRemoteAutomationClientTCK {
      * Create Read Update Delete
      */
     public void testCreateRoot() throws Exception {
-        folder1 = (Document) session.newRequest("Document.Create").setInput("/").set("type", "Folder").set(
-                "name", "TestFolder1").set("properties", "dc:title=Test Folder2\ndc:description=Simple container").execute();
+        folder1 = (Document) session.newRequest("Document.Create")
+                                    .setInput("/")
+                                    .set("type", "Folder")
+                                    .set("name", "TestFolder1")
+                                    .set("properties", "dc:title=Test Folder2\ndc:description=Simple container")
+                                    .execute();
         assertNotNull(folder1);
         assertEquals("/TestFolder1", folder1.getPath());
         assertEquals("Test Folder2", folder1.getTitle());
     }
 
     public void testCreateChild1() throws Exception {
-        Document file = (Document) session.newRequest("Document.Create").setInput("/TestFolder1").set("type", "File").set(
-                "name", "TestFile1").execute();
-        assertNotNull(file);
-        assertEquals("/TestFolder1/TestFile1", file.getPath());
+        Document aFile = (Document) session.newRequest("Document.Create")
+                                           .setInput("/TestFolder1")
+                                           .set("type", "File")
+                                           .set("name", "TestFile1")
+                                           .execute();
+        assertNotNull(aFile);
+        assertEquals("/TestFolder1/TestFile1", aFile.getPath());
     }
 
     public void testCreateChild2() throws Exception {
-        Document file = (Document) session.newRequest("Document.Create").setInput("/TestFolder1").set("type", "File").set(
-                "name", "TestFile2").execute();
-        assertNotNull(file);
-        assertEquals("/TestFolder1/TestFile2", file.getPath());
+        Document aFile = (Document) session.newRequest("Document.Create")
+                                           .setInput("/TestFolder1")
+                                           .set("type", "File")
+                                           .set("name", "TestFile2")
+                                           .execute();
+        assertNotNull(aFile);
+        assertEquals("/TestFolder1/TestFile2", aFile.getPath());
     }
 
     public void testUpdateChild2() throws Exception {
-        Document file = (Document) session.newRequest("Document.Update").setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                "/TestFolder1/TestFile2").set("save", "true").set("properties",
-                "dc:description=Simple File\ndc:subjects=art,sciences").execute();
-        assertNotNull(file);
-        assertEquals("Simple File", file.getProperties().get("dc:description"));
-        assertEquals(2, ((PropertyList) file.getProperties().get("dc:subjects")).size());
+        Document aFile = (Document) session.newRequest("Document.Update")
+                                           .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                           .setInput("/TestFolder1/TestFile2")
+                                           .set("save", "true")
+                                           .set("properties", "dc:description=Simple File\ndc:subjects=art,sciences")
+                                           .execute();
+        assertNotNull(aFile);
+        assertEquals("Simple File", aFile.getProperties().get("dc:description"));
+        assertEquals(2, ((PropertyList) aFile.getProperties().get("dc:subjects")).size());
     }
 
     public void testGetChildren() throws Exception {
@@ -156,23 +169,34 @@ public class ITRemoteAutomationClientTCK {
      */
 
     public void testCreateAnotherRoot() throws Exception {
-        folder2 = (Document) session.newRequest("Document.Create").setInput("/").set("type", "Folder").set(
-                "name", "TestFolder2").set("properties", "dc:title=Test Folder3\ndc:description=Simple container").execute();
+        folder2 = (Document) session.newRequest("Document.Create")
+                                    .setInput("/")
+                                    .set("type", "Folder")
+                                    .set("name", "TestFolder2")
+                                    .set("properties", "dc:title=Test Folder3\ndc:description=Simple container")
+                                    .execute();
         assertNotNull(folder2);
     }
 
     public void testCreateChild(String id) throws Exception {
         String name = "TestFile" + id;
-        Document file = (Document) session.newRequest("Document.Create").setInput("/TestFolder2").set("type", "File").set(
-                "name", name).execute();
-        assertNotNull(file);
+        Document aFile = (Document) session.newRequest("Document.Create")
+                                           .setInput("/TestFolder2")
+                                           .set("type", "File")
+                                           .set("name", name)
+                                           .execute();
+        assertNotNull(aFile);
     }
 
     public void testQueryPage1() throws Exception {
         Document root = (Document) session.newRequest("Document.Fetch").set("value", "/TestFolder2").execute();
-        PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID).set(
-                "query", "select * from Document where ecm:parentId = ?").set("queryParams", root.getId()).set(
-                "pageSize", "2").set("page", "0").execute();
+        PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID)
+                                                              .set("query",
+                                                                      "select * from Document where ecm:parentId = ?")
+                                                              .set("queryParams", root.getId())
+                                                              .set("pageSize", "2")
+                                                              .set("page", "0")
+                                                              .execute();
         assertEquals(2, docs.size());
         assertEquals(2, docs.getPageSize());
         assertEquals(2, docs.getNumberOfPages());
@@ -181,9 +205,13 @@ public class ITRemoteAutomationClientTCK {
 
     public void testQueryPage2() throws Exception {
         Document root = (Document) session.newRequest("Document.Fetch").set("value", "/TestFolder2").execute();
-        PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID).set(
-                "query", "select * from Document where ecm:parentId = ?").set("queryParams", root.getId()).set(
-                "pageSize", "2").set("page", "1").execute();
+        PaginableDocuments docs = (PaginableDocuments) session.newRequest(DocumentPageProviderOperation.ID)
+                                                              .set("query",
+                                                                      "select * from Document where ecm:parentId = ?")
+                                                              .set("queryParams", root.getId())
+                                                              .set("pageSize", "2")
+                                                              .set("page", "1")
+                                                              .execute();
         assertEquals(1, docs.size());
         assertEquals(2, docs.getPageSize());
         assertEquals(2, docs.getNumberOfPages());
@@ -194,24 +222,32 @@ public class ITRemoteAutomationClientTCK {
      * Managing Blobs
      */
     protected File newFile(String content) throws IOException {
-        File file = Framework.createTempFile("automation-test-", ".xml");
-        FileUtils.writeFile(file, content);
-        return file;
+        File aFile = Framework.createTempFile("automation-test-", ".xml");
+        FileUtils.writeFile(aFile, content);
+        return aFile;
     }
 
     // Create documents from Blob using muti-part encoding
     public void testCreateBlobText() throws Exception {
-        folder3 = (Document) session.newRequest("Document.Create").setInput("/").set("type", "Folder").set(
-                "name", "FolderBlob").execute();
+        folder3 = (Document) session.newRequest("Document.Create")
+                                    .setInput("/")
+                                    .set("type", "Folder")
+                                    .set("name", "FolderBlob")
+                                    .execute();
         assertNotNull(folder3);
         assertEquals("/FolderBlob", folder3.getPath());
-        File file = newFile("<doc>mydoc</doc>");
-        FileBlob blob = new FileBlob(file);
+        File aFile = newFile("<doc>mydoc</doc>");
+        FileBlob blob = new FileBlob(aFile);
         blob.setMimeType("text/xml");
-        session.newRequest("FileManager.Import").setInput(blob).setContextProperty("currentDocument", folder3.getPath()).execute();
-        Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID).setHeader(
-                Constants.HEADER_NX_SCHEMAS, "*").set("query",
-                "SELECT * from Document WHERE ecm:path STARTSWITH '/FolderBlob/'").execute();
+        session.newRequest("FileManager.Import")
+               .setInput(blob)
+               .setContextProperty("currentDocument", folder3.getPath())
+               .execute();
+        Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID)
+                                            .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                            .set("query",
+                                                    "SELECT * from Document WHERE ecm:path STARTSWITH '/FolderBlob/'")
+                                            .execute();
         assertEquals(1, docs.size());
         Document document = docs.get(0);
         // get the file content property
@@ -230,20 +266,30 @@ public class ITRemoteAutomationClientTCK {
         // get the root
         Document root = (Document) session.newRequest("Document.Fetch").set("value", "/").execute();
         // create a file document
-        file = (Document) session.newRequest("Document.Create").setInput(root).set("type", "File").set("name", "myfile").set(
-                "properties", "dc:title=My File").execute();
+        file = (Document) session.newRequest("Document.Create")
+                                 .setInput(root)
+                                 .set("type", "File")
+                                 .set("name", "myfile")
+                                 .set("properties", "dc:title=My File")
+                                 .execute();
         // upload file blob
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
         FileBlob fb = new FileBlob(fieldAsJsonFile);
         fb.setMimeType("image/jpeg");
-        session.newRequest("Blob.Attach").setHeader("X-NXVoidOperation", "true").setInput(fb).set("document", "/myfile").execute();
+        session.newRequest("Blob.Attach")
+               .setHeader("X-NXVoidOperation", "true")
+               .setInput(fb)
+               .set("document", "/myfile")
+               .execute();
     }
 
     // Test attaching blob
     public void testGetBlob() throws Exception {
         // get the file document where blob was attached
-        Document doc = (Document) session.newRequest("Document.Fetch").setHeader(Constants.HEADER_NX_SCHEMAS, "*").set(
-                "value", "/myfile").execute();
+        Document doc = (Document) session.newRequest("Document.Fetch")
+                                         .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                         .set("value", "/myfile")
+                                         .execute();
         // get the file content property
         PropertyMap map = doc.getProperties().getMap("file:content");
         // get the data URL
@@ -277,11 +323,17 @@ public class ITRemoteAutomationClientTCK {
         creationProps.put("dc:title", "testDoc");
 
         // Document creation
-        session.newRequest(CreateDocument.ID).setInput(root).set("type", "DataSet").set("name", "testDoc").set(
-                "properties", new PropertyMap(creationProps).toString()).execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput(root)
+               .set("type", "DataSet")
+               .set("name", "testDoc")
+               .set("properties", new PropertyMap(creationProps).toString())
+               .execute();
         // Fetch the document
-        Document document = (Document) session.newRequest("Document.GetChild").setInput(new PathRef("/")).set("name",
-                "testDoc").execute();
+        Document document = (Document) session.newRequest("Document.GetChild")
+                                              .setInput(new PathRef("/"))
+                                              .set("name", "testDoc")
+                                              .execute();
 
         // Send the fields representation as json
 
@@ -310,15 +362,17 @@ public class ITRemoteAutomationClientTCK {
         // Marshaller for bean 'note' registration
         client.registerPojoMarshaller(note.getClass());
 
-        note = (BusinessBean) session.newRequest("Business.BusinessCreateOperation").setInput(note).set("name",
-                note.getTitle()).set("parentPath", "/").execute();
+        note = (BusinessBean) session.newRequest("Business.BusinessCreateOperation")
+                                     .setInput(note)
+                                     .set("name", note.getTitle())
+                                     .set("parentPath", "/")
+                                     .execute();
         assertNotNull(note);
         // Test for pojo <-> adapter automation update
         note.setTitle("Update");
         note = (BusinessBean) session.newRequest("Business.BusinessUpdateOperation").setInput(note).execute();
         assertEquals("Update", note.getTitle());
     }
-
 
     @After
     public void teardown() throws IOException {

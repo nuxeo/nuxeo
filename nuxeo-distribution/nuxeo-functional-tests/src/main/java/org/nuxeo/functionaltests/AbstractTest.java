@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@
 package org.nuxeo.functionaltests;
 
 import static org.junit.Assume.assumeFalse;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -55,6 +54,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.fragment.WebFragment;
@@ -93,7 +93,6 @@ import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
-
 import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
 
 /**
@@ -345,9 +344,8 @@ public abstract class AbstractTest {
                             chromeDriverExecutable.getCanonicalPath()));
                     System.setProperty(SYSPROP_CHROME_DRIVER_PATH, chromeDriverExecutable.getCanonicalPath());
                 } else {
-                    log.error(String.format(
-                            "Could not find the Chrome driver looking at %s or system path."
-                                    + " Download it from %s and set its path with " + "the System property %s.",
+                    log.error(String.format("Could not find the Chrome driver looking at %s or system path."
+                            + " Download it from %s and set its path with " + "the System property %s.",
                             chromeDriverDefaultPath, "http://code.google.com/p/chromedriver/downloads/list",
                             SYSPROP_CHROME_DRIVER_PATH));
                 }
@@ -445,8 +443,9 @@ public abstract class AbstractTest {
         if (surefirebooterJar != null) {
             try {
                 try {
-                    String cp = surefirebooterJar.getManifest().getMainAttributes().getValue(
-                            Attributes.Name.CLASS_PATH);
+                    String cp = surefirebooterJar.getManifest()
+                                                 .getMainAttributes()
+                                                 .getValue(Attributes.Name.CLASS_PATH);
                     if (cp != null) {
                         String[] cpe = cp.split(" ");
                         URL[] newUrls = new URL[cpe.length];
@@ -624,10 +623,10 @@ public abstract class AbstractTest {
         try {
             return wait.until(new Function<T, T>() {
                 @Override
-                public T apply(T page) {
+                public T apply(T aPage) {
                     String notLoaded = anyElementNotLoaded(elements, fieldNames);
                     if (notLoaded == null) {
-                        return page;
+                        return aPage;
                     } else {
                         return null;
                     }
@@ -832,17 +831,17 @@ public abstract class AbstractTest {
      *
      * @param currentPage the current page
      * @param collectionsTitle the Collections container title
-     * @param collectionsDescription the collections description
+     * @param fileDescription the collections description
      * @return the created Collections page
-     * @throws IOException if temporary file creation fails
      */
     protected DocumentBasePage createCollections(DocumentBasePage currentPage, String collectionsTitle,
             String fileDescription) {
-        DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = currentPage.getContentTab().getDocumentCreatePage(
-                "Collections", DublinCoreCreationDocumentFormPage.class);
+        DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = currentPage.getContentTab()
+                                                                                   .getDocumentCreatePage(
+                                                                                           "Collections",
+                                                                                           DublinCoreCreationDocumentFormPage.class);
         // Create File
-        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle,
-                fileDescription);
+        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle, fileDescription);
         return documentBasePage;
     }
 
