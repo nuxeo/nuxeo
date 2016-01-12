@@ -56,6 +56,29 @@
     return false;
   }
 
+  function registerSafeEditForm(formId) {
+    var $root = jQuery(":root");
+    if ($root.data('safeEditForms') === undefined) {
+      $root.data('safeEditForms', []);
+    }
+    if (jQuery.inArray(formId, $root.data('safeEditForms')) == -1) {
+      $root.data('safeEditForms').push(formId);
+    }
+  }
+
+  $.fn.checkSafeEditOnForms = function(message) {
+    var $root = jQuery(":root");
+    var formIds = $root.data('safeEditForms');
+    if (formIds != undefined) {
+      for ( var i = 0, len = formIds.length; i < len; i++) {
+        if (jQuery("#" + formIds[i]).data("dirtyPage")) {
+          return confirm(message);
+        }
+      }
+    }
+    return true;
+  }
+
   $.fn.saveForm = function() {
     jQuery(this).saveForm(0, null);
   }
@@ -128,11 +151,6 @@
         // don't propose to restore if there is nothing new !
         return false;
       }
-
-      // create cleanup callback
-      jQuery(window).unload(function() {
-        // XXX
-      });
 
       var $form = jQuery(this);
       // block auto save until use choose to restore or not
@@ -251,7 +269,9 @@
         jQuery(window).unbind('beforeunload');
         $form.cleanupSavedData();
         return true;
-      })
+      });
+      // register safe edit form to the root
+      registerSafeEditForm($form.attr("id"));
     }
 
     initWhenPageReady = function(savePeriod, saveCB, loadCB, message,
