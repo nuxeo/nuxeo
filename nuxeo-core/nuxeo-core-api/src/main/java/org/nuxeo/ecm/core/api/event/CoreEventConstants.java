@@ -111,6 +111,14 @@ public final class CoreEventConstants {
      */
     public static final String RESET_LIFECYCLE = "resetLifeCycle";
 
+    /**
+     * Passed with documentCreatedByCopy event to be able to reset creator, creation date and last modification date or
+     * not
+     *
+     * @since 7.10-HF04, 8.2
+     */
+    public static final String RESET_CREATOR = "resetCreator";
+
     // Constant utility class
     private CoreEventConstants() {
     }

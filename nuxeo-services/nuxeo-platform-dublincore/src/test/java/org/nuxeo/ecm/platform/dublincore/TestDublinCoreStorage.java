@@ -14,6 +14,7 @@ package org.nuxeo.ecm.platform.dublincore;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CoreSession.StandardCopyOption;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
@@ -46,6 +49,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * DublinCoreStorage Test Case.
@@ -315,6 +319,40 @@ public class TestDublinCoreStorage {
             return folder;
         }
 
+    }
+
+    @Test
+    public void testCopyDocument() throws Exception {
+        DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
+        DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008");
+
+        waitForAsyncCompletion();
+
+        assertNotNull(copy);
+        assertEquals(file.getPropertyValue("dc:creator"), copy.getPropertyValue("dc:creator"));
+        assertEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
+        assertEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+    }
+
+    @Test
+    public void testCopyDocumentWithResetCoreMetadata() throws Exception {
+        DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
+        DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008",
+                StandardCopyOption.RESET_CREATOR);
+
+        waitForAsyncCompletion();
+
+        assertNotNull(copy);
+        assertNotEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
+        assertNotEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+    }
+
+    protected void waitForAsyncCompletion() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+        Framework.getService(EventService.class).waitForAsyncCompletion();
     }
 
 }

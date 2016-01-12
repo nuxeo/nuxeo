@@ -564,8 +564,26 @@ public interface CoreSession extends AutoCloseable {
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be preserved
+     * @deprecated Since 7.10-HF04, 8.2. Use {@link #copy(DocumentRef, DocumentRef, String, CopyOption...)} instead
      */
+    @Deprecated
     DocumentModel copy(DocumentRef src, DocumentRef dst, String name);
+
+    /**
+     * Copies the source document to the destination folder under the given name. If the name is null the original name
+     * is preserved.
+     * <p>
+     * If the destination document is not a folder or it doesn't exists then throws an exception.
+     * <p>
+     * If the source is a proxy the destination will be a copy of the proxy.
+     *
+     * @param src the source document reference
+     * @param dst the destination folder reference
+     * @param name the new name of the file or null if the original name must be preserved
+     * @param copyOptions the options for copy
+     * @since 7.10-HF04, 8.2
+     */
+    DocumentModel copy(DocumentRef src, DocumentRef dst, String name, CopyOption... copyOptions);
 
     /**
      * Copies the source document to the destination folder under the given name. If the name is null the original name
@@ -581,7 +599,9 @@ public interface CoreSession extends AutoCloseable {
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
      * @return
      * @since 5.7
+     * @deprecated Since 7.10-HF04, 8.2. Use {@link #copy(DocumentRef, DocumentRef, String, CopyOption...)} instead
      */
+    @Deprecated
     DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle);
 
     /**
@@ -589,8 +609,20 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param src the documents to copy
      * @param dst the destination folder
+     * @deprecated Since 7.10-HF04, 8.2. Use {@link #copy(List, DocumentRef, CopyOption...)}
      */
+    @Deprecated
     List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst);
+
+    /**
+     * Bulk copy. Destination must be a folder document.
+     *
+     * @param src the documents to copy
+     * @param dst the destination folder
+     * @param copyOptions the options for copy
+     * @since 7.10-HF04, 8.2
+     */
+    List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, CopyOption... copyOptions);
 
     /**
      * Bulk copy. Destination must be a folder document.
@@ -600,18 +632,35 @@ public interface CoreSession extends AutoCloseable {
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
      * @return
      * @since 5.7
+     * @deprecated Since 7.10-HF04, 8.2. Use {@link #copy(List, DocumentRef, CopyOption...)} instead
      */
+    @Deprecated
     List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle);
 
     /**
      * Work like copy but in the case of a source proxy the destination will be a new document instead of a proxy.
      *
-     * @see CoreSession#copy(DocumentRef, DocumentRef, String)
+     * @see CoreSession#copy(DocumentRef, DocumentRef, String, CopyOption...)
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be preserved
+     * @deprecated Since 7.10-HF04, 8.2. Use
+     *             {@link #copyProxyAsDocument(DocumentRef, DocumentRef, String, CopyOption...)} instead
      */
+    @Deprecated
     DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name);
+
+    /**
+     * Work like copy but in the case of a source proxy the destination will be a new document instead of a proxy.
+     *
+     * @see CoreSession#copy(DocumentRef, DocumentRef, String, CopyOption...)
+     * @param src the source document reference
+     * @param dst the destination folder reference
+     * @param name the new name of the file or null if the original name must be preserved
+     * @param copyOptions the options for copy
+     * @since 7.10-HF04, 8.2
+     */
+    DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, CopyOption... copyOptions);
 
     /**
      * Work like copy but in the case of a source proxy the destination will be a new document instead of a proxy.
@@ -622,7 +671,10 @@ public interface CoreSession extends AutoCloseable {
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
      * @return
      * @since 5.7
+     * @deprecated Since 7.10-HF04, 8.2. Use
+     *             {@link #copyProxyAsDocument(DocumentRef, DocumentRef, String, CopyOption...)} instead
      */
+    @Deprecated
     DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle);
 
     /**
@@ -630,8 +682,20 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param src the documents to copy
      * @param dst the destination folder
+     * @deprecated Since 7.10-HF04, 8.2. Use {@link #copyProxyAsDocument(List, DocumentRef, CopyOption...)} instead
      */
+    @Deprecated
     List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst);
+
+    /**
+     * Bulk copyProxyAsDocument. Destination must be a folder document.
+     *
+     * @param src the documents to copy
+     * @param dst the destination folder
+     * @param copyOptions the options of copy
+     * @since 7.10-HF04, 8.2
+     */
+    List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, CopyOption... copyOptions);
 
     /**
      * Bulk copyProxyAsDocument. Destination must be a folder document.
@@ -641,7 +705,9 @@ public interface CoreSession extends AutoCloseable {
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
      * @return
      * @since 5.7
+     * @deprecated Since 7.10-HF04, 8.2. Use {@link #copyProxyAsDocument(List, DocumentRef, CopyOption...)} instead
      */
+    @Deprecated
     List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle);
 
     /**
@@ -1417,5 +1483,18 @@ public interface CoreSession extends AutoCloseable {
      * @since 5.9.3
      */
     Map<String, String> getBinaryFulltext(DocumentRef ref);
+
+    /** @since 7.10-HF04, 8.2 */
+    interface CopyOption {
+    }
+
+    /** @since 7.10-HF04, 8.2 */
+    enum StandardCopyOption implements CopyOption {
+
+        RESET_LIFE_CYCLE,
+
+        RESET_CREATOR;
+
+    }
 
 }
