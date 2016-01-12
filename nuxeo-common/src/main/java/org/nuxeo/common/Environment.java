@@ -381,13 +381,13 @@ public class Environment {
     }
 
     /**
-     * Resolve the path against {@link Environment#home} if not absolute.
+     * Resolve the path against {@link Environment#serverHome} if not absolute.
      *
      * @param temp
      * @since 8.1
      */
     public void setTemp(String temp) {
-        setTemp(home.toPath().resolve(temp).toFile());
+        setTemp(getServerHome().toPath().resolve(temp).toFile());
     }
 
     public void setTemp(File temp) {
@@ -404,13 +404,14 @@ public class Environment {
     }
 
     /**
-     * Resolve the path against {@link Environment#home} if not absolute.
+     * Resolve the path against {@link Environment#runtimeHome} if not absolute.
      *
      * @param config
      * @since 8.1
      */
     public void setConfig(String config) {
-        setConfig(home.toPath().resolve(config).toFile());
+        File configFile = getRuntimeHome().toPath().resolve(config).toFile();
+        setConfig(configFile);
     }
 
     public void setConfig(File config) {
@@ -427,13 +428,13 @@ public class Environment {
     }
 
     /**
-     * Resolve the path against {@link Environment#home} if not absolute.
+     * Resolve the path against {@link Environment#serverHome} if not absolute.
      *
      * @param log
      * @since 8.1
      */
     public void setLog(String log) {
-        setLog(home.toPath().resolve(log).toFile());
+        setLog(getServerHome().toPath().resolve(log).toFile());
     }
 
     public void setLog(File log) {
@@ -450,13 +451,13 @@ public class Environment {
     }
 
     /**
-     * Resolve the path against {@link Environment#home} if not absolute.
+     * Resolve the path against {@link Environment#runtimeHome} if not absolute.
      *
      * @param data
      * @since 8.1
      */
     public void setData(String data) {
-        setData(home.toPath().resolve(data).toFile());
+        setData(getRuntimeHome().toPath().resolve(data).toFile());
     }
 
     public void setData(File data) {
@@ -473,13 +474,13 @@ public class Environment {
     }
 
     /**
-     * Resolve the path against {@link Environment#home} if not absolute.
+     * Resolve the path against {@link Environment#runtimeHome} if not absolute.
      *
      * @param web
      * @since 8.1
      */
     public void setWeb(String web) {
-        setWeb(home.toPath().resolve(web).toFile());
+        setWeb(getRuntimeHome().toPath().resolve(web).toFile());
     }
 
     public void setWeb(File web) {
@@ -705,9 +706,22 @@ public class Environment {
      * @since 8.1
      */
     public File getPath(String key) {
+        return getPath(key, null);
+    }
+
+    /**
+     * @param key the property key
+     * @param defaultValue the default path, absolute or relative to server home
+     * @return the file which path is associated with the given key. The file is guaranteed to be absolute if it has
+     *         been set with {@link #setPath(String, File)}
+     * @since 8.1
+     */
+    public File getPath(String key, String defaultValue) {
         String path = properties.getProperty(key);
         if (path != null) {
             return new File(path);
+        } else if (defaultValue != null) {
+            return getServerHome().toPath().resolve(defaultValue).toFile();
         }
         return null;
     }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ public class FrameworkLoader {
             return;
         }
         FrameworkLoader.home = home;
-        FrameworkLoader.bundleFiles = bundleFiles == null ? new ArrayList<File>() : bundleFiles;
+        FrameworkLoader.bundleFiles = bundleFiles == null ? new ArrayList<>() : bundleFiles;
         Collections.sort(FrameworkLoader.bundleFiles);
 
         loader = cl;
@@ -349,7 +349,14 @@ public class FrameworkLoader {
         Properties sysprops = System.getProperties();
         sysprops.setProperty(Environment.NUXEO_RUNTIME_HOME, home.getAbsolutePath());
 
-        Environment env = new Environment(home);
+        Environment env = Environment.getDefault();
+        if (env == null) {
+            env = new Environment(home);
+        }
+        if (!home.equals(env.getRuntimeHome())) {
+            env.setRuntimeHome(home);
+        }
+
         String v = (String) hostEnv.get(HOST_NAME);
         env.setHostApplicationName(v == null ? Environment.NXSERVER_HOST : v);
         v = (String) hostEnv.get(HOST_VERSION);
@@ -398,10 +405,6 @@ public class FrameworkLoader {
         } else {
             env.setCommandLineArguments(new String[0]);
         }
-        env.getData().mkdirs();
-        env.getLog().mkdirs();
-        env.getTemp().mkdirs();
-
         return env;
     }
 

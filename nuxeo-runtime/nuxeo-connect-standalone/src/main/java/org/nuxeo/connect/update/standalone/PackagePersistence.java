@@ -69,7 +69,7 @@ public class PackagePersistence {
 
     public PackagePersistence(PackageUpdateService pus) throws IOException {
         Environment env = Environment.getDefault();
-        root = env.getPath(Environment.NUXEO_MP_DIR);
+        root = env.getPath(Environment.NUXEO_MP_DIR, Environment.DEFAULT_MP_DIR);
         if (!root.isAbsolute()) {
             throw new RuntimeException();
         }
