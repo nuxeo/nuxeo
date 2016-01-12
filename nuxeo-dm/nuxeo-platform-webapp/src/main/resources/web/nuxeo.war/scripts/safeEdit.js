@@ -71,7 +71,8 @@
     var formIds = $root.data('safeEditForms');
     if (formIds != undefined) {
       for ( var i = 0, len = formIds.length; i < len; i++) {
-        if (jQuery("#" + formIds[i]).data("dirtyPage")) {
+        var formId = formIds[i].split(":").join("\\:")
+        if (jQuery("#" + formId).data("dirtyPage")) {
           return confirm(message);
         }
       }
