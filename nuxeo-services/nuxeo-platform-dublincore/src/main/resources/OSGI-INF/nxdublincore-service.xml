@@ -30,6 +30,7 @@
       <event>beforeDocumentModification</event>
       <event>documentPublished</event>
       <event>lifecycle_transition_event</event>
+      <event>documentCreatedByCopy</event>
     </listener>
 
   </extension>

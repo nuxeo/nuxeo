@@ -365,7 +365,26 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
+    @Deprecated
     public DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle) {
+        if (resetLifeCycle) {
+            return copy(src, dst, name, StandardCopyOption.RESET_LIFE_CYCLE);
+        }
+        return copy(src, dst, name);
+    }
+
+    @Override
+    @Deprecated
+    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name) {
+        return copy(src, dst, name, CopyOptions.parse());
+    }
+
+    @Override
+    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name, CopyOption... copyOptions) {
+        return copy(src, dst, name, CopyOptions.parse(copyOptions));
+    }
+
+    private DocumentModel copy(DocumentRef src, DocumentRef dst, String name, CopyOptions copyOptions) {
         Document dstDoc = resolveReference(dst);
         checkPermission(dstDoc, ADD_CHILDREN);
 
@@ -386,7 +405,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
         options.put(CoreEventConstants.DESTINATION_NAME, name);
         options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
-        options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
+        options.put(CoreEventConstants.RESET_LIFECYCLE, copyOptions.isResetLifeCycle());
+        options.put(CoreEventConstants.RESET_CREATOR, copyOptions.isResetCreator());
         DocumentModel srcDocModel = readModel(srcDoc);
         notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, options, null, null, true, true);
 
@@ -410,28 +430,52 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name) {
-        return copy(src, dst, name, false);
+    @Deprecated
+    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
+        if (resetLifeCycle) {
+            return copy(src, dst, StandardCopyOption.RESET_LIFE_CYCLE);
+        }
+        return copy(src, dst);
     }
 
     @Override
-    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
+    @Deprecated
+    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst) {
+        return copy(src, dst, null);
+    }
+
+    @Override
+    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, CopyOption... opts) {
         List<DocumentModel> newDocuments = new ArrayList<>();
 
         for (DocumentRef ref : src) {
-            newDocuments.add(copy(ref, dst, null, resetLifeCycle));
+            newDocuments.add(copy(ref, dst, null, opts));
         }
 
         return newDocuments;
     }
 
     @Override
-    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst) {
-        return copy(src, dst, false);
+    @Deprecated
+    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle) {
+        if (resetLifeCycle) {
+            return copyProxyAsDocument(src, dst, name, StandardCopyOption.RESET_LIFE_CYCLE);
+        }
+        return copyProxyAsDocument(src, dst, name);
     }
 
     @Override
-    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle) {
+    @Deprecated
+    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name) {
+        return copyProxyAsDocument(src, dst, name, CopyOptions.parse());
+    }
+
+    @Override
+    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, CopyOption... copyOptions) {
+        return copyProxyAsDocument(src, dst, name, CopyOptions.parse(copyOptions));
+    }
+
+    private DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, CopyOptions copyOptions) {
         Document srcDoc = resolveReference(src);
         if (!srcDoc.isProxy()) {
             return copy(src, dst, name);
@@ -449,8 +493,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docModel.getRef());
 
         Map<String, Serializable> options = new HashMap<>();
-        // add resetLifeCycle flag to the event
-        options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
+        options.put(CoreEventConstants.RESET_LIFECYCLE, copyOptions.isResetLifeCycle());
+        options.put(CoreEventConstants.RESET_CREATOR, copyOptions.isResetCreator());
         // notify document created by copy
         String comment = srcDoc.getRepositoryName() + ':' + src.toString();
         notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel, options, null, comment, true, false);
@@ -463,24 +507,29 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name) {
-        return copyProxyAsDocument(src, dst, name, false);
+    @Deprecated
+    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
+        if (resetLifeCycle) {
+            return copyProxyAsDocument(src, dst, StandardCopyOption.RESET_LIFE_CYCLE);
+        }
+        return copyProxyAsDocument(src, dst);
     }
 
     @Override
-    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
+    @Deprecated
+    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst) {
+        return copyProxyAsDocument(src, dst, null);
+    }
+
+    @Override
+    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, CopyOption... opts) {
         List<DocumentModel> newDocuments = new ArrayList<>();
 
         for (DocumentRef ref : src) {
-            newDocuments.add(copyProxyAsDocument(ref, dst, null, resetLifeCycle));
+            newDocuments.add(copyProxyAsDocument(ref, dst, null, opts));
         }
 
         return newDocuments;
-    }
-
-    @Override
-    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst) {
-        return copyProxyAsDocument(src, dst, false);
     }
 
     @Override

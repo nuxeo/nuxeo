@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.dublincore.listener;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PUBLISHED;
 import static org.nuxeo.ecm.core.schema.FacetNames.SYSTEM_DOCUMENT;
 
@@ -75,7 +76,8 @@ public class DublinCoreListener implements EventListener {
         String eventId = event.getName();
 
         if (!eventId.equals(DOCUMENT_CREATED) && !eventId.equals(BEFORE_DOC_UPDATE)
-                && !eventId.equals(TRANSITION_EVENT) && !eventId.equals(DOCUMENT_PUBLISHED)) {
+                && !eventId.equals(TRANSITION_EVENT) && !eventId.equals(DOCUMENT_PUBLISHED)
+                && !eventId.equals(DOCUMENT_CREATED_BY_COPY)) {
             return;
         }
 
@@ -124,12 +126,19 @@ public class DublinCoreListener implements EventListener {
             // live proxies may be updated normally
         }
 
+        Boolean resetCreator = (Boolean) event.getContext().getProperty(CoreEventConstants.RESET_CREATOR);
         Boolean dirty = (Boolean) event.getContext().getProperty(CoreEventConstants.DOCUMENT_DIRTY);
         if ((eventId.equals(BEFORE_DOC_UPDATE) && Boolean.TRUE.equals(dirty))
                 || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);
         } else if (eventId.equals(DOCUMENT_CREATED)) {
+            service.setCreationDate(doc, cEventDate, event);
+            service.setModificationDate(doc, cEventDate, event);
+            service.addContributor(doc, event);
+        } else if (eventId.equals(DOCUMENT_CREATED_BY_COPY) && Boolean.TRUE.equals(resetCreator)) {
+            doc.setProperty("dublincore", "creator", null);
+            doc.setProperty("dublincore", "contributors", null);
             service.setCreationDate(doc, cEventDate, event);
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);
