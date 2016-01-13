@@ -92,10 +92,16 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
     }
 
     @Override
-    public boolean exists(CoreSession session, String parentPath, String name, String type,
-            Map<String, Serializable> values) {
+    public boolean exists(CoreSession session, String parentPath, String name, Map<String, Serializable> values) {
         String targetPath = new Path(parentPath).append(name).toString();
         DocumentRef docRef = new PathRef(targetPath);
         return session.exists(docRef);
+    }
+
+    @Override
+    @Deprecated
+    public boolean exists(CoreSession session, String parentPath, String name, String type,
+            Map<String, Serializable> values) {
+        return exists(session, parentPath, name, null);
     }
 }

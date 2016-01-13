@@ -92,6 +92,10 @@ public class TestCSVImport {
 
     private static final String DOCS_WITH_CREATOR_CSV = "docs_with_creator.csv";
 
+    private static final String DOCS_WITHOUT_TYPE_CSV = "docs_without_type.csv";
+
+    private static final String DOCS_WITH_MISSING_TYPE_CSV = "docs_with_missing_type.csv";
+
     @Inject
     protected CoreSession session;
 
@@ -237,6 +241,55 @@ public class TestCSVImport {
         doc = session.getDocument(new PathRef("/mycomplexfile"));
         assertEquals("My Complex File", doc.getTitle());
         assertEquals("a complex file", doc.getPropertyValue("dc:description"));
+    }
+
+    @Test
+    public void shouldUpdateDocumentsWithoutType() throws InterruptedException {
+        doUpdateDocumentsWithNoType(DOCS_WITHOUT_TYPE_CSV);
+    }
+
+    @Test
+    public void shouldUpdateDocumentsWithMissingType() throws InterruptedException {
+        doUpdateDocumentsWithNoType(DOCS_WITH_MISSING_TYPE_CSV);
+    }
+
+    private void doUpdateDocumentsWithNoType(String csvFileName) throws InterruptedException {
+        DocumentModel doc = session.createDocumentModel("/", "mynote", "Note");
+        doc.setPropertyValue("dc:title", "Existing Note");
+        session.createDocument(doc);
+
+        doc = session.createDocumentModel("/", "myfile", "File");
+        doc.setPropertyValue("dc:title", "Existing File");
+        session.createDocument(doc);
+
+        TransactionHelper.commitOrRollbackTransaction();
+
+        CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(true).build();
+        String importId = csvImporter.launchImport(session, "/", getCSVFile(csvFileName), csvFileName, options);
+
+        workManager.awaitCompletion(10, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        List<CSVImportLog> importLogs = csvImporter.getImportLogs(importId);
+        assertEquals(2, importLogs.size());
+        CSVImportLog importLog = importLogs.get(0);
+        assertEquals(2, importLog.getLine());
+        assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
+        assertEquals("Document updated", importLog.getMessage());
+        importLog = importLogs.get(1);
+        assertEquals(3, importLog.getLine());
+        assertEquals(CSVImportLog.Status.SUCCESS, importLog.getStatus());
+        assertEquals("Document updated", importLog.getMessage());
+
+        assertTrue(session.exists(new PathRef("/myfile")));
+        doc = session.getDocument(new PathRef("/myfile"));
+        assertEquals("My File", doc.getTitle());
+        assertEquals("a simple file", doc.getPropertyValue("dc:description"));
+
+        assertTrue(session.exists(new PathRef("/mynote")));
+        doc = session.getDocument(new PathRef("/mynote"));
+        assertEquals("My Note", doc.getTitle());
+        assertEquals("a simple note", doc.getPropertyValue("dc:description"));
     }
 
     @Test

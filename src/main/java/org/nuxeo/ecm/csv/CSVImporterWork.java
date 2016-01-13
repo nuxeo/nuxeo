@@ -74,6 +74,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
@@ -137,7 +138,7 @@ public class CSVImporterWork extends AbstractWork {
 
     public static final String LABEL_CSV_IMPORTER_MISSING_NAME_VALUE = "label.csv.importer.missingNameValue";
 
-    public static final String LABEL_CSV_IMPORTER_MISSING_NAME_OR_TYPE_COLUMN = "label.csv.importer.missingNameOrTypeColumn";
+    public static final String LABEL_CSV_IMPORTER_MISSING_NAME_COLUMN = "label.csv.importer.missingNameColumn";
 
     public static final String LABEL_CSV_IMPORTER_EMPTY_FILE = "label.csv.importer.emptyFile";
 
@@ -173,6 +174,8 @@ public class CSVImporterWork extends AbstractWork {
     protected CSVImporterOptions options;
 
     protected transient DateFormat dateformat;
+
+    protected boolean hasTypeColumn;
 
     protected Date startDate;
 
@@ -241,10 +244,11 @@ public class CSVImporterWork extends AbstractWork {
             logError(0, "No header line, empty file?", LABEL_CSV_IMPORTER_EMPTY_FILE);
             return;
         }
-        if (!header.containsKey(CSV_NAME_COL) || !header.containsKey(CSV_TYPE_COL)) {
-            logError(0, "Missing 'name' or 'type' column", LABEL_CSV_IMPORTER_MISSING_NAME_OR_TYPE_COLUMN);
+        if (!header.containsKey(CSV_NAME_COL)) {
+            logError(0, "Missing 'name' column", LABEL_CSV_IMPORTER_MISSING_NAME_COLUMN);
             return;
         }
+        hasTypeColumn = header.containsKey(CSV_TYPE_COL);
 
         try {
             int batchSize = options.getBatchSize();
@@ -295,36 +299,58 @@ public class CSVImporterWork extends AbstractWork {
      * @since 6.0
      */
     protected boolean importRecord(CSVRecord record, Map<String, Integer> header) {
-        final String name = record.get(CSV_NAME_COL);
-        final String type = record.get(CSV_TYPE_COL);
+        String name = record.get(CSV_NAME_COL);
         if (StringUtils.isBlank(name)) {
             log.debug("record.isSet=" + record.isSet(CSV_NAME_COL));
             logError(record.getRecordNumber(), "Missing 'name' value", LABEL_CSV_IMPORTER_MISSING_NAME_VALUE);
             return false;
         }
-        if (StringUtils.isBlank(type)) {
-            log.debug("record.isSet=" + record.isSet(CSV_TYPE_COL));
-            logError(record.getRecordNumber(), "Missing 'type' value", LABEL_CSV_IMPORTER_MISSING_TYPE_VALUE);
-            return false;
+
+        Path targetPath = new Path(parentPath).append(name);
+        name = targetPath.lastSegment();
+        String newParentPath = targetPath.removeLastSegments(1).toString();
+        boolean exists = options.getCSVImporterDocumentFactory().exists(session, newParentPath, name, null);
+
+        DocumentRef docRef = null;
+        String type = null;
+        if (exists) {
+            docRef = new PathRef(targetPath.toString());
+            type = session.getDocument(docRef).getType();
+        } else {
+            if (hasTypeColumn) {
+                type = record.get(CSV_TYPE_COL);
+            }
+            if (StringUtils.isBlank(type)) {
+                log.debug("record.isSet=" + record.isSet(CSV_TYPE_COL));
+                logError(record.getRecordNumber(), "Missing 'type' value", LABEL_CSV_IMPORTER_MISSING_TYPE_VALUE);
+                return false;
+            }
         }
+
         DocumentType docType = Framework.getLocalService(SchemaManager.class).getDocumentType(type);
         if (docType == null) {
             logError(record.getRecordNumber(), "The type '%s' does not exist", LABEL_CSV_IMPORTER_NOT_EXISTING_TYPE,
                     type);
             return false;
         }
-        Map<String, Serializable> values = computePropertiesMap(record, docType, header);
-        if (values == null) {
+        Map<String, Serializable> properties = computePropertiesMap(record, docType, header);
+        if (properties == null) {
             // skip this line
             return false;
         }
-        return createOrUpdateDocument(record.getRecordNumber(), name, type, values);
+
+        long lineNumber = record.getRecordNumber();
+        if (exists) {
+            return updateDocument(lineNumber, docRef, properties);
+        } else {
+            return createDocument(lineNumber, newParentPath, name, type, properties);
+        }
     }
 
     /**
      * @since 6.0
      */
-    protected Map<String, Serializable> computePropertiesMap(CSVRecord record, DocumentType docType,
+    protected Map<String, Serializable> computePropertiesMap(CSVRecord record, CompositeType compositeType,
             Map<String, Integer> header) {
         Map<String, Serializable> values = new HashMap<>();
         for (String headerValue : header.keySet()) {
@@ -335,11 +361,11 @@ public class CSVImporterWork extends AbstractWork {
                 if (AUTHORIZED_HEADERS.contains(headerValue) && !StringUtils.isBlank(lineValue)) {
                     values.put(headerValue, lineValue);
                 } else {
-                    if (!docType.hasField(fieldName)) {
+                    if (!compositeType.hasField(fieldName)) {
                         fieldName = fieldName.split(":")[1];
                     }
-                    if (docType.hasField(fieldName) && !StringUtils.isBlank(lineValue)) {
-                        Serializable convertedValue = convertValue(docType, fieldName, headerValue, lineValue,
+                    if (compositeType.hasField(fieldName) && !StringUtils.isBlank(lineValue)) {
+                        Serializable convertedValue = convertValue(compositeType, fieldName, headerValue, lineValue,
                                 record.getRecordNumber());
                         if (convertedValue == null) {
                             return null;
@@ -352,10 +378,10 @@ public class CSVImporterWork extends AbstractWork {
         return values;
     }
 
-    protected Serializable convertValue(DocumentType docType, String fieldName, String headerValue, String stringValue,
-            long lineNumber) {
-        if (docType.hasField(fieldName)) {
-            Field field = docType.getField(fieldName);
+    protected Serializable convertValue(CompositeType compositeType, String fieldName, String headerValue,
+            String stringValue, long lineNumber) {
+        if (compositeType.hasField(fieldName)) {
+            Field field = compositeType.getField(fieldName);
             if (field != null) {
                 try {
                     Serializable fieldValue = null;
@@ -425,7 +451,7 @@ public class CSVImporterWork extends AbstractWork {
             }
         } else {
             logError(lineNumber, "Field '%s' does not exist on type '%s'", LABEL_CSV_IMPORTER_NOT_EXISTING_FIELD,
-                    headerValue, docType.getName());
+                    headerValue, compositeType.getName());
         }
         return null;
     }
@@ -436,19 +462,6 @@ public class CSVImporterWork extends AbstractWork {
             dateformat = new SimpleDateFormat(options.getDateFormat());
         }
         return dateformat;
-    }
-
-    protected boolean createOrUpdateDocument(long lineNumber, String name, String type,
-            Map<String, Serializable> properties) {
-        Path targetPath = new Path(parentPath).append(name);
-        name = targetPath.lastSegment();
-        String newParentPath = targetPath.removeLastSegments(1).toString();
-        DocumentRef docRef = new PathRef(targetPath.toString());
-        if (options.getCSVImporterDocumentFactory().exists(session, newParentPath, name, type, properties)) {
-            return updateDocument(lineNumber, docRef, properties);
-        } else {
-            return createDocument(lineNumber, newParentPath, name, type, properties);
-        }
     }
 
     protected boolean createDocument(long lineNumber, String newParentPath, String name, String type,

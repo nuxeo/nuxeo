@@ -36,6 +36,16 @@ public interface CSVImporterDocumentFactory extends Serializable {
 
     public void updateDocument(CoreSession session, DocumentRef docRef, Map<String, Serializable> values);
 
+    /**
+     * @return {@code true} if document with the specified parentPath, name, and values exists. {@code false} otherwise.
+     * @since 8.2
+     */
+    public boolean exists(CoreSession session, String parentPath, String name, Map<String, Serializable> values);
+
+    /**
+     * @deprecated since 8.2
+     */
+    @Deprecated
     public boolean exists(CoreSession session, String parentPath, String name, String type,
             Map<String, Serializable> values);
 
