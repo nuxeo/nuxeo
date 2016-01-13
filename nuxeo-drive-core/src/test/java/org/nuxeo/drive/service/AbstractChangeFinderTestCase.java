@@ -1121,6 +1121,62 @@ public abstract class AbstractChangeFinderTestCase {
         }
     }
 
+    @Test
+    public void testLockUnlock() throws Exception {
+        DocumentModel doc;
+        List<FileSystemItemChange> changes;
+        try {
+            log.trace("Register a sync root and create a document inside it");
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder1, session);
+            doc = session.createDocumentModel("/folder1", "doc", "File");
+            doc.setPropertyValue("file:content", new StringBlob("The file content"));
+            doc = session.createDocument(doc);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes, expecting 3:
+            // - documentCreated for doc
+            // - rootRegistered for folder1
+            // - documentCreated for folder1
+            changes = getChanges(session.getPrincipal());
+            assertEquals(3, changes.size());
+
+            log.trace("Lock doc");
+            session.setLock(doc.getRef());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes, expecting 1:
+            // - documentLocked for doc
+            changes = getChanges();
+            assertEquals(1, changes.size());
+            assertEquals(new SimpleFileSystemItemChange(doc.getId(), "documentLocked", "test",
+                    "defaultFileSystemItemFactory#test#" + doc.getId(), "doc"),
+                    toSimpleFileSystemItemChange(changes.get(0)));
+
+            log.trace("Unlock doc");
+            session.removeLock(doc.getRef());
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes, expecting 1:
+            // - documentUnlocked for doc
+            changes = getChanges();
+            assertEquals(1, changes.size());
+            assertEquals(new SimpleFileSystemItemChange(doc.getId(), "documentUnlocked", "test",
+                    "defaultFileSystemItemFactory#test#" + doc.getId(), "doc"),
+                    toSimpleFileSystemItemChange(changes.get(0)));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
     /**
      * Gets the document changes for the given user's synchronization roots using the {@link AuditChangeFinder} and
      * updates {@link #lastEventLogId}.
