@@ -29,8 +29,10 @@ import java.io.Serializable;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
+import javax.el.FunctionMapper;
 import javax.el.MethodExpression;
 import javax.el.MethodInfo;
+import javax.el.VariableMapper;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 
@@ -58,8 +60,19 @@ public class MetaMethodExpression extends MethodExpression implements Serializab
 
     private MethodExpression originalMethodExpression;
 
+    private FunctionMapper fnMapper;
+
+    private VariableMapper varMapper;
+
     public MetaMethodExpression(MethodExpression originalMethodExpression) {
+        this(originalMethodExpression, null, null);
+    }
+
+    public MetaMethodExpression(MethodExpression originalMethodExpression, FunctionMapper fnMapper,
+            VariableMapper varMapper) {
         this.originalMethodExpression = originalMethodExpression;
+        this.fnMapper = fnMapper;
+        this.varMapper = varMapper;
     }
 
     // Expression interface
@@ -101,19 +114,20 @@ public class MetaMethodExpression extends MethodExpression implements Serializab
 
     @Override
     public Object invoke(ELContext context, Object[] params) {
+        ELContext nxcontext = getLocalContext(context);
         Object res = null;
         if (originalMethodExpression != null) {
-            res = originalMethodExpression.invoke(context, params);
+            res = originalMethodExpression.invoke(nxcontext, params);
             if (res instanceof String) {
                 String expression = (String) res;
                 if (ComponentTagUtils.isValueReference(expression)) {
                     FacesContext faces = FacesContext.getCurrentInstance();
                     Application app = faces.getApplication();
                     ExpressionFactory factory = app.getExpressionFactory();
-                    MethodExpression newMeth = factory.createMethodExpression(context, expression, Object.class,
+                    MethodExpression newMeth = factory.createMethodExpression(nxcontext, expression, Object.class,
                             new Class[0]);
                     try {
-                        res = newMeth.invoke(context, null);
+                        res = newMeth.invoke(nxcontext, null);
                     } catch (ELException e) {
                         throw e;
                     } catch (RuntimeException e) {
@@ -125,6 +139,13 @@ public class MetaMethodExpression extends MethodExpression implements Serializab
             }
         }
         return res;
+    }
+
+    private ELContext getLocalContext(ELContext context) {
+        if (fnMapper == null && varMapper == null) {
+            return context;
+        }
+        return new org.nuxeo.ecm.platform.ui.web.binding.EvaluationContext(context, fnMapper, varMapper);
     }
 
     // Externalizable interface

@@ -854,6 +854,12 @@
         org.nuxeo.ecm.platform.ui.web.validator.DocumentConstraintValidator
       </validator-class>
     </validator>
+    <validator>
+      <validator-id>MethodValidator</validator-id>
+      <validator-class>
+        org.nuxeo.ecm.platform.ui.web.validator.MethodValidator
+      </validator-class>
+    </validator>
   </extension>
 
   <extension target="faces-config#MANAGED-BEAN">

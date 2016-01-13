@@ -1164,6 +1164,19 @@
   </tag>
 
   <tag>
+    <tag-name>validate</tag-name>
+    <handler-class>org.nuxeo.ecm.platform.ui.web.validator.MethodValidatorTagHandler</handler-class>
+    <description>
+      <![CDATA[
+      <p>
+        Registers an validator instance on the UIComponent
+        associated with the closest parent input.
+      </p>
+      ]]>
+    </description>
+  </tag>
+
+  <tag>
     <tag-name>outputFile</tag-name>
     <component>
       <component-type>org.nuxeo.ecm.platform.ui.web.component.file.UIOutputFile</component-type>

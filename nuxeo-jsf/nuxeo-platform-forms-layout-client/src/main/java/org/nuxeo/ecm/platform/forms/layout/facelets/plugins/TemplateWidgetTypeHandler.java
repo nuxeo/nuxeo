@@ -162,6 +162,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             variables.put(name, ve);
             mappedExpressions.put(key, ve);
         }
+        // never include validator method expressions, otherwise resolution as value will fail
+        mappedExpressions.remove("validator");
         variables.put(RenderVariables.widgetVariables.widgetProperties.name(),
                 new MapValueExpression(mappedExpressions));
         // expose widget controls too
