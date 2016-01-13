@@ -20,8 +20,6 @@ import java.util.concurrent.Callable;
  */
 public interface RepositoryFactory extends Callable<Object> {
 
-    void init(String repositoryName);
-
     /**
      * Constructs the low-level repository with the name previously passed to {@link #init}.
      *

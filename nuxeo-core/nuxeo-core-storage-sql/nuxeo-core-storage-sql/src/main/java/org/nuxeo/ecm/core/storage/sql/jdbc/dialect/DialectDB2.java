@@ -43,8 +43,8 @@ public class DialectDB2 extends Dialect {
 
     public DialectDB2(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
-        fulltextParameters = repositoryDescriptor == null ? null : repositoryDescriptor.fulltextAnalyzer == null ? ""
-                : repositoryDescriptor.fulltextAnalyzer;
+        fulltextParameters = repositoryDescriptor == null ? null
+                : repositoryDescriptor.getFulltextAnalyzer() == null ? "" : repositoryDescriptor.getFulltextAnalyzer();
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.storage.mem.MemRepositoryService" version="1.0.0">
 
-  <require>org.nuxeo.ecm.core.repository.RepositoryServiceComponent</require>
+  <require>org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService</require>
 
   <documentation>
     Manages Memory repositories.

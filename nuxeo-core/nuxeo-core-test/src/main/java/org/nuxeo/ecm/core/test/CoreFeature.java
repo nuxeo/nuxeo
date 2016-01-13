@@ -69,6 +69,7 @@ import com.google.inject.Scope;
         "org.nuxeo.ecm.core.storage", //
         "org.nuxeo.ecm.core.storage.sql", //
         "org.nuxeo.ecm.core.storage.sql.test", //
+        "org.nuxeo.ecm.core.storage.dbs", //
         "org.nuxeo.ecm.core.storage.mem", //
         "org.nuxeo.ecm.core.storage.mongodb", //
 })

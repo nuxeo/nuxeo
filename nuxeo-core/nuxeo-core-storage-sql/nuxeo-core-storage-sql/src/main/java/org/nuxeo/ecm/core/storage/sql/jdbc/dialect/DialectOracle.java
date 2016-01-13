@@ -131,8 +131,8 @@ public class DialectOracle extends Dialect {
 
     public DialectOracle(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
-        fulltextParameters = repositoryDescriptor == null ? null : repositoryDescriptor.fulltextAnalyzer == null ? ""
-                : repositoryDescriptor.fulltextAnalyzer;
+        fulltextParameters = repositoryDescriptor == null ? null
+                : repositoryDescriptor.getFulltextAnalyzer() == null ? "" : repositoryDescriptor.getFulltextAnalyzer();
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
                 : repositoryDescriptor.getPathOptimizationsEnabled();
         if (pathOptimizationsEnabled) {

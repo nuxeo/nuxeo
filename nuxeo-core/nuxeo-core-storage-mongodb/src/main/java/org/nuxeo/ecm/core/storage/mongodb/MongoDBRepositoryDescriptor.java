@@ -13,42 +13,16 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryDescriptor;
 
 /**
  * MongoDB Repository Descriptor.
  */
 @XObject(value = "repository")
-public class MongoDBRepositoryDescriptor {
+public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
 
     public MongoDBRepositoryDescriptor() {
     }
-
-    /** False if the boolean is null or FALSE, true otherwise. */
-    private static boolean defaultFalse(Boolean bool) {
-        return Boolean.TRUE.equals(bool);
-    }
-
-    @XNode("@name")
-    public String name;
-
-    @XNode("@label")
-    public String label;
-
-    @XNode("@isDefault")
-    private Boolean isDefault;
-
-    public Boolean isDefault() {
-        return isDefault;
-    }
-
-    @XNode("fulltext@disabled")
-    private Boolean fulltextDisabled;
-
-    public boolean getFulltextDisabled() {
-        return defaultFalse(fulltextDisabled);
-    }
-
-    // ----- MongoDB specific options -----
 
     @XNode("server")
     public String server;
@@ -56,34 +30,18 @@ public class MongoDBRepositoryDescriptor {
     @XNode("dbname")
     public String dbname;
 
-    /** Copy constructor. */
-    public MongoDBRepositoryDescriptor(MongoDBRepositoryDescriptor other) {
-        name = other.name;
-        label = other.label;
-        isDefault = other.isDefault;
-        server = other.server;
-        dbname = other.dbname;
-        fulltextDisabled = other.fulltextDisabled;
+    @Override
+    public MongoDBRepositoryDescriptor clone() {
+        return (MongoDBRepositoryDescriptor) super.clone();
     }
 
     public void merge(MongoDBRepositoryDescriptor other) {
-        if (other.name != null) {
-            name = other.name;
-        }
-        if (other.label != null) {
-            label = other.label;
-        }
-        if (other.isDefault != null) {
-            isDefault = other.isDefault;
-        }
+        super.merge(other);
         if (other.server != null) {
             server = other.server;
         }
         if (other.dbname != null) {
             dbname = other.dbname;
-        }
-        if (other.fulltextDisabled != null) {
-            fulltextDisabled = other.fulltextDisabled;
         }
     }
 

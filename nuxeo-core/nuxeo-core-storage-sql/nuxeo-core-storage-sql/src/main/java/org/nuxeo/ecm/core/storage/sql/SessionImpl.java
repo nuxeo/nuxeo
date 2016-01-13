@@ -323,7 +323,7 @@ public class SessionImpl implements Session, XAResource {
     protected void flush() {
         checkThread();
         List<Work> works;
-        if (!repository.getRepositoryDescriptor().getFulltextDisabled()) {
+        if (!repository.getRepositoryDescriptor().getFulltextDescriptor().getFulltextDisabled()) {
             works = getFulltextWorks();
         } else {
             works = Collections.emptyList();
@@ -1497,7 +1497,7 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public Map<String, String> getBinaryFulltext(Serializable id) {
-        if (repository.getRepositoryDescriptor().getFulltextDisabled()) {
+        if (repository.getRepositoryDescriptor().getFulltextDescriptor().getFulltextDisabled()) {
             return null;
         }
         RowId rowId = new RowId(Model.FULLTEXT_TABLE_NAME, id);

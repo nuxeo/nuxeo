@@ -92,7 +92,7 @@ public class RepositoryImpl implements Repository {
         sessions = new CopyOnWriteArrayList<SessionImpl>();
         invalidationsPropagator = new InvalidationsPropagator();
 
-        String className = repositoryDescriptor.fulltextParser;
+        String className = repositoryDescriptor.getFulltextDescriptor().getFulltextParser();
         if (StringUtils.isBlank(className)) {
             className = DefaultFulltextParser.class.getName();
         }

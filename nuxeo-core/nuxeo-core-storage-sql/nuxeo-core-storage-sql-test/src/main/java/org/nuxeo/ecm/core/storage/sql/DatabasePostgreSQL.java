@@ -90,7 +90,7 @@ public class DatabasePostgreSQL extends DatabaseHelper {
         properties.put("User", Framework.getProperty(USER_PROPERTY));
         properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
         descriptor.properties = properties;
-        descriptor.fulltextAnalyzer = "french";
+        descriptor.setFulltextAnalyzer("french");
         descriptor.setPathOptimizationsEnabled(true);
         descriptor.setAclOptimizationsEnabled(true);
         descriptor.idType = Framework.getProperty(ID_TYPE_PROPERTY);

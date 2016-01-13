@@ -21,12 +21,14 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.common.xmap.XMap;
+import org.nuxeo.ecm.core.storage.FulltextDescriptor;
+import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 
 public class TestRepositoryDescriptor {
 
@@ -62,42 +64,42 @@ public class TestRepositoryDescriptor {
     @SuppressWarnings("unchecked")
     @Test
     public void testFulltext() throws Exception {
-        assertEquals("french", desc.fulltextAnalyzer);
-        assertEquals("nuxeo", desc.fulltextCatalog);
-        assertNotNull(desc.fulltextIndexes);
-        assertEquals(4, desc.fulltextIndexes.size());
+        assertEquals("french", desc.getFulltextAnalyzer());
+        assertEquals("nuxeo", desc.getFulltextCatalog());
+        FulltextDescriptor fulltextDescriptor = desc.getFulltextDescriptor();
+        List<FulltextIndexDescriptor> fulltextIndexes = fulltextDescriptor.getFulltextIndexes();
+        assertNotNull(fulltextIndexes);
+        assertEquals(4, fulltextIndexes.size());
         FulltextIndexDescriptor fti;
 
-        fti = desc.fulltextIndexes.get(0);
+        fti = fulltextIndexes.get(0);
         assertNull(fti.name);
         assertNull(fti.fieldType);
         assertEquals(new HashSet(), fti.fields);
         assertEquals(new HashSet(Collections.singleton("dc:creator")), fti.excludeFields);
 
-        fti = desc.fulltextIndexes.get(1);
+        fti = fulltextIndexes.get(1);
         assertEquals("titraille", fti.name);
         assertNull(fti.fieldType);
         assertEquals(new HashSet(Arrays.asList("dc:title", "dc:description")), fti.fields);
         assertEquals(new HashSet(), fti.excludeFields);
 
-        fti = desc.fulltextIndexes.get(2);
+        fti = fulltextIndexes.get(2);
         assertEquals("blobs", fti.name);
         assertEquals("blob", fti.fieldType);
         assertEquals(new HashSet(), fti.fields);
         assertEquals(new HashSet(Collections.singleton("foo:bar")), fti.excludeFields);
 
-        fti = desc.fulltextIndexes.get(3);
+        fti = fulltextIndexes.get(3);
         assertEquals("pictures", fti.name);
         assertNull(fti.fieldType);
         assertEquals(new HashSet(Collections.singleton("picture:views/*/filename")), fti.fields);
         assertEquals(new HashSet(), fti.excludeFields);
-        assertEquals("martian", fti.analyzer);
-        assertEquals("other", fti.catalog);
 
-        assertTrue(desc.fulltextExcludedTypes.contains("Folder"));
-        assertTrue(desc.fulltextExcludedTypes.contains("Workspace"));
-        assertTrue(desc.fulltextIncludedTypes.contains("File"));
-        assertTrue(desc.fulltextIncludedTypes.contains("Note"));
+        assertTrue(fulltextDescriptor.getFulltextExcludedTypes().contains("Folder"));
+        assertTrue(fulltextDescriptor.getFulltextExcludedTypes().contains("Workspace"));
+        assertTrue(fulltextDescriptor.getFulltextIncludedTypes().contains("File"));
+        assertTrue(fulltextDescriptor.getFulltextIncludedTypes().contains("Note"));
     }
 
     @Test
@@ -165,46 +167,47 @@ public class TestRepositoryDescriptor {
 
         // fulltext indexes
 
-        assertEquals("english", desc.fulltextAnalyzer);
-        assertEquals("nuxeo", desc.fulltextCatalog);
-        assertEquals(5, desc.fulltextIndexes.size());
+        assertEquals("english", desc.getFulltextAnalyzer());
+        assertEquals("nuxeo", desc.getFulltextCatalog());
+        FulltextDescriptor fulltextDescriptor = desc.getFulltextDescriptor();
+        List<FulltextIndexDescriptor> fulltextIndexes = fulltextDescriptor.getFulltextIndexes();
+        assertEquals(5, fulltextIndexes.size());
         FulltextIndexDescriptor fti;
 
-        fti = desc.fulltextIndexes.get(0);
+        fti = fulltextIndexes.get(0);
         assertNull(fti.name);
         assertNull(fti.fieldType);
         assertEquals(new HashSet<String>(), fti.fields);
         assertEquals(Collections.singleton("dc:creator"), fti.excludeFields);
 
-        fti = desc.fulltextIndexes.get(1);
+        fti = fulltextIndexes.get(1);
         assertEquals("titraille", fti.name);
         assertNull(fti.fieldType);
         assertEquals(new HashSet<String>(Arrays.asList("dc:title", "dc:description", "my:desc")), fti.fields);
         assertEquals(new HashSet<String>(), fti.excludeFields);
 
-        fti = desc.fulltextIndexes.get(2);
+        fti = fulltextIndexes.get(2);
         assertEquals("blobs", fti.name);
         assertEquals("blob", fti.fieldType);
         assertEquals(new HashSet<String>(), fti.fields);
         assertEquals(Collections.singleton("foo:bar"), fti.excludeFields);
 
-        fti = desc.fulltextIndexes.get(3);
+        fti = fulltextIndexes.get(3);
         assertEquals("pictures", fti.name);
         assertNull(fti.fieldType);
         assertEquals(Collections.singleton("picture:views/*/filename"), fti.fields);
         assertEquals(new HashSet<String>(), fti.excludeFields);
-        assertEquals("venusian", fti.analyzer);
-        assertEquals("other", fti.catalog);
 
-        fti = desc.fulltextIndexes.get(4);
+        fti = fulltextIndexes.get(4);
         assertEquals("other", fti.name);
         assertNull(fti.fieldType);
         assertEquals(Collections.singleton("my:other"), fti.fields);
         assertEquals(new HashSet<String>(), fti.excludeFields);
 
         assertEquals(new HashSet<String>(Arrays.asList("Folder", "Workspace", "OtherExcluded")),
-                desc.fulltextExcludedTypes);
-        assertEquals(new HashSet<String>(Arrays.asList("Note", "File", "OtherIncluded")), desc.fulltextIncludedTypes);
+                fulltextDescriptor.getFulltextExcludedTypes());
+        assertEquals(new HashSet<String>(Arrays.asList("Note", "File", "OtherIncluded")),
+                fulltextDescriptor.getFulltextIncludedTypes());
     }
 
 }

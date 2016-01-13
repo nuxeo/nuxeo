@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -248,8 +249,9 @@ public abstract class Dialect {
             softDeleteEnabled = false;
             proxiesEnabled = true;
         } else {
-            fulltextDisabled = repositoryDescriptor.getFulltextDisabled();
-            fulltextSearchDisabled = repositoryDescriptor.getFulltextSearchDisabled();
+            FulltextDescriptor fulltextDescriptor = repositoryDescriptor.getFulltextDescriptor();
+            fulltextDisabled = fulltextDescriptor.getFulltextDisabled();
+            fulltextSearchDisabled = fulltextDescriptor.getFulltextSearchDisabled();
             aclOptimizationsEnabled = repositoryDescriptor.getAclOptimizationsEnabled();
             readAclMaxSize = repositoryDescriptor.getReadAclMaxSize();
             clusteringEnabled = repositoryDescriptor.getClusteringEnabled();

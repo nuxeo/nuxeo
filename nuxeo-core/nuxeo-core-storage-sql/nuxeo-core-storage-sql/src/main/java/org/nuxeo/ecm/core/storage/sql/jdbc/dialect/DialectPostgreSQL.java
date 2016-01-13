@@ -107,8 +107,8 @@ public class DialectPostgreSQL extends Dialect {
     public DialectPostgreSQL(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
         fulltextAnalyzer = repositoryDescriptor == null ? null
-                : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
-                        : repositoryDescriptor.fulltextAnalyzer;
+                : repositoryDescriptor.getFulltextAnalyzer() == null ? DEFAULT_FULLTEXT_ANALYZER
+                        : repositoryDescriptor.getFulltextAnalyzer();
         pathOptimizationsEnabled = repositoryDescriptor == null ? false
                 : repositoryDescriptor.getPathOptimizationsEnabled();
         if (repositoryDescriptor != null) {

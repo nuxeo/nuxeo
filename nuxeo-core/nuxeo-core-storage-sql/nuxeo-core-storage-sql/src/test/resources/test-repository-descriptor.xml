@@ -30,7 +30,7 @@
         <fieldType>blob</fieldType>
         <excludeField>foo:bar</excludeField>
       </index>
-      <index name="pictures" catalog="other" analyzer="martian">
+      <index name="pictures">
         <field>picture:views/*/filename</field>
       </index>
     </fulltext>

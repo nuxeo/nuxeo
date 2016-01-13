@@ -12,30 +12,22 @@
 package org.nuxeo.ecm.core.storage.mem;
 
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryFactory;
 
 /**
  * In-memory implementation of a {@link RepositoryFactory}, creating a {@link MemRepository}.
  *
  * @since 5.9.4
  */
-public class MemRepositoryFactory implements RepositoryFactory {
+public class MemRepositoryFactory extends DBSRepositoryFactory {
 
-    protected String repositoryName;
-
-    @Override
-    public void init(String repositoryName) {
-        this.repositoryName = repositoryName;
+    public MemRepositoryFactory(String repositoryName) {
+        super(repositoryName);
     }
 
     @Override
     public Object call() {
-        MemRepositoryService repositoryService = Framework.getLocalService(MemRepositoryService.class);
-        MemRepositoryDescriptor descriptor = repositoryService.getRepositoryDescriptor(repositoryName);
-        if (descriptor == null) {
-            throw new IllegalStateException("No descriptor registered for: " + repositoryName);
-        }
-        return new MemRepository(descriptor);
+        return new MemRepository((MemRepositoryDescriptor) getRepositoryDescriptor());
     }
 
 }

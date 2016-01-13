@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -46,7 +44,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.runtime.api.Framework;
@@ -460,7 +457,6 @@ public class Model {
         prefixToSchema = new HashMap<String, String>();
         schemaSimpleTextPaths = new HashMap<String, Set<String>>();
         allPathPropertyInfos = new HashMap<String, ModelProperty>();
-        fulltextConfiguration = new FulltextConfiguration();
         fulltextInfoByFragment = new HashMap<String, PropertyType>();
         fragmentKeyTypes = new HashMap<String, Map<String, ColumnType>>();
         binaryFragmentKeys = new HashMap<String, List<String>>();
@@ -487,6 +483,12 @@ public class Model {
 
         miscInHierarchy = false;
 
+        if (repositoryDescriptor.getFulltextDescriptor().getFulltextDisabled()) {
+            fulltextConfiguration = null;
+        } else {
+            fulltextConfiguration = new FulltextConfiguration(repositoryDescriptor.getFulltextDescriptor());
+        }
+
         initMainModel();
         initVersionsModel();
         if (proxiesEnabled) {
@@ -497,8 +499,7 @@ public class Model {
         initMiscModel();
         // models for all document types and mixins
         initModels();
-        if (!repositoryDescriptor.getFulltextDisabled()) {
-            inferFulltextInfo();
+        if (fulltextConfiguration != null) {
             inferFulltextInfoByFragment(); // needs mixin schemas
             initFullTextModel();
         }
@@ -752,105 +753,6 @@ public class Model {
             }
         }
         done.remove(typeName);
-    }
-
-    /**
-     * Infers fulltext info for all schemas.
-     */
-    private void inferFulltextInfo() {
-        List<FulltextIndexDescriptor> descs = repositoryDescriptor.fulltextIndexes;
-        if (descs == null) {
-            descs = new ArrayList<FulltextIndexDescriptor>(1);
-        }
-        if (descs.isEmpty()) {
-            descs.add(new FulltextIndexDescriptor());
-        }
-        for (FulltextIndexDescriptor desc : descs) {
-            String name = desc.name == null ? FULLTEXT_DEFAULT_INDEX : desc.name;
-            fulltextConfiguration.indexNames.add(name);
-            fulltextConfiguration.indexAnalyzer.put(name,
-                    desc.analyzer == null ? repositoryDescriptor.fulltextAnalyzer : desc.analyzer);
-            fulltextConfiguration.indexCatalog.put(name,
-                    desc.catalog == null ? repositoryDescriptor.fulltextCatalog : desc.catalog);
-            if (desc.fields == null) {
-                desc.fields = new HashSet<String>();
-            }
-            if (desc.excludeFields == null) {
-                desc.excludeFields = new HashSet<String>();
-            }
-            if (desc.fields.size() == 1 && desc.excludeFields.isEmpty()) {
-                fulltextConfiguration.fieldToIndexName.put(desc.fields.iterator().next(), name);
-            }
-
-            if (desc.fieldType != null) {
-                if (desc.fieldType.equals(FulltextConfiguration.PROP_TYPE_STRING)) {
-                    fulltextConfiguration.indexesAllSimple.add(name);
-                } else if (desc.fieldType.equals(FulltextConfiguration.PROP_TYPE_BLOB)) {
-                    fulltextConfiguration.indexesAllBinary.add(name);
-                } else {
-                    log.error("Ignoring unknow repository fulltext configuration fieldType: " + desc.fieldType);
-                }
-
-            }
-            if (desc.fields.isEmpty() && desc.fieldType == null) {
-                // no fields specified and no field type -> all of them
-                fulltextConfiguration.indexesAllSimple.add(name);
-                fulltextConfiguration.indexesAllBinary.add(name);
-            }
-
-            if (repositoryDescriptor.fulltextExcludedTypes != null) {
-                fulltextConfiguration.excludedTypes.addAll(repositoryDescriptor.fulltextExcludedTypes);
-            }
-            if (repositoryDescriptor.fulltextIncludedTypes != null) {
-                fulltextConfiguration.includedTypes.addAll(repositoryDescriptor.fulltextIncludedTypes);
-            }
-
-            for (Set<String> fields : Arrays.asList(desc.fields, desc.excludeFields)) {
-                for (String path : fields) {
-                    ModelProperty pi = allPathPropertyInfos.get(path);
-                    if (pi == null) {
-                        log.error(String.format("Ignoring unknown property '%s' in fulltext configuration: %s", path,
-                                name));
-                        continue;
-                    }
-                    Map<String, Set<String>> indexesByPropPath;
-                    Map<String, Set<String>> propPathsByIndex;
-                    if (pi.propertyType == PropertyType.STRING || pi.propertyType == PropertyType.ARRAY_STRING) {
-                        indexesByPropPath = fields == desc.fields ? fulltextConfiguration.indexesByPropPathSimple
-                                : fulltextConfiguration.indexesByPropPathExcludedSimple;
-                        propPathsByIndex = fields == desc.fields ? fulltextConfiguration.propPathsByIndexSimple
-                                : fulltextConfiguration.propPathsExcludedByIndexSimple;
-                    } else if (pi.propertyType == PropertyType.BINARY) {
-                        indexesByPropPath = fields == desc.fields ? fulltextConfiguration.indexesByPropPathBinary
-                                : fulltextConfiguration.indexesByPropPathExcludedBinary;
-                        propPathsByIndex = fields == desc.fields ? fulltextConfiguration.propPathsByIndexBinary
-                                : fulltextConfiguration.propPathsExcludedByIndexBinary;
-                    } else {
-                        log.error(String.format("Ignoring property '%s' with bad type %s in fulltext configuration: %s",
-                                path, pi.propertyType, name));
-                        continue;
-                    }
-                    Set<String> indexes = indexesByPropPath.get(path);
-                    if (indexes == null) {
-                        indexesByPropPath.put(path, indexes = new HashSet<String>());
-                    }
-                    indexes.add(name);
-                    Set<String> paths = propPathsByIndex.get(name);
-                    if (paths == null) {
-                        propPathsByIndex.put(name, paths = new LinkedHashSet<String>());
-                    }
-                    paths.add(path);
-                }
-            }
-        }
-
-        // Add document types with the NotFulltextIndexable facet
-        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        for (DocumentType documentType : schemaManager.getDocumentTypes()) {
-            if (documentType.hasFacet(FacetNames.NOT_FULLTEXT_INDEXABLE)) {
-                fulltextConfiguration.excludedTypes.add(documentType.getName());
-            }
-        }
     }
 
     private void inferFulltextInfoByFragment() {
@@ -1231,7 +1133,7 @@ public class Model {
         if (!miscInHierarchy) {
             fragments.add(MISC_TABLE_NAME);
         }
-        if (!repositoryDescriptor.getFulltextDisabled() && fulltextConfiguration.isFulltextIndexable(typeName)) {
+        if (fulltextConfiguration != null && fulltextConfiguration.isFulltextIndexable(typeName)) {
             fragments.add(FULLTEXT_TABLE_NAME);
         }
         return fragments;

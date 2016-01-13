@@ -12,30 +12,22 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryFactory;
 
 /**
  * MongoDB implementation of a {@link RepositoryFactory}, creating a {@link MongoDBRepository}.
  *
  * @since 5.9.4
  */
-public class MongoDBRepositoryFactory implements RepositoryFactory {
+public class MongoDBRepositoryFactory extends DBSRepositoryFactory {
 
-    protected String repositoryName;
-
-    @Override
-    public void init(String repositoryName) {
-        this.repositoryName = repositoryName;
+    public MongoDBRepositoryFactory(String repositoryName) {
+        super(repositoryName);
     }
 
     @Override
     public Object call() {
-        MongoDBRepositoryService repositoryService = Framework.getLocalService(MongoDBRepositoryService.class);
-        MongoDBRepositoryDescriptor descriptor = repositoryService.getRepositoryDescriptor(repositoryName);
-        if (descriptor == null) {
-            throw new IllegalStateException("No descriptor registered for: " + repositoryName);
-        }
-        return new MongoDBRepository(descriptor);
+        return new MongoDBRepository((MongoDBRepositoryDescriptor) getRepositoryDescriptor());
     }
 
 }
