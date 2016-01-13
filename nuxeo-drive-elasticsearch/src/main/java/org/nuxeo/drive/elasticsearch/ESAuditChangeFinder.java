@@ -86,8 +86,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     protected List<LogEntry> queryESAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds, int limit) {
 
-        SearchRequestBuilder builder = getClient().prepareSearch(ESAuditBackend.IDX_NAME).setTypes(
-                ESAuditBackend.IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getClient().prepareSearch(ESAuditBackend.IDX_NAME)
+                                                  .setTypes(ESAuditBackend.IDX_TYPE)
+                                                  .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
         FilterBuilder filterBuilder = buildFilterClauses(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
@@ -130,11 +131,12 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             // 'documentCreated' or log.eventId = 'documentModified' or
             // log.eventId = 'documentMoved' or log.eventId =
             // 'documentCreatedByCopy' or log.eventId = 'documentRestored' or
-            // log.eventId = 'addedToCollection’) or log.category =
+            // log.eventId = 'addedToCollection’ or log.eventId =
+            // 'documentLocked' or log.eventId = 'documentUnlocked') or log.category =
             // 'eventLifeCycleCategory' and log.eventId =
             // 'lifecycle_transition_event' and log.docLifeCycle != 'deleted' )
             String eventIds[] = { "documentCreated", "documentModified", "documentMoved", "documentCreatedByCopy",
-                    "documentRestored", "addedToCollection" };
+                    "documentRestored", "addedToCollection", "documentLocked", "documentUnlocked" };
             OrFilterBuilder orEventsFilter = FilterBuilders.orFilter();
             orEventsFilter.add(getEventsClause("eventDocumentCategory", eventIds, true));
             orEventsFilter.add(getEventsClause("eventLifeCycleCategory", new String[] { "lifecycle_transition_event" },
@@ -216,8 +218,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     @Override
     public long getUpperBound() {
-        SearchRequestBuilder builder = getClient().prepareSearch(ESAuditBackend.IDX_NAME).setTypes(
-                ESAuditBackend.IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getClient().prepareSearch(ESAuditBackend.IDX_NAME)
+                                                  .setTypes(ESAuditBackend.IDX_TYPE)
+                                                  .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         // TODO refactor this to use max clause
         builder.setQuery(QueryBuilders.matchAllQuery());
         builder.addSort("id", SortOrder.DESC);
