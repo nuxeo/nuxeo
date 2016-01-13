@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +32,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.repository.RepositoryFactory;
+import org.nuxeo.ecm.core.storage.FulltextDescriptor;
+import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 
 /**
@@ -62,67 +62,6 @@ public class RepositoryDescriptor {
 
     /** Specifies that stored procedure detection must be compatible with previous Nuxeo versions. */
     public static final String DDL_MODE_COMPAT = "compat";
-
-    @XObject(value = "index")
-    public static class FulltextIndexDescriptor {
-
-        @XNode("@name")
-        public String name;
-
-        @XNode("@analyzer")
-        public String analyzer;
-
-        @XNode("@catalog")
-        public String catalog;
-
-        /** string or blob */
-        @XNode("fieldType")
-        public String fieldType;
-
-        @XNodeList(value = "field", type = HashSet.class, componentType = String.class)
-        public Set<String> fields = new HashSet<>(0);
-
-        @XNodeList(value = "excludeField", type = HashSet.class, componentType = String.class)
-        public Set<String> excludeFields = new HashSet<>(0);
-
-        public FulltextIndexDescriptor() {
-        }
-
-        /** Copy constructor. */
-        public FulltextIndexDescriptor(FulltextIndexDescriptor other) {
-            name = other.name;
-            analyzer = other.analyzer;
-            catalog = other.catalog;
-            fieldType = other.fieldType;
-            fields = new HashSet<>(other.fields);
-            excludeFields = new HashSet<>(other.excludeFields);
-        }
-
-        public static List<FulltextIndexDescriptor> copyList(List<FulltextIndexDescriptor> other) {
-            List<FulltextIndexDescriptor> copy = new ArrayList<>(other.size());
-            for (FulltextIndexDescriptor fid : other) {
-                copy.add(new FulltextIndexDescriptor(fid));
-            }
-            return copy;
-        }
-
-        public void merge(FulltextIndexDescriptor other) {
-            if (other.name != null) {
-                name = other.name;
-            }
-            if (other.analyzer != null) {
-                analyzer = other.analyzer;
-            }
-            if (other.catalog != null) {
-                catalog = other.catalog;
-            }
-            if (other.fieldType != null) {
-                fieldType = other.fieldType;
-            }
-            fields.addAll(other.fields);
-            excludeFields.addAll(other.excludeFields);
-        }
-    }
 
     @XObject(value = "field")
     public static class FieldDescriptor {
@@ -338,53 +277,69 @@ public class RepositoryDescriptor {
         arrayColumns = Boolean.valueOf(enabled);
     }
 
-    @XNode("indexing/fulltext@disabled")
-    private Boolean fulltextDisabled;
-
-    public boolean getFulltextDisabled() {
-        return defaultFalse(fulltextDisabled);
-    }
-
-    public void setFulltextDisabled(boolean disabled) {
-        fulltextDisabled = Boolean.valueOf(disabled);
-    }
-
-    @XNode("indexing/fulltext@searchDisabled")
-    private Boolean fulltextSearchDisabled;
-
-    public boolean getFulltextSearchDisabled() {
-        if (getFulltextDisabled()) {
-            return true;
-        }
-        return defaultFalse(fulltextSearchDisabled);
-    }
-
-    public void setFulltextSearchDisabled(boolean disabled) {
-        fulltextSearchDisabled = Boolean.valueOf(disabled);
-    }
-
-    @XNode("indexing/fulltext@analyzer")
-    public String fulltextAnalyzer;
-
-    @XNode("indexing/fulltext@parser")
-    public String fulltextParser;
-
-    @XNode("indexing/fulltext@catalog")
-    public String fulltextCatalog;
-
     @XNode("indexing/queryMaker@class")
     public void setQueryMakerDeprecated(String klass) {
         log.warn("Setting queryMaker from repository configuration is now deprecated");
     }
 
+    // VCS-specific fulltext indexing options
+    private String fulltextAnalyzer;
+
+    public String getFulltextAnalyzer() {
+        return fulltextAnalyzer;
+    }
+
+    @XNode("indexing/fulltext@analyzer")
+    public void setFulltextAnalyzer(String fulltextAnalyzer) {
+        this.fulltextAnalyzer = fulltextAnalyzer;
+    }
+
+    private String fulltextCatalog;
+
+    public String getFulltextCatalog() {
+        return fulltextCatalog;
+    }
+
+    @XNode("indexing/fulltext@catalog")
+    public void setFulltextCatalog(String fulltextCatalog) {
+        this.fulltextCatalog = fulltextCatalog;
+    }
+
+    private FulltextDescriptor fulltextDescriptor = new FulltextDescriptor();
+
+    public FulltextDescriptor getFulltextDescriptor() {
+        return fulltextDescriptor;
+    }
+
+    @XNode("indexing/fulltext@disabled")
+    public void setFulltextDisabled(boolean disabled) {
+        fulltextDescriptor.setFulltextDisabled(disabled);
+    }
+
+    @XNode("indexing/fulltext@searchDisabled")
+    public void setFulltextSearchDisabled(boolean disabled) {
+        fulltextDescriptor.setFulltextSearchDisabled(disabled);
+    }
+
+    @XNode("indexing/fulltext@parser")
+    public void setFulltextParser(String fulltextParser) {
+        fulltextDescriptor.setFulltextParser(fulltextParser);
+    }
+
     @XNodeList(value = "indexing/fulltext/index", type = ArrayList.class, componentType = FulltextIndexDescriptor.class)
-    public List<FulltextIndexDescriptor> fulltextIndexes = new ArrayList<>(0);
+    public void setFulltextIndexes(List<FulltextIndexDescriptor> fulltextIndexes) {
+        fulltextDescriptor.setFulltextIndexes(fulltextIndexes);
+    }
 
     @XNodeList(value = "indexing/excludedTypes/type", type = HashSet.class, componentType = String.class)
-    public Set<String> fulltextExcludedTypes = new HashSet<>(0);
+    public void setFulltextExcludedTypes(Set<String> fulltextExcludedTypes) {
+        fulltextDescriptor.setFulltextExcludedTypes(fulltextExcludedTypes);
+    }
 
     @XNodeList(value = "indexing/includedTypes/type", type = HashSet.class, componentType = String.class)
-    public Set<String> fulltextIncludedTypes = new HashSet<>(0);
+    public void setFulltextIncludedTypes(Set<String> fulltextIncludedTypes) {
+        fulltextDescriptor.setFulltextIncludedTypes(fulltextIncludedTypes);
+    }
 
     // compat
     @XNodeList(value = "indexing/neverPerDocumentFacets/facet", type = HashSet.class, componentType = String.class)
@@ -462,14 +417,9 @@ public class RepositoryDescriptor {
         clusterNodeId = other.clusterNodeId;
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
-        fulltextDisabled = other.fulltextDisabled;
-        fulltextSearchDisabled = other.fulltextSearchDisabled;
         fulltextAnalyzer = other.fulltextAnalyzer;
-        fulltextParser = other.fulltextParser;
         fulltextCatalog = other.fulltextCatalog;
-        fulltextIndexes = FulltextIndexDescriptor.copyList(other.fulltextIndexes);
-        fulltextExcludedTypes = new HashSet<>(other.fulltextExcludedTypes);
-        fulltextIncludedTypes = new HashSet<>(other.fulltextIncludedTypes);
+        fulltextDescriptor = new FulltextDescriptor(other.fulltextDescriptor);
         neverPerInstanceMixins = other.neverPerInstanceMixins;
         pathOptimizationsEnabled = other.pathOptimizationsEnabled;
         pathOptimizationsVersion = other.pathOptimizationsVersion;
@@ -547,36 +497,13 @@ public class RepositoryDescriptor {
         if (other.arrayColumns != null) {
             arrayColumns = other.arrayColumns;
         }
-        if (other.fulltextDisabled != null) {
-            fulltextDisabled = other.fulltextDisabled;
-        }
-        if (other.fulltextSearchDisabled != null) {
-            fulltextSearchDisabled = other.fulltextSearchDisabled;
-        }
         if (other.fulltextAnalyzer != null) {
             fulltextAnalyzer = other.fulltextAnalyzer;
-        }
-        if (other.fulltextParser != null) {
-            fulltextParser = other.fulltextParser;
         }
         if (other.fulltextCatalog != null) {
             fulltextCatalog = other.fulltextCatalog;
         }
-        for (FulltextIndexDescriptor oi : other.fulltextIndexes) {
-            boolean append = true;
-            for (FulltextIndexDescriptor i : fulltextIndexes) {
-                if (ObjectUtils.equals(i.name, oi.name)) {
-                    i.merge(oi);
-                    append = false;
-                    break;
-                }
-            }
-            if (append) {
-                fulltextIndexes.add(oi);
-            }
-        }
-        fulltextExcludedTypes.addAll(other.fulltextExcludedTypes);
-        fulltextIncludedTypes.addAll(other.fulltextIncludedTypes);
+        fulltextDescriptor.merge(other.fulltextDescriptor);
         neverPerInstanceMixins.addAll(other.neverPerInstanceMixins);
         if (other.pathOptimizationsEnabled != null) {
             pathOptimizationsEnabled = other.pathOptimizationsEnabled;

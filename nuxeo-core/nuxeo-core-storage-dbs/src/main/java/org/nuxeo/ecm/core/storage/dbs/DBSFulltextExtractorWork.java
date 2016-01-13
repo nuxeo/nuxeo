@@ -19,10 +19,11 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
-import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextExtractorWork;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Work task that does fulltext extraction from the blobs of the given document.
@@ -41,9 +42,9 @@ public class DBSFulltextExtractorWork extends FulltextExtractorWork {
 
     @Override
     public void initFulltextConfigurationAndParser() {
-        fulltextConfiguration = new FulltextConfiguration();
-        fulltextConfiguration.indexNames.add("default");
-        fulltextConfiguration.indexesAllBinary.add("default");
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        DBSRepository repository = (DBSRepository) repositoryService.getRepository(repositoryName);
+        fulltextConfiguration = repository.getFulltextConfiguration();
         fulltextParser = new DefaultFulltextParser();
     }
 

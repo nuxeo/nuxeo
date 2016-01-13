@@ -130,8 +130,8 @@ public class DatabaseSQLServer extends DatabaseHelper {
         properties.put("Password", Framework.getProperty(PASSWORD_PROPERTY));
         properties.put("UseCursors", "true");
         descriptor.properties = properties;
-        descriptor.fulltextAnalyzer = "French";
-        descriptor.fulltextCatalog = "nuxeo";
+        descriptor.setFulltextAnalyzer("French");
+        descriptor.setFulltextCatalog("nuxeo");
         descriptor.idType = Framework.getProperty(ID_TYPE_PROPERTY);
         return descriptor;
     }

@@ -90,7 +90,7 @@ public class MemRepository extends DBSRepositoryBase {
     protected Map<String, State> states;
 
     public MemRepository(MemRepositoryDescriptor descriptor) {
-        super(descriptor.name, descriptor.getFulltextDisabled());
+        super(descriptor.name, descriptor.getFulltextDescriptor());
         initRepository();
     }
 

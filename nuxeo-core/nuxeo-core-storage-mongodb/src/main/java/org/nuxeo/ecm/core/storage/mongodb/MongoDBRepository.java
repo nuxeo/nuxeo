@@ -148,7 +148,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected DBCollection countersColl;
 
     public MongoDBRepository(MongoDBRepositoryDescriptor descriptor) {
-        super(descriptor.name, descriptor.getFulltextDisabled());
+        super(descriptor.name, descriptor.getFulltextDescriptor());
         try {
             mongoClient = newMongoClient(descriptor);
             coll = getCollection(descriptor, mongoClient);
@@ -467,7 +467,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(new BasicDBObject("rend:renditionName", ONE));
         coll.createIndex(new BasicDBObject("drv:subscriptions.enabled", ONE));
         coll.createIndex(new BasicDBObject("collectionMember:collectionIds", ONE));
-        if (!fulltextDisabled) {
+        if (!isFulltextDisabled()) {
             DBObject indexKeys = new BasicDBObject();
             indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);
             indexKeys.put(KEY_FULLTEXT_BINARY, MONGODB_INDEX_TEXT);
@@ -707,7 +707,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(evaluator.getExpression(), evaluator.getSelectClause(),
                 orderByClause, evaluator.pathResolver);
         builder.walk();
-        if (builder.hasFulltext && fulltextDisabled) {
+        if (builder.hasFulltext && isFulltextDisabled()) {
             throw new RuntimeException("Fulltext disabled by configuration");
         }
         DBObject query = builder.getQuery();

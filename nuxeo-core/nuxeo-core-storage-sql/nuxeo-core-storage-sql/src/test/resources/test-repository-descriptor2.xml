@@ -18,7 +18,7 @@
       <index name="titraille">
         <field>my:desc</field>
       </index>
-      <index name="pictures" analyzer="venusian" />
+      <index name="pictures" />
       <index name="other">
         <field>my:other</field>
       </index>

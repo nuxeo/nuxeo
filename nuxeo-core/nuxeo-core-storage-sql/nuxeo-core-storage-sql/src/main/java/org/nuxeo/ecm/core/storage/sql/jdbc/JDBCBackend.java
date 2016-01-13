@@ -35,6 +35,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -233,8 +234,9 @@ public class JDBCBackend implements RepositoryBackend {
                 mapper.createDatabase(ddlMode);
             }
             if (log.isDebugEnabled()) {
+                FulltextDescriptor fulltextDescriptor = repositoryDescriptor.getFulltextDescriptor();
                 log.debug(String.format("Database ready, fulltext: disabled=%b searchDisabled=%b.",
-                        repositoryDescriptor.getFulltextDisabled(), repositoryDescriptor.getFulltextSearchDisabled()));
+                        fulltextDescriptor.getFulltextDisabled(), fulltextDescriptor.getFulltextSearchDisabled()));
             }
             initialized = TRUE;
         }

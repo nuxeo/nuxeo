@@ -113,11 +113,11 @@ public class DialectSQLServer extends Dialect {
             }
         }
         fulltextAnalyzer = repositoryDescriptor == null ? null
-                : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
-                        : repositoryDescriptor.fulltextAnalyzer;
+                : repositoryDescriptor.getFulltextAnalyzer() == null ? DEFAULT_FULLTEXT_ANALYZER
+                        : repositoryDescriptor.getFulltextAnalyzer();
         fulltextCatalog = repositoryDescriptor == null ? null
-                : repositoryDescriptor.fulltextCatalog == null ? DEFAULT_FULLTEXT_CATALOG
-                        : repositoryDescriptor.fulltextCatalog;
+                : repositoryDescriptor.getFulltextCatalog() == null ? DEFAULT_FULLTEXT_CATALOG
+                        : repositoryDescriptor.getFulltextCatalog();
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;

@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService"
   version="1.0.0">
 
-  <require>org.nuxeo.ecm.core.repository.RepositoryServiceComponent
+  <require>org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService
   </require>
 
   <documentation>

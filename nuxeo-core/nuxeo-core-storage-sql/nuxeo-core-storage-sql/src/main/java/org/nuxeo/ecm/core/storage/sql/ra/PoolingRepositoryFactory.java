@@ -35,10 +35,9 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
  */
 public class PoolingRepositoryFactory implements RepositoryFactory {
 
-    private String repositoryName;
+    protected final String repositoryName;
 
-    @Override
-    public void init(String repositoryName) {
+    public PoolingRepositoryFactory(String repositoryName) {
         this.repositoryName = repositoryName;
     }
 

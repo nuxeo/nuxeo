@@ -59,10 +59,15 @@ public class DialectH2 extends Dialect {
 
     private static final String DEFAULT_FULLTEXT_ANALYZER = "org.apache.lucene.analysis.standard.StandardAnalyzer";
 
+    protected final String fulltextAnalyzer;
+
     protected final String usersSeparator;
 
     public DialectH2(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
+        fulltextAnalyzer = repositoryDescriptor == null ? null
+                : repositoryDescriptor.getFulltextAnalyzer() == null ? DEFAULT_FULLTEXT_ANALYZER
+                        : repositoryDescriptor.getFulltextAnalyzer();
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
@@ -199,12 +204,8 @@ public class DialectH2 extends Dialect {
             columnNames.add("'" + col.getPhysicalName() + "'");
         }
         String fullIndexName = String.format("PUBLIC_%s_%s", table.getPhysicalName(), indexName);
-        String analyzer = model.getFulltextConfiguration().indexAnalyzer.get(indexName);
-        if (analyzer == null) {
-            analyzer = DEFAULT_FULLTEXT_ANALYZER;
-        }
         return String.format("CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', (%s), '%s')", fullIndexName,
-                table.getPhysicalName(), StringUtils.join(columnNames, ", "), analyzer);
+                table.getPhysicalName(), StringUtils.join(columnNames, ", "), fulltextAnalyzer);
     }
 
     @Override

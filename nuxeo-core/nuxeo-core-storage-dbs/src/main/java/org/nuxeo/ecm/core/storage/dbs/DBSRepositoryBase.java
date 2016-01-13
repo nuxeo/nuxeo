@@ -61,6 +61,8 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
+import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -85,7 +87,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     protected final String repositoryName;
 
-    protected final boolean fulltextDisabled;
+    protected final FulltextConfiguration fulltextConfiguration;
 
     protected final BlobManager blobManager;
 
@@ -96,9 +98,13 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      */
     protected boolean selfRegisteredLockManager = false;
 
-    public DBSRepositoryBase(String repositoryName, boolean fulltextDisabled) {
+    public DBSRepositoryBase(String repositoryName, FulltextDescriptor fulltextDescriptor) {
         this.repositoryName = repositoryName;
-        this.fulltextDisabled = fulltextDisabled;
+        if (fulltextDescriptor.getFulltextDisabled()) {
+            fulltextConfiguration = null;
+        } else {
+            fulltextConfiguration = new FulltextConfiguration(fulltextDescriptor);
+        }
         blobManager = Framework.getService(BlobManager.class);
         initBlobsPaths();
         initLockManager();
@@ -117,6 +123,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     @Override
     public String getName() {
         return repositoryName;
+    }
+
+    @Override
+    public FulltextConfiguration getFulltextConfiguration() {
+        return fulltextConfiguration;
     }
 
     protected String getLockManagerName() {
@@ -248,7 +259,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     @Override
     public boolean isFulltextDisabled() {
-        return fulltextDisabled;
+        return fulltextConfiguration == null;
     }
 
     @Override

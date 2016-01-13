@@ -128,14 +128,6 @@ public class DBSTransactionState {
         browsePermissions = new HashSet<>(Arrays.asList(securityService.getPermissionsToCheck(BROWSE)));
     }
 
-    protected FulltextConfiguration getFulltextConfiguration() {
-        // TODO get from DBS repo service
-        FulltextConfiguration fulltextConfiguration = new FulltextConfiguration();
-        fulltextConfiguration.indexNames.add("default");
-        fulltextConfiguration.indexesAllBinary.add("default");
-        return fulltextConfiguration;
-    }
-
     /**
      * New transient state for something just read from the repository.
      */
@@ -791,6 +783,7 @@ public class DBSTransactionState {
     protected void getFulltextSimpleWorks(List<Work> works, Set<String> docsWithDirtyStrings) {
         // TODO XXX make configurable, see also FulltextExtractorWork
         FulltextParser fulltextParser = new DefaultFulltextParser();
+        FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
         // update simpletext on documents with dirty strings
         for (String id : docsWithDirtyStrings) {
             if (id == null) {
@@ -806,14 +799,13 @@ public class DBSTransactionState {
             String documentType = docState.getPrimaryType();
             // Object[] mixinTypes = (Object[]) docState.get(KEY_MIXIN_TYPES);
 
-            FulltextConfiguration config = getFulltextConfiguration();
-            if (!config.isFulltextIndexable(documentType)) {
+            if (!fulltextConfiguration.isFulltextIndexable(documentType)) {
                 continue;
             }
             docState.put(KEY_FULLTEXT_JOBID, docState.getId());
             FulltextFinder fulltextFinder = new FulltextFinder(fulltextParser, docState, session);
             List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
-            for (String indexName : config.indexNames) {
+            for (String indexName : fulltextConfiguration.indexNames) {
                 // TODO paths from config
                 String text = fulltextFinder.findFulltext(indexName);
                 indexesAndText.add(new IndexAndText(indexName, text));
@@ -830,9 +822,7 @@ public class DBSTransactionState {
             return;
         }
 
-        // TODO get from extension point, see also FulltextExtractorWork
-        // XXX hardcoded config for now
-        FulltextConfiguration config = getFulltextConfiguration();
+        FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
 
         // mark indexing in progress, so that future copies (including versions)
         // will be indexed as well
@@ -842,7 +832,7 @@ public class DBSTransactionState {
                 // cannot happen
                 continue;
             }
-            if (!config.isFulltextIndexable(docState.getPrimaryType())) {
+            if (!fulltextConfiguration.isFulltextIndexable(docState.getPrimaryType())) {
                 continue;
             }
             docState.put(KEY_FULLTEXT_JOBID, docState.getId());
