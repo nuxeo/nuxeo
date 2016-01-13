@@ -351,8 +351,9 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         }
         Long currentPage = contentViewState.getCurrentPage();
         Object[] params = contentViewState.getQueryParameters();
+
         // init page provider
-        contentView.setExecuted(true);
+        contentView.setExecuted(contentViewState.isExecuted());
         contentView.getPageProvider(searchDocument, contentViewState.getSortInfos(), pageSize, currentPage, params);
         // restore rendering info, unless bindings are present on content
         // view configuration
@@ -388,6 +389,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         // rendering info
         state.setResultLayout(contentView.getCurrentResultLayout());
         state.setResultColumns(contentView.getCurrentResultLayoutColumns());
+        state.setExecuted(contentView.isExecuted());
         return state;
     }
 

@@ -93,9 +93,9 @@ public class TestContentViewState {
 
     List<String> listParam = Arrays.asList(new String[] { "deleted", "validated" });
 
-    String ENC_CURRENT_DOC_CHILDREN = "H4sIAAAAAAAAAI2Qy24CMQxF%2F8XrCNous6sGpCK1dMRrg9AoTQxE8iTTPKAU8e91Zuimq65yY10fX%2FsK2ruELm0snueqRZBQrReL6XzVTN6r9VsR1cvsdcIlENCpA9bBn6zB8E%2F70n6z7UmAziHwpJprIB8EfGYMl1oFxiQMEeQWEsbUdKrYGmtA7BVFFC4TiS0YJDZyFU6KrFFF73YCIqqgjxOvc8t9IHs7RB%2FSzO194V77X%2BUpt44TGy2TTYQwuJ6jRmesO4BMIeONkQFjpvSqLj4z8ApuWNXcZzRkYyoNAgaQBFIfSKO%2FhhENCPYF5SJx5tXQUCYJsHz9WqUjA8ZFx3F7Ke%2Bo6%2BHx6M%2FVcjP96jjmPd1vuGGb%2Fmq6l80j7G4%2F3asr1dABAAA%3D";
+    String ENC_CURRENT_DOC_CHILDREN = "H4sIAAAAAAAAAI2Qu27DMAxF%2F4Wz4LQdtRVOgAZIUyOvJQgMVWJiAbLk6pFHjfx7KTtdOnXSFXF4eckepLMRbdxpvCxFi8Ch3K5Ws%2BWmnn6U2%2Fcsyrf5YkolYNCJE1benbVC%2F098rb8Je2Egk%2Fc0qaIa8CcGXwn9rRKebCL6AHwPEUOsO5GxWitgR2ECMpuMYXtQaAikKpyF0UpkfTgwCCi8bKZOppb6gA84BOfj3B5d9u2HX%2BlMai0lVpJHHQ3CSL0GiVZpewIefcI7WXoMycSFuLlEhj3YcVX1mFEbHWJuYDAacTDiE03xFyjMaEGcFzYYyrwZG%2FIkBpquX4nYkMEk6zBpb%2FktusE8NO5Srneza0cxH%2Bl%2Bw43bDFeTg6yfgZLjFWXKl%2BHD7e4%2FF8rF5OEBAAA%3D";
 
-    String ENC_CURRENT_DOC_CHILDREN_WITH_SEARCH_DOC = "H4sIAAAAAAAAAKWR0U6DQBBFf8XMqzSBFjXZtwZq2qRW0lJ9MA0hMNSNsIvDrg02%2FLuzRfsD7tPsnTtnbjJnKLQyqMyLxNMmbxAERPvtdrFJs%2Fg52j%2B5Ilqu1jFL2esqXWa7xXwbLa9d8KDNj5iQ%2FpIl0n8YO%2FnNs1MPCkvEmRLWQPgefFqkPsmJ2QapA%2FF28KDDnIr3WBe2YS%2BIM5i%2BdbsfZY2OSLpFMhI716tY%2FB0sC9HoUlYSS3ZP%2FSCc%2BOEkuE%2BDOzF7EOHs1ucHF6ORpnbMcdnNB%2FYnTWUHw8ABNJmVqrTDni%2B%2FSNe2UWy%2FTo6ueVegKqU6gjBkceAQhJ2tzTrvteXsytb1nzZCHJRv48osgMPwA%2F404OipAQAA";
+    String ENC_CURRENT_DOC_CHILDREN_WITH_SEARCH_DOC = "H4sIAAAAAAAAAKWR3U4CMRCFX8XMrUuyC6hJ78iCgQSR8KMXxmw23Vls7LY4bcWV7Ls7BeUF7NX09JxvTtIjSGs8Gv%2Bk8LAoGwQB%2BXa1miw2xfgx3z7EIZ%2FO5mOWiufZZlqsJ6NVPr28QgL7codLsp%2BqQvoPY62%2BOdtPQAYi7rRkDUSawEdAapclMdsjORAvrwk4LEm%2Bja0MDXtBHMG3%2B7j7XmmMRLJ7JK%2FQxbeaxd9gJUVjK1UrrNjdT7NhLx32sttNdiMGd2I4uE75wMnoldeReV529Y7twVLloOu4gCU%2FM7WN2OPpllsdGsP2S%2FLsGjmJplJmB8JTwI5LELqg%2FbxsbeDuJmj9p50hEcp%2FE8ciAw7gF8rgY%2BW61A67H%2B4OaOu6AQAA";
 
     @Before
     public void setUp() throws Exception {
@@ -292,16 +292,12 @@ public class TestContentViewState {
         ContentViewState state = service.saveContentView(contentView);
 
         String json = JSONContentViewState.toJSON(state, false);
-        String expectedJson = "{"
-                + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN\","
-                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN\","
-                + "\"pageSize\":2,"
-                + "\"currentPage\":0,"
+        String expectedJson = "{" + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN\","
+                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN\"," + "\"pageSize\":2," + "\"currentPage\":0,"
                 + "\"queryParameters\":[\"test_parent_id\",false,null,[\"deleted\", \"validated\"]],"
-                + "\"searchDocument\":null,"
-                + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
+                + "\"searchDocument\":null," + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":{\"name\":\"document_listing\",\"title\":\"label.document_listing.layout\",\"translateTitle\":true,\"iconPath\":\"/icons/myicon.png\",\"showCSVExport\":true},"
-                + "\"resultColumns\":[\"column_1\"]" + "}";
+                + "\"resultColumns\":[\"column_1\"]," + "\"executed\":false" + "}";
         JSONAssert.assertEquals(expectedJson, json, true);
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
@@ -312,13 +308,10 @@ public class TestContentViewState {
     public void testRestoreJSONContentView() throws Exception {
         assertNull(service.saveContentView(null));
 
-        String json = "{"
-                + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN\","
-                + "\"pageSize\":2,"
+        String json = "{" + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN\"," + "\"pageSize\":2,"
                 + "\"currentPage\":0,"
                 + "\"queryParameters\":[\"test_parent_id\",false,null,[\"deleted\", \"validated\"]],"
-                + "\"searchDocument\":null,"
-                + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
+                + "\"searchDocument\":null," + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}],"
                 + "\"resultLayout\":{\"name\":\"document_listing\",\"title\":\"label.document_listing.layout\",\"translateTitle\":true,\"iconPath\":\"/icons/myicon.png\",\"showCSVExport\":true},"
                 + "\"resultColumns\":[\"column_1\"]" + "}";
         ContentViewState state = JSONContentViewState.fromJSON(json, false);
@@ -529,15 +522,12 @@ public class TestContentViewState {
         ContentViewState state = service.saveContentView(contentView);
 
         String json = JSONContentViewState.toJSON(state, false);
-        String expectedJson = "{"
-                + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\","
-                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\","
-                + "\"pageSize\":2,"
-                + "\"currentPage\":0,"
-                + "\"queryParameters\":[],"
+        String expectedJson = "{" + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\","
+                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\"," + "\"pageSize\":2,"
+                + "\"currentPage\":0," + "\"queryParameters\":[],"
                 + "\"searchDocument\":{\"type\":\"File\",\"properties\":{\"dc:modified\":\"2014-04-16T15:37:43+0000\",\"dc:title\":\"search keywords\",\"files\":[]}},"
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}]," + "\"resultLayout\":null,"
-                + "\"resultColumns\":[\"column_1\"]" + "}";
+                + "\"resultColumns\":[\"column_1\"]," + "\"executed\":false" + "}";
         JSONAssert.assertEquals(expectedJson, json, true);
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
@@ -547,12 +537,9 @@ public class TestContentViewState {
     @Test
     public void testRestoreJSONContentViewWithSearchDoc() throws Exception {
         assertNull(service.saveContentView(null));
-        String json = "{"
-                + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\","
-                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\","
-                + "\"pageSize\":2,"
-                + "\"currentPage\":0,"
-                + "\"queryParameters\":[],"
+        String json = "{" + "\"contentViewName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\","
+                + "\"pageProviderName\":\"CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT\"," + "\"pageSize\":2,"
+                + "\"currentPage\":0," + "\"queryParameters\":[],"
                 + "\"searchDocument\":{\"type\":\"File\",\"properties\":{\"dc:modified\":\"2014-04-16T17:37:43+0200\",\"dc:title\":\"search keywords\"}},"
                 + "\"sortInfos\":[{\"sortColumn\":\"dc:title\",\"sortAscending\":true}]," + "\"resultLayout\":null,"
                 + "\"resultColumns\":[\"column_1\"]" + "}";
@@ -573,12 +560,12 @@ public class TestContentViewState {
 
         String expectedJson = "{" + "\"contentViewName\":\"CURRENT_DOCUMENT_WITH_PATH_PARAM\","
                 + "\"queryParameters\":[\"/\"]," + "\"searchDocument\":null," + "\"sortInfos\":[],"
-                + "\"resultLayout\":null" + "}";
+                + "\"resultLayout\":null," + "\"executed\":false" + "}";
         JSONAssert.assertEquals(expectedJson, json, true);
 
         String encodedJson = JSONContentViewState.toJSON(state, true);
         assertEquals(
-                "H4sIAAAAAAAAAKtWSs7PK0nNKwnLTC33S8xNVbJScg4NCnL1C4l38XcO9QUxwj1DPOIDHMFEkKOvko5SYWlqUWVAYhFQQ0lqUbGSVbSSvlKsjlJxamJRcoZLfnJpLtBMJau80pwcoGh%2BUYlnXlo%2BSB1QUVFqcWlOiU9iZX4pVEktAMoXe7GHAAAA",
+                "H4sIAAAAAAAAAD2MwQrCMBBE%2F2XPBe%2B5lVawYGsJrR6klBC3KKQJbnbRIv57Uw9ehsfwZj5gg2f0fH7gqzEzgoKi13rfdGN5Kvp6g0vVHcY2%2F4XOa8jgKUhLaygNGCmCusIOhgwiGrL3MliZ0ycoL86lNhBXfgqblyTCKI6PZgnyV%2FCNVhhvoCbjIn5X%2FrApwpgAAAA%3D",
                 encodedJson);
     }
 

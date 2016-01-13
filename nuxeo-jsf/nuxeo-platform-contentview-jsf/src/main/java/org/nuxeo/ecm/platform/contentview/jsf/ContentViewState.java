@@ -74,4 +74,14 @@ public interface ContentViewState extends Serializable {
      */
     void setPageProviderName(String name);
 
+    /**
+     * @since 8.1
+     */
+    void setExecuted(boolean executed);
+
+    /**
+     * @since 8.1
+     */
+    boolean isExecuted();
+
 }
