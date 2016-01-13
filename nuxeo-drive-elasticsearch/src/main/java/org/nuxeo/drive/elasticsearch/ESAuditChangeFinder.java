@@ -87,8 +87,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
     protected List<LogEntry> queryESAuditEntries(CoreSession session, SynchronizationRoots activeRoots,
             Set<String> collectionSyncRootMemberIds, long lowerBound, long upperBound, boolean integerBounds, int limit) {
 
-        SearchRequestBuilder builder = getClient().prepareSearch(getESIndexName()).setTypes(
-                ElasticSearchConstants.ENTRY_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getClient().prepareSearch(getESIndexName())
+                                                  .setTypes(ElasticSearchConstants.ENTRY_TYPE)
+                                                  .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 
         QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
         FilterBuilder filterBuilder = buildFilterClauses(session, activeRoots, collectionSyncRootMemberIds, lowerBound,
@@ -219,8 +220,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     @Override
     public long getUpperBound() {
-        SearchRequestBuilder builder = getClient().prepareSearch(getESIndexName()).setTypes(
-                ElasticSearchConstants.ENTRY_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getClient().prepareSearch(getESIndexName())
+                                                  .setTypes(ElasticSearchConstants.ENTRY_TYPE)
+                                                  .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         // TODO refactor this to use max clause
         builder.setQuery(QueryBuilders.matchAllQuery());
         builder.addSort("id", SortOrder.DESC);
