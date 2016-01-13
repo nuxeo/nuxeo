@@ -193,7 +193,7 @@ public class BoxBlobUploader implements JSFBlobUploader {
             String link = String.format(
                     "<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.",
                     getOAuthAuthorizationUrl(provider));
-            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.invalidPermissions", new Object[] { link });
+            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.boxInvalidPermissions", new Object[] { link });
             parent.setValid(false);
             return;
         }
@@ -209,7 +209,7 @@ public class BoxBlobUploader implements JSFBlobUploader {
                 String link = String.format(
                         "<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.",
                         getOAuthAuthorizationUrl(provider));
-                ComponentUtils.addErrorMessage(context, parent, "error.inputFile.invalidPermissions",
+                ComponentUtils.addErrorMessage(context, parent, "error.inputFile.boxInvalidPermissions",
                         new Object[] { link });
                 parent.setValid(false);
                 return;

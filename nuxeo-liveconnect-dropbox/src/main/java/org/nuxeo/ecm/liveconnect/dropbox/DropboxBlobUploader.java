@@ -35,8 +35,6 @@ import javax.faces.context.ResponseWriter;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -199,7 +197,7 @@ public class DropboxBlobUploader implements JSFBlobUploader {
             String link = String.format(
                     "<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.",
                     getOAuthAuthorizationUrl());
-            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.invalidPermissions", new Object[] { link });
+            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.dropboxInvalidPermissions", new Object[] { link });
             parent.setValid(false);
             return;
         }
