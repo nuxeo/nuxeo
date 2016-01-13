@@ -122,6 +122,8 @@ public class JSONContentViewState {
             jsonObject.element("resultColumns", resultColumns);
         }
 
+        jsonObject.element("executed", state.isExecuted());
+
         String jsonString = jsonObject.toString();
 
         if (log.isDebugEnabled()) {
@@ -204,6 +206,8 @@ public class JSONContentViewState {
             resultColumns.addAll(jsonResultColumns);
             state.setResultColumns(resultColumns);
         }
+
+        state.setExecuted(jsonObject.optBoolean("executed"));
 
         if (log.isDebugEnabled()) {
             log.debug("Decoded content view state: " + state);

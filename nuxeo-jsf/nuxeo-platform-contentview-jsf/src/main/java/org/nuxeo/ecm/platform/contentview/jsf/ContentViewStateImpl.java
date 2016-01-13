@@ -50,6 +50,9 @@ public class ContentViewStateImpl implements ContentViewState {
 
     protected List<String> resultColumns;
 
+    // default to true for BBB
+    protected boolean executed = true;
+
     @Override
     public String getContentViewName() {
         return contentViewName;
@@ -138,6 +141,16 @@ public class ContentViewStateImpl implements ContentViewState {
     @Override
     public void setPageProviderName(String pageProviderName) {
         this.pageProviderName = pageProviderName;
+    }
+
+    @Override
+    public void setExecuted(boolean executed) {
+        this.executed = executed;
+    }
+
+    @Override
+    public boolean isExecuted() {
+        return executed;
     }
 
 }
