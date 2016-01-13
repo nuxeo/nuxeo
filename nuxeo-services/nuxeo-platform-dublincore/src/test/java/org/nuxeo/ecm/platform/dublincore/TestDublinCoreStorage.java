@@ -57,6 +57,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * DublinCoreStorage Test Case.
@@ -69,6 +70,9 @@ public class TestDublinCoreStorage {
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected RuntimeHarness runtimeHarness;
 
     @Test
     public void testStorageService() {
@@ -348,6 +352,21 @@ public class TestDublinCoreStorage {
                 StandardCopyOption.RESET_CREATOR);
 
         waitForAsyncCompletion();
+
+        assertNotNull(copy);
+        assertNotEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
+        assertNotEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+    }
+    @Test
+    public void testCopyDocumentWithResetCoreMetadataByConfiguration() throws Exception {
+        runtimeHarness.deployTestContrib("org.nuxeo.ecm.platform.dublincore.test.reset-creator.contrib",
+                "OSGI-INF/reset-creator-contrib.xml");
+
+        DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
+        DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008");
+
+        EventService service = Framework.getService(EventService.class);
+        service.waitForAsyncCompletion();
 
         assertNotNull(copy);
         assertNotEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));

@@ -35,4 +35,11 @@
 
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that enables resetting creator, creation date and last modification date on document copy.
+    </documentation>
+    <property name="nuxeo.dclistener.reset-creator-on-copy">false</property>
+  </extension>
+
 </component>

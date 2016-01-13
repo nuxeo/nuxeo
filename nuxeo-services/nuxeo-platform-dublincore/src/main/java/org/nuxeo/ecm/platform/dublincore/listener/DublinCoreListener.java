@@ -44,6 +44,8 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.dublincore.NXDublinCore;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Core Event Listener for updating DublinCore.
@@ -56,6 +58,8 @@ public class DublinCoreListener implements EventListener {
     private static final Log log = LogFactory.getLog(DublinCoreListener.class);
 
     public static final String DISABLE_DUBLINCORE_LISTENER = "disableDublinCoreListener";
+
+    private static final String RESET_CREATOR_PROPERTY = "nuxeo.dclistener.reset-creator-on-copy";
 
     /**
      * Core event notification.
@@ -127,6 +131,8 @@ public class DublinCoreListener implements EventListener {
         }
 
         Boolean resetCreator = (Boolean) event.getContext().getProperty(CoreEventConstants.RESET_CREATOR);
+        boolean resetCreatorProperty = Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
+                RESET_CREATOR_PROPERTY);
         Boolean dirty = (Boolean) event.getContext().getProperty(CoreEventConstants.DOCUMENT_DIRTY);
         if ((eventId.equals(BEFORE_DOC_UPDATE) && Boolean.TRUE.equals(dirty))
                 || (eventId.equals(TRANSITION_EVENT) && !doc.isImmutable())) {
@@ -136,7 +142,8 @@ public class DublinCoreListener implements EventListener {
             service.setCreationDate(doc, cEventDate, event);
             service.setModificationDate(doc, cEventDate, event);
             service.addContributor(doc, event);
-        } else if (eventId.equals(DOCUMENT_CREATED_BY_COPY) && Boolean.TRUE.equals(resetCreator)) {
+        } else if (eventId.equals(DOCUMENT_CREATED_BY_COPY)
+                && (resetCreatorProperty || Boolean.TRUE.equals(resetCreator))) {
             doc.setProperty("dublincore", "creator", null);
             doc.setProperty("dublincore", "contributors", null);
             service.setCreationDate(doc, cEventDate, event);

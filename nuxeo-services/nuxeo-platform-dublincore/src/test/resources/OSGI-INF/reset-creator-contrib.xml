@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.dublincore.test.reset-creator.contrib">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.dclistener.reset-creator-on-copy">true</property>
+  </extension>
+
+</component>
