@@ -723,12 +723,12 @@ public class TestDefaultFileSystemItemFactory {
     }
 
     @Test
-    public void testLockedDocument() {
+    public void testLockedDocument() throws Exception {
         setPermission(syncRootFolder, "joe", SecurityConstants.READ_WRITE, true);
         setPermission(syncRootFolder, "jack", SecurityConstants.READ_WRITE, true);
 
         CoreSession joeSession = repository.openSessionAs("joe");
-        nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
+        nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
         DocumentModel joeFile = joeSession.getDocument(file.getRef());
 
         log.trace("Check readonly flags on an unlocked document");
@@ -745,7 +745,7 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(((FileItem) fsItem).getCanUpdate());
 
         CoreSession jackSession = repository.openSessionAs("jack");
-        nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, jackSession);
+        nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, session);
         DocumentModel jackFile = jackSession.getDocument(file.getRef());
 
         log.trace("Check readonly flags for a non administrator on a document locked by another user");
