@@ -739,7 +739,7 @@ public class TestDefaultFileSystemItemFactory {
     public void testLockedDocument() {
         setPermission(syncRootFolder, "joe", SecurityConstants.READ_WRITE, true);
         setPermission(syncRootFolder, "jack", SecurityConstants.READ_WRITE, true);
-        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+        try (CoreSession joeSession = repository.openSessionAs("joe")) {
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
             DocumentModel joeFile = joeSession.getDocument(file.getRef());
 
@@ -756,7 +756,7 @@ public class TestDefaultFileSystemItemFactory {
             assertTrue(fsItem.getCanDelete());
             assertTrue(((FileItem) fsItem).getCanUpdate());
 
-            try (CoreSession jackSession = coreFeature.openCoreSession("jack")) {
+            try (CoreSession jackSession = repository.openSessionAs("jack")) {
                 nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, jackSession);
                 DocumentModel jackFile = jackSession.getDocument(file.getRef());
 
