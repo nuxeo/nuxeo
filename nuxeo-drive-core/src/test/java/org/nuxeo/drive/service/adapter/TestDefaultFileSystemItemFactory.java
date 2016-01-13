@@ -28,6 +28,8 @@ import java.security.Principal;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,6 +84,8 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestDefaultFileSystemItemFactory {
 
+    private static final Log log = LogFactory.getLog(TestDefaultFileSystemItemFactory.class);
+    
     private static final String DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX = "defaultFileSystemItemFactory#test#";
 
     private static final String DEFAULT_SYNC_ROOT_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
@@ -716,6 +720,55 @@ public class TestDefaultFileSystemItemFactory {
         boolean ordered = !(DatabaseHelper.DATABASE instanceof DatabaseMySQL);
         checkChildren(folderChildren, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
                 adaptableChild.getId(), ordered);
+    }
+
+    @Test
+    public void testLockedDocument() {
+        setPermission(syncRootFolder, "joe", SecurityConstants.READ_WRITE, true);
+        setPermission(syncRootFolder, "jack", SecurityConstants.READ_WRITE, true);
+        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
+            DocumentModel joeFile = joeSession.getDocument(file.getRef());
+
+            log.trace("Check readonly flags on an unlocked document");
+            FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(joeFile);
+            assertTrue(fsItem.getCanRename());
+            assertTrue(fsItem.getCanDelete());
+            assertTrue(((FileItem)fsItem).getCanUpdate());
+
+            log.trace("Check readonly flags on an document locked by the current user");
+            joeSession.setLock(joeFile.getRef());
+            fsItem = defaultFileSystemItemFactory.getFileSystemItem(joeFile);
+            assertTrue(fsItem.getCanRename());
+            assertTrue(fsItem.getCanDelete());
+            assertTrue(((FileItem)fsItem).getCanUpdate());
+
+            try (CoreSession jackSession = coreFeature.openCoreSession("jack")) {
+                nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, jackSession);
+                DocumentModel jackFile = jackSession.getDocument(file.getRef());
+
+                log.trace("Check readonly flags for a non administrator on a document locked by another user");
+                fsItem = defaultFileSystemItemFactory.getFileSystemItem(jackFile);
+                assertFalse(fsItem.getCanRename());
+                assertFalse(fsItem.getCanDelete());
+                assertFalse(((FileItem)fsItem).getCanUpdate());
+
+                log.trace("Check readonly flags for an administrator on a document locked by another user");
+                fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
+                assertTrue(fsItem.getCanRename());
+                assertTrue(fsItem.getCanDelete());
+                assertTrue(((FileItem)fsItem).getCanUpdate());
+
+                log.trace("Check readonly flags for a non administrator on an unlocked document");
+                joeSession.removeLock(joeFile.getRef());
+                fsItem = defaultFileSystemItemFactory.getFileSystemItem(jackFile);
+                assertTrue(fsItem.getCanRename());
+                assertTrue(fsItem.getCanDelete());
+                assertTrue(((FileItem)fsItem).getCanUpdate());
+            }
+        }
+        resetPermissions(syncRootFolder, "jack");
+        resetPermissions(syncRootFolder, "joe");
     }
 
     protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted)
