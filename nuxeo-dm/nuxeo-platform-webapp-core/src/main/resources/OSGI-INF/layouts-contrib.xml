@@ -110,6 +110,9 @@
       <widgetModes>
         <mode value="view_summary">#{empty layoutValue.dc.nature?'hidden':'view'}</mode>
       </widgetModes>
+      <properties widgetMode="edit">
+        <property name="validator">#{selectionActions.validateTest}</property>
+      </properties>
       <properties mode="any">
         <property name="width">100%</property>
         <property name="minChars">0</property>
@@ -588,9 +591,34 @@
       </templates>
       <rows>
         <row>
+          <widget>nature</widget>
+        </row>
+        <row>
           <widget>file</widget>
         </row>
       </rows>
+      <widget name="nature" type="suggestOneDirectory">
+        <labels>
+          <label mode="any">label.dublincore.nature</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>dc:nature</field>
+        </fields>
+        <widgetModes>
+          <mode value="view_summary">#{empty layoutValue.dc.nature?'hidden':'view'}</mode>
+        </widgetModes>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+        </properties>
+        <properties mode="any">
+          <property name="width">100%</property>
+          <property name="minChars">0</property>
+          <property name="hideHelpLabel">true</property>
+          <property name="directoryName">nature</property>
+          <property name="localize">true</property>
+        </properties>
+      </widget>
     </layout>
 
     <layout name="note">

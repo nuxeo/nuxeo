@@ -33,8 +33,10 @@
 
       <a4j:region rendered="#{not empty field_0 || widget.mode == 'edit'}">
         <nxu:valueHolder id="#{widget.id}_select2" value="#{field_0}"
+        immediate="true"
           required="#{widgetProperty_required}" var="currentValue">
           <nxu:validateDocumentConstraint />
+          <nxu:validate method="#{widget.properties['validator']}" />
           <h:inputHidden readonly="true" id="#{widget.id}_select2_init"
             value="#{select2Actions.resolveSingleDirectoryEntry(currentValue, widgetProperty_directoryName, widgetProperty_localize, widgetProperty_keySeparator, widgetProperty_dbl10n, widgetProperty_labelFieldName)}" />
           <ui:insert name="inside_input_widget" />

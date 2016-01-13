@@ -21,15 +21,18 @@ package org.nuxeo.ecm.platform.ui.web.util;
 
 import java.io.Serializable;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItems;
 import javax.faces.component.UISelectMany;
 import javax.faces.component.ValueHolder;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.FacesEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.validator.ValidatorException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -159,6 +162,11 @@ public class SelectionActionsBean implements Serializable {
 
     public String getSelectedValueHolder() {
         return selectedValueHolder;
+    }
+
+    public void validateTest(FacesContext context, UIComponent component, Object value) {
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Wrong " + value, null);
+        throw new ValidatorException(message);
     }
 
     public void setSelectedValueHolder(String selectedValueHolder) {
