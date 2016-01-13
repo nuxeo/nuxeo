@@ -747,14 +747,14 @@ public class TestDefaultFileSystemItemFactory {
             FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(joeFile);
             assertTrue(fsItem.getCanRename());
             assertTrue(fsItem.getCanDelete());
-            assertTrue(((FileItem)fsItem).getCanUpdate());
+            assertTrue(((FileItem) fsItem).getCanUpdate());
 
             log.trace("Check readonly flags on an document locked by the current user");
             joeSession.setLock(joeFile.getRef());
             fsItem = defaultFileSystemItemFactory.getFileSystemItem(joeFile);
             assertTrue(fsItem.getCanRename());
             assertTrue(fsItem.getCanDelete());
-            assertTrue(((FileItem)fsItem).getCanUpdate());
+            assertTrue(((FileItem) fsItem).getCanUpdate());
 
             try (CoreSession jackSession = coreFeature.openCoreSession("jack")) {
                 nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, jackSession);
@@ -764,20 +764,20 @@ public class TestDefaultFileSystemItemFactory {
                 fsItem = defaultFileSystemItemFactory.getFileSystemItem(jackFile);
                 assertFalse(fsItem.getCanRename());
                 assertFalse(fsItem.getCanDelete());
-                assertFalse(((FileItem)fsItem).getCanUpdate());
+                assertFalse(((FileItem) fsItem).getCanUpdate());
 
                 log.trace("Check readonly flags for an administrator on a document locked by another user");
                 fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
                 assertTrue(fsItem.getCanRename());
                 assertTrue(fsItem.getCanDelete());
-                assertTrue(((FileItem)fsItem).getCanUpdate());
+                assertTrue(((FileItem) fsItem).getCanUpdate());
 
                 log.trace("Check readonly flags for a non administrator on an unlocked document");
                 joeSession.removeLock(joeFile.getRef());
                 fsItem = defaultFileSystemItemFactory.getFileSystemItem(jackFile);
                 assertTrue(fsItem.getCanRename());
                 assertTrue(fsItem.getCanDelete());
-                assertTrue(((FileItem)fsItem).getCanUpdate());
+                assertTrue(((FileItem) fsItem).getCanUpdate());
             }
         }
         resetPermissions(syncRootFolder, "jack");
