@@ -318,12 +318,19 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     }
 
     protected void triggerReload(String id) {
+        if (id.equals(RELOAD_SEAM_EVENT_ID)) {
+            log.info("about to send " + id);
+            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
+            return;
+        }
+        log.info("about to passivate for " + id);
         Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "before-reload", this, null));
         try {
             ServicePassivator
                 .proceed(() -> {
+                    log.info("about to send " + id);
                     Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
-                    if (id.startsWith(FLUSH_EVENT_ID) || FLUSH_SEAM_EVENT_ID.equals(id)) {
+                    if (id.startsWith(FLUSH_EVENT_ID)) {
                         setFlushedNow();
                     }
                 }).onFailure(snapshot -> {
@@ -331,6 +338,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                 });
         } finally {
             Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "after-reload", this, null));
+            log.info("returning from " + id);
         }
     }
 

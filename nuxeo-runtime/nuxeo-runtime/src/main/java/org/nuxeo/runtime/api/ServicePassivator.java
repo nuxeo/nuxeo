@@ -121,7 +121,7 @@ public class ServicePassivator {
             }
         }
 
-        TemporalAmount quietDelay = Duration.ofSeconds(2);
+        TemporalAmount quietDelay = Duration.ofSeconds(5);
 
         public Passivator withQuietDelay(TemporalAmount delay) {
             quietDelay = delay;
@@ -266,10 +266,11 @@ public class ServicePassivator {
         };
 
         void run() {
+            long delay = TimeUnit.MILLISECONDS.convert(quietDelay.get(ChronoUnit.SECONDS), TimeUnit.SECONDS);
             timer.scheduleAtFixedRate(
                     scheduledTask,
-                    0,
-                    TimeUnit.MILLISECONDS.convert(quietDelay.get(ChronoUnit.SECONDS), TimeUnit.SECONDS));
+                    delay,
+                    delay);
         }
 
         /**
@@ -283,7 +284,7 @@ public class ServicePassivator {
             }
         }
 
-        TemporalAmount timeout = Duration.ofSeconds(10);
+        TemporalAmount timeout = Duration.ofSeconds(30);
 
         public Monitor withTimeout(TemporalAmount timeout) {
             this.timeout = timeout;
@@ -339,8 +340,7 @@ public class ServicePassivator {
          */
         public Termination proceed(Runnable runnable) {
             try {
-                if (monitor.passivated.await(timeout.get(ChronoUnit.SECONDS), TimeUnit.SECONDS) == false) {
-                } else {
+                if (monitor.passivated.await(timeout.get(ChronoUnit.SECONDS), TimeUnit.SECONDS)) {
                     runnable.run();
                 }
                 return monitor.passivator.accounting.last
