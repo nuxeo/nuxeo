@@ -67,6 +67,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.joda.time.DateTime;
 
+import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.shell.Shell;
@@ -473,6 +474,7 @@ public class NuxeoFrame extends JFrame {
     protected ImageIcon getImageIcon(String resourcePath) {
         BufferedImage image = null;
         try {
+            ImageIO.setCacheDirectory(Environment.getDefault().getTemp());
             image = ImageIO.read(getClass().getClassLoader().getResource(resourcePath));
         } catch (IOException e) {
             log.error(e);

@@ -38,8 +38,11 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
@@ -65,6 +68,11 @@ public class TestImagingConvertPlugin {
 
     @Inject
     protected ConversionService conversionService;
+
+    @Before
+    public void setup() {
+        ImageIO.setCacheDirectory(Environment.getDefault().getTemp());
+    }
 
     @Test
     public void testResizeConverter() throws Exception {
