@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 package org.nuxeo.ecm.platform.picture.core.test;
 
@@ -75,7 +74,7 @@ public class TestImagingConvertPlugin {
         int resizeHeight = 90;
         int resizeDepth = 8;
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         options.put(OPTION_RESIZE_WIDTH, resizeWidth);
         options.put(OPTION_RESIZE_HEIGHT, resizeHeight);
         options.put(OPTION_RESIZE_DEPTH, resizeDepth);
@@ -100,7 +99,7 @@ public class TestImagingConvertPlugin {
     public void testRotate() throws Exception {
         String converter = "pictureRotation";
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         options.put(OPTION_ROTATE_ANGLE, 90);
 
         for (String filename : ImagingResourcesHelper.TEST_IMAGE_FILENAMES) {
@@ -132,7 +131,7 @@ public class TestImagingConvertPlugin {
         int cropWidth = 400;
         int cropHeight = 200;
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<>();
         options.put(OPTION_CROP_X, 100);
         options.put(OPTION_CROP_Y, 100);
         options.put(OPTION_RESIZE_WIDTH, cropWidth);
