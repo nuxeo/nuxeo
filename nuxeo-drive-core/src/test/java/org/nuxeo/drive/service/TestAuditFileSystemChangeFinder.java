@@ -982,6 +982,8 @@ public class TestAuditFileSystemChangeFinder {
     public void testLockUnlock() throws Exception {
         DocumentModel doc;
         List<FileSystemItemChange> changes;
+
+        TransactionHelper.startTransaction();
         try {
             log.trace("Register a sync root and create a document inside it");
             nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder1, session);
@@ -992,6 +994,7 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
+        TransactionHelper.startTransaction();
         try {
             // Check changes, expecting 3:
             // - documentCreated for doc
@@ -1006,6 +1009,7 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
+        TransactionHelper.startTransaction();
         try {
             // Check changes, expecting 1:
             // - documentLocked for doc
@@ -1021,6 +1025,7 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
 
+        TransactionHelper.startTransaction();
         try {
             // Check changes, expecting 1:
             // - documentUnlocked for doc
@@ -1033,7 +1038,7 @@ public class TestAuditFileSystemChangeFinder {
             commitAndWaitForAsyncCompletion();
         }
     }
-    
+
     /**
      * Gets the document changes for the given user's synchronization roots using the {@link AuditChangeFinder} and
      * updates {@link #lastEventLogId}.
