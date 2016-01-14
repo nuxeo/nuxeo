@@ -34,6 +34,8 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.diff.pictures.DiffPicturesWithBlobsOp;
 import org.nuxeo.diff.pictures.DiffPicturesWithDocsOp;
@@ -128,6 +130,7 @@ public class DiffPicturesOperationsTest {
 
         BufferedImage bi;
         try {
+            ImageIO.setCacheDirectory(Environment.getDefault().getTemp());
             bi = ImageIO.read(f);
             assertNotNull(bi);
 
