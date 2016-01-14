@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -94,7 +93,6 @@ public class DiffPicturesOperationsTest {
 
     @Before
     public void setUp() {
-
         fileImage = FileUtils.getResourceFileFromContext(ISLAND_PNG);
         fileImageModif = FileUtils.getResourceFileFromContext(ISLAND_MODIF_PNG);
 
@@ -109,23 +107,19 @@ public class DiffPicturesOperationsTest {
     }
 
     protected DocumentModel createPictureDocument(File inFile) {
-
         DocumentModel pictDoc = coreSession.createDocumentModel(parentOfTestDocs.getPathAsString(), inFile.getName(),
                 "Picture");
         pictDoc.setPropertyValue("dc:title", inFile.getName());
         pictDoc.setPropertyValue("file:content", new FileBlob(inFile, PNG_MIME_TYPE));
         return coreSession.createDocument(pictDoc);
-
     }
 
     protected BufferedImage checkIsImage(Blob inBlob) throws Exception {
-
         assertTrue(inBlob instanceof FileBlob);
         return checkIsImage((FileBlob) inBlob);
     }
 
     protected BufferedImage checkIsImage(FileBlob inBlob) throws Exception {
-
         assertNotNull(inBlob);
 
         File f = inBlob.getFile();
@@ -142,23 +136,19 @@ public class DiffPicturesOperationsTest {
         }
 
         return bi;
-
     }
 
     protected void deleteFile(Blob inBlob) {
-
         if (inBlob instanceof FileBlob) {
             File f = inBlob.getFile();
             if (f != null) {
                 f.delete();
             }
         }
-
     }
 
     @Test
     public void testOperationWithBlobs_defaultParameters() throws Exception {
-
         FileBlob fb1 = new FileBlob(fileImage, PNG_MIME_TYPE);
         FileBlob fb2 = new FileBlob(fileImageModif, PNG_MIME_TYPE);
 
@@ -177,20 +167,20 @@ public class DiffPicturesOperationsTest {
         BufferedImage bi = checkIsImage(result);
         assertEquals(bi.getWidth(), ISLAND_W);
         assertEquals(bi.getHeight(), ISLAND_H);
-
     }
 
     @Test
     public void testOperationWithDocss_defaultParameters() throws Exception {
-
         OperationContext ctx = new OperationContext(coreSession);
         assertNotNull(ctx);
 
         ctx.setInput(null);
 
         OperationChain chain = new OperationChain("testChain");
-        chain.add(DiffPicturesWithDocsOp.ID).set("blob2VarName", "varBlob").set("leftDoc", docImage.getId()).set(
-                "rightDoc", docImageModif.getId());
+        chain.add(DiffPicturesWithDocsOp.ID)
+             .set("blob2VarName", "varBlob")
+             .set("leftDoc", docImage.getId())
+             .set("rightDoc", docImageModif.getId());
 
         Blob result = (Blob) automationService.run(ctx, chain);
         assertNotNull(result);
@@ -198,7 +188,6 @@ public class DiffPicturesOperationsTest {
         BufferedImage bi = checkIsImage(result);
         assertEquals(bi.getWidth(), ISLAND_W);
         assertEquals(bi.getHeight(), ISLAND_H);
-
     }
 
 }

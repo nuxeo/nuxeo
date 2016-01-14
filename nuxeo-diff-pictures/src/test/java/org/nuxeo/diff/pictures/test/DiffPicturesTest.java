@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,6 @@ public class DiffPicturesTest {
 
     @Test
     public void testDefaultValues() throws Exception {
-
         File img1 = FileUtils.getResourceFileFromContext(ISLAND_PNG);
         File img2 = FileUtils.getResourceFileFromContext(ISLAND_MODIF_PNG);
 
@@ -91,12 +90,10 @@ public class DiffPicturesTest {
         assertEquals(bi.getHeight(), ISLAND_H);
 
         deleteFile(result);
-
     }
 
     @Test
     public void testFuzz() throws Exception {
-
         File img1 = FileUtils.getResourceFileFromContext(ISLAND_PNG);
         long len1 = img1.length();
         File img2 = FileUtils.getResourceFileFromContext(ISLAND_MODIF_PNG);
@@ -109,10 +106,10 @@ public class DiffPicturesTest {
         HashMap<String, Serializable> params;
         DiffPictures dp = new DiffPictures(blob1, blob2);
 
-        // With these island.png, a blur of 10% reduce the comparison result
-        // (when using the default color values). Reduces it a lot.
+        // With these island.png, a blur of 10% reduce the comparison result (when using the default color values).
+        // Reduces it a lot.
         // WARNING: This is a 100% dependence on ImageMagic
-        params = new HashMap<String, Serializable>();
+        params = new HashMap<>();
         params.put("fuzz", "20%");
         result = dp.compare(null, params);
 
@@ -124,12 +121,10 @@ public class DiffPicturesTest {
         assertTrue("Result image with fuzz should be smaller than original", aFile.length() < (len1 / 2));
 
         deleteFile(result);
-
     }
 
     @Test
     public void testSamePicture() throws Exception {
-
         File img1 = FileUtils.getResourceFileFromContext(ISLAND_PNG);
         File img2 = FileUtils.getResourceFileFromContext(ISLAND_PNG);
 
@@ -142,7 +137,7 @@ public class DiffPicturesTest {
 
         // We make the whole thing red.
         // We need the command line that allows to change the background
-        params = new HashMap<String, Serializable>();
+        params = new HashMap<>();
         params.put("highlightColor", "Red");
         params.put("lowlightColor", "Red");
         result = dp.compare("diff-pictures-default-with-params", params);
@@ -171,17 +166,14 @@ public class DiffPicturesTest {
         }
 
         deleteFile(result);
-
     }
 
     protected BufferedImage checkIsImage(Blob inBlob) throws Exception {
-
         assertTrue(inBlob instanceof FileBlob);
         return checkIsImage((FileBlob) inBlob);
     }
 
     protected BufferedImage checkIsImage(FileBlob inBlob) throws Exception {
-
         assertNotNull(inBlob);
 
         File f = inBlob.getFile();
@@ -198,18 +190,15 @@ public class DiffPicturesTest {
         }
 
         return bi;
-
     }
 
     protected void deleteFile(Blob inBlob) {
-
         if (inBlob instanceof FileBlob) {
             File f = inBlob.getFile();
             if (f != null) {
                 f.delete();
             }
         }
-
     }
 
 }
