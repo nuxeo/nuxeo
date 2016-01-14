@@ -25,8 +25,11 @@ import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,6 +55,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -135,6 +139,7 @@ public class TestDefaultFileSystemItemFactory {
     @Before
     public void createTestDocs() throws Exception {
         principal = session.getPrincipal();
+
         syncRootFolder = session.createDocumentModel("/", "syncRoot", "Folder");
         syncRootFolder = session.createDocument(syncRootFolder);
         nuxeoDriveManager.registerSynchronizationRoot(principal, syncRootFolder, session);
@@ -754,11 +759,18 @@ public class TestDefaultFileSystemItemFactory {
         assertFalse(fsItem.getCanDelete());
         assertFalse(((FileItem) fsItem).getCanUpdate());
 
+        // Work around the fact that Principal from injected session is not administrator
+        CoreSession adminSession = openSessionAsAdminUser("admin");
+        nuxeoDriveManager.registerSynchronizationRoot(adminSession.getPrincipal(), syncRootFolder, session);
+        DocumentModel adminFile = adminSession.getDocument(file.getRef());
+
         log.trace("Check readonly flags for an administrator on a document locked by another user");
-        fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(adminFile);
         assertTrue(fsItem.getCanRename());
         assertTrue(fsItem.getCanDelete());
         assertTrue(((FileItem) fsItem).getCanUpdate());
+
+        CoreInstance.getInstance().close(adminSession);
 
         log.trace("Check readonly flags for a non administrator on an unlocked document");
         joeSession.removeLock(joeFile.getRef());
@@ -887,5 +899,16 @@ public class TestDefaultFileSystemItemFactory {
                 fail(String.format("FileSystemItem %s doesn't match any expected.", fsItem.getId()));
             }
         }
+    }
+
+    /**
+     * Rewrite {@link RepositorySettings#openSessionAsAdminUser(String)} as it blocks test execution waiting for
+     * asynchronous completion.
+     */
+    protected CoreSession openSessionAsAdminUser(String userName) throws ClientException {
+        Map<String, Serializable> sessionContext = new Hashtable<String, Serializable>();
+        sessionContext.put("username", userName);
+        sessionContext.put("principal", new UserPrincipal(userName, new ArrayList<String>(), false, true));
+        return repository.getRepositoryHandler().openSession(sessionContext);
     }
 }
