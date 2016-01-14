@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.platform.ui.web.validator;
 
-import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.component.PartialStateHolder;
@@ -27,11 +26,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.MethodExpressionValidator;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
-import javax.faces.view.facelets.FaceletContext;
-
-import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodExpression;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 /**
  * Validator taking a method expression as attribute.
@@ -52,7 +46,7 @@ public class MethodValidator implements Validator, PartialStateHolder {
     /**
      * The value expression representing the validation method to call
      */
-    protected String method;
+    protected MethodExpression method;
 
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
@@ -67,41 +61,20 @@ public class MethodValidator implements Validator, PartialStateHolder {
             return;
         }
 
-        String method = getMethod();
-        if (StringUtils.isBlank(method)) {
+        MethodExpression method = getMethodExpression();
+        if (method == null) {
             // no validation method resolved => ignore
             return;
         }
 
-        if (!ComponentTagUtils.isValueReference(method)) {
-
-            // assume method is a validator name
-            Validator v = context.getApplication().createValidator(method);
-            v.validate(context, component, value);
-
-        } else {
-
-            if (!ComponentTagUtils.isStrictValueReference(method)) {
-                // assume method is a validator name
-                throw new IllegalArgumentException("Invalid validation method '" + method + "'.");
-            }
-
-            // build validator
-            ExpressionFactory f = context.getApplication().getExpressionFactory();
-            MethodExpression me = f.createMethodExpression(context.getELContext(), method, null,
-                    new Class[] { FacesContext.class, UIComponent.class, Object.class });
-            FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
-            new MethodExpressionValidator(
-                    new MetaMethodExpression(me, ctx.getFunctionMapper(), ctx.getVariableMapper())).validate(context,
-                            component, value);
-        }
+        new MethodExpressionValidator(method).validate(context, component, value);
     }
 
-    public String getMethod() {
+    public MethodExpression getMethodExpression() {
         return method;
     }
 
-    public void setMethod(String method) {
+    public void setMethodExpression(MethodExpression method) {
         clearInitialState();
         this.method = method;
     }
@@ -126,7 +99,7 @@ public class MethodValidator implements Validator, PartialStateHolder {
         }
         if (state != null) {
             Object values[] = (Object[]) state;
-            method = (String) values[0];
+            method = (MethodExpression) values[0];
         }
     }
 

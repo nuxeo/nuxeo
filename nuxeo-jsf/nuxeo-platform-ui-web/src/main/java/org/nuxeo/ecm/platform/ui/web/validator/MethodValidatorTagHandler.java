@@ -37,6 +37,8 @@ import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagException;
 
+import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodExpression;
+
 import com.sun.faces.facelets.tag.MetaRulesetImpl;
 import com.sun.faces.facelets.tag.jsf.CompositeComponentTagHandler;
 import com.sun.faces.util.Util;
@@ -48,6 +50,9 @@ import com.sun.faces.util.Util;
  * @since 8.1
  */
 public class MethodValidatorTagHandler extends MetaTagHandler implements AttachedObjectHandler {
+
+    @SuppressWarnings("rawtypes")
+    private final static Class[] VALIDATOR_SIG = new Class[] { FacesContext.class, UIComponent.class, Object.class };
 
     public MethodValidatorTagHandler(TagConfig config) {
         super(config);
@@ -102,29 +107,30 @@ public class MethodValidatorTagHandler extends MetaTagHandler implements Attache
     protected MetaRuleset createMetaRuleset(Class type) {
         Util.notNull("type", type);
         MetaRuleset m = new MetaRulesetImpl(getTag(), type);
-        return m.ignore("binding").ignore("disabled").ignore("for").addRule(LiteralValueHolderRule.Instance);
+        return m.ignore("binding").ignore("disabled").ignore("for").addRule(MethodValueHolderRule.Instance);
     }
 
-    static final class LiteralValueHolderRule extends MetaRule {
+    static final class MethodValueHolderRule extends MetaRule {
 
-        public final static LiteralValueHolderRule Instance = new LiteralValueHolderRule();
+        public final static MethodValueHolderRule Instance = new MethodValueHolderRule();
 
-        final static class MethodMetadata extends Metadata {
+        final static class ValidatorExpressionMetadata extends Metadata {
+            private final TagAttribute attr;
 
-            private final String value;
-
-            public MethodMetadata(String value) {
-                this.value = value;
+            public ValidatorExpressionMetadata(TagAttribute attr) {
+                this.attr = attr;
             }
 
             public void applyMetadata(FaceletContext ctx, Object instance) {
-                ((MethodValidator) instance).setMethod(this.value);
+                ((MethodValidator) instance).setMethodExpression(
+                        new MetaMethodExpression(attr.getMethodExpression(ctx, null, VALIDATOR_SIG),
+                                ctx.getFunctionMapper(), ctx.getVariableMapper(), null, VALIDATOR_SIG));
             }
         }
 
         public Metadata applyRule(String name, TagAttribute attribute, MetadataTarget meta) {
             if ("method".equals(name)) {
-                return new MethodMetadata(attribute.getValue());
+                return new ValidatorExpressionMetadata(attribute);
             }
             return null;
         }

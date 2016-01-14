@@ -32,6 +32,9 @@ import javax.el.ExpressionFactory;
 import javax.el.FunctionMapper;
 import javax.el.MethodExpression;
 import javax.el.MethodInfo;
+import javax.el.MethodNotFoundException;
+import javax.el.PropertyNotFoundException;
+import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
@@ -64,15 +67,21 @@ public class MetaMethodExpression extends MethodExpression implements Serializab
 
     private VariableMapper varMapper;
 
+    private Class<?> returnType;
+
+    private Class<?>[] paramTypes;
+
     public MetaMethodExpression(MethodExpression originalMethodExpression) {
-        this(originalMethodExpression, null, null);
+        this(originalMethodExpression, null, null, null, null);
     }
 
     public MetaMethodExpression(MethodExpression originalMethodExpression, FunctionMapper fnMapper,
-            VariableMapper varMapper) {
+            VariableMapper varMapper, Class<?> returnType, Class<?>[] paramTypes) {
         this.originalMethodExpression = originalMethodExpression;
         this.fnMapper = fnMapper;
         this.varMapper = varMapper;
+        this.returnType = returnType;
+        this.paramTypes = paramTypes;
     }
 
     // Expression interface
@@ -115,19 +124,30 @@ public class MetaMethodExpression extends MethodExpression implements Serializab
     @Override
     public Object invoke(ELContext context, Object[] params) {
         ELContext nxcontext = getLocalContext(context);
+        FacesContext faces = FacesContext.getCurrentInstance();
+        Application app = faces.getApplication();
+        ExpressionFactory factory = app.getExpressionFactory();
         Object res = null;
         if (originalMethodExpression != null) {
-            res = originalMethodExpression.invoke(nxcontext, params);
+            try {
+                res = originalMethodExpression.invoke(nxcontext, params);
+            } catch (MethodNotFoundException e) {
+                // try to resolve as value expression first
+                ValueExpression ve = factory.createValueExpression(nxcontext,
+                        originalMethodExpression.getExpressionString(), String.class);
+                res = ve.getValue(nxcontext);
+            } catch (PropertyNotFoundException e) {
+                // can be triggered from an AliasValueExpression, since it will not invoke a method expression at
+                // resolution.
+                throw e;
+            }
             if (res instanceof String) {
                 String expression = (String) res;
                 if (ComponentTagUtils.isValueReference(expression)) {
-                    FacesContext faces = FacesContext.getCurrentInstance();
-                    Application app = faces.getApplication();
-                    ExpressionFactory factory = app.getExpressionFactory();
-                    MethodExpression newMeth = factory.createMethodExpression(nxcontext, expression, Object.class,
-                            new Class[0]);
+                    MethodExpression newMeth = factory.createMethodExpression(nxcontext, expression, returnType,
+                            paramTypes);
                     try {
-                        res = newMeth.invoke(nxcontext, null);
+                        res = newMeth.invoke(nxcontext, params);
                     } catch (ELException e) {
                         throw e;
                     } catch (RuntimeException e) {

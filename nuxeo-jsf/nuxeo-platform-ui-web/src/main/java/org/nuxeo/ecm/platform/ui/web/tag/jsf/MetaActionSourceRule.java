@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.ui.web.binding.MetaMethodExpression;
  */
 public class MetaActionSourceRule extends MetaRule {
 
+    @SuppressWarnings("rawtypes")
     public static final Class[] ACTION_SIG = new Class[0];
 
     public static final MetaActionSourceRule Instance = new MetaActionSourceRule();
@@ -55,7 +56,8 @@ public class MetaActionSourceRule extends MetaRule {
         public void applyMetadata(FaceletContext ctx, Object instance) {
             ActionSource2 as = (ActionSource2) instance;
             MethodExpression originalExpression = attr.getMethodExpression(ctx, String.class, ACTION_SIG);
-            as.setActionExpression(new MetaMethodExpression(originalExpression));
+            as.setActionExpression(new MetaMethodExpression(originalExpression, ctx.getFunctionMapper(),
+                    ctx.getVariableMapper(), String.class, ACTION_SIG));
         }
     }
 
