@@ -85,6 +85,8 @@ public interface RenderingContext {
 
     public static final String DEFAULT_URL = "http://fake-url.nuxeo.com/";
 
+    public static final String RESPONSE_HEADER_ENTITY_TYPE_KEY = "ENTITY_TYPE";
+
     /**
      * Gets the requested {@link Locale}.
      *
