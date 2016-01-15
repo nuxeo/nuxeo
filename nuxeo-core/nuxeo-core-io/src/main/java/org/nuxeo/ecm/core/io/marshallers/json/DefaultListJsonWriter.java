@@ -33,6 +33,7 @@ import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 
@@ -112,6 +113,7 @@ public abstract class DefaultListJsonWriter<EntityType> extends AbstractJsonWrit
     @Override
     public void write(List<EntityType> list, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
+        ctx.setParameterValues(RenderingContext.RESPONSE_HEADER_ENTITY_TYPE_KEY, this.entityType);
         jg.writeStringField(ENTITY_FIELD_NAME, entityType);
         writePaginationInfos(list, jg);
         Writer<EntityType> documentWriter = registry.getWriter(ctx, elClazz, elGenericType, APPLICATION_JSON_TYPE);

@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.enrichers.Enriched;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.MaxDepthReachedException;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.WrappedContext;
 
 /**
@@ -69,6 +70,7 @@ public abstract class ExtensibleEntityJsonWriter<EntityType> extends AbstractJso
     @Override
     public void write(EntityType entity, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
+        ctx.setParameterValues(RenderingContext.RESPONSE_HEADER_ENTITY_TYPE_KEY, this.entityType);
         jg.writeStringField(ENTITY_FIELD_NAME, entityType);
         writeEntityBody(entity, jg);
         try {

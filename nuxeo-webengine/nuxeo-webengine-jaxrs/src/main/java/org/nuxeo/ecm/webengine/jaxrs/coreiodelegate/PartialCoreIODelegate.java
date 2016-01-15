@@ -26,6 +26,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -48,6 +49,10 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>, MessageBodyReader<Object> {
 
+    public static final String CONTENT_TYPE = "Content-Type";
+
+    public static final String NUXEO_ENTITY = "; nuxeo-entity=";
+
     public static MarshallerRegistry registry;
 
     public static MarshallerRegistry getRegistry() {
@@ -63,6 +68,9 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
 
     @Context
     private HttpServletRequest request;
+
+    @Context
+    private HttpServletResponse response;
 
     @Context
     private HttpHeaders headers;
@@ -112,6 +120,9 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
         if (writer != null) {
             ((Writer<Object>) writer).write(t, type, genericType, mediaType, entityStream);
         }
+        RenderingContext ctx = RenderingContextWebUtils.getContext(request);
+        response.setHeader(CONTENT_TYPE,
+                mediaType + NUXEO_ENTITY + ctx.getParameter(RenderingContext.RESPONSE_HEADER_ENTITY_TYPE_KEY));
     }
 
     @Override
@@ -120,7 +131,7 @@ public abstract class PartialCoreIODelegate implements MessageBodyWriter<Object>
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException,
             WebApplicationException {
         if (reader != null) {
-            return ((Reader<Object>) reader).read(type, genericType, mediaType, entityStream);
+            return reader.read(type, genericType, mediaType, entityStream);
         }
         return null;
     }
