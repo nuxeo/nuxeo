@@ -138,24 +138,22 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             return;
         }
         isShuttingDown = true;
-        ServicePassivator.proceed(() -> {
+        try {
+            log.info("Stopping Nuxeo Runtime service " + getName() + "; version: " + getVersion());
+            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
             try {
-                log.info("Stopping Nuxeo Runtime service " + getName() + "; version: " + getVersion());
-                Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
-                try {
-                    stopExtensions();
-                    doStop();
-                    manager.shutdown();
-                } finally {
-                    isStarted = false;
-                    Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STOPPED, this));
-                    manager = null;
-                }
-                JavaUtilLoggingHelper.reset();
-            } finally {
-                isShuttingDown = false;
-            }
-        });
+                stopExtensions();
+                doStop();
+                manager.shutdown();
+           } finally {
+                isStarted = false;
+                Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STOPPED, this));
+                manager = null;
+           }
+           JavaUtilLoggingHelper.reset();
+       } finally {
+           isShuttingDown = false;
+       }
     }
 
     @Override
