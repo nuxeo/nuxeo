@@ -118,8 +118,8 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
         this.dueDate = dueDate;
         this.taskVariables = taskVariables;
         this.parentPath = parentPath;
-        documents = new ArrayList<DocumentModel>();
-        documents.add(document);
+        this.documents = new ArrayList<DocumentModel>();
+        this.documents.add(document);
     }
 
     /**
@@ -147,7 +147,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
         this.taskDocumentType = taskDocumentType;
         this.documents = documents;
         if (this.documents != null && this.documents.size() > 0) {
-            document = documents.get(0);
+            this.document = documents.get(0);
         }
     }
 
@@ -155,9 +155,9 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
      * @since 7.4
      */
     public CreateTaskUnrestricted(CoreSession session, NuxeoPrincipal principal, List<DocumentModel> documents,
-            String taskDocumentType, String taskName, String taskType, String processId, String processName,
-            List<String> prefixedActorIds, boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath) {
+            String taskDocumentType, String taskName, String taskType, String processId, String processName, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath) {
         this(session, principal, documents != null && documents.size() > 0 ? documents.get(0) : null, taskName,
                 taskType, processId, prefixedActorIds, createOneTaskPerActor, directive, comment, dueDate,
                 taskVariables, parentPath);
@@ -165,7 +165,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
         this.documents = documents;
         this.processName = processName;
         if (this.documents != null && this.documents.size() > 0) {
-            document = documents.get(0);
+            this.document = documents.get(0);
         }
     }
 
@@ -174,8 +174,8 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
         if (StringUtils.isEmpty(taskDocumentType)) {
             taskDocumentType = TaskConstants.TASK_TYPE_NAME;
         }
-        createTask(session, principal, documents, taskDocumentType, taskName, taskType, processId, processName,
-                prefixedActorIds, createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath);
+        createTask(session, principal, documents, taskDocumentType, taskName, taskType, processId, processName, prefixedActorIds,
+                createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath);
     }
 
     /**
@@ -207,9 +207,9 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
      * @since 7.4
      */
     public void createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
-            String taskDocumentType, String taskName, String taskType, String processId, String processName,
-            List<String> prefixedActorIds, boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath) {
+            String taskDocumentType, String taskName, String taskType, String processId, String processName, List<String> prefixedActorIds,
+            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            Map<String, String> taskVariables, String parentPath) {
         if (createOneTaskPerActor) {
             for (String prefixedActorId : prefixedActorIds) {
                 createTask(coreSession, principal, documents, taskDocumentType, taskName, taskType, processId,
@@ -293,7 +293,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
             acp.addACL(acl);
             taskDocument.setACP(acp, true);
             taskDocument = session.saveDocument(taskDocument);
-            tasks.add(taskDocument.getAdapter(Task.class));
+            tasks.add(task);
         }
     }
 

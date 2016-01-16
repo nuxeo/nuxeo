@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +31,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.InstanceRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
@@ -54,9 +54,9 @@ public final class TaskEventNotificationHelper {
 
     private final static Log log = LogFactory.getLog(TaskEventNotificationHelper.class);
 
-
-    public static void notifyEvent(CoreSession coreSession, DocumentModel document, NuxeoPrincipal principal, Task task,
-            String eventId, Map<String, Serializable> properties, String comment, String category) {
+    public static void notifyEvent(CoreSession coreSession, DocumentModel document, NuxeoPrincipal principal,
+            Task task, String eventId, Map<String, Serializable> properties, String comment, String category)
+            {
         // Default category
         if (category == null) {
             category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
@@ -76,7 +76,7 @@ public final class TaskEventNotificationHelper {
         }
         properties.put(DocumentEventContext.COMMENT_PROPERTY_KEY, comment);
         properties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, category);
-        properties.put(TaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY, new InstanceRef(task.getDocument(), coreSession.getPrincipal()));
+        properties.put(TaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY, task);
         String disableNotif = task.getVariable(TaskEventNames.DISABLE_NOTIFICATION_SERVICE);
         if (disableNotif != null && Boolean.TRUE.equals(Boolean.valueOf(disableNotif))) {
             properties.put(TaskEventNames.DISABLE_NOTIFICATION_SERVICE, Boolean.TRUE);
@@ -117,14 +117,12 @@ public final class TaskEventNotificationHelper {
                     documents.add(document);
                 }
             } catch (DocumentNotFoundException e) {
-                log.error(String.format("Could not fetch document with id '%s:%s' for notification", docRepo, docId),
-                        e);
+                log.error(String.format("Could not fetch document with id '%s:%s' for notification", docRepo, docId), e);
             }
         } else {
-            log.error(String.format(
-                    "Could not resolve document for notification: "
-                            + "document is on repository '%s' and given session is on " + "repository '%s'",
-                    docRepo, coreSession.getRepositoryName()));
+            log.error(String.format("Could not resolve document for notification: "
+                    + "document is on repository '%s' and given session is on " + "repository '%s'", docRepo,
+                    coreSession.getRepositoryName()));
         }
 
         final Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
@@ -138,9 +136,16 @@ public final class TaskEventNotificationHelper {
         boolean taskEndedByDelegatedActor = task.getDelegatedActors() != null
                 && task.getDelegatedActors().contains(principal.getName());
         for (DocumentModel doc : documents) {
-            notifyEvent(coreSession, doc, principal, task, eventName, eventProperties, comment, null);
+            notifyEvent(coreSession, doc, principal, task, eventName, eventProperties,
+                    comment, null);
             if (taskEndedByDelegatedActor) {
-                notifyEvent(coreSession, doc, principal, task, eventName, eventProperties,
+                notifyEvent(
+                        coreSession,
+                        doc,
+                        principal,
+                        task,
+                        eventName,
+                        eventProperties,
                         String.format("Task ended by an delegated actor '%s' ", principal.getName())
                                 + (!StringUtils.isEmpty(comment) ? " with the following comment: " + comment : ""),
                         null);
