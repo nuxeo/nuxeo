@@ -21,7 +21,7 @@
 
   <ui:define name="body">
   
-      <my:inputFile id="myFile" />
+      <my:inputFile id="myFile" value="#{currentDocument.file.content}" />
   
     <div class="mainFragment">
       <h:form id="document_header_layout_form" class="titleBlock">
