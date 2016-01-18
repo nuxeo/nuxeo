@@ -175,6 +175,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         canDelete = !doc.hasFacet(FacetNames.PUBLISH_SPACE) && !doc.isProxy()
                 && docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE)
                 && (parentRef == null || docSession.hasPermission(parentRef, SecurityConstants.REMOVE_CHILDREN));
+        lockInfo = doc.getLockInfo();
 
         String parentPath;
         if (parentItem != null) {
