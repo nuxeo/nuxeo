@@ -90,10 +90,13 @@ public class SingleRadioRenderer extends RendererBase {
                         "readonly", "size", "src", "style", "tabindex", "title", "usemap", "xml:lang" });
 
         writer.endElement("input");
-        writer.startElement("label", component);
-        writer.writeAttribute("for", clientId, "for");
-        writer.writeText(convertToString(item.getLabel()), null);
-        writer.endElement("label");
+
+        if (Boolean.TRUE.equals(component.getShowLabel())) {
+            writer.startElement("label", component);
+            writer.writeAttribute("for", clientId, "for");
+            writer.writeText(convertToString(item.getLabel()), null);
+            writer.endElement("label");
+        }
     }
 
     @Override

@@ -41,7 +41,7 @@ public class UIRadio extends UIOutput implements ClientBehaviorHolder {
     public static final String COMPONENT_TYPE = "org.nuxeo.Radio";
 
     enum PropertyKeys {
-        forValue("for"), index, onChange;
+        forValue("for"), index, onChange, showLabel;
 
         String toString;
 
@@ -84,6 +84,14 @@ public class UIRadio extends UIOutput implements ClientBehaviorHolder {
 
     public void setFor(String forValue) {
         getStateHelper().put(PropertyKeys.forValue, forValue);
+    }
+
+    public Boolean getShowLabel() {
+        return (Boolean) getStateHelper().eval(PropertyKeys.showLabel, Boolean.TRUE);
+    }
+
+    public void setShowLabel(Boolean showLabelValue) {
+        getStateHelper().put(PropertyKeys.showLabel, showLabelValue);
     }
 
     public Integer getIndex() {
