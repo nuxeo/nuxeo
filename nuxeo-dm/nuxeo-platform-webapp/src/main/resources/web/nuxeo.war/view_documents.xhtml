@@ -8,6 +8,7 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxw="http://nuxeo.org/nxforms/runtime/widget"
+  xmlns:my="http://java.sun.com/jsf/composite/org/nuxeo/util"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <ui:define name="page title">
@@ -19,6 +20,9 @@
   </ui:define>
 
   <ui:define name="body">
+  
+      <my:inputFile id="myFile" />
+  
     <div class="mainFragment">
       <h:form id="document_header_layout_form" class="titleBlock">
         <nxl:documentLayout documentMode="header" mode="view"

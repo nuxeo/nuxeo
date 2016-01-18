@@ -614,6 +614,15 @@
       </component>
     -->
 
+    <component>
+      <component-type>
+        org.nuxeo.platform.ui.web.cc.inputFile
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.component.file.UICompositeInputFile
+      </component-class>
+    </component>
+
   </extension>
 
   <extension target="faces-config#RENDERER">

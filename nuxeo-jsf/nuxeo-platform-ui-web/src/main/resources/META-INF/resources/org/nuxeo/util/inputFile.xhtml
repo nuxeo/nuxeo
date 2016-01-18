@@ -1,0 +1,44 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:cc="http://java.sun.com/jsf/composite">
+
+  <cc:interface componentType="org.nuxeo.platform.ui.web.cc.inputFile">
+    <cc:attribute name="value" />
+    <cc:attribute name="filename" />
+    <cc:attribute name="editFilename" />
+    <cc:attribute name="editFilenameLabel" />
+    <cc:attribute name="required" />
+    <cc:attribute name="onclick" />
+    <cc:attribute name="onchange" />
+    <cc:attribute name="onselect" />
+  </cc:interface>
+
+  <cc:implementation>
+
+    <table class="dataInput">
+      <tbody>
+        <tr>
+          <ui:repeat value="#{cc.choices}" var="choice">
+            <td class="radioColumn">
+              <input type="radio" name="#{cc.clientId}:choice"
+                id="#{cc.clientId}:choice#{choice}"
+                value="#{choice}" />
+            </td>
+            <td class="fieldColumn">
+              <label for="#{cc.clientId}:choice#{choice}"
+                style="float:left">
+                #{cc.getOptionLabel(choice)}
+              </label>
+            </td>
+          </ui:repeat>
+        </tr>
+      </tbody>
+    </table>
+
+  </cc:implementation>
+
+</ui:component>
