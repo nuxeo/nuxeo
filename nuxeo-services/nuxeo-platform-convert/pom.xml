@@ -80,7 +80,7 @@
 
     <!-- scope test -->
     <dependency>
-      <groupId>pdfbox</groupId>
+      <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
       <scope>test</scope>
     </dependency>
