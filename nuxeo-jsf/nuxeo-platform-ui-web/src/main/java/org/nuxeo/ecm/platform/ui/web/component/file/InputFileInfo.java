@@ -102,7 +102,8 @@ public class InputFileInfo implements Serializable {
                 if (upFile.available() == 0) {
                     throw new ConverterException(INVALID_FILE_MESSAGE);
                 }
-                convertedBlob = FileUtils.createSerializableBlob(upFile, getConvertedFilename(), getConvertedMimeType());
+                convertedBlob = FileUtils.createSerializableBlob(upFile, getConvertedFilename(),
+                        getConvertedMimeType());
             } catch (ConverterException e) {
                 throw e;
             } catch (IOException e) {
@@ -178,6 +179,18 @@ public class InputFileInfo implements Serializable {
             return false;
         }
         return true;
+    }
+
+    /**
+     * @since 8.2
+     */
+    public InputFileInfo clone() {
+        InputFileInfo clone = new InputFileInfo();
+        clone.choice = choice;
+        clone.filename = filename;
+        clone.blob = blob;
+        clone.mimeType = mimeType;
+        return clone;
     }
 
 }

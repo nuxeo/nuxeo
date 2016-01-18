@@ -39,8 +39,19 @@ public interface JSFBlobUploader {
 
     /**
      * Constructs the needed subcomponent.
+     *
+     * @deprecated since 8.2, now useless
      */
+    @Deprecated
     void hookSubComponent(UIInput parent);
+
+    /**
+     * Generates the HTML for an upload choice.
+     *
+     * @since 8.2
+     */
+    // TODO
+    // void decode(UIInput parent, FacesContext context, String onClick) throws IOException;
 
     /**
      * Generates the HTML for an upload choice.

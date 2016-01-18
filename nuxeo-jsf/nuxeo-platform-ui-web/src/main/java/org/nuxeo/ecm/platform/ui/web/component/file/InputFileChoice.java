@@ -64,7 +64,14 @@ public class InputFileChoice {
     }
 
     public static boolean isUpload(String choice) {
-        return UPLOAD.equals(choice) || choice.startsWith(UPLOAD);
+        return UPLOAD.equals(choice) || (choice != null && choice.startsWith(UPLOAD));
+    }
+
+    /**
+     * @since 8.2
+     */
+    public static boolean isRemove(String choice) {
+        return DELETE.equals(choice) || NONE.equals(choice);
     }
 
 }

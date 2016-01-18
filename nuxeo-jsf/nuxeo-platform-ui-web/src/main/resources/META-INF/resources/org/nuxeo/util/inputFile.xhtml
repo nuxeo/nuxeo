@@ -21,21 +21,45 @@
 
     <table class="dataInput">
       <tbody>
-        <tr>
-          <ui:repeat value="#{cc.choices}" var="choice">
+        <c:set var="currentOption" value="#{cc.checkedChoice}" />
+        <ui:repeat value="#{cc.choices}" var="choice">
+          <tr>
+
             <td class="radioColumn">
-              <input type="radio" name="#{cc.clientId}:choice"
-                id="#{cc.clientId}:choice#{choice}"
-                value="#{choice}" />
+              <ui:fragment rendered="#{currentOption == option}">
+                <input type="radio" name="#{cc.clientId}:choice"
+                  id="#{cc.clientId}:choice#{choice}"
+                  value="#{choice}"
+                  onclick="#{cc.attrs.onclick}"
+                  onchange="#{cc.attrs.onchange}"
+                  onselect="#{cc.attrs.onselect}" />
+              </ui:fragment>
+
+              <ui:fragment rendered="#{currentOption != option}">
+                <input type="radio" name="#{cc.clientId}:choice"
+                  id="#{cc.clientId}:choice#{choice}"
+                  value="#{choice}"
+                  onclick="#{cc.attrs.onclick}"
+                  onchange="#{cc.attrs.onchange}"
+                  onselect="#{cc.attrs.onselect}"
+                  checked="checked" />
+              </ui:fragment>
             </td>
+
             <td class="fieldColumn">
               <label for="#{cc.clientId}:choice#{choice}"
                 style="float:left">
                 #{cc.getOptionLabel(choice)}
               </label>
+
+              <nxu:outputFile
+                rendered="#{choice == 'keep' or choice == 'tempKeep'}"
+                binding="#{cc.outputFile}" />
+
+
             </td>
-          </ui:repeat>
-        </tr>
+          </tr>
+        </ui:repeat>
       </tbody>
     </table>
 
