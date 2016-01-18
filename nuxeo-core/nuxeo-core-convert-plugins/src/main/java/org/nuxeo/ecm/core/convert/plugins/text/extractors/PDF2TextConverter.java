@@ -34,10 +34,10 @@ import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
-import org.pdfbox.pdmodel.PDDocument;
-import org.pdfbox.pdmodel.encryption.PDEncryptionDictionary;
-import org.pdfbox.pdmodel.encryption.PDStandardEncryption;
-import org.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.PDEncryptionDictionary;
+import org.apache.pdfbox.pdmodel.encryption.PDStandardEncryption;
+import org.apache.pdfbox.util.PDFTextStripper;
 
 @SuppressWarnings("deprecation")
 public class PDF2TextConverter implements Converter {
