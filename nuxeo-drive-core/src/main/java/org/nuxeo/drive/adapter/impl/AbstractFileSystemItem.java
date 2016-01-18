@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -59,6 +60,8 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
     protected boolean canRename;
 
     protected boolean canDelete;
+
+    protected Lock lockInfo;
 
     /** Internal attributes */
     protected String factoryName;
@@ -161,6 +164,11 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
         return canDelete;
     }
 
+    @Override
+    public Lock getLockInfo() {
+        return lockInfo;
+    }
+
     /*---------- Needed for JSON serialization ----------*/
     public String getUserName() {
         return userName;
@@ -251,6 +259,10 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     protected void setCanDelete(boolean canDelete) {
         this.canDelete = canDelete;
+    }
+
+    protected void setLockInfo(Lock lockInfo) {
+        this.lockInfo = lockInfo;
     }
 
     protected void setUserName(String userName) {
