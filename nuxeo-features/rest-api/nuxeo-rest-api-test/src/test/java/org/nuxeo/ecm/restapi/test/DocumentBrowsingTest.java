@@ -427,6 +427,11 @@ public class DocumentBrowsingTest extends BaseTest {
         ClientResponse response = getResponse(RequestType.GET,
                 "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
 
+        // The above GET will force the creation of the user workspace if it did not exist yet.
+        // Force to refresh current transaction context.
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertFalse(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(FavoritesJsonEnricher.NAME).get(FavoritesJsonEnricher.IS_FAVORITE).getBooleanValue());
