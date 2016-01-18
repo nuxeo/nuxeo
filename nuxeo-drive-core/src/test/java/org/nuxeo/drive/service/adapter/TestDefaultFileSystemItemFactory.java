@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -741,13 +742,20 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(fsItem.getCanRename());
         assertTrue(fsItem.getCanDelete());
         assertTrue(((FileItem) fsItem).getCanUpdate());
+        assertNull(fsItem.getLockInfo());
 
         log.trace("Check readonly flags on an document locked by the current user");
         joeSession.setLock(joeFile.getRef());
+        // Re-fetch document to clear lock info
+        joeFile = joeSession.getDocument(file.getRef());
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(joeFile);
         assertTrue(fsItem.getCanRename());
         assertTrue(fsItem.getCanDelete());
         assertTrue(((FileItem) fsItem).getCanUpdate());
+        Lock lockInfo = fsItem.getLockInfo();
+        assertNotNull(lockInfo);
+        assertEquals("joe", lockInfo.getOwner());
+        assertNotNull(lockInfo.getCreated());
 
         CoreSession jackSession = repository.openSessionAs("jack");
         nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, session);
@@ -758,6 +766,10 @@ public class TestDefaultFileSystemItemFactory {
         assertFalse(fsItem.getCanRename());
         assertFalse(fsItem.getCanDelete());
         assertFalse(((FileItem) fsItem).getCanUpdate());
+        lockInfo = fsItem.getLockInfo();
+        assertNotNull(lockInfo);
+        assertEquals("joe", lockInfo.getOwner());
+        assertNotNull(lockInfo.getCreated());
 
         // Work around the fact that Principal from injected session is not administrator
         CoreSession adminSession = openSessionAsAdminUser("admin");
@@ -769,15 +781,22 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(fsItem.getCanRename());
         assertTrue(fsItem.getCanDelete());
         assertTrue(((FileItem) fsItem).getCanUpdate());
+        lockInfo = fsItem.getLockInfo();
+        assertNotNull(lockInfo);
+        assertEquals("joe", lockInfo.getOwner());
+        assertNotNull(lockInfo.getCreated());
 
         CoreInstance.getInstance().close(adminSession);
 
         log.trace("Check readonly flags for a non administrator on an unlocked document");
         joeSession.removeLock(joeFile.getRef());
+        // Re-fetch document to clear lock info
+        jackFile = jackSession.getDocument(file.getRef());
         fsItem = defaultFileSystemItemFactory.getFileSystemItem(jackFile);
         assertTrue(fsItem.getCanRename());
         assertTrue(fsItem.getCanDelete());
         assertTrue(((FileItem) fsItem).getCanUpdate());
+        assertNull(fsItem.getLockInfo());
 
         CoreInstance.getInstance().close(jackSession);
         CoreInstance.getInstance().close(joeSession);
