@@ -47,11 +47,11 @@
       <artifactId>bcprov-jdk15</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.fontbox</groupId>
+      <groupId>org.apache.pdfbox</groupId>
       <artifactId>fontbox</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jempbox</groupId>
+      <groupId>org.apache.pdfbox</groupId>
       <artifactId>jempbox</artifactId>
     </dependency>
     <dependency>
