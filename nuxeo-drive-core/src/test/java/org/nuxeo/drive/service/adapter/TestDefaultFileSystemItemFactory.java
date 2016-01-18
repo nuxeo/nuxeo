@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -748,13 +749,20 @@ public class TestDefaultFileSystemItemFactory {
             assertTrue(fsItem.getCanRename());
             assertTrue(fsItem.getCanDelete());
             assertTrue(((FileItem) fsItem).getCanUpdate());
+            assertNull(fsItem.getLockInfo());
 
             log.trace("Check readonly flags on an document locked by the current user");
             joeSession.setLock(joeFile.getRef());
+            // Re-fetch document to clear lock info
+            joeFile = joeSession.getDocument(file.getRef());
             fsItem = defaultFileSystemItemFactory.getFileSystemItem(joeFile);
             assertTrue(fsItem.getCanRename());
             assertTrue(fsItem.getCanDelete());
             assertTrue(((FileItem) fsItem).getCanUpdate());
+            Lock lockInfo = fsItem.getLockInfo();
+            assertNotNull(lockInfo);
+            assertEquals("joe", lockInfo.getOwner());
+            assertNotNull(lockInfo.getCreated());
 
             try (CoreSession jackSession = repository.openSessionAs("jack")) {
                 nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, jackSession);
@@ -765,19 +773,30 @@ public class TestDefaultFileSystemItemFactory {
                 assertFalse(fsItem.getCanRename());
                 assertFalse(fsItem.getCanDelete());
                 assertFalse(((FileItem) fsItem).getCanUpdate());
+                lockInfo = fsItem.getLockInfo();
+                assertNotNull(lockInfo);
+                assertEquals("joe", lockInfo.getOwner());
+                assertNotNull(lockInfo.getCreated());
 
                 log.trace("Check readonly flags for an administrator on a document locked by another user");
                 fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
                 assertTrue(fsItem.getCanRename());
                 assertTrue(fsItem.getCanDelete());
                 assertTrue(((FileItem) fsItem).getCanUpdate());
+                lockInfo = fsItem.getLockInfo();
+                assertNotNull(lockInfo);
+                assertEquals("joe", lockInfo.getOwner());
+                assertNotNull(lockInfo.getCreated());
 
                 log.trace("Check readonly flags for a non administrator on an unlocked document");
                 joeSession.removeLock(joeFile.getRef());
+                // Re-fetch document to clear lock info
+                jackFile = jackSession.getDocument(file.getRef());
                 fsItem = defaultFileSystemItemFactory.getFileSystemItem(jackFile);
                 assertTrue(fsItem.getCanRename());
                 assertTrue(fsItem.getCanDelete());
                 assertTrue(((FileItem) fsItem).getCanUpdate());
+                assertNull(fsItem.getLockInfo());
             }
         }
         resetPermissions(syncRootFolder, "jack");
