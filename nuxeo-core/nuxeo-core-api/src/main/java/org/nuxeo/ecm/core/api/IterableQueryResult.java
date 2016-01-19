@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import java.io.Closeable;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ import java.util.Map;
  * The {@link #close()} method MUST be called when the query result is no more needed, otherwise underlying resources
  * will be leaked. There is no auto-closing at the end of the iteration.
  */
-public interface IterableQueryResult extends Iterable<Map<String, Serializable>> {
+public interface IterableQueryResult extends Iterable<Map<String, Serializable>>, Closeable {
 
     /**
      * Closes the query result and releases the underlying resources held by the cursor.
@@ -35,6 +36,7 @@ public interface IterableQueryResult extends Iterable<Map<String, Serializable>>
      * This MUST be called when the query result is no more needed, otherwise underlying resources will be leaked. There
      * is no auto-closing at the end of the iteration.
      */
+    @Override
     void close();
 
     /**
