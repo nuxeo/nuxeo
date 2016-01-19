@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -425,8 +425,7 @@ public class AppCenterViewsManager implements Serializable {
                     log.debug(String.format("%s dependencies: %s", remotePkg, ArrayUtils.toString(pkgDeps)));
                 }
 
-                // TODO NXP-11776: replace errors by internationalized
-                // labels
+                // TODO NXP-11776: replace errors by internationalized labels
                 String targetPlatform = PlatformVersionHelper.getPlatformFilter();
                 if (!TargetPlatformFilterHelper.isCompatibleWithTargetPlatform(remotePkg, targetPlatform)) {
                     status.addError(String.format("This package is not validated for your current platform: %s",
@@ -436,8 +435,7 @@ public class AppCenterViewsManager implements Serializable {
                 if (pkgDeps != null && pkgDeps.length > 0) {
                     DependencyResolution resolution = pm.resolveDependencies(packageId, targetPlatform);
                     if (resolution.isFailed() && targetPlatform != null) {
-                        // retry without PF filter in case it gives more
-                        // information
+                        // retry without PF filter in case it gives more information
                         resolution = pm.resolveDependencies(packageId, null);
                     }
                     if (resolution.isFailed()) {
@@ -448,8 +446,7 @@ public class AppCenterViewsManager implements Serializable {
                         if (pkgToInstall != null && pkgToInstall.size() == 1 && packageId.equals(pkgToInstall.get(0))) {
                             // ignore
                         } else if (resolution.requireChanges()) {
-                            // do not install needed deps: they may not be
-                            // hot-reloadable and that's not what the
+                            // do not install needed deps: they may not be hot-reloadable and that's not what the
                             // "update snapshot" button is for.
                             status.addError(resolution.toString().trim().replaceAll("\n", "<br />"));
                         }
@@ -470,7 +467,7 @@ public class AppCenterViewsManager implements Serializable {
 
                     // Uninstall and/or remove if needed
                     if (pkg != null) {
-                        log.info(String.format("Updating package %s...", pkg));
+                        log.info(String.format("Removing package %s before update...", pkg));
                         if (pkg.getPackageState().isInstalled()) {
                             // First remove it to allow SNAPSHOT upgrade
                             log.info("Uninstalling " + packageId);
@@ -487,41 +484,24 @@ public class AppCenterViewsManager implements Serializable {
 
                     // Download
                     setStatus(SnapshotStatus.downloading, null);
-                    DownloadingPackage downloadingPkg;
-                    try {
-                        downloadingPkg = pm.download(packageId);
-                    } catch (ConnectServerError e) {
-                        setStatus(SnapshotStatus.error, e.getMessage());
-                        return;
+                    DownloadingPackage downloadingPkg = pm.download(packageId);
+                    while (!downloadingPkg.isCompleted()) {
+                        studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
+                        log.debug("downloading studio snapshot package");
+                        Thread.sleep(100);
                     }
-                    try {
-                        while (!downloadingPkg.isCompleted()) {
-                            studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
-                            Thread.sleep(100);
-                            log.debug("downloading studio snapshot package");
-                        }
-                        log.debug("studio snapshot package download completed, starting installation");
-                        Thread.sleep(200);
-                        setStatus(SnapshotStatus.saving, null);
-                        // FIXME JC: Is this a workaround for some issue?
-                        // downloadingPkg.isCompleted() is true!
-                        while (pus.getPackage(downloadingPkg.getId()) == null) {
-                            studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
-                            Thread.sleep(50);
-                            log.debug("downloading studio snapshot package");
-                        }
-                    } catch (PackageException | InterruptedException e) {
-                        ExceptionUtils.checkInterrupt(e);
-                        log.error("Error while downloading studio snapshot", e);
-                        setStatus(SnapshotStatus.error,
-                                translate("label.studio.update.downloading.error", e.getMessage()));
-                        return;
-                    }
+                    studioSnapshotDownloadProgress = downloadingPkg.getDownloadProgress();
+                    setStatus(SnapshotStatus.saving, null);
 
                     // Install
                     setStatus(SnapshotStatus.installing, null);
                     log.info("Installing " + packageId);
                     pkg = pus.getPackage(packageId);
+                    if (pkg == null || PackageState.DOWNLOADED != pkg.getPackageState()) {
+                        log.error("Error while downloading studio snapshot " + pkg);
+                        setStatus(SnapshotStatus.error, translate("label.studio.update.downloading.error", pkg));
+                        return;
+                    }
                     Task installTask = pkg.getInstallTask();
                     try {
                         performTask(installTask);
@@ -533,6 +513,12 @@ public class AppCenterViewsManager implements Serializable {
                     pkg = pus.getPackage(packageId);
                     lastUpdate = pus.getInstallDate(packageId);
                     setStatus(SnapshotStatus.completed, null);
+                } catch (ConnectServerError e) {
+                    setStatus(SnapshotStatus.error, e.getMessage());
+                } catch (InterruptedException e) {
+                    log.error("Error while downloading studio snapshot", e);
+                    setStatus(SnapshotStatus.error, translate("label.studio.update.downloading.error", e.getMessage()));
+                    ExceptionUtils.checkInterrupt(e);
                 } catch (PackageException e) {
                     log.error("Error while installing studio snapshot", e);
                     setStatus(SnapshotStatus.error, translate("label.studio.update.installation.error", e.getMessage()));
