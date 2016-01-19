@@ -20,8 +20,8 @@ package org.nuxeo.elasticsearch.test;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-public class FulltextVcsSearchDisabledFeature extends SimpleFeature {
-    private static final String KEY = "nuxeo.test.vcs.fulltext.search.disabled";
+public class FulltextSearchDisabledFeature extends SimpleFeature {
+    private static final String KEY = "nuxeo.test.fulltext.search.disabled";
     private String flag;
 
     @Override

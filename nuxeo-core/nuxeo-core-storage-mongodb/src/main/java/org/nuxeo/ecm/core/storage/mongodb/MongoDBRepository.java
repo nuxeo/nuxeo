@@ -64,6 +64,7 @@ import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
@@ -701,7 +702,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 orderByClause, evaluator.pathResolver);
         builder.walk();
         if (builder.hasFulltext && isFulltextDisabled()) {
-            throw new RuntimeException("Fulltext disabled by configuration");
+            throw new QueryParseException("Fulltext search disabled by configuration");
         }
         DBObject query = builder.getQuery();
         addPrincipals(query, evaluator.principals);

@@ -93,13 +93,12 @@ public abstract class ExpressionEvaluator {
 
     public final Set<String> principals;
 
-    public ExpressionEvaluator(PathResolver pathResolver, String[] principals) {
+    public final boolean fulltextDisabled;
+
+    public ExpressionEvaluator(PathResolver pathResolver, String[] principals, boolean fulltextDisabled) {
         this.pathResolver = pathResolver;
         this.principals = principals == null ? null : new HashSet<String>(Arrays.asList(principals));
-    }
-
-    public ExpressionEvaluator() {
-        this(null, null);
+        this.fulltextDisabled = fulltextDisabled;
     }
 
     public Object walkExpression(Expression expr) {
@@ -229,6 +228,9 @@ public abstract class ExpressionEvaluator {
         }
         if (!(rvalue instanceof StringLiteral)) {
             throw new QueryParseException(NXQL.ECM_FULLTEXT + " requires literal string as right argument");
+        }
+        if (fulltextDisabled) {
+            throw new QueryParseException("Fulltext search disabled by configuration");
         }
         String query = ((StringLiteral) rvalue).value;
         if (name.equals(NXQL.ECM_FULLTEXT)) {

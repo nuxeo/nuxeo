@@ -31,7 +31,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@Features({ FulltextVcsSearchDisabledFeature.class, RepositoryElasticSearchFeature.class })
+@Features({ FulltextSearchDisabledFeature.class, RepositoryElasticSearchFeature.class })
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestFulltextSearchDisabled extends TestFulltextEnabled {
 

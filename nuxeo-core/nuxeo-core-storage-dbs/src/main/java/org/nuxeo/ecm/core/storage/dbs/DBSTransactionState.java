@@ -28,7 +28,9 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BASE_VERSION_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
@@ -65,6 +67,7 @@ import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
@@ -764,16 +767,100 @@ public class DBSTransactionState {
      * @param docWithDirtyBinaries set of ids, updated by this method
      */
     protected void findDirtyDocuments(Set<String> docsWithDirtyStrings, Set<String> docWithDirtyBinaries) {
-        for (String id : transientCreated) {
-            docsWithDirtyStrings.add(id);
-            docWithDirtyBinaries.add(id);
-        }
         for (DBSDocumentState docState : transientStates.values()) {
-            // TODO finer-grained dirty state
-            if (docState.isDirtyIgnoringFulltext()) {
-                String id = docState.getId();
-                docsWithDirtyStrings.add(id);
-                docWithDirtyBinaries.add(id);
+            StateDiff diff = docState.getStateChange();
+            if (diff == null) {
+                continue;
+            }
+            diff.remove(KEY_FULLTEXT_SIMPLE);
+            diff.remove(KEY_FULLTEXT_BINARY);
+            diff.remove(KEY_FULLTEXT_JOBID);
+            Set<String> paths = new DirtyPathsFinder().findDirtyPaths(diff);
+            FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
+            boolean dirtyStrings = false;
+            boolean dirtyBinaries = false;
+            for (String path : paths) {
+                if (fulltextConfiguration.indexesByPropPathSimple.containsKey(path)) {
+                    dirtyStrings = true;
+                    if (dirtyBinaries) {
+                        break;
+                    }
+                }
+                if (fulltextConfiguration.indexesByPropPathBinary.containsKey(path)) {
+                    dirtyBinaries = true;
+                    if (dirtyStrings) {
+                        break;
+                    }
+                }
+            }
+            if (dirtyStrings) {
+                docsWithDirtyStrings.add(docState.getId());
+            }
+            if (dirtyBinaries) {
+                docWithDirtyBinaries.add(docState.getId());
+            }
+        }
+    }
+
+    /**
+     * Iterates on a state diff to find the paths corresponding to dirty values.
+     *
+     * @since 7.10-HF04, 8.1
+     */
+    protected static class DirtyPathsFinder {
+
+        protected Set<String> paths;
+
+        public Set<String> findDirtyPaths(StateDiff value) {
+            paths = new HashSet<>();
+            findDirtyPaths(value, null);
+            return paths;
+        }
+
+        protected void findDirtyPaths(Object value, String path) {
+            if (value instanceof Object[]) {
+                findDirtyPaths((Object[]) value, path);
+            } else if (value instanceof List) {
+                findDirtyPaths((List<?>) value, path);
+            } else if (value instanceof ListDiff) {
+                findDirtyPaths((ListDiff) value, path);
+            } else if (value instanceof State) {
+                findDirtyPaths((State) value, path);
+            } else {
+                paths.add(path);
+            }
+        }
+
+        protected void findDirtyPaths(Object[] value, String path) {
+            String newPath = path + "/*";
+            for (Object v : value) {
+                findDirtyPaths(v, newPath);
+            }
+        }
+
+        protected void findDirtyPaths(List<?> value, String path) {
+            String newPath = path + "/*";
+            for (Object v : value) {
+                findDirtyPaths(v, newPath);
+            }
+        }
+
+        protected void findDirtyPaths(ListDiff value, String path) {
+            String newPath = path + "/*";
+            if (value.diff != null) {
+                findDirtyPaths(value.diff, newPath);
+            }
+            if (value.rpush != null) {
+                findDirtyPaths(value.rpush, newPath);
+            }
+        }
+
+        protected void findDirtyPaths(State value, String path) {
+            for (Entry<String, Serializable> es : value.entrySet()) {
+                String key = es.getKey();
+                Serializable v = es.getValue();
+                String newPath = path == null ? key : path + "/" + key;
+                findDirtyPaths(v, newPath);
             }
         }
     }

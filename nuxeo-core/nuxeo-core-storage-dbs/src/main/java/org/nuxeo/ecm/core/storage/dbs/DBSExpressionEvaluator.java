@@ -275,8 +275,8 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
     protected int refCount;
 
     public DBSExpressionEvaluator(DBSSession session, SelectClause selectClause, Expression expression,
-            OrderByClause orderByClause, String[] principals) {
-        super(new DBSPathResolver(session), principals);
+            OrderByClause orderByClause, String[] principals, boolean fulltextDisabled) {
+        super(new DBSPathResolver(session), principals, fulltextDisabled);
         this.selectClause = selectClause;
         this.expression = expression;
         this.orderByClause = orderByClause;

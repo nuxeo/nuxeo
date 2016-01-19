@@ -16,9 +16,6 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
@@ -81,17 +78,6 @@ public class DBSDocumentState {
      */
     public boolean isDirty() {
         return originalState != null;
-    }
-
-    public boolean isDirtyIgnoringFulltext() {
-        StateDiff diff = getStateChange();
-        if (diff == null) {
-            return false;
-        }
-        diff.remove(KEY_FULLTEXT_SIMPLE);
-        diff.remove(KEY_FULLTEXT_BINARY);
-        diff.remove(KEY_FULLTEXT_JOBID);
-        return !diff.isEmpty();
     }
 
     public void setNotDirty() {

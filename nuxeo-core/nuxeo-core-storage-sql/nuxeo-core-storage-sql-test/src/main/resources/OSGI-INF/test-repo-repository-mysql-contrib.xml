@@ -11,8 +11,8 @@
         <neverPerDocumentFacets>
           <facet>NotPerDocFacet</facet>
         </neverPerDocumentFacets>
-        <fulltext disabled="${nuxeo.test.vcs.fulltext.disabled}"
-          searchDisabled="${nuxeo.test.vcs.fulltext.search.disabled}">
+        <fulltext disabled="${nuxeo.test.fulltext.disabled}"
+          searchDisabled="${nuxeo.test.fulltext.search.disabled}">
           <index> <!-- name="default" implied -->
             <!-- all props implied -->
           </index>
