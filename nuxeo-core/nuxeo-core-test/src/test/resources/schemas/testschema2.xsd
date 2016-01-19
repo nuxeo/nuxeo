@@ -16,10 +16,24 @@
     <xs:list itemType="xs:int"/>
   </xs:simpleType>
 
+  <xs:complexType name="notifications">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="nxs:notification"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="notification">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="subscribers" type="nxs:stringArray"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:element name="title" type="xs:string" />
   <xs:element name="bignotes" type="nxs:stringArray"/>
   <xs:element name="subjects" type="nxs:stringArray"/>
   <xs:element name="dates" type="nxs:dateList"/>
   <xs:element name="counts" type="nxs:intList"/>
+  <xs:element name="notifs" type="nxs:notifications"/>
 
 </xs:schema>
