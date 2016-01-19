@@ -24,7 +24,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
@@ -117,12 +116,7 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
         if (!Boolean.TRUE.equals(isNewConversation)) {
             String onclickJS = "if(!(event.ctrlKey||event.shiftKey||event.metaKey||event.button==1)){this.href='"
                     + Functions.javaScriptEscape(urlCurrentConversation) + "'}";
-            String existingOnclick = (String) component.getAttributes().get("onclick");
-            if (StringUtils.isBlank(existingOnclick)) {
-                component.getAttributes().put("onclick", onclickJS);
-            } else {
-                component.getAttributes().put("onclick", onclickJS + existingOnclick);
-            }
+            writer.writeAttribute("onclick", onclickJS, "onclick");
         }
 
         RenderKitUtils.renderPassThruAttributes(writer, component,
