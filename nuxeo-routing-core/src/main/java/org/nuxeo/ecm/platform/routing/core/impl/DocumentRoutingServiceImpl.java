@@ -790,8 +790,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }
         String query = String.format(ROUTE_MODEL_DOC_ID_WITH_ID_QUERY, NXQL.escapeString(id));
         List<String> routeIds = new ArrayList<>();
-        IterableQueryResult results = session.queryAndFetch(query, "NXQL");
-        try {
+        try (IterableQueryResult results = session.queryAndFetch(query, "NXQL")) {
             if (results.size() == 0) {
                 throw new NuxeoException("No route found for id: " + id);
             }
@@ -801,8 +800,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             for (Map<String, Serializable> map : results) {
                 routeIds.add(map.get("ecm:uuid").toString());
             }
-        } finally {
-            results.close();
         }
         String routeDocId = routeIds.get(0);
         if (modelsChache == null) {
@@ -964,8 +961,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             List<String> routeIds = new ArrayList<>();
             String query = "SELECT ecm:uuid FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'done' "
                     + "OR ecm:currentLifeCycleState = 'canceled') ORDER BY dc:created";
-            IterableQueryResult results = session.queryAndFetch(query, "NXQL");
-            try {
+            try (IterableQueryResult results = session.queryAndFetch(query, "NXQL")) {
                 for (Map<String, Serializable> result : results) {
                     routeIds.add(result.get("ecm:uuid").toString());
                     i++;
@@ -974,22 +970,16 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                         break;
                     }
                 }
-            } finally {
-                results.close();
             }
-            IterableQueryResult tasks = null;
             for (String routeDocId : routeIds) {
                 final String associatedTaskQuery = String.format(
                         "SELECT ecm:uuid FROM Document WHERE ecm:mixinType = 'Task' AND nt:processId = '%s'",
                         routeDocId);
-                try {
-                    tasks = session.queryAndFetch(associatedTaskQuery, "NXQL");
+                try (IterableQueryResult tasks = session.queryAndFetch(associatedTaskQuery, "NXQL")) {
                     for (Map<String, Serializable> task : tasks) {
                         final String taskId = task.get("ecm:uuid").toString();
                         session.removeDocument(new IdRef(taskId));
                     }
-                } finally {
-                    tasks.close();
                 }
                 session.removeDocument(new IdRef(routeDocId));
             }
