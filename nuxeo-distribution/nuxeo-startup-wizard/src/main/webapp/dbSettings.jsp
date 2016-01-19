@@ -160,14 +160,14 @@
   <div id="dbnosqlSettings" style="<%=dbnosqlSettingsStyle%>">
     <table>
       <tr>
-        <td class="labelCell"><fmt:message key="label.nuxeo.dbnosql.name" /></td>
-        <td><input type="text" name="nuxeo.dbnosql.name"
-          value="<%=collector.getConfigurationParam("nuxeo.dbnosql.name")%>" /></td>
+        <td class="labelCell"><fmt:message key="label.nuxeo.mongodb.dbname" /></td>
+        <td><input type="text" name="<%=ConfigurationGenerator.PARAM_MONGODB_NAME %>"
+          value="<%=collector.getConfigurationParam(ConfigurationGenerator.PARAM_MONGODB_NAME)%>" /></td>
       </tr>
       <tr>
-        <td class="labelCell"><fmt:message key="label.nuxeo.dbnosql.uri" /></td>
-        <td><input type="text" name="nuxeo.dbnosql.uri"
-          value="<%=collector.getConfigurationParam("nuxeo.dbnosql.uri")%>" /></td>
+        <td class="labelCell"><fmt:message key="label.nuxeo.mongodb.server" /></td>
+        <td><input type="text" name="<%=ConfigurationGenerator.PARAM_MONGODB_SERVER %>"
+          value="<%=collector.getConfigurationParam(ConfigurationGenerator.PARAM_MONGODB_SERVER)%>" /></td>
       </tr>
     </table>
   </div>

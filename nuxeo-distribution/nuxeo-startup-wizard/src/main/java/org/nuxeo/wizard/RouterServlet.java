@@ -24,8 +24,8 @@ import static org.nuxeo.common.Environment.NUXEO_DATA_DIR;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_EXCLUDE_CHECK_LIST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_NOSQL_LIST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.INSTALL_AFTER_RESTART;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DBNOSQL_NAME;
-import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DBNOSQL_URI;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_MONGODB_NAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_MONGODB_SERVER;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_HOST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_NAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PORT;
@@ -330,11 +330,11 @@ public class RouterServlet extends HttpServlet {
 
         // Check NoSQL database
         if (!DB_EXCLUDE_CHECK_LIST.contains(templateDbNoSQLName) && DB_NOSQL_LIST.contains(templateDbNoSQLName)) {
-            if (collector.getConfigurationParam(PARAM_DBNOSQL_NAME).isEmpty()) {
-                ctx.trackError(PARAM_DBNOSQL_NAME, "error.dbname.required");
+            if (collector.getConfigurationParam(PARAM_MONGODB_NAME).isEmpty()) {
+                ctx.trackError(PARAM_MONGODB_NAME, "error.dbname.required");
             }
-            if (collector.getConfigurationParam(PARAM_DBNOSQL_URI).isEmpty()) {
-                ctx.trackError(PARAM_DBNOSQL_URI, "error.dburi.required");
+            if (collector.getConfigurationParam(PARAM_MONGODB_SERVER).isEmpty()) {
+                ctx.trackError(PARAM_MONGODB_SERVER, "error.dburi.required");
             }
         }
 

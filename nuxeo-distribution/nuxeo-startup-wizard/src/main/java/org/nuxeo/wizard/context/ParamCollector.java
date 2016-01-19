@@ -129,7 +129,7 @@ public class ParamCollector {
     public void removeDbKeys() {
         List<String> keys = new ArrayList<>();
         for (String key : configurationParams.keySet()) {
-            if (key.startsWith("nuxeo.db")) {
+            if (key.startsWith("nuxeo.db") || key.startsWith("nuxeo.mongodb")) {
                 keys.add(key);
             }
         }

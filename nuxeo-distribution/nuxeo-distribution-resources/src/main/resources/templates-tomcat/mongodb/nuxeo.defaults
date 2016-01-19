@@ -2,6 +2,6 @@
 mongodb.target=.
 
 nuxeo.dbnosql.type=mongodb
-nuxeo.dbnosql.name=nuxeo
-nuxeo.dbnosql.uri=mongodb://localhost:27017/${nuxeo.dbnosql.name}
-#nuxeo.dbnosql.uri=mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
+nuxeo.mongodb.server=localhost:27017
+#nuxeo.mongodb.server=mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
+nuxeo.mongodb.dbname=nuxeo

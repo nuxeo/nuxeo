@@ -220,12 +220,12 @@ public class ConfigurationGenerator {
     /**
      * @since 8.1
      */
-    public static final String PARAM_DBNOSQL_NAME = "nuxeo.dbnosql.name";
+    public static final String PARAM_MONGODB_NAME = "nuxeo.mongodb.dbname";
 
     /**
      * @since 8.1
      */
-    public static final String PARAM_DBNOSQL_URI = "nuxeo.dbnosql.uri";
+    public static final String PARAM_MONGODB_SERVER = "nuxeo.mongodb.server";
 
     /**
      * Keys which value must be displayed thoughtfully
@@ -358,8 +358,6 @@ public class ConfigurationGenerator {
             put("mail.smtp.password", "mail.transport.password");
             put("mail.smtp.usetls", "mail.transport.usetls");
             put("mail.smtp.auth", "mail.transport.auth");
-            put("nuxeo.mongodb.server", "nuxeo.dbnosql.uri");
-            put("nuxeo.mongodb.dbname", "nuxeo.dbnosql.name");
         }
     };
 
