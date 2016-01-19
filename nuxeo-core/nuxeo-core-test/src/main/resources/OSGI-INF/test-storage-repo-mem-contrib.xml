@@ -2,6 +2,7 @@
 <component name="org.nuxeo.ecm.core.test.repository">
   <extension target="org.nuxeo.ecm.core.storage.mem.MemRepositoryService" point="repository">
     <repository name="test" label="Mem Repository">
+      <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}" />
     </repository>
   </extension>
 </component>

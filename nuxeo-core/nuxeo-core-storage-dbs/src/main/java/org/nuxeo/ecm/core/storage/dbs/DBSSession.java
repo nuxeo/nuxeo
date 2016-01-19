@@ -1422,8 +1422,9 @@ public class DBSSession implements Session {
 
         QueryOptimizer optimizer = new QueryOptimizer();
         MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
+        boolean fulltextDisabled = repository.getFulltextConfiguration() == null;
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, orderByClause,
-                queryFilter.getPrincipals());
+                queryFilter.getPrincipals(), fulltextDisabled);
 
         int limit = (int) queryFilter.getLimit();
         int offset = (int) queryFilter.getOffset();

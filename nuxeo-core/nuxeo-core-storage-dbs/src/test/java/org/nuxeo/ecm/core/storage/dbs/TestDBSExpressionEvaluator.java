@@ -101,7 +101,7 @@ public class TestDBSExpressionEvaluator extends NXRuntimeTestCase {
         Expression expression = query.getWhereClause().predicate;
         OrderByClause orderByClause = query.getOrderByClause();
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, orderByClause,
-                null);
+                null, false);
         evaluator.parse();
         assertTrue(evaluator.hasWildcardProjection());
         State state = state(//
@@ -126,7 +126,7 @@ public class TestDBSExpressionEvaluator extends NXRuntimeTestCase {
         Expression expression = query.getWhereClause().predicate;
         OrderByClause orderByClause = query.getOrderByClause();
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, orderByClause,
-                null);
+                null, false);
         evaluator.parse();
         assertTrue(evaluator.hasWildcardProjection());
         State state = state(//
@@ -153,7 +153,7 @@ public class TestDBSExpressionEvaluator extends NXRuntimeTestCase {
         Expression expression = query.getWhereClause().predicate;
         OrderByClause orderByClause = query.getOrderByClause();
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, orderByClause,
-                null);
+                null, false);
         evaluator.parse();
         assertTrue(evaluator.hasWildcardProjection());
         State state = state(//
