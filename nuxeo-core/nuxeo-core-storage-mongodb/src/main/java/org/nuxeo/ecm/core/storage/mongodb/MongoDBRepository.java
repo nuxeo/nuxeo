@@ -715,26 +715,38 @@ public class MongoDBRepository extends DBSRepositoryBase {
         addPrincipals(query, evaluator.principals);
         DBObject orderBy = builder.getOrderBy();
         DBObject keys = builder.getProjection();
+        boolean projectionHasWildcard = builder.hasProjectionWildcard();
+        if (projectionHasWildcard) {
+            // we'll do post-treatment to re-evaluate the query to get proper wildcard projections
+            // so we need the full state from the database
+            keys = new BasicDBObject();
+            evaluator.parse();
+        }
 
         if (log.isTraceEnabled()) {
             logQuery(query, keys, orderBy, limit, offset);
         }
 
-        List<State> states;
+        List<Map<String, Serializable>> projections;
         long totalSize;
         DBCursor cursor = coll.find(query, keys).skip(offset).limit(limit);
         try {
             if (orderBy != null) {
                 cursor.sort(orderBy);
             }
-            states = new ArrayList<>();
+            projections = new ArrayList<>();
             for (DBObject ob : cursor) {
-                states.add(bsonToState(ob));
+                State state = bsonToState(ob);
+                if (projectionHasWildcard) {
+                    projections.addAll(evaluator.matches(state));
+                } else {
+                    projections.add(flatten(state));
+                }
             }
             if (countUpTo == -1) {
                 // count full size
                 if (limit == 0) {
-                    totalSize = states.size();
+                    totalSize = projections.size();
                 } else {
                     totalSize = cursor.count();
                 }
@@ -744,7 +756,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             } else {
                 // count only if less than countUpTo
                 if (limit == 0) {
-                    totalSize = states.size();
+                    totalSize = projections.size();
                 } else {
                     totalSize = cursor.copy().limit(countUpTo + 1).count();
                 }
@@ -755,10 +767,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
         } finally {
             cursor.close();
         }
-        if (log.isTraceEnabled() && states.size() != 0) {
-            log.trace("MongoDB:    -> " + states.size());
+        if (log.isTraceEnabled() && projections.size() != 0) {
+            log.trace("MongoDB:    -> " + projections.size());
         }
-        return new PartialList<>(flatten(states), totalSize);
+        return new PartialList<>(projections, totalSize);
     }
 
     protected void addPrincipals(DBObject query, Set<String> principals) {
@@ -771,14 +783,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
     /**
      * Flatten and convert from internal names to NXQL.
      */
-    protected List<Map<String, Serializable>> flatten(List<State> states) {
-        List<Map<String, Serializable>> flatList = new ArrayList<>(states.size());
-        for (State state : states) {
-            Map<String, Serializable> map = new HashMap<>();
-            flatten(map, state, null);
-            flatList.add(map);
-        }
-        return flatList;
+    protected Map<String, Serializable> flatten(State state) {
+        Map<String, Serializable> map = new HashMap<>();
+        flatten(map, state, null);
+        return map;
     }
 
     protected void flatten(Map<String, Serializable> map, State state, String prefix) {
