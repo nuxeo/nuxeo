@@ -143,11 +143,11 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     public static final String ROUTE_MODELS_IMPORTER_XP = "routeModelImporter";
 
-    protected Map<String, String> typeToChain = new HashMap<String, String>();
+    protected Map<String, String> typeToChain = new HashMap<>();
 
-    protected Map<String, String> undoChainIdFromRunning = new HashMap<String, String>();
+    protected Map<String, String> undoChainIdFromRunning = new HashMap<>();
 
-    protected Map<String, String> undoChainIdFromDone = new HashMap<String, String>();
+    protected Map<String, String> undoChainIdFromDone = new HashMap<>();
 
     protected DocumentRoutingPersister persister;
 
@@ -212,7 +212,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 route = instance.getAdapter(DocumentRoute.class);
                 route.setAttachedDocuments(docIds);
                 route.save(session);
-                Map<String, Serializable> props = new HashMap<String, Serializable>();
+                Map<String, Serializable> props = new HashMap<>();
                 props.put(DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY, initiator);
                 fireEvent(DocumentRoutingConstants.Events.beforeRouteReady.name(), props);
                 route.setReady(session);
@@ -220,7 +220,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 route.save(session);
                 if (startInstance) {
                     fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(),
-                            new HashMap<String, Serializable>());
+                            new HashMap<>());
                     DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
                     routingEngine.start(route, map, session);
                     fireEventAfterWorkflowStarted(route, session);
@@ -280,7 +280,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     route.setAttachedDocuments(docIds);
                     route.save(session);
                 }
-                fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<String, Serializable>(),
+                fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(),
                         route, session);
                 DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
                 routingEngine.start(route, map, session);
@@ -291,7 +291,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     protected void fireEventAfterWorkflowStarted(DocumentRoute route, CoreSession session) {
-        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+        Map<String, Serializable> eventProperties = new HashMap<>();
         eventProperties.put(RoutingAuditHelper.WORKFLOW_INITATIOR, route.getInitiator());
         eventProperties.put("modelId", route.getModelId());
         eventProperties.put("modelName", route.getModelName());
@@ -358,7 +358,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public List<DocumentRoute> getAvailableDocumentRouteModel(CoreSession session) {
         DocumentModelList list = session.query(AVAILABLE_ROUTES_MODEL_QUERY);
-        List<DocumentRoute> routes = new ArrayList<DocumentRoute>();
+        List<DocumentRoute> routes = new ArrayList<>();
         for (DocumentModel model : list) {
             routes.add(model.getAdapter(DocumentRoute.class));
         }
@@ -368,7 +368,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public List<DocumentRoute> getAvailableDocumentRoute(CoreSession session) {
         DocumentModelList list = session.query(AVAILABLE_ROUTES_QUERY);
-        List<DocumentRoute> routes = new ArrayList<DocumentRoute>();
+        List<DocumentRoute> routes = new ArrayList<>();
         for (DocumentModel model : list) {
             routes.add(model.getAdapter(DocumentRoute.class));
         }
@@ -428,7 +428,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public List<DocumentRouteTableElement> getRouteElements(DocumentRoute route, CoreSession session) {
         RouteTable table = new RouteTable(route);
-        List<DocumentRouteTableElement> elements = new ArrayList<DocumentRouteTableElement>();
+        List<DocumentRouteTableElement> elements = new ArrayList<>();
         processElementsInFolder(route.getDocument(), elements, table, session, 0, null);
         int maxDepth = 0;
         for (DocumentRouteTableElement element : elements) {
@@ -476,7 +476,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public List<DocumentRoute> getDocumentRoutesForAttachedDocument(CoreSession session, String attachedDocId) {
-        List<DocumentRouteElement.ElementLifeCycleState> states = new ArrayList<DocumentRouteElement.ElementLifeCycleState>();
+        List<DocumentRouteElement.ElementLifeCycleState> states = new ArrayList<>();
         states.add(DocumentRouteElement.ElementLifeCycleState.ready);
         states.add(DocumentRouteElement.ElementLifeCycleState.running);
         return getDocumentRoutesForAttachedDocument(session, attachedDocId, states);
@@ -485,7 +485,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public List<DocumentRoute> getDocumentRoutesForAttachedDocument(CoreSession session, String attachedDocId,
             List<DocumentRouteElement.ElementLifeCycleState> states) {
-        DocumentModelList list = null;
+        DocumentModelList list;
         StringBuilder statesString = new StringBuilder();
         if (states != null && !states.isEmpty()) {
             statesString.append(" ecm:currentLifeCycleState IN (");
@@ -502,7 +502,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 + " ORDER BY dc:created", attachedDocId);
         UnrestrictedQueryRunner queryRunner = new UnrestrictedQueryRunner(session, query);
         list = queryRunner.runQuery();
-        List<DocumentRoute> routes = new ArrayList<DocumentRoute>();
+        List<DocumentRoute> routes = new ArrayList<>();
         for (DocumentModel model : list) {
             routes.add(model.getAdapter(DocumentRoute.class));
         }
@@ -642,7 +642,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             newRoute.followTransition(DocumentRouteElement.ElementLifeCycleTransistion.toDraft, session, false);
         }
         newRoute.getDocument().setPropertyValue("dc:title", newName);
-        newRoute.setAttachedDocuments(new ArrayList<String>());
+        newRoute.setAttachedDocuments(new ArrayList<>());
         newRoute.save(session);
         return newRoute;
     }
@@ -711,7 +711,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public List<URL> getRouteModelTemplateResources() {
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
         for (URL url : routeResourcesRegistry.getRouteModelTemplateResources()) {
             urls.add(url); // test contrib parsing and deployment
         }
@@ -721,9 +721,9 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @SuppressWarnings("unchecked")
     @Override
     public List<DocumentModel> searchRouteModels(CoreSession session, String searchString) {
-        List<DocumentModel> allRouteModels = new ArrayList<DocumentModel>();
+        List<DocumentModel> allRouteModels = new ArrayList<>();
         PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        Map<String, Serializable> props = new HashMap<>();
         props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
         props.put(CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DocumentModel> pageProvider;
@@ -760,7 +760,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         if (path == null) {
             return null;
         }
-        URL url = null;
+        URL url;
         try {
             url = new URL(path);
         } catch (MalformedURLException e) {
@@ -791,7 +791,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             }
         }
         String query = String.format(ROUTE_MODEL_DOC_ID_WITH_ID_QUERY, NXQL.escapeString(id));
-        List<String> routeIds = new ArrayList<String>();
+        List<String> routeIds = new ArrayList<>();
         IterableQueryResult results = session.queryAndFetch(query, "NXQL");
         try {
             if (results.size() == 0) {
@@ -841,7 +841,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             throw new DocumentRouteException("Can not resume workflow, no related route");
         }
         completeTask(routeInstanceId, null, task, data, status, session);
-        final Map<String, Serializable> extraEventProperties = new HashMap<String, Serializable>();
+        final Map<String, Serializable> extraEventProperties = new HashMap<>();
         extraEventProperties.put(DocumentRoutingConstants.WORKFLOW_TASK_COMPLETION_ACTION_KEY, status);
         TaskEventNotificationHelper.notifyTaskEnded(session, (NuxeoPrincipal) session.getPrincipal(), task, comment,
                 TaskEventNames.WORKFLOW_TASK_COMPLETED, extraEventProperties);
@@ -893,7 +893,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     doc.setACP(acp, true);
                     session.saveDocument(doc);
                 }
-            };
+            }
         }.runUnrestricted();
     }
 
@@ -914,7 +914,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     doc.setACP(acp, true);
                     session.saveDocument(doc);
                 }
-            };
+            }
         }.runUnrestricted();
     }
 
@@ -963,7 +963,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
         @Override
         public void run() {
-            List<String> routeIds = new ArrayList<String>();
+            List<String> routeIds = new ArrayList<>();
             String query = "SELECT ecm:uuid FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'done' "
                     + "OR ecm:currentLifeCycleState = 'canceled') ORDER BY dc:created";
             IterableQueryResult results = session.queryAndFetch(query, "NXQL");
@@ -1137,7 +1137,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     grantPermissionToTaskAssignees(session, node.getTaskAssigneesPermission(), docs, task);
 
                     // Audit task reassignment
-                    Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+                    Map<String, Serializable> eventProperties = new HashMap<>();
                     eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
                             DocumentRoutingConstants.ROUTING_CATEGORY);
                     eventProperties.put("taskName", task.getName());
@@ -1202,7 +1202,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     grantPermissionToTaskDelegatedActors(session, node.getTaskAssigneesPermission(), docs, task);
 
                     // Audit task delegation
-                    Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+                    Map<String, Serializable> eventProperties = new HashMap<>();
                     eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY,
                             DocumentRoutingConstants.ROUTING_CATEGORY);
                     eventProperties.put("taskName", task.getName());
@@ -1237,7 +1237,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     protected void setAclForActors(CoreSession session, final String aclName, final String permission,
             final List<DocumentModel> docs, List<String> actors) {
-        final List<String> actorIds = new ArrayList<String>();
+        final List<String> actorIds = new ArrayList<>();
         for (String actor : actors) {
             if (actor.startsWith(NuxeoPrincipal.PREFIX)) {
                 actorIds.add(actor.substring(NuxeoPrincipal.PREFIX.length()));
@@ -1302,7 +1302,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             query.append(String.format(" AND nt:targetDocumentId = '%s'", document.getId()));
         }
         final DocumentModelList documentModelList = session.query(query.toString());
-        final List<Task> result = new ArrayList<Task>();
+        final List<Task> result = new ArrayList<>();
 
         // User does not necessary have READ on the workflow instance
         new UnrestrictedSessionRunner(session) {
@@ -1343,8 +1343,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 "SELECT * FROM %s WHERE docri:participatingDocuments/* = '%s' AND ecm:currentLifeCycleState = '%s'",
                 DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, document.getId(),
                 DocumentRouteElement.ElementLifeCycleState.running);
-        DocumentModelList documentModelList = session.query(query.toString());
-        List<DocumentRoute> result = new ArrayList<DocumentRoute>();
+        DocumentModelList documentModelList = session.query(query);
+        List<DocumentRoute> result = new ArrayList<>();
         for (DocumentModel documentModel : documentModelList) {
             result.add(documentModel.getAdapter(GraphRoute.class));
         }
@@ -1369,8 +1369,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 "SELECT * FROM %s WHERE docri:initiator = '%s' AND ecm:currentLifeCycleState = '%s'",
                 DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, session.getPrincipal().getName(),
                 DocumentRouteElement.ElementLifeCycleState.running);
-        DocumentModelList documentModelList = session.query(query.toString());
-        List<DocumentRoute> result = new ArrayList<DocumentRoute>();
+        DocumentModelList documentModelList = session.query(query);
+        List<DocumentRoute> result = new ArrayList<>();
         for (DocumentModel documentModel : documentModelList) {
             final GraphRoute graphRoute = documentModel.getAdapter(GraphRoute.class);
             if (StringUtils.isNotBlank(worflowModelName)) {
