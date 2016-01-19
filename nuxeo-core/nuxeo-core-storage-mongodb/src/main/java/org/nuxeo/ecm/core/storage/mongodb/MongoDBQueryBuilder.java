@@ -506,7 +506,9 @@ public class MongoDBQueryBuilder {
                 FieldInfo fieldInfo = fidbo.fieldInfo;
                 if (fieldInfo.hasWildcard) {
                     if (fieldInfo.fieldSuffix.contains("*")) {
-                        throw new QueryParseException("Cannot use two wildcards: " + fieldInfo.prop);
+                        // a double wildcard of the form foo/*/bar/* is not a problem if bar is an array
+                        // TODO prevent deep complex multiple wildcards
+                        // throw new QueryParseException("Cannot use two wildcards: " + fieldInfo.prop);
                     }
                     // generate a key unique per correlation for this element match
                     String wildcardNumber = fieldInfo.fieldWildcard;
