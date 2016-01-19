@@ -25,6 +25,7 @@
   <xs:complexType name="notification">
     <xs:sequence>
       <xs:element name="name" type="xs:string"/>
+      <xs:element name="enabled" type="xs:boolean"/>
       <xs:element name="subscribers" type="nxs:stringArray"/>
     </xs:sequence>
   </xs:complexType>

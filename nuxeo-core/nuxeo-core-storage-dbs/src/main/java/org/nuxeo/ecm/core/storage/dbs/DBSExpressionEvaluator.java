@@ -602,7 +602,11 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                 step = part;
                 if (!firstPart) {
                     // we already computed the type of the first part
-                    type = ((ComplexType) type).getField(part).getType();
+                    Field field = ((ComplexType) type).getField(part);
+                    if (field == null) {
+                        throw new QueryParseException("No such property: " + name);
+                    }
+                    type = field.getType();
                 }
             } else {
                 // wildcard

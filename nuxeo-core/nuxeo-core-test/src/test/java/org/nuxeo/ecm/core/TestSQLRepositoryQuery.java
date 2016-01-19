@@ -2931,6 +2931,24 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    public void testQueryComplexBoolean() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File2");
+        Map<String, Serializable> map1 = new HashMap<>();
+        map1.put("name", "bob");
+        map1.put("enabled", Long.valueOf(1));
+        map1.put("subscribers", new String[] { "sub1", "sub2" });
+        doc.setPropertyValue("tst2:notifs", (Serializable) Collections.singletonList(map1));
+        doc = session.createDocument(doc);
+        session.save();
+
+        String docId = doc.getId();
+
+        String query = "SELECT * FROM File2 WHERE ecm:isProxy = 0 AND tst2:notifs/*/enabled = 1";
+        DocumentModelList res = session.query(query);
+        assertEquals(Arrays.asList(docId), getIds(res));
+    }
+
+    @Test
     public void testQueryDistinct() throws Exception {
         assumeTrue("DBS does not support DISTINCT in queries", supportsDistinct());
 

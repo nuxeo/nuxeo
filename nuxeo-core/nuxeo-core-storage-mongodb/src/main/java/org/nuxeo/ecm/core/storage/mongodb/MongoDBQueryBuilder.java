@@ -70,6 +70,7 @@ import org.nuxeo.ecm.core.query.sql.model.SelectList;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -917,17 +918,17 @@ public class MongoDBQueryBuilder {
     public FieldInfo walkReference(Reference ref) {
         String prop = ref.name;
         prop = canonicalXPath(prop);
-        List<String> split = new LinkedList<>(Arrays.asList(StringUtils.split(prop, '/')));
+        String[] parts = prop.split("/");
         if (prop.startsWith(NXQL.ECM_PREFIX)) {
             if (prop.startsWith(NXQL.ECM_ACL + "/")) {
-                if (split.size() != 3) {
+                if (parts.length != 3) {
                     throw new QueryParseException("No such property: " + ref.name);
                 }
-                String wildcard = split.get(1);
+                String wildcard = parts[1];
                 if (NumberUtils.isDigits(wildcard)) {
                     throw new QueryParseException("Cannot use explicit index in ACLs: " + ref.name);
                 }
-                String last = split.get(2);
+                String last = parts[2];
                 String fullField;
                 String queryField;
                 String projectionField;
@@ -955,9 +956,9 @@ public class MongoDBQueryBuilder {
                 return new FieldInfo(prop, field, field, field, isBoolean, true);
             }
         } else {
-            String first = split.get(0);
-            Field schemaField = schemaManager.getField(first);
-            if (schemaField == null) {
+            String first = parts[0];
+            Field field = schemaManager.getField(first);
+            if (field == null) {
                 if (first.indexOf(':') > -1) {
                     throw new QueryParseException("No such property: " + ref.name);
                 }
@@ -969,42 +970,50 @@ public class MongoDBQueryBuilder {
                         continue;
                     }
                     if (schema != null) {
-                        schemaField = schema.getField(first);
-                        if (schemaField != null) {
+                        field = schema.getField(first);
+                        if (field != null) {
                             break;
                         }
                     }
                 }
-                if (schemaField == null) {
+                if (field == null) {
                     throw new QueryParseException("No such property: " + ref.name);
                 }
             }
+            Type type = field.getType();
             // canonical name
-            split.set(0, schemaField.getName().getPrefixedName());
-            prop = StringUtils.join(split, '/'); // canonicalized first component
-            // MongoDB embedded field syntax uses . separator
-            Type type = schemaField.getType();
-            boolean isArray = type instanceof ListType && ((ListType) type).isArray();
-            boolean isBoolean = type instanceof BooleanType;
-            // terminating wildcard for array -> just remove from query
-            if (isArray && split.get(split.size() - 1).startsWith("*")) {
-                // TODO correlations?
-                split.remove(split.size() - 1);
-            }
+            parts[0] = field.getName().getPrefixedName();
             // are there wildcards or list indexes?
             List<String> queryFieldParts = new LinkedList<>(); // field for query
             List<String> projectionFieldParts = new LinkedList<>(); // field for projection
-            for (String part : split) {
-                if (!part.startsWith("*")) {
+            boolean firstPart = true;
+            for (String part : parts) {
+                if (NumberUtils.isDigits(part)) {
+                    // explicit list index
                     queryFieldParts.add(part);
-                    if (!NumberUtils.isDigits(part)) {
-                        projectionFieldParts.add(part);
+                    type = ((ListType) type).getFieldType();
+                } else if (!part.startsWith("*")) {
+                    // complex sub-property
+                    queryFieldParts.add(part);
+                    projectionFieldParts.add(part);
+                    if (!firstPart) {
+                        // we already computed the type of the first part
+                        field = ((ComplexType) type).getField(part);
+                        if (field == null) {
+                            throw new QueryParseException("No such property: " + ref.name);
+                        }
+                        type = field.getType();
                     }
+                } else {
+                    // wildcard
+                    type = ((ListType) type).getFieldType();
                 }
+                firstPart = false;
             }
-            String fullField = StringUtils.join(split, '.');
+            String fullField = StringUtils.join(parts, '.');
             String queryField = StringUtils.join(queryFieldParts, '.');
             String projectionField = StringUtils.join(projectionFieldParts, '.');
+            boolean isBoolean = type instanceof BooleanType;
             return new FieldInfo(prop, fullField, queryField, projectionField, isBoolean, false);
         }
     }
