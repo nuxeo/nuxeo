@@ -1312,14 +1312,16 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     if (StringUtils.isNotBlank(worflowModelName)) {
 
                         final String processId = task.getProcessId();
-                        final DocumentRoute routeInstance = session.getDocument(new IdRef(processId)).getAdapter(
-                                DocumentRoute.class);
-                        if (routeInstance != null) {
-                            final String routeInstanceName = routeInstance.getName();
-                            if (routeInstanceName != null
-                                    && (routeInstanceName.equals(worflowModelName) || routeInstanceName.matches("^("
-                                            + worflowModelName + ")\\.\\d+"))) {
-                                result.add(task);
+                        if (processId != null) {
+                            final DocumentRoute routeInstance = session.getDocument(new IdRef(processId)).getAdapter(
+                                    DocumentRoute.class);
+                            if (routeInstance != null) {
+                                final String routeInstanceName = routeInstance.getName();
+                                if (routeInstanceName != null
+                                        && (routeInstanceName.equals(worflowModelName) || routeInstanceName.matches("^("
+                                                + worflowModelName + ")\\.\\d+"))) {
+                                    result.add(task);
+                                }
                             }
                         }
                     } else {
