@@ -219,8 +219,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 fireEvent(DocumentRoutingConstants.Events.afterRouteReady.name(), props);
                 route.save(session);
                 if (startInstance) {
-                    fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(),
-                            new HashMap<>());
+                    fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>());
                     DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
                     routingEngine.start(route, map, session);
                     fireEventAfterWorkflowStarted(route, session);
@@ -280,8 +279,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     route.setAttachedDocuments(docIds);
                     route.save(session);
                 }
-                fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(),
-                        route, session);
+                fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<>(), route, session);
                 DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
                 routingEngine.start(route, map, session);
                 fireEventAfterWorkflowStarted(route, session);
@@ -1314,14 +1312,16 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     if (StringUtils.isNotBlank(worflowModelName)) {
 
                         final String processId = task.getProcessId();
-                        final DocumentRoute routeInstance = session.getDocument(new IdRef(processId)).getAdapter(
-                                DocumentRoute.class);
-                        if (routeInstance != null) {
-                            final String routeInstanceName = routeInstance.getName();
-                            if (routeInstanceName != null
-                                    && (routeInstanceName.equals(worflowModelName) || routeInstanceName.matches("^("
-                                            + worflowModelName + ")\\.\\d+"))) {
-                                result.add(task);
+                        if (processId != null) {
+                            final DocumentRoute routeInstance = session.getDocument(new IdRef(processId)).getAdapter(
+                                    DocumentRoute.class);
+                            if (routeInstance != null) {
+                                final String routeInstanceName = routeInstance.getName();
+                                if (routeInstanceName != null
+                                        && (routeInstanceName.equals(worflowModelName) || routeInstanceName.matches("^("
+                                                + worflowModelName + ")\\.\\d+"))) {
+                                    result.add(task);
+                                }
                             }
                         }
                     } else {
