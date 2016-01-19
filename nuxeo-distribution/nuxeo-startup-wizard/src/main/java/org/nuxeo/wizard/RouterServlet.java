@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,18 @@
 
 package org.nuxeo.wizard;
 
+import static org.nuxeo.common.Environment.NUXEO_DATA_DIR;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_EXCLUDE_CHECK_LIST;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.INSTALL_AFTER_RESTART;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_HOST;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_NAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PORT;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PWD;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_USER;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_WIZARD_DONE;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -28,7 +40,6 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -52,6 +63,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
@@ -98,22 +110,18 @@ public class RouterServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         // process action
         handleAction(getAction(req), req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         // store posted data
         Context.instance(req).getCollector().collectConfigurationParams(req);
-
         doGet(req, resp);
     }
 
     protected Method findhandler(Page currentPage, String verb) {
-
         String methodName = "handle" + currentPage.getAction() + verb;
         Method method = null;
         try {
@@ -134,7 +142,6 @@ public class RouterServlet extends HttpServlet {
 
     protected void handleAction(String action, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         // locate page
         Page currentPage = navHandler.getCurrentPage(action);
         if (currentPage == null) {
@@ -176,9 +183,7 @@ public class RouterServlet extends HttpServlet {
 
     public void handleConnectGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         Context ctx = Context.instance(req);
-
         // compute CB url
         String cbUrl = req.getRequestURL().toString();
         cbUrl = cbUrl.replace("/router/" + currentPage.getAction(), "/ConnectCallback?cb=yes");
@@ -188,15 +193,12 @@ public class RouterServlet extends HttpServlet {
             cbUrl = ctx.getBaseUrl() + "ConnectCallback?cb=yes";
         }
         cbUrl = URLEncoder.encode(cbUrl, "UTF-8");
-
         req.setAttribute("callBackUrl", cbUrl);
-
         handleDefaultGET(currentPage, req, resp);
     }
 
     public void handleConnectCallbackGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         String token = req.getParameter(CONNECT_TOKEN_KEY);
         String action = req.getParameter("action");
         String targetNav = null;
@@ -234,7 +236,6 @@ public class RouterServlet extends HttpServlet {
             SimpleNavigationHandler.instance().deactivatePage("ConnectFinish");
             // go to the next page
             targetNav = currentPage.next().getAction();
-
         } else if ("skip".equals(action)) {
             // activate the confirm form
             SimpleNavigationHandler.instance().activatePage("ConnectFinish");
@@ -245,14 +246,12 @@ public class RouterServlet extends HttpServlet {
         }
 
         String targetUrl = req.getContextPath() + "/" + targetNav;
-
         req.setAttribute("targetUrl", targetUrl);
         handleDefaultGET(currentPage, req, resp);
     }
 
     public void handleConnectFinishGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         // get the connect Token and decode associated infos
         String token = req.getParameter(CONNECT_TOKEN_KEY);
         Map<String, String> connectMap = new HashMap<>();
@@ -267,64 +266,57 @@ public class RouterServlet extends HttpServlet {
             }
             Context.instance(req).storeConnectMap(connectMap);
         }
-
         handleDefaultGET(currentPage, req, resp);
     }
 
     public void handleDBPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
 
-        String templateDbName = collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
+        String templateDbName = collector.getConfigurationParam(PARAM_TEMPLATE_DBNAME);
         if ("true".equals(req.getParameter("refresh"))) {
-            String templateName = templateDbName;
-            collector.changeDBTemplate(templateName);
+            collector.changeDBTemplate(templateDbName);
             currentPage.dispatchToJSP(req, resp);
             return;
         }
 
         // Check relational database
-        if (!Arrays.asList("default", "mongodb").contains(templateDbName)) {
-            if (collector.getConfigurationParam("nuxeo.db.name").isEmpty()) {
-                ctx.trackError("nuxeo.db.name", "error.dbname.required");
+        if (!DB_EXCLUDE_CHECK_LIST.contains(templateDbName)) {
+            if (collector.getConfigurationParam(PARAM_DB_NAME).isEmpty()) {
+                ctx.trackError(PARAM_DB_NAME, "error.dbname.required");
             }
-            if (collector.getConfigurationParam("nuxeo.db.user").isEmpty()) {
-                ctx.trackError("nuxeo.db.user", "error.dbuser.required");
+            if (collector.getConfigurationParam(PARAM_DB_USER).isEmpty()) {
+                ctx.trackError(PARAM_DB_USER, "error.dbuser.required");
             }
-            if (collector.getConfigurationParam("nuxeo.db.password").isEmpty()) {
-                ctx.trackError("nuxeo.db.password", "error.dbpassword.required");
+            if (collector.getConfigurationParam(PARAM_DB_PWD).isEmpty()) {
+                ctx.trackError(PARAM_DB_PWD, "error.dbpassword.required");
             }
-            if (collector.getConfigurationParam("nuxeo.db.host").isEmpty()) {
-                ctx.trackError("nuxeo.db.host", "error.dbhost.required");
+            if (collector.getConfigurationParam(PARAM_DB_HOST).isEmpty()) {
+                ctx.trackError(PARAM_DB_HOST, "error.dbhost.required");
             }
-            if (collector.getConfigurationParam("nuxeo.db.port").isEmpty()) {
-                ctx.trackError("nuxeo.db.port", "error.dbport.required");
+            if (collector.getConfigurationParam(PARAM_DB_PORT).isEmpty()) {
+                ctx.trackError(PARAM_DB_PORT, "error.dbport.required");
             } else {
-                if (!NumberValidator.validate(collector.getConfigurationParam("nuxeo.db.port"))) {
-                    ctx.trackError("nuxeo.db.port", "error.invalid.port");
+                if (!NumberValidator.validate(collector.getConfigurationParam(PARAM_DB_PORT))) {
+                    ctx.trackError(PARAM_DB_PORT, "error.invalid.port");
                 } else {
-                    int dbPort = Integer.parseInt(collector.getConfigurationParam("nuxeo.db.port"));
+                    int dbPort = Integer.parseInt(collector.getConfigurationParam(PARAM_DB_PORT));
                     if (dbPort < 1024 || dbPort > 65536) {
-                        ctx.trackError("nuxeo.db.port", "error.invalid.port");
+                        ctx.trackError(PARAM_DB_PORT, "error.invalid.port");
                     }
                 }
             }
             ConfigurationGenerator cg = collector.getConfigurationGenerator();
             try {
-                cg.checkDatabaseConnection(
-                        templateDbName,
-                        collector.getConfigurationParam("nuxeo.db.name"),
-                        collector.getConfigurationParam("nuxeo.db.user"),
-                        collector.getConfigurationParam("nuxeo.db.password"),
-                        collector.getConfigurationParam("nuxeo.db.host"),
-                        collector.getConfigurationParam("nuxeo.db.port"));
+                cg.checkDatabaseConnection(templateDbName, collector.getConfigurationParam(PARAM_DB_NAME),
+                        collector.getConfigurationParam(PARAM_DB_USER), collector.getConfigurationParam(PARAM_DB_PWD),
+                        collector.getConfigurationParam(PARAM_DB_HOST), collector.getConfigurationParam(PARAM_DB_PORT));
             } catch (DatabaseDriverException e) {
-                ctx.trackError("nuxeo.db.name", "error.db.driver.notfound");
+                ctx.trackError(PARAM_DB_NAME, "error.db.driver.notfound");
                 log.warn(e);
             } catch (SQLException e) {
-                ctx.trackError("nuxeo.db.name", "error.db.connection");
+                ctx.trackError(PARAM_DB_NAME, "error.db.connection");
                 log.warn(e);
             }
         }
@@ -344,12 +336,10 @@ public class RouterServlet extends HttpServlet {
         } else {
             currentPage.next().dispatchToJSP(req, resp, true);
         }
-
     }
 
     public void handleUserPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
 
@@ -357,9 +347,6 @@ public class RouterServlet extends HttpServlet {
         String directoryType = collector.getConfigurationParam("nuxeo.directory.type");
 
         if ("true".equals(refreshParam)) {
-            // String templateName =
-            // collector.getConfigurationParam(ConfigurationGenerator.PARAM_TEMPLATE_USERNAME);
-            // collector.changeUserTemplate(templateName);
             currentPage.dispatchToJSP(req, resp);
             return;
         }
@@ -538,12 +525,10 @@ public class RouterServlet extends HttpServlet {
         } else {
             currentPage.next().dispatchToJSP(req, resp, true);
         }
-
     }
 
     public void handleRecapPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
         ConfigurationGenerator cg = collector.getConfigurationGenerator();
@@ -552,7 +537,7 @@ public class RouterServlet extends HttpServlet {
         PackageDownloaderHelper.markPackageSelectionDone(ctx);
 
         Map<String, String> changedParameters = collector.getConfigurationParams();
-        changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
+        changedParameters.put(PARAM_WIZARD_DONE, "true");
         try {
             // save config
             cg.saveFilteredConfiguration(changedParameters);
@@ -568,21 +553,20 @@ public class RouterServlet extends HttpServlet {
 
     public void handleGeneralPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
-        String bindAddress = collector.getConfigurationParamValue("nuxeo.bind.address");
+        String bindAddress = collector.getConfigurationParamValue(PARAM_BIND_ADDRESS);
         if (bindAddress != null && !bindAddress.isEmpty()) {
             if (!IPValidator.validate(bindAddress)) {
-                ctx.trackError("nuxeo.bind.address", "error.invalid.ip");
+                ctx.trackError(PARAM_BIND_ADDRESS, "error.invalid.ip");
             }
             try {
                 InetAddress inetAddress = InetAddress.getByName(bindAddress);
                 ConfigurationGenerator.checkAddressReachable(inetAddress);
             } catch (UnknownHostException e) {
-                ctx.trackError("nuxeo.bind.address", "error.invalid.ip");
+                ctx.trackError(PARAM_BIND_ADDRESS, "error.invalid.ip");
             } catch (ConfigurationException e) {
-                ctx.trackError("nuxeo.bind.address", "error.already.used.ip");
+                ctx.trackError(PARAM_BIND_ADDRESS, "error.already.used.ip");
             }
         }
 
@@ -595,20 +579,17 @@ public class RouterServlet extends HttpServlet {
 
     public void handleHomeGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         Context ctx = Context.instance(req);
         if (PackageDownloaderHelper.isPackageSelectionDone(ctx)) {
             navHandler.deactivatePage("PackagesSelection");
             navHandler.deactivatePage("PackagesDownload");
             navHandler.activatePage("PackagesSelectionDone");
         }
-
         handleDefaultGET(currentPage, req, resp);
     }
 
     public void handleHomePOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         String baseUrl = req.getParameter("baseUrl");
         if (baseUrl != null && !baseUrl.isEmpty()) {
             if (baseUrl.endsWith("Home")) {
@@ -633,7 +614,6 @@ public class RouterServlet extends HttpServlet {
 
     public void handleProxyPOST(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         Context ctx = Context.instance(req);
         ParamCollector collector = ctx.getCollector();
         String proxyType = collector.getConfigurationParamValue("nuxeo.http.proxy.type");
@@ -696,7 +676,6 @@ public class RouterServlet extends HttpServlet {
     }
 
     public void handleResetGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp) throws IOException {
-
         // reset
         Context.reset();
         SimpleNavigationHandler.reset();
@@ -713,16 +692,13 @@ public class RouterServlet extends HttpServlet {
 
     public void handlePackageOptionsResourceGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-
         DownloadablePackageOptions options = PackageDownloader.instance().getPackageOptions();
         resp.setContentType("text/json");
         resp.getWriter().write(options.asJson());
-
     }
 
     public void handlePackagesSelectionGET(Page currentPage, HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
         handleDefaultGET(currentPage, req, resp);
     }
 
@@ -738,7 +714,6 @@ public class RouterServlet extends HttpServlet {
         }
 
         PackageDownloader.instance().selectOptions(options);
-
         currentPage.next().dispatchToJSP(req, resp, true);
     }
 
@@ -756,13 +731,10 @@ public class RouterServlet extends HttpServlet {
             throws ServletException, IOException {
         ParamCollector collector = Context.instance(req).getCollector();
 
-        String installationFilePath = new File(
-                collector.getConfigurationParam(org.nuxeo.common.Environment.NUXEO_DATA_DIR),
-                ConfigurationGenerator.INSTALL_AFTER_RESTART).getAbsolutePath();
+        String installationFilePath = new File(collector.getConfigurationParam(NUXEO_DATA_DIR), INSTALL_AFTER_RESTART).getAbsolutePath();
 
         PackageDownloader.instance().scheduleDownloadedPackagesForInstallation(installationFilePath);
         PackageDownloader.reset();
-
         currentPage.next().dispatchToJSP(req, resp, true);
     }
 

@@ -1,9 +1,11 @@
-<%@ include file="includes/header.jsp" %>
+<%@ include file="includes/header.jsp"%>
 
-<h1><fmt:message key="label.dbSettings" /></h1>
+<h1>
+  <fmt:message key="label.dbSettings" />
+</h1>
 
 <%
-  String dbTemplate = collector.getConfigurationParam("nuxeo.dbtemplate");
+    String dbTemplate = collector.getConfigurationParam("nuxeo.dbtemplate");
   if (dbTemplate==null || dbTemplate.equals("")) {
     dbTemplate="default";
   }
@@ -46,13 +48,11 @@
 </script>
 
 
-<%@ include file="includes/form-start.jsp" %>
-<span class="screenDescription">
-<fmt:message key="label.dbSettings.description" /> <br/>
+<%@ include file="includes/form-start.jsp"%>
+<span class="screenDescription"> <fmt:message key="label.dbSettings.description" /> <br />
 </span>
 
-<span class="screenExplanations">
-<fmt:message key="label.dbSettings.explanations" /> <br/>
+<span class="screenExplanations"> <fmt:message key="label.dbSettings.explanations" /> <br />
 </span>
 
 
@@ -173,4 +173,4 @@
 
 <%@ include file="includes/prevnext.jsp" %>
 
-<%@ include file="includes/footer.jsp" %>
+<%@ include file="includes/footer.jsp"%>

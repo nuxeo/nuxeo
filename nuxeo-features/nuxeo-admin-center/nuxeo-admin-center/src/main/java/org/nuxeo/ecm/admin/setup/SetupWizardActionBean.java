@@ -21,6 +21,19 @@
 
 package org.nuxeo.ecm.admin.setup;
 
+import static org.nuxeo.common.Environment.NUXEO_DATA_DIR;
+import static org.nuxeo.common.Environment.NUXEO_LOG_DIR;
+import static org.nuxeo.common.Environment.PRODUCT_NAME;
+import static org.nuxeo.common.Environment.PRODUCT_VERSION;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_CONF;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_DEV_SYSTEM_PROP;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_HOST;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_NAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PORT;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PWD;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_USER;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_NUXEO_URL;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
 
 import java.io.FileNotFoundException;
@@ -58,7 +71,6 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 
-import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
 import org.nuxeo.launcher.config.ConfigurationException;
@@ -83,16 +95,15 @@ public class SetupWizardActionBean implements Serializable {
     /**
      * The list of important parameters that need to be presented first to the user
      */
-    private static final String[] managedKeyParameters = { "nuxeo.bind.address", "nuxeo.url",
-            Environment.NUXEO_DATA_DIR, Environment.NUXEO_LOG_DIR, Environment.PRODUCT_NAME,
-            Environment.PRODUCT_VERSION, "nuxeo.conf", PARAM_TEMPLATE_DBNAME, "nuxeo.db.name", "nuxeo.db.user",
-            "nuxeo.db.password", "nuxeo.db.host", "nuxeo.db.port", "nuxeo.db.min-pool-size", "nuxeo.db.min-pool-size",
-            "nuxeo.db.max-pool-size", "nuxeo.vcs.min-pool-size", "nuxeo.vcs.max-pool-size",
+    private static final String[] managedKeyParameters = { PARAM_BIND_ADDRESS, PARAM_NUXEO_URL, NUXEO_DATA_DIR,
+            NUXEO_LOG_DIR, PRODUCT_NAME, PRODUCT_VERSION, NUXEO_CONF, PARAM_TEMPLATE_DBNAME, PARAM_DB_NAME,
+            PARAM_DB_USER, PARAM_DB_PWD, PARAM_DB_HOST, PARAM_DB_PORT, "nuxeo.db.min-pool-size",
+            "nuxeo.db.min-pool-size", "nuxeo.db.max-pool-size", "nuxeo.vcs.min-pool-size", "nuxeo.vcs.max-pool-size",
             "nuxeo.notification.eMailSubjectPrefix", "mailservice.user", "mailservice.password", "mail.store.protocol",
             "mail.transport.protocol", "mail.store.host", "mail.store.port", "mail.store.user", "mail.store.password",
             "mail.debug", "mail.transport.host", "mail.transport.port", "mail.transport.auth", "mail.transport.user",
             "mail.transport.password", "mail.from", "mail.user", "mail.transport.usetls", "nuxeo.http.proxy.host",
-            "nuxeo.http.proxy.port", "nuxeo.http.proxy.login", "nuxeo.http.proxy.password", "org.nuxeo.dev",
+            "nuxeo.http.proxy.port", "nuxeo.http.proxy.login", "nuxeo.http.proxy.password", NUXEO_DEV_SYSTEM_PROP,
             "nuxeo.directory.type", "nuxeo.user.group.storage", "nuxeo.ldap.url", "nuxeo.ldap.binddn",
             "nuxeo.ldap.bindpassword", "nuxeo.ldap.retries", "nuxeo.ldap.user.searchBaseDn",
             "nuxeo.ldap.user.searchClass", "nuxeo.ldap.user.searchFilter", "nuxeo.ldap.user.searchScope",

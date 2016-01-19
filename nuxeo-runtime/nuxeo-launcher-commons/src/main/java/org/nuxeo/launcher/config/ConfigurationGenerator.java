@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -314,11 +315,7 @@ public class ConfigurationGenerator {
     }
 
     protected static final Map<String, String> parametersMigration = new HashMap<String, String>() {
-        /**
-         *
-         */
         private static final long serialVersionUID = 1L;
-
         {
             put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS, PARAM_TEMPLATES_PARSING_EXTENSIONS);
             put("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key");

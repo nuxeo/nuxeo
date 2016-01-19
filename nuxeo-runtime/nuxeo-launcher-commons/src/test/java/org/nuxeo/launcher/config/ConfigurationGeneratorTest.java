@@ -283,16 +283,16 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         String originalTemplates = configGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_NAME);
         configGenerator.changeDBTemplate("postgresql");
-        assertEquals("Failed to change database default to postgresql", originalTemplates + ",postgresql",
+        assertEquals("Failed to change database default to postgresql", originalTemplates.concat(",postgresql"),
                 configGenerator.getUserTemplates());
         Map<String, String> customParameters = new HashMap<>();
         customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "postgresql");
         configGenerator.saveFilteredConfiguration(customParameters);
         // Check stored value
         assertTrue(configGenerator.init(true));
-        assertEquals("Failed to change database default to postgresql", originalTemplates + ",postgresql",
+        assertEquals("Failed to change database default to postgresql", originalTemplates.concat(",postgresql"),
                 configGenerator.getUserTemplates());
-        assertEquals("Failed to change database default to postgresql", originalTemplates + ",postgresql",
+        assertEquals("Failed to change database default to postgresql", originalTemplates.concat(",postgresql"),
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
         assertEquals("Failed to change database default to postgresql", "postgresql",
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));

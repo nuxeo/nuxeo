@@ -1,3 +1,4 @@
+<%@page import="org.nuxeo.launcher.config.ConfigurationGenerator"%>
 <%@page import="java.util.TreeMap"%>
 <%@ include file="includes/header.jsp" %>
 
@@ -20,14 +21,14 @@ boolean connectOK = ctx.isConnectRegistrationDone();
       String label = "label."+pName;%>
     <tr>
       <%if (changedParams.containsKey(pName) ||
-              pName.startsWith("nuxeo.db") && !"default".equals(collector.getConfigurationParam(pName))) {%>
+              pName.startsWith("nuxeo.db") && !ConfigurationGenerator.DB_EXCLUDE_CHECK_LIST.contains(collector.getConfigurationParam(pName))) {%>
       <td class="bold">
       <%} else {%>
       <td>
       <%}%>
       <fmt:message key="<%=label%>"/></td>
       <%if (changedParams.containsKey(pName) ||
-              pName.startsWith("nuxeo.db") && !"default".equals(collector.getConfigurationParam(pName))) {%>
+              pName.startsWith("nuxeo.db") && !ConfigurationGenerator.DB_EXCLUDE_CHECK_LIST.contains(collector.getConfigurationParam(pName))) {%>
       <td class="bold highlighted">
       <%} else {%>
       <td>
