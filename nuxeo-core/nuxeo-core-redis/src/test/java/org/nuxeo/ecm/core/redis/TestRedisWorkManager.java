@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.redis;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.work.WorkManagerTest;
+import org.nuxeo.runtime.test.runner.RandomBug;
 
 /**
  * Test of the WorkManager using Redis. Does not run if no Redis is configured through the properties of
@@ -46,6 +47,13 @@ public class TestRedisWorkManager extends WorkManagerTest {
     @Ignore("NXP-15680")
     public void testWorkManagerWork() throws Exception {
         super.testWorkManagerWork();
+    }
+
+    @Test
+    @Override
+    @RandomBug.Repeat(issue = "NXP-18762", onFailure = 10, onSuccess = 30)
+    public void testClearCompletedBefore() throws Exception {
+       super.testClearCompletedBefore();
     }
 
 }
