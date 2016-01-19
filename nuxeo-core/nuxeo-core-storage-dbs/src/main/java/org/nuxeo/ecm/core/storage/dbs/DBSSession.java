@@ -287,6 +287,7 @@ public class DBSSession implements Session {
     }
 
     protected Document getChild(String parentId, String name) {
+        name = normalize(name);
         DBSDocumentState docState = transaction.getChildState(parentId, name);
         return getDocument(docState);
     }
@@ -390,10 +391,12 @@ public class DBSSession implements Session {
     }
 
     protected boolean hasChild(String parentId, String name) {
-        return transaction.hasChild(parentId, normalize(name));
+        name = normalize(name);
+        return transaction.hasChild(parentId, name);
     }
 
     public Document createChild(String id, String parentId, String name, Long pos, String typeName) {
+        name = normalize(name);
         DBSDocumentState docState = createChildState(id, parentId, name, pos, typeName);
         return getDocument(docState);
     }
