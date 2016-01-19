@@ -273,7 +273,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         if (log.isDebugEnabled()) {
             log.debug("Start running deployment preprocessor");
         }
-        String rootPath = Environment.getDefault().getHome().getAbsolutePath();
+        String rootPath = Environment.getDefault().getRuntimeHome().getAbsolutePath();
         File root = new File(rootPath);
         DeploymentPreprocessor processor = new DeploymentPreprocessor(root);
         // initialize
