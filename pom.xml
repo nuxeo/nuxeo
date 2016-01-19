@@ -8,17 +8,60 @@
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-smart-search-parent</artifactId>
-  <name>Nuxeo Platform Smart Search Parent</name>
-  <description>Nuxeo Platform Smart Search Parent</description>
-  <packaging>pom</packaging>
+  <artifactId>nuxeo-platform-smart-search</artifactId>
+  <name>Nuxeo Platform Smart Search</name>
+  <description>Nuxeo Platform Smart Search</description>
 
-  <modules>
-    <module>nuxeo-platform-smart-query-api</module>
-    <module>nuxeo-platform-smart-query-jsf</module>
-    <module>nuxeo-platform-smart-folder-core</module>
-    <module>nuxeo-platform-smart-folder-jsf</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-search-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-webapp-base</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-search-ui</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.faces</groupId>
+      <artifactId>jsf-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.seam</groupId>
+      <artifactId>jboss-seam</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
 
   <repositories>
     <repository>
