@@ -2474,7 +2474,8 @@ public abstract class NuxeoLauncher {
             }
             KeyValueInfo kv = new KeyValueInfo(key, value);
             nxConfig.keyvals.add(kv);
-            if (!key.contains("password") && !key.equals(Environment.SERVER_STATUS_KEY) && !Crypto.isEncrypted(value)) {
+            if (!ConfigurationGenerator.SECRET_KEYS.contains(key) && !key.contains("password")
+                    && !key.equals(Environment.SERVER_STATUS_KEY) && !Crypto.isEncrypted(value)) {
                 log.info(key + "=" + value);
             } else {
                 log.info(key + "=********");

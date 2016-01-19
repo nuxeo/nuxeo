@@ -120,8 +120,14 @@ public class ParamCollector {
      * @param templateName database template to use
      */
     public void changeDBTemplate(String templateName) {
-        List<String> keys = new ArrayList<>();
         configurationGenerator.changeDBTemplate(templateName);
+    }
+
+    /**
+     * @since 8.1
+     */
+    public void removeDbKeys() {
+        List<String> keys = new ArrayList<>();
         for (String key : configurationParams.keySet()) {
             if (key.startsWith("nuxeo.db")) {
                 keys.add(key);

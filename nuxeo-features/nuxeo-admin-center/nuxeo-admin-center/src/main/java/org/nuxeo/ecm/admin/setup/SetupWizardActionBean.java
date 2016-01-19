@@ -35,6 +35,7 @@ import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PWD;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_USER;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_NUXEO_URL;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.SECRET_KEYS;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -283,8 +284,7 @@ public class SetupWizardActionBean implements Serializable {
         }
 
         // Remove empty values for password keys
-        for (String pwdKey : new String[] { "nuxeo.db.password", "mailservice.password", "mail.transport.password",
-                "nuxeo.http.proxy.password" }) {
+        for (String pwdKey : SECRET_KEYS) {
             if (StringUtils.isEmpty(parameters.get(pwdKey))) {
                 parameters.remove(pwdKey);
             }

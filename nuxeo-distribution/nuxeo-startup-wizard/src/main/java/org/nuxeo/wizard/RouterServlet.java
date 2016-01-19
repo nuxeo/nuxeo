@@ -22,13 +22,17 @@ package org.nuxeo.wizard;
 
 import static org.nuxeo.common.Environment.NUXEO_DATA_DIR;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_EXCLUDE_CHECK_LIST;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.DB_NOSQL_LIST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.INSTALL_AFTER_RESTART;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DBNOSQL_NAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DBNOSQL_URI;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_HOST;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_NAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PORT;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_PWD;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_DB_USER;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNAME;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_TEMPLATE_DBNOSQL_NAME;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_WIZARD_DONE;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.PARAM_BIND_ADDRESS;
 
@@ -275,8 +279,11 @@ public class RouterServlet extends HttpServlet {
         ParamCollector collector = ctx.getCollector();
 
         String templateDbName = collector.getConfigurationParam(PARAM_TEMPLATE_DBNAME);
+        String templateDbNoSQLName = collector.getConfigurationParam(PARAM_TEMPLATE_DBNOSQL_NAME);
         if ("true".equals(req.getParameter("refresh"))) {
             collector.changeDBTemplate(templateDbName);
+            collector.changeDBTemplate(templateDbNoSQLName);
+            collector.removeDbKeys();
             currentPage.dispatchToJSP(req, resp);
             return;
         }
@@ -321,13 +328,13 @@ public class RouterServlet extends HttpServlet {
             }
         }
 
-        // Check mongodb database
-        if (templateDbName.equals("mongodb")) {
-            if (collector.getConfigurationParam("nuxeo.mongodb.dbname").isEmpty()) {
-                ctx.trackError("nuxeo.mongodb.dbname", "error.dbname.required");
+        // Check NoSQL database
+        if (!DB_EXCLUDE_CHECK_LIST.contains(templateDbNoSQLName) && DB_NOSQL_LIST.contains(templateDbNoSQLName)) {
+            if (collector.getConfigurationParam(PARAM_DBNOSQL_NAME).isEmpty()) {
+                ctx.trackError(PARAM_DBNOSQL_NAME, "error.dbname.required");
             }
-            if (collector.getConfigurationParam("nuxeo.mongodb.server").isEmpty()) {
-                ctx.trackError("nuxeo.mongodb.server", "error.dbhost.required");
+            if (collector.getConfigurationParam(PARAM_DBNOSQL_URI).isEmpty()) {
+                ctx.trackError(PARAM_DBNOSQL_URI, "error.dburi.required");
             }
         }
 

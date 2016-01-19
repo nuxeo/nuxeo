@@ -130,7 +130,17 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_TEMPLATE_DBNAME = "nuxeo.dbtemplate";
 
+    /**
+     * @since 8.1
+     */
+    public static final String PARAM_TEMPLATE_DBNOSQL_NAME = "nuxeo.dbnosqltemplate";
+
     public static final String PARAM_TEMPLATE_DBTYPE = "nuxeo.db.type";
+
+    /**
+     * @since 8.1
+     */
+    public static final String PARAM_TEMPLATE_DBNOSQL_TYPE = "nuxeo.dbnosql.type";
 
     /**
      * @deprecated since 5.7
@@ -155,10 +165,11 @@ public class ConfigurationGenerator {
 
     public static final String BOUNDARY_END = "### END - DO NOT EDIT BETWEEN BEGIN AND END ###";
 
-    public static final List<String> DB_LIST = Arrays.asList("default", "postgresql", "oracle", "mysql", "mssql",
-            "db2", "mongodb");
+    public static final List<String> DB_LIST = Arrays.asList("default", "postgresql", "oracle", "mysql", "mssql", "db2");
 
-    public static final List<String> DB_EXCLUDE_CHECK_LIST = Arrays.asList("default", "mongodb");
+    public static final List<String> DB_NOSQL_LIST = Arrays.asList("none", "mongodb");
+
+    public static final List<String> DB_EXCLUDE_CHECK_LIST = Arrays.asList("default", "none");
 
     public static final String PARAM_WIZARD_DONE = "nuxeo.wizard.done";
 
@@ -205,6 +216,25 @@ public class ConfigurationGenerator {
     public static final String PARAM_DB_USER = "nuxeo.db.user";
 
     public static final String PARAM_DB_PWD = "nuxeo.db.password";
+
+    /**
+     * @since 8.1
+     */
+    public static final String PARAM_DBNOSQL_NAME = "nuxeo.dbnosql.name";
+
+    /**
+     * @since 8.1
+     */
+    public static final String PARAM_DBNOSQL_URI = "nuxeo.dbnosql.uri";
+
+    /**
+     * Keys which value must be displayed thoughtfully
+     *
+     * @since 8.1
+     */
+    public static final List<String> SECRET_KEYS = Arrays.asList(PARAM_DB_PWD, "mailservice.password",
+            "mail.transport.password", "nuxeo.http.proxy.password", "nuxeo.ldap.bindpassword",
+            "nuxeo.user.emergency.password");
 
     /**
      * @deprecated Since 7.10. Use {@link Environment#PRODUCT_NAME}
@@ -328,6 +358,8 @@ public class ConfigurationGenerator {
             put("mail.smtp.password", "mail.transport.password");
             put("mail.smtp.usetls", "mail.transport.usetls");
             put("mail.smtp.auth", "mail.transport.auth");
+            put("nuxeo.mongodb.server", "nuxeo.dbnosql.uri");
+            put("nuxeo.mongodb.dbname", "nuxeo.dbnosql.name");
         }
     };
 
@@ -557,6 +589,7 @@ public class ConfigurationGenerator {
             includeTemplates();
             checkForDeprecatedParameters(defaultConfig);
             extractDatabaseTemplateName();
+            extractNoSqlDatabaseTemplateName();
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (IOException e) {
@@ -904,6 +937,10 @@ public class ConfigurationGenerator {
         if (newDbTemplate != null) {
             changedParameters.put(PARAM_TEMPLATES_NAME, rebuildTemplatesStr(newDbTemplate));
         }
+        newDbTemplate = changedParameters.remove(PARAM_TEMPLATE_DBNOSQL_NAME);
+        if (newDbTemplate != null) {
+            changedParameters.put(PARAM_TEMPLATES_NAME, rebuildTemplatesStr(newDbTemplate));
+        }
         if (changedParameters.containsValue(null) || changedParameters.containsValue("")) {
             // There are properties to unset
             Set<String> propertiesToUnset = new HashSet<>();
@@ -1130,31 +1167,50 @@ public class ConfigurationGenerator {
      * @see #rebuildTemplatesStr(String)
      */
     public String extractDatabaseTemplateName() {
-        String dbTemplate = "unknown";
+        return extractDbTemplateName(DB_LIST, PARAM_TEMPLATE_DBTYPE, PARAM_TEMPLATE_DBNAME, "unknown");
+    }
+
+    /**
+     * Extract a NoSQL database template from the current list of templates. Return the last one if there are multiples.
+     *
+     * @see #rebuildTemplatesStr(String)
+     * @since 8.1
+     */
+    public String extractNoSqlDatabaseTemplateName() {
+        return extractDbTemplateName(DB_NOSQL_LIST, PARAM_TEMPLATE_DBNOSQL_TYPE, PARAM_TEMPLATE_DBNOSQL_NAME, null);
+    }
+
+    private String extractDbTemplateName(List<String> knownDbList, String paramTemplateDbType,
+            String paramTemplateDbName, String defaultTemplate) {
+        String dbTemplate = defaultTemplate;
         boolean found = false;
         for (File templateFile : includedTemplates) {
             String template = templateFile.getName();
-            if (DB_LIST.contains(template)) {
+            if (knownDbList.contains(template)) {
                 dbTemplate = template;
                 found = true;
             }
         }
-        String dbType = userConfig.getProperty(PARAM_TEMPLATE_DBTYPE);
+        String dbType = userConfig.getProperty(paramTemplateDbType);
         if (!found && dbType != null) {
             log.warn(String.format("Didn't find a known database template in the list but "
-                    + "some template contributed a value for %s.", PARAM_TEMPLATE_DBTYPE));
+                    + "some template contributed a value for %s.", paramTemplateDbType));
             dbTemplate = dbType;
         }
-        if (!dbTemplate.equals(dbType)) {
+        if (dbTemplate != null && !dbTemplate.equals(dbType)) {
             if (dbType == null) {
-                log.warn(String.format("Missing value for %s, using %s", PARAM_TEMPLATE_DBTYPE, dbTemplate));
-                userConfig.setProperty(PARAM_TEMPLATE_DBTYPE, dbTemplate);
+                log.warn(String.format("Missing value for %s, using %s", paramTemplateDbType, dbTemplate));
+                userConfig.setProperty(paramTemplateDbType, dbTemplate);
             } else {
-                log.error(String.format("Inconsistent values between %s (%s) and %s (%s)", PARAM_TEMPLATE_DBNAME,
-                        dbTemplate, PARAM_TEMPLATE_DBTYPE, dbType));
+                log.error(String.format("Inconsistent values between %s (%s) and %s (%s)", paramTemplateDbName,
+                        dbTemplate, paramTemplateDbType, dbType));
             }
         }
-        defaultConfig.setProperty(PARAM_TEMPLATE_DBNAME, dbTemplate);
+        if (dbTemplate == null) {
+            defaultConfig.remove(paramTemplateDbName);
+        } else {
+            defaultConfig.setProperty(paramTemplateDbName, dbTemplate);
+        }
         return dbTemplate;
     }
 
@@ -1233,6 +1289,7 @@ public class ConfigurationGenerator {
                 throw new ConfigurationException("Failed to connect on database: " + e.getMessage());
             }
         }
+        // TODO NXP-18773: check NoSQL database
     }
 
     /**
@@ -1400,24 +1457,36 @@ public class ConfigurationGenerator {
      * @see #changeTemplates(String)
      */
     public String rebuildTemplatesStr(String dbTemplate) {
-        String currentDBTemplate = userConfig.getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
-        if (currentDBTemplate == null) {
-            currentDBTemplate = extractDatabaseTemplateName();
-        }
         List<String> templatesList = new ArrayList<>();
         templatesList.addAll(Arrays.asList(templates.split(TEMPLATE_SEPARATOR)));
+        String currentDBTemplate = null;
+        if (DB_LIST.contains(dbTemplate)) {
+            currentDBTemplate = userConfig.getProperty(PARAM_TEMPLATE_DBNAME);
+            if (currentDBTemplate == null) {
+                currentDBTemplate = extractDatabaseTemplateName();
+            }
+        } else if (DB_NOSQL_LIST.contains(dbTemplate)) {
+            currentDBTemplate = userConfig.getProperty(PARAM_TEMPLATE_DBNOSQL_NAME);
+            if (currentDBTemplate == null) {
+                currentDBTemplate = extractNoSqlDatabaseTemplateName();
+            }
+            if ("none".equals(dbTemplate)) {
+                dbTemplate = null;
+            }
+        }
         int dbIdx = templatesList.indexOf(currentDBTemplate);
         if (dbIdx < 0) {
-            // current db template is implicit => override it
+            if (dbTemplate == null) {
+                return templates;
+            }
+            // current db template is implicit => set the new one
             templatesList.add(dbTemplate);
+        } else if (dbTemplate == null) {
+            // current db template is explicit => remove it
+            templatesList.remove(dbIdx);
         } else {
             // current db template is explicit => replace it
             templatesList.set(dbIdx, dbTemplate);
-        }
-
-        // Hacky due to the need to still have a database configured
-        if (dbTemplate.equals("mongodb") && !templatesList.contains("default")) {
-            templatesList.add(0, "default");
         }
         return StringUtils.join(templatesList, TEMPLATE_SEPARATOR);
     }
