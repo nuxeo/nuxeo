@@ -4,12 +4,17 @@ nuxeo.suggestbox = (function(m) {
 
   var absoluteUrlRegExp = /^(?:[a-z]+:)?\/\//;
 
+  function escapeHTML(string) {
+    // prototype.js allows us to use escapeHTML on strings
+    return string.escapeHTML();
+  };
+
   m.selectedFormatter = function(item) {
     return '';
   };
 
   m.suggestedFormatter = function(item) {
-    return '<span><img src="/nuxeo' + item.icon + '" />' + item.label + '</span>';
+    return '<span><img src="/nuxeo' + item.icon + '" />' + escapeHTML(item.label) + '</span>';
   };
 
   m.entryHandler = function(item) {
