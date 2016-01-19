@@ -4,12 +4,27 @@ nuxeo.suggestbox = (function(m) {
 
   var absoluteUrlRegExp = /^(?:[a-z]+:)?\/\//;
 
+  var entityMap = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+          '/': '&#x2F;'
+        };
+
+  function escapeHTML(string) {
+    return String(string).replace(/[&<>"'\/]/g, function fromEntityMap (s) {
+      return entityMap[s];
+    });
+  };
+
   m.selectedFormatter = function(item) {
     return '';
   };
 
   m.suggestedFormatter = function(item) {
-    return '<span><img src="/nuxeo' + item.icon + '" class="smallIcon" />' + item.label + '</span>';
+    return '<span><img src="/nuxeo' + item.icon + '" class="smallIcon" />' + escapeHTML(item.label) + '</span>';
   };
 
   m.entryHandler = function(item) {
