@@ -125,6 +125,8 @@ public class MongoDBQueryBuilder {
 
     protected DBObject projection;
 
+    boolean projectionHasWildcard;
+
     public MongoDBQueryBuilder(Expression expression, SelectClause selectClause, OrderByClause orderByClause,
             PathResolver pathResolver) {
         schemaManager = Framework.getLocalService(SchemaManager.class);
@@ -150,6 +152,10 @@ public class MongoDBQueryBuilder {
 
     public DBObject getProjection() {
         return projection;
+    }
+
+    public boolean hasProjectionWildcard() {
+        return projectionHasWildcard;
     }
 
     protected void walkOrderBy() {
@@ -187,7 +193,6 @@ public class MongoDBQueryBuilder {
         projection.put(KEY_ID, ONE); // always useful
         projection.put(KEY_NAME, ONE); // used in ORDER BY ecm:path
         projection.put(KEY_PARENT_ID, ONE); // used in ORDER BY ecm:path
-        boolean projectionHasWildcard = false;
         boolean projectionOnFulltextScore = false;
         for (int i = 0; i < selectClause.elements.size(); i++) {
             Operand op = selectClause.elements.get(i);
