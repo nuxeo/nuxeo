@@ -33,8 +33,10 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
@@ -97,6 +99,14 @@ public class FulltextConfiguration {
     public FulltextConfiguration(FulltextDescriptor fulltextDescriptor) {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
 
+        // find what paths we mean by "all"
+        Set<String> allSimplePaths = new HashSet<>();
+        Set<String> allBinaryPaths = new HashSet<>();
+        PathsFinder pathsFinder = new PathsFinder(allSimplePaths, allBinaryPaths);
+        for (Schema schema : schemaManager.getSchemas()) {
+            pathsFinder.walkSchema(schema);
+        }
+
         List<FulltextIndexDescriptor> descs = fulltextDescriptor.getFulltextIndexes();
         if (descs == null) {
             descs = new ArrayList<FulltextIndexDescriptor>(1);
@@ -133,6 +143,19 @@ public class FulltextConfiguration {
                 indexesAllBinary.add(name);
             }
 
+            if (indexesAllSimple.contains(name)) {
+                propPathsByIndexSimple.put(name, new HashSet<>(allSimplePaths));
+                for (String path : allSimplePaths) {
+                    indexesByPropPathSimple.computeIfAbsent(path, p -> new HashSet<>()).add(name);
+                }
+            }
+            if (indexesAllBinary.contains(name)) {
+                propPathsByIndexBinary.put(name, new HashSet<>(allBinaryPaths));
+                for (String path : allBinaryPaths) {
+                    indexesByPropPathBinary.computeIfAbsent(path, p -> new HashSet<>()).add(name);
+                }
+            }
+
             if (fulltextDescriptor.getFulltextExcludedTypes() != null) {
                 excludedTypes.addAll(fulltextDescriptor.getFulltextExcludedTypes());
             }
@@ -163,16 +186,8 @@ public class FulltextConfiguration {
                                 path, field.getType(), name));
                         continue;
                     }
-                    Set<String> indexes = indexesByPropPath.get(path);
-                    if (indexes == null) {
-                        indexesByPropPath.put(path, indexes = new HashSet<String>());
-                    }
-                    indexes.add(name);
-                    Set<String> paths = propPathsByIndex.get(name);
-                    if (paths == null) {
-                        propPathsByIndex.put(name, paths = new LinkedHashSet<String>());
-                    }
-                    paths.add(path);
+                    indexesByPropPath.computeIfAbsent(path, p -> new HashSet<>()).add(name);
+                    propPathsByIndex.computeIfAbsent(name, n -> new HashSet<>()).add(path);
                 }
             }
         }
@@ -193,6 +208,62 @@ public class FulltextConfiguration {
             return getBaseType(((ListType) type).getFieldType());
         }
         return type;
+    }
+
+    public static class PathsFinder {
+
+        protected final Set<String> simplePaths;
+
+        protected final Set<String> binaryPaths;
+
+        public PathsFinder(Set<String> simplePaths, Set<String> binaryPaths) {
+            this.simplePaths = simplePaths;
+            this.binaryPaths = binaryPaths;
+        }
+
+        public void walkSchema(Schema schema) {
+            walkComplexType(schema, null);
+        }
+
+        protected void walkComplexType(ComplexType complexType, String path) {
+            for (Field field : complexType.getFields()) {
+                String name = field.getName().getPrefixedName();
+                String fieldPath = path == null ? name : path + '/' + name;
+                walkType(field.getType(), fieldPath);
+            }
+        }
+
+        protected void walkType(Type type, String path) {
+            if (type.isSimpleType()) {
+                walkSimpleType(type, path);
+            } else if (type.isListType()) {
+                String listPath = path + "/*";
+                Type ftype = ((ListType) type).getField().getType();
+                if (ftype.isComplexType()) {
+                    // complex list
+                    walkComplexType((ComplexType) ftype, listPath);
+                } else {
+                    // array
+                    walkSimpleType(ftype, listPath);
+                }
+            } else {
+                // complex type
+                ComplexType ctype = (ComplexType) type;
+                walkComplexType(ctype, path);
+            }
+        }
+
+        protected void walkSimpleType(Type type, String path) {
+            while (type instanceof SimpleTypeImpl) {
+                // type with constraint
+                type = type.getSuperType();
+            }
+            if (type instanceof StringType) {
+                simplePaths.add(path);
+            } else if (type instanceof BinaryType) {
+                binaryPaths.add(path);
+            }
+        }
     }
 
     public boolean isFulltextIndexable(String typeName) {

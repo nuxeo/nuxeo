@@ -205,8 +205,6 @@ public class DBSDocument extends BaseDocument<State> {
 
     static {
         systemPropNameMap = new HashMap<String, String>();
-        systemPropNameMap.put(SYSPROP_FULLTEXT_SIMPLE, KEY_FULLTEXT_SIMPLE);
-        systemPropNameMap.put(SYSPROP_FULLTEXT_BINARY, KEY_FULLTEXT_BINARY);
         systemPropNameMap.put(SYSPROP_FULLTEXT_JOBID, KEY_FULLTEXT_JOBID);
     }
 
@@ -722,8 +720,14 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public void setSystemProp(String name, Serializable value) {
-
-        String propertyName = systemPropNameMap.get(name);
+        String propertyName;
+        if (name.startsWith(SYSPROP_FULLTEXT_SIMPLE)) {
+            propertyName = name.replace(SYSPROP_FULLTEXT_SIMPLE, KEY_FULLTEXT_SIMPLE);
+        } else if (name.startsWith(SYSPROP_FULLTEXT_BINARY)) {
+            propertyName = name.replace(SYSPROP_FULLTEXT_BINARY, KEY_FULLTEXT_BINARY);
+        } else {
+            propertyName = systemPropNameMap.get(name);
+        }
         if (propertyName == null) {
             throw new PropertyNotFoundException(name, "Unknown system property");
         }
@@ -790,11 +794,12 @@ public class DBSDocument extends BaseDocument<State> {
         case "major_version":
         case "minor_version":
             return "uid";
-        case KEY_FULLTEXT_SIMPLE:
-        case KEY_FULLTEXT_BINARY:
         case KEY_FULLTEXT_JOBID:
         case KEY_LIFECYCLE_POLICY:
         case KEY_LIFECYCLE_STATE:
+            return "__ecm__";
+        }
+        if (xpath.startsWith(KEY_FULLTEXT_SIMPLE) || xpath.startsWith(KEY_FULLTEXT_BINARY)) {
             return "__ecm__";
         }
         String[] segments = xpath.split("/");

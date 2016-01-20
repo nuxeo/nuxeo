@@ -4,7 +4,14 @@
     <repository name="test" label="MongoDB Repository">
       <server>${nuxeo.test.mongodb.server}</server>
       <dbname>${nuxeo.test.mongodb.dbname}</dbname>
-      <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}" />
+      <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}">
+        <index> <!-- name="default" implied -->
+          <!-- all props implied -->
+        </index>
+        <index name="title">
+          <field>dc:title</field>
+        </index>
+      </fulltext>
     </repository>
   </extension>
 </component>

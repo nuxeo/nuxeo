@@ -2,7 +2,14 @@
 <component name="org.nuxeo.ecm.core.test.repository">
   <extension target="org.nuxeo.ecm.core.storage.mem.MemRepositoryService" point="repository">
     <repository name="test" label="Mem Repository">
-      <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}" />
+      <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}">
+        <index> <!-- name="default" implied -->
+          <!-- all props implied -->
+        </index>
+        <index name="title">
+          <field>dc:title</field>
+        </index>
+      </fulltext>
     </repository>
   </extension>
 </component>
