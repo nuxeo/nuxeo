@@ -772,21 +772,27 @@ public class DBSTransactionState {
             if (diff == null) {
                 continue;
             }
-            diff.remove(KEY_FULLTEXT_SIMPLE);
-            diff.remove(KEY_FULLTEXT_BINARY);
-            diff.remove(KEY_FULLTEXT_JOBID);
+            // ignore fulltext-related properties to avoid looping
+            for (String key : diff.keyArray()) {
+                if (key.startsWith(KEY_FULLTEXT_SIMPLE) || key.startsWith(KEY_FULLTEXT_BINARY)
+                        || key.equals(KEY_FULLTEXT_JOBID)) {
+                    diff.remove(key);
+                }
+            }
             Set<String> paths = new DirtyPathsFinder().findDirtyPaths(diff);
             FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
             boolean dirtyStrings = false;
             boolean dirtyBinaries = false;
             for (String path : paths) {
-                if (fulltextConfiguration.indexesByPropPathSimple.containsKey(path)) {
+                Set<String> indexesSimple = fulltextConfiguration.indexesByPropPathSimple.get(path);
+                if (indexesSimple != null && !indexesSimple.isEmpty()) {
                     dirtyStrings = true;
                     if (dirtyBinaries) {
                         break;
                     }
                 }
-                if (fulltextConfiguration.indexesByPropPathBinary.containsKey(path)) {
+                Set<String> indexesBinary= fulltextConfiguration.indexesByPropPathBinary.get(path);
+                if (indexesBinary != null && !indexesBinary.isEmpty()) {
                     dirtyBinaries = true;
                     if (dirtyStrings) {
                         break;
