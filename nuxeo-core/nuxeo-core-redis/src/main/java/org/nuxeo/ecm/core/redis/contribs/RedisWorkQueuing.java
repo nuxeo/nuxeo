@@ -361,6 +361,7 @@ public class RedisWorkQueuing implements WorkQueuing {
         try {
             int n = suspendScheduledWork(queueId);
             log.info("Suspending " + n + " work instances from queue: " + queueId);
+            allQueued.remove(queueId);
             return n;
         } catch (IOException e) {
             throw new RuntimeException(e);
