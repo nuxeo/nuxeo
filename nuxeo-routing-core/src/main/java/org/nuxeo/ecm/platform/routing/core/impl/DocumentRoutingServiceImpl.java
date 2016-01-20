@@ -1312,7 +1312,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     if (StringUtils.isNotBlank(worflowModelName)) {
 
                         final String processId = task.getProcessId();
-                        if (processId != null) {
+                        if (processId != null && session.exists(new IdRef(processId))) {
                             final DocumentRoute routeInstance = session.getDocument(new IdRef(processId)).getAdapter(
                                     DocumentRoute.class);
                             if (routeInstance != null) {
