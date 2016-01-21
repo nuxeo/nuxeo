@@ -50,7 +50,7 @@
               <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
               <div class="tmp-tab">[[i18n('label.permissions.actions', 'Actions')]]</div>
             </div>
-            <template is="dom-repeat" items="{{localAces}}" as="ace">
+            <template is="dom-repeat" items="{{localAces}}" as="ace" strip-whitespace>
               <div class$="[[aclRowClass(ace)]]">
                 <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
                 <div><span class="label">[[i18n(ace.permission)]]</span></div>
@@ -118,7 +118,7 @@
               <div class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</div>
               <div class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</div>
             </div>
-            <template is="dom-repeat" items="{{inheritedAces}}" as="ace">
+            <template is="dom-repeat" items="{{inheritedAces}}" as="ace" strip-whitespace>
               <div class$="[[aclRowClass(ace)]]">
                 <div><span class$="[[entityClass(ace.username)]]" title="[[entityTooltip(ace.username)]]">[[entityDisplay(ace.username)]]</span></div>
                 <div><span class="label">[[i18n(ace.permission)]]</span></div>
