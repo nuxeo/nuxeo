@@ -76,7 +76,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     private static final int SELECT2_LOADING_TIMEOUT = 20;
 
-    protected boolean mutliple = false;
+    protected boolean multiple = false;
 
     /**
      * Constructor.
@@ -108,14 +108,14 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     public Select2WidgetElement(final WebDriver driver, WebElement element, final boolean multiple) {
         this(driver, element);
-        mutliple = multiple;
+        this.multiple = multiple;
     }
 
     /**
      * @since 5.9.3
      */
     public WebElement getSelectedValue() {
-        if (mutliple) {
+        if (multiple) {
             throw new UnsupportedOperationException("The select2 is multiple and has multiple selected values");
         }
         return element.findElement(By.xpath(S2_SINGLE_CURRENT_SELECTION_XPATH));
@@ -125,7 +125,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 5.9.3
      */
     public List<WebElement> getSelectedValues() {
-        if (!mutliple) {
+        if (!multiple) {
             throw new UnsupportedOperationException(
                     "The select2 is not multiple and can't have multiple selected values");
         }
@@ -153,7 +153,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 8.1
      */
     public void removeSelection() {
-        if (mutliple) {
+        if (multiple) {
             throw new UnsupportedOperationException("The select2 is multiple, use #removeSelection(value) instead");
         }
         element.findElement(By.className("select2-search-choice-close")).click();
@@ -163,7 +163,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      * @since 5.9.3
      */
     public void removeFromSelection(final String displayedText) {
-        if (!mutliple) {
+        if (!multiple) {
             throw new UnsupportedOperationException("The select2 is not multiple, use #removeSelection instead");
         }
         final String submittedValueBefore = getSubmittedValue();
@@ -307,7 +307,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     public void clickSelect2Field() {
         WebElement select2Field = null;
-        if (mutliple) {
+        if (multiple) {
             select2Field = element;
         } else {
             select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice')]"));
@@ -321,7 +321,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     private WebElement getSuggestInput() {
         WebElement suggestInput = null;
-        if (mutliple) {
+        if (multiple) {
             suggestInput = element.findElement(By.xpath("ul/li[@class='select2-search-field']/input"));
         } else {
             suggestInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));
@@ -338,7 +338,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     private void waitSelect2() throws TimeoutException {
         Wait<WebElement> wait = new FluentWait<WebElement>(
-                !mutliple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
+                !multiple ? driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH))
                         : element.findElement(By.xpath(S2_MULTIPLE_INPUT_XPATH))).withTimeout(SELECT2_LOADING_TIMEOUT,
                                 TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(
                                         NoSuchElementException.class);
@@ -353,7 +353,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     public void clearSuggestInput() {
         WebElement suggestInput = null;
-        if (mutliple) {
+        if (multiple) {
             suggestInput = driver.findElement(By.xpath("//ul/li[@class='select2-search-field']/input"));
         } else {
             suggestInput = driver.findElement(By.xpath(S2_SINGLE_INPUT_XPATH));

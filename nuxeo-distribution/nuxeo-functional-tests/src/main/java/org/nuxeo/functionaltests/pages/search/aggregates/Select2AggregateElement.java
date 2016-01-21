@@ -64,7 +64,7 @@ public class Select2AggregateElement extends Select2WidgetElement implements Agg
     @Override
     public void clickSelect2Field() {
         WebElement select2Field = null;
-        if (mutliple) {
+        if (multiple) {
             select2Field = element.findElement(By.xpath("ul/li/input"));
         } else {
             select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice')]"));
