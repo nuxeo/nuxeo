@@ -1180,4 +1180,112 @@ public class TestSQLRepositoryProperties {
         ((DBSRepository) repository).updateState(id, diff);
     }
 
+    @Test
+    public void testComplexListArrayElementResetWithNull() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
+        doc.setPropertyValue("complexlist",
+                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "foo" })));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // set map value to null
+        doc.setPropertyValue("complexlist", (Serializable) Arrays.asList(Collections.singletonMap("array", null)));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) doc.getPropertyValue("complexlist");
+        assertEquals(1, list.size());
+        Map<String, Serializable> map = list.get(0);
+        assertEquals(0, ((String[]) map.get("array")).length);
+    }
+
+    @Test
+    public void testComplexListArrayElementResetWithEmptyArray() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
+        doc.setPropertyValue("complexlist",
+                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "foo" })));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // set map value to empty array
+        doc.setPropertyValue("complexlist",
+                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] {})));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) doc.getPropertyValue("complexlist");
+        assertEquals(1, list.size());
+        Map<String, Serializable> map = list.get(0);
+        assertEquals(0, ((String[]) map.get("array")).length);
+    }
+
+    @Test
+    public void testComplexListArrayElementModify() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
+        doc.setPropertyValue("complexlist",
+                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "foo" })));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // replace map value with new array of same size
+        doc.setPropertyValue("complexlist",
+                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "bar" })));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) doc.getPropertyValue("complexlist");
+        assertEquals(1, list.size());
+        Map<String, Serializable> map = list.get(0);
+        assertEquals(1, ((String[]) map.get("array")).length);
+        assertEquals("bar", ((String[]) map.get("array"))[0]);
+    }
+
+    @Test
+    public void testComplexListArrayElementGrow() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
+        doc.setPropertyValue("complexlist",
+                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "foo" })));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // replace map value with new array of bigger size
+        doc.setPropertyValue("complexlist",
+                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "bar", "baz" })));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) doc.getPropertyValue("complexlist");
+        assertEquals(1, list.size());
+        Map<String, Serializable> map = list.get(0);
+        assertEquals(2, ((String[]) map.get("array")).length);
+        assertEquals("bar", ((String[]) map.get("array"))[0]);
+        assertEquals("baz", ((String[]) map.get("array"))[1]);
+    }
+
+    @Test
+    public void testComplexListArrayElementShrink() {
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "MyDocType");
+        doc.setPropertyValue("complexlist",
+                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "foo", "bar" })));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // replace map value with new array of smaller size
+        doc.setPropertyValue("complexlist",
+                (Serializable) Arrays.asList(Collections.singletonMap("array", new String[] { "baz" })));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> list = (List<Map<String, Serializable>>) doc.getPropertyValue("complexlist");
+        assertEquals(1, list.size());
+        Map<String, Serializable> map = list.get(0);
+        assertEquals(1, ((String[]) map.get("array")).length);
+        assertEquals("baz", ((String[]) map.get("array"))[0]);
+    }
+
 }
