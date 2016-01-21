@@ -54,4 +54,19 @@ public interface RedisExecutor {
      * @since 7.4
      */
     boolean supportPipelined();
+
+    /**
+     * Start to trace Redis activity only for debug purpose.
+     * @since 8.1
+     */
+    default void startMonitor() {
+    }
+
+    /**
+     * Stop tracing Redis activity.
+     * @since 8.1
+     */
+    default void stopMonitor() {
+    }
+
 }
