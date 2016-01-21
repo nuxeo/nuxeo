@@ -16,7 +16,10 @@
  */
 package org.nuxeo.ecm.core.redis;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.nuxeo.ecm.core.work.WorkManagerTest;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Test of the WorkManager using Redis. Does not run if no Redis is configured through the properties of
@@ -25,6 +28,9 @@ import org.nuxeo.ecm.core.work.WorkManagerTest;
  * @since 5.8
  */
 public class TestRedisWorkManager extends WorkManagerTest {
+
+    private boolean monitorRedis = false;
+    private RedisExecutor redisExecutor;
 
     @Override
     public boolean persistent() {
@@ -35,6 +41,38 @@ public class TestRedisWorkManager extends WorkManagerTest {
     protected void doDeploy() throws Exception {
         super.doDeploy();
         RedisFeature.setup(this);
+        if (monitorRedis) {
+            redisExecutor = Framework.getLocalService(RedisExecutor.class);
+            redisExecutor.startMonitor();
+        }
     }
 
+    @Test
+    @Override
+    @Ignore("NXP-15680")
+    public void testWorkManagerWork() throws Exception {
+        super.testWorkManagerWork();
+    }
+
+    @Test
+    @Override
+    public void testClearCompletedBefore() throws Exception {
+        startMonitorRedis();
+        try {
+            super.testClearCompletedBefore();
+        } finally {
+            stopMonitorRedis();
+        }
+    }
+
+    private void stopMonitorRedis() {
+        monitorRedis = false;
+        if (redisExecutor != null) {
+            redisExecutor.stopMonitor();
+        }
+    }
+
+    private void startMonitorRedis() {
+        monitorRedis = true;
+    }
 }

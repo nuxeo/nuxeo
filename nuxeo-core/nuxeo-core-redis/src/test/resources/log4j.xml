@@ -6,8 +6,6 @@
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
     <param name="Target" value="System.out" />
-    <param name="Threshold" value="WARN" />
-
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
     </layout>
@@ -22,6 +20,11 @@
     </layout>
   </appender>
 
+  <category name="org.nuxeo.ecm.core.redis.RedisPoolExecutor" additivity="false">
+    <priority value="DEBUG" />
+    <appender-ref ref="CONSOLE" />
+    <appender-ref ref="FILE" />
+  </category>
 
   <root>
     <priority value="WARN" />

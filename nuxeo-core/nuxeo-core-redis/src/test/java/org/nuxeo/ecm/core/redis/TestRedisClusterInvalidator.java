@@ -66,6 +66,9 @@ public class TestRedisClusterInvalidator {
 
     @Test
     public void testSendReceiveInvalidations() throws Exception {
+        RedisExecutor redisExecutor = Framework.getLocalService(RedisExecutor.class);
+        redisExecutor.startMonitor();
+        int delayMs = 10000;
         RedisClusterInvalidator rci2 = createRedisClusterInvalidator("node2");
         RedisClusterInvalidator rci1 = createRedisClusterInvalidator("node1");
         try {
@@ -73,11 +76,13 @@ public class TestRedisClusterInvalidator {
             invals.addModified(new RowId("dublincore", "docid1"));
             invals.addModified(new RowId("dublincore", "docid2"));
             rci1.sendInvalidations(invals);
-            Invalidations invalsReceived = waitForInvalidation(rci2, 2000);
+            Invalidations invalsReceived = waitForInvalidation(rci2, delayMs);
+            assertNotNull("No invalidation received after " + delayMs + " ms", invalsReceived.isEmpty());
             assertEquals(invals.toString(), invalsReceived.toString());
         } finally {
             rci1.close();
             rci2.close();
+            redisExecutor.stopMonitor();
         }
     }
 
@@ -93,6 +98,9 @@ public class TestRedisClusterInvalidator {
 
     @Test
     public void testSendReceiveMultiInvalidations() throws Exception {
+        int delayMs = 10000;
+        RedisExecutor redisExecutor = Framework.getLocalService(RedisExecutor.class);
+        redisExecutor.startMonitor();
         RedisClusterInvalidator rci2 = createRedisClusterInvalidator("node2");
         RedisClusterInvalidator rci1 = createRedisClusterInvalidator("node1");
         try {
@@ -102,12 +110,14 @@ public class TestRedisClusterInvalidator {
             invals = new Invalidations();
             invals.addModified(new RowId("dublincore", "docid2"));
             rci1.sendInvalidations(invals);
-            Invalidations invalsReceived = waitForInvalidation(rci2, 2000);
+            Invalidations invalsReceived = waitForInvalidation(rci2, delayMs);
             assertNotNull(invals.modified);
+            assertNotNull("No invalidation received after " + delayMs + " ms", invalsReceived.modified);
             assertEquals(2, invalsReceived.modified.size());
         } finally {
             rci1.close();
             rci2.close();
+            redisExecutor.stopMonitor();
         }
     }
 
