@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Benoit Delbosc
+ *     Guillaume Renard <grenard@nuxeo.com>
  */
 package org.nuxeo.elasticsearch.test;
 
@@ -24,6 +25,7 @@ import javax.inject.Inject;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.search.SearchHit;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -136,6 +138,27 @@ public class TestFetchDocumentsFromEs {
         Assert.assertNull(result.getAggregates());
         Assert.assertEquals(10, result.getElasticsearchResponse().getHits().getTotalHits());
         //System.out.println(result.getElasticsearchResponse());
+
+    }
+
+    /**
+     * @since 8.2
+     */
+    @Test
+    public void checkPathLevel() throws Exception {
+        buildAndIndexTree();
+
+        EsResult result = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select * from Document").limit(20).fetchFromElasticsearch().onlyElasticsearchResponse());
+
+        for (SearchHit sh : result.getElasticsearchResponse().getHits()) {
+            String path = (String) sh.getSource().get("ecm:path");
+            int pathDepth = (int) sh.getSource().get("ecm:path.depth");
+            String[] split =path.split("/");
+            Assert.assertEquals(split.length, pathDepth);
+            for (int i = 1; i < split.length; i++) {
+                Assert.assertEquals(split[i], sh.getSource().get("ecm:path.level" + i));
+            }
+        }
 
     }
 }
