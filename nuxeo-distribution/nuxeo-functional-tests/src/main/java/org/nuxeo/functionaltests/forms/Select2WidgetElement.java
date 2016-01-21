@@ -150,12 +150,21 @@ public class Select2WidgetElement extends WebFragmentImpl {
     }
 
     /**
+     * @since 8.1
+     */
+    public void removeSelection() {
+        if (mutliple) {
+            throw new UnsupportedOperationException("The select2 is multiple, use #removeSelection(value) instead");
+        }
+        element.findElement(By.className("select2-search-choice-close")).click();
+    }
+
+    /**
      * @since 5.9.3
      */
     public void removeFromSelection(final String displayedText) {
         if (!mutliple) {
-            throw new UnsupportedOperationException(
-                    "The select2 is not multiple and you can't remove a specific value");
+            throw new UnsupportedOperationException("The select2 is not multiple, use #removeSelection instead");
         }
         final String submittedValueBefore = getSubmittedValue();
         boolean found = false;
