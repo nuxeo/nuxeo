@@ -213,6 +213,10 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
         Map<String, Object> map = (Map<String, Object>) value;
         for (Entry<String, Object> entry : map.entrySet()) {
             Property property = get(entry.getKey());
+            if (property.isPhantom() && this.isNew()) {
+                // make sure complex list elements are rewritten
+                property.setForceDirty(true);
+            }
             property.setValue(entry.getValue());
         }
     }
