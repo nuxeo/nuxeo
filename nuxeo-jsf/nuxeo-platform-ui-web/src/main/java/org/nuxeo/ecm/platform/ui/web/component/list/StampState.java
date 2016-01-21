@@ -294,6 +294,9 @@ final class StampState implements Externalizable {
             evh.setValue(selfState[2]);
             if (selfState[3] != null) {
                 evh.setLocalValueSet((Boolean) selfState[3]);
+            } else {
+                // make sure it's set to false otherwise, see NXP-18734
+                evh.setLocalValueSet(false);
             }
             if (selfState[4] != null) {
                 evh.setValid((Boolean) selfState[4]);
