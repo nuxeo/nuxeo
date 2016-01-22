@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.binding.MapValueExpression;
+import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
@@ -141,7 +142,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             String key = prop.getKey();
             String name = RenderVariables.widgetVariables.widgetProperty.name() + "_" + key;
             ValueExpression ve = eFactory.createValueExpression(prop.getValue(), Object.class);
-            vm.setVariable(name, ve);
+            vm.setVariable(name, new MetaValueExpression(ve, ctx.getFunctionMapper(), vm));
             mappedExpressions.put(key, ve);
         }
         vm.addBlockedPattern(RenderVariables.widgetVariables.widgetProperty.name() + "_*");
