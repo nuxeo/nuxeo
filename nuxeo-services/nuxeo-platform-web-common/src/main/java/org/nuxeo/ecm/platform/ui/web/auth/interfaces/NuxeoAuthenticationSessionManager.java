@@ -43,9 +43,9 @@ public interface NuxeoAuthenticationSessionManager {
     boolean canBypassRequest(ServletRequest request);
 
     /**
-     * CallBack to clean up web session associated resources.
+     * May invalidates the session. Return true is the session was invalidated.
      */
-    void onBeforeSessionInvalidate(ServletRequest request);
+    boolean invalidateSession(ServletRequest request);
 
     /**
      * CallBack before SessionReinit.

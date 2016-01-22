@@ -31,8 +31,10 @@ public class DefaultSessionManager implements NuxeoAuthenticationSessionManager 
         return false;
     }
 
-    public void onBeforeSessionInvalidate(ServletRequest request) {
+    @Override
+    public boolean invalidateSession(ServletRequest request) {
         // NOP
+        return false;
     }
 
     public void onAfterSessionReinit(ServletRequest request) {

@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -356,16 +357,18 @@ public class PluggableAuthenticationService extends DefaultComponent {
     }
 
     public void invalidateSession(ServletRequest request) {
+        boolean done = false;
         if (!sessionManagers.isEmpty()) {
-            for (String smName : sessionManagers.keySet()) {
-                NuxeoAuthenticationSessionManager sm = sessionManagers.get(smName);
-                sm.onBeforeSessionInvalidate(request);
+            Iterator<NuxeoAuthenticationSessionManager> it = sessionManagers.values().iterator();
+            while (it.hasNext() && !(done = it.next().invalidateSession(request))) {
             }
         }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpSession session = httpRequest.getSession(false);
-        if (session != null) {
-            session.invalidate();
+        if (!done) {
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+            HttpSession session = httpRequest.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
         }
     }
 
