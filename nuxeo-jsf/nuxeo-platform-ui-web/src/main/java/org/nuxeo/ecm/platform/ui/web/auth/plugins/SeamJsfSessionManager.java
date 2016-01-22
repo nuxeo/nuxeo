@@ -38,11 +38,13 @@ public class SeamJsfSessionManager extends DefaultSessionManager {
     }
 
     @Override
-    public void onBeforeSessionInvalidate(ServletRequest request) {
+    public boolean invalidateSession(ServletRequest request) {
         try {
             Seam.invalidateSession();
-        } catch (Exception e) {
-            super.onBeforeSessionInvalidate(request);
+            return true;
+        } catch (RuntimeException e) {
+            // TODO what is caught here?
+            return super.invalidateSession(request);
         }
     }
 
