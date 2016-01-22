@@ -75,8 +75,6 @@ public class TestPagingComplexFilterDirectory {
             entries = session.query(filter, filter.keySet(), order, false, 5, 11);
             assertEquals(1, entries.size());
             assertEquals("12", entries.get(0).getId());
-        } catch (UnsupportedOperationException e) {
-            // paging not supported by dialect (NXP-10647)
         }
     }
 
