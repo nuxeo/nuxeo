@@ -70,6 +70,7 @@ import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.ChangeType;
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
@@ -313,7 +314,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     }
 
     protected TypeManagerImpl getTypeManager() {
-        return repository.getTypeManager(getCallContext().getCmisVersion());
+        CmisVersion cmisVersion = callContext == null ? CmisVersion.CMIS_1_1 : callContext.getCmisVersion();
+        return repository.getTypeManager(cmisVersion);
     }
 
     @Override
