@@ -31,7 +31,6 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
@@ -132,8 +131,9 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         // add binding "fieldOrValue" available since 5.6, in case template
         // widget is always supposed to bind value when no field is defined
         String computedValue = ValueExpressionHelper.createExpressionString(widget.getValueName(), firstField);
+        ValueExpression fieldOrValueExpr = eFactory.createValueExpression(ctx, computedValue, Object.class);
         vm.setVariable(RenderVariables.widgetVariables.fieldOrValue.name(),
-                eFactory.createValueExpression(ctx, computedValue, Object.class));
+                new MetaValueExpression(fieldOrValueExpr, ctx.getFunctionMapper(), vm));
         vm.addBlockedPattern(RenderVariables.widgetVariables.fieldOrValue.name());
 
         // expose widget properties too
@@ -153,7 +153,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
             String key = ctrl.getKey();
             String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
-            vm.setVariable(name, eFactory.createValueExpression(ctrl.getValue(), Object.class));
+            ValueExpression ve = eFactory.createValueExpression(ctrl.getValue(), Object.class);
+            vm.setVariable(name, new MetaValueExpression(ve, ctx.getFunctionMapper(), vm));
         }
         vm.addBlockedPattern(RenderVariables.widgetVariables.widgetControl.name() + "_*");
     }
@@ -167,7 +168,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             computedName = RenderVariables.widgetVariables.field.name() + "_" + index;
         }
         String computedValue = ValueExpressionHelper.createExpressionString(widget.getValueName(), fieldDef);
-        vm.setVariable(computedName, eFactory.createValueExpression(ctx, computedValue, Object.class));
+        ValueExpression ve = eFactory.createValueExpression(ctx, computedValue, Object.class);
+        vm.setVariable(computedName, new MetaValueExpression(ve, ctx.getFunctionMapper(), vm));
     }
 
     /**
