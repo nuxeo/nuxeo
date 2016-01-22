@@ -41,6 +41,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -166,6 +167,18 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
     }
 
+    /**
+     * Checks the SQL error we got and determine if a concurrent update happened. Throws if that's the case.
+     *
+     * @param e the exception
+     * @since 7.10-HF04, 8.2
+     */
+    protected void checkConcurrentUpdate(Throwable e) throws ConcurrentUpdateException {
+        if (dialect.isConcurrentUpdateException(e)) {
+            throw new ConcurrentUpdateException(e);
+        }
+    }
+
     @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap) {
 
@@ -269,6 +282,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
             entry = fieldMapToDocumentModel(fieldMap);
         } catch (SQLException e) {
+            checkConcurrentUpdate(e);
             throw new DirectoryException("createEntry failed", e);
         } finally {
             try {
@@ -546,6 +560,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 setFieldValue(ps, index, table.getPrimaryColumn(), docModel.getId());
                 ps.execute();
             } catch (SQLException e) {
+                checkConcurrentUpdate(e);
                 throw new DirectoryException("updateEntry failed for " + docModel.getId(), e);
             } finally {
                 try {
@@ -629,6 +644,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             setFieldValue(ps, 1, table.getPrimaryColumn(), id);
             ps.execute();
         } catch (SQLException e) {
+            checkConcurrentUpdate(e);
             throw new DirectoryException("deleteEntry failed", e);
         } finally {
             try {
@@ -719,6 +735,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
             ps.execute();
         } catch (SQLException e) {
+            checkConcurrentUpdate(e);
             throw new DirectoryException("deleteEntry failed", e);
         } finally {
             try {
