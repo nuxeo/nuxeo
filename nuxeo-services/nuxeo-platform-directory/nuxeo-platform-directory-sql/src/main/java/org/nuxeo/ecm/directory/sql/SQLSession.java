@@ -897,17 +897,19 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
             select.setOrderBy(orderby.toString());
             String query = select.getStatement();
-            if (limit > 0) {
-                if (!dialect.supportsPaging()) {
-                    throw new UnsupportedOperationException("Trying to use paging with an unsupported dialect: "
-                            + dialect.getClass().getName());
-                }
-
+            boolean manualLimitOffset;
+            if (limit <= 0) {
+                manualLimitOffset = false;
+            } else {
                 if (offset < 0) {
                     offset = 0;
                 }
-
-                query = dialect.addPagingClause(query, limit, offset);
+                if (dialect.supportsPaging()) {
+                    query = dialect.addPagingClause(query, limit, offset);
+                    manualLimitOffset = false;
+                } else {
+                    manualLimitOffset = true;
+                }
             }
 
             if (logger.isLogEnabled()) {
@@ -960,6 +962,20 @@ public class SQLSession extends BaseSession implements EntrySource {
                     list.add(docModel);
                 }
                 rs.close();
+                if (manualLimitOffset) {
+                    int totalSize = list.size();
+                    if (offset > 0) {
+                        if (offset >= totalSize) {
+                            list = new DocumentModelListImpl();
+                        } else {
+                            list = new DocumentModelListImpl(list.subList(offset, totalSize));
+                        }
+                    }
+                    if (list.size() > limit) { // list.size() not totalSize, we may have an offset already
+                        list = new DocumentModelListImpl(list.subList(0, limit));
+                    }
+                    ((DocumentModelListImpl) list).setTotalSize(totalSize);
+                }
                 if (trucatedResults) {
                     ((DocumentModelListImpl) list).setTotalSize(-2);
                 }
