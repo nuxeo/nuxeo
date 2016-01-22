@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.ui.web.component.document;
 
+import static com.sun.faces.renderkit.Attribute.attr;
+
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.logging.Level;
@@ -31,7 +33,6 @@ import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 
 import com.sun.faces.renderkit.Attribute;
-import com.sun.faces.renderkit.AttributeManager;
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.OutputLinkRenderer;
 
@@ -52,7 +53,59 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
         return new Param[0];
     }
 
-    private static final Attribute[] PASSTHROUGHATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.OUTPUTLINK);
+    private static final Attribute[] PASSTHROUGHATTRIBUTES = new Attribute[] {
+            //
+            attr("accesskey"),
+            //
+            attr("charset"),
+            //
+            attr("coords"),
+            //
+            attr("dir"),
+            //
+            attr("hreflang"),
+            //
+            attr("lang"),
+            //
+            attr("onblur", "blur"),
+            // ommitted
+            // attr("onclick", "click", "action"),
+            //
+            attr("ondblclick", "dblclick"),
+            //
+            attr("onfocus", "focus"),
+            //
+            attr("onkeydown", "keydown"),
+            //
+            attr("onkeypress", "keypress"),
+            //
+            attr("onkeyup", "keyup"),
+            //
+            attr("onmousedown", "mousedown"),
+            //
+            attr("onmousemove", "mousemove"),
+            //
+            attr("onmouseout", "mouseout"),
+            //
+            attr("onmouseover", "mouseover"),
+            //
+            attr("onmouseup", "mouseup"),
+            //
+            attr("rel"),
+            //
+            attr("rev"),
+            //
+            attr("role"),
+            //
+            attr("shape"),
+            //
+            attr("style"),
+            //
+            attr("tabindex"),
+            //
+            attr("title"),
+            //
+            attr("type") };
 
     @Override
     protected void renderAsActive(FacesContext context, UIComponent component) throws IOException {
@@ -73,7 +126,7 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
             return;
         }
         ResponseWriter writer = context.getResponseWriter();
-        assert (writer != null);
+        assert(writer != null);
         writer.startElement("a", component);
         String writtenId = writeIdAttributeIfNecessary(context, writer, component);
         if (null != writtenId) {
@@ -115,11 +168,13 @@ public class RestDocumentLinkRenderer extends OutputLinkRenderer {
             String onclickJS = "if(!(event.ctrlKey||event.shiftKey||event.metaKey||event.button==1)){this.href='"
                     + Functions.javaScriptEscape(urlNewConversation) + "'}";
             String existingOnclick = (String) component.getAttributes().get("onclick");
+            String onclick;
             if (StringUtils.isBlank(existingOnclick)) {
-                component.getAttributes().put("onclick", onclickJS);
+                onclick = onclickJS;
             } else {
-                component.getAttributes().put("onclick", onclickJS + existingOnclick);
+                onclick = onclickJS + existingOnclick;
             }
+            writer.writeAttribute("onclick", onclick, "onclick");
         } else {
             sb.append(getFragment(component));
             url = context.getExternalContext().encodeResourceURL(sb.toString());
