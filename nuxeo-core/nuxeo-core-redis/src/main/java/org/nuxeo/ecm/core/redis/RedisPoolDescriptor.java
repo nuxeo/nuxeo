@@ -40,6 +40,12 @@ public abstract class RedisPoolDescriptor {
     @XNode("timeout")
     public int timeout = Protocol.DEFAULT_TIMEOUT;
 
+    @XNode("maxTotal")
+    public int maxTotal = 16;
+
+    @XNode("maxIdle")
+    public int maxIdle = 8;
+
     @XNode("prefix")
     public String prefix;
 

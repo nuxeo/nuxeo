@@ -16,6 +16,8 @@
       <password>${nuxeo.redis.password}</password>
       <database>${nuxeo.redis.database}</database>
       <timeout>${nuxeo.redis.timeout}</timeout>
+      <maxTotal>${nuxeo.redis.maxTotal}</maxTotal>
+      <maxIdle>${nuxeo.redis.maxIdle}</maxIdle>
       <prefix>${nuxeo.redis.prefix}</prefix>
     </sentinel>
 <#else>
@@ -25,6 +27,8 @@
       <password>${nuxeo.redis.password}</password>
       <database>${nuxeo.redis.database}</database>
       <timeout>${nuxeo.redis.timeout}</timeout>
+      <maxTotal>${nuxeo.redis.maxTotal}</maxTotal>
+      <maxIdle>${nuxeo.redis.maxIdle}</maxIdle>
       <prefix>${nuxeo.redis.prefix}</prefix>
     </server>
 </#if>

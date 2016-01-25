@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Condition;
@@ -52,6 +53,10 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
     private static AtomicLong LAST_IO_EXCEPTION = new AtomicLong(0);
 
     private static AtomicLong LAST_CONNECTION_EXCEPTION = new AtomicLong(0);
+
+    private static final int REMOTE_POLL_INTERVAL_MS = 1000;
+
+    private static final int REMOTE_POLL_INTERVAL_STDEV_MS = 200;
 
     protected final String queueId;
 
@@ -98,12 +103,19 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
             }
             lock.lock();
             try {
-                notEmpty.await(1, TimeUnit.SECONDS);
+                // wake up if our instance has submitted a new job or wait
+                notEmpty.await(getRemotePollInterval(), TimeUnit.MILLISECONDS);
             } finally {
                 lock.unlock();
             }
 
         }
+    }
+
+    private int getRemotePollInterval() {
+        // add some randomness so we don't generate periodic spike when all workers are starving
+        return REMOTE_POLL_INTERVAL_MS + ThreadLocalRandom.current().nextInt(-1 * REMOTE_POLL_INTERVAL_STDEV_MS,
+                REMOTE_POLL_INTERVAL_STDEV_MS);
     }
 
     @Override

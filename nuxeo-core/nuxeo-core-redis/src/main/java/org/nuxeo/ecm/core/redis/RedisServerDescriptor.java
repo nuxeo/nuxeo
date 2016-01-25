@@ -69,9 +69,12 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
     @Override
     public RedisExecutor newExecutor() {
         if (!canConnect(host, port)) {
-            throw new NuxeoException("Cannot connect to Jedis host: " + host + ":" + port);
+            throw new NuxeoException("Cannot connect to Redis host: " + host + ":" + port);
         }
-        return new RedisPoolExecutor(new JedisPool(new JedisPoolConfig(), host, port, timeout,
+        JedisPoolConfig conf = new JedisPoolConfig();
+        conf.setMaxTotal(maxTotal);
+        conf.setMaxTotal(maxIdle);
+        return new RedisPoolExecutor(new JedisPool(conf, host, port, timeout,
                 StringUtils.defaultIfBlank(password, null), database));
     }
 

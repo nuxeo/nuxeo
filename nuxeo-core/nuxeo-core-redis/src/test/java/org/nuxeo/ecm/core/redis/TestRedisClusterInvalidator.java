@@ -91,8 +91,8 @@ public class TestRedisClusterInvalidator {
     private Invalidations waitForInvalidation(RedisClusterInvalidator rci2, int countdown_ms) throws InterruptedException {
         Invalidations ret;
         do  {
-            Thread.sleep(50);
-            countdown_ms -= 50;
+            Thread.sleep(10);
+            countdown_ms -= 10;
             ret = rci2.receiveInvalidations();
         } while (ret.isEmpty() && countdown_ms > 0);
         return ret;
