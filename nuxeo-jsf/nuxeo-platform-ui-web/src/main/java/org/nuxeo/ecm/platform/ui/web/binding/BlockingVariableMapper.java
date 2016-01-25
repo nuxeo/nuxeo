@@ -146,4 +146,8 @@ public class BlockingVariableMapper extends VariableMapper {
         return buf.toString();
     }
 
+    public static BlockingVariableMapper createMapper(VariableMapper orig) {
+        return new BlockingVariableMapper(orig);
+    }
+
 }

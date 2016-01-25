@@ -49,6 +49,7 @@ import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
+import com.sun.faces.facelets.tag.ui.IncludeHandler;
 
 /**
  * Template widget type.
@@ -82,25 +83,23 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             return;
         }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
-        String widgetId = widget.getId();
-        TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
         TagAttribute templateAttr = getTemplateAttribute(helper);
         if (templateAttr == null) {
-            templateAttr = helper.createAttribute(TEMPLATE_PROPERTY_NAME, template);
+            templateAttr = helper.createAttribute("src", template);
         }
-        attributes = FaceletHandlerHelper.addTagAttribute(attributes, templateAttr);
+        TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(templateAttr);
         String widgetTagConfigId = widget.getTagConfigId();
         TagConfig config = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, nextHandler);
 
         VariableMapper cvm = ctx.getVariableMapper();
         if (!(cvm instanceof BlockingVariableMapper)) {
             throw new IllegalArgumentException(
-                    "Current context variable mapper should be an instance of MetaVariableMapper");
+                    "Current context variable mapper should be an instance of BlockingVariableMapper");
         }
         BlockingVariableMapper vm = (BlockingVariableMapper) cvm;
         fillVariablesForRendering(ctx, vm, widget);
 
-        new DecorateHandler(config).apply(ctx, parent);
+        new IncludeHandler(config).apply(ctx, parent);
     }
 
     /**
