@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -74,34 +75,7 @@
 
   <profiles>
     <profile>
-      <id>tomcat</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-    </profile>
-    <profile>
-      <id>pgsql</id>
-    </profile>
-    <profile>
-      <id>mssql</id>
-    </profile>
-    <profile>
-      <id>oracle10g</id>
-    </profile>
-    <profile>
-      <id>oracle11g</id>
-    </profile>
-    <profile>
-      <id>oracle12c</id>
-    </profile>
-    <profile>
-      <id>mysql</id>
-    </profile>
-    <profile>
       <id>monitor</id>
-    </profile>
-    <profile>
-      <id>mongodb</id>
     </profile>
     <profile>
       <id>bench</id>

@@ -70,34 +70,4 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>tomcat</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-    </profile>
-    <profile>
-      <id>pgsql</id>
-    </profile>
-    <profile>
-      <id>mssql</id>
-    </profile>
-    <profile>
-      <id>oracle10g</id>
-    </profile>
-    <profile>
-      <id>oracle11g</id>
-    </profile>
-    <profile>
-      <id>oracle12c</id>
-    </profile>
-    <profile>
-      <id>mysql</id>
-    </profile>
-    <profile>
-      <id>mongodb</id>
-    </profile>
-  </profiles>
-
 </project>

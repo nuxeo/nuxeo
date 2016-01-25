@@ -14,7 +14,7 @@
 
   <properties>
     <connect.password>setTheValueInYourSettings</connect.password>
-    <!-- NXP-15687, NXP-15177: default skip while failing randomly -->
+    <!-- NXP-15177: skip by default while failing randomly -->
     <skipITs>true</skipITs>
   </properties>
 
@@ -100,29 +100,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>pgsql</id>
-    </profile>
-    <profile>
-      <id>mssql</id>
-    </profile>
-    <profile>
-      <id>oracle10g</id>
-    </profile>
-    <profile>
-      <id>oracle11g</id>
-    </profile>
-    <profile>
-      <id>oracle12c</id>
-    </profile>
-    <profile>
-      <id>mysql</id>
-    </profile>
-    <profile>
-      <id>mongodb</id>
-    </profile>
-  </profiles>
 
 </project>
