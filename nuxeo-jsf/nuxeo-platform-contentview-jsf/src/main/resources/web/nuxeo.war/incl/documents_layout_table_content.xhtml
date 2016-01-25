@@ -68,7 +68,7 @@
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
                 value="#{layoutListingStatus.index == 0}" />
-              <nxl:layout layout="#{layout}" value="#{row}" />
+              <nxl:layout layout="#{layout}" value="#{row}" exposeLayout="false" />
             </nxu:repeat>
           </div>
         </c:when>
@@ -83,7 +83,7 @@
                     end="#{(documents.size-1)/2}">
                     <c:set var="showListingHeader"
                       value="#{layoutListingStatus.index == 0}" />
-                    <nxl:layout layout="#{layout}" value="#{row}" />
+                    <nxl:layout layout="#{layout}" value="#{row}" exposeLayout="false" />
                   </nxu:repeat>
                 </table>
               </td>
@@ -94,7 +94,7 @@
                     begin="#{(documents.size-1)/2 + 1}">
                     <c:set var="showListingHeader"
                       value="#{layoutListingStatus.index == documents.size/2+1}" />
-                    <nxl:layout layout="#{layout}" value="#{row}" />
+                    <nxl:layout layout="#{layout}" value="#{row}" exposeLayout="false" />
                   </nxu:repeat>
                 </table>
               </td>
@@ -108,7 +108,7 @@
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
                 value="#{layoutListingStatus.index == 0}" />
-              <nxl:layout layout="#{layout}" value="#{row}" />
+              <nxl:layout layout="#{layout}" value="#{row}" exposeLayout="false" />
             </nxu:repeat>
           </table>
         </c:otherwise>
