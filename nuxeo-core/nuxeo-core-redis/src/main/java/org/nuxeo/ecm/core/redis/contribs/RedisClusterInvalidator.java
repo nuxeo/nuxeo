@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.redis.contribs;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -30,9 +29,11 @@ import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.runtime.api.Framework;
-
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.Pipeline;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Redis implementation of {@link ClusterInvalidator}.
@@ -52,7 +53,11 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
     // Node HSET key: nuxeo:inval:<repositoryName>:nodes:<nodeId>
     protected static final String CLUSTER_NODES_KEY = "nodes";
 
+    // Keep info about a cluster node for one day
     protected static final int TIMEOUT_REGISTER_SECOND = 24 * 3600;
+
+    // Max delay to wait for a channel subscription
+    protected static final long TIMEOUT_SUBSCRIBE_SECOND = 10;
 
     protected static final String STARTED_KEY = "started";
 
@@ -74,6 +79,8 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
 
     private static final Log log = LogFactory.getLog(RedisClusterInvalidator.class);
 
+    private CountDownLatch subscribeLatch;
+
     @Override
     public void initialize(String nodeId, RepositoryImpl repository) {
         this.nodeId = nodeId;
@@ -87,22 +94,40 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
     }
 
     protected void createSubscriberThread() {
+        subscribeLatch = new CountDownLatch(1);
         String name = "RedisClusterInvalidatorSubscriber:" + repositoryName + ":" + nodeId;
         subscriberThread = new Thread(this::subscribeToInvalidationChannel, name);
         subscriberThread.setUncaughtExceptionHandler((t, e) -> log.error("Uncaught error on thread " + t.getName(), e));
         subscriberThread.setPriority(Thread.NORM_PRIORITY);
         subscriberThread.start();
+        try {
+            if (! subscribeLatch.await(TIMEOUT_SUBSCRIBE_SECOND, TimeUnit.SECONDS)) {
+                log.error("Redis channel subscripion timeout after " + TIMEOUT_SUBSCRIBE_SECOND +
+                        "s, continuing but this node may not receive cluster invalidations");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
     }
 
     protected void subscribeToInvalidationChannel() {
-        log.info("Subscribe to channel: " + getChannelName());
+        log.info("Subscribing to channel: " + getChannelName());
         redisExecutor.execute(jedis -> {
             jedis.subscribe(new JedisPubSub() {
+                @Override
+                public void onSubscribe(String channel, int subscribedChannels) {
+                    super.onSubscribe(channel, subscribedChannels);
+                    if (subscribeLatch != null) {
+                        subscribeLatch.countDown();
+                    }
+                    log.debug("Subscribed to channel: " + getChannelName());
+                }
+
                 @Override
                 public void onMessage(String channel, String message) {
                     try {
                         RedisInvalidations rInvals = new RedisInvalidations(nodeId, message);
-
                         if (log.isTraceEnabled()) {
                             log.trace("Receive invalidations: " + rInvals);
                         }

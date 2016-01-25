@@ -18,11 +18,15 @@ package org.nuxeo.ecm.core.redis;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import redis.clients.jedis.Client;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisMonitor;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.util.Pool;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class RedisPoolExecutor implements RedisExecutor {
 
@@ -74,12 +78,19 @@ public class RedisPoolExecutor implements RedisExecutor {
 
     @Override
     public void startMonitor() {
+        CountDownLatch monitorLatch = new CountDownLatch(1);
         monitorThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 log.debug("Starting monitor thread");
                 execute(jedis -> {
                     jedis.monitor(new JedisMonitor() {
+                        @Override
+                        public void proceed(Client client) {
+                            monitorLatch.countDown();
+                            super.proceed(client);
+                        }
+
                         public void onCommand(String command) {
                             if (Thread.currentThread().isInterrupted()) {
                                 // The only way to get out of this thread
@@ -96,6 +107,14 @@ public class RedisPoolExecutor implements RedisExecutor {
         });
         monitorThread.setName("Nuxeo-Redis-Monitor");
         monitorThread.start();
+        try {
+            if (! monitorLatch.await(5, TimeUnit.SECONDS)) {
+                log.error("Failed to init Redis moniotring");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
