@@ -44,6 +44,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
+import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 
 /**
  * Layout row recursion tag handler.
@@ -112,7 +113,9 @@ public class LayoutRowTagHandler extends TagHandler {
 
                 // expose row variables
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
-                ValueExpression rowVe = eFactory.createValueExpression(row, LayoutRow.class);
+                ValueExpression rowVe = new MetaValueExpression(
+                        eFactory.createValueExpression("#{layout.rows[" + rowCounter + "]}", String.class),
+                        ctx.getFunctionMapper(), vm, LayoutRow.class);
                 vm.setVariable(RenderVariables.rowVariables.layoutRow.name(), rowVe);
                 vm.addBlockedPattern(RenderVariables.rowVariables.layoutRow.name());
                 vm.setVariable(RenderVariables.columnVariables.layoutColumn.name(), rowVe);
