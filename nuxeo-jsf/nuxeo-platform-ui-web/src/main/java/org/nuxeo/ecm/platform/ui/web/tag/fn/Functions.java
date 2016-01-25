@@ -759,6 +759,9 @@ public final class Functions {
      * @param targetId the component to look for locally so as to return its absolute client id.
      */
     public static String componentAbsoluteId(UIComponent anchor, String targetId) {
+        if (true) {
+            return targetId;
+        }
         // handle case where several target ids could be given as input
         if (targetId == null) {
             return null;
