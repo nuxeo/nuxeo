@@ -115,10 +115,10 @@
                 <jvmArg>-XX:+OptimizeStringConcat</jvmArg>
                 <jvmArg>-XX:+UseThreadPriorities</jvmArg>
                 <jvmArg>-XX:ThreadPriorityPolicy=42</jvmArg>
-                <!--<jvmArg>-Dcom.sun.management.jmxremote.autodiscovery=true</jvmArg>-->
-                <!--<jvmArg>-Dcom.sun.management.jdp.name=gatling</jvmArg>-->
-                <!--<jvmArg>-XX:+UnlockCommercialFeatures</jvmArg>-->
-                <!--<jvmArg>-XX:+FlightRecorder</jvmArg>-->
+                <!--<jvmArg>-Dcom.sun.management.jmxremote.autodiscovery=true</jvmArg> -->
+                <!--<jvmArg>-Dcom.sun.management.jdp.name=gatling</jvmArg> -->
+                <!--<jvmArg>-XX:+UnlockCommercialFeatures</jvmArg> -->
+                <!--<jvmArg>-XX:+FlightRecorder</jvmArg> -->
               </jvmArgs>
             </configuration>
             <executions>

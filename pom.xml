@@ -6151,6 +6151,9 @@
     <profile>
       <id>mysql</id>
     </profile>
+    <profile>
+      <id>mongodb</id>
+    </profile>
 
     <!-- Used to include addons and/or nuxeo-distribution in a single run -->
     <profile>
