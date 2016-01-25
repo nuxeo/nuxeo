@@ -6180,9 +6180,6 @@
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>mongodb</id>
-    </profile>
   </profiles>
 
   <developers>
