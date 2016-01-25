@@ -113,7 +113,9 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
         List<Task> tasks = taskService.getAllCurrentTaskInstances(coreSession, getSortInfos());
         if (tasks != null) {
             for (Task task : tasks) {
-                if (task.hasEnded() || task.isCancelled()) {
+                List<String> targetDocumentsIds = task.getTargetDocumentsIds();
+                boolean hasTargetDocuments = targetDocumentsIds != null && !targetDocumentsIds.isEmpty();
+                if (task.hasEnded() || task.isCancelled() || !hasTargetDocuments) {
                     continue;
                 }
                 DocumentModel doc = taskService.getTargetDocumentModel(task, coreSession);
