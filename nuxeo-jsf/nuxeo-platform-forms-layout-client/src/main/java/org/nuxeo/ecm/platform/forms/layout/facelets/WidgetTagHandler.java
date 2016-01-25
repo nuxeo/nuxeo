@@ -392,7 +392,7 @@ public class WidgetTagHandler extends MetaTagHandler {
             vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name(), widgetIndexVe);
         }
 
-        if (exposeLevel) {
+        if (exposeLevel && false) {
             Integer level = null;
             if (widget != null) {
                 level = widget.getLevel();
@@ -401,9 +401,9 @@ public class WidgetTagHandler extends MetaTagHandler {
             if (widgetIndexVe != null) {
                 vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name() + "_" + level, widgetIndexVe);
             }
+            vm.addBlockedPattern(RenderVariables.widgetVariables.widget.name() + "*");
+            vm.addBlockedPattern(RenderVariables.widgetVariables.widgetIndex.name() + "*");
         }
-        vm.addBlockedPattern(RenderVariables.widgetVariables.widget.name() + "*");
-        vm.addBlockedPattern(RenderVariables.widgetVariables.widgetIndex.name() + "*");
 
         // expose widget controls too
         if (widget != null) {
