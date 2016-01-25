@@ -351,14 +351,8 @@ public class LayoutTagHandler extends TagHandler {
             }
         }
 
-        // expose layout instance to variable mapper to ensure good
-        // resolution of properties
-        ExpressionFactory eFactory = ctx.getExpressionFactory();
-        ValueExpression layoutVe = eFactory.createValueExpression(layoutInstance, Layout.class);
-        ctx.getVariableMapper().setVariable(RenderVariables.layoutVariables.layout.name(), layoutVe);
-
         // expose rendering variables
-        fillVariablesForLayoutRendering(ctx, eFactory, layoutService, vm, layoutInstance);
+        fillVariablesForLayoutRendering(ctx, ctx.getExpressionFactory(), layoutService, vm, layoutInstance);
 
         final String layoutTagConfigId = layoutInstance.getTagConfigId();
 
