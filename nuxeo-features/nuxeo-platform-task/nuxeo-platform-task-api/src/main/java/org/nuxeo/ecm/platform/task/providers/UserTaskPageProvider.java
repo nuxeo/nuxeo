@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
     @Override
     public List<DashBoardItem> getCurrentPage() {
         if (pageTasks == null) {
-            pageTasks = new ArrayList<DashBoardItem>();
+            pageTasks = new ArrayList<>();
             if (userTasks == null) {
                 getAllTasks();
             }
@@ -105,7 +105,7 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
     protected void getAllTasks() {
         error = null;
         errorMessage = null;
-        userTasks = new ArrayList<DashBoardItem>();
+        userTasks = new ArrayList<>();
         CoreSession coreSession = getCoreSession();
         boolean filterTrashDocs = getFilterDocumentsInTrash();
         NuxeoPrincipal pal = (NuxeoPrincipal) coreSession.getPrincipal();
@@ -124,7 +124,7 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
                         userTasks.add(new DashBoardItemImpl(task, doc, getLocale()));
                     }
                 } else {
-                    log.warn(String.format("User '%s' has a task of type '%s' on a " + "missing or deleted document",
+                    log.warn(String.format("User '%s' has a task of type '%s' on a missing or deleted document",
                             pal.getName(), task.getName()));
                 }
             }
