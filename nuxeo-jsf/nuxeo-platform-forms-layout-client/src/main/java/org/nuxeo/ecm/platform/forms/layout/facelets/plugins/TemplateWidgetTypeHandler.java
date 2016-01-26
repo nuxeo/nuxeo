@@ -84,13 +84,11 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             return;
         }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
-        String widgetId = widget.getId();
-        TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
         TagAttribute templateAttr = getTemplateAttribute(helper);
         if (templateAttr == null) {
             templateAttr = helper.createAttribute(TEMPLATE_PROPERTY_NAME, template);
         }
-        attributes = FaceletHandlerHelper.addTagAttribute(attributes, templateAttr);
+        TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(templateAttr);
         String widgetTagConfigId = widget.getTagConfigId();
         TagConfig config = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, nextHandler);
 
