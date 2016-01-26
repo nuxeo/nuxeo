@@ -32,7 +32,7 @@ empty:
   <nxu:set var="openBox" value="#{nxu:hasMessages(filterFormId) or contentView.searchLayout.filterUnfolded}"
     cache="true">
   <nxu:set var="elementsToReRender"
-    value="#{contentIdToBeReRendered} #{nxu:componentAbsoluteId(component, resetFilterFormId)} #{nxu:componentAbsoluteId(component, filterFormId)}">
+    value="#{contentIdToBeReRendered} #{resetFilterFormId} #{filterFormId}">
 
   <div class="foldableLightBox">
 
@@ -52,7 +52,7 @@ empty:
               value="#{jsfResetActions.resetComponents}" />
             <nxu:actionListenerMethod
               value="#{contentView.resetSearchDocumentModel()}" />
-            <f:ajax execute="@this" render="#{elementsToReRender}" />
+            <a4j:ajax execute="@this" render="#{elementsToReRender}" />
           </h:commandLink>
         </h:form>
       </div>
@@ -73,7 +73,7 @@ empty:
               value="#{contentView.setExecuted(true)}" />
             <nxu:actionListenerMethod
               value="#{jsfResetActions.resetComponents}" />
-            <f:ajax execute="@form" render="#{elementsToReRender}" />
+            <a4j:ajax execute="@form" render="#{elementsToReRender}" />
           </h:commandButton>
           <h:commandButton
             value="#{messages['label.contentview.filter.clearFilterButton']}"
@@ -85,7 +85,7 @@ empty:
               value="#{jsfResetActions.resetComponents}" />
             <nxu:actionListenerMethod
               value="#{contentView.resetSearchDocumentModel()}" />
-            <f:ajax execute="@this" render="#{elementsToReRender}" />
+            <a4j:ajax execute="@this" render="#{elementsToReRender}" />
           </h:commandButton>
         </p>
       </h:form>
