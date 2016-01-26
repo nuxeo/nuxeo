@@ -108,6 +108,10 @@ public class TaskPageProvidersTest {
         // create another task to check pagination
         taskService.createTask(session, administrator, document, "Test Task Name 2", actors, false, "test directive",
                 "test comment", calendar.getTime(), null, null);
+        // NXP-18868 create task without document (task from workflow without document)
+        taskService.createTaskForProcess(session, administrator, Collections.emptyList(), null, "Test Task Name 3",
+                "Task1a34", "a6dd157e-143d-4e03-a3cf-d33482c8de36", null, actors, false, "test directive",
+                "test comment", calendar.getTime(), null, null, null);
     }
 
     @Test
@@ -154,11 +158,15 @@ public class TaskPageProvidersTest {
         PageProvider<DashBoardItem> taskProvider = getPageProvider("current_user_tasks_sort_asc");
         List<DashBoardItem> tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
+        // NXP-18868 task without documents are not retrieved by page provider
+        assertEquals(2, tasks.size());
         assertEquals("Test Task Name", tasks.get(0).getName());
         // Check task order
         taskProvider = getPageProvider("current_user_tasks_sort_desc");
         tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
+        // NXP-18868 task without documents are not retrieved by page provider
+        assertEquals(2, tasks.size());
         // Check task order update
         assertEquals("Test Task Name 2", tasks.get(0).getName());
     }
