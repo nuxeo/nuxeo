@@ -7,7 +7,7 @@
     Seam.Component.getInstance("documentActions").getAppLinks("${document.id}", "${blobXPath}", function(data) {
       jQuery.each(data, function(i, appLink) {
         var link = jQuery("<a href='" + appLink.link + "' target='_blank'>");
-        link.append(jQuery("<img src='" + appLink.icon + "' title='" +  title.replace('$APP', appLink.appName) + "'/>"));
+        link.append(jQuery("<img class='smallIcon' src='" + appLink.icon + "' title='" +  title.replace('$APP', appLink.appName) + "'/>"));
         actions.append(link);
       });
     });

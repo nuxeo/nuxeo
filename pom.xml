@@ -18,6 +18,7 @@
     <module>nuxeo-liveconnect-google-drive</module>
     <module>nuxeo-liveconnect-dropbox</module>
     <module>nuxeo-liveconnect-box</module>
+    <module>nuxeo-liveconnect-onedrive</module>
   </modules>
 
   <repositories>
