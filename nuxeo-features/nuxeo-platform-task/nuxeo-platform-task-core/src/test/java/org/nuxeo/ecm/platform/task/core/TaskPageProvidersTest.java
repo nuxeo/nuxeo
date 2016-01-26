@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -62,17 +62,16 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.content.template", //
-    "org.nuxeo.ecm.directory", //
-    "org.nuxeo.ecm.platform.usermanager", //
-    "org.nuxeo.ecm.directory.types.contrib", //
-    "org.nuxeo.ecm.directory.sql", //
-    "org.nuxeo.ecm.platform.task.core", //
-    "org.nuxeo.ecm.platform.task.testing", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.directory.types.contrib", //
+        "org.nuxeo.ecm.directory.sql", //
+        "org.nuxeo.ecm.platform.task.core", //
+        "org.nuxeo.ecm.platform.task.testing", //
 })
-@LocalDeploy({
-    "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml"    , //
-    "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml"    , //
-    "org.nuxeo.ecm.platform.task.core.test:OSGI-INF/pageproviders-contrib.xml"    , //
+@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml", //
+        "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml", //
+        "org.nuxeo.ecm.platform.task.core.test:OSGI-INF/pageproviders-contrib.xml", //
 })
 public class TaskPageProvidersTest {
 
@@ -98,11 +97,11 @@ public class TaskPageProvidersTest {
         document = getDocument();
 
         // create isolated task
-        List<String> actors = new ArrayList<String>();
+        List<String> actors = new ArrayList<>();
         actors.add(NuxeoPrincipal.PREFIX + administrator.getName());
         actors.add(NuxeoGroup.PREFIX + SecurityConstants.MEMBERS);
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2006, 6, 6);
+        calendar.set(2006, Calendar.JULY, 6);
         // create one task
         taskService.createTask(session, administrator, document, "Test Task Name", actors, false, "test directive",
                 "test comment", calendar.getTime(), null, null);
@@ -111,13 +110,9 @@ public class TaskPageProvidersTest {
                 "test comment", calendar.getTime(), null, null);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testTaskPageProvider() throws Exception {
-        Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(
-                "current_user_tasks", null, null, null, properties, (Object[]) null);
+        PageProvider<DashBoardItem> taskProvider = getPageProvider("current_user_tasks");
         List<DashBoardItem> tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
@@ -156,20 +151,25 @@ public class TaskPageProvidersTest {
 
     @Test
     public void testTaskPageProviderSorting() {
-        Map<String, Serializable> properties = new HashMap<>();
-        properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(
-                "current_user_tasks_sort_asc", null, null, null, properties, (Object[]) null);
+        PageProvider<DashBoardItem> taskProvider = getPageProvider("current_user_tasks_sort_asc");
         List<DashBoardItem> tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
         assertEquals("Test Task Name", tasks.get(0).getName());
         // Check task order
-        taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider("current_user_tasks_sort_desc", null,
-                null, null, properties, (Object[]) null);
+        taskProvider = getPageProvider("current_user_tasks_sort_desc");
         tasks = taskProvider.getCurrentPage();
         assertNotNull(tasks);
         // Check task order update
         assertEquals("Test Task Name 2", tasks.get(0).getName());
+    }
+
+    @SuppressWarnings("unchecked")
+    private PageProvider<DashBoardItem> getPageProvider(String pageProviderName) {
+        Map<String, Serializable> properties = Collections.singletonMap(UserTaskPageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        return (PageProvider<DashBoardItem>) ppService.getPageProvider(pageProviderName, null, null, null, properties,
+                (Object[]) null);
+
     }
 
     protected DocumentModel getDocument() throws Exception {

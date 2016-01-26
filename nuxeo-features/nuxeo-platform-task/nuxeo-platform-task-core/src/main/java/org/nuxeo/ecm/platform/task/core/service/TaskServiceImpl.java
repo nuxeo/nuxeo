@@ -81,7 +81,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     @Override
     public void activate(ComponentContext context) {
         super.activate(context);
-        tasksProviders = new HashMap<String, TaskProvider>();
+        tasksProviders = new HashMap<>();
     }
 
     @Override
@@ -140,12 +140,12 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     public List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document,
             String taskDocumentType, String taskName, String taskType, String processId, List<String> actorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
-            {
-        List<DocumentModel> docs = new ArrayList<DocumentModel>();
+            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo) {
+        List<DocumentModel> docs = new ArrayList<>();
         docs.add(document);
-        return createTask(coreSession, principal, docs, taskDocumentType, taskName, taskType, processId, actorIds,
-                createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath, eventInfo);
+        return createTaskForProcess(coreSession, principal, docs, taskDocumentType, taskName, taskType, processId,
+                null, actorIds, createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath,
+                eventInfo);
     }
 
     /**
@@ -162,14 +162,12 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public String acceptTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment)
-            {
+    public String acceptTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment) {
         return endTask(coreSession, principal, task, comment, TaskEventNames.WORKFLOW_TASK_COMPLETED, true);
     }
 
     @Override
-    public String rejectTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment)
-            {
+    public String rejectTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment) {
         return endTask(coreSession, principal, task, comment, TaskEventNames.WORKFLOW_TASK_REJECTED, false);
     }
 
@@ -207,8 +205,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         return false;
     }
 
-    protected boolean isTaskAssignedToUser(Task task, NuxeoPrincipal user, boolean checkDelegatedActors)
-            {
+    protected boolean isTaskAssignedToUser(Task task, NuxeoPrincipal user, boolean checkDelegatedActors) {
         if (task != null && user != null) {
             // user actors
             List<String> actors = user.getAllGroups();
@@ -275,7 +272,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     @Override
     public List<Task> getCurrentTaskInstances(CoreSession coreSession) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getCurrentTaskInstances(coreSession);
@@ -293,7 +290,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
      */
     @Override
     public List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getCurrentTaskInstances(coreSession, sortInfos);
@@ -306,11 +303,10 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     @Override
     public List<Task> getAllCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
-            newTasks = taskProvider.getAllCurrentTaskInstances(coreSession,
-                    sortInfos);
+            newTasks = taskProvider.getAllCurrentTaskInstances(coreSession, sortInfos);
             if (newTasks != null) {
                 tasks.addAll(newTasks);
             }
@@ -326,7 +322,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
      */
     @Override
     public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getCurrentTaskInstances(actors, coreSession);
@@ -343,9 +339,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
      * @since 5.9.3
      */
     @Override
-    public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession, List<SortInfo> sortInfos)
-            {
-        List<Task> tasks = new ArrayList<Task>();
+    public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession, List<SortInfo> sortInfos) {
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getCurrentTaskInstances(actors, coreSession, sortInfos);
@@ -357,9 +352,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSession)
-            {
-        List<Task> tasks = new ArrayList<Task>();
+    public List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSession) {
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getTaskInstances(dm, user, coreSession);
@@ -371,9 +365,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession)
-            {
-        List<Task> tasks = new ArrayList<Task>();
+    public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession) {
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getTaskInstances(dm, actors, coreSession);
@@ -386,7 +379,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     @Override
     public List<Task> getAllTaskInstances(String processId, CoreSession session) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getAllTaskInstances(processId, session);
@@ -398,9 +391,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user, CoreSession session)
-            {
-        List<Task> tasks = new ArrayList<Task>();
+    public List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user, CoreSession session) {
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getAllTaskInstances(processId, user, session);
@@ -412,9 +404,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId, List<String> actors, CoreSession session)
-            {
-        List<Task> tasks = new ArrayList<Task>();
+    public List<Task> getAllTaskInstances(String processId, List<String> actors, CoreSession session) {
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getAllTaskInstances(processId, actors, session);
@@ -430,7 +421,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
      */
     @Deprecated
     protected List<Task> wrapDocModelInTask(DocumentModelList taskDocuments) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         for (DocumentModel doc : taskDocuments) {
             tasks.add(doc.getAdapter(Task.class));
         }
@@ -481,7 +472,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     @Override
     public List<Task> getAllTaskInstances(String processId, String nodeId, CoreSession session) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         List<Task> newTasks;
         for (TaskProvider taskProvider : tasksProviders.values()) {
             newTasks = taskProvider.getAllTaskInstances(processId, nodeId, session);
@@ -506,7 +497,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     throw new NuxeoException("Invalid taskId: " + taskId);
                 }
                 List<String> currentAssignees = task.getActors();
-                List<String> currentActors = new ArrayList<String>();
+                List<String> currentActors = new ArrayList<>();
                 for (String currentAssignee : currentAssignees) {
                     if (currentAssignee.startsWith(NotificationConstants.GROUP_PREFIX)
                             || currentAssignee.startsWith(NotificationConstants.USER_PREFIX)) {
@@ -521,7 +512,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 // remove ACLs set for current assignees
                 ACP acp = taskDoc.getACP();
                 ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
-                List<ACE> toRemove = new ArrayList<ACE>();
+                List<ACE> toRemove = new ArrayList<>();
 
                 for (ACE ace : acl.getACEs()) {
                     if (currentActors.contains(ace.getUsername()) || taskInitator.equals(ace.getUsername())) {
@@ -531,7 +522,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 acl.removeAll(toRemove);
 
                 // grant EVERYTHING on task doc to the new actors
-                List<String> actorIds = new ArrayList<String>();
+                List<String> actorIds = new ArrayList<>();
                 for (String actor : newActors) {
                     if (actor.startsWith(NotificationConstants.GROUP_PREFIX)
                             || actor.startsWith(NotificationConstants.USER_PREFIX)) {
@@ -551,13 +542,13 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 task.addComment(currentUser, comment);
                 session.saveDocument(taskDoc);
 
-                List<DocumentModel> docs = new ArrayList<DocumentModel>();
+                List<DocumentModel> docs = new ArrayList<>();
                 for (String string : task.getTargetDocumentsIds()) {
                     docs.add(session.getDocument(new IdRef(string)));
 
                 }
-                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_REASSIGNED,
-                        new HashMap<String, Serializable>(), comment, (NuxeoPrincipal) session.getPrincipal(), actorIds);
+                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_REASSIGNED, new HashMap<>(), comment,
+                        (NuxeoPrincipal) session.getPrincipal(), actorIds);
 
             }
         }.runUnrestricted();
@@ -577,7 +568,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                     throw new NuxeoException("Invalid taskId: " + taskId);
                 }
                 // grant EVERYTHING on task doc to the delegated actors
-                List<String> actorIds = new ArrayList<String>();
+                List<String> actorIds = new ArrayList<>();
                 ACP acp = taskDoc.getACP();
                 ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
 
@@ -598,7 +589,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 }
                 taskDoc.setACP(acp, true);
 
-                List<String> allDelegatedActors = new ArrayList<String>();
+                List<String> allDelegatedActors = new ArrayList<>();
                 allDelegatedActors.addAll(task.getDelegatedActors());
                 for (String actor : actorIds) {
                     if (!allDelegatedActors.contains(actor)) {
@@ -610,13 +601,12 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 String currentUser = ((NuxeoPrincipal) session.getPrincipal()).getActingUser();
                 task.addComment(currentUser, comment);
                 session.saveDocument(taskDoc);
-                List<DocumentModel> docs = new ArrayList<DocumentModel>();
+                List<DocumentModel> docs = new ArrayList<>();
                 for (String string : task.getTargetDocumentsIds()) {
                     docs.add(session.getDocument(new IdRef(string)));
 
                 }
-                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_DELEGATED,
-                        new HashMap<String, Serializable>(),
+                notifyEvent(session, task, docs, TaskEventNames.WORKFLOW_TASK_DELEGATED, new HashMap<>(),
                         String.format("Task delegated by '%s' to '%s'", currentUser, StringUtils.join(actorIds, ","))
                                 + (!StringUtils.isEmpty(comment) ? " with the following comment: " + comment : ""),
                         (NuxeoPrincipal) session.getPrincipal(), actorIds);
@@ -626,10 +616,9 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     }
 
     protected void notifyEvent(CoreSession session, Task task, List<DocumentModel> docs, String event,
-            Map<String, Serializable> eventInfo, String comment, NuxeoPrincipal principal, List<String> actorIds)
-            {
-        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-        ArrayList<String> notificationRecipients = new ArrayList<String>();
+            Map<String, Serializable> eventInfo, String comment, NuxeoPrincipal principal, List<String> actorIds) {
+        Map<String, Serializable> eventProperties = new HashMap<>();
+        ArrayList<String> notificationRecipients = new ArrayList<>();
         notificationRecipients.addAll(actorIds);
         eventProperties.put(NotificationConstants.RECIPIENTS_KEY,
                 notificationRecipients.toArray(new String[notificationRecipients.size()]));
@@ -645,7 +634,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     @Override
     public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, boolean includeDelegatedTasks,
             CoreSession session) {
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         for (TaskProvider taskProvider : tasksProviders.values()) {
             tasks.addAll(taskProvider.getTaskInstances(dm, actors, includeDelegatedTasks, session));
         }
@@ -655,10 +644,8 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     /**
      * @since 5.8
      * @deprecated since 7.4 use
-     *             {@link #org.nuxeo.ecm.platform.task.core.service.TaskServiceImpl.createTaskWithProcessName(CoreSession,
-     *             NuxeoPrincipal, List<DocumentModel>, String, String, String, String, String, List<String>, boolean,
-     *             String, String, Date, Map<String, String>, String, Map<String, Serializable>)
-     *             createTaskWithProcessName} instead
+     *             {@link #createTaskForProcess(CoreSession, NuxeoPrincipal, List, String, String, String, String, String, List, boolean, String, String, Date, Map, String, Map)}
+     *             instead
      */
     @Override
     @Deprecated
@@ -675,11 +662,10 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
      * @since 7.4
      */
     @Override
-    public List<Task> createTaskForProcess(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
-            String taskDocumentType, String taskName, String taskType, String processId, String processName, List<String> actorIds,
-            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
-            {
+    public List<Task> createTaskForProcess(CoreSession coreSession, NuxeoPrincipal principal,
+            List<DocumentModel> documents, String taskDocumentType, String taskName, String taskType, String processId,
+            String processName, List<String> actorIds, boolean createOneTaskPerActor, String directive, String comment,
+            Date dueDate, Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo) {
         if (StringUtils.isBlank(parentPath)) {
             parentPath = getTaskRootParentPath(coreSession);
         }

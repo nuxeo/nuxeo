@@ -44,7 +44,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * The variable used as process instance variables.
      */
     enum VariableName {
-        documentId, documentRepositoryName, endLifecycleTransition, initiator, document, principal, createdFromTaskService, directive, validated, right;
+        documentId, documentRepositoryName, endLifecycleTransition, initiator, document, principal, createdFromTaskService, directive, validated, right
     }
 
     /**
@@ -103,7 +103,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param coreSession the session to use when notifying
      * @param principal the principal marked as initiator of the task and used when notifying.
      * @param document the document to attach to the task.
-     * @param the task document type
+     * @param taskDocumentType the task document type
      * @param taskName the task name.
      * @param taskType the task type.
      * @param processId the process ID linked to this task if any.
@@ -132,7 +132,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param coreSession the session to use when notifying
      * @param principal the principal marked as initiator of the task and used when notifying.
      * @param documents the documents to attach to the task.
-     * @param the task document type
+     * @param taskDocumentType the task document type
      * @param taskName the task name.
      * @param taskType the task type.
      * @param processId the process ID linked to this task if any.
@@ -146,13 +146,11 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param parentPath /task-root if null
      * @param eventInfo
      * @since 5.6
-     *
      * @deprecated since 7.4 use
-     *             {@link #org.nuxeo.ecm.platform.task.core.service.TaskServiceImpl.createTaskWithProcessName(CoreSession,
-     *             NuxeoPrincipal, List<DocumentModel>, String, String, String, String, String, List<String>, boolean,
-     *             String, String, Date, Map<String, String>, String, Map<String, Serializable>)
-     *             createTaskWithProcessName} instead
+     *             {@link #createTaskForProcess(CoreSession, NuxeoPrincipal, List, String, String, String, String, String, List, boolean, String, String, Date, Map, String, Map)}
+     *             instead
      */
+    @Deprecated
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
             String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
@@ -167,12 +165,12 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param coreSession the session to use when notifying
      * @param principal the principal marked as initiator of the task and used when notifying.
      * @param documents the documents to attach to the task.
-     * @param the task document type
+     * @param taskDocumentType the task document type
      * @param taskName the task name.
      * @param taskType the task type.
      * @param processId the process ID linked to this task if any.
      * @param processName the process Name linked to this task if any.
-     * @param prefixedActorIds the list of actor ids, prefixed with 'user:' or 'group:'.
+     * @param actorIds the list of actor ids, prefixed with 'user:' or 'group:'.
      * @param createOneTaskPerActor if true, one task will be created per actor, else a single task will be assigned to
      *            all actors.
      * @param directive the directive, put in the task variables.
@@ -184,13 +182,12 @@ public interface TaskService extends Serializable, TaskProvider {
      * @since 7.4
      */
     List<Task> createTaskForProcess(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
-            String taskDocumentType, String taskName, String taskType, String processId, String processName, List<String> actorIds,
-            boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
+            String taskDocumentType, String taskName, String taskType, String processId, String processName,
+            List<String> actorIds, boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
             Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo);
 
     /**
      * Returns true if user is an administrator, the initiator of the task, or an actor of the task.
-     *
      */
     boolean canEndTask(NuxeoPrincipal principal, Task task);
 
@@ -238,9 +235,9 @@ public interface TaskService extends Serializable, TaskProvider {
     void deleteTask(CoreSession coreSession, String taskId);
 
     /**
-     * @param ti the task.
-     * @param user the user.
-     * @return the task's target document.
+     * @param ti the task
+     * @param coreSession
+     * @return the task's target document
      */
     DocumentModel getTargetDocumentModel(Task ti, CoreSession coreSession);
 
