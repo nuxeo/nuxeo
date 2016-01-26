@@ -13,7 +13,7 @@
 }
 // Replace calendar icon in forms
 img.rf-cal-btn {
-  background: transparent url('/nuxeo/icons/calendar.png') no-repeat scroll 0 0 / 16px 16px;
+  background: transparent url('${basePath}/icons/calendar.png') no-repeat scroll 0 0 / 16px 16px;
   height: 25px;
   margin-right: 1em;
   padding-left: 25px;
