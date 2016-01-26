@@ -102,14 +102,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <!-- Sonar & JaCoCo -->
-    <sonar.host.url>https://sonar.nuxeo.org/</sonar.host.url>
-    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-    <it.jacoco.destFile>${java.io.tmpdir}/jacoco-it.dump</it.jacoco.destFile>
-    <sonar.jacoco.itReportPath>${it.jacoco.destFile}</sonar.jacoco.itReportPath>
-    <it.failsafe.argLine></it.failsafe.argLine>
-    <skip.surefire.tests>${skipTests}</skip.surefire.tests>
-
     <!-- License Maven Plugin -->
     <license.excludedGroups>org\.nuxeo.*</license.excludedGroups>
     <!-- Can't parse POMs because of http://jira.codehaus.org/browse/MLICENSE-77 -->
@@ -200,6 +192,26 @@
     <gatling.version>2.1.7</gatling.version>
     <scala.version>2.11.7</scala.version>
     <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
+
+    <!-- Tests properties -->
+    <!-- for use integration/vcstests.xml and org.nuxeo:nuxeo-ftest -->
+    <!-- (related profiles: customdb, default, pgsql, oracle10g, oracle11g, oracle12c, mysql, mongodb) -->
+    <nuxeo.test.core>vcs</nuxeo.test.core>
+    <nuxeo.db.host.default>localhost</nuxeo.db.host.default>
+
+    <!-- for use in maven-surefire-plugin to skip only the unit tests (maven-surefire-plugin) -->
+    <!-- and not skip the integration tests (maven-failsafe-plugin, ant-assembly-maven-plugin) -->
+    <!-- related properties: skipTests (skip all tests), skipITs (skip integration tests) -->
+    <skip.surefire.tests>${skipTests}</skip.surefire.tests>
+
+    <!-- for use in maven-surefire-plugin, maven-failsafe-plugin, jacoco-maven-plugin -->
+    <it.failsafe.argLine></it.failsafe.argLine>
+
+    <!-- Sonar & JaCoCo (related profile: sonar)-->
+    <sonar.host.url>https://sonar.nuxeo.org/</sonar.host.url>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <it.jacoco.destFile>${java.io.tmpdir}/jacoco-it.dump</it.jacoco.destFile>
+    <sonar.jacoco.itReportPath>${it.jacoco.destFile}</sonar.jacoco.itReportPath>
   </properties>
 
   <dependencyManagement>
@@ -842,6 +854,7 @@
         <artifactId>nuxeo-web-resources-wro</artifactId>
         <version>${nuxeo.services.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-web-resources-rest</artifactId>
@@ -4730,6 +4743,11 @@
             <nuxeo.test.vcs.user>${nuxeo.test.vcs.user}</nuxeo.test.vcs.user>
             <nuxeo.test.vcs.password>${nuxeo.test.vcs.password}</nuxeo.test.vcs.password>
             <nuxeo.test.vcs.singleds>${nuxeo.test.vcs.singleds}</nuxeo.test.vcs.singleds>
+            <!-- Used by org.nuxeo.ecm.core.test.StorageConfiguration -->
+            <!-- (and org.nuxeo.ecm.core.storage.mongodb.TestGridFSBinaryManager) -->
+            <nuxeo.test.core>${nuxeo.test.core}</nuxeo.test.core>
+            <nuxeo.test.mongodb.server>${nuxeo.test.mongodb.server}</nuxeo.test.mongodb.server>
+            <nuxeo.test.mongodb.dbname>${nuxeo.test.mongodb.dbname}</nuxeo.test.mongodb.dbname>
           </systemPropertyVariables>
           <includes>
             <include>**/Test*.java</include>
@@ -5562,12 +5580,6 @@
       </build>
     </profile>
     <profile>
-      <id>skipUnitTests</id>
-      <properties>
-        <skipTests>true</skipTests>
-      </properties>
-    </profile>
-    <profile>
       <id>release</id>
       <activation>
         <property>
@@ -5985,11 +5997,15 @@
       <distributionManagement>
         <repository>
           <id>releases</id>
-          <url>http://mavenpriv.in.nuxeo.com/nexus/content/repositories/releases</url>
+          <url>
+            http://mavenpriv.in.nuxeo.com/nexus/content/repositories/releases
+          </url>
         </repository>
         <snapshotRepository>
           <id>snapshots</id>
-          <url>http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots</url>
+          <url>
+            http://mavenpriv.in.nuxeo.com/nexus/content/repositories/snapshots
+          </url>
           <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
       </distributionManagement>
@@ -6014,23 +6030,6 @@
           </plugin>
         </plugins>
       </reporting>
-    </profile>
-
-    <profile>
-      <id>skiptests</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <excludes>
-                <exclude>**/*.java</exclude>
-              </excludes>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
 
     <profile>
@@ -6109,9 +6108,17 @@
     </profile>
     <profile>
       <id>pgsql</id>
+      <properties>
+        <nuxeo.test.vcs.db>PostgreSQL</nuxeo.test.vcs.db>
+        <nuxeo.db.port.default>5432</nuxeo.db.port.default>
+      </properties>
     </profile>
     <profile>
       <id>mssql</id>
+      <properties>
+        <nuxeo.test.vcs.db>SQLServer</nuxeo.test.vcs.db>
+        <nuxeo.db.port.default>1433</nuxeo.db.port.default>
+      </properties>
     </profile>
     <profile>
       <id>oracle10g</id>
@@ -6121,6 +6128,10 @@
           <artifactId>ojdbc14</artifactId>
         </dependency>
       </dependencies>
+      <properties>
+        <nuxeo.test.vcs.db>Oracle</nuxeo.test.vcs.db>
+        <nuxeo.db.port.default>1521</nuxeo.db.port.default>
+      </properties>
     </profile>
     <profile>
       <id>oracle11g</id>
@@ -6130,6 +6141,10 @@
           <artifactId>ojdbc6</artifactId>
         </dependency>
       </dependencies>
+      <properties>
+        <nuxeo.test.vcs.db>Oracle</nuxeo.test.vcs.db>
+        <nuxeo.db.port.default>1521</nuxeo.db.port.default>
+      </properties>
     </profile>
     <profile>
       <id>oracle12c</id>
@@ -6139,9 +6154,24 @@
           <artifactId>ojdbc7</artifactId>
         </dependency>
       </dependencies>
+      <properties>
+        <nuxeo.test.vcs.db>Oracle</nuxeo.test.vcs.db>
+        <nuxeo.db.port.default>1521</nuxeo.db.port.default>
+      </properties>
     </profile>
     <profile>
       <id>mysql</id>
+      <properties>
+        <nuxeo.test.vcs.db>MySQL</nuxeo.test.vcs.db>
+        <nuxeo.db.port.default>3306</nuxeo.db.port.default>
+      </properties>
+    </profile>
+    <profile>
+      <id>mongodb</id>
+       <properties>
+        <nuxeo.test.core>mongodb</nuxeo.test.core>
+        <nuxeo.mongodb.server.default>localhost:27017</nuxeo.mongodb.server.default>
+      </properties>
     </profile>
 
     <!-- Used to include addons and/or nuxeo-distribution in a single run -->
@@ -6168,9 +6198,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>mongodb</id>
     </profile>
   </profiles>
 
