@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Stephane Lacoin
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.management.jtajca;
 
@@ -69,12 +70,19 @@ public class CanRollbackDatabaseTest {
 
     private void insertWrongReference() throws NamingException, SQLException, AssertionFailedError {
         DataSource ds = DataSourceHelper.getDataSource("jdbc/repository_test");
+        try (Connection db = ds.getConnection()) {
+            try (Statement st = db.createStatement()) {
+                st.execute("CREATE TABLE footest(a INTEGER PRIMARY KEY)");
+            }
+        }
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         {
             try (Connection db = ds.getConnection()) {
                 try (Statement st = db.createStatement()) {
-                    st.execute("INSERT into hierarchy(id) values('pfouh')");
-                    st.addBatch("INSERT into hierarchy (id, parentid ) values ('1','2')");
-                    st.executeBatch();
+                    st.execute("INSERT INTO footest (a) VALUES (0)");
+                    st.execute("INSERT INTO footest (a) VALUES (1)");
+                    st.execute("INSERT INTO footest (a) VALUES (1)");
                 }
             } finally {
                 try {
@@ -84,7 +92,7 @@ public class CanRollbackDatabaseTest {
                     TransactionHelper.startTransaction();
                     try (Connection db = ds.getConnection()) {
                         try (Statement st = db.createStatement()) {
-                            try (ResultSet rs = st.executeQuery("SELECT id from hierarchy where id = 'pfouh'")) {
+                            try (ResultSet rs = st.executeQuery("SELECT a FROM footest WHERE a = 0")) {
                                 if (rs.next()) {
                                     throw new AssertionFailedError("connection was not rollbacked");
                                 }

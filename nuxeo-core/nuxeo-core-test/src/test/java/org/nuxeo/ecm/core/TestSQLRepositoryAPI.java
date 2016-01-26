@@ -178,6 +178,10 @@ public class TestSQLRepositoryAPI {
         }
     }
 
+    protected boolean isDBS() {
+        return coreFeature.getStorageConfiguration().isDBS();
+    }
+
     /**
      * Sleep 1s, useful for stupid databases (like MySQL) that don't have subsecond resolution in TIMESTAMP fields.
      */
@@ -3829,7 +3833,10 @@ public class TestSQLRepositoryAPI {
         ((SchemaManagerImpl) schemaManager).unregisterDocumentType(dtd);
 
         reopenSession();
-        assertFalse(session.hasChildren(rootRef));
+        if (!isDBS()) {
+            // DBS does not do obsolete type check on hasChildren() due to cost
+            assertFalse(session.hasChildren(rootRef));
+        }
         assertEquals(0, session.getChildren(rootRef).size());
         try {
             session.getDocument(docRef);
