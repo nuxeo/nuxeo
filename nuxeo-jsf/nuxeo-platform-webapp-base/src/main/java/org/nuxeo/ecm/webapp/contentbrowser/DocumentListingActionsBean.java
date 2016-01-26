@@ -71,7 +71,9 @@ public class DocumentListingActionsBean implements Serializable {
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
-    /** @since 5.6 */
+    /**
+     * @since 5.6
+     */
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
@@ -232,8 +234,7 @@ public class DocumentListingActionsBean implements Serializable {
         processSelectPage(contentViewName, listName, selection);
     }
 
-    public void processSelectRow(String docRef, String contentViewName, String listName, Boolean selection)
-            {
+    public void processSelectRow(String docRef, String contentViewName, String listName, Boolean selection) {
         List<DocumentModel> documents = getCurrentPageDocuments(contentViewName);
         DocumentModel doc = null;
         if (documents != null) {
@@ -245,8 +246,9 @@ public class DocumentListingActionsBean implements Serializable {
             }
         }
         if (doc == null) {
-            log.error(String.format("could not find doc '%s' in the current page of "
-                    + "content view page provider '%s'", docRef, contentViewName));
+            log.error(
+                    String.format("could not find doc '%s' in the current page of content view page provider '%s'",
+                            docRef, contentViewName));
             return;
         }
         String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION : listName;
@@ -303,8 +305,7 @@ public class DocumentListingActionsBean implements Serializable {
      *
      * @param versionModelSelection the version model selection
      */
-    protected final void processVersionSelectRow(PageSelection<VersionModel> versionModelSelection)
-            {
+    protected final void processVersionSelectRow(PageSelection<VersionModel> versionModelSelection) {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
