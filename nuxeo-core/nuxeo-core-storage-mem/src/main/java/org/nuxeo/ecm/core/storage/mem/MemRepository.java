@@ -373,7 +373,7 @@ public class MemRepository extends DBSRepositoryBase {
                 }
                 state.put(key, value);
             } else {
-                state.put(key, diffElem);
+                state.put(key, StateHelper.deepCopy(diffElem, true)); // thread-safe
             }
         }
     }
