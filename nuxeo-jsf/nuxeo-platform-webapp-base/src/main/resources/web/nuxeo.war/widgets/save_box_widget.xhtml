@@ -1,14 +1,15 @@
-<ui:composition
+<h:panelGroup layout="block"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
-  xmlns:a4j="http://richfaces.org/a4j">
-<div id="#{widget.id}"
-  class="#{widgetProperty_styleClass}">
+  id="#{widget.id}"
+  styleClass="#{widgetProperty_styleClass}">
 
   <nxu:set var="widgetPanelId"
     value="#{widget.id}_panel"
@@ -39,9 +40,9 @@
     value="#{webActions.getAction(widgetProperty_actionId, not widgetProperty_disableFiltered)}"
     cache="true">
   <nxu:set var="localElementToRender"
-    value="#{nxu:componentAbsoluteId(component, widgetPanelId)}">
+    value="#{widgetPanelId}">
   <nxu:set var="elementsToRender"
-    value="#{nxu:joinRender(ajaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}">
+    value="#{nxu:joinRender(ajaxReRender, widgetProperty_ajaxReRender)}">
     <nxwt:action
       mode="#{widget.mode}"
       widgetName="#{widget.name}_action"
@@ -57,5 +58,4 @@
   </a4j:outputPanel>
   </nxu:set>
 
-</div>
-</ui:composition>
+</h:panelGroup>
