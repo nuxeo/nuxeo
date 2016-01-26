@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -61,6 +62,9 @@ import com.google.inject.Inject;
 @LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestCompareQueryAndFetch {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -149,6 +153,16 @@ public class TestCompareQueryAndFetch {
                     // ISO 8601
                     value = String.format("%tFT%<tT.%<tL%<tz", (Calendar) value);
                 }
+                if (coreFeature.getStorageConfiguration().isDBSMongoDB()) {
+                    if (key.equals("ecm:name") || key.equals("ecm:parentId")) {
+                        // MongoDB has extra keys in the result set, ignore them
+                        continue;
+                    }
+                    if (value == null) {
+                        // MongoDB returns explicit nulls
+                        continue;
+                    }
+                }
                 sortedMap.put(key, value);
             }
             sb.append(sortedMap.entrySet().toString());
@@ -174,7 +188,7 @@ public class TestCompareQueryAndFetch {
     public void testSimpleSearchWithSort() throws Exception {
         compareESAndCore("select ecm:uuid, dc:title, dc:nature from Document order by ecm:uuid");
         compareESAndCore("select ecm:uuid, dc:title from Document where ecm:currentLifeCycleState != 'deleted' order by ecm:uuid");
-        compareESAndCore("select dc:nature from File order by dc:nature");
+        compareESAndCore("select ecm:uuid, dc:nature from File order by dc:nature, ecm:uuid");
         // TODO some timezone issues here...
         // compareESAndCore("select ecm:uuid, dc:issued from File order by ecm:uuid");
     }
