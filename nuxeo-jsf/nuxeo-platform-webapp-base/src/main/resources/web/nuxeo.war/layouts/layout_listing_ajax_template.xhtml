@@ -48,6 +48,7 @@
                 <f:attribute name="listName" value="#{contentView.selectionListName}" />
                 <a4j:ajax event="change"
                   execute="@this"
+                  oncomplete="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
                   render="#{resultsPanelId} #{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
               </h:selectBooleanCheckbox>
             </c:when>
@@ -62,6 +63,7 @@
                 <f:attribute name="listName" value="#{contentView.selectionListName}" />
                 <a4j:ajax event="change"
                   execute="@this"
+                  oncomplete="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
                   render="#{resultsPanelId} #{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
               </h:selectBooleanCheckbox>
             </c:when>
