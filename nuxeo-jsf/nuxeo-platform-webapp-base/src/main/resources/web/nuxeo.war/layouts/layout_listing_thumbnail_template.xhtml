@@ -1,4 +1,6 @@
 <f:subview
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -19,7 +21,7 @@
     - formId: the surrounding form id
   </c:if>
 
-  <c:if test="#{layoutListingStatus.index == 0}">
+  <ui:fragment rendered="#{layoutListingStatus.index == 0}">
 
     <!-- slideshow init -->
     <nxu:set var="cvpcfp"
@@ -178,7 +180,7 @@
       </a4j:outputPanel>
     </div>
     <div class="clear" />
-  </c:if>
+  </ui:fragment>
 
   <!-- for slideshow -->
   <nxu:set var="blobInfo"
