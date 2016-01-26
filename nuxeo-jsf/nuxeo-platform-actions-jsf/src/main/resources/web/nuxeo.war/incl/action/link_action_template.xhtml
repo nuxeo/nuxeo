@@ -46,7 +46,7 @@
       <nxu:actionListenerMethod
         value="#{action.getLink()}" />
       <ui:insert name="after_action_trigger" />
-      <f:ajax execute="#{action.immediate ? '@this' : '@form'}"
+      <a4j:ajax execute="#{action.immediate ? '@this' : '@form'}"
         render="#{ajaxReRender}" />
     </h:commandButton>
 
@@ -82,7 +82,7 @@
       <nxu:actionListenerMethod
         value="#{action.getLink()}" />
       <ui:insert name="after_action_trigger" />
-      <f:ajax execute="#{action.immediate ? '@this' : '@form'}"
+      <a4j:ajax execute="#{action.immediate ? '@this' : '@form'}"
         render="#{ajaxReRender}" />
     </h:commandLink>
   </c:if>

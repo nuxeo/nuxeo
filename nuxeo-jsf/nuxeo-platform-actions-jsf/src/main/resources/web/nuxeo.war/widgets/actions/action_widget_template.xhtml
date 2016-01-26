@@ -20,8 +20,7 @@
   cache="true">
 <nxu:set var="actionsPanelId" value="#{widget.id}_panel"
   cache="true">
-<nxu:set var="actionsAjaxReRender" value="#{nxu:componentAbsoluteId(component, actionsPanelId)}">
-<nxu:set var="ajaxReRender" value="#{nxu:joinRender(actionsAjaxReRender, nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender))}">
+<nxu:set var="ajaxReRender" value="#{nxu:joinRender(actionsPanelId, widgetProperty_ajaxReRender)}">
 <nxu:set var="formAdded" value="#{widgetProperty_addForm}" cache="true">
   <nxu:valueHolder id="#{clickedActionIdHolder}"
     skip="#{!widgetProperty_trackCurrentAction}"
@@ -47,7 +46,6 @@
     </a4j:outputPanel>
 
   </nxu:valueHolder>
-</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>
