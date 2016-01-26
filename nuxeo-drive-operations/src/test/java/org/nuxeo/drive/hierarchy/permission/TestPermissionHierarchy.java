@@ -93,7 +93,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.ecm.core.cache", "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 @Jetty(port = 18080)
-@RepositoryConfig(cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 @TransactionalConfig(autoStart = true)
 public class TestPermissionHierarchy {
 
