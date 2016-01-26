@@ -35,6 +35,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentRenderUtils;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
 /**
  * Managed bean, request-scoped, that resets the components value for ajax interactions.
@@ -110,7 +111,7 @@ public class JSFResetActionsBean {
         if (component == null) {
             return;
         }
-        String baseCompId = getStringAttribute(component, "target", false);
+        String baseCompId = ComponentUtils.getAttributeValue(component, "target", String.class, null, false);
         if (baseCompId == null) {
             // compat
             baseCompId = getBaseComponentId();
@@ -129,17 +130,6 @@ public class JSFResetActionsBean {
         } else {
             log.error("No base component id given => cannot reset components state.");
         }
-    }
-
-    protected String getStringAttribute(UIComponent component, String name, boolean required) {
-        Object value = component.getAttributes().get(name);
-        if (required && value == null) {
-            throw new IllegalArgumentException("Component attribute with name '" + name + "' cannot be null: " + value);
-        }
-        if (value == null || value instanceof String) {
-            return (String) value;
-        }
-        throw new IllegalArgumentException("Component attribute with name '" + name + "' is not a String: " + value);
     }
 
     /**
