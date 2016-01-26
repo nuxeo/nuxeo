@@ -14,9 +14,6 @@
 
   <h:form enctype="multipart/form-data" id="#{fancyboxFormId}" disableDoubleClickShield="#{!useHtml5DragAndDrop}">
 
-    <nxu:set var="buttonsId" value="#{fancyboxFormId}_buttons">
-    <nxu:set var="fancyButtonsRender"
-      value="#{nxu:componentAbsoluteId(component, buttonsId)}">
     <div class="content positionR">
       <table class="dataInput fullWidth separator">
         <tbody>
@@ -33,7 +30,7 @@
               translated="true"
               minChars="3"
               placeholder="label.bulk.import.documents.select.location.placeholder"
-              ajaxReRender="#{fancyButtonsRender}"
+              ajaxReRender="#{fancyboxFormId}_buttons"
               pageProviderName="importFolders"
               documentSchemas="dublincore,common" />
             <h:message styleClass="errorMessage" for="#{fancyboxFormId}"
@@ -83,7 +80,7 @@
                   value="#{importActions.selectedImportOptionId}"
                   id="#{widget.id}" styleClass="langSelect">
                   <a4j:ajax event="change"
-                    render="#{nxu:componentAbsoluteId(component, 'importLayout_panel')}" />
+                    render="importLayout_panel" />
                   <nxu:selectItems
                     var="importOption" value="#{importOptions}"
                     itemValue="#{importOption.id}" itemLabel="#{messages[importOption.label]}" />
@@ -122,7 +119,7 @@
 
     </div>
 
-    <a4j:outputPanel id="#{buttonsId}" layout="block">
+    <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
       <div class="buttonsGadget" data-selectedimportfolder="#{!empty importActions.selectedImportFolderId}">
         <nxu:set var="importButtonDisabled"
           value="#{empty importActions.selectedImportFolderId or !importActions.hasUploadedFiles()}"
@@ -156,8 +153,6 @@
         </nxu:set>
       </div>
     </a4j:outputPanel>
-    </nxu:set>
-    </nxu:set>
   </h:form>
 
 </h:panelGroup>
