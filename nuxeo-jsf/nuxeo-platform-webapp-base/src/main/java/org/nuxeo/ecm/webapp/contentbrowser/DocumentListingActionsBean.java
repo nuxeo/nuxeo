@@ -213,6 +213,22 @@ public class DocumentListingActionsBean implements Serializable {
         return documents;
     }
 
+    /**
+     * @since 8.2
+     */
+    public void selectPage(ValueChangeEvent event) {
+        UIComponent anchor = event.getComponent();
+        String currentDocRef = ComponentUtils.getAttributeValue(anchor, "currentDocRef", String.class, null, false);
+        String contentViewName = ComponentUtils.getAttributeValue(anchor, "contentViewName", String.class, null, true);
+        String listName = ComponentUtils.getAttributeValue(anchor, "listName", String.class, null, true);
+        Boolean selection = Boolean.TRUE.equals(event.getNewValue());
+        if (currentDocRef == null) {
+            processSelectPage(contentViewName, listName, selection);
+        } else {
+            checkCurrentDocAndProcessSelectPage(contentViewName, listName, selection, currentDocRef);
+        }
+    }
+
     public void processSelectPage(String contentViewName, String listName, Boolean selection) {
         List<DocumentModel> documents = getCurrentPageDocuments(contentViewName);
         if (documents != null) {
