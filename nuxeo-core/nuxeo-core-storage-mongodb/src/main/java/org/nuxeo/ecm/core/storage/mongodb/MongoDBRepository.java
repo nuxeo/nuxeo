@@ -696,10 +696,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, int limit, int offset, int countUpTo) {
+            OrderByClause orderByClause, boolean selectDocuments, int limit, int offset, int countUpTo) {
         // orderByClause may be null and different from evaluator.getOrderByClause() in case we want to post-filter
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(evaluator.getExpression(), evaluator.getSelectClause(),
-                orderByClause, evaluator.pathResolver);
+                orderByClause, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
         builder.walk();
         if (builder.hasFulltext && isFulltextDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
@@ -708,8 +708,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
         addPrincipals(query, evaluator.principals);
         DBObject orderBy = builder.getOrderBy();
         DBObject keys = builder.getProjection();
-        boolean projectionHasWildcard = builder.hasProjectionWildcard();
-        if (projectionHasWildcard) {
+        // Don't do manual projection if there are no projection wildcards, as this brings no new
+        // information and is costly. The only difference is several identical rows instead of one.
+        boolean manualProjection = !selectDocuments && builder.hasProjectionWildcard();
+        if (manualProjection) {
             // we'll do post-treatment to re-evaluate the query to get proper wildcard projections
             // so we need the full state from the database
             keys = new BasicDBObject();
@@ -730,7 +732,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             projections = new ArrayList<>();
             for (DBObject ob : cursor) {
                 State state = bsonToState(ob);
-                if (projectionHasWildcard) {
+                if (manualProjection) {
                     projections.addAll(evaluator.matches(state));
                 } else {
                     projections.add(flatten(state));

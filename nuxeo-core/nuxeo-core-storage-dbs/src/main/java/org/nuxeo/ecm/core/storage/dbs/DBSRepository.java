@@ -179,6 +179,7 @@ public interface DBSRepository extends Repository, LockManager {
      *
      * @param evaluator the map-based evaluator for the query
      * @param orderByClause an ORDER BY clause
+     * @param selectDocuments the projection should return only distinct document ids
      * @param limit the limit on the number of documents to return
      * @param offset the offset in the list of documents to return
      * @param countUpTo if {@code -1}, count the total size without offset/limit.<br>
@@ -189,7 +190,7 @@ public interface DBSRepository extends Repository, LockManager {
      *         countUpTo
      */
     PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator, OrderByClause orderByClause,
-            int limit, int offset, int countUpTo);
+            boolean selectDocuments, int limit, int offset, int countUpTo);
 
     /**
      * Gets the lock manager for this repository.

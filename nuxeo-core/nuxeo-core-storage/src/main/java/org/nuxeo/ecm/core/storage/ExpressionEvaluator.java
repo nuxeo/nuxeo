@@ -93,12 +93,14 @@ public abstract class ExpressionEvaluator {
 
     public final Set<String> principals;
 
-    public final boolean fulltextDisabled;
+    public final boolean fulltextSearchDisabled;
 
-    public ExpressionEvaluator(PathResolver pathResolver, String[] principals, boolean fulltextDisabled) {
+    public boolean hasFulltext;
+
+    public ExpressionEvaluator(PathResolver pathResolver, String[] principals, boolean fulltextSearchDisabled) {
         this.pathResolver = pathResolver;
         this.principals = principals == null ? null : new HashSet<String>(Arrays.asList(principals));
-        this.fulltextDisabled = fulltextDisabled;
+        this.fulltextSearchDisabled = fulltextSearchDisabled;
     }
 
     public Object walkExpression(Expression expr) {
@@ -229,12 +231,13 @@ public abstract class ExpressionEvaluator {
         if (!(rvalue instanceof StringLiteral)) {
             throw new QueryParseException(NXQL.ECM_FULLTEXT + " requires literal string as right argument");
         }
-        if (fulltextDisabled) {
+        if (fulltextSearchDisabled) {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
         String query = ((StringLiteral) rvalue).value;
         if (name.equals(NXQL.ECM_FULLTEXT)) {
             // standard fulltext query
+            hasFulltext = true;
             String simple = (String) walkReference(new Reference(NXQL_ECM_FULLTEXT_SIMPLE));
             String binary = (String) walkReference(new Reference(NXQL_ECM_FULLTEXT_BINARY));
             return fulltext(simple, binary, query);

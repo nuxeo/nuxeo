@@ -89,8 +89,12 @@ public class FulltextConfiguration {
 
     public final Set<String> includedTypes = new HashSet<String>();
 
+    public final boolean fulltextSearchDisabled;
+
     public FulltextConfiguration(FulltextDescriptor fulltextDescriptor) {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+
+        fulltextSearchDisabled = fulltextDescriptor.getFulltextSearchDisabled();
 
         // find what paths we mean by "all"
         Set<String> allSimplePaths = new HashSet<>();

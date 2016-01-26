@@ -275,8 +275,8 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
     protected int refCount;
 
     public DBSExpressionEvaluator(DBSSession session, SelectClause selectClause, Expression expression,
-            OrderByClause orderByClause, String[] principals, boolean fulltextDisabled) {
-        super(new DBSPathResolver(session), principals, fulltextDisabled);
+            OrderByClause orderByClause, String[] principals, boolean fulltextSearchDisabled) {
+        super(new DBSPathResolver(session), principals, fulltextSearchDisabled);
         this.selectClause = selectClause;
         this.expression = expression;
         this.orderByClause = orderByClause;
@@ -408,16 +408,35 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
     public Map<String, Serializable> walkSelectClauseAndOrderBy(SelectClause selectClause,
             OrderByClause orderByClause) {
         Map<String, Serializable> projection = new HashMap<>();
+        boolean projectionOnFulltextScore = false;
+        boolean sortOnFulltextScore = false;
         SelectList elements = selectClause.getSelectList();
         for (int i = 0; i < elements.size(); i++) {
             Operand op = elements.get(i);
             if (op instanceof Reference) {
-                addProjection((Reference) op, projection);
+                Reference ref = (Reference) op;
+                if (ref.name.equals(NXQL.ECM_FULLTEXT_SCORE)) {
+                    projectionOnFulltextScore = true;
+                }
+                addProjection(ref, projection);
             }
         }
         if (orderByClause != null) {
             for (OrderByExpr obe : orderByClause.elements) {
-                addProjection(obe.reference, projection);
+                Reference ref = obe.reference;
+                if (ref.name.equals(NXQL.ECM_FULLTEXT_SCORE)) {
+                    sortOnFulltextScore = true;
+                }
+                addProjection(ref, projection);
+            }
+        }
+        if (projectionOnFulltextScore || sortOnFulltextScore) {
+            if (!parsing) {
+                if (!hasFulltext) {
+                    throw new QueryParseException(
+                            NXQL.ECM_FULLTEXT_SCORE + " cannot be used without " + NXQL.ECM_FULLTEXT);
+                }
+                projection.put(NXQL.ECM_FULLTEXT_SCORE, Long.valueOf(1));
             }
         }
         return projection;

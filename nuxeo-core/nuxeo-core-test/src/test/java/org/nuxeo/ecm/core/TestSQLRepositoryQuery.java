@@ -1127,6 +1127,8 @@ public class TestSQLRepositoryQuery {
     // new-style date comparisons (casting to native DATE type)
     @Test
     public void testDateNew() throws Exception {
+        assumeTrue("MongoDB does not support NXQL DATE casts", !isDBSMongoDB());
+
         String sql;
         DocumentModelList dml;
         createDocs();

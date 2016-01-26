@@ -76,6 +76,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
@@ -101,6 +102,8 @@ public class MongoDBQueryBuilder {
     private static final Long ONE = Long.valueOf(1);
 
     private static final Long MINUS_ONE = Long.valueOf(-1);
+
+    protected static final String DATE_CAST = "DATE";
 
     protected final AtomicInteger counter = new AtomicInteger();
 
@@ -128,13 +131,16 @@ public class MongoDBQueryBuilder {
 
     boolean projectionHasWildcard;
 
+    private boolean fulltextSearchDisabled;
+
     public MongoDBQueryBuilder(Expression expression, SelectClause selectClause, OrderByClause orderByClause,
-            PathResolver pathResolver) {
+            PathResolver pathResolver, boolean fulltextSearchDisabled) {
         schemaManager = Framework.getLocalService(SchemaManager.class);
         this.expression = expression;
         this.selectClause = selectClause;
         this.orderByClause = orderByClause;
         this.pathResolver = pathResolver;
+        this.fulltextSearchDisabled = fulltextSearchDisabled;
     }
 
     public void walk() {
@@ -221,7 +227,12 @@ public class MongoDBQueryBuilder {
         Operator op = expr.operator;
         Operand lvalue = expr.lvalue;
         Operand rvalue = expr.rvalue;
-        String name = lvalue instanceof Reference ? ((Reference) lvalue).name : null;
+        Reference ref = lvalue instanceof Reference ? (Reference) lvalue : null;
+        String name = ref != null ? ref.name : null;
+        String cast = ref != null ? ref.cast : null;
+        if (DATE_CAST.equals(cast)) {
+            checkDateLiteralForCast(op, rvalue, name);
+        }
         if (op == Operator.STARTSWITH) {
             return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
@@ -285,6 +296,22 @@ public class MongoDBQueryBuilder {
         }
     }
 
+    protected void checkDateLiteralForCast(Operator op, Operand value, String name) {
+        if (op == Operator.BETWEEN || op == Operator.NOTBETWEEN) {
+            LiteralList l = (LiteralList) value;
+            checkDateLiteralForCast(l.get(0), name);
+            checkDateLiteralForCast(l.get(1), name);
+        } else {
+            checkDateLiteralForCast(value, name);
+        }
+    }
+
+    protected void checkDateLiteralForCast(Operand value, String name) {
+        if (value instanceof DateLiteral && !((DateLiteral) value).onlyDate) {
+            throw new QueryParseException("DATE() cast must be used with DATE literal, not TIMESTAMP: " + name);
+        }
+    }
+
     protected DBObject walkEcmPath(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
             throw new QueryParseException(NXQL.ECM_PATH + " requires = or <> operator");
@@ -330,6 +357,9 @@ public class MongoDBQueryBuilder {
         }
         if (!(rvalue instanceof StringLiteral)) {
             throw new QueryParseException(NXQL.ECM_FULLTEXT + " requires literal string as right argument");
+        }
+        if (fulltextSearchDisabled) {
+            throw new QueryParseException("Fulltext search disabled by configuration");
         }
         String fulltextQuery = ((StringLiteral) rvalue).value;
         if (name.equals(NXQL.ECM_FULLTEXT)) {
@@ -509,7 +539,7 @@ public class MongoDBQueryBuilder {
                 FieldInfoDBObject fidbo = (FieldInfoDBObject) ob;
                 FieldInfo fieldInfo = fidbo.fieldInfo;
                 if (fieldInfo.hasWildcard) {
-                    if (fieldInfo.fieldSuffix.contains("*")) {
+                    if (fieldInfo.fieldSuffix != null && fieldInfo.fieldSuffix.contains("*")) {
                         // a double wildcard of the form foo/*/bar/* is not a problem if bar is an array
                         // TODO prevent deep complex multiple wildcards
                         // throw new QueryParseException("Cannot use two wildcards: " + fieldInfo.prop);
@@ -578,7 +608,7 @@ public class MongoDBQueryBuilder {
     }
 
     protected Object checkBoolean(FieldInfo fieldInfo, Object right) {
-        if (fieldInfo.isBoolean) {
+        if (fieldInfo.isBoolean()) {
             // convert 0 / 1 to actual booleans
             if (right instanceof Long) {
                 if (ZERO.equals(right)) {
@@ -844,8 +874,8 @@ public class MongoDBQueryBuilder {
         }
     }
 
-    /** Splits foo.*.bar into foo, *, bar and foo.*1.bar into foo, *1, bar */
-    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*)\\.\\*(\\d*)\\.(.*)");
+    /** Splits foo.*.bar into foo, *, bar and split foo.*1.bar into foo, *1, bar with the last bar part optional */
+    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*)\\.\\*(\\d*)(?:\\.(.*))?");
 
     protected static class FieldInfo {
 
@@ -861,7 +891,7 @@ public class MongoDBQueryBuilder {
         /** MongoDB field for projection. */
         protected final String projectionField;
 
-        protected final boolean isBoolean;
+        protected final Type type;
 
         /**
          * Boolean system properties only use TRUE or NULL, not FALSE, so queries must be updated accordingly.
@@ -876,16 +906,16 @@ public class MongoDBQueryBuilder {
         /** Wildcard part after * */
         protected final String fieldWildcard;
 
-        /** Part after wildcard. */
+        /** Part after wildcard, may be null. */
         protected final String fieldSuffix;
 
-        protected FieldInfo(String prop, String fullField, String queryField, String projectionField, boolean isBoolean,
+        protected FieldInfo(String prop, String fullField, String queryField, String projectionField, Type type,
                 boolean isTrueOrNullBoolean) {
             this.prop = prop;
             this.fullField = fullField;
             this.queryField = queryField;
             this.projectionField = projectionField;
-            this.isBoolean = isBoolean;
+            this.type = type;
             this.isTrueOrNullBoolean = isTrueOrNullBoolean;
             Matcher m = WILDCARD_SPLIT.matcher(fullField);
             if (m.matches()) {
@@ -897,6 +927,10 @@ public class MongoDBQueryBuilder {
                 hasWildcard = false;
                 fieldPrefix = fieldWildcard = fieldSuffix = null;
             }
+        }
+
+        protected boolean isBoolean() {
+            return type instanceof BooleanType;
         }
     }
 
@@ -916,51 +950,35 @@ public class MongoDBQueryBuilder {
      * Returns the MongoDB field for this reference.
      */
     public FieldInfo walkReference(Reference ref) {
-        String prop = ref.name;
-        prop = canonicalXPath(prop);
+        FieldInfo fieldInfo = walkReference(ref.name);
+        if (DATE_CAST.equals(ref.cast)) {
+            Type type = fieldInfo.type;
+            if (!(type instanceof DateType
+                    || (type instanceof ListType && ((ListType) type).getFieldType() instanceof DateType))) {
+                throw new QueryParseException("Cannot cast to " + ref.cast + ": " + ref.name);
+            }
+            // fieldInfo.isDateCast = true;
+        }
+        return fieldInfo;
+    }
+
+    protected FieldInfo walkReference(String name) {
+        String prop = canonicalXPath(name);
         String[] parts = prop.split("/");
         if (prop.startsWith(NXQL.ECM_PREFIX)) {
             if (prop.startsWith(NXQL.ECM_ACL + "/")) {
-                if (parts.length != 3) {
-                    throw new QueryParseException("No such property: " + ref.name);
-                }
-                String wildcard = parts[1];
-                if (NumberUtils.isDigits(wildcard)) {
-                    throw new QueryParseException("Cannot use explicit index in ACLs: " + ref.name);
-                }
-                String last = parts[2];
-                String fullField;
-                String queryField;
-                String projectionField;
-                boolean isBoolean;
-                if (NXQL.ECM_ACL_NAME.equals(last)) {
-                    fullField = KEY_ACP + "." + KEY_ACL_NAME;
-                    queryField = KEY_ACP + "." + KEY_ACL_NAME;
-                    // TODO remember wildcard correlation
-                    isBoolean = false;
-                } else {
-                    String fieldLast = DBSSession.convToInternalAce(last);
-                    if (fieldLast == null) {
-                        throw new QueryParseException("No such property: " + ref.name);
-                    }
-                    isBoolean = KEY_ACE_GRANT.equals(fieldLast);
-                    fullField = KEY_ACP + "." + KEY_ACL + "." + wildcard + "." + fieldLast;
-                    queryField = KEY_ACP + "." + KEY_ACL + "." + fieldLast;
-                }
-                projectionField = queryField;
-                return new FieldInfo(prop, fullField, queryField, projectionField, isBoolean, false);
-            } else {
-                // simple field
-                String field = DBSSession.convToInternal(prop);
-                boolean isBoolean = DBSSession.isBoolean(field);
-                return new FieldInfo(prop, field, field, field, isBoolean, true);
+                return parseACP(prop, parts);
             }
+            // simple field
+            String field = DBSSession.convToInternal(prop);
+            Type type = DBSSession.getType(field);
+            return new FieldInfo(prop, field, field, field, type, true);
         } else {
             String first = parts[0];
             Field field = schemaManager.getField(first);
             if (field == null) {
                 if (first.indexOf(':') > -1) {
-                    throw new QueryParseException("No such property: " + ref.name);
+                    throw new QueryParseException("No such property: " + name);
                 }
                 // check without prefix
                 // TODO precompute this in SchemaManagerImpl
@@ -977,7 +995,7 @@ public class MongoDBQueryBuilder {
                     }
                 }
                 if (field == null) {
-                    throw new QueryParseException("No such property: " + ref.name);
+                    throw new QueryParseException("No such property: " + name);
                 }
             }
             Type type = field.getType();
@@ -1000,7 +1018,7 @@ public class MongoDBQueryBuilder {
                         // we already computed the type of the first part
                         field = ((ComplexType) type).getField(part);
                         if (field == null) {
-                            throw new QueryParseException("No such property: " + ref.name);
+                            throw new QueryParseException("No such property: " + name);
                         }
                         type = field.getType();
                     }
@@ -1013,9 +1031,37 @@ public class MongoDBQueryBuilder {
             String fullField = StringUtils.join(parts, '.');
             String queryField = StringUtils.join(queryFieldParts, '.');
             String projectionField = StringUtils.join(projectionFieldParts, '.');
-            boolean isBoolean = type instanceof BooleanType;
-            return new FieldInfo(prop, fullField, queryField, projectionField, isBoolean, false);
+            return new FieldInfo(prop, fullField, queryField, projectionField, type, false);
         }
+    }
+
+    protected FieldInfo parseACP(String prop, String[] parts) {
+        if (parts.length != 3) {
+            throw new QueryParseException("No such property: " + prop);
+        }
+        String wildcard = parts[1];
+        if (NumberUtils.isDigits(wildcard)) {
+            throw new QueryParseException("Cannot use explicit index in ACLs: " + prop);
+        }
+        String last = parts[2];
+        String fullField;
+        String queryField;
+        String projectionField;
+        if (NXQL.ECM_ACL_NAME.equals(last)) {
+            fullField = KEY_ACP + "." + KEY_ACL_NAME;
+            queryField = KEY_ACP + "." + KEY_ACL_NAME;
+            // TODO remember wildcard correlation
+        } else {
+            String fieldLast = DBSSession.convToInternalAce(last);
+            if (fieldLast == null) {
+                throw new QueryParseException("No such property: " + prop);
+            }
+            fullField = KEY_ACP + "." + KEY_ACL + "." + wildcard + "." + fieldLast;
+            queryField = KEY_ACP + "." + KEY_ACL + "." + fieldLast;
+        }
+        Type type = DBSSession.getType(last);
+        projectionField = queryField;
+        return new FieldInfo(prop, fullField, queryField, projectionField, type, false);
     }
 
     protected boolean isMixinTypes(FieldInfo fieldInfo) {

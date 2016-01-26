@@ -290,22 +290,19 @@ public class MemRepository extends DBSRepositoryBase {
 
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, int limit, int offset, int countUpTo) {
+            OrderByClause orderByClause, boolean selectDocuments, int limit, int offset, int countUpTo) {
         if (log.isTraceEnabled()) {
             log.trace("Mem: QUERY " + evaluator + " OFFSET " + offset + " LIMIT " + limit);
         }
         evaluator.parse();
-        boolean wildcardProjection = evaluator.hasWildcardProjection();
         List<Map<String, Serializable>> projections = new ArrayList<>();
         for (State state : states.values()) {
             List<Map<String, Serializable>> matches = evaluator.matches(state);
             if (!matches.isEmpty()) {
-                if (wildcardProjection) {
-                    // all projections are relevant
-                    projections.addAll(matches);
-                } else {
-                    // no wildcard in projection, all projections are identical, keep the first
+                if (selectDocuments) {
                     projections.add(matches.get(0));
+                } else {
+                    projections.addAll(matches);
                 }
             }
         }

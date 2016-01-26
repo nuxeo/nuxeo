@@ -121,6 +121,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.StateHelper;
@@ -138,11 +139,15 @@ public class DBSSession implements Session {
 
     protected final DBSTransactionState transaction;
 
+    protected final boolean fulltextSearchDisabled;
+
     protected boolean closed;
 
     public DBSSession(DBSRepository repository) {
         this.repository = repository;
         transaction = new DBSTransactionState(repository, this);
+        FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
+        fulltextSearchDisabled = fulltextConfiguration == null || fulltextConfiguration.fulltextSearchDisabled;
     }
 
     @Override
@@ -1381,7 +1386,7 @@ public class DBSSession implements Session {
     }
 
     protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo) {
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, countUpTo);
+        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, true, countUpTo);
         List<String> ids = new ArrayList<String>(pl.list.size());
         for (Map<String, Serializable> map : pl.list) {
             String id = (String) map.get(NXQL.ECM_UUID);
@@ -1391,7 +1396,7 @@ public class DBSSession implements Session {
     }
 
     protected PartialList<Map<String, Serializable>> doQueryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, int countUpTo) {
+            QueryFilter queryFilter, boolean selectDocuments, int countUpTo) {
         if ("NXTAG".equals(queryType)) {
             // for now don't try to implement tags
             // and return an empty list
@@ -1423,9 +1428,8 @@ public class DBSSession implements Session {
 
         QueryOptimizer optimizer = new QueryOptimizer();
         MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
-        boolean fulltextDisabled = repository.getFulltextConfiguration() == null;
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression, orderByClause,
-                queryFilter.getPrincipals(), fulltextDisabled);
+                queryFilter.getPrincipals(), fulltextSearchDisabled);
 
         int limit = (int) queryFilter.getLimit();
         int offset = (int) queryFilter.getOffset();
@@ -1454,8 +1458,8 @@ public class DBSSession implements Session {
         }
 
         // query the repository
-        PartialList<Map<String, Serializable>> pl = repository.queryAndFetch(evaluator, repoOrderByClause, repoLimit,
-                repoOffset, countUpTo);
+        PartialList<Map<String, Serializable>> pl = repository.queryAndFetch(evaluator, repoOrderByClause,
+                selectDocuments, repoLimit, repoOffset, countUpTo);
 
         List<Map<String, Serializable>> projections = pl.list;
         long totalSize = pl.totalSize;
@@ -1589,8 +1593,7 @@ public class DBSSession implements Session {
 
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params) {
-        int countUpTo = -1;
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, countUpTo);
+        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, false, -1);
         return new DBSQueryResult(pl);
     }
 
@@ -1819,10 +1822,6 @@ public class DBSSession implements Session {
             return null;
         }
         throw new QueryParseException("No such property: " + name);
-    }
-
-    public static boolean isBoolean(String name) {
-        return getType(name) instanceof BooleanType;
     }
 
     protected static final Type STRING_ARRAY_TYPE = new ListTypeImpl("", "", StringType.INSTANCE);

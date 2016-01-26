@@ -47,7 +47,7 @@ public class TestFulltextDisabled extends TestFulltextEnabled {
         DocumentModelList esRet = ess.query(new NxQueryBuilder(session).nxql(nxql));
         Assert.assertEquals(0, esRet.totalSize());
 
-        // fulltext search with VCS is not allowed
+        // fulltext search with core is not allowed
         exception.expect(QueryParseException.class);
         DocumentModelList coreRet = session.query(nxql);
     }
