@@ -77,10 +77,55 @@ public class LayoutRowTagHandler extends TagHandler {
      * {@link RenderVariables.columnVariables#layoutColumnIndex}, that act are aliases.
      */
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
+
+        if (FaceletHandlerHelper.isAliasOptimEnabled()) {
+            applyOptimized(ctx, parent, helper);
+        } else {
+            applyCompat(ctx, parent, helper);
+        }
+    }
+
+    protected void applyOptimized(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper)
+            throws IOException, FacesException, ELException {
+        String rowCountVarName = RenderVariables.layoutVariables.layoutRowCount.name();
+        TagAttribute rowCountAttr = helper.createAttribute(rowCountVarName, "#{" + rowCountVarName + "}");
+        int rowCount = rowCountAttr.getInt(ctx);
+
+        if (rowCount == 0) {
+            return;
+        }
+
+        VariableMapper orig = ctx.getVariableMapper();
+        try {
+            for (int i = 0; i < rowCount; i++) {
+                BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+                ctx.setVariableMapper(vm);
+                // expose row variables
+                ExpressionFactory eFactory = ctx.getExpressionFactory();
+                ValueExpression ve = eFactory.createValueExpression(
+                        "#{" + RenderVariables.layoutVariables.layout.name() + ".rows[" + i + "]}", String.class);
+                ValueExpression rowVe = new MetaValueExpression(ve, ctx.getFunctionMapper(), vm, LayoutRow.class);
+                ValueExpression rowIndexVe = eFactory.createValueExpression(i, Integer.class);
+                String instanceName = getInstanceName();
+                String indexName = getIndexName();
+                vm.setVariable(instanceName, rowVe);
+                vm.addBlockedPattern(instanceName);
+                vm.setVariable(indexName, rowIndexVe);
+                vm.addBlockedPattern(indexName);
+
+                nextHandler.apply(ctx, parent);
+            }
+        } finally {
+            ctx.setVariableMapper(orig);
+        }
+    }
+
+    protected void applyCompat(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper)
+            throws IOException, FacesException, ELException {
         // resolve rows from layout in context
         Layout layout = null;
         String layoutVariableName = RenderVariables.layoutVariables.layout.name();
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute layoutAttribute = helper.createAttribute(layoutVariableName, "#{" + layoutVariableName + "}");
         if (layoutAttribute != null) {
             layout = (Layout) layoutAttribute.getObject(ctx, Layout.class);
@@ -89,53 +134,6 @@ public class LayoutRowTagHandler extends TagHandler {
             log.error("Could not resolve layout " + layoutAttribute);
             return;
         }
-
-        if (FaceletHandlerHelper.isAliasOptimEnabled()) {
-            applyOptimized(ctx, parent, layout, helper);
-        } else {
-            applyCompat(ctx, parent, layout, helper);
-        }
-    }
-
-    protected void applyOptimized(FaceletContext ctx, UIComponent parent, Layout layout, FaceletHandlerHelper helper)
-            throws IOException, FacesException, ELException {
-        LayoutRow[] rows = layout.getRows();
-        if (rows == null || rows.length == 0) {
-            return;
-        }
-
-        VariableMapper orig = ctx.getVariableMapper();
-        try {
-            int rowCounter = 0;
-            for (LayoutRow row : rows) {
-                BlockingVariableMapper vm = new BlockingVariableMapper(orig);
-                ctx.setVariableMapper(vm);
-
-                // expose row variables
-                ExpressionFactory eFactory = ctx.getExpressionFactory();
-                ValueExpression rowVe = new MetaValueExpression(
-                        eFactory.createValueExpression("#{layout.rows[" + rowCounter + "]}", String.class),
-                        ctx.getFunctionMapper(), vm, LayoutRow.class);
-                vm.setVariable(RenderVariables.rowVariables.layoutRow.name(), rowVe);
-                vm.addBlockedPattern(RenderVariables.rowVariables.layoutRow.name());
-                vm.setVariable(RenderVariables.columnVariables.layoutColumn.name(), rowVe);
-                vm.addBlockedPattern(RenderVariables.columnVariables.layoutColumn.name());
-                ValueExpression rowIndexVe = eFactory.createValueExpression(rowCounter, Integer.class);
-                vm.setVariable(RenderVariables.rowVariables.layoutRowIndex.name(), rowIndexVe);
-                vm.addBlockedPattern(RenderVariables.rowVariables.layoutRowIndex.name());
-                vm.setVariable(RenderVariables.columnVariables.layoutColumnIndex.name(), rowIndexVe);
-                vm.addBlockedPattern(RenderVariables.columnVariables.layoutColumnIndex.name());
-
-                nextHandler.apply(ctx, parent);
-                rowCounter++;
-            }
-        } finally {
-            ctx.setVariableMapper(orig);
-        }
-    }
-
-    protected void applyCompat(FaceletContext ctx, UIComponent parent, Layout layout, FaceletHandlerHelper helper)
-            throws IOException, FacesException, ELException {
         LayoutRow[] rows = layout.getRows();
         if (rows == null || rows.length == 0) {
             return;
@@ -164,6 +162,14 @@ public class LayoutRowTagHandler extends TagHandler {
             handler.apply(ctx, parent);
             rowCounter++;
         }
+    }
+
+    protected String getInstanceName() {
+        return RenderVariables.rowVariables.layoutRow.name();
+    }
+
+    protected String getIndexName() {
+        return RenderVariables.rowVariables.layoutRowIndex.name();
     }
 
 }

@@ -42,11 +42,11 @@ public class RenderVariables {
     }
 
     public enum layoutVariables {
-        layout, layoutProperty
+        layout, layoutProperty, layoutRowCount,
     }
 
     public enum rowVariables {
-        layoutRow, layoutRowIndex
+        layoutRow, layoutRowIndex,
     }
 
     public enum columnVariables {

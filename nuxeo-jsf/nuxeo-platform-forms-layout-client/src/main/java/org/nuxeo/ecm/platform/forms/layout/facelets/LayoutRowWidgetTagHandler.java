@@ -94,7 +94,7 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             throws IOException, FacesException, FaceletException, ELException {
         // resolve widgets from row in context
         LayoutRow row = null;
-        String rowVariableName = RenderVariables.rowVariables.layoutRow.name();
+        String rowVariableName = getInstanceName();
         FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute rowAttribute = helper.createAttribute(rowVariableName, "#{" + rowVariableName + "}");
         if (rowAttribute != null) {
@@ -137,6 +137,10 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
         } finally {
             ctx.setVariableMapper(orig);
         }
+    }
+
+    protected String getInstanceName() {
+        return RenderVariables.rowVariables.layoutRow.name();
     }
 
     protected void applyCompat(FaceletContext ctx, UIComponent parent)
@@ -206,7 +210,8 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             blockedPatterns.add(RenderVariables.widgetVariables.widgetIndex.name() + "*");
             blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
 
-            FaceletHandler handler = helper.getAliasFaceletHandler(tagConfigId, variables, blockedPatterns, nextHandler);
+            FaceletHandler handler = helper.getAliasFaceletHandler(tagConfigId, variables, blockedPatterns,
+                    nextHandler);
 
             // apply
             handler.apply(ctx, parent);
