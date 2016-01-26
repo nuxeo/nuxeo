@@ -135,8 +135,8 @@ public class LayoutTagHandler extends TagHandler {
         definition = getAttribute("definition");
         layout = getAttribute("layout");
         if (name == null && definition == null && layout == null) {
-            throw new TagException(this.tag, "At least one of attributes 'name', 'layout' or 'definition'"
-                    + " is required");
+            throw new TagException(this.tag,
+                    "At least one of attributes 'name', 'layout' or 'definition'" + " is required");
         }
         exposeLayout = getAttribute("exposeLayout");
         mode = getAttribute("mode");
@@ -314,8 +314,8 @@ public class LayoutTagHandler extends TagHandler {
 
     protected void applyLayoutHandler(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper,
             WebLayoutManager layoutService, Layout layoutInstance, String templateValue,
-            Map<String, Serializable> additionalProps, BlockingVariableMapper vm, boolean resolveOnly, boolean exposeLayout)
-            throws IOException, FacesException, ELException {
+            Map<String, Serializable> additionalProps, BlockingVariableMapper vm, boolean resolveOnly,
+            boolean exposeLayout) throws IOException, FacesException, ELException {
 
         // set unique id on layout, unless layout is only resolved
         if (!resolveOnly) {
@@ -334,8 +334,9 @@ public class LayoutTagHandler extends TagHandler {
                         && (value == null || ((value instanceof String) && StringUtils.isBlank((String) value)))) {
                     // do not override property on layout
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Do not override property '%s' with "
-                                + "empty value on layout named '%s'", key, layoutInstance.getName()));
+                        log.debug(String.format(
+                                "Do not override property '%s' with " + "empty value on layout named '%s'", key,
+                                layoutInstance.getName()));
                     }
                 } else {
                     layoutInstance.setProperty(key, value);
@@ -363,7 +364,8 @@ public class LayoutTagHandler extends TagHandler {
         }
 
         // expose rendering variables
-        fillVariablesForLayoutRendering(ctx, ctx.getExpressionFactory(), layoutService, vm, layoutInstance, exposeLayout);
+        fillVariablesForLayoutRendering(ctx, ctx.getExpressionFactory(), layoutService, vm, layoutInstance,
+                exposeLayout);
 
         final String layoutTagConfigId = layoutInstance.getTagConfigId();
 
@@ -372,6 +374,7 @@ public class LayoutTagHandler extends TagHandler {
         } else {
             if (!StringUtils.isBlank(templateValue)) {
                 TagAttribute srcAttr = helper.createAttribute("template", templateValue);
+                // XXX ComponentRef wrapper needed
                 TagConfig config = TagConfigFactory.createTagConfig(this.config, layoutTagConfigId,
                         FaceletHandlerHelper.getTagAttributes(srcAttr), nextHandler);
                 FaceletHandler includeHandler = new DecorateHandler(config);
@@ -425,10 +428,19 @@ public class LayoutTagHandler extends TagHandler {
             vm.setVariable(name, eFactory.createValueExpression(prop.getValue(), Object.class));
         }
         vm.addBlockedPattern(RenderVariables.layoutVariables.layoutProperty.name() + "_*");
+
+        // expose layout row count for row variables reference
+        Integer rowCount = null;
+        if (layoutInstance.getRows() != null) {
+            rowCount = layoutInstance.getRows().length;
+        }
+        vm.setVariable(RenderVariables.layoutVariables.layoutRowCount.name(),
+                eFactory.createValueExpression(rowCount, Integer.class));
+        vm.addBlockedPattern(RenderVariables.layoutVariables.layoutRowCount.name());
     }
 
-    protected void applyErrorHandler(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper, String message)
-            throws IOException {
+    protected void applyErrorHandler(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper,
+            String message) throws IOException {
         log.error(message);
         ComponentHandler output = helper.getErrorComponentHandler(null, message);
         output.apply(ctx, parent);

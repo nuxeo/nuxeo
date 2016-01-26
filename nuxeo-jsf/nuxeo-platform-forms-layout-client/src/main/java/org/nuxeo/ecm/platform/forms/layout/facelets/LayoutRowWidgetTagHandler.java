@@ -73,12 +73,12 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
      * Widget variables exposed: {@link RenderVariables.widgetVariables#widget} , same variable suffixed with "_n" where
      * n is the widget level, and {@link RenderVariables.widgetVariables#widgetIndex}.
      */
-    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
-            ELException {
+    public void apply(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
 
         // resolve widgets from row in context
         LayoutRow row = null;
-        String rowVariableName = RenderVariables.rowVariables.layoutRow.name();
+        String rowVariableName = getInstanceName();
         FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute rowAttribute = helper.createAttribute(rowVariableName, "#{" + rowVariableName + "}");
         if (rowAttribute != null) {
@@ -122,4 +122,9 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             ctx.setVariableMapper(orig);
         }
     }
+
+    protected String getInstanceName() {
+        return RenderVariables.rowVariables.layoutRow.name();
+    }
+
 }
