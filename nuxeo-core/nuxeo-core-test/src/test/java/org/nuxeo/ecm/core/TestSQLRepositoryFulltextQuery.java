@@ -92,6 +92,10 @@ public class TestSQLRepositoryFulltextQuery {
         return coreFeature.getStorageConfiguration().isDBS();
     }
 
+    protected boolean isDBSMongoDB() {
+        return coreFeature.getStorageConfiguration().isDBSMongoDB();
+    }
+
     protected void reopenSession() {
         session = coreFeature.reopenCoreSession();
     }
@@ -682,27 +686,27 @@ public class TestSQLRepositoryFulltextQuery {
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world smurf'";
         dml = session.query(query);
-        assertEquals(1, dml.size()); // MongoDB has different semantics
+        assertEquals(isDBSMongoDB() ? 0 : 1, dml.size());
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world -smurf'";
         dml = session.query(query);
-        assertEquals(2, dml.size()); // MongoDB has different semantics
+        assertEquals(isDBSMongoDB() ? 1 : 2, dml.size());
 
         query = "SELECT * FROM File WHERE ecm:fulltext = '-smurf world OR pete'";
         dml = session.query(query);
-        assertEquals(2, dml.size()); // MongoDB has different semantics
+        assertEquals(isDBSMongoDB() ? 1 : 2, dml.size());
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world oyster'";
         dml = session.query(query);
-        assertEquals(2, dml.size()); // MongoDB has different semantics
+        assertEquals(isDBSMongoDB() ? 1 : 2, dml.size());
 
         query = "SELECT * FROM File WHERE ecm:fulltext = 'pete OR world -oyster'";
         dml = session.query(query);
-        assertEquals(1, dml.size()); // MongoDB has different semantics
+        assertEquals(isDBSMongoDB() ? 0 : 1, dml.size());
 
         query = "SELECT * FROM File WHERE ecm:fulltext = '-oyster world OR pete'";
         dml = session.query(query);
-        assertEquals(1, dml.size()); // MongoDB has different semantics
+        assertEquals(isDBSMongoDB() ? 0 : 1, dml.size());
     }
 
     // don't use small words, they are eliminated by some fulltext engines

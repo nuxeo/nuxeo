@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -73,6 +75,8 @@ public abstract class ExpressionEvaluator {
     protected static final String DATE_CAST = "DATE";
 
     protected static final String PHRASE_QUOTE = "\"";
+
+    protected static final String NEG_PHRASE_QUOTE = "-\"";
 
     protected static final String OR = "or";
 
@@ -742,6 +746,8 @@ public abstract class ExpressionEvaluator {
         // query
         List<String> query = new ArrayList<String>();
         String phrase = null;
+        int phraseWordCount = 1;
+        int maxPhraseWordCount = 1; // maximum number of words in a phrase
         for (String word : StringUtils.split(queryString.toLowerCase(), ' ')) {
             if (WORD_PATTERN.matcher(word).matches()) {
                 continue;
@@ -750,13 +756,21 @@ public abstract class ExpressionEvaluator {
                 if (word.endsWith(PHRASE_QUOTE)) {
                     phrase += " " + word.substring(0, word.length() - 1);
                     query.add(phrase);
+                    phraseWordCount++;
+                    if (maxPhraseWordCount < phraseWordCount) {
+                        maxPhraseWordCount = phraseWordCount;
+                    }
                     phrase = null;
+                    phraseWordCount = 1;
                 } else {
                     phrase += " " + word;
+                    phraseWordCount++;
                 }
             } else {
                 if (word.startsWith(PHRASE_QUOTE)) {
                     phrase = word.substring(1);
+                } else if (word.startsWith(NEG_PHRASE_QUOTE)) {
+                    phrase = "-" + word.substring(2);
                 } else {
                     if (word.startsWith("+")) {
                         word = word.substring(1);
@@ -770,24 +784,50 @@ public abstract class ExpressionEvaluator {
         }
         // fulltext
         Set<String> fulltext = new HashSet<String>();
-        fulltext.addAll(parseFullText(string1));
-        fulltext.addAll(parseFullText(string2));
+        fulltext.addAll(parseFullText(string1, maxPhraseWordCount));
+        fulltext.addAll(parseFullText(string2, maxPhraseWordCount));
 
         return Boolean.valueOf(fulltext(fulltext, query));
     }
 
-    private static Set<String> parseFullText(String string) {
+    private static Set<String> parseFullText(String string, int phraseSize) {
         if (string == null) {
             return Collections.emptySet();
         }
         Set<String> set = new HashSet<String>();
+        Deque<String> phraseWords = new LinkedList<>();
         for (String word : WORD_PATTERN.split(string)) {
-            String w = parseWord(word);
-            if (w != null) {
-                set.add(w.toLowerCase());
+            word = parseWord(word);
+            if (word != null) {
+                word = word.toLowerCase();
+                set.add(word);
+                if (phraseSize > 1) {
+                    phraseWords.addLast(word);
+                    if (phraseWords.size() > 1) {
+                        if (phraseWords.size() > phraseSize) {
+                            phraseWords.removeFirst();
+                        }
+                        addPhraseWords(set, phraseWords);
+                    }
+                }
             }
         }
+        while (phraseWords.size() > 2) {
+            phraseWords.removeFirst();
+            addPhraseWords(set, phraseWords);
+        }
         return set;
+    }
+
+    /**
+     * Adds to the set all the sub-phrases from the start of the phraseWords.
+     */
+    private static void addPhraseWords(Set<String> set, Deque<String> phraseWords) {
+        String[] array = phraseWords.toArray(new String[0]);
+        for (int len = 2; len <= array.length; len++) {
+            String phrase = StringUtils.join(array, ' ', 0, len);
+            set.add(phrase);
+        }
     }
 
     private static String parseWord(String string) {

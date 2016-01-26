@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -446,10 +447,10 @@ public class TestSQLRepositoryQuery {
         assertEquals(2, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:contributors/* NOT IN ('bob', 'pete')");
-        assertEquals(1, dml.size());
+        assertEquals(notMatchesNull() ? 5 : 1, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:contributors/* NOT IN ('bob', 'john')");
-        assertEquals(1, dml.size());
+        assertEquals(notMatchesNull() ? 5 : 1, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:contributors/* LIKE 'pe%'");
         assertEquals(1, dml.size());
@@ -461,13 +462,13 @@ public class TestSQLRepositoryQuery {
         assertEquals(2, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:contributors/* NOT LIKE '%o%'");
-        assertEquals(1, dml.size());
+        assertEquals(notMatchesNull() ? 5 : 1, dml.size());
 
         dml = session.query("SELECT * FROM Document WHERE dc:subjects/* LIKE '%oo%'");
         assertEquals(1, dml.size());
 
         dml = session.query("SELECT * FROM File WHERE dc:subjects/* NOT LIKE '%oo%'");
-        assertEquals(0, dml.size());
+        assertEquals(notMatchesNull() ? 2 : 0, dml.size());
     }
 
     @Test
@@ -1470,8 +1471,10 @@ public class TestSQLRepositoryQuery {
         // document with effective acl
         checkQueryACL(1, queryBase + "ecm:acl/*1/status = 1");
 
-        // document with pending or archived acl, no match
-        checkQueryACL(0, queryBase + "ecm:acl/*1/status <> 1");
+        if (!notMatchesNull()) {
+            // document with pending or archived acl, no match
+            checkQueryACL(0, queryBase + "ecm:acl/*1/status <> 1");
+        }
 
         // block
         checkQueryACL(1, queryBase
@@ -1815,7 +1818,12 @@ public class TestSQLRepositoryQuery {
          */
         // don't use a '' here for Oracle, for which '' IS NULL
         dml = session.query("SELECT * FROM Document WHERE ecm:lockOwner <> '_'");
-        assertIdSet(dml, file1.getId());
+        if (notMatchesNull()) {
+            // check that we find the doc in the list
+            assertTrue(dml.stream().map(doc -> doc.getId()).collect(Collectors.toSet()).contains(file1.getId()));
+        } else {
+            assertIdSet(dml, file1.getId());
+        }
         dml = session.query("SELECT * FROM Document ORDER BY ecm:lockOwner");
         assertEquals(9, dml.size());
 
@@ -2653,7 +2661,10 @@ public class TestSQLRepositoryQuery {
         res = session.query(SELECT_WHERE + clause);
         assertEquals(Arrays.asList(docId), getIds(res));
         it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL");
-        assertEquals(2, it.size()); // two uncorrelated stars
+        // MongoDB query projecting on a non-wildcard values doesn't repeat matches
+        // as this would entail re-evaluating the projection from the full state
+        // just to get duplicated identical rows
+        assertEquals(isDBSMongoDB() ? 1 : 2, it.size()); // two uncorrelated stars
         it.close();
 
         // alternate xpath syntax
@@ -2895,7 +2906,7 @@ public class TestSQLRepositoryQuery {
         clause = "tst:subjects/*1 = 'foo' ORDER BY tst:subjects/*1";
         try {
             session.query(SELECT_WHERE + clause);
-            if (!isDBSMongoDB()) {
+            if (!isDBS()) {
                 // ORDER BY tst:subjects works on MongoDB
                 fail();
             }
@@ -2908,7 +2919,10 @@ public class TestSQLRepositoryQuery {
 
         clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
         it = session.queryAndFetch("SELECT tst:title" + FROM_WHERE + clause, "NXQL");
-        assertEquals(3, it.size());
+        // MongoDB query projecting on a non-wildcard values doesn't repeat matches
+        // as this would entail re-evaluating the projection from the full state
+        // just to get duplicated identical rows
+        assertEquals(isDBSMongoDB() ? 1 : 3, it.size());
         it.close();
     }
 

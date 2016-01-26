@@ -488,6 +488,8 @@ public class TestAutomaticIndexing {
 
     @Test
     public void shouldIndexTag() throws Exception {
+        assumeTrue("DBS does not support tags", !coreFeature.getStorageConfiguration().isDBS());
+
         // ElasticSearchInlineListener.useSyncIndexing.set(true);
         startTransaction();
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
