@@ -164,7 +164,11 @@ public class CoreFeature extends SimpleFeature {
             }
         }
         if (granularity != Granularity.METHOD) {
+            // we need a transaction to properly initialize the session
+            // but it hasn't been started yet by TransactionalFeature
+            TransactionHelper.startTransaction();
             initializeSession(runner);
+            TransactionHelper.commitOrRollbackTransaction();
         }
     }
 
