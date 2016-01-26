@@ -79,7 +79,7 @@
       onclick="if (!(jQuery(this).checkSafeEdit())){return false;};history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{onclick}"
       styleClass="#{actionStyleClass} #{action.properties.styleClass}"
       accessKey="#{action.accessKey}">
-      <f:ajax execute="@this" render="#{ajaxReRender}" />
+      <a4j:ajax execute="@this" render="#{ajaxReRender}" />
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
     </h:commandLink>
