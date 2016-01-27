@@ -1,0 +1,154 @@
+<ui:fragment
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+  <ui:remove>
+    Layout template to be included before iteration on listing thumbnail layout,
+    for infoview popup management.
+
+    Script resources have to be inserted out of the iteration to be inserted
+    only once, and to allow resources relocation when iteration is done
+    at render time.
+  </ui:remove>
+
+  <!-- slideshow init -->
+  <nxu:set var="cvpcfp"
+    value="#{nxu:jsfTagIdEscape(contentViewPanelId)}">
+    <a4j:jsFunction name="#{cvpcfp}NP" action="#{provider.next()}"
+      render="#{contentIdToBeReRendered}"
+      oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterNP();" />
+    <a4j:jsFunction name="#{cvpcfp}PP" action="#{provider.previous()}"
+      render="#{contentIdToBeReRendered}"
+      oncomplete="jQuery('div[id$=#{contentViewPanelId}]').openLightBoxAfterPP();" />
+
+    <a4j:jsFunction name="#{cvpcfp}_infoViewNextPage" action="#{provider.next()}"
+      render="#{contentIdToBeReRendered}"
+      oncomplete="nuxeo.infoView.openFirstInfoView();" />
+    <a4j:jsFunction name="#{cvpcfp}_infoViewPreviousPage" action="#{provider.previous()}"
+      render="#{contentIdToBeReRendered}"
+      oncomplete="nuxeo.infoView.openLastInfoView();" />
+
+    <h:outputScript target="#{pageJsTarget}">
+      jQuery.extend(true, jQuery.magnificPopup.defaults, {
+        tClose: "#{messages['label.slideshow.close']}",
+        tLoading: "#{messages['label.slideshow.loading']}",
+        gallery: {
+          tPrev: "#{messages['label.slideshow.gallery.previous']}",
+          tNext: "#{messages['label.slideshow.gallery.next']}",
+          tCounter: ""
+        },
+        image: {
+          tError: "#{messages['label.slideshow.image.error']}"
+        },
+        ajax: {
+          tError: "#{messages['label.slideshow.ajax.error']}"
+        }
+      });
+
+      var nuxeo = nuxeo || {};
+      nuxeo.infoView = (function(m) {
+        m.hasPreviousPage = #{provider.previousPageAvailable};
+        m.hasNextPage = #{provider.nextPageAvailable};
+        m.infoViewUrls = [];
+
+        m.nextPageAndOpenInfoView = function() {
+          if (m.hasNextPage) {
+            console.log("next");
+            #{cvpcfp}_infoViewNextPage();
+            // #{cvpcfp}NP();
+          }
+        };
+
+        m.previousPageAndOpenInfoView = function() {
+          if (m.hasPreviousPage) {
+            console.log("previous")
+            #{cvpcfp}_infoViewPreviousPage();
+            // #{cvpcfp}PP();
+          }
+        };
+
+        m.openFirstInfoView = function() {
+          jQuery.fancybox.close();
+          if (m.infoViewUrls.length > 0) {
+            openFancyBox(m.infoViewUrls[0], {
+              'autoDimensions': false,
+              'width': '100%',
+              'height': '100%',
+              'centerOnScroll': true,
+              'scrolling': 'auto',
+              'padding': 0
+            });
+          }
+        };
+
+        m.openLastInfoView = function() {
+          jQuery.fancybox.close();
+          if (m.infoViewUrls.length > 0) {
+            openFancyBox(m.infoViewUrls[m.infoViewUrls.length - 1], {
+              'autoDimensions': false,
+              'width': '100%',
+              'height': '100%',
+              'centerOnScroll': true,
+              'scrolling': 'auto',
+              'padding': 0
+            });
+          }
+        };
+
+        return m;
+
+      })(nuxeo.infoView || {});
+
+      jQuery(document).ready(function() {
+        // slideshow
+        jQuery('div[id$=#{contentViewPanelId}]').initNxCv({
+          nxHasPreviousPage : #{provider.previousPageAvailable},
+          nxHasNextPage : #{provider.nextPageAvailable},
+          endOfPageCallback : #{cvpcfp}NP,
+          startOfPageCallback : #{cvpcfp}PP
+        });
+
+        // info view
+        var canTriggerInfoView = function(event) {
+          if (event &amp;&amp; event.target) {
+            var ele = jQuery(event.target);
+            if ((ele.is('input') &amp;&amp; ele.attr('type').match(/checkbox/i))
+              || ele.is('a') || ele.closest('a').length &gt; 0) {
+              return false;
+            }
+          }
+          return true;
+        };
+
+        jQuery('div[data-infoviewurl]').each(function(index, ele) {
+          var ele = jQuery(ele);
+          var infoViewUrl = ele.data('infoviewurl');
+          // store the info view url
+          nuxeo.infoView.infoViewUrls.push(infoViewUrl);
+          ele.click(function(event) {
+            if (canTriggerInfoView(event)) {
+              openFancyBox(infoViewUrl, {
+                'autoDimensions': false,
+                'width': '100%',
+                'height': '100%',
+                'centerOnScroll': true,
+                'scrolling': 'auto',
+                'padding': 0
+              });
+            }
+          });
+        });
+
+      });
+    </h:outputScript>
+
+  </nxu:set>
+
+</ui:fragment>
