@@ -66,6 +66,7 @@
         <c:when test="#{display == 'block'}">
           <div>
             <nxu:repeat var="row" items="#{documents.rows}"
+              id="#{formId}_repeat"
               renderTime="#{useRepeatRenderTime}"
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
@@ -81,6 +82,7 @@
               <td>
                 <table class="dataTableNoBorder">
                   <nxu:repeat var="row" items="#{documents.rows}"
+                    id="#{formId}_repeat"
                     renderTime="#{useRepeatRenderTime}"
                     varStatus="layoutListingStatus"
                     end="#{(documents.size-1)/2}">
@@ -93,6 +95,7 @@
               <td>
                 <table class="dataTableNoBorder">
                   <nxu:repeat var="row" items="#{documents.rows}"
+                    id="#{formId}_repeat"
                     renderTime="#{useRepeatRenderTime}"
                     varStatus="layoutListingStatus"
                     begin="#{(documents.size-1)/2 + 1}">
@@ -109,6 +112,7 @@
         <c:otherwise>
           <table class="dataOutput">
             <nxu:repeat var="row" items="#{documents.rows}"
+              id="#{formId}_repeat"
               renderTime="#{useRepeatRenderTime}"
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
