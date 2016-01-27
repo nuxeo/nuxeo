@@ -54,6 +54,7 @@
       mode="view" selectedColumns="#{selectedResultLayoutColumns}"
       template="#{layoutTemplate}" resolveOnly="true">
 
+      <c:set var="useRepeatRenderTime" value="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.listings.useRepeatRenderTime')}" />
       <c:set var="display" value="#{layoutProperty_display}" />
       <c:if
         test="#{empty display and fn:endsWith(layoutName, '_2_columns')}">
@@ -65,6 +66,7 @@
         <c:when test="#{display == 'block'}">
           <div>
             <nxu:repeat var="row" items="#{documents.rows}"
+              renderTime="#{useRepeatRenderTime}"
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
                 value="#{layoutListingStatus.index == 0}" />
@@ -79,6 +81,7 @@
               <td>
                 <table class="dataTableNoBorder">
                   <nxu:repeat var="row" items="#{documents.rows}"
+                    renderTime="#{useRepeatRenderTime}"
                     varStatus="layoutListingStatus"
                     end="#{(documents.size-1)/2}">
                     <c:set var="showListingHeader"
@@ -90,6 +93,7 @@
               <td>
                 <table class="dataTableNoBorder">
                   <nxu:repeat var="row" items="#{documents.rows}"
+                    renderTime="#{useRepeatRenderTime}"
                     varStatus="layoutListingStatus"
                     begin="#{(documents.size-1)/2 + 1}">
                     <c:set var="showListingHeader"
@@ -105,6 +109,7 @@
         <c:otherwise>
           <table class="dataOutput">
             <nxu:repeat var="row" items="#{documents.rows}"
+              renderTime="#{useRepeatRenderTime}"
               varStatus="layoutListingStatus">
               <c:set var="showListingHeader"
                 value="#{layoutListingStatus.index == 0}" />

@@ -57,4 +57,19 @@
     <property name="nuxeo.jsf.deferJavaScriptLoading">true</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Controls whether iterations in document listings are done
+      using build-time tag c:forEach or render-time tag ui:repeat (which is much
+      more efficient on large content).
+
+      Using render-time iterations may break
+      some behaviours, this property is mainly useful for backport of
+      optimizations on maintenance branches.
+
+      @since 8.2
+    </documentation>
+    <property name="nuxeo.jsf.listings.useRepeatRenderTime">true</property>
+  </extension>
+
 </component>
