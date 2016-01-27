@@ -74,6 +74,7 @@
     <module>nuxeo-chemistry</module>
     <module>nuxeo-business-days-management</module>
     <module>nuxeo-core-binarymanager-sql</module>
+    <module>nuxeo-core-binarymanager-gridfs</module>
     <module>nuxeo-http-client</module>
     <module>nuxeo-platform-document-routing</module>
     <module>nuxeo-platform-error-web</module>
@@ -595,6 +596,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-binarymanager-azure</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-gridfs</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
