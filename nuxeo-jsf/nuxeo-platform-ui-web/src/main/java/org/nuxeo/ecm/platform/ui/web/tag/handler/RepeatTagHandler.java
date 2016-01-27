@@ -40,12 +40,12 @@ import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
+import com.sun.faces.facelets.component.UIRepeat;
 import com.sun.faces.facelets.tag.TagAttributeImpl;
 import com.sun.faces.facelets.tag.TagAttributesImpl;
 import com.sun.faces.facelets.tag.jstl.core.ForEachHandler;
+import com.sun.faces.facelets.tag.ui.RepeatHandler;
 
 /**
  * Repeat handler, similar to the standard ForEach handler.
@@ -60,7 +60,7 @@ public class RepeatTagHandler extends TagHandler {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected static final DataModel EMPTY_MODEL = new ListDataModel(Collections.emptyList());
 
-    protected static final String OPTIMS_CONF = "nuxeo.jsf.useRepeatOptims";
+    protected static final String RENDER_TIME_CONF = "nuxeo.jsf.useRepeatRenderTime";
 
     /**
      * @since 5.7
@@ -122,6 +122,11 @@ public class RepeatTagHandler extends TagHandler {
      */
     protected final TagAttribute varStatus;
 
+    /**
+     * @since 8.2
+     */
+    protected final TagAttribute renderTime;
+
     public RepeatTagHandler(TagConfig config) {
         super(config);
         this.config = config;
@@ -136,6 +141,7 @@ public class RepeatTagHandler extends TagHandler {
         step = getAttribute("step");
         tranzient = getAttribute("transient");
         varStatus = getAttribute("varStatus");
+        renderTime = getAttribute("renderTime");
     }
 
     protected TagAttribute getItemsAttribute() {
@@ -207,8 +213,16 @@ public class RepeatTagHandler extends TagHandler {
         }
 
         FaceletHandler handler;
-        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        if (configurationService.isBooleanPropertyTrue(OPTIMS_CONF)) {
+        if (renderTime(ctx)) {
+            List<TagAttribute> repeatAttrs = new ArrayList<TagAttribute>();
+            TagAttribute itemsAttr = getItemsAttribute();
+            repeatAttrs.add(createAttribute(config, "value", itemsAttr != null ? itemsAttr.getValue() : null));
+            repeatAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
+            ComponentConfig repeatConfig = TagConfigFactory.createComponentConfig(config, tagId,
+                    new TagAttributesImpl(repeatAttrs.toArray(new TagAttribute[] {})), nextHandler,
+                    UIRepeat.COMPONENT_TYPE, null);
+            handler = new RepeatHandler(repeatConfig);
+        } else {
             List<TagAttribute> forEachAttrs = new ArrayList<TagAttribute>();
             forEachAttrs.add(createAttribute(config, "items", "#{" + getVarName("items") + "}"));
             forEachAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
@@ -222,18 +236,17 @@ public class RepeatTagHandler extends TagHandler {
                     getVarName("items"), itemsAttr != null ? itemsAttr.getValue() : null, "false", anchor,
                     forEachHandler);
             handler = new SetTagHandler(aliasConfig);
-        } else {
-            List<TagAttribute> repeatAttrs = new ArrayList<TagAttribute>();
-            TagAttribute itemsAttr = getItemsAttribute();
-            repeatAttrs.add(createAttribute(config, "value", itemsAttr != null ? itemsAttr.getValue() : null));
-            repeatAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
-            TagConfig forEachConfig = TagConfigFactory.createTagConfig(config, tagId,
-                    new TagAttributesImpl(repeatAttrs.toArray(new TagAttribute[] {})), nextHandler);
-            handler = new ForEachHandler(forEachConfig);
         }
 
         // apply
         handler.apply(ctx, parent);
+    }
+
+    protected boolean renderTime(FaceletContext ctx) {
+        if (renderTime != null) {
+            return renderTime.getBoolean(ctx);
+        }
+        return false;
     }
 
     protected String getVarName(String id) {

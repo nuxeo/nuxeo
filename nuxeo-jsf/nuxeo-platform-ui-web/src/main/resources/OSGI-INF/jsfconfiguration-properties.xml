@@ -29,7 +29,7 @@
   </extension>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <property name="nuxeo.jsf.useRepeatOptims">true</property>
+    <property name="nuxeo.jsf.useRepeatRenderTime">true</property>
   </extension>
 
 </component>
