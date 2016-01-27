@@ -26,14 +26,6 @@
     (available since 5.6).
 </ui:remove>
 
-  <ui:insert name="empty_folder_label">
-    <h:outputText value="#{messages['label.content.emptyFolder']}"
-      rendered="#{documents.rowCount == 0}"
-      styleClass="emptyResult emptyResultBig" />
-  </ui:insert>
-
-  <ui:insert name="error_message" />
-
   <c:if test="#{not hideTopPaginationControls}">
     <c:choose>
       <c:when test="#{useAjaxPagination == null or useAjaxPagination}">
@@ -44,6 +36,14 @@
       </c:otherwise>
     </c:choose>
   </c:if>
+
+  <ui:insert name="empty_folder_label">
+    <h:outputText value="#{messages['label.content.emptyFolder']}"
+      rendered="#{documents.rowCount == 0}"
+      styleClass="emptyResult emptyResultBig" />
+  </ui:insert>
+
+  <ui:insert name="error_message" />
 
   <c:if test="#{documents.rowCount != 0}">
 
