@@ -48,7 +48,7 @@
   <c:if test="#{documents.rowCount != 0}">
 
     <c:if test="false">
-      Resolve layout for first element just to get display
+      Resolve layout for first element just to get display and before_layout property.
     </c:if>
     <nxl:layout name="#{layoutName}" value="#{documents.rows[0]}"
       mode="view" selectedColumns="#{selectedResultLayoutColumns}"
@@ -59,6 +59,10 @@
       <c:if
         test="#{empty display and fn:endsWith(layoutName, '_2_columns')}">
         <c:set var="display" value="table_2_columns" />
+      </c:if>
+
+      <c:if test="#{not empty layoutProperty_before_template}">
+        <ui:include src="#{layoutProperty_before_template}" />
       </c:if>
 
       <c:choose>
