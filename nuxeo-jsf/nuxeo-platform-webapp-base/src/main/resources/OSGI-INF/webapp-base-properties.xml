@@ -57,4 +57,8 @@
     <property name="nuxeo.jsf.deferJavaScriptLoading">true</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.jsf.listings.useRepeatRenderTime">true</property>
+  </extension>
+
 </component>
