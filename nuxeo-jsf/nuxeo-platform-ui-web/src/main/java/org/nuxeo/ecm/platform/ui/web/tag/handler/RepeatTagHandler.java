@@ -40,6 +40,8 @@ import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.sun.faces.facelets.tag.TagAttributeImpl;
 import com.sun.faces.facelets.tag.TagAttributesImpl;
@@ -57,6 +59,8 @@ public class RepeatTagHandler extends TagHandler {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected static final DataModel EMPTY_MODEL = new ListDataModel(Collections.emptyList());
+
+    protected static final String OPTIMS_CONF = "nuxeo.jsf.useRepeatOptims";
 
     /**
      * @since 5.7
@@ -178,8 +182,8 @@ public class RepeatTagHandler extends TagHandler {
      * value changes.
      */
     @Override
-    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
-            ELException {
+    public void apply(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
         String anchor = String.valueOf(true);
         FaceletHandler nextHandler = this.nextHandler;
         TagAttribute varStatusAttr = varStatus;
@@ -202,18 +206,31 @@ public class RepeatTagHandler extends TagHandler {
             }
         }
 
-        List<TagAttribute> forEachAttrs = new ArrayList<TagAttribute>();
-        forEachAttrs.add(createAttribute(config, "items", "#{" + getVarName("items") + "}"));
-        forEachAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
-        TagConfig forEachConfig = TagConfigFactory.createTagConfig(config, tagId, new TagAttributesImpl(
-                forEachAttrs.toArray(new TagAttribute[] {})), nextHandler);
-        ForEachHandler forEachHandler = new ForEachHandler(forEachConfig);
+        FaceletHandler handler;
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        if (configurationService.isBooleanPropertyTrue(OPTIMS_CONF)) {
+            List<TagAttribute> forEachAttrs = new ArrayList<TagAttribute>();
+            forEachAttrs.add(createAttribute(config, "items", "#{" + getVarName("items") + "}"));
+            forEachAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
+            TagConfig forEachConfig = TagConfigFactory.createTagConfig(config, tagId,
+                    new TagAttributesImpl(forEachAttrs.toArray(new TagAttribute[] {})), nextHandler);
+            ForEachHandler forEachHandler = new ForEachHandler(forEachConfig);
 
-        String setTagConfigId = getTagConfigId(ctx);
-        TagAttribute itemsAttr = getItemsAttribute();
-        ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(config, setTagConfigId,
-                getVarName("items"), itemsAttr != null ? itemsAttr.getValue() : null, "false", anchor, forEachHandler);
-        FaceletHandler handler = new SetTagHandler(aliasConfig);
+            String setTagConfigId = getTagConfigId(ctx);
+            TagAttribute itemsAttr = getItemsAttribute();
+            ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(config, setTagConfigId,
+                    getVarName("items"), itemsAttr != null ? itemsAttr.getValue() : null, "false", anchor,
+                    forEachHandler);
+            handler = new SetTagHandler(aliasConfig);
+        } else {
+            List<TagAttribute> repeatAttrs = new ArrayList<TagAttribute>();
+            TagAttribute itemsAttr = getItemsAttribute();
+            repeatAttrs.add(createAttribute(config, "value", itemsAttr != null ? itemsAttr.getValue() : null));
+            repeatAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
+            TagConfig forEachConfig = TagConfigFactory.createTagConfig(config, tagId,
+                    new TagAttributesImpl(repeatAttrs.toArray(new TagAttribute[] {})), nextHandler);
+            handler = new ForEachHandler(forEachConfig);
+        }
 
         // apply
         handler.apply(ctx, parent);
