@@ -90,8 +90,7 @@ public class Batch {
     }
 
     protected List<String> getOrderedFileIndexes() {
-        List<String> sortedFileIndexes = new ArrayList<String>();
-        sortedFileIndexes = new ArrayList<String>(fileEntries.keySet());
+        List<String> sortedFileIndexes = new ArrayList<String>(fileEntries.keySet());
         Collections.sort(sortedFileIndexes, new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
