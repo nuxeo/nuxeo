@@ -1,4 +1,4 @@
-<f:subview id="#{widget.id}"
+<c:if test="true"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
@@ -19,7 +19,6 @@
       docRef="#{field_1}">
       <nxu:graphicImage
         value="#{nxd:bigIconPath(field_0)}" alt="#{label}" title="#{label}"
-        rendered="#{!empty nxd:bigIconPath(field_0)}"
         styleClass="bigIcon" />
     </div>
   </div>
@@ -35,4 +34,4 @@
 </c:if>
 
 </nxu:set></nxu:set>
-</f:subview>
+</c:if>
