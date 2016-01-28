@@ -1,5 +1,6 @@
-<f:subview
+<ui:fragment
   xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
@@ -14,4 +15,4 @@
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>#{field.versionLabel}</nxp:html>
 </c:if>
-</f:subview>
+</ui:fragment>
