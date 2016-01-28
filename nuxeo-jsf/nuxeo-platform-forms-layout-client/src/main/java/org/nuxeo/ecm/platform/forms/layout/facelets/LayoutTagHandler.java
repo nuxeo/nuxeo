@@ -57,6 +57,7 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.web.common.debug.DebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.TagAttributeImpl;
@@ -167,6 +168,9 @@ public class LayoutTagHandler extends TagHandler {
     @SuppressWarnings("unchecked")
     // TODO: add javadoc about variables exposed
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
+        long start = System.currentTimeMillis();
+        String logId = null;
+
         WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
         // add additional properties put on tag
@@ -259,6 +263,7 @@ public class LayoutTagHandler extends TagHandler {
 
                     String nameValue = name.getValue(ctx);
                     List<String> layoutNames = resolveLayoutNames(nameValue);
+                    logId = layoutNames.toString();
                     for (String layoutName : layoutNames) {
                         layoutInstance = layoutService.getLayout(ctx, layoutName, layoutCategory, modeValue, valueName,
                                 selectedRowsValue, selectAllByDefaultValue);
@@ -283,6 +288,11 @@ public class LayoutTagHandler extends TagHandler {
                                 selectedRowsValue, selectAllByDefaultValue);
                         applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
                                 additionalProps, vm, resolveOnlyValue, exposeLayoutValue);
+                        if (layoutInstance != null) {
+                            logId = layoutInstance.getId();
+                        } else {
+                            logId = layoutDef.getName() + " (def)";
+                        }
                     }
                 }
             }
@@ -291,7 +301,7 @@ public class LayoutTagHandler extends TagHandler {
             // layout resolved => cleanup variable mapper
             ctx.setVariableMapper(orig);
         }
-
+        DebugTracer.trace(log, start, logId);
     }
 
     /**
