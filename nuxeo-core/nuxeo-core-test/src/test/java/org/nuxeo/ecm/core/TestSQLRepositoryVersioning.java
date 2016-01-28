@@ -1060,4 +1060,19 @@ public class TestSQLRepositoryVersioning {
         }
     }
 
+    @Test
+    public void testRemoveLiveProxyTarget() {
+        DocumentModel fold = session.createDocumentModel("/", "fold", "Folder");
+        fold = session.createDocument(fold);
+        DocumentModel doc = session.createDocumentModel("/fold", "doc", "File");
+        doc = session.createDocument(doc);
+        // create a live proxy to the doc
+        // put proxy in same folder so that we can remove both at once
+        session.createProxy(doc.getRef(), fold.getRef());
+        session.save();
+        // remove the folder, containing the doc which is a proxy target
+        session.removeDocument(fold.getRef());
+        session.save();
+    }
+
 }

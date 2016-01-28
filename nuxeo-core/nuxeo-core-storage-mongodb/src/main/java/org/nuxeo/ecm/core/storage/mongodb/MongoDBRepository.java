@@ -237,49 +237,50 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
         State state = new State(ob.keySet().size());
         for (String key : ob.keySet()) {
-            Object val = ob.get(key);
-            Serializable value;
-            if (val instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<Object> list = (List<Object>) val;
-                if (list.isEmpty()) {
-                    value = null;
-                } else {
-                    if (list.get(0) instanceof DBObject) {
-                        List<Serializable> l = new ArrayList<>(list.size());
-                        for (Object el : list) {
-                            l.add(bsonToState((DBObject) el));
-                        }
-                        value = (Serializable) l;
-                    } else {
-                        // turn the list into a properly-typed array
-                        Class<?> klass = Object.class;
-                        for (Object o : list) {
-                            if (o != null) {
-                                klass = scalarToSerializableClass(o.getClass());
-                                break;
-                            }
-                        }
-                        Object[] ar = (Object[]) Array.newInstance(klass, list.size());
-                        int i = 0;
-                        for (Object el : list) {
-                            ar[i++] = scalarToSerializable(el);
-                        }
-                        value = ar;
-                    }
-                }
-            } else if (val instanceof DBObject) {
-                value = bsonToState((DBObject) val);
-            } else {
-                if (MONGODB_ID.equals(key)) {
-                    // skip ObjectId
-                    continue;
-                }
-                value = scalarToSerializable(val);
+            if (MONGODB_ID.equals(key)) {
+                // skip ObjectId
+                continue;
             }
-            state.put(key, value);
+            state.put(key, bsonToValue(ob.get(key)));
         }
         return state;
+    }
+
+    protected Serializable bsonToValue(Object value) {
+        if (value instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> list = (List<Object>) value;
+            if (list.isEmpty()) {
+                return null;
+            } else {
+                if (list.get(0) instanceof DBObject) {
+                    List<Serializable> l = new ArrayList<>(list.size());
+                    for (Object el : list) {
+                        l.add(bsonToState((DBObject) el));
+                    }
+                    return (Serializable) l;
+                } else {
+                    // turn the list into a properly-typed array
+                    Class<?> klass = Object.class;
+                    for (Object o : list) {
+                        if (o != null) {
+                            klass = scalarToSerializableClass(o.getClass());
+                            break;
+                        }
+                    }
+                    Object[] ar = (Object[]) Array.newInstance(klass, list.size());
+                    int i = 0;
+                    for (Object el : list) {
+                        ar[i++] = scalarToSerializable(el);
+                    }
+                    return ar;
+                }
+            }
+        } else if (value instanceof DBObject) {
+            return bsonToState((DBObject) value);
+        } else {
+            return scalarToSerializable(value);
+        }
     }
 
     public static class Updates {
@@ -647,7 +648,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     proxyTargets.put(id, targetId);
                 }
                 if (targetProxies != null) {
-                    Object[] proxyIds = (Object[]) ob.get(KEY_PROXY_IDS);
+                    Object[] proxyIds = (Object[]) bsonToValue(ob.get(KEY_PROXY_IDS));
                     if (proxyIds != null) {
                         targetProxies.put(id, proxyIds);
                     }
