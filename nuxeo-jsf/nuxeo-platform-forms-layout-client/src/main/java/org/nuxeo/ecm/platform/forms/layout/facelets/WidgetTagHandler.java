@@ -53,6 +53,7 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.web.common.debug.DebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.el.VariableMapperWrapper;
@@ -144,6 +145,8 @@ public class WidgetTagHandler extends MetaTagHandler {
      * widget level, and {@link RenderVariables.globalVariables#document}.
      */
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
+        long start = System.currentTimeMillis();
+
         // compute value name to set on widget instance in case it's changed
         // from first computation
         String valueName = null;
@@ -227,6 +230,7 @@ public class WidgetTagHandler extends MetaTagHandler {
                 ctx.setVariableMapper(orig);
             }
         }
+        DebugTracer.trace(log, start, widgetInstance == null ? null : widgetInstance.getId());
     }
 
     public static void generateWidgetIdsRecursive(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget) {

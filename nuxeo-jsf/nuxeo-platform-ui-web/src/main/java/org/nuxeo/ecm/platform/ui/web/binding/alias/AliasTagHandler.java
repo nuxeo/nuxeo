@@ -41,7 +41,10 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
+import org.nuxeo.ecm.platform.web.common.debug.DebugTracer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -65,6 +68,8 @@ import com.sun.faces.facelets.tag.jsf.ComponentSupport;
  * @since 5.4
  */
 public class AliasTagHandler extends ComponentHandler {
+
+    private static final Log log = LogFactory.getLog(AliasTagHandler.class);
 
     /**
      * @since 6.0
@@ -104,6 +109,8 @@ public class AliasTagHandler extends ComponentHandler {
     @Override
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+        long start = System.currentTimeMillis();
+
         // make sure our parent is not null
         if (parent == null) {
             throw new TagException(tag, "Parent UIComponent was null");
@@ -120,6 +127,7 @@ public class AliasTagHandler extends ComponentHandler {
         } else {
             applyAlias(ctx, parent, cacheValue);
         }
+        DebugTracer.trace(log, start, "alias");
     }
 
     protected boolean isOptimizedAgain() {

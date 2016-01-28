@@ -53,6 +53,7 @@ import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.FormTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.web.common.debug.DebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.TagAttributesImpl;
@@ -103,6 +104,8 @@ public class ActionTagHandler extends MetaTagHandler {
      * widget level, and {@link RenderVariables.globalVariables#document}.
      */
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
+        long start = System.currentTimeMillis();
+
         Action actionInstance = null;
         if (action != null) {
             actionInstance = (Action) action.getObject(ctx, Action.class);
@@ -262,6 +265,7 @@ public class ActionTagHandler extends MetaTagHandler {
 
         }
 
+        DebugTracer.trace(log, start, actionInstance == null ? null : actionInstance.getId());
     }
 
     @Override
