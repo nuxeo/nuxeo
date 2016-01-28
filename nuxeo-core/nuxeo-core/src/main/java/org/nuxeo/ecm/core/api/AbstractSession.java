@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -446,13 +447,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, CopyOption... opts) {
-        List<DocumentModel> newDocuments = new ArrayList<>();
-
-        for (DocumentRef ref : src) {
-            newDocuments.add(copy(ref, dst, null, opts));
-        }
-
-        return newDocuments;
+        return src.stream().map(ref -> copy(ref, dst, null, opts)).collect(Collectors.toList());
     }
 
     @Override
@@ -523,13 +518,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, CopyOption... opts) {
-        List<DocumentModel> newDocuments = new ArrayList<>();
-
-        for (DocumentRef ref : src) {
-            newDocuments.add(copyProxyAsDocument(ref, dst, null, opts));
-        }
-
-        return newDocuments;
+        return src.stream().map(ref -> copyProxyAsDocument(ref, dst, null, opts)).collect(Collectors.toList());
     }
 
     @Override
@@ -776,9 +765,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public void importDocuments(List<DocumentModel> docModels) {
-        for (DocumentModel docModel : docModels) {
-            importDocument(docModel);
-        }
+        docModels.forEach(this::importDocument);
     }
 
     protected static final PathRef EMPTY_PATH = new PathRef("");
