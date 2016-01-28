@@ -1,10 +1,8 @@
-<f:subview
-  xmlns="http://www.w3.org/1999/xhtml"
+<c:if test="true"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <c:if test="#{widget.mode != 'pdf'}">#{messages[field]}</c:if>
 <c:if test="#{widget.mode == 'pdf'}">
   <nxp:html>#{messages[field]}</nxp:html>
 </c:if>
-</f:subview>
+</c:if>
