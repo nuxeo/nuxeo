@@ -52,14 +52,15 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
             Map<String, Serializable> values) {
         values = prepareValues(values);
         DocumentModel doc = session.createDocumentModel(parentPath, name, type);
-        for (Map.Entry<String, Serializable> entry : values.entrySet()) {
-            if (NXQL.ECM_LIFECYCLESTATE.equals(entry.getKey())) {
-                doc.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, entry.getValue());
-            } else {
-                doc.setPropertyValue(entry.getKey(), entry.getValue());
-            }
+        if (values.containsKey(NXQL.ECM_LIFECYCLESTATE)) {
+            doc.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, values.get(NXQL.ECM_LIFECYCLESTATE));
+            values.remove(NXQL.ECM_LIFECYCLESTATE);
         }
-        session.createDocument(doc);
+        doc = session.createDocument(doc);
+        for (Map.Entry<String, Serializable> entry : values.entrySet()) {
+            doc.setPropertyValue(entry.getKey(), entry.getValue());
+        }
+        session.saveDocument(doc);
     }
 
     protected Map<String, Serializable> prepareValues(Map<String, Serializable> values) {
