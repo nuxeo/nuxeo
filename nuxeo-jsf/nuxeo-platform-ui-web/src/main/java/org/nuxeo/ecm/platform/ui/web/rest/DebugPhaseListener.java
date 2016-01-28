@@ -58,7 +58,7 @@ public class DebugPhaseListener implements PhaseListener {
     public void afterPhase(PhaseEvent event) {
         if (isEnabled()) {
             long end = System.currentTimeMillis();
-            log.error(event.getPhaseId() + ": " + (end - start));
+            log.error(event.getPhaseId() + ": " + (end - start) + " ms");
         }
     }
 
