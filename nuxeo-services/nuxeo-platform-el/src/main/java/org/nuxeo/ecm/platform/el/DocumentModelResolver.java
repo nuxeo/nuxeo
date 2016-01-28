@@ -64,11 +64,17 @@ public class DocumentModelResolver extends BeanELResolver {
     public Class<?> getType(ELContext context, Object base, Object property) {
         Class<?> type = null;
         if (base instanceof DocumentModel) {
-            try {
-                type = super.getType(context, base, property);
-            } catch (PropertyNotFoundException e) {
+            DocumentModel doc = (DocumentModel) base;
+            if ("dc".equals(property) || doc.hasSchema((String) property)) {
                 type = DocumentPropertyContext.class;
                 context.setPropertyResolved(true);
+            } else {
+                try {
+                    type = super.getType(context, base, property);
+                } catch (PropertyNotFoundException e) {
+                    type = DocumentPropertyContext.class;
+                    context.setPropertyResolved(true);
+                }
             }
         } else if (base instanceof DocumentPropertyContext || base instanceof Property) {
             type = Object.class;
@@ -115,12 +121,18 @@ public class DocumentModelResolver extends BeanELResolver {
     public Object getValue(ELContext context, Object base, Object property) {
         Object value = null;
         if (base instanceof DocumentModel) {
-            try {
-                // try document getters first to resolve doc.id for instance
-                value = super.getValue(context, base, property);
-            } catch (PropertyNotFoundException e) {
+            DocumentModel doc = (DocumentModel) base;
+            if ("dc".equals(property) || doc.hasSchema((String) property)) {
                 value = new DocumentPropertyContext((DocumentModel) base, (String) property);
                 context.setPropertyResolved(true);
+            } else {
+                try {
+                    // try document getters first to resolve doc.id for instance
+                    value = super.getValue(context, base, property);
+                } catch (PropertyNotFoundException e) {
+                    value = new DocumentPropertyContext((DocumentModel) base, (String) property);
+                    context.setPropertyResolved(true);
+                }
             }
         } else if (base instanceof DocumentPropertyContext) {
             try {
