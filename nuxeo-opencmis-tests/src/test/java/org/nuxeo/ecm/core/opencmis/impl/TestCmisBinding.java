@@ -2171,18 +2171,18 @@ public class TestCmisBinding extends TestCmisBindingBase {
             res = query(statement);
             assertEquals(1, res.getNumItems().intValue());
             assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
-        }
 
-        // query for invalid index name
-        try {
-            statement = "SELECT cmis:name FROM File" //
-                    + " WHERE CONTAINS('nx:borked:title1')";
-            res = query(statement);
-            if (!useElasticsearch()) { // ES turns this into the regular fulltext query
-                fail();
+            // query for invalid index name
+            try {
+                statement = "SELECT cmis:name FROM File" //
+                        + " WHERE CONTAINS('nx:borked:title1')";
+                res = query(statement);
+                if (!useElasticsearch()) { // ES turns this into the regular fulltext query
+                    fail();
+                }
+            } catch (CmisInvalidArgumentException e) {
+                assertTrue(e.getMessage(), e.getMessage().contains("No such fulltext index: borked"));
             }
-        } catch (CmisInvalidArgumentException e) {
-            assertTrue(e.getMessage().contains("No such fulltext index: borked"));
         }
     }
 
