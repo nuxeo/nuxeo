@@ -93,9 +93,11 @@
           <ui:insert name="upper_buttons" />
         </a4j:outputPanel>
       </f:subview>
-      <div class="table-overflow">
-        <ui:include src="documents_layout_table_content.xhtml" />
-      </div>
+      <f:subview id="#{formId}">
+        <div class="table-overflow">
+          <ui:include src="documents_layout_table_content.xhtml" />
+        </div>
+      </f:subview>
       <f:subview id="#{formId}_buttons">
         <a4j:outputPanel id="ajax_selection_buttons"
                          layout="block">
