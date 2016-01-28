@@ -36,4 +36,8 @@
     <property name="nuxeo.jsf.useRepeatRenderTime">true</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.jsf.useJSFLifeCycleTimer">false</property>
+  </extension>
+
 </component>
