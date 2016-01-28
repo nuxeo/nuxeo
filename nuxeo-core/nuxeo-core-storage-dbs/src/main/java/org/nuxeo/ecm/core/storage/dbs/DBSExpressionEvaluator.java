@@ -438,7 +438,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                     throw new QueryParseException(
                             NXQL.ECM_FULLTEXT_SCORE + " cannot be used without " + NXQL.ECM_FULLTEXT);
                 }
-                projection.put(NXQL.ECM_FULLTEXT_SCORE, Long.valueOf(1));
+                projection.put(NXQL.ECM_FULLTEXT_SCORE, Double.valueOf(1));
             }
         }
         return projection;
