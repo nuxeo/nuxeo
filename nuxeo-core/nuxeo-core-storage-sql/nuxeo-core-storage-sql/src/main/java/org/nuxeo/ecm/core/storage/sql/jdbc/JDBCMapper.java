@@ -891,13 +891,19 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     // queryFilter used for principals and permissions
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
-            Object... params) {
+            boolean distinctDocuments, Object... params) {
         if (dialect.needsPrepareUserReadAcls()) {
             prepareUserReadAcls(queryFilter);
         }
         QueryMaker queryMaker = findQueryMaker(queryType);
         if (queryMaker == null) {
             throw new NuxeoException("No QueryMaker accepts query: " + queryType + ": " + query);
+        }
+        if (distinctDocuments) {
+            String q = query.toLowerCase();
+            if (q.startsWith("select ") && !q.startsWith("select distinct ")) {
+                query = "SELECT DISTINCT " + query.substring("SELECT ".length());
+            }
         }
         try {
             return new ResultSetQueryResult(queryMaker, query, queryFilter, pathResolver, this, params);

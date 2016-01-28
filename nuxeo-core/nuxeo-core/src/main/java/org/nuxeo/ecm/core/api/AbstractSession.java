@@ -1190,6 +1190,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType, Object... params) {
+        return queryAndFetch(query, queryType, false, params);
+    }
+
+    @Override
+    public IterableQueryResult queryAndFetch(String query, String queryType, boolean distinctDocuments,
+            Object... params) {
         try {
             SecurityService securityService = getSecurityService();
             Principal principal = getPrincipal();
@@ -1209,7 +1215,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 transformers = Collections.emptyList();
             }
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, 0, 0);
-            IterableQueryResult result = getSession().queryAndFetch(query, queryType, queryFilter, params);
+            IterableQueryResult result = getSession().queryAndFetch(query, queryType, queryFilter, distinctDocuments,
+                    params);
             return result;
         } catch (QueryParseException e) {
             e.addInfo("Failed to execute query: " + queryType + ": " + query);

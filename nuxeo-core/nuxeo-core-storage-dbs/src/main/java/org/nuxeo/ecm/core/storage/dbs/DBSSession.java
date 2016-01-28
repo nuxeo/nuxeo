@@ -1398,7 +1398,7 @@ public class DBSSession implements Session {
     }
 
     protected PartialList<Map<String, Serializable>> doQueryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, boolean selectDocuments, int countUpTo) {
+            QueryFilter queryFilter, boolean distinctDocuments, int countUpTo) {
         if ("NXTAG".equals(queryType)) {
             // for now don't try to implement tags
             // and return an empty list
@@ -1461,7 +1461,7 @@ public class DBSSession implements Session {
 
         // query the repository
         PartialList<Map<String, Serializable>> pl = repository.queryAndFetch(evaluator, repoOrderByClause,
-                selectDocuments, repoLimit, repoOffset, countUpTo);
+                distinctDocuments, repoLimit, repoOffset, countUpTo);
 
         List<Map<String, Serializable>> projections = pl.list;
         long totalSize = pl.totalSize;
@@ -1594,8 +1594,10 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params) {
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, false, -1);
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, Object[] params) {
+        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, distinctDocuments,
+                -1);
         return new DBSQueryResult(pl);
     }
 

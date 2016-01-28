@@ -438,8 +438,9 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params) {
-        return session.queryAndFetch(query, queryType, queryFilter, params);
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, Object[] params) {
+        return session.queryAndFetch(query, queryType, queryFilter, distinctDocuments, params);
     }
 
     /*

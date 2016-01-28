@@ -419,6 +419,20 @@ public interface Session extends Connection {
     IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params);
 
     /**
+     * Makes a query to the database and returns an iterable (which must be closed when done).
+     *
+     * @param query the query
+     * @param queryType the query type
+     * @param queryFilter the query filter
+     * @param distinctDocuments if {@code true} then a maximum of one row per document will be returned
+     * @param params optional query-type-dependent parameters
+     * @return an iterable, which <b>must</b> be closed when done
+     * @since 7.10-HF04, 8.2
+     */
+    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, Object... params);
+
+    /**
      * Gets the lock manager for this session.
      *
      * @return the lock manager

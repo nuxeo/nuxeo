@@ -1065,8 +1065,31 @@ public interface CoreSession extends AutoCloseable {
     DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset, long countUpTo);
 
     /**
+     * Executes the given query and returns an iterable of maps containing the requested properties (which must be
+     * closed when done).
+     *
+     * @param query the query to execute
+     * @param queryType the query type, usually "NXQL"
+     * @param params optional query-type-dependent parameters
+     * @return an {@link IterableQueryResult}, which <b>must</b> be closed after use
      */
     IterableQueryResult queryAndFetch(String query, String queryType, Object... params);
+
+    /**
+     * Executes the given query and returns an iterable of maps containing the requested properties (which must be
+     * closed when done).
+     * <p>
+     * It's possible to specify {@code distinctDocuments = true} to get a maximum of one row of results per document,
+     * this will behave differently only when the {@code WHERE} clause contains wildcards.
+     *
+     * @param query the query to execute
+     * @param queryType the query type, usually "NXQL"
+     * @param distinctDocuments if {@code true} then a maximum of one row per document will be returned
+     * @param params optional query-type-dependent parameters
+     * @return an {@link IterableQueryResult}, which <b>must</b> be closed after use
+     * @since 7.10-HF04, 8.2
+     */
+    IterableQueryResult queryAndFetch(String query, String queryType, boolean distinctDocuments, Object... params);
 
     /** -------------------------- Security API --------------------------- * */
 

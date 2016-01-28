@@ -56,7 +56,8 @@ public interface Session {
     /**
      * Does a query and fetch the individual results as maps.
      */
-    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params);
+    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, Object[] params);
 
     /**
      * Gets the lock manager for this session.
