@@ -23,14 +23,11 @@ package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
 import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletException;
@@ -56,11 +53,6 @@ import com.sun.faces.facelets.tag.ui.RepeatHandler;
  * @author Anahide Tchertchian
  */
 public class RepeatTagHandler extends TagHandler {
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected static final DataModel EMPTY_MODEL = new ListDataModel(Collections.emptyList());
-
-    protected static final String RENDER_TIME_CONF = "nuxeo.jsf.useRepeatRenderTime";
 
     /**
      * @since 5.7
