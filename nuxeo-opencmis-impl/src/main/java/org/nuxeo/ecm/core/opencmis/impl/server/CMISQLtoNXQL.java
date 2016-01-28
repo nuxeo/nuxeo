@@ -260,12 +260,10 @@ public class CMISQLtoNXQL {
         // WHERE clause
 
         Tree whereNode = walker.getWherePredicateTree();
-        boolean distinct = false;
         if (whereNode != null) {
             GeneratingWalker generator = new GeneratingWalker();
             generator.walkPredicate(whereNode);
             whereClauses.add(generator.buf.toString());
-            distinct = generator.distinct;
         }
 
         // ORDER BY clause
@@ -288,7 +286,7 @@ public class CMISQLtoNXQL {
         // create the whole select
 
         String where = StringUtils.join(whereClauses, " AND ");
-        String nxql = "SELECT " + (distinct ? "DISTINCT " : "") + what + " FROM " + nxqlFrom + " WHERE " + where;
+        String nxql = "SELECT " + what + " FROM " + nxqlFrom + " WHERE " + where;
         if (!orderbys.isEmpty()) {
             nxql += " ORDER BY " + StringUtils.join(orderbys, ", ");
         }
@@ -545,8 +543,6 @@ public class CMISQLtoNXQL {
 
         public StringBuilder buf = new StringBuilder();
 
-        public boolean distinct;
-
         @Override
         public Boolean walkNot(Tree opNode, Tree node) {
             buf.append("NOT ");
@@ -668,7 +664,6 @@ public class CMISQLtoNXQL {
             if (!NXQL.ECM_MIXINTYPE.equals(nxqlCol)) {
                 buf.append("/*");
             }
-            distinct = true;
             buf.append(' ');
             buf.append(op);
             buf.append(' ');
@@ -691,7 +686,6 @@ public class CMISQLtoNXQL {
             walkExpr(colNode);
             if (multi) {
                 buf.append("/*");
-                distinct = true;
             }
             buf.append(isNull ? " IS NULL" : " IS NOT NULL");
             return null;
