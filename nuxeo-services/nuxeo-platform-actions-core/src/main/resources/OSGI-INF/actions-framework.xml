@@ -241,4 +241,10 @@
 
     <object class="org.nuxeo.ecm.platform.actions.TypeCompatibility" />
   </extension-point>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService"
+    point="configuration">
+    <property name="nuxeo.actions.debug.traceLag">-1</property>
+  </extension>
+
 </component>

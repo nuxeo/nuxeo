@@ -116,6 +116,7 @@ public class WebActionsBean implements WebActions, Serializable {
                 list.addAll(actions);
             }
         }
+
         return list;
     }
 
