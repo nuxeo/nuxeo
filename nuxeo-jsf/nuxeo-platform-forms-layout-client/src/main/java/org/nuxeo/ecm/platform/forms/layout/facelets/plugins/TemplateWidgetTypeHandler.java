@@ -49,6 +49,7 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.MapValueExpression;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
 
@@ -62,6 +63,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final Log log = LogFactory.getLog(TemplateWidgetTypeHandler.class);
 
     public static final String TEMPLATE_PROPERTY_NAME = "template";
+
+    public static final String TRACE_PROP = "nuxeo.jsf.templateWidgetType.traceLag";
 
     /**
      * Property that can be put on the widget type definition to decide whether the widget type should bind to parent
@@ -77,6 +80,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     @Override
     public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
+        long start = System.currentTimeMillis();
+
         String template = getTemplateValue(widget);
         if (template == null) {
             log.error("Missing template property for widget " + widget.getName() + " in layout "
@@ -105,6 +110,14 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         DecorateHandler includeHandler = new DecorateHandler(config);
         TagHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns, includeHandler);
         handler.apply(ctx, parent);
+
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        long lagValue = Long.valueOf(cs.getProperty(TRACE_PROP, "-1"));
+        long end = System.currentTimeMillis();
+        long lag = end - start;
+        if (lagValue > 0 && lag > lagValue) {
+            log.error("twidget type for " + widget.getId() + " took: " + lag + " ms.");
+        }
     }
 
     /**
