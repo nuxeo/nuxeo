@@ -138,11 +138,13 @@ public interface Mapper extends RowMapper, XAResource {
      * @param query the query
      * @param queryType the query type
      * @param queryFilter the query filter
+     * @param distinctDocuments if {@code true} then a maximum of one row per document will be returned
      * @param params optional query-type-dependent parameters
      * @return an iterable, which <b>must</b> be closed when done
      */
     // queryFilter used for principals and permissions
-    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params);
+    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, Object... params);
 
     /**
      * Gets the ids for all the ancestors of the given row ids.

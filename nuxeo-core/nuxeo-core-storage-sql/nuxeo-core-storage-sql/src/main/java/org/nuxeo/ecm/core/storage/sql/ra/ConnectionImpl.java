@@ -332,6 +332,15 @@ public class ConnectionImpl implements Session {
         return result;
     }
 
+    @Override
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, Object... params) {
+        IterableQueryResult result = getSession().queryAndFetch(query, queryType, queryFilter, distinctDocuments,
+                params);
+        noteQueryResult(result);
+        return result;
+    }
+
     public static class QueryResultContextException extends Exception {
         private static final long serialVersionUID = 1L;
 

@@ -697,7 +697,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, boolean selectDocuments, int limit, int offset, int countUpTo) {
+            OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
         // orderByClause may be null and different from evaluator.getOrderByClause() in case we want to post-filter
         MongoDBQueryBuilder builder = new MongoDBQueryBuilder(evaluator.getExpression(), evaluator.getSelectClause(),
                 orderByClause, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
@@ -711,7 +711,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         DBObject keys = builder.getProjection();
         // Don't do manual projection if there are no projection wildcards, as this brings no new
         // information and is costly. The only difference is several identical rows instead of one.
-        boolean manualProjection = !selectDocuments && builder.hasProjectionWildcard();
+        boolean manualProjection = !distinctDocuments && builder.hasProjectionWildcard();
         if (manualProjection) {
             // we'll do post-treatment to re-evaluate the query to get proper wildcard projections
             // so we need the full state from the database

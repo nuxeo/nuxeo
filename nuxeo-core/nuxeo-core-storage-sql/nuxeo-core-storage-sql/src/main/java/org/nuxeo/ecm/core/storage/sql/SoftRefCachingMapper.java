@@ -88,8 +88,8 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
 
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
-            Object... params) {
-        return mapper.queryAndFetch(query, queryType, queryFilter, params);
+            boolean distinctDocuments, Object... params) {
+        return mapper.queryAndFetch(query, queryType, queryFilter, distinctDocuments, params);
     }
 
     @Override

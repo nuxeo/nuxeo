@@ -1245,9 +1245,15 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
             Object... params) {
+        return queryAndFetch(query, queryType, queryFilter, false, params);
+    }
+
+    @Override
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            boolean distinctDocuments, Object... params) {
         final Timer.Context timerContext = queryTimer.time();
         try {
-            return mapper.queryAndFetch(query, queryType, queryFilter, params);
+            return mapper.queryAndFetch(query, queryType, queryFilter, distinctDocuments, params);
         } finally {
             long duration = timerContext.stop();
             if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
