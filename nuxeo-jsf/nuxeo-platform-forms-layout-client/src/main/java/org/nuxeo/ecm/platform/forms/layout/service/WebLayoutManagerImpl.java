@@ -237,7 +237,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         } else if (value == null || value instanceof String) {
             return Boolean.valueOf((String) value);
         } else {
-            log.error("Could not get boolean value for '" + value + "'");
+            log.error("Could not get boolean value for '" + value + "' in expression '" + expression + "'");
             return Boolean.FALSE;
         }
     }
@@ -250,7 +250,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         if (value == null || value instanceof String) {
             return (String) value;
         } else {
-            log.error("Could not get string value for '" + value + "'");
+            log.error("Could not get string value for '" + value + "' in expression '" + expression + "'");
             return null;
         }
     }
