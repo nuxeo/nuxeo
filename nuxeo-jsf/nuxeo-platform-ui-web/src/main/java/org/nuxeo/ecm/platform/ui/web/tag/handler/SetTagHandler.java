@@ -38,11 +38,14 @@ import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.ui.web.util.DebugTracer;
 
 /**
  * Tag handler that exposes a variable to the variable map. Behaviour is close to the c:set tag handler except:
@@ -58,6 +61,8 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
  * @since 5.3.1
  */
 public class SetTagHandler extends AliasTagHandler {
+
+    private static final Log log = LogFactory.getLog(SetTagHandler.class);
 
     protected final TagAttribute var;
 
@@ -99,6 +104,8 @@ public class SetTagHandler extends AliasTagHandler {
     @Override
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+        long start = DebugTracer.start();
+
         // make sure our parent is not null
         if (parent == null) {
             throw new TagException(tag, "Parent UIComponent was null");
@@ -129,6 +136,7 @@ public class SetTagHandler extends AliasTagHandler {
         } else {
             applyAlias(ctx, parent);
         }
+        DebugTracer.trace(log, start, var.getValue());
     }
 
     public FaceletHandler getNextHandler() {

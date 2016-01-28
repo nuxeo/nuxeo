@@ -40,4 +40,9 @@
     <property name="nuxeo.jsf.useJSFLifeCycleTimer">false</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService"
+    point="configuration">
+    <property name="nuxeo.jsf.debug.traceLag">-1</property>
+  </extension>
+
 </component>

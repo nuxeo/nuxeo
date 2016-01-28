@@ -123,9 +123,11 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     @Override
     public List<Action> getActions(String category, ActionContext context, boolean hideUnavailableActions) {
+        long start = DebugTracer.start();
         List<Action> actions = getActionRegistry().getActions(category);
         if (hideUnavailableActions) {
             applyFilters(context, actions);
+            DebugTracer.trace(log, start, category);
             return actions;
         } else {
             List<Action> allActions = new ArrayList<Action>();
@@ -135,16 +137,19 @@ public class ActionService extends DefaultComponent implements ActionManager {
             for (Action a : allActions) {
                 a.setAvailable(actions.contains(a));
             }
+            DebugTracer.trace(log, start, category);
             return allActions;
         }
     }
 
     @Override
     public Action getAction(String actionId, ActionContext context, boolean hideUnavailableAction) {
+        long start = DebugTracer.start();
         Action action = getActionRegistry().getAction(actionId);
         if (action != null) {
             if (hideUnavailableAction) {
                 if (!checkFilters(context, action)) {
+                    DebugTracer.trace(log, start, actionId);
                     return null;
                 }
             } else {
@@ -153,6 +158,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 }
             }
         }
+        DebugTracer.trace(log, start, actionId);
         return action;
     }
 
@@ -207,12 +213,15 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     @Override
     public boolean checkFilter(String filterId, ActionContext context) {
+        long start = DebugTracer.start();
         ActionFilterRegistry filterReg = getFilterRegistry();
         ActionFilter filter = filterReg.getFilter(filterId);
-        if (filter == null) {
-            return false;
+        boolean res = false;
+        if (filter != null) {
+            res = filter.accept(null, context);
         }
-        return filter.accept(null, context);
+        DebugTracer.trace(log, start, filterId);
+        return res;
     }
 
     @Override
@@ -221,6 +230,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     protected boolean checkFilters(Action action, List<String> filterIds, ActionContext context) {
+        long start = DebugTracer.start();
         ActionFilterRegistry filterReg = getFilterRegistry();
         for (String filterId : filterIds) {
             ActionFilter filter = filterReg.getFilter(filterId);
@@ -232,11 +242,13 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Filter '%s' denied access", filterId));
                 }
+                DebugTracer.trace(log, start, filterIds.toString());
                 return false;
             }
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Filter '%s' granted access", filterId));
             }
+            DebugTracer.trace(log, start, filterIds.toString());
         }
         return true;
     }
@@ -277,7 +289,10 @@ public class ActionService extends DefaultComponent implements ActionManager {
     protected void registerFilterFactory(FilterFactory ff) {
         getFilterRegistry().removeFilter(ff.id);
         try {
-            ActionFilter filter = (ActionFilter) Thread.currentThread().getContextClassLoader().loadClass(ff.className).newInstance();
+            ActionFilter filter = (ActionFilter) Thread.currentThread()
+                                                       .getContextClassLoader()
+                                                       .loadClass(ff.className)
+                                                       .newInstance();
             filter.setId(ff.id);
             getFilterRegistry().addFilter(filter);
         } catch (ReflectiveOperationException e) {

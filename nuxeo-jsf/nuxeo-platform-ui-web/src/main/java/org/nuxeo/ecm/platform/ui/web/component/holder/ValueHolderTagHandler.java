@@ -39,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
+import org.nuxeo.ecm.platform.ui.web.util.DebugTracer;
 
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
@@ -80,6 +81,8 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
 
     @Override
     public void applyNextHandler(FaceletContext ctx, UIComponent c) throws IOException, FacesException, ELException {
+        long start = DebugTracer.start();
+
         String varName = null;
         boolean varSet = false;
         if (var != null) {
@@ -118,6 +121,8 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
                 ctx.setVariableMapper(orig);
             }
         }
+
+        DebugTracer.trace(log, start, var.getValue());
     }
 
     /**

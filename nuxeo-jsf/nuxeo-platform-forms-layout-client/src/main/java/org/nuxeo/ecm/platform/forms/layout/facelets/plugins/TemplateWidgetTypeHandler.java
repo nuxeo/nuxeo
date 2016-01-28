@@ -48,6 +48,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.MapValueExpression;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
+import org.nuxeo.ecm.platform.ui.web.util.DebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
@@ -77,6 +78,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     @Override
     public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
+        long start = DebugTracer.start();
+
         String template = getTemplateValue(widget);
         if (template == null) {
             log.error("Missing template property for widget " + widget.getName() + " in layout "
@@ -105,6 +108,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         DecorateHandler includeHandler = new DecorateHandler(config);
         TagHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns, includeHandler);
         handler.apply(ctx, parent);
+
+        DebugTracer.trace(log, start, widget.getId(), -1);
     }
 
     /**
