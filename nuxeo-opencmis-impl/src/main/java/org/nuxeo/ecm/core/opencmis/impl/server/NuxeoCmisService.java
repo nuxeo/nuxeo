@@ -1498,7 +1498,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                     NxQueryBuilder qb = new NxQueryBuilder(coreSession).nxql(nxql).limit(-1);
                     it = ess.queryAndAggregate(qb).getRows();
                 } else {
-                    it = coreSession.queryAndFetch(nxql, NXQL.NXQL);
+                    // distinct documents
+                    it = coreSession.queryAndFetch(nxql, NXQL.NXQL, true, new Object[0]);
                 }
             } catch (QueryParseException e) {
                 e.addInfo("Invalid query: CMISQL: " + query);
