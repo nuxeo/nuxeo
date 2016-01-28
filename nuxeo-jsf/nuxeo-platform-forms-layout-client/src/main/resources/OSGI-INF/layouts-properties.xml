@@ -7,4 +7,9 @@
     <property name="nuxeo.jsf.listWidget.compatEnabled">false</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService"
+    point="configuration">
+    <property name="nuxeo.jsf.templateWidgetType.traceLag">7</property>
+  </extension>
+
 </component>
