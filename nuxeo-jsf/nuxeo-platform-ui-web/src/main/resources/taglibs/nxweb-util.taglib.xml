@@ -2028,6 +2028,11 @@
     </description>
   </tag>
 
+  <tag>
+    <tag-name>form</tag-name>
+    <handler-class>org.nuxeo.ecm.platform.ui.web.tag.handler.FormTagHandler</handler-class>
+  </tag>
+
   <!-- old tomahawk tags, migrated to use RichFaces tags -->
 
   <tag>
