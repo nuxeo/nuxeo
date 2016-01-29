@@ -21,16 +21,13 @@
             <c:set var="gridStyleClassProp" value="nxl_gridStyleClass_#{widgetIndex}" />
             <div class="gridBox #{nxu:test(empty layoutRow.properties[gridStyleClassProp], widgetControl_gridStyleClass, layoutRow.properties[gridStyleClassProp])}">
               <c:if test="#{widget != null}">
-                <ui:decorate template="/widgets/incl/form_template.xhtml">
-                  <ui:param name="addForm" value="#{widgetControl_requireSurroundingForm}" />
-                  <ui:param name="formId" value="#{widget.id}_form" />
-                  <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
-                  <ui:param name="disableMultiPartForm" value="#{widgetControl_disableMultiPartForm}" />
-                  <ui:param name="disableDoubleClickShield" value="#{widgetControl_disableDoubleClickShield}" />
-                  <ui:define name="form_template_content">
-                    <nxl:widget widget="#{widget}" value="#{value}" />
-                  </ui:define>
-                </ui:decorate>
+                <nxu:form id="#{widget.id}_form"
+                  add="#{widgetControl_requireSurroundingForm}"
+                  useAjaxForm="#{widgetControl_useAjaxForm}"
+                  disableMultipartForm="#{widgetControl_disableMultipartForm}"
+                  disableDoubleClickShield="#{widgetControl_disableDoubleClickShield}">
+                  <nxl:widget widget="#{widget}" value="#{value}" />
+                </nxu:form>
               </c:if>
             </div>
           </nxl:layoutRowWidget>
