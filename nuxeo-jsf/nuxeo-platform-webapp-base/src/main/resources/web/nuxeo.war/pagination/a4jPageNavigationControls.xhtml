@@ -1,4 +1,4 @@
-<ui:composition
+<c:if test="#{not empty contentIdToBeReRendered}"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -13,8 +13,6 @@
   - contentIdToBeReRendered: mandatory id(s) of components to re-render. if
     empty, actions will not be displayed.
 </ui:remove>
-
-<c:if test="#{not empty contentIdToBeReRendered}">
 
 <a4j:region>
   <h:panelGroup
@@ -66,6 +64,5 @@
 
 
 </a4j:region>
-</c:if>
 
-</ui:composition>
+</c:if>

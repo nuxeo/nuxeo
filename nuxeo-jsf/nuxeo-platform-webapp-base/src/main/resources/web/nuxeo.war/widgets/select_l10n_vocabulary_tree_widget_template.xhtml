@@ -18,9 +18,9 @@
   </c:if>
 
   <c:if test="#{widgetProperty_multiSelect and not empty field}">
-    <c:forEach var="item" items="#{field}">
+    <ui:repeat var="item" value="#{field}">
       <div><h:outputText value="#{vocabularyTreeActions.getLabelFor(widgetProperty_directoryName, item, keySeparator)}" /></div>
-    </c:forEach>
+    </ui:repeat>
   </c:if>
 
 </c:if>
