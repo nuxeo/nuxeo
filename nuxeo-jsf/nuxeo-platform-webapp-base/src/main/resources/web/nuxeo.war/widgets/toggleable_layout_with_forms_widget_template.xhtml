@@ -183,7 +183,9 @@
                     <nxu:set var="actions"
                       value="#{webActions.getActionsList(allActionCategories)}"
                       cache="true">
-                      <c:forEach var="action" items="#{actions}">
+                      <nxu:repeat var="action" items="#{actions}"
+                        id="#{widget.id}_actions_repeat"
+                        renderTime="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.useRepeatRenderTime')}">
                         <c:if test="#{useAjaxForm}">
                           <nxu:set var="addForm" value="false" cache="true">
                             <ui:decorate template="/incl/action/action_template.xhtml">

@@ -1,4 +1,4 @@
-<c:if test="#{not empty widgetProperty_actions}"
+<ui:fragment rendered="#{not empty widgetProperty_actions}"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -31,17 +31,21 @@
           <div class="widgetPanel actionsWidgetPanel">
             <nxu:repeat var="action" items="#{widgetProperty_actions}"
               begin="0"
-              end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
-              step="1"
+              renderTime="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.useRepeatRenderTime')}"
+              id="#{widget.id}"
+              end="#{webActions.getActionEnd(widgetProperty_actions.size(), widgetProperty_maxActionsNumber)}"
               varStatus="status">
               <span class="horizontalAction #{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
-                <ui:decorate template="/incl/action/action_template.xhtml">
-                  <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                <ui:include src="/incl/action/generic_action_template.xhtml">
+                  <ui:param name="action" value="#{action}" />
+                  <ui:param name="useButton" value="#{widgetProperty_actionsDisplay == 'buttons'}" />
+                  <ui:param name="hideLabel" value="#{widgetProperty_actionsDisplay == 'icons'}" />
+                  <ui:param name="hideIcon" value="#{widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'links'}" />
                   <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                   <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                   <ui:param name="formStyleClass" value="displayI subWidgetForm" />
                   <ui:param name="mode" value="#{widget.mode}" />
-                </ui:decorate>
+                </ui:include>
               </span>
               <c:if test="#{not status.last}">
                 <h:outputText value="#{widgetProperty_separator}" />
@@ -57,16 +61,21 @@
           <ul>
             <nxu:repeat var="action" items="#{widgetProperty_actions}"
               begin="0"
-              end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
+              renderTime="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.useRepeatRenderTime')}"
+              id="#{widget.id}"
+              end="#{webActions.getActionEnd(widgetProperty_actions.size(), widgetProperty_maxActionsNumber)}"
               step="1">
               <li class="#{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
-                <ui:decorate template="/incl/action/action_template.xhtml">
-                  <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                <ui:include src="/incl/action/generic_action_template.xhtml">
+                  <ui:param name="action" value="#{action}" />
+                  <ui:param name="useButton" value="#{widgetProperty_actionsDisplay == 'buttons'}" />
+                  <ui:param name="hideLabel" value="#{widgetProperty_actionsDisplay == 'icons'}" />
+                  <ui:param name="hideIcon" value="#{widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'links'}" />
                   <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                   <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                   <ui:param name="formStyleClass" value="displayI subWidgetForm" />
                   <ui:param name="mode" value="#{widget.mode}" />
-                </ui:decorate>
+                </ui:include>
               </li>
             </nxu:repeat>
           </ul>
@@ -82,15 +91,19 @@
                   value="boldLabel #{widgetProperty_labelStyleClass}" />
               </ui:include>
               <ul class="actionSubList">
-                <nxu:repeat var="action" items="#{widgetProperty_actions}">
+                <nxu:repeat var="action" items="#{widgetProperty_actions}"
+                  renderTime="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.useRepeatRenderTime')}"
+                  id="#{widget.id}">
                   <li class="#{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
-                    <ui:decorate template="/incl/action/action_template.xhtml">
-                      <ui:param name="actionsDisplay" value="#{nxu:test(widgetProperty_actionsDisplay == 'buttons', 'links', widgetProperty_actionsDisplay)}" />
+                    <ui:include src="/incl/action/generic_action_template.xhtml">
+                      <ui:param name="action" value="#{action}" />
+                      <ui:param name="hideLabel" value="#{widgetProperty_actionsDisplay == 'icons'}" />
+                      <ui:param name="hideIcon" value="#{widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'links'}" />
                       <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                       <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                       <ui:param name="formStyleClass" value="subWidgetForm" />
                       <ui:param name="mode" value="#{widget.mode}" />
-                    </ui:decorate>
+                    </ui:include>
                   </li>
                 </nxu:repeat>
               </ul>
@@ -108,16 +121,20 @@
         <c:otherwise>
           <nxu:repeat var="action" items="#{widgetProperty_actions}"
             begin="0"
-            end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
-            step="1">
+            end="#{webActions.getActionEnd(widgetProperty_actions.size(), widgetProperty_maxActionsNumber)}"
+            renderTime="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.useRepeatRenderTime')}"
+            id="#{widget.id}">
             <div class="widgetPanel actionsWidgetPanel #{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass}">
-              <ui:decorate template="/incl/action/action_template.xhtml">
-                <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+              <ui:include src="/incl/action/generic_action_template.xhtml">
+                <ui:param name="action" value="#{action}" />
+                <ui:param name="useButton" value="#{widgetProperty_actionsDisplay == 'buttons'}" />
+                <ui:param name="hideLabel" value="#{widgetProperty_actionsDisplay == 'icons'}" />
+                <ui:param name="hideIcon" value="#{widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'links'}" />
                 <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                 <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                 <ui:param name="formStyleClass" value="subWidgetForm" />
                 <ui:param name="mode" value="#{widget.mode}" />
-              </ui:decorate>
+              </ui:include>
             </div>
           </nxu:repeat>
 
@@ -131,8 +148,10 @@
         <div class="clear" />
       </c:if>
 
-      <nxu:repeat var="action" items="#{widgetProperty_actions}">
+      <nxu:repeat var="action" items="#{widgetProperty_actions}"
+        renderTime="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.useRepeatRenderTime')}">
         <ui:include src="/incl/action/generic_mode_action_template.xhtml">
+          <ui:param name="action" value="#{action}" />
           <ui:param name="mode" value="after_view" />
         </ui:include>
       </nxu:repeat>
@@ -148,4 +167,4 @@
 </nxu:set>
 </nxu:set>
 
-</c:if>
+</ui:fragment>

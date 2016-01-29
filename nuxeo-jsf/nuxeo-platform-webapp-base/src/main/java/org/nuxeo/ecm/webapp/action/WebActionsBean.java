@@ -390,6 +390,16 @@ public class WebActionsBean implements WebActions, Serializable {
         return null;
     }
 
+    public Integer getActionEnd(Integer size, String max) {
+        if (!StringUtils.isBlank(max)) {
+            Integer maxVal = Integer.valueOf(max);
+            if (maxVal.compareTo(size) < 0) {
+                return maxVal - 1;
+            }
+        }
+        return size - 1;
+    }
+
     public void setCurrentSubTabId(String tabId) {
         if (tabId != null) {
             // do not reset tab when not set as this method
