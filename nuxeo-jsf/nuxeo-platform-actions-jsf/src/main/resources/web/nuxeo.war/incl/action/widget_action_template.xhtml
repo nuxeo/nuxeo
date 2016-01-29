@@ -30,21 +30,18 @@
       layoutName="#{widget.name}"
       value="#{fieldOrValue}"
       resolveOnly="true">
-      <ui:decorate template="/widgets/incl/form_template.xhtml">
-        <ui:param name="addForm" value="#{widgetControl_requireSurroundingForm}" />
-        <ui:param name="formId" value="#{widget.id}_form" />
-        <ui:param name="useAjaxForm" value="#{widgetControl_useAjaxForm}" />
-        <ui:param name="disableMultiPartForm" value="#{widgetControl_disableMultiPartForm}" />
-        <ui:param name="formStyleClass" value="subWidgetForm" />
-        <ui:param name="disableDoubleClickShield" value="#{widgetControl_disableDoubleClickShield}" />
-        <ui:define name="form_template_content">
-          <c:if test="#{action.properties.displayWidgetLabel}">
-            <ui:include src="/widgets/incl/widget_label_template.xhtml" />
-            <h:outputText value=" " />
-          </c:if>
-          <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-        </ui:define>
-      </ui:decorate>
+      <nxu:form id="#{widget.id}_form"
+        skip="#{!widgetControl_requireSurroundingForm}"
+        useAjaxForm="#{widgetControl_useAjaxForm}"
+        disableMultipartForm="#{widgetControl_disableMultiPartForm}"
+        styleClass="subWidgetForm"
+        disableDoubleClickShield="#{widgetControl_disableDoubleClickShield}">
+        <c:if test="#{action.properties.displayWidgetLabel}">
+          <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+          <h:outputText value=" " />
+        </c:if>
+        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+      </nxu:form>
     </nxl:widget>
 
   </nxu:set>
