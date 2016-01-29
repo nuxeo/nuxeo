@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.management.jtajca;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import javax.inject.Inject;
@@ -27,7 +28,7 @@ import javax.inject.Named;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -47,7 +48,10 @@ public class CanMonitorConnectionPoolTest {
     protected ConnectionPoolMonitor db;
 
     @Inject
-    CoreSession repository;
+    protected FeaturesRunner featuresRunner;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Test
     public void areMonitorsInstalled() {
@@ -68,7 +72,12 @@ public class CanMonitorConnectionPoolTest {
 
     protected void isConnectionOpened(ConnectionPoolMonitor monitor) {
         int count = monitor.getConnectionCount();
-        assertThat(count, greaterThan(0));
+        if (coreFeature.getStorageConfiguration().isVCS()) {
+            assertThat(count, greaterThan(0));
+        } else {
+            // pool is allocated but not actually used for anything
+            assertEquals(0, count);
+        }
     }
 
 }
