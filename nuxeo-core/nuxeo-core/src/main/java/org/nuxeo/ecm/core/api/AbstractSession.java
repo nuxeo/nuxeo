@@ -363,7 +363,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Deprecated
     public DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle) {
         if (resetLifeCycle) {
-            return copy(src, dst, name, StandardCopyOption.RESET_LIFE_CYCLE);
+            return copy(src, dst, name, CopyOption.RESET_LIFE_CYCLE);
         }
         return copy(src, dst, name);
     }
@@ -371,15 +371,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     @Deprecated
     public DocumentModel copy(DocumentRef src, DocumentRef dst, String name) {
-        return copy(src, dst, name, CopyOptions.parse());
+        return copy(src, dst, name, null);
     }
 
     @Override
     public DocumentModel copy(DocumentRef src, DocumentRef dst, String name, CopyOption... copyOptions) {
-        return copy(src, dst, name, CopyOptions.parse(copyOptions));
-    }
-
-    private DocumentModel copy(DocumentRef src, DocumentRef dst, String name, CopyOptions copyOptions) {
         Document dstDoc = resolveReference(dst);
         checkPermission(dstDoc, ADD_CHILDREN);
 
@@ -400,8 +396,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
         options.put(CoreEventConstants.DESTINATION_NAME, name);
         options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
-        options.put(CoreEventConstants.RESET_LIFECYCLE, copyOptions.isResetLifeCycle());
-        options.put(CoreEventConstants.RESET_CREATOR, copyOptions.isResetCreator());
+        options.put(CoreEventConstants.RESET_LIFECYCLE, CopyOption.isResetLifeCycle(copyOptions));
+        options.put(CoreEventConstants.RESET_CREATOR, CopyOption.isResetCreator(copyOptions));
         DocumentModel srcDocModel = readModel(srcDoc);
         notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, options, null, null, true, true);
 
@@ -428,7 +424,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Deprecated
     public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
         if (resetLifeCycle) {
-            return copy(src, dst, StandardCopyOption.RESET_LIFE_CYCLE);
+            return copy(src, dst, CopyOption.RESET_LIFE_CYCLE);
         }
         return copy(src, dst);
     }
@@ -454,7 +450,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Deprecated
     public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle) {
         if (resetLifeCycle) {
-            return copyProxyAsDocument(src, dst, name, StandardCopyOption.RESET_LIFE_CYCLE);
+            return copyProxyAsDocument(src, dst, name, CopyOption.RESET_LIFE_CYCLE);
         }
         return copyProxyAsDocument(src, dst, name);
     }
@@ -462,15 +458,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     @Deprecated
     public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name) {
-        return copyProxyAsDocument(src, dst, name, CopyOptions.parse());
+        return copyProxyAsDocument(src, dst, name, null);
     }
 
     @Override
     public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, CopyOption... copyOptions) {
-        return copyProxyAsDocument(src, dst, name, CopyOptions.parse(copyOptions));
-    }
-
-    private DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, CopyOptions copyOptions) {
         Document srcDoc = resolveReference(src);
         if (!srcDoc.isProxy()) {
             return copy(src, dst, name);
@@ -488,8 +480,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docModel.getRef());
 
         Map<String, Serializable> options = new HashMap<>();
-        options.put(CoreEventConstants.RESET_LIFECYCLE, copyOptions.isResetLifeCycle());
-        options.put(CoreEventConstants.RESET_CREATOR, copyOptions.isResetCreator());
+        options.put(CoreEventConstants.RESET_LIFECYCLE, CopyOption.isResetLifeCycle(copyOptions));
+        options.put(CoreEventConstants.RESET_CREATOR, CopyOption.isResetCreator(copyOptions));
         // notify document created by copy
         String comment = srcDoc.getRepositoryName() + ':' + src.toString();
         notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel, options, null, comment, true, false);
@@ -505,7 +497,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Deprecated
     public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
         if (resetLifeCycle) {
-            return copyProxyAsDocument(src, dst, StandardCopyOption.RESET_LIFE_CYCLE);
+            return copyProxyAsDocument(src, dst, CopyOption.RESET_LIFE_CYCLE);
         }
         return copyProxyAsDocument(src, dst);
     }

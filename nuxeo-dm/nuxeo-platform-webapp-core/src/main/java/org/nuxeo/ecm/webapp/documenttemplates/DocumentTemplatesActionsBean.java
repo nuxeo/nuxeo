@@ -42,7 +42,6 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
-import org.nuxeo.ecm.core.api.CoreSession.StandardCopyOption;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -170,7 +169,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
         String name = pss.generatePathSegment(doc);
         CopyOption opt = null;
         if (Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(RESET_CREATOR_PROPERTY)) {
-            opt = StandardCopyOption.RESET_CREATOR;
+            opt = CopyOption.RESET_CREATOR;
         }
         DocumentModel created = documentManager.copy(new IdRef(selectedTemplateId), currentDocRef, name, opt);
 
