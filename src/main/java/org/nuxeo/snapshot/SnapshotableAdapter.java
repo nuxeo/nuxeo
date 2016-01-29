@@ -134,8 +134,16 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             mustSnapshot = true;
         } else {
             String[] existingUUIds = (String[]) doc.getPropertyValue(CHILDREN_PROP);
-            if (!Arrays.equals(vuuids, existingUUIds)) {
-                mustSnapshot = true;
+            if (doc.hasFacet(FacetNames.ORDERABLE)) {
+                // ordered, exact comparison
+                if (!Arrays.equals(vuuids, existingUUIds)) {
+                    mustSnapshot = true;
+                }
+            } else {
+                // not ordered, use unordered comparison
+                if (!new HashSet<>(Arrays.asList(vuuids)).equals(new HashSet<>(Arrays.asList(existingUUIds)))) {
+                    mustSnapshot = true;
+                }
             }
         }
 
