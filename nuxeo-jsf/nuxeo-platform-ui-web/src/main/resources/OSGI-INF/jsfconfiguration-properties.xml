@@ -36,4 +36,9 @@
     <property name="nuxeo.jsf.useJSFLifeCycleTimer">true</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService"
+    point="configuration">
+    <property name="nuxeo.jsf.faceletHandler.traceLag">10</property>
+  </extension>
+
 </component>
