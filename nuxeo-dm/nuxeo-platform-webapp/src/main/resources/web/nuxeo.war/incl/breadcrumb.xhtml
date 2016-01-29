@@ -1,4 +1,5 @@
-<div xmlns="http://www.w3.org/1999/xhtml"
+<h:panelGroup layout="block"
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -19,13 +20,13 @@
           <li class="dropDownMenu button dropdown">
             <h:graphicImage value="/icons/UpFolder_icon.gif" alt="server" />
             <ul class="actionSubList">
-              <nxu:repeat var="coreRepository" items="#{coreRepositories}">
+              <ui:repeat var="coreRepository" value="#{coreRepositories}">
                 <li>
                   <h:commandLink action="#{serverActions.selectRepository(coreRepository.name)}">
                     <h:outputText value="#{messages[coreRepository.label]}" />
                   </h:commandLink>
                 </li>
-              </nxu:repeat>
+              </ui:repeat>
             </ul>
           </li>
         </ul>
@@ -36,13 +37,13 @@
           <li class="dropDownMenu button dropdown">
             <h:outputText value="#{nxd:titleOrId(navigationContext.currentDomain)}" />
             <ul class="actionSubList">
-              <nxu:repeat var="userDomain" items="#{breadcrumbActions.userDomains}">
+              <ui:repeat var="userDomain" value="#{breadcrumbActions.userDomains}">
                 <li>
                   <nxd:restDocumentLink document="#{userDomain}">
                     <h:outputText value="#{nxd:titleOrId(userDomain)}" />
                   </nxd:restDocumentLink>
                 </li>
-              </nxu:repeat>
+              </ui:repeat>
             </ul>
           </li>
         </ul>
@@ -50,15 +51,15 @@
 
       <c:if test="#{!empty backendPath}">
 
-        <nxu:repeat var="pathElement" items="#{backendPath}" varStatus="status">
-          <c:if test="#{(status.first and (!pathElement.link or !breadcrumbActions.isUserDomain(pathElement.documentModel))) or !status.first}">
+        <ui:repeat var="pathElement" value="#{backendPath}" varStatus="status">
+          <ui:fragment rendered="#{(status.first and (!pathElement.link or !breadcrumbActions.isUserDomain(pathElement.documentModel))) or !status.first}">
             <nxd:restDocumentLink document="#{pathElement.documentModel}"
               rendered="#{pathElement.link}">
               <h:outputText value="#{nxd:titleOrId(pathElement.documentModel)}" />
             </nxd:restDocumentLink>
             <h:outputText value="#{pathElement.name}" rendered="#{!pathElement.link}" />
-          </c:if>
-        </nxu:repeat>
+          </ui:fragment>
+        </ui:repeat>
 
       </c:if>
       <c:if test="#{empty backendPath}">
@@ -68,7 +69,7 @@
     </h:form>
   </div>
 
-  <div style="clear:both"></div>
+  <div class="clear" />
 
   <h:outputScript target="#{pageJsTarget}">
     jQuery(document).ready(function() {
@@ -76,4 +77,4 @@
     });
   </h:outputScript>
 
-</div>
+</h:panelGroup>
