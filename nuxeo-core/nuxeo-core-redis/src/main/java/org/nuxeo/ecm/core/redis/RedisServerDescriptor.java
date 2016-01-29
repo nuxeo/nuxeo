@@ -73,7 +73,7 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
         }
         JedisPoolConfig conf = new JedisPoolConfig();
         conf.setMaxTotal(maxTotal);
-        conf.setMaxTotal(maxIdle);
+        conf.setMaxIdle(maxIdle);
         return new RedisPoolExecutor(new JedisPool(conf, host, port, timeout,
                 StringUtils.defaultIfBlank(password, null), database));
     }
