@@ -35,31 +35,10 @@ Templating zones that can be filled when useAjaxForm is set to true:
 - after_action_trigger
 </c:if>
 
-<c:choose>
-
-  <c:when test="#{actionsDisplay == 'buttons'}">
-    <ui:include src="/incl/action/generic_action_template.xhtml">
-      <ui:param name="useButton" value="true" />
-      <ui:param name="hideIcon" value="true" />
-    </ui:include>
-  </c:when>
-
-  <c:when test="#{actionsDisplay == 'icons'}">
-    <ui:include src="/incl/action/generic_action_template.xhtml">
-      <ui:param name="hideLabel" value="true" />
-    </ui:include>
-  </c:when>
-
-  <c:when test="#{actionsDisplay == 'links'}">
-    <ui:include src="/incl/action/generic_action_template.xhtml">
-      <ui:param name="hideIcon" value="true" />
-    </ui:include>
-  </c:when>
-
-  <c:otherwise>
-    <ui:include src="/incl/action/generic_action_template.xhtml" />
-  </c:otherwise>
-
-</c:choose>
+  <ui:include src="/incl/action/generic_action_template.xhtml">
+    <ui:param name="useButton" value="#{actionsDisplay == 'buttons'}" />
+    <ui:param name="hideLabel" value="#{actionsDisplay == 'icons'}" />
+    <ui:param name="hideIcon" value="#{actionsDisplay == 'buttons' or actionsDisplay == 'links'}" />
+  </ui:include>
 
 </c:if>
