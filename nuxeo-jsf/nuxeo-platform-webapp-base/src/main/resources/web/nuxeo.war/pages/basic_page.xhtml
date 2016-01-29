@@ -13,7 +13,7 @@
 
   <h:head id="pageHead">
 
-    <nxu:set var="pageFlavor" value="#{pageFlavor}">
+    <nxu:set var="pageFlavor" value="#{pageFlavor}" cache="true">
       <nxr:insert target="#{nuxeoWebResourceDispatcher.headStartTarget}" />
     </nxu:set>
 
