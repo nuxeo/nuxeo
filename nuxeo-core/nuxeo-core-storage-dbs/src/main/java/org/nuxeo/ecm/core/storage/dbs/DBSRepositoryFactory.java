@@ -19,8 +19,9 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
-import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * Base DBS implementation of a {@link RepositoryFactory}, creating a subclass of {@link DBSRepository}.
@@ -42,6 +43,16 @@ public abstract class DBSRepositoryFactory implements RepositoryFactory {
             throw new IllegalStateException("No descriptor registered for: " + repositoryName);
         }
         return descriptor;
+    }
+
+    /**
+     * This is done so that the connection pool monitor has something to return. In the future we may have an actual
+     * pool.
+     */
+    protected void installPool() {
+        NuxeoConnectionManagerConfiguration pool = new NuxeoConnectionManagerConfiguration();
+        pool.setName("repository/" + repositoryName);
+        NuxeoContainer.initConnectionManager(pool);
     }
 
 }
