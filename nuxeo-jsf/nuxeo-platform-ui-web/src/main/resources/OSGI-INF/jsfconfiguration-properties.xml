@@ -38,7 +38,7 @@
 
   <extension target="org.nuxeo.runtime.ConfigurationService"
     point="configuration">
-    <property name="nuxeo.jsf.faceletHandler.traceLag">10</property>
+    <property name="nuxeo.jsf.faceletHandler.traceLag">-1</property>
   </extension>
 
 </component>
