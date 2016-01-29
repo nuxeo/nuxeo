@@ -6,10 +6,10 @@
   xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
   test="true">
 
-<c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
+<nxu:repeat var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status"
+  renderTime="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.useRepeatRenderTime')}">
   <nxu:set var="actions"
-    value="#{documentContentViewActions.getSelectionActions(actionCategory, contentView, documentsListsManager.getWorkingList(contentView.selectionListName))}"
-    cache="true">
+    value="#{documentContentViewActions.getSelectionActions(actionCategory, contentView, documentsListsManager.getWorkingList(contentView.selectionListName))}">
     <c:if test="#{not status.first and not empty actions}">
       <br />
     </c:if>
@@ -24,6 +24,6 @@
       ignoreTemplateProperty="true"
       addForm="true" />
   </nxu:set>
-</c:forEach>
+</nxu:repeat>
 
 </c:if>

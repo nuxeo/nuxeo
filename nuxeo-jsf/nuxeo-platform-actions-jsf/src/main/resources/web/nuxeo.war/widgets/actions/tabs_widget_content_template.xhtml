@@ -1,4 +1,4 @@
-<ui:composition
+<c:if test="true"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -16,7 +16,8 @@
     </c:if>
   </nxu:set>
   <c:if test="#{not empty widgetProperty_currentTabAction.link}">
-    <nxu:set var="action" value="#{widgetProperty_currentTabAction}">
+    <nxu:set var="action" value="#{widgetProperty_currentTabAction}"
+      blockPatterns="action">
     <nxu:set var="defaultParentTabActionCategoryPrefix"
       value="#{nxu:test(empty parentTabActionCategory, widgetProperty_category, parentTabActionCategory)}"
       cache="true">
@@ -42,4 +43,4 @@
   </nxu:set>
 </c:if>
 
-</ui:composition>
+</c:if>
