@@ -2185,6 +2185,16 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    public void testQueryAndFetchDistinctId() throws Exception {
+        makeComplexDoc();
+
+        String query = "SELECT DISTINCT ecm:uuid FROM TestDoc WHERE tst:friends/*/firstname = 'John'";
+        IterableQueryResult res = session.queryAndFetch(query, "NXQL");
+        assertEquals(1, res.size());
+        res.close();
+    }
+
+    @Test
     public void testSelectColumnsDistinct() throws Exception {
         assumeTrue("DBS does not support DISTINCT in queries", supportsDistinct());
 
