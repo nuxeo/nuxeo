@@ -28,4 +28,8 @@
 
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.jsf.removeAliasOptimsReloaded">false</property>
+  </extension>
+
 </component>
