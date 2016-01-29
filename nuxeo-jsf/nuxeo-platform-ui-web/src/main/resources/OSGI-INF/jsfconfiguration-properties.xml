@@ -24,8 +24,28 @@
 
     <property name="nuxeo.jsf.enableDoubleClickShield">true</property>
     <property name="nuxeo.jsf.defaultBytePrefixFormat">SI</property>
-    <property name="nuxeo.jsf.removeAliasOptims">false</property>
 
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that allows removing merging features on alias tags
+      (nxu:set), useful for backport of optimization on maintenance branches.
+
+      @since 6.0
+    </documentation>
+    <property name="nuxeo.jsf.removeAliasOptimsReloaded">false</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that allows removing optimization features on alias
+      tags (nxu:set and associated), useful for backport of optimization on
+      maintenance branches.
+
+      @since 8.2
+    </documentation>
+    <property name="nuxeo.jsf.removeAliasOptimsReloaded">false</property>
   </extension>
 
 </component>
