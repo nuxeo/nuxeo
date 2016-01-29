@@ -24,8 +24,12 @@
 
     <property name="nuxeo.jsf.enableDoubleClickShield">true</property>
     <property name="nuxeo.jsf.defaultBytePrefixFormat">SI</property>
-    <property name="nuxeo.jsf.removeAliasOptims">false</property>
 
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.jsf.removeAliasOptims">false</property>
+    <property name="nuxeo.jsf.removeAliasOptimsReloaded">false</property>
   </extension>
 
 </component>
