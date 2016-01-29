@@ -292,7 +292,11 @@ public class DBSSession implements Session {
     protected Document getChild(String parentId, String name) {
         name = normalize(name);
         DBSDocumentState docState = transaction.getChildState(parentId, name);
-        return getDocument(docState);
+        DBSDocument doc = getDocument(docState);
+        if (doc == null) {
+            throw new DocumentNotFoundException(name);
+        }
+        return doc;
     }
 
     protected List<Document> getChildren(String parentId) {
