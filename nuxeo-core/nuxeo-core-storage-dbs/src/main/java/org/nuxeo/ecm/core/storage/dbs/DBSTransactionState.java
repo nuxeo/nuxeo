@@ -29,10 +29,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BASE_VERSION_ID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
@@ -770,18 +767,23 @@ public class DBSTransactionState {
      */
     protected void findDirtyDocuments(Set<String> docsWithDirtyStrings, Set<String> docWithDirtyBinaries) {
         for (DBSDocumentState docState : transientStates.values()) {
-            StateDiff diff = docState.getStateChange();
-            if (diff == null) {
+            State originalState = docState.getOriginalState();
+            State state = docState.getState();
+            if (originalState == state) {
                 continue;
             }
-            // ignore fulltext-related properties to avoid looping
-            for (String key : diff.keyArray()) {
-                if (key.startsWith(KEY_FULLTEXT_SIMPLE) || key.startsWith(KEY_FULLTEXT_BINARY)
-                        || key.equals(KEY_FULLTEXT_JOBID)) {
-                    diff.remove(key);
-                }
+            StateDiff diff = StateHelper.diff(originalState, state);
+            if (diff.isEmpty()) {
+                continue;
             }
-            Set<String> paths = new DirtyPathsFinder().findDirtyPaths(diff);
+            StateDiff rdiff = StateHelper.diff(state, originalState);
+            // we do diffs in both directions to capture removal of complex list elements,
+            // for instance for {foo: [{bar: baz}] -> {foo: []}
+            // diff paths = foo and rdiff paths = foo/*/bar
+            Set<String> paths = new HashSet<>();
+            DirtyPathsFinder dirtyPathsFinder = new DirtyPathsFinder(paths);
+            dirtyPathsFinder.findDirtyPaths(diff);
+            dirtyPathsFinder.findDirtyPaths(rdiff);
             FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
             boolean dirtyStrings = false;
             boolean dirtyBinaries = false;
@@ -819,10 +821,12 @@ public class DBSTransactionState {
 
         protected Set<String> paths;
 
-        public Set<String> findDirtyPaths(StateDiff value) {
-            paths = new HashSet<>();
-            findDirtyPaths(value, null);
-            return paths;
+        public DirtyPathsFinder(Set<String> paths) {
+            this.paths = paths;
+        }
+
+        public void findDirtyPaths(StateDiff value) {
+            findDirtyPaths(value, (String) null);
         }
 
         protected void findDirtyPaths(Object value, String path) {
