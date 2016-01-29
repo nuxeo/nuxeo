@@ -653,6 +653,13 @@ public class TestSQLRepositoryAPI {
         assertNotNull(retrievedChild.getRef());
 
         assertEquals(name2, retrievedChild.getName());
+
+        try {
+            session.getChild(root.getRef(), "nosuchchild");
+            fail("Should fail with DocumentNotFoundException");
+        } catch (DocumentNotFoundException e) {
+            assertEquals("nosuchchild", e.getMessage());
+        }
     }
 
     @Test
