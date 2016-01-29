@@ -11,9 +11,9 @@
   <nxu:set var="page" value="#{themeStylingService.getPage(pageName)}">
     <c:if test="#{page != null}">
       <nxr:meta charset="#{page.charset}" />
-      <c:forEach var="fav" items="#{themeActions.favicons}">
+      <ui:repeat var="fav" value="#{themeActions.favicons}">
         <nxr:favicon value="#{fav}" />
-      </c:forEach>
+      </ui:repeat>
       <ui:include src="page_resources.xhtml" />
     </c:if>
   </nxu:set>
