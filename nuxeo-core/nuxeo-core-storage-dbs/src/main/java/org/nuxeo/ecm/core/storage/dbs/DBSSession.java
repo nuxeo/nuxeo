@@ -1424,6 +1424,7 @@ public class DBSSession implements Session {
             } else {
                 throw new QueryParseException("SELECT DISTINCT not supported on DBS");
             }
+            distinctDocuments = true;
         }
         for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
             sqlQuery = transformer.transform(queryFilter.getPrincipal(), sqlQuery);
