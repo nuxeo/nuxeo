@@ -33,10 +33,12 @@ import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletException;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.platform.ui.web.binding.alias.UIAliasHolder;
 
 import com.sun.faces.facelets.component.UIRepeat;
 import com.sun.faces.facelets.tag.TagAttributeImpl;
@@ -211,10 +213,13 @@ public class RepeatTagHandler extends TagHandler {
         }
 
         FaceletHandler handler;
+        TagAttribute itemsAttr = getItemsAttribute();
+        String itemsAttrValue = itemsAttr == null ? null : itemsAttr.getValue();
+        String itemsVar = getVarName("items");
+        String itemsRef = "#{" + itemsVar + "}";
         if (renderTime(ctx)) {
             List<TagAttribute> repeatAttrs = new ArrayList<TagAttribute>();
-            TagAttribute itemsAttr = getItemsAttribute();
-            repeatAttrs.add(createAttribute(config, "value", itemsAttr != null ? itemsAttr.getValue() : null));
+            repeatAttrs.add(createAttribute(config, "value", itemsRef));
             repeatAttrs.addAll(copyAttributes(config, id, var, begin, end, step, varStatusAttr, tranzient));
             ComponentConfig repeatConfig = TagConfigFactory.createComponentConfig(config, tagId,
                     new TagAttributesImpl(repeatAttrs.toArray(new TagAttribute[] {})), nextHandler,
@@ -222,22 +227,28 @@ public class RepeatTagHandler extends TagHandler {
             handler = new RepeatHandler(repeatConfig);
         } else {
             List<TagAttribute> forEachAttrs = new ArrayList<TagAttribute>();
-            forEachAttrs.add(createAttribute(config, "items", "#{" + getVarName("items") + "}"));
+            forEachAttrs.add(createAttribute(config, "items", itemsRef));
             forEachAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
             TagConfig forEachConfig = TagConfigFactory.createTagConfig(config, tagId,
                     new TagAttributesImpl(forEachAttrs.toArray(new TagAttribute[] {})), nextHandler);
-            ForEachHandler forEachHandler = new ForEachHandler(forEachConfig);
-
-            String setTagConfigId = getTagConfigId(ctx);
-            TagAttribute itemsAttr = getItemsAttribute();
-            ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(config, setTagConfigId,
-                    getVarName("items"), itemsAttr != null ? itemsAttr.getValue() : null, "false", anchor,
-                    forEachHandler);
-            handler = new SetTagHandler(aliasConfig);
+            handler = new ForEachHandler(forEachConfig);
         }
 
+        // ensure unreference in case of ajax re-render + block of variables String setTagConfigId =
+        // getTagConfigId(ctx);
+        String setTagConfigId = getTagConfigId(ctx);
+        TagAttribute[] attrs = new TagAttribute[4];
+        attrs[0] = createAttribute(config, "var", itemsVar);
+        attrs[1] = createAttribute(config, "value", itemsAttrValue);
+        attrs[2] = createAttribute(config, "anchor", anchor);
+        attrs[3] = createAttribute(config, "blockPatterns", itemsVar);
+        TagAttributes attributes = new TagAttributesImpl(attrs);
+        ComponentConfig aliasConfig = TagConfigFactory.createComponentConfig(config, setTagConfigId, attributes,
+                handler, UIAliasHolder.COMPONENT_TYPE, null);
+        FaceletHandler refHandler = new SetTagHandler(aliasConfig);
+
         // apply
-        handler.apply(ctx, parent);
+        refHandler.apply(ctx, parent);
     }
 
     protected boolean renderTime(FaceletContext ctx) {
