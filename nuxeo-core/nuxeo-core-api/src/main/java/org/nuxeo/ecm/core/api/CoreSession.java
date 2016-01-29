@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -1459,15 +1460,19 @@ public interface CoreSession extends AutoCloseable {
     Map<String, String> getBinaryFulltext(DocumentRef ref);
 
     /** @since 8.2 */
-    interface CopyOption {
-    }
-
-    /** @since 8.2 */
-    enum StandardCopyOption implements CopyOption {
+    enum CopyOption {
 
         RESET_LIFE_CYCLE,
 
         RESET_CREATOR;
+
+        public static boolean isResetLifeCycle(CopyOption... options) {
+            return options != null && Arrays.asList(options).contains(RESET_LIFE_CYCLE);
+        }
+
+        public static boolean isResetCreator(CopyOption... options) {
+            return options != null && Arrays.asList(options).contains(RESET_CREATOR);
+        }
 
     }
 

@@ -42,7 +42,7 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.CoreSession.StandardCopyOption;
+import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -165,7 +165,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         String name = pss.generatePathSegment(doc);
         DocumentModel created = documentManager.copy(new IdRef(selectedTemplateId), currentDocRef, name,
-                StandardCopyOption.RESET_CREATOR);
+                CopyOption.RESET_CREATOR);
 
         // Update from user input.
         // This part is for now harcoded for Workspace type.

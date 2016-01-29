@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.CoreSession.StandardCopyOption;
+import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -348,8 +348,7 @@ public class TestDublinCoreStorage {
     @Test
     public void testCopyDocumentWithResetCoreMetadata() throws Exception {
         DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
-        DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008",
-                StandardCopyOption.RESET_CREATOR);
+        DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008", CopyOption.RESET_CREATOR);
 
         waitForAsyncCompletion();
 
