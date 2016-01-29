@@ -35,8 +35,11 @@
               step="1"
               varStatus="status">
               <span class="horizontalAction #{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
-                <ui:decorate template="/incl/action/action_template.xhtml">
-                  <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                <ui:decorate template="/incl/action/generic_action_template.xhtml">
+                  <ui:param name="action" value="#{action}" />
+                  <ui:param name="useButton" value="#{widgetProperty_actionsDisplay == 'buttons'}" />
+                  <ui:param name="hideLabel" value="#{widgetProperty_actionsDisplay == 'icons'}" />
+                  <ui:param name="hideIcon" value="#{widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'links'}" />
                   <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                   <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                   <ui:param name="formStyleClass" value="displayI subWidgetForm" />
@@ -60,8 +63,11 @@
               end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
               step="1">
               <li class="#{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
-                <ui:decorate template="/incl/action/action_template.xhtml">
-                  <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+                <ui:decorate template="/incl/action/generic_action_template.xhtml">
+                  <ui:param name="action" value="#{action}" />
+                  <ui:param name="useButton" value="#{widgetProperty_actionsDisplay == 'buttons'}" />
+                  <ui:param name="hideLabel" value="#{widgetProperty_actionsDisplay == 'icons'}" />
+                  <ui:param name="hideIcon" value="#{widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'links'}" />
                   <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                   <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                   <ui:param name="formStyleClass" value="displayI subWidgetForm" />
@@ -84,8 +90,10 @@
               <ul class="actionSubList">
                 <nxu:repeat var="action" items="#{widgetProperty_actions}">
                   <li class="#{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass} #{nxu:test(widgetProperty_currentAction.id == action.id, 'selected', '')}">
-                    <ui:decorate template="/incl/action/action_template.xhtml">
-                      <ui:param name="actionsDisplay" value="#{nxu:test(widgetProperty_actionsDisplay == 'buttons', 'links', widgetProperty_actionsDisplay)}" />
+                    <ui:decorate template="/incl/action/generic_action_template.xhtml">
+                      <ui:param name="action" value="#{action}" />
+                      <ui:param name="hideLabel" value="#{widgetProperty_actionsDisplay == 'icons'}" />
+                      <ui:param name="hideIcon" value="#{widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'links'}" />
                       <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                       <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                       <ui:param name="formStyleClass" value="subWidgetForm" />
@@ -111,8 +119,11 @@
             end="#{empty widgetProperty_maxActionsNumber?widgetProperty_actions.size()-1:widgetProperty_maxActionsNumber-1}"
             step="1">
             <div class="widgetPanel actionsWidgetPanel #{widgetProperty_containerStyleClass} #{action.properties.containerStyleClass}">
-              <ui:decorate template="/incl/action/action_template.xhtml">
-                <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+              <ui:decorate template="/incl/action/generic_action_template.xhtml">
+                <ui:param name="action" value="#{action}" />
+                <ui:param name="useButton" value="#{widgetProperty_actionsDisplay == 'buttons'}" />
+                <ui:param name="hideLabel" value="#{widgetProperty_actionsDisplay == 'icons'}" />
+                <ui:param name="hideIcon" value="#{widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'links'}" />
                 <ui:param name="addForm" value="#{widgetProperty_addForm}" />
                 <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                 <ui:param name="formStyleClass" value="subWidgetForm" />
