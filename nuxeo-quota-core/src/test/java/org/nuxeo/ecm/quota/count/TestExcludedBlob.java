@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaSizeService;
@@ -60,7 +59,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(QuotaFeature.class)
 @LocalDeploy("org.nuxeo.ecm.quota.core:exclude-blob-contrib.xml")
-@TransactionalConfig(autoStart = false)
 public class TestExcludedBlob {
 
     @Inject
