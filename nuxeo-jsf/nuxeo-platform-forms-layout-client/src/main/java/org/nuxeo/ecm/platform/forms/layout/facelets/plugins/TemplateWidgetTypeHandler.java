@@ -109,7 +109,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         TagHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns, includeHandler);
         handler.apply(ctx, parent);
 
-        DebugTracer.trace(log, start, widget.getId());
+        DebugTracer.trace(log, start, widget.getId(), -1);
     }
 
     /**

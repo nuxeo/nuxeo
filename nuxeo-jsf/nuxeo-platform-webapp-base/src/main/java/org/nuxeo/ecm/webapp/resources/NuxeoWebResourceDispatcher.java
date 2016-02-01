@@ -31,6 +31,7 @@ import javax.faces.event.ComponentSystemEventListener;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.debug.DebugTracer;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.jsf.PageResourceRenderer;
@@ -58,6 +59,8 @@ public class NuxeoWebResourceDispatcher implements ComponentSystemEventListener 
     private static String DEFER_JS_PROP = "nuxeo.jsf.deferJavaScriptLoading";
 
     public void processEvent(ComponentSystemEvent event) throws AbortProcessingException {
+        long start = System.currentTimeMillis();
+
         FacesContext ctx = FacesContext.getCurrentInstance();
         UIViewRoot root = ctx.getViewRoot();
         boolean ajaxRequest = ctx.getPartialViewContext().isAjaxRequest();
@@ -87,6 +90,8 @@ public class NuxeoWebResourceDispatcher implements ComponentSystemEventListener 
             moveResources(ctx, root, otherResources, TARGET_HEAD, SLOT_BODY_START,
                     "Pushing head resource %s at the beggining of body tag");
         }
+
+        DebugTracer.traceMillis(log, start, "resource dispatch");
     }
 
     protected void moveResources(FacesContext ctx, UIViewRoot root, List<UIComponent> resources, String removeFrom,

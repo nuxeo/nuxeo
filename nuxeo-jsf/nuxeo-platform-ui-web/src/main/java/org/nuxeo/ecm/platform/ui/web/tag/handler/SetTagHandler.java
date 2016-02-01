@@ -136,7 +136,7 @@ public class SetTagHandler extends AliasTagHandler {
         } else {
             applyAlias(ctx, parent);
         }
-        DebugTracer.trace(log, start, var.getValue(ctx));
+        DebugTracer.trace(log, start, var.getValue());
     }
 
     public FaceletHandler getNextHandler() {

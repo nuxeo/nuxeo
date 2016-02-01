@@ -32,10 +32,18 @@ public class DebugTracer {
     public static void trace(Log log, long start, String id) {
         ConfigurationService cs = Framework.getService(ConfigurationService.class);
         long lagValue = Long.valueOf(cs.getProperty(TRACE_PROP, "-1"));
-        if (lagValue > 0) {
+        trace(log, start, id, lagValue);
+    }
+
+    public static void traceMillis(Log log, long start, String id) {
+        trace(log, start, id, 0);
+    }
+
+    public static void trace(Log log, long start, String id, long maxLag) {
+        if (maxLag >= 0) {
             long end = System.currentTimeMillis();
             long lag = end - start;
-            if (lagValue > 0 && lag > lagValue) {
+            if (lag > maxLag) {
                 log.error(id + " took: " + lag + " ms.");
             }
         }

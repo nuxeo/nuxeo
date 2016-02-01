@@ -56,6 +56,7 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.debug.DebugTracer;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -98,6 +99,8 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Override
     public List<Action> getActionsList(String category, ActionContext context, boolean hideUnavailableAction) {
+        long start = System.currentTimeMillis();
+
         List<Action> list = new ArrayList<Action>();
         List<String> categories = new ArrayList<String>();
         if (category != null) {
@@ -116,6 +119,8 @@ public class WebActionsBean implements WebActions, Serializable {
                 list.addAll(actions);
             }
         }
+
+        DebugTracer.trace(log, start, category, 0);
         return list;
     }
 
@@ -160,7 +165,12 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Override
     public Action getAction(String actionId, boolean hideUnavailableAction) {
-        return actionManager.getAction(actionId, createActionContext(), hideUnavailableAction);
+        long start = System.currentTimeMillis();
+        try {
+            return actionManager.getAction(actionId, createActionContext(), hideUnavailableAction);
+        } finally {
+            DebugTracer.trace(log, start, actionId, 0);
+        }
     }
 
     @Override
@@ -170,7 +180,12 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Override
     public Action getAction(String actionId, ActionContext context, boolean hideUnavailableAction) {
-        return actionManager.getAction(actionId, context, hideUnavailableAction);
+        long start = System.currentTimeMillis();
+        try {
+            return actionManager.getAction(actionId, context, hideUnavailableAction);
+        } finally {
+            DebugTracer.trace(log, start, actionId, 0);
+        }
     }
 
     @Override

@@ -221,6 +221,8 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     protected boolean checkFilters(Action action, List<String> filterIds, ActionContext context) {
+        long start = System.currentTimeMillis();
+        int maxLag = 2;
         ActionFilterRegistry filterReg = getFilterRegistry();
         for (String filterId : filterIds) {
             ActionFilter filter = filterReg.getFilter(filterId);
@@ -232,10 +234,24 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Filter '%s' denied access", filterId));
                 }
+                if (maxLag >= 0) {
+                    long end = System.currentTimeMillis();
+                    long lag = end - start;
+                    if (lag > maxLag) {
+                        log.error(filterId + " took: " + lag + " ms.");
+                    }
+                }
                 return false;
             }
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Filter '%s' granted access", filterId));
+            }
+            if (maxLag >= 0) {
+                long end = System.currentTimeMillis();
+                long lag = end - start;
+                if (lag > maxLag) {
+                    log.error(filterId + " took: " + lag + " ms.");
+                }
             }
         }
         return true;
