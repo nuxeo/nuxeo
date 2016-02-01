@@ -54,7 +54,7 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.FormTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.debug.DebugTracer;
+import org.nuxeo.ecm.platform.web.common.debug.DebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.TagAttributesImpl;

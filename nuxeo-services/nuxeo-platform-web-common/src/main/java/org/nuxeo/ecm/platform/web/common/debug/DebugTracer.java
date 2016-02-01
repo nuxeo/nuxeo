@@ -16,14 +16,14 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.platform.ui.web.tag.handler.debug;
+package org.nuxeo.ecm.platform.web.common.debug;
 
 import org.apache.commons.logging.Log;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
- * @since TODO
+ * @since 8.2
  */
 public class DebugTracer {
 
@@ -43,7 +43,7 @@ public class DebugTracer {
         if (maxLag >= 0) {
             long end = System.currentTimeMillis();
             long lag = end - start;
-            if (lag > maxLag) {
+            if (lag >= maxLag) {
                 log.error(id + " took: " + lag + " ms.");
             }
         }

@@ -48,7 +48,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.MapValueExpression;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.debug.DebugTracer;
+import org.nuxeo.ecm.platform.web.common.debug.DebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.ui.DecorateHandler;

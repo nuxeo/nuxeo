@@ -44,8 +44,8 @@ import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.debug.DebugTracer;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.web.common.debug.DebugTracer;
 
 /**
  * Tag handler that exposes a variable to the variable map. Behaviour is close to the c:set tag handler except:

@@ -39,7 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.debug.DebugTracer;
+import org.nuxeo.ecm.platform.web.common.debug.DebugTracer;
 
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 

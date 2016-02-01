@@ -43,7 +43,7 @@ import javax.faces.view.facelets.TagException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.debug.DebugTracer;
+import org.nuxeo.ecm.platform.web.common.debug.DebugTracer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
