@@ -3,6 +3,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxa="http://nuxeo.org/nxweb/actions"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
 <c:if test="false">
@@ -48,80 +49,10 @@ Templating zones that can be filled when useAjaxForm is set to true:
 
 </c:if>
 
-<nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}">
-<nxu:set var="actionWidgetName" value="#{nxu:test(formAdded, nxu:jsfTagIdEscape(action.id), defActionWidgetName)}">
-<nxu:set var="actionConfirmMessageJs"
-  value="if (!confirm#{actionWidgetName}Message()) return false;"
-  cache="true">
-
-  <c:if test="#{not empty action.properties.confirmMessage}">
-    <script type="text/javascript">
-      function confirm#{actionWidgetName}Message() {
-        message = "#{nxu:translate(action.properties.confirmMessage, action.properties.confirmMessageArgs)}";
-        if (message != "") {
-          return confirm(message);
-        }
-        return true;
-      }
-    </script>
-  </c:if>
-
-  <nxu:set var="actionReRender"
-    value="#{action.properties.ajaxReRender}"
-    resolveTwice="true">
-  <nxl:widgetType category="jsfAction"
-    name="#{nxu:test(empty action.type, nxu:test(empty actionType, 'link', actionType), action.type)}"
-    mode="#{empty mode?'view':mode}"
-    widgetName="#{actionWidgetName}"
-    hideIcon="#{hideIcon}"
-    hideLabel="#{hideLabel}"
-    useButton="#{useButton}"
-    useAjaxForm="#{useAjaxForm and action.properties.ajaxSupport}"
-    formAdded="#{formAdded}"
-    actionStyleClass="#{actionStyleClass}"
-    clickedActionIdHolder="#{clickedActionIdHolder}"
-    value="#{fieldOrValue}"
-    resolveOnly="true">
-    <nxu:set var="ajaxReRender"
-      value="#{nxu:joinRender(ajaxReRender, nxu:componentAbsoluteId(component, actionReRender))}">
-    <nxu:set var="addForm"
-      value="#{action.properties.containsKey('addForm') ? action.properties.addForm : addForm}"
-      resolveTwice="true">
-    <nxu:set var="useAjaxForm"
-      value="#{empty useAjaxForm and action.properties.containsKey('useAjaxForm') ? action.properties.useAjaxForm : useAjaxForm}"
-      resolveTwice="true">
-    <nxu:set var="discardForm"
-      value="#{action.properties.containsKey('discardSurroundingForm') ? discardSurroundingForm : widget.properties.discardSurroundingForm}"
-      resolveTwice="true">
-    <nxu:set var="supportAjax"
-      value="#{action.properties.containsKey('ajaxSupport') ? action.properties.ajaxSupport : widget.properties.supportAjax}"
-      resolveTwice="true">
-    <nxu:set var="disableMultipartForm"
-      value="#{action.properties.containsKey('disableMultipartForm') ? action.properties.disableMultipartForm : widget.properties.disableMultipartForm}"
-      resolveTwice="true">
-    <nxu:set var="disableDoubleClickShield"
-      value="#{action.properties.containsKey('disableDoubleClickShield') ? action.properties.disableDoubleClickShield : widget.properties.disableDoubleClickShield}"
-      resolveTwice="true" >
-      <nxu:form id="#{widget.id}_form"
-        add="#{addForm and (!discardForm or useAjaxForm)}"
-        useAjaxForm="#{useAjaxForm and supportAjax}"
-        disableMultipartForm="#{disableMultipartForm}"
-        styleClass="#{formStyleClass}"
-        disableDoubleClickShield="#{disableDoubleClickShield}">
-        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-      </nxu:form>
-    </nxu:set>
-    </nxu:set>
-    </nxu:set>
-    </nxu:set>
-    </nxu:set>
-    </nxu:set>
-    </nxu:set>
-  </nxl:widgetType>
-  </nxu:set>
-
-</nxu:set>
-</nxu:set>
-</nxu:set>
+<nxa:action action="#{action}"
+  mode="#{mode}"
+  addForm="#{addForm}"
+  useAjaxForm="#{useAjaxForm}"
+  formStyleClass="#{formStyleClass}" />
 
 </c:if>

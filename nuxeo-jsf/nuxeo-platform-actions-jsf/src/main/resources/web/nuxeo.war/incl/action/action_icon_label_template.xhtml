@@ -10,7 +10,7 @@
   <c:if test="#{not hideIcon}">
     <nxu:graphicImage value="#{nxu:test(empty actionIcon and hideLabel, '/icons/action_empty.png', actionIcon)}"
       title="#{actionLabel}"
-      rendered="#{not hideIcon}"
+      rendered="#{not empty actionIcon or hideLabel}"
       alt="#{actionLabel}"
       styleClass="smallIcon tipsyShow #{empty tipsyGravity?'tipsyGravitySE':tipsyGravity} #{action.properties.iconStyleClass}" />
   </c:if>
