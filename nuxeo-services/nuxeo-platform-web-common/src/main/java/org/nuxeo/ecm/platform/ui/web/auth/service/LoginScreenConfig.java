@@ -280,6 +280,8 @@ public class LoginScreenConfig implements Serializable {
                                                   Framework.getProperty(Environment.PRODUCT_VERSION))
                                           .queryParam(Environment.DISTRIBUTION_VERSION,
                                                   Framework.getProperty(Environment.DISTRIBUTION_VERSION))
+                                          .queryParam(Environment.DISTRIBUTION_PACKAGE,
+                                                  Framework.getProperty(Environment.DISTRIBUTION_PACKAGE))
                                           .build()
                                           .toString();
         }

@@ -20,11 +20,20 @@
 package org.nuxeo.ecm.platform.ui.web.auth;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.common.Environment.DISTRIBUTION_PACKAGE;
+import static org.nuxeo.common.Environment.DISTRIBUTION_VERSION;
+import static org.nuxeo.common.Environment.PRODUCT_VERSION;
+
+import java.net.URL;
+import java.util.Properties;
+
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +42,8 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.LoginVideo;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import com.sun.jersey.api.uri.UriComponent;
 
 public class TestLoginScreenConfig extends NXRuntimeTestCase {
 
@@ -47,12 +58,18 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-framework.xml");
         deployContrib(WEB_BUNDLE, "OSGI-INF/authentication-contrib.xml");
         deployContrib(WEB_BUNDLE_TEST, "OSGI-INF/test-loginscreenconfig.xml");
+
+        Properties properties = Framework.getProperties();
+        properties.setProperty(PRODUCT_VERSION, "LTS-2015");
+        properties.setProperty(DISTRIBUTION_VERSION, "7.10");
+        properties.setProperty(DISTRIBUTION_PACKAGE, "zip");
+
     }
 
     private PluggableAuthenticationService getAuthService() {
         PluggableAuthenticationService authService;
-        authService = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
-                PluggableAuthenticationService.NAME);
+        authService = (PluggableAuthenticationService) Framework.getRuntime()
+                                                                .getComponent(PluggableAuthenticationService.NAME);
 
         return authService;
     }
@@ -165,6 +182,25 @@ public class TestLoginScreenConfig extends NXRuntimeTestCase {
         assertNotNull(config.getProvider("OuvertId"));
         assertEquals("new", config.getProvider("google").getLink(null, null));
         assertEquals("BBB", config.getProvider("OuvertId").getLink(null, null));
+
+    }
+
+    @Test
+    public void iframe_url_embeds_the_distribution_package_type_and_version() throws Exception {
+
+        LoginScreenConfig config = new LoginScreenConfig();
+        String strUrl = config.getNewsIframeUrl();
+        if (!strUrl.startsWith("http")) {
+            strUrl = "http:" + strUrl;
+        }
+        URL url = new URL(strUrl);
+
+        MultivaluedMap<String, String> query = UriComponent.decodeQuery(url.getQuery(), true);
+
+        assertThat(query.keySet()).contains(PRODUCT_VERSION, DISTRIBUTION_VERSION, DISTRIBUTION_PACKAGE);
+        assertThat(query.get(PRODUCT_VERSION)).contains("LTS-2015");
+        assertThat(query.get(DISTRIBUTION_VERSION)).contains("7.10");
+        assertThat(query.get(DISTRIBUTION_PACKAGE)).contains("zip");
 
     }
 }
