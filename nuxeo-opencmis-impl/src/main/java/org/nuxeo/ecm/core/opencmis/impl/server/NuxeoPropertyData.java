@@ -121,7 +121,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                     NuxeoTypeHelper.getBaseTypeId(doc).value());
         } else if (PropertyIds.DESCRIPTION.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyStringData((PropertyDefinition<String>) pd, doc,
-                    NuxeoTypeHelper.NX_DC_DESCRIPTION, true, callContext);
+                    NuxeoTypeHelper.NX_DC_DESCRIPTION, false, callContext);
         } else if (PropertyIds.CREATED_BY.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyStringData((PropertyDefinition<String>) pd, doc,
                     NuxeoTypeHelper.NX_DC_CREATOR, true, callContext);
