@@ -52,4 +52,9 @@ public class RedisPoolExecutor implements RedisExecutor {
         return pool;
     }
 
+    @Override
+    public boolean supportPipelined() {
+        return true;
+    }
+
 }
