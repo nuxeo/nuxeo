@@ -422,15 +422,11 @@ public class LayoutTagHandler extends TagHandler {
             BlockingVariableMapper vm, String modeValue) {
         ValueExpression valueExpr = value.getValueExpression(ctx, Object.class);
         vm.setVariable(RenderVariables.globalVariables.value.name(), valueExpr);
-        vm.addBlockedPattern(RenderVariables.globalVariables.value.name());
         vm.setVariable(RenderVariables.globalVariables.layoutValue.name(), valueExpr);
-        vm.addBlockedPattern(RenderVariables.globalVariables.layoutValue.name());
         ValueExpression modeVe = eFactory.createValueExpression(modeValue, String.class);
         vm.setVariable(RenderVariables.globalVariables.layoutMode.name(), modeVe);
-        vm.addBlockedPattern(RenderVariables.globalVariables.layoutMode.name());
         // mode as alias to layoutMode
         vm.setVariable(RenderVariables.globalVariables.mode.name(), modeVe);
-        vm.addBlockedPattern(RenderVariables.globalVariables.mode.name());
     }
 
     /**
