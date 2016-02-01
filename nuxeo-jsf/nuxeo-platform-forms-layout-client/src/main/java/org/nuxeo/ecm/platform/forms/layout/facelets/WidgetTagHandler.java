@@ -314,7 +314,9 @@ public class WidgetTagHandler extends MetaTagHandler {
             }
 
             vm.setVariable(RenderVariables.globalVariables.value.name(), valueExpr);
+            vm.addBlockedPattern(RenderVariables.globalVariables.value.name());
             vm.setVariable(RenderVariables.globalVariables.value.name() + "_" + widget.getLevel(), valueExpr);
+            vm.addBlockedPattern(RenderVariables.globalVariables.value.name() + "_*");
         }
         fh.apply(ctx, parent);
     }
