@@ -10,7 +10,7 @@
   <f:attribute name="docRef" value="#{field_1.toString()}" />
   <f:attribute name="contentViewName" value="#{contentView.name}" />
   <f:attribute name="listName" value="#{contentView.selectionListName}" />
-  <a4j:ajax id="#{widget.id}_ajax_onclick" event="click"
+  <a4j:ajax id="#{widget.id}_ajax_onclick" event="change"
     execute="@this"
-    render="#{resultsPanelId} #{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
+    render="#{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
 </h:selectBooleanCheckbox>
