@@ -46,6 +46,12 @@ public class TestSegmentIOService {
     @Inject
     EventService eventService;
 
+    protected void waitForAsyncCompletion() {
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+    }
+
     protected void sendAuthenticationEvent(Principal principal) throws Exception {
             Map<String, Serializable> props = new HashMap<String, Serializable>();
             props.put("AuthenticationPlugin", "FakeAuth");
@@ -81,7 +87,8 @@ public class TestSegmentIOService {
         component.getTestData().clear();
 
         sendAuthenticationEvent(session.getPrincipal());
-        eventService.waitForAsyncCompletion();
+
+        waitForAsyncCompletion();
 
         List<Map<String, Object>> testData  = component.getTestData();
 
@@ -110,9 +117,7 @@ public class TestSegmentIOService {
         doc = session.createDocument(doc);
         session.save();
 
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
+        waitForAsyncCompletion();
 
         List<Map<String, Object>> testData  = component.getTestData();
 
