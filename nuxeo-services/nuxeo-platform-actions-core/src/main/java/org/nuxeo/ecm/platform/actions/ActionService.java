@@ -128,7 +128,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         List<Action> actions = getActionRegistry().getActions(category);
         if (hideUnavailableActions) {
             applyFilters(context, actions);
-            DebugTracer.trace(log, start, category, 0);
+            DebugTracer.trace(log, start, category);
             return actions;
         } else {
             List<Action> allActions = new ArrayList<Action>();
@@ -138,7 +138,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
             for (Action a : allActions) {
                 a.setAvailable(actions.contains(a));
             }
-            DebugTracer.trace(log, start, category, 0);
+            DebugTracer.trace(log, start, category);
             return allActions;
         }
     }
@@ -150,7 +150,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         if (action != null) {
             if (hideUnavailableAction) {
                 if (!checkFilters(context, action)) {
-                    DebugTracer.trace(log, start, actionId, 0);
+                    DebugTracer.trace(log, start, actionId);
                     return null;
                 }
             } else {
@@ -159,7 +159,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 }
             }
         }
-        DebugTracer.trace(log, start, actionId, 0);
+        DebugTracer.trace(log, start, actionId);
         return action;
     }
 
@@ -221,7 +221,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         if (filter != null) {
             res = filter.accept(null, context);
         }
-        DebugTracer.trace(log, start, filterId, 0);
+        DebugTracer.trace(log, start, filterId);
         return res;
     }
 
@@ -243,13 +243,13 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Filter '%s' denied access", filterId));
                 }
-                DebugTracer.trace(log, start, filterIds.toString(), 0);
+                DebugTracer.trace(log, start, filterIds.toString());
                 return false;
             }
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Filter '%s' granted access", filterId));
             }
-            DebugTracer.trace(log, start, filterIds.toString(), 0);
+            DebugTracer.trace(log, start, filterIds.toString());
         }
         return true;
     }
