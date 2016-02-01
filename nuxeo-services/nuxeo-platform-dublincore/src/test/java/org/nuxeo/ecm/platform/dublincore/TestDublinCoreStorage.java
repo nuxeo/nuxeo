@@ -50,14 +50,15 @@ import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * DublinCoreStorage Test Case.
@@ -67,6 +68,9 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @LocalDeploy("org.nuxeo.ecm.platform.dublincore.tests:OSGI-INF/types-contrib.xml")
 public class TestDublinCoreStorage {
+
+    @Inject
+    protected CoreFeature feature;
 
     @Inject
     protected CoreSession session;
@@ -340,9 +344,8 @@ public class TestDublinCoreStorage {
         waitForAsyncCompletion();
 
         assertNotNull(copy);
-        assertEquals(file.getPropertyValue("dc:creator"), copy.getPropertyValue("dc:creator"));
-        assertEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
-        assertEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+        assertEqualsCalendar(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
+        assertEqualsCalendar(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
     }
 
     @Test
@@ -353,9 +356,10 @@ public class TestDublinCoreStorage {
         waitForAsyncCompletion();
 
         assertNotNull(copy);
-        assertNotEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
-        assertNotEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+        assertNotEqualsCalendar(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
+        assertNotEqualsCalendar(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
     }
+
     @Test
     public void testCopyDocumentWithResetCoreMetadataByConfiguration() throws Exception {
         runtimeHarness.deployTestContrib("org.nuxeo.ecm.platform.dublincore.test.reset-creator.contrib",
@@ -364,12 +368,21 @@ public class TestDublinCoreStorage {
         DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
         DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008");
 
-        EventService service = Framework.getService(EventService.class);
-        service.waitForAsyncCompletion();
+        waitForAsyncCompletion();
 
         assertNotNull(copy);
-        assertNotEquals(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
-        assertNotEquals(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+        assertNotEqualsCalendar(file.getPropertyValue("dc:created"), copy.getPropertyValue("dc:created"));
+        assertNotEqualsCalendar(file.getPropertyValue("dc:modified"), copy.getPropertyValue("dc:modified"));
+    }
+
+    private void assertEqualsCalendar(Object expected, Object actual) {
+        StorageConfiguration storageConfig = feature.getStorageConfiguration();
+        assertEquals(storageConfig.convertToStoredCalendar((Calendar) expected), actual);
+    }
+
+    private void assertNotEqualsCalendar(Object expected, Object actual) {
+        StorageConfiguration storageConfig = feature.getStorageConfiguration();
+        assertNotEquals(storageConfig.convertToStoredCalendar((Calendar) expected), actual);
     }
 
     protected void waitForAsyncCompletion() {

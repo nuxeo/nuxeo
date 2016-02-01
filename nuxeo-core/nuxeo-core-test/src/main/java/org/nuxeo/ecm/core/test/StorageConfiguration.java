@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -316,6 +317,22 @@ public class StorageConfiguration {
         URL contribURL = bundle.getEntry(contribPath);
         assertNotNull("deployment contrib " + contribPath + " not found", contribURL);
         return contribURL;
+    }
+
+    public long convertToStoredTimestamp(long timestamp) {
+        if (isVCSMySQL()) {
+            return timestamp / 1000 * 1000;
+        }
+        return timestamp;
+    }
+
+    public Calendar convertToStoredCalendar(Calendar calendar) {
+        if (isVCSMySQL()) {
+            Calendar result = (Calendar) calendar.clone();
+            result.setTimeInMillis(convertToStoredTimestamp(result.getTimeInMillis()));
+            return result;
+        }
+        return calendar;
     }
 
 }
