@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -46,6 +45,9 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
 
     @XNode("port")
     public int port = Protocol.DEFAULT_PORT;
+
+    @XNode("failoverTimeout")
+    public int failoverTimeout = 300;
 
     protected boolean canConnect(String name, int port) {
         try (Jedis jedis = new Jedis(name, port)) {
@@ -74,8 +76,9 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
         JedisPoolConfig conf = new JedisPoolConfig();
         conf.setMaxTotal(maxTotal);
         conf.setMaxIdle(maxIdle);
-        return new RedisPoolExecutor(new JedisPool(conf, host, port, timeout,
+        RedisExecutor base = new RedisPoolExecutor(new JedisPool(conf, host, port, timeout,
                 StringUtils.defaultIfBlank(password, null), database));
+        return new RedisFailoverExecutor(failoverTimeout, base);
     }
 
 }
