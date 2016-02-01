@@ -99,6 +99,10 @@ public class RenditionActionBean implements Serializable {
     }
 
     public boolean hasVisibleRenditions(String excludedKinds) {
+        // FIXME costly on every page
+        if (true) {
+            return false;
+        }
         return !getVisibleRenditions(excludedKinds).isEmpty();
     }
 
