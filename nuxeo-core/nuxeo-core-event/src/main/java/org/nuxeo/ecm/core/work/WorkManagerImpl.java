@@ -774,6 +774,18 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 }
                 transaction.registerSynchronization(new WorkScheduling(work, scheduling));
                 return true;
+            } else if (status == Status.STATUS_COMMITTED) {
+                // called in afterCompletion, we can schedule immediately
+                if (log.isDebugEnabled()) {
+                    log.debug("Scheduling work immediately: " + work);
+                }
+                return false;
+            } else if (status == Status.STATUS_MARKED_ROLLBACK) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cancelling schedule because transaction marked rollback-only: " + work);
+                }
+                work.setWorkInstanceState(State.CANCELED);
+                return true;
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("Not scheduling work after commit because transaction is in status " + status + ": "

@@ -3943,6 +3943,36 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
+    public void testRollback2() {
+        DocumentModel file = session.createDocumentModel("/", "file", "File");
+        file.setPropertyValue("dc:title", "foo");
+        file = session.createDocument(file);
+        session.save();
+        nextTransaction();
+
+        // start some changes
+        file.setPropertyValue("dc:title", "bar");
+        session.saveDocument(file);
+
+        // abort the transaction
+        TransactionHelper.setTransactionRollbackOnly();
+
+        // attempt save in rollback-only state
+        session.save();
+
+        // more changes
+        file.setPropertyValue("dc:title", "gee");
+        session.saveDocument(file);
+        session.save();
+
+        nextTransaction();
+
+        // check what we now have file1 title unchanged
+        file = session.getDocument(file.getRef());
+        assertEquals("foo", file.getPropertyValue("dc:title"));
+    }
+
+    @Test
     @ConditionalIgnoreRule.Ignore(condition = IgnoreWindows.class, cause = "Not enough time granularity")
     public void testBinaryGC() throws Exception {
         // GC binaries from previous tests

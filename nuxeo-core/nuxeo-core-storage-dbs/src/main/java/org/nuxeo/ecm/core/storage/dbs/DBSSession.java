@@ -170,7 +170,7 @@ public class DBSSession implements Session {
     @Override
     public void save() {
         transaction.save();
-        if (!TransactionHelper.isTransactionActive()) {
+        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             transaction.commit();
         }
     }

@@ -79,7 +79,10 @@ public class AsyncEventExecutor {
             if (filtered.isEmpty()) {
                 continue;
             }
-            getWorkManager().schedule(new ListenerWork(listener, filtered));
+            // This may be called in a transaction if event.isCommitEvent() is true or at transaction commit
+            // in other cases. If the transaction has been marked rollback-only, then scheduling must discard
+            // so we schedule "after commit"
+            getWorkManager().schedule(new ListenerWork(listener, filtered), true);
         }
     }
 

@@ -105,11 +105,20 @@ public class TestNXAuditEventsService {
     protected MBeanServer mbeanServer;
 
     @Inject
+    protected EventService eventService;
+
+    @Inject
     CoreSession session;
 
     @Before
     public void setUp() throws Exception {
         mbeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
+    }
+
+    public void waitForAsyncCompletion() {
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
     }
 
     @Test
@@ -131,8 +140,8 @@ public class TestNXAuditEventsService {
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
         event.setImmediate(true);
-        Framework.getLocalService(EventService.class).fireEvent(event);
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        eventService.fireEvent(event);
+        waitForAsyncCompletion();
 
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source.getId());
         assertEquals(2, entries.size());
@@ -161,8 +170,8 @@ public class TestNXAuditEventsService {
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
         event.setImmediate(true);
-        Framework.getLocalService(EventService.class).fireEvent(event);
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        eventService.fireEvent(event);
+        waitForAsyncCompletion();
 
         List<LogEntry> entries = serviceUnderTest.getLogEntriesFor(repo.source.getId());
         assertEquals(2, entries.size());
@@ -196,8 +205,8 @@ public class TestNXAuditEventsService {
         Event event = ctx.newEvent("documentModified"); // auditable
         event.setInline(false);
         event.setImmediate(true);
-        Framework.getLocalService(EventService.class).fireEvent(event);
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        eventService.fireEvent(event);
+        waitForAsyncCompletion();
 
         eventIds = backend.getLoggedEventIds();
         assertEquals(n + 1, eventIds.size());
@@ -232,9 +241,8 @@ public class TestNXAuditEventsService {
 
         // When i fire an event with it
         EventContext ctx = new UnboundEventContext(principal, new HashMap<String, Serializable>());
-        EventService es = Framework.getService(EventService.class);
-        es.fireEvent(ctx.newEvent("loginSuccess"));
-        es.waitForAsyncCompletion();
+        eventService.fireEvent(ctx.newEvent("loginSuccess"));
+        waitForAsyncCompletion();
 
         // Then then event is logged with the principal's name
         assertEquals(1, serviceUnderTest.getEventsCount("loginSuccess").intValue());
@@ -267,9 +275,7 @@ public class TestNXAuditEventsService {
         session.removeDocument(model.getRef());
         session.save();
 
-        TransactionHelper.commitOrRollbackTransaction();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
+        waitForAsyncCompletion();
 
         FilterMapEntry filterByDocRemoved = new FilterMapEntry();
         filterByDocRemoved.setColumnName(BuiltinLogEntryData.LOG_EVENT_ID);
@@ -297,7 +303,7 @@ public class TestNXAuditEventsService {
         model.setProperty("dublincore", "title", "huum");
         session.createDocument(model);
         session.save();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        waitForAsyncCompletion();
         ObjectName objectName = AuditEventMetricFactory.getObjectName("documentCreated");
         Long count = (Long) mbeanServer.getAttribute(objectName, "count");
         assertEquals(new Long(1L), count);
