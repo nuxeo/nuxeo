@@ -32,7 +32,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,15 +44,11 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
-import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletRequest;
 
 /**
  * Seam Action bean to handle the preview tabs and associated actions.
@@ -122,7 +117,7 @@ public class PreviewActionBean implements Serializable {
     }
 
     public String getPreviewURL(DocumentModel doc, String field) {
-        return PreviewHelper.getPreviewURL(doc, protectField(field));
+        return PreviewHelper.getPreviewURL(doc, field);
     }
 
     public String getPreviewWithBlobPostProcessingURL() {
@@ -172,12 +167,10 @@ public class PreviewActionBean implements Serializable {
     }
 
     /**
-     * @since 7.3
+     * @since 8.2
      */
-    public String getViewerURL(DocumentModel doc, String field, Blob blob) {
-        ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String baseURL = BaseURL.getBaseURL(servletRequest);
-        return PreviewHelper.getViewerURL(doc, field, blob, baseURL);
+    public boolean hasBlobPreview(DocumentModel doc, String field) {
+        return PreviewHelper.blobSupportsPreview(doc, field);
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED }, create = false)

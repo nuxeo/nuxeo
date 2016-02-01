@@ -55,4 +55,9 @@ public interface HtmlPreviewAdapter {
      */
     boolean hasBlobToPreview() throws PreviewException;
 
+    /**
+     * @since 8.2
+     */
+    boolean hasPreview(String xpath);
+
 }

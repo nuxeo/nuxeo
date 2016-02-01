@@ -19,8 +19,6 @@
 package org.nuxeo.ftest.cap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -31,11 +29,9 @@ import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -56,7 +52,7 @@ public class ITBlobActionsTest extends AbstractTest {
 
     public final static String DOCUMENT_DESC = "Document Test Description";
 
-    public static final String PREVIEW_FILE_REGEX = "http://.*/api/v1/id/.*/@blob/blobholder:0";
+    public static final String PREVIEW_FILE_REGEX = "http://.*/api/v1/repo/default/id/.*/@blob/file:content/@preview/";
 
     @Test
     public void testBlobPreviewAction() throws Exception {
@@ -90,16 +86,7 @@ public class ITBlobActionsTest extends AbstractTest {
 
         String previewUrl = preview.get().getAttribute("href");
         assertFalse(StringUtils.isEmpty(previewUrl));
-
-        URI previewUri = new URI(previewUrl);
-        assertEquals("/nuxeo/viewer/web/viewer.html", previewUri.getPath());
-
-        List<NameValuePair> params = URLEncodedUtils.parse(previewUri, "UTF-8");
-        assertEquals(1, params.size());
-        assertEquals("file", params.get(0).getName());
-
-        String fileUrl = params.get(0).getValue();
-        assertTrue(fileUrl.matches(PREVIEW_FILE_REGEX));
+        assertTrue(previewUrl.matches(PREVIEW_FILE_REGEX));
 
         logout();
     }

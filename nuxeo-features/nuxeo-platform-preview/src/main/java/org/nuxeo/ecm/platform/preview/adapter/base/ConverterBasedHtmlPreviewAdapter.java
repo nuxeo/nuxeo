@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.preview.adapter.base;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -79,6 +78,12 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         return srcMT;
     }
 
+    protected String getMimeType(String xpath) {
+        BlobHolder blobHolder2preview = getBlobHolder2preview(xpath);
+        Blob blob = getBlob2preview(blobHolder2preview);
+        return getMimeType(blob);
+    }
+
     protected String getDefaultPreviewFieldXPath() {
         return defaultFieldXPath;
     }
@@ -93,19 +98,22 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
     }
 
     @Override
-    public List<Blob> getPreviewBlobs(String xpath) throws PreviewException {
+    public boolean hasPreview(String xpath) {
+        String srcMT = getMimeType(xpath);
+        MimeTypePreviewer mtPreviewer = getPreviewManager().getPreviewer(srcMT);
+        return mtPreviewer != null || getConversionService().getConverterName(srcMT, "text/html") != null;
+    }
 
+    @Override
+    public List<Blob> getPreviewBlobs(String xpath) throws PreviewException {
         BlobHolder blobHolder2preview = getBlobHolder2preview(xpath);
         Blob blob2Preview = getBlob2preview(blobHolder2preview);
 
-        List<Blob> blobResults = new ArrayList<>();
-
-        String srcMT = getMimeType(blob2Preview);
+        String srcMT = getMimeType(xpath);
         log.debug("Source type for HTML preview =" + srcMT);
         MimeTypePreviewer mtPreviewer = getPreviewManager().getPreviewer(srcMT);
         if (mtPreviewer != null) {
-            blobResults = mtPreviewer.getPreview(blob2Preview, adaptedDoc);
-            return blobResults;
+            return mtPreviewer.getPreview(blob2Preview, adaptedDoc);
         }
 
         String converterName = getConversionService().getConverterName(srcMT, "text/html");
@@ -122,7 +130,6 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         } catch (ConversionException e) {
             throw new PreviewException(e.getMessage(), e);
         }
-
     }
 
     /**
@@ -204,10 +211,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         } catch (NothingToPreviewException e) {
             return false;
         }
-        if (blob2Preview == null) {
-            return false;
-        }
-        return true;
+        return blob2Preview != null;
     }
 
 }

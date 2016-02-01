@@ -131,6 +131,21 @@ public interface DownloadService {
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos) throws IOException;
 
     /**
+     * Triggers a blob download.
+     *
+     * @param doc the document, if available
+     * @param xpath the blob's xpath or blobholder index, if available
+     * @param blob the blob, if already fetched
+     * @param filename the filename to use
+     * @param reason the download reason
+     * @param extendedInfos an optional map of extended informations to log
+     * @param inline if not null, force the inline flag for content-disposition
+     */
+    void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
+            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline)
+            throws IOException;
+
+    /**
      * Triggers a blob download. The actual byte transfer is done through a {@link DownloadExecutor}.
      *
      * @param doc the document, if available

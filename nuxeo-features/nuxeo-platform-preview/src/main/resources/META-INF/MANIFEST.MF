@@ -7,8 +7,7 @@ Bundle-Category: web,stateless
 Require-Bundle: org.nuxeo.ecm.platform.ui,
  org.nuxeo.ecm.platform.convert,
  org.nuxeo.ecm.platform.mimetype.api
-Nuxeo-Component: OSGI-INF/restAPI-contrib.xml,
- OSGI-INF/document-adapter-contrib.xml,
+Nuxeo-Component: OSGI-INF/document-adapter-contrib.xml,
  OSGI-INF/preview-adapter-framework.xml,
  OSGI-INF/preview-adapter-contrib.xml,
  OSGI-INF/actions-contrib.xml,

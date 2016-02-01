@@ -179,7 +179,15 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
-            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos) throws IOException {
+            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos)
+            throws IOException {
+        downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos, null);
+    }
+
+    @Override
+    public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
+            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline)
+            throws IOException {
         if (blob == null) {
             if (doc == null || xpath == null) {
                 throw new NuxeoException("No blob or doc xpath");
@@ -191,7 +199,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             }
         }
         final Blob fblob = blob;
-        downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos, null,
+        downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos, inline,
                 byteRange -> transferBlobWithByteRange(fblob, byteRange, response));
     }
 

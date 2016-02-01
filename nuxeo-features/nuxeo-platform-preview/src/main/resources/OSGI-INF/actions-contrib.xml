@@ -36,10 +36,10 @@
       </properties>
     </action>
 
-    <action id="blobPreview" link="#{previewActions.getViewerURL(document, blobXPath, blob)}" type="bare_link"
+    <action id="blobPreview" link="#{previewActions.getPreviewURL(document, blobXPath)}" type="bare_link"
             label="label.document.preview" icon="/icons/contextual_menu/preview.png" order="150">
       <category>BLOB_ACTIONS</category>
-      <filter-id>hasPDFPreview</filter-id>
+      <filter-id>hasBlobPreview</filter-id>
       <properties>
         <property name="target">_blank</property>
       </properties>
@@ -68,10 +68,9 @@
       </rule>
     </filter>
 
-    <filter id="hasPDFPreview">
+    <filter id="hasBlobPreview">
       <rule grant="true">
-        <condition>#{conversionActions.isExportableToPDF(blob)}</condition>
-        <condition>#{conversionActions.isPDF(blob)}</condition>
+        <condition>#{previewActions.hasBlobPreview(document, blobXPath)}</condition>
       </rule>
     </filter>
 

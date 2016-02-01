@@ -107,6 +107,20 @@ public class BlobObject extends DefaultObject {
         return bh;
     }
 
+    /**
+     * @since 8.2
+     */
+    public DocumentModel getDocument() {
+        return doc;
+    }
+
+    /**
+     * @since 8.2
+     */
+    public String getXpath() {
+        return fieldPath;
+    }
+
     @GET
     public Object doGet(@Context Request request) {
         Blob blob = getBlob();

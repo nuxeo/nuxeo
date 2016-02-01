@@ -90,4 +90,8 @@ public class PreprocessedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter {
         return getPreviewBlobs().size() > 0;
     }
 
+    @Override
+    public boolean hasPreview(String xpath) {
+        return hasBlobToPreview();
+    }
 }

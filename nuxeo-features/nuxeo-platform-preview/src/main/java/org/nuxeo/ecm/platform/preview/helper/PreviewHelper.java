@@ -17,68 +17,39 @@
 
 package org.nuxeo.ecm.platform.preview.helper;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class PreviewHelper {
 
-    public static final String PREVIEWURL_PREFIX = "restAPI/preview/";
+    public static final String REST_API_PREFIX = "site/api/v1";
 
-    public static final String PREVIEWURL_DEFAULTXPATH = "default";
-
-    protected static final String PDF_MIMETYPE = "application/pdf";
-
-    protected static final String PDF_EXTENSION = ".pdf";
-
-    protected static final Map<String, Boolean> hasPreviewByType = new ConcurrentHashMap<String, Boolean>();
+    protected static final Map<String, Boolean> hasPreviewByType = new ConcurrentHashMap<>();
 
     private PreviewHelper() {
     }
 
     public static String getPreviewURL(DocumentModel doc) {
-        return getPreviewURL(doc, PREVIEWURL_DEFAULTXPATH);
+        return getPreviewURL(doc, null);
     }
 
     public static String getPreviewURL(DocumentModel doc, String xpath) {
-        if (xpath == null) {
-            xpath = PREVIEWURL_DEFAULTXPATH;
+        StringJoiner sj = new StringJoiner("/", "", "/") // add trailing slash
+            .add(REST_API_PREFIX)
+            .add("repo").add(doc.getRepositoryName())
+            .add("id").add(doc.getId());
+        if (xpath != null) {
+            sj.add("@blob").add(xpath);
         }
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(PREVIEWURL_PREFIX);
-        sb.append(doc.getRepositoryName());
-        sb.append("/");
-        sb.append(doc.getId());
-        sb.append("/");
-        sb.append(xpath);
-        sb.append("/");
-
-        return sb.toString();
-    }
-
-    public static DocumentRef getDocumentRefFromPreviewURL(String url) {
-        if (url == null) {
-            return null;
-        }
-
-        String[] urlParts = url.split(PREVIEWURL_PREFIX);
-        String[] parts = urlParts[1].split("/");
-        String strRef = parts[1];
-        return new IdRef(strRef);
+        return sj.add("@preview").toString();
     }
 
     public static boolean typeSupportsPreview(DocumentModel doc) {
@@ -108,42 +79,27 @@ public class PreviewHelper {
      */
     public static boolean docHasBlobToPreview(DocumentModel document) throws PreviewException {
         HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
-        return adapter == null ? false : adapter.hasBlobToPreview();
+        return adapter != null && adapter.hasBlobToPreview();
     }
 
     /**
-     * @since 7.3
+     * @since 8.2
      */
-    public static String getViewerURL(DocumentModel doc, String xpath, Blob blob, String baseURL) {
-        baseURL = baseURL.endsWith("/") ? baseURL.substring(0, baseURL.length() - 1) : baseURL;
-        String fileURL = String.format("%s/api/v1/id/%s/@blob/%s", baseURL, doc.getId(),
-            isBlobHolder(doc, xpath) ? DownloadService.BLOBHOLDER_0 : xpath);
-        StringBuilder sb = new StringBuilder();
-        sb.append("viewer/web/viewer.html?file=");
-        sb.append(fileURL);
-        if (!isPDF(blob)) {
-            sb.append("/@convert?");
-            sb.append(URIUtils.quoteURIPathToken("format=pdf"));
+    public static boolean blobSupportsPreview(DocumentModel doc, String xpath) {
+        if (isBlobHolder(doc, xpath)) {
+            xpath = null;
         }
-
-        return sb.toString();
+        HtmlPreviewAdapter adapter = getBlobPreviewAdapter(doc);
+        return adapter != null && adapter.hasPreview(xpath);
     }
 
     /**
-     * @since 7.3
+     * @since 8.2
      */
-    public static boolean isPDF(Blob blob) {
-        String mimeType = blob.getMimeType();
-        if (StringUtils.isNotBlank(mimeType) && PDF_MIMETYPE.equals(mimeType)) {
-            return true;
-        } else {
-            String filename = blob.getFilename();
-            if (StringUtils.isNotBlank(filename) && filename.endsWith(PDF_EXTENSION)) {
-                // assume it's a pdf file
-                return true;
-            }
-        }
-        return false;
+    public static HtmlPreviewAdapter getBlobPreviewAdapter(DocumentModel doc) {
+        ConverterBasedHtmlPreviewAdapter adapter = new ConverterBasedHtmlPreviewAdapter();
+        adapter.setAdaptedDocument(doc);
+        return adapter;
     }
 
     private static boolean isBlobHolder(DocumentModel doc, String xpath) {

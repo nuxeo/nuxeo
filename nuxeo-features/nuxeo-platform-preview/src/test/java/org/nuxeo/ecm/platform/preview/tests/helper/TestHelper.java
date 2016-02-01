@@ -22,7 +22,6 @@ import static org.junit.Assert.*;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -36,9 +35,9 @@ public class TestHelper extends NXRuntimeTestCase {
 
     private static final String uuid = "f53fc32e-21b3-4640-9917-05e873aa1e53";
 
-    private static final String targetURL1 = "restAPI/preview/default/f53fc32e-21b3-4640-9917-05e873aa1e53/default/";
+    private static final String targetURL1 = "site/api/v1/repo/default/id/f53fc32e-21b3-4640-9917-05e873aa1e53/@preview/";
 
-    private static final String targetURL2 = "restAPI/preview/default/f53fc32e-21b3-4640-9917-05e873aa1e53/file:content/";
+    private static final String targetURL2 = "site/api/v1/repo/default/id/f53fc32e-21b3-4640-9917-05e873aa1e53/@blob/file:content/@preview/";
 
     @Before
     @Override
@@ -65,13 +64,6 @@ public class TestHelper extends NXRuntimeTestCase {
         String previewURL = PreviewHelper.getPreviewURL(doc, "file:content");
         assertNotNull(previewURL);
         assertEquals(targetURL2, previewURL);
-    }
-
-    @Test
-    public void testResolveURLDefault() {
-        DocumentRef docRef = PreviewHelper.getDocumentRefFromPreviewURL(targetURL1);
-        assertNotNull(docRef);
-        assertEquals(uuid, docRef.toString());
     }
 
 }
