@@ -3,6 +3,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxa="http://nuxeo.org/nxweb/actions"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
 <c:if test="false">
@@ -18,6 +19,20 @@ Parameters:
 
 </c:if>
 
+<nxa:action action="#{action}"
+  value="#{fieldOrValue}"
+  mode="#{mode}"
+  addForm="#{addForm}"
+  useAjaxForm="#{useAjaxForm}"
+  hideIcon="#{hideIcon}"
+  hideLabel="#{hideLabel}"
+  useButton="#{useButton}"
+  formAdded="#{formAdded}"
+  actionStyleClass="#{actionStyleClass}"
+  clickedActionIdHolder="#{clickedActionIdHolder}"
+  formStyleClass="#{formStyleClass}" />
+
+<c:if test="false">
 <nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}_#{nxu:jsfTagIdEscape(mode)}">
 <nxu:set var="simpleActionWidgetName" value="#{nxu:jsfTagIdEscape(action.id)}_#{nxu:jsfTagIdEscape(mode)}">
 
@@ -37,5 +52,6 @@ Parameters:
 
 </nxu:set>
 </nxu:set>
+</c:if>
 
 </c:if>

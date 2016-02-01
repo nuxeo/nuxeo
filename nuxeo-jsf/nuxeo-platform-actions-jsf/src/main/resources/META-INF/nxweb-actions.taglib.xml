@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<facelet-taglib id="nxa" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facelettaglibrary_2_2.xsd"
+  version="2.2">
+  <description>
+    <![CDATA[
+    <p>Nuxeo Web Actions Taglib</p>
+    ]]>
+  </description>
+  <namespace>http://nuxeo.org/nxweb/actions</namespace>
+
+  <tag>
+    <tag-name>action</tag-name>
+    <handler-class>org.nuxeo.ecm.platform.actions.facelets.ActionTagHandler</handler-class>
+  </tag>
+
+</facelet-taglib>
