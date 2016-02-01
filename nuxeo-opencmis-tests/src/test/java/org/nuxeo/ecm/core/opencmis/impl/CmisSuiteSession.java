@@ -361,6 +361,24 @@ public class CmisSuiteSession {
     }
 
     @Test
+    public void testUpdateDescription() throws Exception {
+        Document doc;
+        doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+
+        doc.updateProperties(Collections.singletonMap("cmis:description", "desc1"));
+
+        doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        assertEquals("desc1", doc.getPropertyValue("cmis:description"));
+        assertEquals("desc1", doc.getPropertyValue("dc:description"));
+
+        doc.updateProperties(Collections.singletonMap("dc:description", "desc2"));
+
+        doc = (Document) session.getObjectByPath("/testfolder1/testfile1");
+        assertEquals("desc2", doc.getPropertyValue("cmis:description"));
+        assertEquals("desc2", doc.getPropertyValue("dc:description"));
+    }
+
+    @Test
     @RandomBug.Repeat(issue = "NXP-16198")
     public void testContentStream() throws Exception {
         Document file = (Document) session.getObjectByPath("/testfolder1/testfile1");
