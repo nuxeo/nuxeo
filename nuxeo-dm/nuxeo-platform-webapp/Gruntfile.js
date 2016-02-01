@@ -40,7 +40,18 @@ module.exports = function (grunt) {
           '<%= config.target %>/viewers/nuxeo-pdf-viewer.vulcanized.html': [
             '<%= config.target %>/bower_components/nuxeo-ui-elements/viewers/nuxeo-pdf-viewer.html'
           ]
+        }
+      },
+      imageViewer: {
+        options: {
+          inlineScripts: true,
+          inlineCss: true
         },
+        files: {
+          '<%= config.target %>/viewers/nuxeo-image-viewer.vulcanized.html': [
+            '<%= config.target %>/bower_components/nuxeo-ui-elements/viewers/nuxeo-image-viewer.html'
+          ]
+        }
       },
     },
     clean: {
@@ -62,6 +73,7 @@ module.exports = function (grunt) {
     'vulcanize:permissions',
     'vulcanize:pdfViewer',
     'copy:pdfjs',
+    'vulcanize:imageViewer',
     'clean:bower_components'
   ]);
 };

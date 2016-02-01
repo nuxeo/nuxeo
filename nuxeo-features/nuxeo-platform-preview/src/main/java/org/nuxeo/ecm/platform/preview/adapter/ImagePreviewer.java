@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Alexandre Russel
+ *     Andre Justo
  *
  * $Id$
  */
@@ -28,6 +29,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
  * @author Alexandre Russel
@@ -35,26 +37,23 @@ import org.nuxeo.ecm.platform.preview.api.PreviewException;
 public class ImagePreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
-        List<Blob> blobResults = new ArrayList<Blob>();
-        StringBuffer htmlPage = new StringBuffer();
-        htmlPage.append("<html><head><title>");
-        htmlPage.append(getPreviewTitle(dm));
-        htmlPage.append("</title></head><body>");
-        appendPreviewSettings(htmlPage);
-        htmlPage.append("<img src=\"image\">");
-        Blob mainBlob = Blobs.createBlob(htmlPage.toString(), "text/html", null, "index.html");
+        List<Blob> blobResults = new ArrayList<>();
+        String basePath = VirtualHostHelper.getContextPathProperty();
+        StringBuffer html = new StringBuffer();
+        html.append("<html><head>");
+        html.append("<title>" + getPreviewTitle(dm) + "</title>");
+        html.append(String.format("<script src=\"%s/bower_components/webcomponentsjs/webcomponents-lite.js\"></script>", basePath));
+        html.append(String.format("<link rel=\"import\" href=\"%s/viewers/nuxeo-image-viewer.vulcanized.html\">", basePath));
+        html.append("<style>");
+        html.append("nuxeo-image-viewer {");
+        html.append("height: 100%; }");
+        html.append("</style>");
+        html.append("</head><body>");
+        html.append("<nuxeo-image-viewer src=\"image\" controls responsive></nuxeo-image-viewer>");
+        Blob mainBlob = Blobs.createBlob(html.toString(), "text/html", null, "index.html");
         blob.setFilename("image");
         blobResults.add(mainBlob);
         blobResults.add(blob);
         return blobResults;
     }
-
-    private static void appendPreviewSettings(StringBuffer sb) {
-        sb.append("<script type=\"text/javascript\">");
-        sb.append("var previewSettings = { ");
-        sb.append("imageOnly: true");
-        sb.append("}");
-        sb.append("</script>");
-    }
-
 }
