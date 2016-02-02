@@ -204,12 +204,6 @@ public class ActionTagHandler extends MetaTagHandler {
                     // expose widget variables
                     WidgetTagHandler.exposeWidgetVariables(ctx, vm, widgetInstance, null, false);
 
-                    // create form handler if needed
-                    boolean doAddForm = false;
-                    if (addForm != null) {
-                        doAddForm = addForm.getBoolean(ctx);
-                    }
-
                     // create widget handler
                     TagAttributes wattrs = config.getTag().getAttributes();
                     wattrs = FaceletHandlerHelper.addTagAttribute(wattrs,
@@ -221,6 +215,16 @@ public class ActionTagHandler extends MetaTagHandler {
                             nextHandler);
                     FaceletHandler handler = new WidgetTagHandler(wconfig);
 
+                    // create form handler if needed
+                    boolean doAddForm = false;
+                    if (addForm != null) {
+                        doAddForm = addForm.getBoolean(ctx);
+                    }
+                    if (!doAddForm) {
+                        // check if addForm information held by the action configuration
+                        doAddForm = helper.createAttribute("addForm",
+                                String.valueOf(widgetInstance.getProperty("addForm"))).getBoolean(ctx);
+                    }
                     if (doAddForm) {
                         // resolve form related attributes early
                         boolean discard = helper.createAttribute("discardSurroundingForm",
