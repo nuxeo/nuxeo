@@ -504,14 +504,14 @@ public class NuxeoAuthenticationFilter implements Filter {
                 // identity not found in cache or reseted by logout
                 if (cachableUserIdent == null || cachableUserIdent.getUserInfo() == null) {
                     UserIdentificationInfo userIdent = handleRetrieveIdentity(httpRequest, httpResponse);
-                    if (userIdent != null && userIdent.getUserName().equals(getAnonymousId())) {
+                    if (userIdent != null && userIdent.containsValidIdentity()
+                            && userIdent.getUserName().equals(getAnonymousId())) {
                         String forceAuth = httpRequest.getParameter(FORCE_ANONYMOUS_LOGIN);
                         if (forceAuth != null && forceAuth.equals("true")) {
                             userIdent = null;
                         }
                     }
                     if ((userIdent == null || !userIdent.containsValidIdentity()) && !bypassAuth(httpRequest)) {
-
                         boolean res = handleLoginPrompt(httpRequest, httpResponse);
                         if (res) {
                             return;
@@ -520,7 +520,6 @@ public class NuxeoAuthenticationFilter implements Filter {
                         // restore saved Starting page
                         targetPageURL = getSavedRequestedURL(httpRequest, httpResponse);
                     }
-
                     if (userIdent != null && userIdent.containsValidIdentity()) {
                         // do the authentication
                         cachableUserIdent = new CachableUserIdentificationInfo(userIdent);
