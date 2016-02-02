@@ -23,7 +23,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -69,6 +68,9 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
         throw new NuxeoException("Cannot connect to jedis hosts");
     }
 
+    @XNode("failoverTimeout")
+    public int failoverTimeout = 300;
+
     protected boolean canConnect(String name, int port) {
         try (Jedis jedis = new Jedis(name, port)) {
             if (StringUtils.isNotBlank(password)) {
@@ -97,8 +99,11 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
             throw new RuntimeException("Only one host supported");
         }
         RedisHostDescriptor host = selectHost();
-        return new RedisPoolExecutor(new JedisPool(new JedisPoolConfig(), host.name, host.port, timeout,
+        JedisPoolConfig conf = new JedisPoolConfig();
+        conf.setMaxTotal(maxTotal);
+        conf.setMaxIdle(maxIdle);
+        RedisExecutor base = new RedisPoolExecutor(new JedisPool(conf, host.name, host.port, timeout,
                 StringUtils.defaultIfBlank(password, null), database));
-
+        return new RedisFailoverExecutor(failoverTimeout, base);
     }
 }
