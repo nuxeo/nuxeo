@@ -505,7 +505,7 @@
 
   <tag>
     <tag-name>layoutColumn</tag-name>
-    <handler-class>org.nuxeo.ecm.platform.forms.layout.facelets.LayoutRowTagHandler</handler-class>
+    <handler-class>org.nuxeo.ecm.platform.forms.layout.facelets.LayoutColumnTagHandler</handler-class>
     <description>
       Facelet tag handler equivalent to the layoutRow tag, available since 5.3.1.
     </description>
@@ -563,7 +563,7 @@
 
   <tag>
     <tag-name>layoutColumnWidget</tag-name>
-    <handler-class>org.nuxeo.ecm.platform.forms.layout.facelets.LayoutRowWidgetTagHandler</handler-class>
+    <handler-class>org.nuxeo.ecm.platform.forms.layout.facelets.LayoutColumnWidgetTagHandler</handler-class>
     <description>
       Facelet tag handler equivalent to the layoutRowWidget tag, available since 5.3.1.
     </description>
