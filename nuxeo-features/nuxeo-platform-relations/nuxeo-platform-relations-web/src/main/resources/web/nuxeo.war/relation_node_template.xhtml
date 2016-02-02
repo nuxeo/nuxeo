@@ -1,11 +1,11 @@
 <div xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory"
-  xmlns:g="http://nuxeo.org/geide">
+  xmlns:nxdir="http://nuxeo.org/nxdirectory">
 
   <table>
     <tr>
@@ -23,10 +23,11 @@
             value="#{node.title}" action="#{node.getAction()}" />
           <h:outputText rendered="#{not node.documentVisible}" value="#{messages['label.relation.document.not.visible']}" />
         </f:subview>
-        
-        <h:outputLink rendered="#{node.resource and not node.QNameResource}" value="#{node.href}" target="_blank">
+
+        <h:outputLink rendered="#{not node.QNameResource and node.resource and fn:startsWith(node.href, 'http')}" value="#{node.href}" target="_blank">
           <h:outputText value="#{node.title}" />
         </h:outputLink>
+        <h:outputText rendered="#{not node.QNameResource and node.resource and not fn:startsWith(node.href, 'http')}" value="#{node.title}" />
         <h:outputText rendered="#{node.literal}" value="#{node.title}" />
       </td>
     </tr>
