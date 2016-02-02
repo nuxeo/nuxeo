@@ -10,9 +10,9 @@
     <h:selectOneMenu
       value="#{searchUIActions.currentSelectedSavedSearchId}"
       id="#{widget.id}" styleClass="langSelect">
-      <a4j:ajax execute="@this"
+      <f:ajax execute="@this"
         listener="#{searchUIActions.refreshAndRewind}"
-        render="#{widgetProperty_ajaxReRender}" />
+        render="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}" />
       <f:selectItems value="#{searchUIActions.allSavedSearchesSelectItems}" />
     </h:selectOneMenu>
   </a4j:region>

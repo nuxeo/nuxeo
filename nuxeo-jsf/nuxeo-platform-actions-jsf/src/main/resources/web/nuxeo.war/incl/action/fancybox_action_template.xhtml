@@ -12,8 +12,10 @@
 <nxu:set var="fancyReRenderId"
   value="#{fancyboxIdPrefix}ajax_panel"
   cache="true">
+<nxu:set var="fancyReRender"
+  value="#{nxu:componentAbsoluteId(component, fancyReRenderId)}">
 <nxu:set var="elementsToReRender"
-  value="#{nxu:joinRender(ajaxReRender, fancyReRenderId)}">
+  value="#{nxu:joinRender(ajaxReRender, fancyReRender)}">
 <nxu:set var="iframe"
   value="#{action.properties.iframe}"
   resolveTwice="true" cache="true">
@@ -34,7 +36,7 @@
           accesskey="#{action.accessKey}">
           <f:attribute name="selectedValue" value="#{action.id}" />
           <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
-          <a4j:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
+          <f:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
           <ui:include src="/incl/action/action_icon_label_template.xhtml">
             <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
             <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
@@ -51,7 +53,7 @@
           accesskey="#{action.accessKey}">
           <f:attribute name="selectedValue" value="#{action.id}" />
           <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
-          <a4j:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
+          <f:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
           <ui:insert name="inside_action" />
         </h:commandButton>
       </c:if>
@@ -215,6 +217,7 @@
 
 </c:if>
 
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>

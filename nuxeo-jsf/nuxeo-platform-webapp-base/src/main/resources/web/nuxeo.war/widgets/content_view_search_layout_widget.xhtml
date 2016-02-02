@@ -1,4 +1,4 @@
-<h:panelGroup layout="block"
+<ui:composition
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -6,30 +6,36 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  id="#{widget.id}"
-  styleClass="#{widgetProperty_styleClass}">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+<div id="#{widget.id}"
+  class="#{widgetProperty_styleClass}">
 
-  <c:if test="#{contentView != null}">
     <nxu:set var="contentViewName"
       value="#{widgetProperty_contentViewName}">
-    <nxu:set var="resolvedAjaxReRender"
-      value="#{widgetProperty_ajaxReRender}"
-      cache="false">
-      <nxl:layout name="#{contentView.searchLayout.name}"
-        mode="search" value="#{contentView.searchDocumentModel}">
-        <ui:define name="inside_input_widget">
-          <c:if test="#{widgetControl_supportInsideInputWidgetEffects}">
-            <a4j:ajax execute="@form"
-              listener="#{contentViewActions.refreshAndRewind(contentView.name)}"
-              render="@form #{resolvedAjaxReRender}">
-            </f:ajax>
+      <nxu:set var="contentView"
+        value="#{contentViewActions.getContentViewWithProvider(contentViewName)}"
+        cache="true">
+        <nxu:set var="resolvedAjaxReRender"
+          value="#{nxu:componentAbsoluteId(component, widgetProperty_ajaxReRender)}"
+          cache="false">
+          <c:if test="#{contentView != null}">
+            <nxl:layout name="#{contentView.searchLayout.name}"
+              mode="search" value="#{contentView.searchDocumentModel}">
+              <ui:define name="inside_input_widget">
+                <c:if
+                  test="#{widgetControl_supportInsideInputWidgetEffects}">
+                  <f:ajax execute="@form"
+                    listener="#{contentViewActions.refreshAndRewind(contentView.name)}"
+                    render="@form #{resolvedAjaxReRender}">
+                  </f:ajax>
+                </c:if>
+              </ui:define>
+            </nxl:layout>
           </c:if>
-        </ui:define>
-        </nxl:layout>
-    </nxu:set>
-    </nxu:set>
-  </c:if>
 
-</h:panelGroup>
+        </nxu:set>
+      </nxu:set>
+    </nxu:set>
+
+  </div>
+</ui:composition>
