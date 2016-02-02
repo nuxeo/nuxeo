@@ -194,61 +194,67 @@ public class ActionTagHandler extends MetaTagHandler {
                     valueName = ComponentTagUtils.getBareValueName(valueName);
                 }
                 Widget widgetInstance = layoutService.createWidget(ctx, wDef, modeValue, valueName, null);
+                if (widgetInstance != null) {
+                    // don't bother
 
-                // set unique id on widget before exposing it to the context
-                FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
-                WidgetTagHandler.generateWidgetId(ctx, helper, widgetInstance, false);
+                    // set unique id on widget before exposing it to the context
+                    FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
+                    WidgetTagHandler.generateWidgetId(ctx, helper, widgetInstance, false);
 
-                // expose widget variables
-                WidgetTagHandler.exposeWidgetVariables(ctx, vm, widgetInstance, null, false);
+                    // expose widget variables
+                    WidgetTagHandler.exposeWidgetVariables(ctx, vm, widgetInstance, null, false);
 
-                // create form handler if needed
-                boolean doAddForm = false;
-                if (addForm != null) {
-                    doAddForm = addForm.getBoolean(ctx);
-                }
-
-                // create widget handler
-                TagAttributes wattrs = config.getTag().getAttributes();
-                wattrs = FaceletHandlerHelper.addTagAttribute(wattrs,
-                        helper.createAttribute(RenderVariables.widgetVariables.widget.name(),
-                                "#{" + RenderVariables.widgetVariables.widget.name() + "}"));
-                wattrs = FaceletHandlerHelper.addTagAttribute(wattrs,
-                        helper.createAttribute("value", value.getValue()));
-                TagConfig wconfig = TagConfigFactory.createTagConfig(config, config.getTagId(), wattrs, nextHandler);
-                FaceletHandler handler = new WidgetTagHandler(wconfig);
-
-                if (doAddForm) {
-                    // resolve form related attributes early
-                    boolean discard = helper.createAttribute("discardSurroundingForm",
-                            String.valueOf(widgetInstance.getProperty("discardSurroundingForm"))).getBoolean(ctx);
-                    boolean doUseAjaxForm = false;
-                    if (useAjaxForm != null) {
-                        doUseAjaxForm = useAjaxForm.getBoolean(ctx);
+                    // create form handler if needed
+                    boolean doAddForm = false;
+                    if (addForm != null) {
+                        doAddForm = addForm.getBoolean(ctx);
                     }
-                    if (!discard || doUseAjaxForm) {
-                        List<TagAttribute> fattrs = new ArrayList<>();
-                        if (doUseAjaxForm) {
-                            Object ajaxProp = widgetInstance.getProperty("ajaxSupport");
-                            if (ajaxProp == null) {
-                                ajaxProp = widgetInstance.getProperty("supportAjax");
-                            }
-                            fattrs.add(helper.createAttribute("useAjaxForm", String.valueOf(ajaxProp)));
+
+                    // create widget handler
+                    TagAttributes wattrs = config.getTag().getAttributes();
+                    wattrs = FaceletHandlerHelper.addTagAttribute(wattrs,
+                            helper.createAttribute(RenderVariables.widgetVariables.widget.name(),
+                                    "#{" + RenderVariables.widgetVariables.widget.name() + "}"));
+                    wattrs = FaceletHandlerHelper.addTagAttribute(wattrs,
+                            helper.createAttribute("value", value.getValue()));
+                    TagConfig wconfig = TagConfigFactory.createTagConfig(config, config.getTagId(), wattrs,
+                            nextHandler);
+                    FaceletHandler handler = new WidgetTagHandler(wconfig);
+
+                    if (doAddForm) {
+                        // resolve form related attributes early
+                        boolean discard = helper.createAttribute("discardSurroundingForm",
+                                String.valueOf(widgetInstance.getProperty("discardSurroundingForm"))).getBoolean(ctx);
+                        boolean doUseAjaxForm = false;
+                        if (useAjaxForm != null) {
+                            doUseAjaxForm = useAjaxForm.getBoolean(ctx);
                         }
-                        fattrs.add(helper.createAttribute("disableMultipartForm",
-                                String.valueOf(widgetInstance.getProperty("disableMultipartForm"))));
-                        fattrs.add(helper.createAttribute("disableDoubleClickShield",
-                                String.valueOf(widgetInstance.getProperty("disableDoubleClickShield"))));
-                        fattrs.add(helper.createAttribute("styleClass",
-                                formStyleClass != null ? formStyleClass.getValue() : null));
+                        if (!discard || doUseAjaxForm) {
+                            List<TagAttribute> fattrs = new ArrayList<>();
+                            if (doUseAjaxForm) {
+                                Object ajaxProp = widgetInstance.getProperty("ajaxSupport");
+                                if (ajaxProp == null) {
+                                    ajaxProp = widgetInstance.getProperty("supportAjax");
+                                }
+                                fattrs.add(helper.createAttribute("useAjaxForm", String.valueOf(ajaxProp)));
+                            }
+                            fattrs.add(helper.createAttribute("disableMultipartForm",
+                                    String.valueOf(widgetInstance.getProperty("disableMultipartForm"))));
+                            fattrs.add(helper.createAttribute("disableDoubleClickShield",
+                                    String.valueOf(widgetInstance.getProperty("disableDoubleClickShield"))));
+                            fattrs.add(helper.createAttribute("styleClass",
+                                    formStyleClass != null ? formStyleClass.getValue() : null));
+                            fattrs.add(helper.createAttribute("id", widgetInstance.getId() + "_form"));
 
-                        TagConfig fconfig = TagConfigFactory.createTagConfig(config, config.getTagId(),
-                                new TagAttributesImpl(fattrs.toArray(new TagAttribute[] {})), handler);
-                        handler = new FormTagHandler(fconfig);
+                            TagConfig fconfig = TagConfigFactory.createTagConfig(config, config.getTagId(),
+                                    new TagAttributesImpl(fattrs.toArray(new TagAttribute[] {})), handler);
+                            handler = new FormTagHandler(fconfig);
+                        }
                     }
+
+                    handler.apply(ctx, parent);
                 }
 
-                handler.apply(ctx, parent);
             } finally {
                 ctx.setVariableMapper(orig);
             }
