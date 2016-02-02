@@ -20,9 +20,16 @@ Parameters:
 </c:if>
 
 <nxa:action action="#{action}"
+  value="#{fieldOrValue}"
   mode="#{mode}"
   addForm="#{addForm}"
   useAjaxForm="#{useAjaxForm}"
+  hideIcon="#{hideIcon}"
+  hideLabel="#{hideLabel}"
+  useButton="#{useButton}"
+  formAdded="#{formAdded}"
+  actionStyleClass="#{actionStyleClass}"
+  clickedActionIdHolder="#{clickedActionIdHolder}"
   formStyleClass="#{formStyleClass}" />
 
 <c:if test="false">
