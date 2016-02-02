@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
+import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
@@ -41,6 +43,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 
 /**
  * Layout row recursion tag handler.
@@ -86,6 +89,50 @@ public class LayoutRowTagHandler extends TagHandler {
             return;
         }
 
+        if (FaceletHandlerHelper.isAliasOptimEnabled()) {
+            applyOptimized(ctx, parent, layout, helper);
+        } else {
+            applyCompat(ctx, parent, layout, helper);
+        }
+    }
+
+    protected void applyOptimized(FaceletContext ctx, UIComponent parent, Layout layout, FaceletHandlerHelper helper)
+            throws IOException, FacesException, ELException {
+        LayoutRow[] rows = layout.getRows();
+        if (rows == null || rows.length == 0) {
+            return;
+        }
+
+        VariableMapper orig = ctx.getVariableMapper();
+        try {
+            int rowCounter = 0;
+            for (LayoutRow row : rows) {
+                BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+                ctx.setVariableMapper(vm);
+
+                // expose row variables
+                ExpressionFactory eFactory = ctx.getExpressionFactory();
+                ValueExpression rowVe = eFactory.createValueExpression(row, LayoutRow.class);
+                vm.setVariable(RenderVariables.rowVariables.layoutRow.name(), rowVe);
+                vm.addBlockedPattern(RenderVariables.rowVariables.layoutRow.name());
+                vm.setVariable(RenderVariables.columnVariables.layoutColumn.name(), rowVe);
+                vm.addBlockedPattern(RenderVariables.columnVariables.layoutColumn.name());
+                ValueExpression rowIndexVe = eFactory.createValueExpression(rowCounter, Integer.class);
+                vm.setVariable(RenderVariables.rowVariables.layoutRowIndex.name(), rowIndexVe);
+                vm.addBlockedPattern(RenderVariables.rowVariables.layoutRowIndex.name());
+                vm.setVariable(RenderVariables.columnVariables.layoutColumnIndex.name(), rowIndexVe);
+                vm.addBlockedPattern(RenderVariables.columnVariables.layoutColumnIndex.name());
+
+                nextHandler.apply(ctx, parent);
+                rowCounter++;
+            }
+        } finally {
+            ctx.setVariableMapper(orig);
+        }
+    }
+
+    protected void applyCompat(FaceletContext ctx, UIComponent parent, Layout layout, FaceletHandlerHelper helper)
+            throws IOException, FacesException, ELException {
         LayoutRow[] rows = layout.getRows();
         if (rows == null || rows.length == 0) {
             return;
@@ -115,4 +162,5 @@ public class LayoutRowTagHandler extends TagHandler {
             rowCounter++;
         }
     }
+
 }
