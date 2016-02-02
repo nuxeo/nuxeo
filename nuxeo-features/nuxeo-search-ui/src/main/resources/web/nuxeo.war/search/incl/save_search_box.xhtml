@@ -30,8 +30,8 @@
       <h:commandButton value="#{messages['command.save']}"
         action="#{searchUIActions.saveSearch()}"
         styleClass="button">
-        <f:ajax execute="@form" onevent="jQuery.fancybox.close"
-          render="#{nxu:componentAbsoluteId(component, 'searchPanelLeft')}" />
+        <a4j:ajax execute="@form" onevent="jQuery.fancybox.close"
+          render="searchPanelLeft" />
       </h:commandButton>
       <h:commandButton value="#{messages['command.cancel']}"
         action="#{searchUIActions.cancelSaveSearch()}"
