@@ -40,9 +40,9 @@ class InjectorArbre(Injector):
             props = {}
             parentPath = self.createPathFromGeoHash(name)
             pDate = row[7]
-            if pDate.startswith('17'):
+            if pDate[0:2] < "18":
                 # mssql don't like date before 1753
-                pDate = pDate.replace('17', '18')
+                pDate = "18" + pDate[2:]
             props["dc:title"] = row[5] + ((" - " + row[6]) if row[6] != "" else "")
             props["dc:description"] = row[1] + " " + row[2] +  " plantation: " + row[7]
             props["dc:issued"] = pDate
