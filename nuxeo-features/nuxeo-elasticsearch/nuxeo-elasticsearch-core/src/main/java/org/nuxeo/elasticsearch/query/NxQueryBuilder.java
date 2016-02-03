@@ -150,7 +150,7 @@ public class NxQueryBuilder {
      * Build the query using the Elasticsearch QueryBuilder API. You should either use nxql, either esQuery, not both.
      */
     public NxQueryBuilder esQuery(QueryBuilder queryBuilder) {
-        this.esQueryBuilder = queryBuilder;
+        esQueryBuilder = addSecurityFilter(queryBuilder);
         nxql = null;
         return this;
     }
