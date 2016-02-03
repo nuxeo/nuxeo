@@ -12,7 +12,7 @@
 <c:if test="#{widgetProperty_useButton}">
 
   <c:if test="#{not widgetProperty_useAjaxForm}">
-    <nxh:commandButton action="#{action.getLink()}"
+    <nxh:commandButton action="#{widgetProperty_action.getLink()}"
       id="#{widget.id}"
       onclick="#{widgetProperty_onclick}"
       immediate="#{widgetProperty_immediate}"
@@ -40,7 +40,7 @@
       </ui:include>
       <ui:insert name="before_action_trigger" />
       <nxu:actionListenerMethod
-        value="#{widgetProperty_link}" />
+        value="#{widgetProperty_action.getLink()}" />
       <ui:insert name="after_action_trigger" />
       <a4j:ajax execute="#{widgetProperty_immediate ? '@this' : '@form'}"
         render="#{ajaxReRender}" />
@@ -53,7 +53,7 @@
 <c:if test="#{not widgetProperty_useButton}">
 
   <c:if test="#{not widgetProperty_useAjaxForm}">
-    <nxh:commandLink action="#{widgetProperty_link}"
+    <nxh:commandLink action="#{widgetProperty_action.getLink()}"
       id="#{widget.id}"
       onclick="#{widgetProperty_onclick}"
       immediate="#{widgetProperty_immediate}"
@@ -76,7 +76,7 @@
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="before_action_trigger" />
       <nxu:actionListenerMethod
-        value="#{widgetProperty_link}" />
+        value="#{widgetProperty_action.getLink()}" />
       <ui:insert name="after_action_trigger" />
       <a4j:ajax execute="#{widgetProperty_immediate ? '@this' : '@form'}"
         render="#{ajaxReRender}" />
