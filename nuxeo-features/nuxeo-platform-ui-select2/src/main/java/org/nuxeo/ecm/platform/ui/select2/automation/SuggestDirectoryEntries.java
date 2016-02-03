@@ -242,7 +242,7 @@ public class SuggestDirectoryEntries {
                         Map<String, Serializable> filter = new HashMap<String, Serializable>();
                         filter.put(Select2Common.PARENT_FIELD_ID, getId());
                         try {
-                            isLeaf = session.query(filter).isEmpty();
+                            isLeaf = session.query(filter, Collections.emptySet(),  new HashMap<String, String>(), false, 1, -1).isEmpty();
                         } catch (DirectoryException ce) {
                             log.error("Could not retrieve children of entry", ce);
                             isLeaf = true;
@@ -382,6 +382,12 @@ public class SuggestDirectoryEntries {
     protected boolean displayObsoleteEntries = false;
 
     /**
+     * @since 8.2
+     */
+    @Param(name = "limit", required = false)
+    protected int limit = -1;
+
+    /**
      * Fetch mode. If not contains, then starts with.
      *
      * @since 5.9.2
@@ -495,7 +501,7 @@ public class SuggestDirectoryEntries {
                 } else {
                     // We at least filter with prefix or/and exclude the
                     // obsolete
-                    entries = session.query(filter, fullText);
+                    entries = session.query(filter, fullText,  new HashMap<String, String>(), false, limit, -1);
                 }
             } else {
                 // Labels are translated in properties file, we have to post
@@ -505,7 +511,7 @@ public class SuggestDirectoryEntries {
                     entries = session.getEntries();
                 } else {
                     // We want to exclude the obsolete
-                    entries = session.query(filter);
+                    entries = session.query(filter, fullText,  new HashMap<String, String>(), false, limit, -1);
                 }
             }
 
