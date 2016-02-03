@@ -129,9 +129,6 @@ public abstract class AbstractChangeFinderTestCase {
 
         // Create test users
         try (Session userDir = directoryService.open("userDirectory")) {
-            if (userDir.getEntry("user1") != null) {
-                userDir.deleteEntry("user1");
-            }
             Map<String, Object> user1 = new HashMap<String, Object>();
             user1.put("username", "user1");
             user1.put("groups", Arrays.asList(new String[] { "members" }));
@@ -157,9 +154,7 @@ public abstract class AbstractChangeFinderTestCase {
             user1Session.close();
         }
         try (Session usersDir = directoryService.open("userDirectory")) {
-            if (usersDir.getEntry("user1") != null) {
-                usersDir.deleteEntry("user1");
-            }
+            usersDir.deleteEntry("user1");
         }
 
         // Disable deletion listener for the repository cleanup phase done in
