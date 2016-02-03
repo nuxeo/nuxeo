@@ -445,6 +445,25 @@
       </fields>
     </widget>
 
+    <widget name="suggestion_resultLimit" type="int">
+      <sinceVersion>8.2</sinceVersion>
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Limit returned results</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          The maximal number of result returned by the suggestion.
+          Defaults to unlimited.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>limit</field>
+      </fields>
+    </widget>
+
     <widget name="userSuggestion_frequency" type="int">
       <categories>
         <category>widgetTypeConf</category>
@@ -1451,6 +1470,9 @@
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">suggestion_resultLimit</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_directory_fetch_mode</widget>
                 </row>
                 <row>
@@ -1605,6 +1627,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">suggestion_resultLimit</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_directory_fetch_mode</widget>
