@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -222,12 +223,15 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             }
             if (users != null) {
                 for (String userName : users) {
-                    if (userName.contains(":")) {
-                        if (actors.contains(userName.split(":")[1])) {
+                    if (userName.startsWith(NuxeoPrincipal.PREFIX)) {
+                        if (actors.contains(userName.substring(NuxeoPrincipal.PREFIX.length()))) {
                             return true;
                         }
-                    }
-                    if (actors.contains(userName)) {
+                    } else  if (userName.startsWith(NuxeoGroup.PREFIX)) {
+                        if (actors.contains(userName.substring(NuxeoGroup.PREFIX.length()))) {
+                            return true;
+                        }
+                    } else if(actors.contains(userName)) {
                         return true;
                     }
                 }
