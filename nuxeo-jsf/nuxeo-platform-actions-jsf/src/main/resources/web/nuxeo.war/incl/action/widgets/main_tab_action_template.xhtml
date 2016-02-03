@@ -1,0 +1,30 @@
+<c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+  <nxu:set var="requireDocument" value="#{action.properties.requireDocument}"
+    cache="true">
+  <nxu:set var="onclick"
+    value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
+    cache="true">
+
+    <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(action.id)}"
+      repositoryName="#{navigationContext.currentServerLocation.name}"
+      view="#{mainTabsActions.getViewFor(action)}"
+      pattern="#{mainTabsActions.getPatternFor(action)}"
+      addTabInfo="false"
+      target="#{action.properties.target}"
+      tabs="MAIN_TABS:#{action.id}"
+      onclick="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
+      accesskey="#{action.accessKey}">
+      <h:outputText value="#{messages[action.label]}" />
+    </nxd:restDocumentLink>
+
+  </nxu:set>
+  </nxu:set>
+
+</c:if>
