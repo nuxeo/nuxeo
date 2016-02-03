@@ -1,0 +1,25 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+<nxu:set var="otherTemplate"
+  value="template_#{widget.mode}"
+  cache="true">
+<nxu:set var="actionTemplate"
+  value="#{nxu:test(widget.mode == 'view', action.properties.template, action.properties[otherTemplate])}"
+  resolveTwice="true">
+  <c:if test="#{not empty actionTemplate}">
+    <ui:include src="#{actionTemplate}">
+      <ui:insert name="inside_action" />
+    </ui:include>
+  </c:if>
+</nxu:set>
+</nxu:set>
+
+</ui:composition>
