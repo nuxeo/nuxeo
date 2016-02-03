@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -89,7 +88,7 @@ public class SQLDirectoryFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+    public void beforeSetup(FeaturesRunner runner) throws Exception {
         if (granularity != Granularity.METHOD) {
             return;
         }
