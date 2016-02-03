@@ -3923,6 +3923,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="documentActions_widget_type_properties_any">
               <rows>
@@ -3988,6 +3991,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="currentDocumentActions_widget_type_properties_any">
               <rows>
@@ -4063,6 +4069,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="documentActionsWithForms_widget_type_properties_any">
               <rows>
@@ -4130,6 +4139,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="currentDocumentActionsWithForms_widget_type_properties_any">
               <rows>
@@ -4205,6 +4217,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="documentAction_widget_type_properties_any">
               <rows>
@@ -4262,6 +4277,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="currentDocumentAction_widget_type_properties_any">
               <rows>
@@ -4330,6 +4348,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="documentActionWithForms_widget_type_properties_any">
               <rows>
@@ -4387,6 +4408,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="currentDocumentActionWithForms_widget_type_properties_any">
               <rows>
@@ -4451,6 +4475,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">false</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="documentTabsWithForms_widget_type_properties_any">
               <rows>
