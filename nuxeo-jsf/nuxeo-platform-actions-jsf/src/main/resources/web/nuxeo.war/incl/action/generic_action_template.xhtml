@@ -49,12 +49,16 @@ Templating zones that can be filled when useAjaxForm is set to true:
 
 </c:if>
 
+<nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}">
+<nxu:set var="actionWidgetName" value="#{nxu:test(formAdded, nxu:jsfTagIdEscape(action.id), defActionWidgetName)}">
+
 <c:choose>
   <c:when test="#{!removeActionOptims}">
 
     <nxa:action action="#{action}"
       value="#{fieldOrValue}"
       mode="#{mode}"
+      widgetName="#{actionWidgetName}"
       addForm="#{addForm}"
       useAjaxForm="#{useAjaxForm}"
       hideIcon="#{hideIcon}"
@@ -67,8 +71,6 @@ Templating zones that can be filled when useAjaxForm is set to true:
   </c:when>
   <c:otherwise>
 
-<nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}">
-<nxu:set var="actionWidgetName" value="#{nxu:test(formAdded, nxu:jsfTagIdEscape(action.id), defActionWidgetName)}">
 <nxu:set var="actionConfirmMessageJs"
   value="if (!confirm#{actionWidgetName}Message()) return false;"
   cache="true">
@@ -140,11 +142,12 @@ Templating zones that can be filled when useAjaxForm is set to true:
   </nxu:set>
 
 </nxu:set>
-</nxu:set>
-</nxu:set>
 
 
   </c:otherwise>
 </c:choose>
+
+</nxu:set>
+</nxu:set>
 
 </c:if>

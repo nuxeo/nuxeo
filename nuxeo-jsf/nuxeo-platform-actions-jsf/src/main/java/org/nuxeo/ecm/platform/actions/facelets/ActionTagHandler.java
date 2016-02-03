@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
@@ -71,6 +73,8 @@ public class ActionTagHandler extends MetaTagHandler {
 
     protected final TagAttribute action;
 
+    protected final TagAttribute widgetName;
+
     protected final TagAttribute value;
 
     protected final TagAttribute mode;
@@ -83,13 +87,15 @@ public class ActionTagHandler extends MetaTagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "action", "mode", "addForm", "useAjaxForm", "formStyleClass" };
+    protected final String[] reservedVarsArray = { "action", "widgetName", "value", "mode", "addForm", "useAjaxForm",
+            "formStyleClass" };
 
     public ActionTagHandler(TagConfig config) {
         super(config);
         this.config = config;
 
         action = getRequiredAttribute("action");
+        widgetName = getAttribute("widgetName");
         value = getRequiredAttribute("value");
         mode = getAttribute("mode");
         addForm = getAttribute("addForm");
@@ -186,8 +192,16 @@ public class ActionTagHandler extends MetaTagHandler {
                     }
                 }
 
-                WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(actionInstance.getId(), wtype,
-                        actionInstance.getLabel(), actionInstance.getHelp(), true, null, null, props, null);
+                String widgetNameValue = null;
+                if (widgetName != null) {
+                    widgetNameValue = widgetName.getValue(ctx);
+                }
+                if (StringUtils.isBlank(widgetNameValue)) {
+                    widgetNameValue = actionInstance.getId();
+                }
+
+                WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(widgetNameValue, wtype, actionInstance.getLabel(),
+                        actionInstance.getHelp(), true, null, null, props, null);
                 wDef.setTypeCategory(wcat);
                 wDef.setDynamic(true);
                 WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
