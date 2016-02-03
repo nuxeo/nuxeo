@@ -35,7 +35,7 @@
       disabled="#{!widgetProperty_available}"
       styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
       accesskey="#{widgetProperty_accessKey}">
-      <ui:include src="/incl/action/action_icon_label_template.xhtml">
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml">
         <ui:param name="widgetProperty_hideLabel" value="true" />
       </ui:include>
       <ui:insert name="before_action_trigger" />
@@ -61,7 +61,7 @@
       disabled="#{!widgetProperty_available}"
       styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
       accesskey="#{widgetProperty_accessKey}">
-      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
     </nxh:commandLink>
   </c:if>
@@ -73,7 +73,7 @@
       disabled="#{!widgetProperty_available}"
       styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
       accesskey="#{widgetProperty_accessKey}">
-      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
       <ui:insert name="before_action_trigger" />
       <nxu:actionListenerMethod
         value="#{widgetProperty_action.getLink()}" />
