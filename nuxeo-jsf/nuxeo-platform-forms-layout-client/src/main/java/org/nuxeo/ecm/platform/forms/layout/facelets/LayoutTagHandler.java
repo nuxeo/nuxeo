@@ -93,6 +93,11 @@ public class LayoutTagHandler extends TagHandler {
      */
     protected final TagAttribute layout;
 
+    /**
+     * @since 8.2: optim to avoid exposing layout variable in iterations
+     */
+    protected final TagAttribute exposeLayout;
+
     protected final TagAttribute name;
 
     /**
@@ -140,6 +145,7 @@ public class LayoutTagHandler extends TagHandler {
             throw new TagException(this.tag,
                     "At least one of attributes 'name', 'layout' or 'definition' is required");
         }
+        exposeLayout = getAttribute("exposeLayout");
         mode = getAttribute("mode");
         value = getRequiredAttribute("value");
         if (layout == null && (name != null || definition != null)) {
@@ -212,6 +218,11 @@ public class LayoutTagHandler extends TagHandler {
                 resolveOnlyValue = resolveOnly.getBoolean(ctx);
             }
 
+            boolean exposeLayoutValue = true;
+            if (exposeLayout != null) {
+                exposeLayoutValue = exposeLayout.getBoolean(ctx);
+            }
+
             if (layout != null) {
                 // resolve layout instance given as attribute
                 layoutInstance = (Layout) layout.getObject(ctx, Layout.class);
@@ -222,7 +233,7 @@ public class LayoutTagHandler extends TagHandler {
                     fillVariablesForLayoutBuild(ctx, eFactory, vm, layoutInstance.getMode());
                     layoutInstance.setValueName(valueName);
                     applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
-                            additionalProps, vm, resolveOnlyValue);
+                            additionalProps, vm, resolveOnlyValue, exposeLayoutValue);
                 }
             } else {
                 // build layout instance from other attributes
@@ -267,7 +278,7 @@ public class LayoutTagHandler extends TagHandler {
                             applyErrorHandler(ctx, parent, helper, errMsg);
                         } else {
                             applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
-                                    additionalProps, vm, resolveOnlyValue);
+                                    additionalProps, vm, resolveOnlyValue, exposeLayoutValue);
                         }
                     }
                 }
@@ -282,7 +293,7 @@ public class LayoutTagHandler extends TagHandler {
                         layoutInstance = layoutService.getLayout(ctx, layoutDef, modeValue, valueName,
                                 selectedRowsValue, selectAllByDefaultValue);
                         applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
-                                additionalProps, vm, resolveOnlyValue);
+                                additionalProps, vm, resolveOnlyValue, exposeLayoutValue);
                         if (layoutInstance != null) {
                             logId = layoutInstance.getId();
                         } else {
@@ -324,7 +335,7 @@ public class LayoutTagHandler extends TagHandler {
 
     protected void applyLayoutHandler(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper,
             WebLayoutManager layoutService, Layout layoutInstance, String templateValue,
-            Map<String, Serializable> additionalProps, BlockingVariableMapper vm, boolean resolveOnly)
+            Map<String, Serializable> additionalProps, BlockingVariableMapper vm, boolean resolveOnly, boolean exposeLayout)
             throws IOException, FacesException, ELException {
 
         // set unique id on layout, unless layout is only resolved
@@ -374,7 +385,7 @@ public class LayoutTagHandler extends TagHandler {
         }
 
         // expose rendering variables
-        fillVariablesForLayoutRendering(ctx, ctx.getExpressionFactory(), layoutService, vm, layoutInstance);
+        fillVariablesForLayoutRendering(ctx, ctx.getExpressionFactory(), layoutService, vm, layoutInstance, exposeLayout);
 
         final String layoutTagConfigId = layoutInstance.getTagConfigId();
 
@@ -427,11 +438,13 @@ public class LayoutTagHandler extends TagHandler {
      * Computes variables for rendering, making available the layout instance and its properties to the context.
      */
     protected void fillVariablesForLayoutRendering(FaceletContext ctx, ExpressionFactory eFactory,
-            WebLayoutManager layoutService, BlockingVariableMapper vm, Layout layoutInstance) {
-        // expose layout value
-        ValueExpression layoutVe = eFactory.createValueExpression(layoutInstance, Layout.class);
-        vm.setVariable(RenderVariables.layoutVariables.layout.name(), layoutVe);
-        vm.addBlockedPattern(RenderVariables.layoutVariables.layout.name());
+            WebLayoutManager layoutService, BlockingVariableMapper vm, Layout layoutInstance, boolean exposeLayout) {
+        if (exposeLayout) {
+            // expose layout value
+            ValueExpression layoutVe = eFactory.createValueExpression(layoutInstance, Layout.class);
+            vm.setVariable(RenderVariables.layoutVariables.layout.name(), layoutVe);
+            vm.addBlockedPattern(RenderVariables.layoutVariables.layout.name());
+        }
 
         // expose layout properties too
         for (Map.Entry<String, Serializable> prop : layoutInstance.getProperties().entrySet()) {
