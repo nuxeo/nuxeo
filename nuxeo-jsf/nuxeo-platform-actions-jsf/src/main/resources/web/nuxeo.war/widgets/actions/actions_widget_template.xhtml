@@ -22,6 +22,7 @@
 <nxu:set var="formAdded" value="#{widgetProperty_addForm}" cache="true">
 
   <nxu:valueHolder id="#{clickedActionIdHolder}"
+    skip="#{!widgetProperty_trackCurrentAction}"
     var="clickedActionId">
 
     <a4j:outputPanel id="#{actionsPanelId}" layout="block"
