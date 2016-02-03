@@ -43,7 +43,7 @@ public class EditTabSubPage extends AbstractPage {
     WebElement descriptionInputText;
 
     @Required
-    @FindBy(id = "document_edit:nxw_documentEditButtons_EDIT_CURRENT_DOCUMENT")
+    @FindBy(id = "document_edit:nxw_EDIT_CURRENT_DOCUMENT")
     WebElement save;
 
     public EditTabSubPage(WebDriver driver) {
