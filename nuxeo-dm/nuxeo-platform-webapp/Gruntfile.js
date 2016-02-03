@@ -11,6 +11,14 @@ module.exports = function (grunt) {
       source: 'src/main/resources/web/nuxeo.war',
       target: 'target/classes/web/nuxeo.war'
     },
+    copy: {
+      pdfjs: {
+        cwd: '<%= config.target %>/bower_components/nuxeo-ui-elements/viewers/pdfjs',
+        src: ['**/*'],
+        dest: '<%= config.target %>/viewers/pdfjs',
+        expand: true
+      }
+    },
     vulcanize: {
       permissions: {
         options: {
@@ -20,6 +28,17 @@ module.exports = function (grunt) {
         files: {
           '<%= config.target %>/permissions/components/elements.vulcanized.html': [
             '<%= config.target %>/bower_components/nuxeo-document-permissions/nuxeo-document-permissions.html'
+          ]
+        },
+      },
+      pdfViewer: {
+        options: {
+          inlineScripts: true,
+          inlineCss: true
+        },
+        files: {
+          '<%= config.target %>/viewers/nuxeo-pdf-viewer.vulcanized.html': [
+            '<%= config.target %>/bower_components/nuxeo-ui-elements/viewers/nuxeo-pdf-viewer.html'
           ]
         },
       },
@@ -41,6 +60,8 @@ module.exports = function (grunt) {
 
   grunt.registerTask('default', [
     'vulcanize:permissions',
+    'vulcanize:pdfViewer',
+    'copy:pdfjs',
     'clean:bower_components'
   ]);
 };

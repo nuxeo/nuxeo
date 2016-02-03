@@ -8,6 +8,10 @@
     "paper-elements": "PolymerElements/paper-elements#^1.0.5",
     "nuxeo-elements": "nuxeo/nuxeo-elements#0.2.6",
     "nuxeo-document-permissions": "nuxeo/nuxeo-document-permissions#0.2.4",
+    "nuxeo-ui-elements": "nuxeo/nuxeo-ui-elements#master",
     "moment": "2.10.6"
+  },
+  "resolutions": {
+    "nuxeo-elements": "master"
   }
 }

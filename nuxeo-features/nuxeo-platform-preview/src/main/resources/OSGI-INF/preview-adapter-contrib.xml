@@ -19,6 +19,9 @@
       <previewer class="org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer">
         <pattern>image.*</pattern>
       </previewer>
+      <previewer class="org.nuxeo.ecm.platform.preview.adapter.PdfPreviewer">
+        <pattern>application/pdf</pattern>
+      </previewer>
       <previewer class="org.nuxeo.ecm.platform.preview.adapter.HtmlPreviewer">
         <pattern>text/html</pattern>
       </previewer>
