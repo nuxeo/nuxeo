@@ -9,44 +9,40 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-<nxu:set var="onclick"
-  value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
-  cache="true">
-
 <c:if test="#{widgetProperty_useButton}">
 
-  <c:if test="#{not useAjaxForm}">
+  <c:if test="#{not widgetProperty_useAjaxForm}">
     <nxh:commandButton action="#{action.getLink()}"
       id="#{widget.id}"
-      onclick="#{onclick}"
-      immediate="#{action.immediate}"
-      value="#{messages[action.label]}"
-      disabled="#{!action.available}"
-      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
-      accesskey="#{action.accessKey}">
-      <ui:include src="/incl/action/action_icon_label_template.xhtml">
-        <ui:param name="hideLabel" value="true" />
+      onclick="#{widgetProperty_onclick}"
+      immediate="#{widgetProperty_immediate}"
+      value="#{messages[widget.label]}"
+      disabled="#{!widgetProperty_available}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accesskey="#{widgetProperty_accessKey}">
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml">
+        <ui:param name="widgetProperty_hideLabel" value="true" />
       </ui:include>
       <ui:insert name="inside_action" />
     </nxh:commandButton>
   </c:if>
 
-  <c:if test="#{useAjaxForm}">
+  <c:if test="#{widgetProperty_useAjaxForm}">
     <h:commandButton
       id="#{widget.id}"
-      onclick="#{onclick};#{nxu:test(not empty onSubmit, onSubmit, '')};"
-      value="#{messages[action.label]}"
-      disabled="#{!action.available}"
-      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
-      accesskey="#{action.accessKey}">
+      onclick="#{widgetProperty_onclick};#{nxu:test(not empty onSubmit, onSubmit, '')};"
+      value="#{messages[widget.label]}"
+      disabled="#{!widgetProperty_available}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accesskey="#{widgetProperty_accessKey}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml">
-        <ui:param name="hideLabel" value="true" />
+        <ui:param name="widgetProperty_hideLabel" value="true" />
       </ui:include>
       <ui:insert name="before_action_trigger" />
       <nxu:actionListenerMethod
-        value="#{action.getLink()}" />
+        value="#{widgetProperty_link}" />
       <ui:insert name="after_action_trigger" />
-      <a4j:ajax execute="#{action.immediate ? '@this' : '@form'}"
+      <a4j:ajax execute="#{widgetProperty_immediate ? '@this' : '@form'}"
         render="#{ajaxReRender}" />
     </h:commandButton>
 
@@ -56,39 +52,37 @@
 
 <c:if test="#{not widgetProperty_useButton}">
 
-  <c:if test="#{not useAjaxForm}">
-    <nxh:commandLink action="#{action.getLink()}"
+  <c:if test="#{not widgetProperty_useAjaxForm}">
+    <nxh:commandLink action="#{widgetProperty_link}"
       id="#{widget.id}"
-      onclick="#{onclick}"
-      immediate="#{action.immediate}"
-      target="#{action.properties.target}"
-      disabled="#{!action.available}"
-      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
-      accesskey="#{action.accessKey}">
+      onclick="#{widgetProperty_onclick}"
+      immediate="#{widgetProperty_immediate}"
+      target="#{widgetProperty_target}"
+      disabled="#{!widgetProperty_available}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accesskey="#{widgetProperty_accessKey}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
     </nxh:commandLink>
   </c:if>
 
-  <c:if test="#{useAjaxForm}">
+  <c:if test="#{widgetProperty_useAjaxForm}">
     <h:commandLink
       id="#{widget.id}"
-      onclick="#{onclick};"
-      disabled="#{!action.available}"
-      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
-      accesskey="#{action.accessKey}">
+      onclick="#{widgetProperty_onclick}"
+      disabled="#{!widgetProperty_available}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accesskey="#{widgetProperty_accessKey}">
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="before_action_trigger" />
       <nxu:actionListenerMethod
-        value="#{action.getLink()}" />
+        value="#{widgetProperty_link}" />
       <ui:insert name="after_action_trigger" />
-      <a4j:ajax execute="#{action.immediate ? '@this' : '@form'}"
+      <a4j:ajax execute="#{widgetProperty_immediate ? '@this' : '@form'}"
         render="#{ajaxReRender}" />
     </h:commandLink>
   </c:if>
 
 </c:if>
-
-</nxu:set>
 
 </c:if>
