@@ -181,6 +181,9 @@ public class ActionTagHandler extends MetaTagHandler {
                 props.put("link", actionInstance.getLink());
                 props.put("actionId", actionInstance.getId());
                 props.put("action", actionInstance);
+                if (useAjaxForm != null) {
+                    props.put("useAjaxForm", useAjaxForm.getValue());
+                }
 
                 // add all extra props passed to the tag
                 String widgetPropertyMarker = RenderVariables.widgetVariables.widgetProperty.name() + "_";
@@ -202,6 +205,10 @@ public class ActionTagHandler extends MetaTagHandler {
                 if (StringUtils.isBlank(widgetNameValue)) {
                     widgetNameValue = actionInstance.getId();
                 }
+                // avoid double markers
+                if (widgetNameValue != null && widgetNameValue.startsWith(FaceletHandlerHelper.WIDGET_ID_PREFIX)) {
+                    widgetNameValue = widgetNameValue.substring(FaceletHandlerHelper.WIDGET_ID_PREFIX.length());
+                }
 
                 WidgetDefinitionImpl wDef = new WidgetDefinitionImpl(widgetNameValue, wtype, actionInstance.getLabel(),
                         actionInstance.getHelp(), true, null, null, props, null);
@@ -214,8 +221,6 @@ public class ActionTagHandler extends MetaTagHandler {
                 }
                 Widget widgetInstance = layoutService.createWidget(ctx, wDef, modeValue, valueName, null);
                 if (widgetInstance != null) {
-                    // don't bother
-
                     // set unique id on widget before exposing it to the context
                     FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
                     WidgetTagHandler.generateWidgetId(ctx, helper, widgetInstance, false);
@@ -224,7 +229,7 @@ public class ActionTagHandler extends MetaTagHandler {
                     WidgetTagHandler.exposeWidgetVariables(ctx, vm, widgetInstance, null, false);
 
                     // create widget handler
-                    TagAttributes wattrs = config.getTag().getAttributes();
+                    TagAttributes wattrs = FaceletHandlerHelper.getTagAttributes();
                     wattrs = FaceletHandlerHelper.addTagAttribute(wattrs,
                             helper.createAttribute(RenderVariables.widgetVariables.widget.name(),
                                     "#{" + RenderVariables.widgetVariables.widget.name() + "}"));
