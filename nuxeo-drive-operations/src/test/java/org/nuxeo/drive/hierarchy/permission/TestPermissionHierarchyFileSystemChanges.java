@@ -84,7 +84,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
-@RepositoryConfig(cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
@@ -165,8 +165,12 @@ public class TestPermissionHierarchyFileSystemChanges {
         TransactionHelper.startTransaction();
 
         // Close core sessions
-        session1.close();
-        session2.close();
+        if (session1 != null) {
+            session1.close();
+        }
+        if (session2 != null) {
+            session2.close();
+        }
 
         // Delete test users
         deleteUser("user1");
