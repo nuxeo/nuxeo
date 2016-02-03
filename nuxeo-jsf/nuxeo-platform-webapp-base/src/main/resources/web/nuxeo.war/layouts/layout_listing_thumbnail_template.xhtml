@@ -173,7 +173,7 @@
           value="#{messages['label.search.deselect.all']}">
           <nxu:actionListenerMethod value="#{documents.setSelected(false)}" />
           <nxu:actionListenerMethod value="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, false)}" />
-          <a4j:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_deselectAll #{formId}_buttons:ajax_selection_buttons" />
+          <a4j:ajax execute="@this" render="@this #{layoutColumn.widgets[0].name}_selectAll #{formId}_buttons:ajax_selection_buttons" />
         </h:commandButton>
       </a4j:outputPanel>
     </div>
