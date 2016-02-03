@@ -42,7 +42,7 @@ public class DublinCoreCreationDocumentFormPage extends AbstractPage {
     public WebElement descriptionTextInput;
 
     @Required
-    @FindBy(id = "document_create:nxw_CREATE_DOCUMENT")
+    @FindBy(id = "document_create:nxw_documentCreateButtons_CREATE_DOCUMENT")
     public WebElement createButton;
 
     public DublinCoreCreationDocumentFormPage(WebDriver driver) {
