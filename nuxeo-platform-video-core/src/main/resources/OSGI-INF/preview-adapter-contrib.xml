@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.video.core.previewer">
+  <require>org.nuxeo.ecm.platform.preview.adapter.contrib</require>
+  <extension target="org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManagerComponent"
+             point="MimeTypePreviewer">
+    <previewer class="org.nuxeo.ecm.platform.video.VideoDocumentPreviewer">
+      <pattern>video.*</pattern>
+    </previewer>
+  </extension>
+</component>
