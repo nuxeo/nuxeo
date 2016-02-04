@@ -9,8 +9,10 @@
     <ui:fragment rendered="#{not empty actionLink}">
       <h:outputLink value="#{actionLink}"
         id="#{widget.id}"
-        target="#{widgetProperty_target}" onclick="#{widgetProperty_onclick}"
-        immediate="#{widgetProperty_immediate}" disabled="#{!widgetProperty_available}"
+        target="#{widgetProperty_target}"
+        onclick="#{widgetProperty_onclick}"
+        immediate="#{widgetProperty_immediate}"
+        disabled="#{!webRequestActions.isDocumentActionAvailable(widgetProperty_action, nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument))}"
         styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
         accesskey="#{widgetProperty_accessKey}">
         <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />

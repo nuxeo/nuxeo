@@ -84,6 +84,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
         Iterator<Action> it = actions.iterator();
         while (it.hasNext()) {
             Action action = it.next();
+            action.setFiltered(true);
             if (!checkFilters(context, action)) {
                 it.remove();
             }
@@ -141,7 +142,6 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
             for (Action a : allActions) {
                 a.setAvailable(actions.contains(a));
-                a.setFiltered(true);
             }
             DebugTracer.trace(log, start, category);
             return allActions;

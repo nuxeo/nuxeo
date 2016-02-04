@@ -9,7 +9,7 @@
 
   <nxwt:documentActions value="#{field}" mode="view"
     widgetProperty_category="BLOB_ACTIONS_LISTING" actionContextDocument="#{field}"
-    actionsDisplay="icons" />
+    actionsDisplay="icons" postFilter="true" />
 
   <h:outputLink id="#{widget.id}"
     value="#{nxd:liveEditUrl(field, widget.properties.file_schema, widget.properties.file_field_name, widget.properties.filename_field_name)}"
