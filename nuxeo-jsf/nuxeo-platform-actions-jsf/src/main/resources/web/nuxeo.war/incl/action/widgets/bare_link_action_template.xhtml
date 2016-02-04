@@ -12,7 +12,7 @@
         target="#{widgetProperty_target}"
         onclick="#{widgetProperty_onclick}"
         immediate="#{widgetProperty_immediate}"
-        disabled="#{!webRequestActions.isDocumentActionAvailable(widgetProperty_action, nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument))}"
+        disabled="#{!widgetProperty_available}"
         styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
         accesskey="#{widgetProperty_accessKey}">
         <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />

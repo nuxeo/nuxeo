@@ -18,7 +18,7 @@
       id="#{widget.id}"
       onclick="#{widgetProperty_onclick};#{nxu:test(not empty onSubmit, onSubmit, '')};"
       value="#{messages[widget.label]}"
-      disabled="#{!webRequestActions.isDocumentActionAvailable(widgetProperty_action, nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument))}"
+      disabled="#{!widgetProperty_available}"
       styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
       accesskey="#{widgetProperty_accessKey}">
       <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml">
@@ -39,7 +39,7 @@
       onclick="#{widgetProperty_onclick}"
       immediate="#{widgetProperty_immediate}"
       value="#{messages[widget.label]}"
-      disabled="#{!webRequestActions.isDocumentActionAvailable(widgetProperty_action, nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument))}"
+      disabled="#{!widgetProperty_available}"
       styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
       accesskey="#{widgetProperty_accessKey}">
       <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml">
@@ -58,7 +58,7 @@
     <h:commandLink
       id="#{widget.id}"
       onclick="#{widgetProperty_onclick}"
-      disabled="#{!webRequestActions.isDocumentActionAvailable(widgetProperty_action, nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument))}"
+      disabled="#{!widgetProperty_available}"
       styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
       accesskey="#{widgetProperty_accessKey}">
       <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
@@ -77,7 +77,7 @@
       onclick="#{widgetProperty_onclick}"
       immediate="#{widgetProperty_immediate}"
       target="#{widgetProperty_target}"
-      disabled="#{!webRequestActions.isDocumentActionAvailable(widgetProperty_action, nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument))}"
+      disabled="#{!widgetProperty_available}"
       styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
       accesskey="#{widgetProperty_accessKey}">
       <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
