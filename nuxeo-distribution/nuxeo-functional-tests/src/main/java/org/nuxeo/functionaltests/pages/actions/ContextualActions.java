@@ -41,7 +41,7 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//img[@alt=\"Add to Worklist\"]")
     public WebElement addToWorklistButton;
 
-    @FindBy(id = "nxw_permalinkAction_form:nxw_documentActionsUpperButtons_permalinkAction_subview:nxw_documentActionsUpperButtons_permalinkAction_link")
+    @FindBy(id = "nxw_permalinkAction_form:nxw_permalinkAction_link")
     public WebElement permaButton;
 
     public String permaBoxFocusName = "permalinkFocus";
@@ -69,7 +69,7 @@ public class ContextualActions extends AbstractPage {
      * @since 8.1
      */
     public ContextualActions openMore() {
-        String xpath = "//div[@id=\"nxw_documentActionsUpperButtons_panel\"]/div/ul/li";
+        String xpath = "//ul[@id=\"nxw_documentActionsUpperButtons_dropDownMenu\"]/li";
         driver.findElement(By.xpath(xpath)).click();
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
