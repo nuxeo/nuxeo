@@ -112,25 +112,33 @@ public class SetTagHandler extends AliasTagHandler {
         }
 
         if (isOptimizedAgain()) {
-            String varStr = var.getValue(ctx);
-            VariableMapper orig = ctx.getVariableMapper();
-            boolean done = false;
-            if (orig instanceof BlockingVariableMapper) {
-                BlockingVariableMapper vm = (BlockingVariableMapper) orig;
-                if (isAcceptingMerge(ctx, vm, varStr)) {
-                    FaceletHandler next = applyOptimized(ctx, parent, vm, varStr);
-                    next.apply(ctx, parent);
-                    done = true;
-                }
+            boolean cacheValue = false;
+            if (cache != null) {
+                cacheValue = cache.getBoolean(ctx);
             }
-            if (!done) {
-                try {
-                    BlockingVariableMapper vm = new BlockingVariableMapper(orig);
-                    ctx.setVariableMapper(vm);
-                    FaceletHandler next = applyOptimized(ctx, parent, vm, varStr);
-                    next.apply(ctx, parent);
-                } finally {
-                    ctx.setVariableMapper(orig);
+            if (cacheValue) {
+                applyAlias(ctx, parent);
+            } else {
+                String varStr = var.getValue(ctx);
+                VariableMapper orig = ctx.getVariableMapper();
+                boolean done = false;
+                if (orig instanceof BlockingVariableMapper) {
+                    BlockingVariableMapper vm = (BlockingVariableMapper) orig;
+                    if (isAcceptingMerge(ctx, vm, varStr)) {
+                        FaceletHandler next = applyOptimized(ctx, parent, vm, varStr);
+                        next.apply(ctx, parent);
+                        done = true;
+                    }
+                }
+                if (!done) {
+                    try {
+                        BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+                        ctx.setVariableMapper(vm);
+                        FaceletHandler next = applyOptimized(ctx, parent, vm, varStr);
+                        next.apply(ctx, parent);
+                    } finally {
+                        ctx.setVariableMapper(orig);
+                    }
                 }
             }
         } else {
@@ -176,36 +184,22 @@ public class SetTagHandler extends AliasTagHandler {
             String varStr) throws IOException {
 
         // handle variable expression
-        boolean cacheValue = false;
-        if (cache != null) {
-            cacheValue = cache.getBoolean(ctx);
-        }
         boolean resolveTwiceBool = false;
         if (resolveTwice != null) {
             resolveTwiceBool = resolveTwice.getBoolean(ctx);
         }
 
         ValueExpression ve;
-        if (cacheValue) {
-            // resolve value and put it as is in variable mapper
-            Object res = value.getObject(ctx);
-            if (resolveTwiceBool && res instanceof String && ComponentTagUtils.isValueReference((String) res)) {
-                ve = ctx.getExpressionFactory().createValueExpression(ctx, (String) res, Object.class);
-                res = ve.getValue(ctx);
+        ve = value.getValueExpression(ctx, Object.class);
+        if (resolveTwiceBool) {
+            boolean localBool = false;
+            if (local != null) {
+                localBool = local.getBoolean(ctx);
             }
-            ve = ctx.getExpressionFactory().createValueExpression(res, Object.class);
-        } else {
-            ve = value.getValueExpression(ctx, Object.class);
-            if (resolveTwiceBool) {
-                boolean localBool = false;
-                if (local != null) {
-                    localBool = local.getBoolean(ctx);
-                }
-                if (localBool) {
-                    ve = new MetaValueExpression(ve);
-                } else {
-                    ve = new MetaValueExpression(ve, ctx.getFunctionMapper(), vm);
-                }
+            if (localBool) {
+                ve = new MetaValueExpression(ve);
+            } else {
+                ve = new MetaValueExpression(ve, ctx.getFunctionMapper(), vm, varStr);
             }
         }
 
