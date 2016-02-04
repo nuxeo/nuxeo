@@ -54,7 +54,7 @@
       mode="view" selectedColumns="#{selectedResultLayoutColumns}"
       template="#{layoutTemplate}" resolveOnly="true">
 
-      <c:set var="useRepeatRenderTime" value="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.useRepeatRenderTime')}" />
+      <c:set var="useRepeatRenderTime" value="#{configurationService.isBooleanPropertyTrue('nuxeo.jsf.listings.useRepeatRenderTime')}" />
       <c:set var="display" value="#{layoutProperty_display}" />
       <c:if
         test="#{empty display and fn:endsWith(layoutName, '_2_columns')}">
