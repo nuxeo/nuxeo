@@ -16,8 +16,9 @@
         <nxu:repeat var="action" begin="#{widgetProperty_maxActionsNumber}"
           end="#{widgetProperty_actions.size-1}" step="1" items="#{widgetProperty_actions}">
           <li>
-            <ui:include src="/incl/action/generic_action_template.xhtml">
-              <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
+            <ui:include src="/incl/action/action_template.xhtml">
+              <ui:param name="actionsDisplay" value="#{nxu:test(widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'icons', 'icons_links', widgetProperty_actionsDisplay)}" />
+              <ui:param name="ajaxReRender" value="#{nxu:joinRender(ajaxReRender, widgetProperty_ajaxReRender)}" />
               <ui:param name="addForm" value="#{widgetProperty_addForm}" />
               <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
               <ui:param name="formStyleClass" value="subWidgetForm" />
