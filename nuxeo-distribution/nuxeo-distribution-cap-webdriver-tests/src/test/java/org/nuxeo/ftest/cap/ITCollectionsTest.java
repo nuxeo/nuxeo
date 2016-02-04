@@ -152,7 +152,7 @@ public class ITCollectionsTest extends AbstractTest {
         ContentTabSubPage workspaceContentTab = fileDocumentBasePage.getNavigationSubPage().goToDocument(
                 WORKSPACE_TITLE).getContentTab();
 
-        workspaceContentTab.selectDocumentByIndex(0, 1);
+        workspaceContentTab.selectByIndex(0, 1);
 
         AddAllToCollectionForm addAllToCollectionForm = workspaceContentTab.getAddAllToCollectionPopup();
 

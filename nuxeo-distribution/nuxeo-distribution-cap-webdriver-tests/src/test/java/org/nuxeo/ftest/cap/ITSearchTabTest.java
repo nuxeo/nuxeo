@@ -181,14 +181,14 @@ public class ITSearchTabTest extends AbstractTest {
         assertEquals(MY_FAVORITES_COLLECTION, selectedCollections.get(0));
 
         // save this search
-        String saveAsPath = "//input[contains(@id, 'nxw_searchResultsActions_saveSearch_link')]";
+        String saveAsPath = "//input[contains(@id, 'nxw_saveSearch_link')]";
         assertEquals(1, driver.findElements(By.xpath(saveAsPath)).size());
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
         driver.findElement(By.xpath(saveAsPath)).click();
         arm.end();
 
-        WebElement fancybox = Locator.findElementWithTimeout(By.id("nxw_searchResultsActions_saveSearch_box"));
+        WebElement fancybox = Locator.findElementWithTimeout(By.id("nxw_saveSearch_after_view_box"));
         String ssTitle = "Test Saved Search " + new Date().getTime();
         fancybox.findElement(By.xpath(".//input[@type='text']")).sendKeys(ssTitle);
         arm.begin();

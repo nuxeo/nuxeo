@@ -35,13 +35,13 @@ import com.google.common.base.Function;
  */
 public class AddAllToCollectionForm extends AddToCollectionForm {
 
-    private final static String ADD_BUTTON_ID = "document_content_buttons:nxw_cvButton_addSelectedToCollectionAction_fancy_subview:nxw_cvButton_addSelectedToCollectionAction_fancyform:addAll";
+    private final static String ADD_BUTTON_ID = "document_content_buttons:nxw_addSelectedToCollectionAction_after_view_fancy_subview:nxw_addSelectedToCollectionAction_after_view_fancyform:addAll";
 
-    private final static String S2_CHOOSE_COLLECTION_ID = "s2id_document_content_buttons:nxw_cvButton_addSelectedToCollectionAction_fancy_subview:nxw_cvButton_addSelectedToCollectionAction_fancyform:nxw_singleDocumentSuggestion_2_select2";
+    private final static String S2_CHOOSE_COLLECTION_ID = "s2id_document_content_buttons:nxw_addSelectedToCollectionAction_after_view_fancy_subview:nxw_addSelectedToCollectionAction_after_view_fancyform:nxw_singleDocumentSuggestion_2_select2";
 
-    private final static String NEW_COLLECTION_DESCRIPTION_ID = "document_content_buttons:nxw_cvButton_addSelectedToCollectionAction_fancy_subview:nxw_cvButton_addSelectedToCollectionAction_fancyform:nxw_cvButton_addSelectedToCollectionAction_fancyform_collectionDescriptionsPanel";
+    private final static String NEW_COLLECTION_DESCRIPTION_ID = "document_content_buttons:nxw_addSelectedToCollectionAction_after_view_fancy_subview:nxw_addSelectedToCollectionAction_after_view_fancyform:description";
 
-    private static final String EXISTING_COLLECTION_DESCRIPTION_ID = "document_content_buttons:nxw_cvButton_addSelectedToCollectionAction_fancy_subview:nxw_cvButton_addSelectedToCollectionAction_fancyform:scd";
+    private static final String EXISTING_COLLECTION_DESCRIPTION_ID = "document_content_buttons:nxw_addSelectedToCollectionAction_after_view_fancy_subview:nxw_addSelectedToCollectionAction_after_view_fancyform:scd";
 
     public AddAllToCollectionForm(WebDriver driver, WebElement element) {
         super(driver, element);
