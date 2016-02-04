@@ -64,6 +64,17 @@ module.exports = function (grunt) {
           ]
         },
       },
+      markdownViewer: {
+        options: {
+          inlineScripts: true,
+          inlineCss: true
+        },
+        files: {
+          '<%= config.target %>/viewers/marked-element.vulcanized.html': [
+            '<%= config.target %>/bower_components/marked-element/marked-element.html'
+          ]
+        },
+      },
     },
     clean: {
       bower_components: {
@@ -86,6 +97,7 @@ module.exports = function (grunt) {
     'copy:pdfjs',
     'vulcanize:imageViewer',
     'vulcanize:videoViewer',
+    'vulcanize:markdownViewer',
     'clean:bower_components'
   ]);
 };

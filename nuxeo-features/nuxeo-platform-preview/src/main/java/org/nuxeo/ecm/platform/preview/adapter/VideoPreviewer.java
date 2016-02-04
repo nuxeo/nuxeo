@@ -55,6 +55,7 @@ public class VideoPreviewer extends AbstractPreviewer implements MimeTypePreview
             blobResults.add(blob);
         }
         html.append("</nuxeo-video-viewer>");
+        html.append("</body>");
         Blob mainBlob = Blobs.createBlob(html.toString(), "text/html", null, "index.html");
         blobResults.add(0, mainBlob);
         return blobResults;

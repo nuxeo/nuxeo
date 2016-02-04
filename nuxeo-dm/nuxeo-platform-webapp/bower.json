@@ -9,7 +9,8 @@
     "nuxeo-elements": "nuxeo/nuxeo-elements#0.2.6",
     "nuxeo-document-permissions": "nuxeo/nuxeo-document-permissions#0.2.4",
     "nuxeo-ui-elements": "nuxeo/nuxeo-ui-elements#master",
-    "moment": "2.10.6"
+    "moment": "2.10.6",
+    "marked-element": "PolymerElements/marked-element#~1.1.3"
   },
   "resolutions": {
     "nuxeo-elements": "0.2.6",

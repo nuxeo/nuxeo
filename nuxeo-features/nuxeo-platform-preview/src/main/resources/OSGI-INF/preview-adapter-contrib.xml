@@ -31,5 +31,8 @@
       <previewer class="org.nuxeo.ecm.platform.preview.adapter.PlainTextPreviewer">
         <pattern>text/plain</pattern>
       </previewer>
+      <previewer class="org.nuxeo.ecm.platform.preview.adapter.MarkdownPreviewer">
+        <pattern>text/x-web-markdown</pattern>
+      </previewer>
     </extension>
 </component>
