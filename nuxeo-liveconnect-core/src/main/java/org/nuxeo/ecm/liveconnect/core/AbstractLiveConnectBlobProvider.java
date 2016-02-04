@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
@@ -264,6 +265,9 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
 
     public final Credential getCredential(String user) throws IOException {
         Credential credential = getCredentialFactory().build(user);
+        if (credential == null) {
+            throw new NuxeoException("No credentials found for user + " + user + " and service " + blobProviderId);
+        }
         Long expiresInSeconds = credential.getExpiresInSeconds();
         if (expiresInSeconds != null && expiresInSeconds <= 0) {
             credential.refreshToken();
