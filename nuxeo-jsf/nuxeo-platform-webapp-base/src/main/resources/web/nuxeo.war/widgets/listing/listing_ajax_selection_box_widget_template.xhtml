@@ -4,12 +4,9 @@
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:f="http://java.sun.com/jsf/core"
   id="#{widget.id}"
-  value="#{field_0}"
-  valueChangeListener="#{documentListingActions.selectRow}">
-  <f:attribute name="docRef" value="#{field_1.toString()}" />
-  <f:attribute name="contentViewName" value="#{contentView.name}" />
-  <f:attribute name="listName" value="#{contentView.selectionListName}" />
-  <a4j:ajax id="#{widget.id}_ajax_onclick" event="change"
+  value="#{field_0}">
+  <a4j:ajax id="#{widget.id}_ajax_onclick" event="click"
     execute="@this"
+    listener="#{documentListingActions.processSelectRow(field_1, contentView.name, contentView.selectionListName, field_0)}"
     render="#{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
 </h:selectBooleanCheckbox>

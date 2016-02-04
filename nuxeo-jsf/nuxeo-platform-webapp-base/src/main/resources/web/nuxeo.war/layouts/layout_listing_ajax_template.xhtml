@@ -42,13 +42,11 @@
               <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
                 styleClass="tipsyShow tipsyGravitySW"
                 title="#{messages['tooltip.content.select.all']}"
-                value="#{documents.selected}"
-                valueChangeListener="#{documentListingActions.selectPage}">
-                <f:attribute name="contentViewName" value="#{contentView.name}" />
-                <f:attribute name="listName" value="#{contentView.selectionListName}" />
-                <a4j:ajax event="change"
+                onchange="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
+                value="#{documents.selected}">
+                <a4j:ajax event="click"
                   execute="@this"
-                  oncomplete="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
+                  listener="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
                   render="#{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
               </h:selectBooleanCheckbox>
             </c:when>
@@ -56,14 +54,11 @@
               <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
                 styleClass="tipsyShow tipsyGravitySW"
                 title="#{messages['tooltip.content.select.all']}"
-                value="#{documents.selected}"
-                valueChangeListener="#{documentListingActions.selectPage}">
-                <f:attribute name="currentDocRef" value="#{currentDocument.ref.toString()}" />
-                <f:attribute name="contentViewName" value="#{contentView.name}" />
-                <f:attribute name="listName" value="#{contentView.selectionListName}" />
-                <a4j:ajax event="change"
+                onchange="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
+                value="#{documents.selected}">
+                <a4j:ajax event="click"
                   execute="@this"
-                  oncomplete="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
+                  listener="#{documentListingActions.checkCurrentDocAndProcessSelectPage(contentView.name, contentView.selectionListName, documents.selected, currentDocument.ref)}"
                   render="#{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
               </h:selectBooleanCheckbox>
             </c:when>

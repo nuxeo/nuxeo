@@ -28,9 +28,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.faces.component.UIComponent;
-import javax.faces.event.ValueChangeEvent;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Factory;
@@ -53,7 +50,6 @@ import org.nuxeo.ecm.platform.query.api.PageSelection;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.cache.LRUCachingMap;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
@@ -213,22 +209,6 @@ public class DocumentListingActionsBean implements Serializable {
         return documents;
     }
 
-    /**
-     * @since 8.2
-     */
-    public void selectPage(ValueChangeEvent event) {
-        UIComponent anchor = event.getComponent();
-        String currentDocRef = ComponentUtils.getAttributeValue(anchor, "currentDocRef", String.class, null, false);
-        String contentViewName = ComponentUtils.getAttributeValue(anchor, "contentViewName", String.class, null, true);
-        String listName = ComponentUtils.getAttributeValue(anchor, "listName", String.class, null, true);
-        Boolean selection = Boolean.TRUE.equals(event.getNewValue());
-        if (currentDocRef == null) {
-            processSelectPage(contentViewName, listName, selection);
-        } else {
-            checkCurrentDocAndProcessSelectPage(contentViewName, listName, selection, currentDocRef);
-        }
-    }
-
     public void processSelectPage(String contentViewName, String listName, Boolean selection) {
         List<DocumentModel> documents = getCurrentPageDocuments(contentViewName);
         if (documents != null) {
@@ -252,23 +232,6 @@ public class DocumentListingActionsBean implements Serializable {
             navigationContext.navigateToRef(currentDocumentRef);
         }
         processSelectPage(contentViewName, listName, selection);
-    }
-
-    /**
-     * @since 8.2
-     */
-    public void selectRow(ValueChangeEvent event) {
-        UIComponent anchor = event.getComponent();
-        String currentDocRef = ComponentUtils.getAttributeValue(anchor, "currentDocRef", String.class, null, false);
-        String docRef = ComponentUtils.getAttributeValue(anchor, "docRef", String.class, null, true);
-        String contentViewName = ComponentUtils.getAttributeValue(anchor, "contentViewName", String.class, null, true);
-        String listName = ComponentUtils.getAttributeValue(anchor, "listName", String.class, null, true);
-        Boolean selection = Boolean.TRUE.equals(event.getNewValue());
-        if (currentDocRef == null) {
-            processSelectRow(docRef, contentViewName, listName, selection);
-        } else {
-            checkCurrentDocAndProcessSelectRow(docRef, contentViewName, listName, selection, currentDocRef);
-        }
     }
 
     public void processSelectRow(String docRef, String contentViewName, String listName, Boolean selection) {
