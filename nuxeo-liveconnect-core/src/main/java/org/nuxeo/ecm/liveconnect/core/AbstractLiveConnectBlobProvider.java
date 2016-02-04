@@ -266,7 +266,7 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
     public final Credential getCredential(String user) throws IOException {
         Credential credential = getCredentialFactory().build(user);
         if (credential == null) {
-            throw new NuxeoException("No credentials found for user + " + user + " and service " + blobProviderId);
+            throw new NuxeoException("No credentials found for user " + user + " and service " + blobProviderId);
         }
         Long expiresInSeconds = credential.getExpiresInSeconds();
         if (expiresInSeconds != null && expiresInSeconds <= 0) {
