@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,6 +64,8 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
     @Inject
     private CoreSession session;
 
+    private ACE ace;
+
     @Before
     public void before() {
         DocumentModel root = session.getDocument(new PathRef("/"));
@@ -70,10 +73,19 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         Map<String, Serializable> contextData = new HashMap<>();
         contextData.put(Constants.NOTIFY_KEY, false);
         contextData.put(Constants.COMMENT_KEY, "sample comment");
-        acp.addACE(ACL.LOCAL_ACL, ACE.builder("Administrator", "Read")
-                                     .creator("Administrator")
-                                     .contextData(contextData)
-                                     .build());
+        ace = ACE.builder("Administrator", "Read")
+                .creator("Administrator")
+                .contextData(contextData)
+                .build();
+        acp.addACE(ACL.LOCAL_ACL, ace);
+        root.setACP(acp, true);
+    }
+
+    @After
+    public void tearDown() {
+        DocumentModel root = session.getDocument(new PathRef("/"));
+        ACP acp = root.getACP();
+        acp.removeACE(ACL.LOCAL_ACL, ace);
         root.setACP(acp, true);
     }
 
