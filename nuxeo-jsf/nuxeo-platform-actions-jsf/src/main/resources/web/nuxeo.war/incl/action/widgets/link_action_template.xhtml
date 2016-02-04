@@ -9,7 +9,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-<c:if test="#{widgetProperty_useButton}">
+<c:choose>
+<c:when test="#{widgetProperty_useButton}">
 
   <c:choose>
   <c:when test="#{widgetProperty_useAjaxForm and (widgetProperty_ajaxSupport == null ? widgetProperty_supportAjax : widgetProperty_ajaxSupport)}">
@@ -49,26 +50,11 @@
   </c:otherwise>
   </c:choose>
 
-</c:if>
-
-<c:if test="#{not widgetProperty_useButton}">
+</c:when>
+<c:otherwise>
 
   <c:choose>
   <c:when test="#{widgetProperty_useAjaxForm and (widgetProperty_ajaxSupport == null ? widgetProperty_supportAjax : widgetProperty_ajaxSupport)}">
-    <nxh:commandLink action="#{widgetProperty_action.getLink()}"
-      id="#{widget.id}"
-      onclick="#{widgetProperty_onclick}"
-      immediate="#{widgetProperty_immediate}"
-      target="#{widgetProperty_target}"
-      disabled="#{!widgetProperty_available}"
-      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
-      accesskey="#{widgetProperty_accessKey}">
-      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
-      <ui:insert name="inside_action" />
-    </nxh:commandLink>
-  </c:when>
-
-  <c:otherwise>
     <h:commandLink
       id="#{widget.id}"
       onclick="#{widgetProperty_onclick}"
@@ -83,9 +69,24 @@
       <a4j:ajax execute="#{widgetProperty_immediate ? '@this' : '@form'}"
         render="#{ajaxReRender}" />
     </h:commandLink>
+  </c:when>
+
+  <c:otherwise>
+    <nxh:commandLink action="#{widgetProperty_action.getLink()}"
+      id="#{widget.id}"
+      onclick="#{widgetProperty_onclick}"
+      immediate="#{widgetProperty_immediate}"
+      target="#{widgetProperty_target}"
+      disabled="#{!widgetProperty_available}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accesskey="#{widgetProperty_accessKey}">
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
+      <ui:insert name="inside_action" />
+    </nxh:commandLink>
   </c:otherwise>
   </c:choose>
 
-</c:if>
+</c:otherwise>
+</c:choose>
 
 </c:if>
