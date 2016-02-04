@@ -481,10 +481,14 @@ final public class NxqlQueryConverter {
             if (v.endsWith("/")) {
                 v = v.replaceAll("/$", "");
             }
-            // we don't want to return the parent
-            filter = FilterBuilders.andFilter(
-                    FilterBuilders.termFilter(indexName, v),
-                    FilterBuilders.notFilter(FilterBuilders.termFilter(name, value)));
+            if (NXQL.ECM_PATH.equals(name)) {
+                // we don't want to return the parent when searching on ecm:path, see NXP-18955
+                filter = FilterBuilders.andFilter(
+                        FilterBuilders.termFilter(indexName, v),
+                        FilterBuilders.notFilter(FilterBuilders.termFilter(name, value)));
+            } else {
+                filter = FilterBuilders.termFilter(indexName, v);
+            }
         }
         return filter;
     }

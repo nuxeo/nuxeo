@@ -377,6 +377,17 @@ public class TestNxqlConversion {
                 "    }\n" + //
                 "  }\n" + //
                 "}", es);
+        // for other field than ecm:path we want to match the root
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where dc:coverage STARTSWITH 'Europe/France'").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"term\" : {\n" + //
+                "        \"dc:coverage.children\" : \"Europe/France\"\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
     }
 
     @Test
