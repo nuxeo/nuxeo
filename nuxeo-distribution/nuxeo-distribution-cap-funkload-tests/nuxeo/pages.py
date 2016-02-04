@@ -585,10 +585,10 @@ class FolderPage(BasePage):
             ['nxw_newDocument_form', 'nxw_newDocument_form'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['Faces-Request', 'partial/ajax'],
-            ['javax.faces.source', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
+            ['javax.faces.source', 'nxw_newDocument_form:nxw_newDocument_link'],
             ['javax.faces.partial.event', 'click'],
-            ['javax.faces.partial.execute', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
-            ['javax.faces.partial.render', 'nxw_documentActionSubviewUpperList_newDocument_ajax_panel nxw_documentActionSubviewUpperList_panel'],
+            ['javax.faces.partial.execute', 'nxw_newDocument_form:nxw_newDocument_link'],
+            ['javax.faces.partial.render', 'nxw_newDocument_after_view_ajax_panel nxw_documentActionSubviewUpperList_panel'],
             ['javax.faces.behavior.event', 'action'],
             ['javax.faces.partial.ajax', 'true']],
             description="Click on 'New' action")
@@ -596,9 +596,9 @@ class FolderPage(BasePage):
         fl.assert_('Available Document Types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform'],
+            ['nxw_newDocument_after_view_fancy_subview:nxw_newDocument_after_view_fancyform', 'nxw_newDocument_after_view_fancy_subview:nxw_newDocument_after_view_fancyform'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform:Folder', 'nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform:Folder']],
+            ['nxw_newDocument_after_view_fancy_subview:nxw_newDocument_after_view_fancyform:Folder', 'nxw_newDocument_after_view_fancy_subview:nxw_newDocument_after_view_fancyform:Folder']],
             description="Create folder: New Folder")
 
         fl.assert_('document_create' in fl.getBody(),
@@ -621,19 +621,19 @@ class FolderPage(BasePage):
             ['nxw_newDocument_form', 'nxw_newDocument_form'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['Faces-Request', 'partial/ajax'],
-            ['javax.faces.source', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
+            ['javax.faces.source', 'nxw_newDocument_form:nxw_newDocument_link'],
             ['javax.faces.partial.event', 'click'],
-            ['javax.faces.partial.execute', 'nxw_newDocument_form:nxw_documentActionSubviewUpperList_newDocument_subview:nxw_documentActionSubviewUpperList_newDocument_link'],
-            ['javax.faces.partial.render', 'nxw_documentActionSubviewUpperList_newDocument_ajax_panel nxw_documentActionSubviewUpperList_panel'],
+            ['javax.faces.partial.execute', 'nxw_newDocument_form:nxw_newDocument_link'],
+            ['javax.faces.partial.render', 'nxw_newDocument_after_view_ajax_panel nxw_documentActionSubviewUpperList_panel'],
             ['javax.faces.behavior.event', 'action'],
             ['javax.faces.partial.ajax', 'true']],
             description="Click on 'New' action")
         fl.assert_('Available Document Types' in fl.getBody())
 
         fl.post(fl.server_url + "/view_documents.faces", params=[
-            ['nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform', 'nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform'],
+            ['nxw_newDocument_after_view_fancy_subview:nxw_newDocument_after_view_fancyform', 'nxw_newDocument_after_view_fancy_subview:nxw_newDocument_after_view_fancyform'],
             ['javax.faces.ViewState', fl.getLastJsfState()],
-            ['nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform:File', 'nxw_documentActionSubviewUpperList_newDocument_fancy_subview:nxw_documentActionSubviewUpperList_newDocument_fancyform:File']],
+            ['nxw_newDocument_after_view_fancy_subview:nxw_newDocument_after_view_fancyform:File', 'nxw_newDocument_after_view_fancy_subview:nxw_newDocument_after_view_fancyform:File']],
             description="Create file: New document")
 
         fl.assert_('document_create' in fl.getBody(),
