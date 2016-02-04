@@ -39,36 +39,24 @@
       </nxd:restDocumentLink>
     </span>
 
-    <nxu:set var="actions"
-      value="#{webActions.getActionsList('DOCUMENT_HEADER_ACTIONS_LIST')}"
-      cache="true">
-      <c:if test="#{!empty actions}">
-        <c:forEach var="action" items="#{actions}">
-          <nxh:commandLink action="#{action.getLink()}"
-            onclick="#{action.confirm}"
-            immediate="#{action.immediate}">
-            <h:graphicImage value="#{action.icon}"
-              rendered="#{not empty action.icon}"
-              title="#{messages[action.label]}" />
-          </nxh:commandLink>
-        </c:forEach>
-      </c:if>
-    </nxu:set>
-    <nxu:set var="actions"
-      value="#{webActions.getActionsList('DOCUMENT_HEADER_ACTIONS_LIST_HREF')}"
-      cache="true">
-      <c:if test="#{!empty actions}">
-        <c:forEach var="action" items="#{actions}">
-          <nxu:set var="link" value="#{action.getLink()}" resolveTwice="true">
-            <a href="#{link}">
-              <h:graphicImage value="#{action.icon}"
-                rendered="#{not empty action.icon}"
-                title="#{messages[action.label]}" />
-            </a>
-          </nxu:set>
-        </c:forEach>
-      </c:if>
-    </nxu:set>
+    <c:forEach var="action" items="#{webRequestActions.getDocumentActions('DOCUMENT_HEADER_ACTIONS_LIST', field, true, false)}">
+      <nxh:commandLink action="#{action.getLink()}"
+        onclick="#{action.confirm}"
+        immediate="#{action.immediate}">
+        <h:graphicImage value="#{action.icon}"
+          rendered="#{not empty action.icon}"
+          title="#{messages[action.label]}" />
+      </nxh:commandLink>
+    </c:forEach>
+    <c:forEach var="action" items="#{webRequestActions.getDocumentActions('DOCUMENT_HEADER_ACTIONS_LIST_HREF', field, true, false)}">
+      <nxu:set var="link" value="#{action.getLink()}" resolveTwice="true">
+        <a href="#{link}">
+          <h:graphicImage value="#{action.icon}"
+            rendered="#{not empty action.icon}"
+            title="#{messages[action.label]}" />
+        </a>
+      </nxu:set>
+    </c:forEach>
 
   </h1>
 

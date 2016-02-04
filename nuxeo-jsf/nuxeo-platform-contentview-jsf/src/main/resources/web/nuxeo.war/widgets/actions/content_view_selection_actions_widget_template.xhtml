@@ -8,8 +8,7 @@
 
 <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
   <nxu:set var="actions"
-    value="#{documentContentViewActions.getSelectionActions(actionCategory, contentView, documentsListsManager.getWorkingList(contentView.selectionListName))}"
-    cache="true">
+    value="#{webRequestActions.getContentViewSelectionActions(actionCategory, contentView, documentsListsManager.getWorkingList(contentView.selectionListName))}">
     <c:if test="#{not status.first and not empty actions}">
       <br />
     </c:if>

@@ -7,6 +7,12 @@
     </listener>
   </extension>
 
+  <extension target="faces-config#PHASE-LISTENER">
+    <phase-listener>
+      org.nuxeo.ecm.webapp.action.WebRequestActionsBeanListener
+    </phase-listener>
+  </extension>
+
   <extension target="pages#PAGES">
     <!--  bind url for forced invalidation of nav tree -->
     <page view-id="/invalidateTree.xhtml"

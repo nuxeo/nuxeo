@@ -90,6 +90,11 @@ public class ActionService extends DefaultComponent implements ActionManager {
         }
     }
 
+    @Override
+    public boolean checkFilters(Action action, ActionContext context) {
+        return checkFilters(context, action);
+    }
+
     private boolean checkFilters(ActionContext context, Action action) {
         if (action == null) {
             return false;
@@ -136,6 +141,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
             for (Action a : allActions) {
                 a.setAvailable(actions.contains(a));
+                a.setFiltered(true);
             }
             DebugTracer.trace(log, start, category);
             return allActions;
@@ -158,6 +164,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 }
             }
         }
+        action.setFiltered(true);
         DebugTracer.trace(log, start, actionId);
         return action;
     }

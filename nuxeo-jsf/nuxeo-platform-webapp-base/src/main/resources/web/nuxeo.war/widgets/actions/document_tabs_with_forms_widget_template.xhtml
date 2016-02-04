@@ -4,20 +4,14 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core">
 
-<nxu:set var="actionContextDocument"
-  value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
-  cache="true">
 <nxu:set var="widgetProperty_actions"
-  value="#{webActions.getActionsListForDocument(widgetProperty_category, actionContextDocument, not widgetProperty_disableFiltered)}"
-  cache="true">
+  value="#{webRequestActions.getDocumentActions(widgetProperty_category, nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument), not widgetProperty_disableFiltered, widgetProperty_postFilter)}">
 <nxu:set var="widgetProperty_currentTabAction"
-  value="#{webActions.getCurrentTabAction(widgetProperty_category)}"
-  cache="true">
+  value="#{webActions.getCurrentTabAction(widgetProperty_category)}">
 <nxu:set var="widgetProperty_addForm"
   value="true"
   cache="true">
   <ui:include src="/widgets/actions/tabs_widget_template.xhtml" />
-</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>

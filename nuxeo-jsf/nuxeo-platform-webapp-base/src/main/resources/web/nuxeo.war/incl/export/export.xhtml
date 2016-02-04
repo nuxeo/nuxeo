@@ -50,11 +50,9 @@
       <div class="tabsContent">
 
         <nxu:set var="exportActions"
-          value="#{webActions.getActionsList('DOCUMENT_EXPORT_VIEW_ACTION')}"
-          cache="true">
+          value="#{webRequestActions.getDocumentActions('DOCUMENT_EXPORT_VIEW_ACTION', currentDocument, true, false)}">
         <nxu:set var="exportCommandActions"
-          value="#{webActions.getActionsList('DOCUMENT_EXPORT_VIEW_COMMAND_ACTION')}"
-          cache="true">
+          value="#{webActions.getDocumentActions('DOCUMENT_EXPORT_VIEW_COMMAND_ACTION', currentDocument, true, false)}">
           <c:if test="#{not empty exportActions or not empty exportCommandActions}">
             <h2>#{messages['label.exportview.document']}</h2>
             <c:forEach var="action" items="#{exportActions}">
