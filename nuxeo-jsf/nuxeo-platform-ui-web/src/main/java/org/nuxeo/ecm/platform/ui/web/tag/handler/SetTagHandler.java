@@ -199,7 +199,7 @@ public class SetTagHandler extends AliasTagHandler {
             if (localBool) {
                 ve = new MetaValueExpression(ve);
             } else {
-                ve = new MetaValueExpression(ve, ctx.getFunctionMapper(), vm, varStr);
+                ve = new MetaValueExpression(ve, ctx.getFunctionMapper(), vm);
             }
         }
 
