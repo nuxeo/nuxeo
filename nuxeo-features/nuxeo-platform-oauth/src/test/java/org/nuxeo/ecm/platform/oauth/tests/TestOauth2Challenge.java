@@ -40,6 +40,7 @@ import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -74,6 +75,12 @@ public class TestOauth2Challenge {
         if (!clientRegistry.hasClient(CLIENT_ID)) {
             OAuth2Client oauthClient = new OAuth2Client("Dummy", CLIENT_ID, CLIENT_SECRET);
             assertTrue(clientRegistry.registerClient(oauthClient));
+
+            // commit the transaction so that the HTTP thread finds the newly created directory entry
+            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+                TransactionHelper.commitOrRollbackTransaction();
+                TransactionHelper.startTransaction();
+            }
         }
 
         // First client to request like a "Client" as OAuth RFC describe it
@@ -95,8 +102,6 @@ public class TestOauth2Challenge {
 
         ClientResponse cr = responseFromAuthorizationWith(params);
         assertEquals(302, cr.getStatus());
-
-        TestAuthorizationRequest.getRequests();
 
         String redirect = cr.getHeaders().get("Location").get(0);
         assertTrue(redirect.contains(".jsp"));
