@@ -129,7 +129,7 @@ public class ITMiscLittleThingsTest extends AbstractTest {
      */
     @Test
     public void testPDFExport() {
-        WebElement exportActionPageLink = driver.findElement(By.id("nxw_documentExport_form:nxw_documentActionsUpperButtons_documentExport_subview:nxw_documentActionsUpperButtons_documentExport_link"));
+        WebElement exportActionPageLink = driver.findElement(By.id("nxw_documentExport_form:nxw_documentExport_link"));
         exportActionPageLink.click();
         waitForXmlExport();
         WebElement exportPDFActionLink = driver.findElement(By.linkText(XML_EXPORT_LINK_TEXT));

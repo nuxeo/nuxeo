@@ -31,13 +31,13 @@ import org.openqa.selenium.WebElement;
  */
 public class AddToCollectionForm extends WebFragmentImpl {
 
-    private final static String ADD_BUTTON_ID = "nxw_documentActionsUpperButtons_addToCollectionAction_fancy_subview:nxw_documentActionsUpperButtons_addToCollectionAction_fancyform:add";
+    private final static String ADD_BUTTON_ID = "nxw_addToCollectionAction_after_view_fancy_subview:nxw_addToCollectionAction_after_view_fancyform:add";
 
-    private final static String S2_CHOOSE_COLLECTION_ID = "s2id_nxw_documentActionsUpperButtons_addToCollectionAction_fancy_subview:nxw_documentActionsUpperButtons_addToCollectionAction_fancyform:nxw_singleDocumentSuggestion_1_select2";
+    private final static String S2_CHOOSE_COLLECTION_ID = "s2id_nxw_addToCollectionAction_after_view_fancy_subview:nxw_addToCollectionAction_after_view_fancyform:nxw_singleDocumentSuggestion_1_select2";
 
-    private final static String NEW_COLLECTION_DESCRIPTION_ID = "nxw_documentActionsUpperButtons_addToCollectionAction_fancy_subview:nxw_documentActionsUpperButtons_addToCollectionAction_fancyform:description";
+    private final static String NEW_COLLECTION_DESCRIPTION_ID = "nxw_addToCollectionAction_after_view_fancy_subview:nxw_addToCollectionAction_after_view_fancyform:description";
 
-    private static final String EXISTING_COLLECTION_DESCRIPTION_ID = "nxw_documentActionsUpperButtons_addToCollectionAction_fancy_subview:nxw_documentActionsUpperButtons_addToCollectionAction_fancyform:scd";
+    private static final String EXISTING_COLLECTION_DESCRIPTION_ID = "nxw_addToCollectionAction_after_view_fancy_subview:nxw_addToCollectionAction_after_view_fancyform:scd";
 
     protected boolean multiple = false;
 
