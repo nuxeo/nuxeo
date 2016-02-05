@@ -4,9 +4,9 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html">
-  <nxu:set var="actionLink" value="#{widgetProperty_link}"
-    cache="#{widgetProperty_cacheLink != null ? widgetProperty_cacheLink : false}">
-    <ui:fragment rendered="#{not empty actionLink}">
+  <ui:fragment rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}">
+    <nxu:set var="actionLink" value="#{widgetProperty_link}"
+      cache="#{widgetProperty_cacheLink != null ? widgetProperty_cacheLink : false}">
       <h:outputLink value="#{actionLink}"
         id="#{widget.id}"
         target="#{widgetProperty_target}"
@@ -18,6 +18,6 @@
         <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
         <ui:insert name="inside_action" />
       </h:outputLink>
-    </ui:fragment>
-  </nxu:set>
+    </nxu:set>
+  </ui:fragment>
 </c:if>
