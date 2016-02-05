@@ -79,6 +79,8 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Standard implementation of a {@link DocumentModel}.
@@ -1629,6 +1631,14 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @since 7.10
      */
     private Object writeReplace() throws ObjectStreamException {
+        if (TransactionHelper.isNoTransaction()) { // protect from no transaction
+            TransactionHelper.startTransaction();
+            try {
+                return writeReplace();
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
         if (isDirty()) {
             return this;
         }

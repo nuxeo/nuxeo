@@ -37,6 +37,7 @@ public class TestDocumentModel extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.ecm.core.schema");
     }
 
