@@ -26,7 +26,7 @@
 
     <filter id="hasVisibleRenditions">
       <rule grant="true">
-        <condition>#{renditionActionCache.hasVisibleRenditions('nuxeo:video:conversion,nuxeo:picture:conversion')}</condition>
+        <condition>#{renditionAction.hasVisibleRenditions('nuxeo:video:conversion,nuxeo:picture:conversion')}</condition>
       </rule>
     </filter>
 

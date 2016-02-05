@@ -9,7 +9,7 @@
   <nxu:set var="excludedKinds"
     value="#{widgetProperty_excludedKinds}"
     resolveTwice="true">
-  <nxu:set var="renditions" value="#{renditionActionCache.getVisibleRenditions(excludedKinds)}">
+  <nxu:set var="renditions" value="#{renditionAction.getVisibleRenditions(excludedKinds)}" cache="true">
     <c:if test="#{!empty renditions}">
 
       <h3 class="summaryTitle">
