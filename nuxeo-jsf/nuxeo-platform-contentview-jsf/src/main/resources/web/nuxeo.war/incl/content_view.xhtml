@@ -82,7 +82,8 @@
   cache="true">
 <nxu:set var="aggregates"
   value="#{contentView.pageProvider.hasAggregateSupport() ? contentView.pageProvider.aggregates : null}"
-  cache="true">
+  cache="false">
+
 <nxu:set var="selectedResultLayoutColumns"
   value="#{nxu:test(selectedResultLayoutColumns == null, contentView.currentResultLayoutColumns, selectedResultLayoutColumns)}"
   cache="true">
@@ -96,7 +97,7 @@
   </c:if>
 
 <nxu:set var="contentViewRenderId"
-  value="cv_#{contentView.name}_#{contentViewId}"
+  value="cv_#{contentViewName}_#{contentViewId}"
   cache="true">
 <nxu:set var="contentViewRenderId"
   value="#{nxu:jsfTagIdEscape(contentViewRenderId)}"

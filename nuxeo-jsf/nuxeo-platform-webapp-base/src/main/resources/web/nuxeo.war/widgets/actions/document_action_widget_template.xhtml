@@ -6,7 +6,7 @@
 
 <nxu:set var="actionContextDocument"
   value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
-  cache="true">
+  cache="false">
 <nxu:set var="widgetProperty_action"
   value="#{webRequestActions.getDocumentAction(widgetProperty_actionId, actionContextDocument, not widgetProperty_disableFiltered, widgetProperty_postFilter)}"
   cache="false">
