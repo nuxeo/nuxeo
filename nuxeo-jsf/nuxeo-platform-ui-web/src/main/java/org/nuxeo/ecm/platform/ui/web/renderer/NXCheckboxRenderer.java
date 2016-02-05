@@ -82,11 +82,14 @@ public class NXCheckboxRenderer extends CheckboxRenderer {
             throws IOException {
         String val = currentValue;
         // hack to make sure checkbox state is restored correctly from bound value on ajax request
-        if (component instanceof EditableValueHolder && context.getPartialViewContext().isAjaxRequest()
-                && Boolean.parseBoolean((String) component.getAttributes().get("resetOnAjax"))) {
-            EditableValueHolder c = (EditableValueHolder) component;
-            c.resetValue();
-            val = getCurrentValue(context, component);
+        if (component instanceof EditableValueHolder && context.getPartialViewContext().isAjaxRequest()) {
+            Object reset = (String) component.getAttributes().get("resetOnAjax");
+            if ((reset instanceof Boolean && Boolean.TRUE.equals(reset))
+                    || (reset instanceof String && Boolean.parseBoolean((String) reset))) {
+                EditableValueHolder c = (EditableValueHolder) component;
+                c.resetValue();
+                val = getCurrentValue(context, component);
+            }
         }
         super.getEndTextToRender(context, component, val);
     }
