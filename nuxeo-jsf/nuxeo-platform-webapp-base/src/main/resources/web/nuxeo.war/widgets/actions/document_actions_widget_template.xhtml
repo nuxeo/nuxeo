@@ -6,10 +6,10 @@
 
 <nxu:set var="actionContextDocument"
   value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
-  cache="false">
+  cache="true">
 <nxu:set var="widgetProperty_actions"
   value="#{webRequestActions.getDocumentActions(widgetProperty_category, actionContextDocument, not widgetProperty_disableFiltered, widgetProperty_postFilter)}"
-  cache="false">
+  cache="true">
 <nxu:set var="widgetProperty_addForm"
   value="false"
   cache="true">
