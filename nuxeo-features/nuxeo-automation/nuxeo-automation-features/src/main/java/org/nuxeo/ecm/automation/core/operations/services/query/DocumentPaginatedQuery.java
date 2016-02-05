@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.query;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
@@ -39,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -139,11 +142,7 @@ public class DocumentPaginatedQuery {
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        SimpleDocumentModel searchDocumentModel = null;
-        if (namedParameters != null && !namedParameters.isEmpty()) {
-            searchDocumentModel = new SimpleDocumentModel();
-            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
-        }
+        DocumentModel searchDocumentModel = getSearchDocumentModel(session, namedParameters);
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setPattern(query);
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
@@ -154,5 +153,26 @@ public class DocumentPaginatedQuery {
         }
         return res;
 
+    }
+
+    /**
+     * @since 8.2
+     */
+    public static DocumentModel getSearchDocumentModel(CoreSession session, Properties namedParameters) {
+        SimpleDocumentModel searchDocumentModel = new SimpleDocumentModel();
+        if (namedParameters != null && !namedParameters.isEmpty()) {
+            for (Map.Entry<String, String> entry : namedParameters.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                try {
+                    DocumentHelper.setProperty(session, searchDocumentModel, key, value, true);
+                } catch (PropertyNotFoundException | IOException e) {
+                    // assume this is a "pure" named parameter, not part of the search doc schema
+                    continue;
+                }
+            }
+            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
+        }
+        return searchDocumentModel;
     }
 }

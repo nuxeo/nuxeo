@@ -36,8 +36,8 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.RecordSet;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -143,11 +143,7 @@ public class ResultSetPaginatedQuery {
 
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-        SimpleDocumentModel searchDocumentModel = null;
-        if (namedParameters != null && !namedParameters.isEmpty()) {
-            searchDocumentModel = new SimpleDocumentModel();
-            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
-        }
+        DocumentModel searchDocumentModel = DocumentPaginatedQuery.getSearchDocumentModel(session, namedParameters);
         QueryAndFetchProviderDescriptor desc = new QueryAndFetchProviderDescriptor();
         desc.setPattern(query);
         PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) pageProviderService.getPageProvider(

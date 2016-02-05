@@ -18,17 +18,31 @@
  */
 package org.nuxeo.ecm.automation.core.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.document.SaveDocument;
 import org.nuxeo.ecm.automation.core.operations.document.SetDocumentProperty;
+import org.nuxeo.ecm.automation.core.operations.services.PaginableRecordSetImpl;
+import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.core.operations.services.query.ResultSetPaginatedQuery;
 import org.nuxeo.ecm.automation.core.util.PaginableRecordSet;
+import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -36,19 +50,13 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.runtime.management" })
+@LocalDeploy({ "org.nuxeo.ecm.automation.core:test-providers.xml", "org.nuxeo.ecm.automation.core:test-operations.xml" })
 public class SearchOperationTest {
 
     protected DocumentModel src;
@@ -77,6 +85,28 @@ public class SearchOperationTest {
         dst = session.createDocument(dst);
         session.save();
         dst = session.getDocument(dst.getRef());
+
+        DocumentModel ws1 = session.createDocumentModel("/", "ws1", "Workspace");
+        ws1.setPropertyValue("dc:title", "WS1");
+        ws1.setPropertyValue("dc:subjects", new Object[] { "Art/Culture" });
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, 2007);
+        cal.set(Calendar.MONTH, 1); // 0-based
+        cal.set(Calendar.DAY_OF_MONTH, 17);
+        ws1.setPropertyValue("dc:issued", cal);
+        ws1 = session.createDocument(ws1);
+
+        DocumentModel ws2 = session.createDocumentModel("/", "ws2", "Workspace");
+        ws2.setPropertyValue("dc:title", "WS2");
+        ws2 = session.createDocument(ws2);
+
+        DocumentModel ws3 = session.createDocumentModel("/", "ws3", "Workspace");
+        ws3.setPropertyValue("dc:title", "WS3");
+        String[] fakeContributors = { session.getPrincipal().getName() };
+        ws3.setPropertyValue("dc:contributors", fakeContributors);
+        ws3.setPropertyValue("dc:creator", fakeContributors[0]);
+        ws3 = session.createDocument(ws3);
+        session.save();
     }
 
     /**
@@ -91,7 +121,7 @@ public class SearchOperationTest {
         chain.add(SetDocumentProperty.ID).set("xpath", "dc:description").set("value", "samedesc");
         chain.add(SaveDocument.ID);
         DocumentModelList list = (DocumentModelList) service.run(ctx, chain);
-        assertEquals(2, list.size());
+        assertEquals(5, list.size());
         assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
         assertEquals("samedesc", list.get(0).getPropertyValue("dc:description"));
         assertEquals("samedesc", session.getDocument(src.getRef()).getPropertyValue("dc:description"));
@@ -109,7 +139,7 @@ public class SearchOperationTest {
         PaginableRecordSet list = (PaginableRecordSet) service.run(ctx, ResultSetPaginatedQuery.ID, params);
 
         // And verify number results and id entry
-        assertEquals(2, list.size());
+        assertEquals(5, list.size());
         assertNotNull(list.get(0).get("ecm:uuid"));
     }
 
@@ -126,7 +156,7 @@ public class SearchOperationTest {
         DocumentModelList list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
 
         // And verify number results and id entry
-        assertEquals(2, list.size());
+        assertEquals(5, list.size());
         assertEquals("Destination", list.get(0).getTitle());
 
         params.put("query", "SELECT * FROM Workspace");
@@ -135,7 +165,127 @@ public class SearchOperationTest {
         list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
 
         // And verify number results and id entry
-        assertEquals(2, list.size());
-        assertEquals("Destination", list.get(1).getTitle());
+        assertEquals(5, list.size());
+        assertEquals("WS2", list.get(1).getTitle());
+    }
+
+    /**
+     * @since 8.2
+     */
+    @Test
+    public void testQueryWithNamedParametersInvalid() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps(null, null);
+        params.put("query", "SELECT * FROM Document where dc:title=:foo ORDER BY dc:title");
+        try {
+            service.run(ctx, DocumentPaginatedQuery.ID, params);
+            fail("Should have raised an OperationException");
+        } catch (OperationException e) {
+            assertNotNull(e.getMessage());
+            assertTrue(e.getMessage().contains(
+                    "Failed to execute query: SELECT * FROM " + "Document " +
+                            "where dc:title=:foo ORDER "
+                            + "BY dc:title, Lexical Error: Illegal character <:> at offset 38"));
+        }
+    }
+
+    /**
+     * @since 8.2
+     */
+    @Test
+    public void testQueryWithNamedParametersAndDoc() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("np:title", "WS1");
+        params.put("query", "SELECT * FROM Document where dc:title=:np:title ORDER BY dc:title");
+        DocumentModelList list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
+
+        // test size
+        assertEquals(1, list.size());
+    }
+
+    /**
+     * @since 8.2
+     */
+    @Test
+    public void testQueryWithNamedParametersAndDocInvalid() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("np:title", "WS1");
+        params.put("query", "SELECT * FROM Document where dc:title=:foo ORDER BY dc:title");
+        try {
+            service.run(ctx, DocumentPaginatedQuery.ID, params);
+            fail("Should have raised an OperationException");
+        } catch (OperationException e) {
+            assertNotNull(e.getMessage());
+            assertTrue(e.getMessage()
+                        .contains(
+                                "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38"));
+        }
+    }
+
+    /**
+     * @since 8.2
+     */
+    @Test
+    public void testQueryWithNamedParametersInWhereClause() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("parameter1", "WS1");
+        params.put("query", "SELECT * FROM Document where dc:title=:parameter1 ORDER BY dc:title");
+        DocumentModelList list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
+
+        // test page size
+        assertEquals(1, list.size());
+    }
+
+    /**
+     * @since 8.2
+     */
+    @Test
+    public void testQueryWithNamedParametersInWhereClauseWithDoc() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("np:title", "WS1");
+        params.put("query", "SELECT * FROM Document where dc:title=:np:title ORDER BY dc:title");
+        DocumentModelList list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
+
+        // test page size
+        assertEquals(1, list.size());
+    }
+
+    protected Map<String, Object> getNamedParamsProps(String propName, String propValue) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        if (propName != null) {
+            Map<String, String> namedParameters = new HashMap<>();
+            namedParameters.put(propName, propValue);
+            Properties namedProperties = new Properties(namedParameters);
+            params.put("namedParameters", namedProperties);
+        }
+        return params;
+    }
+
+    /**
+     * @since 8.2
+     */
+    @Test
+    public void testQueryWithNamedParameters() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("parameter1", "WS1");
+        params.put("query", "SELECT * FROM Document where dc:title=:parameter1 ORDER BY dc:title");
+        DocumentModelList list = (DocumentModelList) service.run(ctx, DocumentPaginatedQuery.ID, params);
+
+        // test page size
+        assertEquals(1, list.size());
+    }
+
+    /**
+     * @since 8.2
+     */
+    @Test
+    public void testQueryResultSetWithNamedParametersInWhereClause() throws Exception {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = getNamedParamsProps("parameter1", "WS1");
+        params.put("query", "SELECT * FROM Document where dc:title=:parameter1 ORDER BY dc:title");
+        PaginableRecordSetImpl list = (PaginableRecordSetImpl) service.run(ctx, ResultSetPaginatedQuery.ID, params);
+
+        // test page size
+        assertEquals(1, list.size());
     }
 }
