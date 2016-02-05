@@ -9,6 +9,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
+<ui:fragment rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}">
+
 <c:choose>
 <c:when test="#{widgetProperty_useButton}">
 
@@ -88,5 +90,7 @@
 
 </c:otherwise>
 </c:choose>
+
+</ui:fragment>
 
 </c:if>

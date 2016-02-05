@@ -43,6 +43,7 @@ import javax.faces.view.facelets.TagConfig;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -85,10 +86,12 @@ public class ActionTagHandler extends MetaTagHandler {
 
     protected final TagAttribute formStyleClass;
 
+    protected final TagAttribute postFilterMethod;
+
     protected final TagAttribute[] vars;
 
     protected final String[] reservedVarsArray = { "action", "widgetName", "value", "mode", "addForm", "useAjaxForm",
-            "formStyleClass" };
+            "formStyleClass", "postFilterMethod" };
 
     public ActionTagHandler(TagConfig config) {
         super(config);
@@ -101,6 +104,7 @@ public class ActionTagHandler extends MetaTagHandler {
         addForm = getAttribute("addForm");
         useAjaxForm = getAttribute("useAjaxForm");
         formStyleClass = getAttribute("formStyleClass");
+        postFilterMethod = getAttribute("postFilterMethod");
 
         vars = tag.getAttributes().getAll();
     }
@@ -174,12 +178,58 @@ public class ActionTagHandler extends MetaTagHandler {
                 props.put("icon", actionInstance.getIcon());
                 props.put("onclick", actionInstance.getConfirm());
                 props.put("accessKey", actionInstance.getAccessKey());
-                props.put("available", actionInstance.getAvailable());
                 props.put("link", actionInstance.getLink());
                 props.put("actionId", actionInstance.getId());
                 props.put("action", actionInstance);
                 if (useAjaxForm != null) {
                     props.put("useAjaxForm", useAjaxForm.getValue());
+                }
+
+                String valueName = value.getValue();
+                String bareValueName = valueName;
+                if (ComponentTagUtils.isStrictValueReference(valueName)) {
+                    bareValueName = ComponentTagUtils.getBareValueName(valueName);
+                }
+
+                // add filtering method if needed
+                if (!actionInstance.isFiltered()) {
+                    // make sure variables are in the context for this filter resolution
+                    ExpressionFactory eFactory = ctx.getExpressionFactory();
+                    ValueExpression actionVe = eFactory.createValueExpression(actionInstance, Action.class);
+                    vm.setVariable("action", actionVe);
+                    vm.addBlockedPattern("action");
+
+                    String bindingValue = bareValueName;
+                    boolean bindingDone = false;
+                    if (props.containsKey("actionContextDocument")) {
+                        Object val = props.get("actionContextDocument");
+                        if (val instanceof String && ComponentTagUtils.isStrictValueReference((String) val)) {
+                            bindingValue = ComponentTagUtils.getBareValueName((String) val);
+                            ValueExpression bindingVe = eFactory.createValueExpression(ctx, (String) val, Object.class);
+                            vm.setVariable("actionContextDocument", bindingVe);
+                            vm.addBlockedPattern("actionContextDocument");
+                            bindingDone = true;
+                        }
+                    }
+                    if (!bindingDone) {
+                        // just bound current value to make expressions consistent
+                        vm.setVariable("actionContextDocument", value.getValueExpression(ctx, DocumentModel.class));
+                        vm.addBlockedPattern("actionContextDocument");
+                    }
+
+                    String method = null;
+                    if (postFilterMethod != null) {
+                        method = postFilterMethod.getValue(ctx);
+                    }
+                    if (StringUtils.isBlank(method)) {
+                        method = "webActions.isAvailableForDocument";
+                    }
+                    String filterExpr = "#{" + method + "(" + bindingValue + ", action)}";
+                    props.put("available", filterExpr);
+                    props.put("enabled", filterExpr);
+                } else {
+                    props.put("available", actionInstance.getAvailable());
+                    props.put("enabled", "true");
                 }
 
                 // add all extra props passed to the tag
@@ -212,11 +262,7 @@ public class ActionTagHandler extends MetaTagHandler {
                 wDef.setTypeCategory(wcat);
                 wDef.setDynamic(true);
                 WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
-                String valueName = value.getValue();
-                if (ComponentTagUtils.isStrictValueReference(valueName)) {
-                    valueName = ComponentTagUtils.getBareValueName(valueName);
-                }
-                Widget widgetInstance = layoutService.createWidget(ctx, wDef, modeValue, valueName, null);
+                Widget widgetInstance = layoutService.createWidget(ctx, wDef, modeValue, bareValueName, null);
                 if (widgetInstance != null) {
                     // set unique id on widget before exposing it to the context
                     FaceletHandlerHelper helper = new FaceletHandlerHelper(config);

@@ -7,10 +7,12 @@
   xmlns:h="http://java.sun.com/jsf/html">
 
   <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(widgetProperty_actionId)}"
+    rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}"
     repositoryName="#{navigationContext.currentServerLocation.name}"
     view="#{mainTabsActions.getViewFor(widgetProperty_action)}"
     pattern="#{mainTabsActions.getPatternFor(widgetProperty_action)}"
     addTabInfo="false"
+    disabled="#{!widgetProperty_available}"
     target="#{widgetProperty_target}"
     tabs="MAIN_TABS:#{widgetProperty_actionId}"
     onclick="#{widgetProperty_onclick}"
