@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -56,84 +57,110 @@ public class WebRequestActionsBean {
 
     protected Map<String, Action> byIdCache = new HashMap<String, Action>();
 
+    protected Map<String, ActionContext> actionContexts = new HashMap<String, ActionContext>();
+
     public void reset() {
         if (log.isDebugEnabled()) {
             log.debug("reset");
         }
         byCatCache.clear();
         byIdCache.clear();
+        actionContexts.clear();
     }
 
-    protected ActionContext createActionContext() {
-        return actionContextProvider.createActionContext();
+    protected ActionContext getCurrentActionContext() {
+        // retrieve event-scoped context
+        ActionContext ctx = (ActionContext) Component.getInstance("currentActionContext");
+        String cacheKey = getActionContextCacheKey(ctx.getCurrentDocument());
+        if (!actionContexts.containsKey(cacheKey)) {
+            actionContexts.put(cacheKey, ctx);
+        }
+        return actionContexts.get(cacheKey);
     }
 
-    protected ActionContext createActionContext(DocumentModel document) {
-        return actionContextProvider.createActionContext(document);
+    protected ActionContext getActionContext(DocumentModel doc) {
+        String cacheKey = getActionContextCacheKey(doc);
+        if (!actionContexts.containsKey(cacheKey)) {
+            actionContexts.put(cacheKey, actionContextProvider.createActionContext(doc));
+        }
+        return actionContexts.get(cacheKey);
     }
 
-    public List<Action> getContentViewActions(String category, ContentView contentView, List<Object> selectedEntries) {
-        ActionContext ctx = actionContextProvider.createActionContext();
-        ctx.putLocalVariable("contentView", contentView);
-        ctx.putLocalVariable("selectedDocuments", selectedEntries);
-        return getActions(computeContentViewSelectionCacheKey(category, contentView, selectedEntries), category, ctx,
-                false, false);
+    protected String getActionContextCacheKey(DocumentModel doc) {
+        return doc != null ? doc.getCacheKey() : null;
     }
 
-    protected String computeContentViewCacheKey(String category, ContentView contentView,
-            List<Object> selectedEntries) {
-        return "cv_" + category + (contentView != null ? contentView.getName() : "null") + "_"
-                + computeCacheKey(selectedEntries) + "_false_false";
+    protected void fillContext(ActionContext ctx, Map<String, Object> oldVariables, String key, Object value) {
+        oldVariables.put(key, ctx.putLocalVariable(key, value));
+    }
+
+    protected void cleanContext(ActionContext ctx, Map<String, Object> oldVariables) {
+        if (oldVariables == null) {
+            return;
+        }
+        for (Map.Entry<String, Object> item : oldVariables.entrySet()) {
+            Object val = item.getValue();
+            if (val == null) {
+                ctx.removeLocalVariable(item.getKey());
+            } else {
+                ctx.putLocalVariable(item.getKey(), val);
+            }
+        }
+    }
+
+    public List<Action> getContentViewActions(String category, ContentView contentView, Object showPageSizeSelector,
+            Object showRefreshCommand, Object showCSVExport, Object showPDFExport, Object showSyndicationLinks,
+            Object showSlideshow, Object showEditColumns, Object showEditRows, Object showSpreadsheet) {
+        ActionContext ctx = getCurrentActionContext();
+        Map<String, Object> oldVariables = new HashMap<String, Object>();
+        try {
+            fillContext(ctx, oldVariables, "contentView", contentView);
+            fillContext(ctx, oldVariables, "showPageSizeSelector", showPageSizeSelector);
+            fillContext(ctx, oldVariables, "showRefreshCommand", showRefreshCommand);
+            fillContext(ctx, oldVariables, "showCSVExport", showCSVExport);
+            fillContext(ctx, oldVariables, "showPDFExport", showPDFExport);
+            fillContext(ctx, oldVariables, "showSyndicationLinks", showSyndicationLinks);
+            fillContext(ctx, oldVariables, "showSlideshow", showSlideshow);
+            fillContext(ctx, oldVariables, "showEditColumns", showEditColumns);
+            fillContext(ctx, oldVariables, "showEditRows", showEditRows);
+            fillContext(ctx, oldVariables, "showSpreadsheet", showSpreadsheet);
+            String cacheKey = "cv_" + (contentView != null ? contentView.getName() : "null") + "_" + category + "_"
+                    + (contentView != null ? contentView.getCacheKey() : "null");
+            return getActions(cacheKey, category, ctx, false, false);
+        } finally {
+            cleanContext(ctx, oldVariables);
+        }
     }
 
     public List<Action> getContentViewSelectionActions(String category, ContentView contentView,
             List<Object> selectedEntries) {
-        ActionContext ctx = actionContextProvider.createActionContext();
-        ctx.putLocalVariable("contentView", contentView);
-        ctx.putLocalVariable("selectedDocuments", selectedEntries);
-        return getActions(computeContentViewSelectionCacheKey(category, contentView, selectedEntries), category, ctx,
-                false, false);
-    }
-
-    protected String computeContentViewSelectionCacheKey(String category, ContentView contentView,
-            List<Object> selectedEntries) {
-        return "cv_sel_" + category + (contentView != null ? contentView.getName() : "null") + "_"
-                + computeCacheKey(selectedEntries) + "_false_false";
-    }
-
-    protected String computeCacheKey(List<Object> selectedEntries) {
-        if (selectedEntries == null) {
-            return "null";
+        ActionContext ctx = getCurrentActionContext();
+        Map<String, Object> oldVariables = new HashMap<String, Object>();
+        try {
+            fillContext(ctx, oldVariables, "contentView", contentView);
+            fillContext(ctx, oldVariables, "selectedDocuments", selectedEntries);
+            String cacheKey = "cv_sel_" + (contentView != null ? contentView.getName() : "null") + "_" + category + "_"
+                    + (contentView != null ? contentView.getCacheKey() : "null");
+            return getActions(cacheKey, category, ctx, false, false);
+        } finally {
+            cleanContext(ctx, oldVariables);
         }
-        String cacheKey = "";
-        for (Object selectedEntry : selectedEntries) {
-            cacheKey += selectedEntry == null ? "null" : selectedEntry.toString();
-        }
-        return cacheKey;
     }
 
     public List<Action> getDocumentActions(String category, DocumentModel document, boolean removeFiltered,
             boolean postFilter) {
-        return getActions(computeDocumentCategoryCacheKey(category, document, removeFiltered, postFilter), category,
-                createActionContext(document), removeFiltered, postFilter);
-    }
-
-    protected String computeDocumentCategoryCacheKey(String category, DocumentModel document, boolean removeFiltered,
-            boolean postFilter) {
-        return "docs_" + category + "_" + (document != null ? document.getCacheKey() : "null") + "_"
+        ActionContext context = postFilter ? null : getActionContext(document);
+        String cacheKey = "docs_" + category + "_" + (document != null ? document.getCacheKey() : "null") + "_"
                 + String.valueOf(removeFiltered) + "_" + String.valueOf(postFilter);
+        return getActions(cacheKey, category, context, removeFiltered, postFilter);
     }
 
     public Action getDocumentAction(String actionId, DocumentModel document, boolean removeFiltered,
             boolean postFilter) {
-        return getAction(computeDocumentCacheKey(actionId, document, removeFiltered, postFilter), actionId,
-                createActionContext(document), removeFiltered, postFilter);
-    }
-
-    protected String computeDocumentCacheKey(String actionId, DocumentModel document, boolean removeFiltered,
-            boolean postFilter) {
-        return "doc_" + actionId + "_" + (document != null ? document.getCacheKey() : "null") + "_"
+        ActionContext context = postFilter ? null : getActionContext(document);
+        String cacheKey = "doc_" + actionId + "_" + (document != null ? document.getCacheKey() : "null") + "_"
                 + String.valueOf(removeFiltered) + "_" + String.valueOf(postFilter);
+        return getAction(cacheKey, actionId, context, removeFiltered, postFilter);
     }
 
     public List<Action> getActions(String cacheKey, String category, ActionContext context, boolean removeFiltered,
@@ -193,7 +220,8 @@ public class WebRequestActionsBean {
     }
 
     public boolean isDocumentActionAvailable(Action action, DocumentModel document) {
-        return isActionAvailable(action, createActionContext(document));
+        // return isActionAvailable(action, createActionContext(document));
+        return false;
     }
 
     public boolean isActionAvailable(Action action, ActionContext context) {

@@ -74,8 +74,19 @@ public abstract class AbstractActionContext implements ActionContext {
     }
 
     @Override
+    public boolean hasLocalVariable(String key) {
+        return localVariables.containsKey(key);
+    }
+
+
+    @Override
     public Object putLocalVariable(String key, Object value) {
         return localVariables.put(key, value);
+    }
+
+    @Override
+    public Object removeLocalVariable(String key) {
+        return localVariables.remove(key);
     }
 
     @Override

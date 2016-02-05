@@ -4,12 +4,17 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:c="http://java.sun.com/jstl/core">
 
+<nxu:set var="actionContextDocument"
+  value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
+  cache="true">
 <nxu:set var="widgetProperty_action"
-  value="#{webRequestActions.getDocumentAction(widgetProperty_actionId, nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument), not widgetProperty_disableFiltered, widgetProperty_postFilter)}">
+  value="#{webRequestActions.getDocumentAction(widgetProperty_actionId, actionContextDocument, not widgetProperty_disableFiltered, widgetProperty_postFilter)}"
+  cache="false">
 <nxu:set var="widgetProperty_addForm"
   value="false"
   cache="true">
   <ui:include src="/widgets/actions/action_widget_template.xhtml" />
+</nxu:set>
 </nxu:set>
 </nxu:set>
 

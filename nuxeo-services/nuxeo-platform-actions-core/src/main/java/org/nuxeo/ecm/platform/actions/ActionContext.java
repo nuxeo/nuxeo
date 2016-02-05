@@ -86,6 +86,16 @@ public interface ActionContext extends Serializable {
     Object getLocalVariable(String key);
 
     /**
+     * @since 8.2
+     */
+    boolean hasLocalVariable(String key);
+
+    /**
+     * @since 8.2
+     */
+    Object removeLocalVariable(String key);
+
+    /**
      * Returns the number of local variables
      */
     int size();
