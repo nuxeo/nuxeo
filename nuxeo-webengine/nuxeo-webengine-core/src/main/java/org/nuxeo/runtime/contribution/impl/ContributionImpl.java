@@ -141,7 +141,7 @@ public class ContributionImpl<K, T> implements Contribution<K, T> {
         return false;
     }
 
-    public void addFragment(T fragment, K ... superKeys) {
+    public synchronized void addFragment(T fragment, K... superKeys) {
         // check if it is the main fragment
         if (registry.isMainFragment(fragment)) {
             mainFragments.add(fragment);
