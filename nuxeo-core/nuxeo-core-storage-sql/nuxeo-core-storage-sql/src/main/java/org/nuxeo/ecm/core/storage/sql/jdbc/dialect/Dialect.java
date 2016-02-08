@@ -681,7 +681,7 @@ public abstract class Dialect {
         return "?";
     }
 
-    public String getNoColumnsInsertString() {
+    public String getNoColumnsInsertString(Column idColumn) {
         return "VALUES ( )";
     }
 
