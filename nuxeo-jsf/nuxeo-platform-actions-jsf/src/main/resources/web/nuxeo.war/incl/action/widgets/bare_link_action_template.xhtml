@@ -8,8 +8,11 @@
     cache="#{widgetProperty_cacheLink != null ? widgetProperty_cacheLink : false}">
     <ui:fragment rendered="#{not empty actionLink}">
       <h:outputLink value="#{actionLink}"
-        target="#{widgetProperty_target}" onclick="#{widgetProperty_onclick}"
-        immediate="#{widgetProperty_immediate}" disabled="#{!widgetProperty_available}"
+        id="#{widget.id}"
+        target="#{widgetProperty_target}"
+        onclick="#{widgetProperty_onclick}"
+        immediate="#{widgetProperty_immediate}"
+        disabled="#{!widgetProperty_available}"
         styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
         accesskey="#{widgetProperty_accessKey}">
         <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
