@@ -463,15 +463,15 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
                 DocumentModel doc = session.getDocument(docRef);
                 references.add(docRef);
                 paths.add(doc.getPathAsString());
+            } catch(DocumentSecurityException e) {
+                log.warn(String.format(
+                        "User %s cannot access document %s, not adding it to the list of synchronization roots.",
+                        session.getPrincipal().getName(), docRef));
             } catch (ClientException e) {
                 if (e.getCause() instanceof NoSuchDocumentException) {
                     log.warn(String.format(
                             "Document %s not found, not adding it to the list of synchronization roots for user %s.",
                             docRef, session.getPrincipal().getName()));
-                } else if (e.getCause() instanceof DocumentSecurityException) {
-                    log.warn(String.format(
-                            "User %s cannot access document %s, not adding it to the list of synchronization roots.",
-                            session.getPrincipal().getName(), docRef));
                 } else {
                     throw e;
                 }
