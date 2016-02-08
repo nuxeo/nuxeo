@@ -217,8 +217,12 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
 
         List<Column> columnList = new ArrayList<>(table.getColumns());
+        Column idColumn = null;
         for (Iterator<Column> i = columnList.iterator(); i.hasNext();) {
             Column column = i.next();
+            if (column.isIdentity()) {
+                idColumn = column;
+            }
             String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
             if (fieldMap.get(prefixField) == null) {
                 i.remove();
@@ -228,6 +232,8 @@ public class SQLSession extends BaseSession implements EntrySource {
         for (Column column : columnList) {
             insert.addColumn(column);
         }
+        // needed for Oracle for empty map insert
+        insert.addIdentityColumn(idColumn);
         String sql = insert.getStatement();
 
         if (logger.isLogEnabled()) {

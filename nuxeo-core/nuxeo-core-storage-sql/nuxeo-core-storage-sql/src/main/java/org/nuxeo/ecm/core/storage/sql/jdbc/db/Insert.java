@@ -34,6 +34,8 @@ public class Insert implements Serializable {
 
     private final List<Column> columns;
 
+    private Column idColumn;
+
     private String insertValues;
 
     public Insert(Table table) {
@@ -44,6 +46,10 @@ public class Insert implements Serializable {
 
     public void addColumn(Column column) {
         columns.add(column);
+    }
+
+    public void addIdentityColumn(Column idColumn) {
+        this.idColumn = idColumn;
     }
 
     public void setValues(String insertValues) {
@@ -72,7 +78,7 @@ public class Insert implements Serializable {
         }
 
         if (columnNames.isEmpty()) {
-            buf.append(dialect.getNoColumnsInsertString());
+            buf.append(dialect.getNoColumnsInsertString(idColumn));
         } else {
             buf.append('(');
             buf.append(StringUtils.join(columnNames, ", "));

@@ -186,6 +186,12 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public String getNoColumnsInsertString(Column idColumn) {
+        // INSERT INTO foo () VALUES () or DEFAULT VALUES is not legal for Oracle, you need at least one column
+        return String.format("(%s) VALUES (DEFAULT)", idColumn.getQuotedName());
+    }
+
+    @Override
     public String getConnectionSchema(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";

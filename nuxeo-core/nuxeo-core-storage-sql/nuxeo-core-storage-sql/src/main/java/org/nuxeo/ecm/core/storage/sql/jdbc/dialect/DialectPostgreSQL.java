@@ -173,7 +173,7 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getNoColumnsInsertString() {
+    public String getNoColumnsInsertString(Column idColumn) {
         return "DEFAULT VALUES";
     }
 
