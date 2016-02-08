@@ -39,7 +39,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -163,7 +162,6 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
     }
 
     @Test
-    @Ignore("Test is ignored due to NXP-18978 issue")
     public void testGetOAuth2Provider() {
         OAuth2ServiceProvider oAuth2Provider = blobProvider.getOAuth2Provider();
         assertNotNull(oAuth2Provider);
