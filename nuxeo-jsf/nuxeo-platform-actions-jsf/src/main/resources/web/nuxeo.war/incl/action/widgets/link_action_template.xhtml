@@ -9,9 +9,31 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-<c:if test="#{widgetProperty_useButton}">
+<c:choose>
+<c:when test="#{widgetProperty_useButton}">
 
-  <c:if test="#{not widgetProperty_useAjaxForm}">
+  <c:choose>
+  <c:when test="#{widgetProperty_useAjaxForm and (widgetProperty_ajaxSupport == null ? widgetProperty_supportAjax : widgetProperty_ajaxSupport)}">
+    <h:commandButton
+      id="#{widget.id}"
+      onclick="#{widgetProperty_onclick};#{nxu:test(not empty onSubmit, onSubmit, '')};"
+      value="#{messages[widget.label]}"
+      disabled="#{!widgetProperty_available}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accesskey="#{widgetProperty_accessKey}">
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml">
+        <ui:param name="widgetProperty_hideLabel" value="true" />
+      </ui:include>
+      <ui:insert name="before_action_trigger" />
+      <nxu:actionListenerMethod
+        value="#{widgetProperty_action.getLink()}" />
+      <ui:insert name="after_action_trigger" />
+      <a4j:ajax execute="#{widgetProperty_immediate ? '@this' : '@form'}"
+        render="#{ajaxReRender}" />
+    </h:commandButton>
+  </c:when>
+
+  <c:otherwise>
     <nxh:commandButton action="#{widgetProperty_action.getLink()}"
       id="#{widget.id}"
       onclick="#{widgetProperty_onclick}"
@@ -25,34 +47,31 @@
       </ui:include>
       <ui:insert name="inside_action" />
     </nxh:commandButton>
-  </c:if>
+  </c:otherwise>
+  </c:choose>
 
-  <c:if test="#{widgetProperty_useAjaxForm}">
-    <h:commandButton
+</c:when>
+<c:otherwise>
+
+  <c:choose>
+  <c:when test="#{widgetProperty_useAjaxForm and (widgetProperty_ajaxSupport == null ? widgetProperty_supportAjax : widgetProperty_ajaxSupport)}">
+    <h:commandLink
       id="#{widget.id}"
-      onclick="#{widgetProperty_onclick};#{nxu:test(not empty onSubmit, onSubmit, '')};"
-      value="#{messages[widget.label]}"
+      onclick="#{widgetProperty_onclick}"
       disabled="#{!widgetProperty_available}"
       styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
       accesskey="#{widgetProperty_accessKey}">
-      <ui:include src="/incl/action/action_icon_label_template.xhtml">
-        <ui:param name="widgetProperty_hideLabel" value="true" />
-      </ui:include>
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
       <ui:insert name="before_action_trigger" />
       <nxu:actionListenerMethod
         value="#{widgetProperty_action.getLink()}" />
       <ui:insert name="after_action_trigger" />
       <a4j:ajax execute="#{widgetProperty_immediate ? '@this' : '@form'}"
         render="#{ajaxReRender}" />
-    </h:commandButton>
+    </h:commandLink>
+  </c:when>
 
-  </c:if>
-
-</c:if>
-
-<c:if test="#{not widgetProperty_useButton}">
-
-  <c:if test="#{not widgetProperty_useAjaxForm}">
+  <c:otherwise>
     <nxh:commandLink action="#{widgetProperty_action.getLink()}"
       id="#{widget.id}"
       onclick="#{widgetProperty_onclick}"
@@ -61,28 +80,13 @@
       disabled="#{!widgetProperty_available}"
       styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
       accesskey="#{widgetProperty_accessKey}">
-      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
     </nxh:commandLink>
-  </c:if>
+  </c:otherwise>
+  </c:choose>
 
-  <c:if test="#{widgetProperty_useAjaxForm}">
-    <h:commandLink
-      id="#{widget.id}"
-      onclick="#{widgetProperty_onclick}"
-      disabled="#{!widgetProperty_available}"
-      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
-      accesskey="#{widgetProperty_accessKey}">
-      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-      <ui:insert name="before_action_trigger" />
-      <nxu:actionListenerMethod
-        value="#{widgetProperty_action.getLink()}" />
-      <ui:insert name="after_action_trigger" />
-      <a4j:ajax execute="#{widgetProperty_immediate ? '@this' : '@form'}"
-        render="#{ajaxReRender}" />
-    </h:commandLink>
-  </c:if>
-
-</c:if>
+</c:otherwise>
+</c:choose>
 
 </c:if>
