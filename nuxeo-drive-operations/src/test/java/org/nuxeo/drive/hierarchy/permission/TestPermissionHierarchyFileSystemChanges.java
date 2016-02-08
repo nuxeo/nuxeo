@@ -73,6 +73,7 @@ import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -93,6 +94,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 public class TestPermissionHierarchyFileSystemChanges {
+
+    public static final String NXP18936 = "NXP-18936: javax.naming.NameNotFoundException: repository_test not found in container";
 
     private static final String USER_SYNC_ROOT_PARENT_ID_PREFIX = "userSyncRootParentFactory#test#";
 
@@ -273,6 +276,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * </pre>
      */
     @Test
+    @RandomBug.Repeat(issue = NXP18936)
     public void testRootlessItems() throws Exception {
 
         TransactionHelper.commitOrRollbackTransaction();
