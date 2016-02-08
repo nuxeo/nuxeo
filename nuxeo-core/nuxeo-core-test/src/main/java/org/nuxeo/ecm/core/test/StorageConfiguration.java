@@ -322,12 +322,22 @@ public class StorageConfiguration {
     public long convertToStoredTimestamp(long timestamp) {
         if (isVCSMySQL()) {
             return timestamp / 1000 * 1000;
+        } else if (isVCSSQLServer()) {
+            // as datetime in SQL Server are rounded to increments of .000, .003, or .007 seconds
+            long milliseconds = timestamp % 10;
+            long newTimestamp = timestamp - milliseconds;
+            if (milliseconds >= 7) {
+                newTimestamp += 7;
+            } else if (milliseconds >= 3) {
+                newTimestamp += 3;
+            }
+            return newTimestamp;
         }
         return timestamp;
     }
 
     public Calendar convertToStoredCalendar(Calendar calendar) {
-        if (isVCSMySQL()) {
+        if (isVCSMySQL() || isVCSSQLServer()) {
             Calendar result = (Calendar) calendar.clone();
             result.setTimeInMillis(convertToStoredTimestamp(result.getTimeInMillis()));
             return result;
