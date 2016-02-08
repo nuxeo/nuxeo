@@ -4,6 +4,11 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:h="http://java.sun.com/jsf/html">
+
+<c:if test="false">
+  WARN: deprecated template since 8.2, see widgets subdirectory
+</c:if>
+
   <nxu:set var="actionLink" value="#{action.getLink()}"
     resolveTwice="true"
     cache="#{action.properties.cacheLink != null ? action.properties.cacheLink : false}">
