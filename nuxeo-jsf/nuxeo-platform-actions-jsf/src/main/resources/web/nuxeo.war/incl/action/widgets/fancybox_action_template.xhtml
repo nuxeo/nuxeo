@@ -8,46 +8,41 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html">
 
-<nxu:set var="fancyboxIdPrefix" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}_">
 <nxu:set var="fancyReRenderId"
-  value="#{fancyboxIdPrefix}ajax_panel"
+  value="#{widget.id}_ajax_panel"
   cache="true">
 <nxu:set var="elementsToReRender"
   value="#{nxu:joinRender(ajaxReRender, fancyReRenderId)}">
 
 <c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}">
 
-  <f:subview id="#{fancyboxIdPrefix}subview">
+  <c:if test="#{empty widgetProperty_iframe}">
 
-    <c:if test="#{empty widgetProperty_iframe}">
+    <c:if test="#{not widgetProperty_useButton}">
+      <h:commandLink id="#{widget.id}_link"
+        styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+        disabled="#{!widgetProperty_available}"
+        accesskey="#{widgetProperty_accessKey}">
+        <f:attribute name="selectedValue" value="#{widgetProperty_actionId}" />
+        <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
+        <a4j:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
+        <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
+        <ui:insert name="inside_action" />
+      </h:commandLink>
+    </c:if>
 
-      <c:if test="#{not widgetProperty_useButton}">
-        <h:commandLink id="#{fancyboxIdPrefix}link"
-          styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
-          disabled="#{!widgetProperty_available}"
-          accesskey="#{widgetProperty_accessKey}">
-          <f:attribute name="selectedValue" value="#{widgetProperty_actionId}" />
-          <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
-          <a4j:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
-          <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
-          <ui:insert name="inside_action" />
-        </h:commandLink>
-      </c:if>
-
-      <c:if test="#{widgetProperty_useButton}">
-        <h:commandButton id="#{fancyboxIdPrefix}link"
-          onclick="#{widgetProperty_onclick}"
-          value="#{messages[widget.label]}"
-          styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
-          disabled="#{!widgetProperty_available}"
-          accesskey="#{widgetProperty_accessKey}">
-          <f:attribute name="selectedValue" value="#{widgetProperty_actionId}" />
-          <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
-          <a4j:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
-          <ui:insert name="inside_action" />
-        </h:commandButton>
-      </c:if>
-
+    <c:if test="#{widgetProperty_useButton}">
+      <h:commandButton id="#{widget.id}_link"
+        onclick="#{widgetProperty_onclick}"
+        value="#{messages[widget.label]}"
+        styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+        disabled="#{!widgetProperty_available}"
+        accesskey="#{widgetProperty_accessKey}">
+        <f:attribute name="selectedValue" value="#{widgetProperty_actionId}" />
+        <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
+        <a4j:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
+        <ui:insert name="inside_action" />
+      </h:commandButton>
     </c:if>
 
     <c:if test="#{not empty widgetProperty_iframe}">
@@ -73,7 +68,7 @@
               });">
 
         <c:if test="#{not widgetProperty_useButton}">
-          <a4j:commandLink id="#{fancyboxIdPrefix}link"
+          <a4j:commandLink id="#{widget.id}_link"
             execute="@this"
             ignoreDupResponses="true" requestDelay="100"
             onclick="#{widgetProperty_onclick};#{fancyboxJs}"
@@ -86,7 +81,7 @@
         </c:if>
 
         <c:if test="#{widgetProperty_useButton}">
-          <a4j:commandButton id="#{fancyboxIdPrefix}link"
+          <a4j:commandButton id="#{widget.id}_link"
             execute="@this"
             ignoreDupResponses="true" requestDelay="100"
             onclick="#{widgetProperty_onclick};#{fancyboxJs}"
@@ -102,27 +97,27 @@
 
     </c:if>
 
-  </f:subview>
+  </c:if>
 
 </c:if>
 
 <c:if test="#{widget.mode == 'after_view' and empty widgetProperty_iframe}">
 
-  <a4j:outputPanel id="#{fancyboxIdPrefix}ajax_panel" layout="block">
+  <a4j:outputPanel id="#{widget.id}_ajax_panel" layout="block">
 
     <nxu:set var="fancyboxFormId"
-      value="#{fancyboxIdPrefix}fancyform"
+      value="#{widget.id}_fancyform"
       cache="true">
     <nxu:set
       var="actionClicked"
       value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
       cache="false">
 
-      <f:subview rendered="#{actionClicked}" id="#{fancyboxIdPrefix}fancy_subview">
+      <f:subview rendered="#{actionClicked}" id="#{widget.id}_fancy_subview">
 
-        <h:form id="#{fancyboxIdPrefix}closeFancyboxForm">
-          <a4j:jsFunction id="#{fancyboxIdPrefix}closeFancybox"
-            name="#{fancyboxIdPrefix}closeFancybox"
+        <h:form id="#{widget.id}_closeFancyboxForm">
+          <a4j:jsFunction id="#{widget.id}_closeFancybox"
+            name="#{widget.id}_closeFancybox"
             render="#{elementsToReRender}" execute="@this">
             <f:attribute name="selectedValue" value="" />
             <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
@@ -134,7 +129,7 @@
 
         <script>
           jQuery(document).ready(function() {
-            openFancyBox('##{fancyboxIdPrefix}box', {
+            openFancyBox('##{widget.id}_box', {
               width: '#{widgetProperty_width}',
               height: '#{widgetProperty_height}',
               scrolling: '#{widgetProperty_scrolling}',
@@ -148,13 +143,13 @@
                 if (theFunction.length !== 0) {
                   window[theFunction]();
                 }
-                #{fancyboxIdPrefix}closeFancybox();
+                #{widget.id}_closeFancybox();
               }
             });
           });
         </script>
         <div style="display:none">
-          <div id="#{fancyboxIdPrefix}box">
+          <div id="#{widget.id}_box">
             <c:if test="#{not empty widgetProperty_include}">
               <ui:include src="#{widgetProperty_include}" />
             </c:if>
@@ -188,7 +183,6 @@
 
 </c:if>
 
-</nxu:set>
 </nxu:set>
 </nxu:set>
 
