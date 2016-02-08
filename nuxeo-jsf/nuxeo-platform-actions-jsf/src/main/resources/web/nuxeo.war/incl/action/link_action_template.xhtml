@@ -9,6 +9,10 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
+<c:if test="false">
+  WARN: deprecated template since 8.2, see widgets subdirectory
+</c:if>
+
 <nxu:set var="onclick"
   value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
   cache="true">
