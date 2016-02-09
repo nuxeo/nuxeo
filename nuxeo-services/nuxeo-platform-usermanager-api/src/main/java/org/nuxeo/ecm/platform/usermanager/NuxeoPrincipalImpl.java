@@ -42,7 +42,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -266,26 +265,15 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Override
     public DocumentModel getModel() {
-        try {
-            return model.clone();
-        } catch (CloneNotSupportedException cause) {
-            throw new NuxeoException("Cannot clone user model " + model, cause);
-        }
+        return model;
     }
 
     /**
      * Sets model and recomputes all groups.
      */
     public void setModel(DocumentModel model, boolean updateAllGroups) {
-        try {
-            this.model = model.clone();
-        } catch (CloneNotSupportedException cause) {
-            throw new NuxeoException("Cannot clone user model " + model, cause);
-        }
-        dataModel = this.model.getDataModels()
-                .values()
-                .iterator()
-                .next();
+        this.model = model;
+        dataModel = model.getDataModels().values().iterator().next();
         if (updateAllGroups) {
             updateAllGroups();
         }
