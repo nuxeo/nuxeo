@@ -6,7 +6,11 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
-  <c:if test="#{renditionActionCache.hasVisibleRenditions(widgetProperty_excludedKinds)}">
+  <nxu:set var="excludedKinds"
+    value="#{widgetProperty_excludedKinds}"
+    resolveTwice="true">
+  <nxu:set var="renditions" value="#{renditionAction.getVisibleRenditions(excludedKinds)}" cache="true">
+    <c:if test="#{!empty renditions}">
 
       <h3 class="summaryTitle">
         <h:outputText value="#{messages['label.summary.renditions.title']}" />
@@ -14,7 +18,7 @@
 
       <h:outputText value="#{messages['label.summary.renditions.header']}" />
 
-      <nxu:dataTable value="#{renditionAction.getVisibleRenditions(widgetProperty_excludedKinds)}"
+      <nxu:dataTable value="#{renditions}"
         var="rendition" styleClass="dataOutput">
         <nxu:column styleClass="iconColumn">
           <nxu:graphicImage value="#{rendition.icon}" />
@@ -26,6 +30,8 @@
         </nxu:column>
       </nxu:dataTable>
 
-  </c:if>
+    </c:if>
+  </nxu:set>
+  </nxu:set>
 
 </div>

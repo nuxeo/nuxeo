@@ -2,7 +2,6 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document">
 
   <h3><h:outputText value="#{messages['label.exportview']}" /></h3>
@@ -12,8 +11,8 @@
     <nxu:set var="excludedKinds"
       value="#{action.properties.excludedKinds}"
       resolveTwice="true">
-    <c:if test="#{renditionActionCache.hasVisibleRenditions(excludedKinds)}">
-      <nxu:dataTable value="#{renditionAction.getVisibleRenditions(excludedKinds)}"
+    <nxu:set var="renditions" value="#{renditionAction.getVisibleRenditions(excludedKinds)}" cache="true">
+      <nxu:dataTable value="#{renditions}"
         var="rendition" styleClass="dataOutput">
         <nxu:column styleClass="iconColumn">
           <nxu:graphicImage value="#{rendition.icon}" />
@@ -24,7 +23,7 @@
           </a>
         </nxu:column>
       </nxu:dataTable>
-    </c:if>
+    </nxu:set>
     </nxu:set>
 
   </div>
