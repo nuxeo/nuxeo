@@ -61,14 +61,15 @@ public class ActionListenerMethodTagHandler extends TagHandler {
     }
 
     @Override
-    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
-            ELException {
+    public void apply(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
         if (parent instanceof ActionSource) {
             // only process if parent was just created
             if (parent.getParent() == null) {
                 ActionSource src = (ActionSource) parent;
-                ActionListener listener = new MethodExpressionActionListener(new MetaMethodExpression(
-                        value.getMethodExpression(ctx, null, ACTION_LISTENER_SIG)));
+                ActionListener listener = new MethodExpressionActionListener(
+                        new MetaMethodExpression(value.getMethodExpression(ctx, null, ACTION_LISTENER_SIG),
+                                ctx.getFunctionMapper(), ctx.getVariableMapper()));
                 src.addActionListener(listener);
             }
         } else {
