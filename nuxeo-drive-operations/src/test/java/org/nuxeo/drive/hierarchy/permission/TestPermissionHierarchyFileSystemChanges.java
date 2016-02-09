@@ -38,6 +38,7 @@ import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -73,7 +74,6 @@ import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -276,7 +276,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * </pre>
      */
     @Test
-    @RandomBug.Repeat(issue = NXP18936)
+    @Ignore(NXP18936)
     public void testRootlessItems() throws Exception {
 
         TransactionHelper.commitOrRollbackTransaction();
