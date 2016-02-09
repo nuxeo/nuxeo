@@ -9,8 +9,7 @@
     <ui:define name="users_search_method">
       <a4j:region id="search_users_region">
         <!-- search form -->
-        <h:form id="searchForm"
-          onsubmit="document.getElementById('usersListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('usersListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');">
+        <h:form id="searchForm">
           <h:outputScript target="#{pageJsTarget}">
             jQuery(document).ready(function() {
               jQuery('#usersListingView\\:searchForm').focusFirst();
@@ -23,12 +22,14 @@
           <h:commandButton id="searchButton"
             value="#{messages['command.search']}"
             action="#{contentViewActions.refreshAndRewind(contentViewName)}"
+            onclick="document.getElementById('usersListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('usersListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');"
             styleClass="button">
             <f:ajax execute="@form" render="usersPanel searchForm" />
           </h:commandButton>
           <h:commandButton id="clearButton"
             value="#{messages['command.clearSearch']}"
             action="#{userManagementActions.clearSearch}"
+            onclick="document.getElementById('usersListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('usersListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');"
             styleClass="button">
             <f:ajax execute="@form" render="usersPanel searchForm" />
           </h:commandButton>
