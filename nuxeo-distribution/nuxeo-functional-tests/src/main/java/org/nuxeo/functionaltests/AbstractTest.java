@@ -160,8 +160,8 @@ public abstract class AbstractTest {
 
     static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll(
-            "/$", "");
+    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
+                                                 .replaceAll("/$", "");
 
     public static final int LOAD_TIMEOUT_SECONDS = 30;
 
@@ -556,6 +556,18 @@ public abstract class AbstractTest {
     }
 
     /**
+     * Opens given url adding hardcoded Seam conversation named "0NXMAIN".
+     *
+     * @since 8.3
+     */
+    public static void open(String url) {
+        if (driver != null) {
+            new JavaScriptErrorCollector(driver).checkForErrors();
+        }
+        driver.get(NUXEO_URL + url + "?conversationId=0NXMAIN");
+    }
+
+    /**
      * Do not wait for page load. Do not handle error. Do not give explicit error in case of failure. This is a very raw
      * get.
      *
@@ -620,8 +632,8 @@ public abstract class AbstractTest {
             }
         }
 
-        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                             .pollingEvery(POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         try {
             return wait.until(new Function<T, T>() {
                 @Override
