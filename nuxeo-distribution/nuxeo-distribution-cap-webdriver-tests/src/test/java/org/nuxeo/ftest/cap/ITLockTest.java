@@ -38,7 +38,7 @@ import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @since 8.1
+ * @since 8.2
  */
 public class ITLockTest extends AbstractTest {
 

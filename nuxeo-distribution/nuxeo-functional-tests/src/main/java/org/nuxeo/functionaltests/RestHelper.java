@@ -24,21 +24,18 @@ import java.io.IOException;
 
 import okhttp3.Credentials;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
 import okhttp3.ResponseBody;
+
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import static org.browsermob.proxy.jetty.html.Input.File;
-
 /**
- * @since 8.1
+ * @since 8.2
  */
 public class RestHelper {
 
@@ -167,8 +164,8 @@ public class RestHelper {
 
         RequestBody body = RequestBody.create(AUTOMATION_JSON, json);
 
-
-        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1/automation", "Document.AddPermission" }, "/");
+        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1/automation",
+                "Document.AddPermission" }, "/");
         Request request = newRequest().url(url).post(body).build();
         Response response = client.newCall(request).execute();
         if (!response.isSuccessful()) {
