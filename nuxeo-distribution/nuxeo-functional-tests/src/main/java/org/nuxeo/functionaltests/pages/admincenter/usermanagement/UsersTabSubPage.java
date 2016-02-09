@@ -18,6 +18,7 @@
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -54,7 +55,10 @@ public class UsersTabSubPage extends UsersGroupsBasePage {
     public UsersTabSubPage searchUser(String query) {
         searchInput.clear();
         searchInput.sendKeys(query);
-        searchButton.submit();
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        searchButton.click();
+        arm.end();
         return asPage(UsersTabSubPage.class);
     }
 
