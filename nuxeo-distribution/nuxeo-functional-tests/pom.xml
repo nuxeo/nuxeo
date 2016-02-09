@@ -68,6 +68,14 @@
       <artifactId>JSErrorCollector</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
       <!-- needed by htmlunit -->
       <groupId>org.apache.james</groupId>
       <artifactId>apache-mime4j</artifactId>
