@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -105,9 +106,8 @@ public class ConversionCacheGCManager {
 
         for (String key : cacheKeys) {
             ConversionCacheEntry cacheEntry = ConversionCacheHolder.getCacheEntry(key);
-            if (key != null) {
-                sortingMap.put(cacheEntry.getLastAccessedTime(), key);
-            }
+            Objects.requireNonNull(cacheEntry, key);
+            sortingMap.put(cacheEntry.getLastAccessedTime(), key);
         }
 
         List<Date> accessTimeList = new ArrayList<Date>();
