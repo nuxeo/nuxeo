@@ -34,6 +34,7 @@ import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
@@ -113,6 +114,9 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Summary']")
     public WebElement summaryTabLink;
+
+    @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Comments']")
+    public WebElement commentsTabLink;
 
     @Required
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']")
@@ -273,6 +277,11 @@ public class DocumentBasePage extends AbstractPage {
     public SummaryTabSubPage getSummaryTab() {
         clickOnDocumentTabLink(summaryTabLink);
         return asPage(SummaryTabSubPage.class);
+    }
+
+    public CommentsTabSubPage getCommentsTab() {
+        clickOnDocumentTabLink(commentsTabLink);
+        return asPage(CommentsTabSubPage.class);
     }
 
     /**

@@ -37,6 +37,9 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//img[@alt=\"Lock\"]")
     public WebElement lockButton;
 
+    @FindBy(xpath = "//img[@alt=\"Unlock\"]")
+    public WebElement unlockButton;
+
     @FindBy(xpath = "//img[@alt=\"Follow this Document\"]")
     public WebElement followButton;
 

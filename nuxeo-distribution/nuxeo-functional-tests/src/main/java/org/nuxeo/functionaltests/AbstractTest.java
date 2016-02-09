@@ -555,6 +555,14 @@ public abstract class AbstractTest {
         return asPage(pageClassToProxy);
     }
 
+
+    public static void open(String url){
+        if (driver != null) {
+            new JavaScriptErrorCollector(driver).checkForErrors();
+        }
+        driver.get(NUXEO_URL + url + "?conversationId=0NXMAIN");
+    }
+
     /**
      * Do not wait for page load. Do not handle error. Do not give explicit error in case of failure. This is a very raw
      * get.
