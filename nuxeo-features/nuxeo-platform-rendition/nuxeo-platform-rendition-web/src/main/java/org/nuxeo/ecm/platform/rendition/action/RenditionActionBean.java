@@ -21,7 +21,9 @@ package org.nuxeo.ecm.platform.rendition.action;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -31,13 +33,17 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,7 +52,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @Name("renditionAction")
-@Scope(ScopeType.PAGE)
+@Scope(ScopeType.CONVERSATION)
 public class RenditionActionBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,6 +61,8 @@ public class RenditionActionBean implements Serializable {
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
+
+    protected Map<String, List<Rendition>> visibleRenditionsCache = new HashMap<String, List<Rendition>>();
 
     @Factory(value = "currentDocumentRenditions", scope = ScopeType.EVENT)
     public List<Rendition> getCurrentDocumentRenditions() throws Exception {
@@ -81,21 +89,24 @@ public class RenditionActionBean implements Serializable {
      * @since 7.3
      */
     public List<Rendition> getVisibleRenditions(String excludedKinds) {
-        DocumentModel doc = navigationContext.getCurrentDocument();
-        RenditionService rs = Framework.getLocalService(RenditionService.class);
-        List<Rendition> availableRenditions = rs.getAvailableRenditions(doc, true);
+        if (!visibleRenditionsCache.containsKey(excludedKinds)) {
+            DocumentModel doc = navigationContext.getCurrentDocument();
+            RenditionService rs = Framework.getLocalService(RenditionService.class);
+            List<Rendition> availableRenditions = rs.getAvailableRenditions(doc, true);
 
-        List<Rendition> filteredRenditions = availableRenditions;
-        if (StringUtils.isNotBlank(excludedKinds)) {
-            filteredRenditions = new ArrayList<>();
-            List<String> excludedKindList = Arrays.asList(excludedKinds.split(","));
-            for (Rendition rendition : availableRenditions) {
-                if (!excludedKindList.contains(rendition.getKind())) {
-                    filteredRenditions.add(rendition);
+            List<Rendition> filteredRenditions = availableRenditions;
+            if (StringUtils.isNotBlank(excludedKinds)) {
+                filteredRenditions = new ArrayList<>();
+                List<String> excludedKindList = Arrays.asList(excludedKinds.split(","));
+                for (Rendition rendition : availableRenditions) {
+                    if (!excludedKindList.contains(rendition.getKind())) {
+                        filteredRenditions.add(rendition);
+                    }
                 }
             }
+            visibleRenditionsCache.put(excludedKinds, filteredRenditions);
         }
-        return filteredRenditions;
+        return visibleRenditionsCache.get(excludedKinds);
     }
 
     public boolean hasVisibleRenditions(String excludedKinds) {
@@ -117,4 +128,15 @@ public class RenditionActionBean implements Serializable {
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
         return String.format(RENDITION_REST_URL_FORMAT, BaseURL.getBaseURL(request), doc.getId(), renditionName);
     }
+
+    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
+            EventNames.LOCATION_SELECTION_CHANGED }, create = false)
+    @BypassInterceptors
+    public void resetCache() {
+        visibleRenditionsCache.clear();
+        // make sure event context is cleared so that renditionAction factories are called again
+        Contexts.getEventContext().remove("currentDocumentRenditions");
+        Contexts.getEventContext().remove("currentDocumentVisibleRenditionDefinitions");
+    }
+
 }
