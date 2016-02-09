@@ -40,7 +40,9 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
@@ -69,8 +71,7 @@ import org.nuxeo.ecm.platform.relations.web.StatementInfoComparator;
 import org.nuxeo.ecm.platform.relations.web.StatementInfoImpl;
 import org.nuxeo.ecm.platform.relations.web.listener.RelationActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
-import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 
 /**
@@ -85,10 +86,9 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
  */
 @Name("relationActions")
 @Scope(CONVERSATION)
-@AutomaticDocumentBasedInvalidation
-public class RelationActionsBean extends DocumentContextBoundActionBean implements RelationActions, Serializable {
+public class RelationActionsBean implements RelationActions, Serializable {
 
-    private static final long serialVersionUID = 2336539966097558178L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(RelationActionsBean.class);
 
@@ -212,7 +212,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
         if (incomingStatementsInfo != null) {
             return incomingStatementsInfo;
         }
-        DocumentModel currentDoc = getCurrentDocument();
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
         Resource docResource = getDocumentResource(currentDoc);
         if (docResource == null) {
             incomingStatements = Collections.emptyList();
@@ -239,7 +239,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
         if (outgoingStatementsInfo != null) {
             return outgoingStatementsInfo;
         }
-        DocumentModel currentDoc = getCurrentDocument();
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
         Resource docResource = getDocumentResource(currentDoc);
         if (docResource == null) {
             outgoingStatements = Collections.emptyList();
@@ -260,7 +260,11 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
         return outgoingStatementsInfo;
     }
 
+
     @Override
+    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
+            EventNames.LOCATION_SELECTION_CHANGED }, create = false)
+    @BypassInterceptors
     public void resetStatements() {
         incomingStatements = null;
         incomingStatementsInfo = null;
@@ -358,7 +362,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
             object = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, localName);
         }
         try {
-            documentRelationManager.addRelation(documentManager, getCurrentDocument(), object, predicateUri, false,
+            documentRelationManager.addRelation(documentManager, navigationContext.getCurrentDocument(), object, predicateUri, false,
                     includeStatementsInEvents, StringUtils.trim(comment));
             facesMessages.add(StatusMessage.Severity.INFO,
                     resourcesAccessor.getMessages().get("label.relation.created"));
@@ -400,11 +404,6 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
     @Override
     public Boolean getShowCreateForm() {
         return showCreateForm;
-    }
-
-    @Override
-    protected void resetBeanCache(DocumentModel newCurrentDocumentModel) {
-        resetStatements();
     }
 
     public Boolean getPopupDisplayed() {
