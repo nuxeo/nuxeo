@@ -55,7 +55,8 @@ public class MetaActionSourceRule extends MetaRule {
         public void applyMetadata(FaceletContext ctx, Object instance) {
             ActionSource2 as = (ActionSource2) instance;
             MethodExpression originalExpression = attr.getMethodExpression(ctx, String.class, ACTION_SIG);
-            as.setActionExpression(new MetaMethodExpression(originalExpression));
+            as.setActionExpression(
+                    new MetaMethodExpression(originalExpression, ctx.getFunctionMapper(), ctx.getVariableMapper()));
         }
     }
 
