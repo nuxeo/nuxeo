@@ -79,6 +79,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -1483,9 +1484,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             String key = entry.getKey();
             DataModel data = entry.getValue();
             DataModelImpl newData = new DataModelImpl(key, data.getMap());
-            for (String name:data.getDirtyFields()) {
-                newData.setDirty(name);
-            }
             dm.dataModels.put(key, newData);
         }
         return dm;
