@@ -79,5 +79,7 @@ function openFancyBox(ele, options) {
     settings.height = parseInt(settings.height);
   }
 
+  // ensure fancybox is initialized
+  jQuery.fancybox.init();
   jQuery('<a href="' + ele + '"></a>').fancybox(settings).click();
 }
