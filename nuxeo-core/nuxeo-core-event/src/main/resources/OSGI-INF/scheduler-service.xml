@@ -43,11 +43,5 @@
 
   </extension-point>
 
-  <extension target="org.nuxeo.runtime.EventService" point="listeners">
-    <listener class="org.nuxeo.ecm.core.work.ReloadListener">
-      <topic>org.nuxeo.runtime.reload</topic>
-    </listener>
-  </extension>
-  
 
 </component>
