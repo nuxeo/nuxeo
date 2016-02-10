@@ -22,6 +22,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -45,6 +46,9 @@ public class CommentsTabSubPage extends DocumentBasePage {
 
     @FindBy(linkText = "Reply")
     WebElement replyLink;
+
+    @FindBy(linkText = "Delete")
+    WebElement deleteLink;
 
     public CommentsTabSubPage(WebDriver driver) {
         super(driver);
@@ -78,6 +82,22 @@ public class CommentsTabSubPage extends DocumentBasePage {
 
     public CommentsTabSubPage reply(String reply) {
         return addComment(reply, true);
+    }
+
+    /**
+     * Deletes first comment.
+     */
+    public CommentsTabSubPage delete() {
+        deleteLink.click();
+        return asPage(CommentsTabSubPage.class);
+    }
+
+    public boolean canDelete() {
+        try {
+            return deleteLink.isEnabled();
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
 }

@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ITLockTest extends AbstractTest {
 
-    public static final String DOCUMENT_LOCKED = "Locked";
+    private static final String DOCUMENT_LOCKED = "Locked";
 
     private List<String> usersToDelete = new ArrayList<>();
 
