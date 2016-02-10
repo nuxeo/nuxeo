@@ -38,7 +38,6 @@ import javax.persistence.EntityManager;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileSystemItem;
@@ -94,8 +93,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml",
         "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
 public class TestPermissionHierarchyFileSystemChanges {
-
-    public static final String NXP18936 = "NXP-18936: javax.naming.NameNotFoundException: repository_test not found in container";
 
     private static final String USER_SYNC_ROOT_PARENT_ID_PREFIX = "userSyncRootParentFactory#test#";
 
@@ -276,7 +273,6 @@ public class TestPermissionHierarchyFileSystemChanges {
      * </pre>
      */
     @Test
-    @Ignore(NXP18936)
     public void testRootlessItems() throws Exception {
 
         TransactionHelper.commitOrRollbackTransaction();
