@@ -457,27 +457,30 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         Set<IdRef> references = new LinkedHashSet<IdRef>();
         Set<String> paths = new LinkedHashSet<String>();
         IterableQueryResult results = session.queryAndFetch(query, NXQL.NXQL);
-        for (Map<String, Serializable> result : results) {
-            IdRef docRef = new IdRef(result.get("ecm:uuid").toString());
-            try {
-                DocumentModel doc = session.getDocument(docRef);
-                references.add(docRef);
-                paths.add(doc.getPathAsString());
-            } catch(DocumentSecurityException e) {
-                log.warn(String.format(
-                        "User %s cannot access document %s, not adding it to the list of synchronization roots.",
-                        session.getPrincipal().getName(), docRef));
-            } catch (ClientException e) {
-                if (e.getCause() instanceof NoSuchDocumentException) {
+        try {
+            for (Map<String, Serializable> result : results) {
+                IdRef docRef = new IdRef(result.get("ecm:uuid").toString());
+                try {
+                    DocumentModel doc = session.getDocument(docRef);
+                    references.add(docRef);
+                    paths.add(doc.getPathAsString());
+                } catch(DocumentSecurityException e) {
                     log.warn(String.format(
-                            "Document %s not found, not adding it to the list of synchronization roots for user %s.",
-                            docRef, session.getPrincipal().getName()));
-                } else {
-                    throw e;
+                            "User %s cannot access document %s, not adding it to the list of synchronization roots.",
+                            session.getPrincipal().getName(), docRef));
+                } catch (ClientException e) {
+                    if (e.getCause() instanceof NoSuchDocumentException) {
+                        log.warn(String.format(
+                                "Document %s not found, not adding it to the list of synchronization roots for user %s.",
+                                docRef, session.getPrincipal().getName()));
+                    } else {
+                        throw e;
+                    }
                 }
             }
+        } finally {
+            results.close();
         }
-        results.close();
         SynchronizationRoots repoSyncRoots = new SynchronizationRoots(session.getRepositoryName(), paths, references);
         syncRoots.put(session.getRepositoryName(), repoSyncRoots);
         return syncRoots;
