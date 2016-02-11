@@ -21,25 +21,31 @@ package org.nuxeo.ftest.cap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_URL;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -84,8 +90,8 @@ public class ITSafeEditTest extends AbstractTest {
         }
 
         public String getKeyFromLocalStorage(int key) {
-            return (String) js.executeScript(
-                    String.format("return window.localStorage.key('%s');", Integer.valueOf(key)));
+            return (String) js.executeScript(String.format("return window.localStorage.key('%s');",
+                    Integer.valueOf(key)));
         }
 
         public Long getLocalStorageLength() {
@@ -108,47 +114,25 @@ public class ITSafeEditTest extends AbstractTest {
 
     private static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
-
     private final static String NEW_WORKSPACE_TITLE = "newWorkspaceName";
 
     private final static String DESCRIPTION_ELT_ID = "document_edit:nxl_heading:nxw_description";
 
     private final static String TITLE_ELT_ID = "document_edit:nxl_heading:nxw_title";
 
-    private final static String INITIAL_DESCRIPTION = "workspaceDescription";
-
     private final static String DRAFT_SAVE_TEXT_NOTIFICATION = "Draft saved";
 
-    private void prepare() throws Exception {
-        DocumentBasePage documentBasePage;
-        DocumentBasePage s = login();
+    @Before
+    public void before() {
+        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1", "members");
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, null);
+        RestHelper.addPermission(TEST_WORKSPACE_PATH, TEST_USERNAME, "Everything");
+    }
 
-        // Create a new user if not exist
-        UsersGroupsBasePage page;
-        UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(TEST_USERNAME);
-        if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME, "lastname1", "company1",
-                    "email1", TEST_PASSWORD, "members");
-            usersTab = page.getUsersTab(true);
-        } // search user usersTab =
-        usersTab.searchUser(TEST_USERNAME);
-        assertTrue(usersTab.isUserFound(TEST_USERNAME));
-
-        // create a new wokspace and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter()
-                                   .getHeaderLinks()
-                                   .getNavigationSubPage()
-                                   .goToDocument("Workspaces");
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, INITIAL_DESCRIPTION);
-        PermissionsSubPage permissionsSubPage = workspacePage.getPermissionsTab();
-        // Need WriteSecurity (so in practice Manage everything) to edit a
-        // Workspace
-        if (!permissionsSubPage.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
-            permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
-        }
-        logout();
+    @After
+    public void after() {
+        RestHelper.cleanup();
     }
 
     private void byPassPopup(String message, boolean accept) {
@@ -180,32 +164,13 @@ public class ITSafeEditTest extends AbstractTest {
         wait.until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
-                List<WebElement> elts = driver.findElements(
-                        By.xpath("//div[contains(.,'A draft of this document has been saved')]"));
+                List<WebElement> elts = driver.findElements(By.xpath("//div[contains(.,'A draft of this document has been saved')]"));
                 if (!elts.isEmpty()) {
                     return elts.get(0);
                 }
                 return null;
             }
         });
-    }
-
-    /**
-     * Delete created user and data.
-     *
-     * @throws UserNotConnectedException
-     * @since 5.7.1
-     */
-    private void restoreState() throws Exception {
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(TEST_USERNAME);
-        usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
-        DocumentBasePage documentBasePage = usersTab.exitAdminCenter()
-                                                    .getHeaderLinks()
-                                                    .getNavigationSubPage()
-                                                    .goToDocument("Workspaces");
-        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
-        logout();
     }
 
     /**
@@ -243,22 +208,16 @@ public class ITSafeEditTest extends AbstractTest {
      */
     @Test
     public void testAutoSaveOnChangeAndRestore() throws Exception {
-
         if (!runTestForBrowser()) {
             log.warn("Browser not supported. Nothing to run.");
             return;
         }
 
-        prepare();
-
-        DocumentBasePage documentBasePage;
         WebElement descriptionElt, titleElt;
+        login(TEST_USERNAME, TEST_PASSWORD);
+        open(TEST_WORKSPACE_URL);
 
-        // Log as test user and edit the created workdspace
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab()
-                                                              .goToDocument("Workspaces")
-                                                              .getContentTab()
-                                                              .goToDocument(WORKSPACE_TITLE);
+        DocumentBasePage documentBasePage = asPage(DocumentBasePage.class);
         documentBasePage.getEditTab();
 
         LocalStorage localStorage = new LocalStorage(driver);
@@ -314,7 +273,7 @@ public class ITSafeEditTest extends AbstractTest {
         localStorage = new LocalStorage(driver);
         titleElt = Locator.findElementWithTimeout(By.name(TITLE_ELT_ID));
         String titleEltValue = titleElt.getAttribute("value");
-        assertEquals(WORKSPACE_TITLE, titleEltValue);
+        assertEquals(TEST_WORKSPACE_TITLE, titleEltValue);
         log.debug("5 - " + localStorage.getLocalStorageLength());
 
         // We must find in the localstorage an entry matching the previous
@@ -348,7 +307,6 @@ public class ITSafeEditTest extends AbstractTest {
         byPassLeavePagePopup(true);
 
         logout();
-        restoreState();
     }
 
     /**
@@ -359,25 +317,17 @@ public class ITSafeEditTest extends AbstractTest {
      */
     @Test
     public void testSafeEditOnSelect2() throws Exception {
-
         if (!runTestForBrowser()) {
             log.warn("Browser not supported. Nothing to run.");
             return;
         }
 
-        prepare();
-
-        DocumentBasePage documentBasePage;
         // Log as test user and edit the created workdspace
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab()
-                                                              .goToDocument("Workspaces")
-                                                              .getContentTab()
-                                                              .goToDocument(WORKSPACE_TITLE);
+        login(TEST_USERNAME, TEST_PASSWORD);
+        open(TEST_FILE_URL);
+        DocumentBasePage documentBasePage = asPage(DocumentBasePage.class);
 
-        // Create test File
-        FileDocumentBasePage filePage = createFile(documentBasePage, "Test file", "Test File description", false, null,
-                null, null);
-        EditTabSubPage editTabSubPage = filePage.getEditTab();
+        EditTabSubPage editTabSubPage = documentBasePage.getEditTab();
 
         Select2WidgetElement coverageWidget = new Select2WidgetElement(driver,
                 driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']")));
@@ -397,7 +347,7 @@ public class ITSafeEditTest extends AbstractTest {
             byPassLeavePagePopup(true);
         }
 
-        filePage = asPage(FileDocumentBasePage.class);
+        FileDocumentBasePage filePage = asPage(FileDocumentBasePage.class);
         filePage.getEditTab();
 
         checkSafeEditRestoreProvided();
@@ -413,8 +363,6 @@ public class ITSafeEditTest extends AbstractTest {
 
         editTabSubPage.save();
         logout();
-
-        restoreState();
     }
 
     private void waitForSavedNotification() {
@@ -441,7 +389,7 @@ public class ITSafeEditTest extends AbstractTest {
         // confirmRestoreYes.click();
         // We just want to trigger the js event handler attached to
         // confirmRestoreYes element. This is the workaround.
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", confirmRestoreYes);
+        driver.executeScript("arguments[0].click();", confirmRestoreYes);
     }
 
 }

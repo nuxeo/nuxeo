@@ -19,10 +19,12 @@ package org.nuxeo.ftest.cap;
 
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.NavigationSubPage;
@@ -51,6 +53,11 @@ public class ITContextualActionsTest extends AbstractTest {
     public final static String DOCUMENT_LOCKED = "Locked";
 
     public final static String NOTE_TYPE = "Note";
+
+    @After
+    public void after() {
+        RestHelper.deleteDocument("/default-domain/workspaces/" + WORKSPACE_NAME);
+    }
 
     @Test
     public void verifyContextualActions() throws Exception {
@@ -100,7 +107,7 @@ public class ITContextualActionsTest extends AbstractTest {
         // Test follow action
         actions = actions.openMore().clickOnButton(actions.followButton);
 
-        // Test  More button & Add to Worklist action
+        // Test More button & Add to Worklist action
         actions = actions.openMore().clickOnButton(actions.addToWorklistButton);
         // Test More button & Export
         actions = actions.openMore().clickOnButton(actions.exportButton);

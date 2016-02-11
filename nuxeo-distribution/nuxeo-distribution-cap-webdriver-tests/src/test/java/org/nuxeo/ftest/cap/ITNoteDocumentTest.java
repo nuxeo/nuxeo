@@ -19,17 +19,22 @@
 package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_URL;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.forms.RichEditorElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.NoteSummaryTabSubPage;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -50,39 +55,39 @@ public class ITNoteDocumentTest extends AbstractTest {
 
     protected final static String NOTE_DESCRIPTION = "Description note 1";
 
+    @Before
+    public void before() {
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+    }
+
     @Test
     public void testCreateSimpleNote() throws Exception {
-        // Login as Administrator
-        DocumentBasePage defaultDomainPage = login();
-
-        // Init repository with a test Workspace
-        DocumentBasePage testWorkspacePage = initRepository(defaultDomainPage);
-
+        login();
+        open(TEST_WORKSPACE_URL);
         // Create a Note
-        NoteDocumentBasePage noteDocumentPage = createNote(testWorkspacePage, NOTE_TITLE, NOTE_DESCRIPTION, true,
-                CONTENT_NOTE);
+        NoteDocumentBasePage noteDocumentPage = createNote(asPage(DocumentBasePage.class), NOTE_TITLE,
+                NOTE_DESCRIPTION, true, CONTENT_NOTE);
         NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
 
         // Test the result
         assertEquals(CONTENT_NOTE, noteSummaryPage.getTextBlockContentText());
-
-        // Clean up repository
-        cleanRepository(noteDocumentPage);
 
         logout();
     }
 
     @Test
     public void testCreateComplexNote() throws Exception {
-        // Login as Administrator
-        DocumentBasePage defaultDomainPage = login();
-
-        // Init repository with a test Workspace
-        DocumentBasePage testWorkspacePage = initRepository(defaultDomainPage);
+        login();
+        open(TEST_WORKSPACE_URL);
 
         // Get the Note creation form
-        NoteCreationFormPage noteCreationPage = testWorkspacePage.getContentTab().getDocumentCreatePage("Note",
-                NoteCreationFormPage.class);
+        NoteCreationFormPage noteCreationPage = asPage(DocumentBasePage.class).getContentTab().getDocumentCreatePage(
+                "Note", NoteCreationFormPage.class);
         noteCreationPage.titleTextInput.sendKeys(NOTE_TITLE);
         noteCreationPage.descriptionTextInput.sendKeys(NOTE_DESCRIPTION);
 
@@ -109,23 +114,17 @@ public class ITNoteDocumentTest extends AbstractTest {
         assertEquals(CONTENT_NOTE, boldTextContent.getText());
         assertEquals(CONTENT_NOTE_2, italicTextContent.getText());
 
-        // Clean up repository
-        cleanRepository(noteDocumentPage);
-
         logout();
     }
 
     @Test
     public void testCreateAndEditNote() throws Exception {
-        // Login as Administrator
-        DocumentBasePage defaultDomainPage = login();
-
-        // Init repository with a test Workspace
-        DocumentBasePage testWorkspacePage = initRepository(defaultDomainPage);
+        login();
+        open(TEST_WORKSPACE_URL);
 
         // Create a Note
-        NoteDocumentBasePage noteDocumentPage = createNote(testWorkspacePage, NOTE_TITLE, NOTE_DESCRIPTION, true,
-                CONTENT_NOTE);
+        NoteDocumentBasePage noteDocumentPage = createNote(asPage(DocumentBasePage.class), NOTE_TITLE,
+                NOTE_DESCRIPTION, true, CONTENT_NOTE);
         // Edit the note
         EditTabSubPage editTab = noteDocumentPage.getEditTab();
         RichEditorElement editor = new RichEditorElement(driver, "document_edit:nxl_note:nxw_note_editor");
@@ -136,9 +135,6 @@ public class ITNoteDocumentTest extends AbstractTest {
         String expectedText = String.format("%s%s", CONTENT_NOTE_EDITED, CONTENT_NOTE);
         NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
         assertEquals(expectedText, noteSummaryPage.getTextBlockContentText().replace("\n", ""));
-
-        // Clean up repository
-        cleanRepository(noteDocumentPage);
 
         logout();
     }

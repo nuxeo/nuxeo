@@ -60,8 +60,8 @@ public class ITAdminNavigationTest extends AbstractTest {
         assertTrue(newDocPage.permissionsTabLink.isDisplayed());
         assertTrue(newDocPage.historyTabLink.isDisplayed());
         assertTrue(newDocPage.manageTabLink.isDisplayed());
-        assertTrue(driver.findElement(
-                By.xpath("//div[@id='nxw_documentTabs_panel']//a/span[text()='Route']")).isDisplayed());
+        assertTrue(driver.findElement(By.xpath("//div[@id='nxw_documentTabs_panel']//a/span[text()='Route']"))
+                         .isDisplayed());
     }
 
 }

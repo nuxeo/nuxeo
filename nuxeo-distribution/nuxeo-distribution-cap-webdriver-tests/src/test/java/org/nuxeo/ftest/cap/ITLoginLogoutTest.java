@@ -21,7 +21,6 @@
 package org.nuxeo.ftest.cap;
 
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 

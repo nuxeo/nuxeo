@@ -26,7 +26,6 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.nuxeo.functionaltests.pages.restapiDoc.RestApiDocBasePage;
 
 /**
- *
  * @since 7.3
  */
 public class ITRestApiTestDoc extends AbstractTest {

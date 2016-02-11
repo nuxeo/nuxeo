@@ -20,8 +20,15 @@
 
 package org.nuxeo.ftest.cap;
 
-import java.io.IOException;
-import java.util.ArrayList;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_PATH;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
+
 import java.util.List;
 
 import org.junit.After;
@@ -35,8 +42,6 @@ import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
 
-import static org.junit.Assert.assertTrue;
-
 /**
  * @since 8.2
  */
@@ -44,34 +49,24 @@ public class ITLockTest extends AbstractTest {
 
     private static final String DOCUMENT_LOCKED = "Locked";
 
-    private List<String> usersToDelete = new ArrayList<>();
-
-    private List<String> documentsToDelete = new ArrayList<>();
-
     @Before
-    public void before() throws Exception {
-        usersToDelete.add(RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, null, null, null, null, "members"));
-        usersToDelete.add(RestHelper.createUser("bree", "bree1", null, null, null, null, "members"));
-        documentsToDelete.add(RestHelper.createDocument("/default-domain/workspaces", "Workspace", "ws", null));
-        RestHelper.createDocument("/default-domain/workspaces/ws", "File", "file", null);
-        RestHelper.addPermission("/default-domain/workspaces/ws/file", TEST_USERNAME, "Write");
+    public void before() {
+        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, null, null, null, null, "members");
+        RestHelper.createUser("bree", "bree1", null, null, null, null, "members");
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, null);
+        RestHelper.addPermission(TEST_FILE_PATH, TEST_USERNAME, "Write");
     }
 
     @After
-    public void after() throws IOException {
-        for (String user : usersToDelete) {
-            RestHelper.deleteUser(user);
-        }
-        for (String id : documentsToDelete) {
-            RestHelper.deleteDocument(id);
-        }
+    public void after() {
+        RestHelper.cleanup();
     }
 
     @Test
     public void testLockAndUnlockDocumentByLockOwner() throws DocumentBasePage.UserNotConnectedException {
         login(TEST_USERNAME, TEST_PASSWORD);
         open("/nxpath/default/default-domain/workspaces/ws/file@view_documents");
-
 
         ContextualActions actions = asPage(FileDocumentBasePage.class).getContextualActions();
         actions = actions.clickOnButton(actions.lockButton);
@@ -101,7 +96,6 @@ public class ITLockTest extends AbstractTest {
         login(TEST_USERNAME, TEST_PASSWORD);
         open("/nxpath/default/default-domain/workspaces/ws/file@view_documents");
 
-
         ContextualActions actions = asPage(FileDocumentBasePage.class).getContextualActions();
         actions.clickOnButton(actions.lockButton);
         List<String> states = asPage(FileDocumentBasePage.class).getCurrentStates();
@@ -126,7 +120,6 @@ public class ITLockTest extends AbstractTest {
     public void testCommentOnLockedDocument() throws DocumentBasePage.UserNotConnectedException {
         login(TEST_USERNAME, TEST_PASSWORD);
         open("/nxpath/default/default-domain/workspaces/ws/file@view_documents");
-
 
         ContextualActions actions = asPage(FileDocumentBasePage.class).getContextualActions();
         actions.clickOnButton(actions.lockButton);

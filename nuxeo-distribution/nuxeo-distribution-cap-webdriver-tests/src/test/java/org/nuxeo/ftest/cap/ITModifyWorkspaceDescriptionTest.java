@@ -21,16 +21,18 @@
 package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_URL;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
-import java.util.Date;
-
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 
 /**
  * <p>
@@ -48,62 +50,31 @@ import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
  */
 public class ITModifyWorkspaceDescriptionTest extends AbstractTest {
 
-    private final String WORKSPACE_TITLE = "WorkspaceDescriptionModify_" + new Date().getTime();
+    @Before
+    public void before() {
+        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, "John", "Smith", "Nuxeo", "jsmith@nuxeo.com", "members");
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.addPermission(TEST_WORKSPACE_PATH, TEST_USERNAME, "Everything");
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+    }
 
     @Test
     public void testModifyWsDescription() throws Exception {
-
-        // As an administrator, check that jsmith is created and has rights
-        UsersGroupsBasePage usergroupPage = login().getAdminCenter().getUsersGroupsHomePage();
-        UsersTabSubPage page = usergroupPage.getUsersTab().searchUser(TEST_USERNAME);
-        if (!page.isUserFound(TEST_USERNAME)) {
-            usergroupPage = page.getUserCreatePage().createUser(TEST_USERNAME, "John", "Smith", "Nuxeo",
-                    "jsmith@nuxeo.com", TEST_PASSWORD, "members");
-        }
-
-        DocumentBasePage documentBasePage = usergroupPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
-        PermissionsSubPage permissionsSubPage = documentBasePage.getPermissionsTab();
-        // Need WriteSecurity (so in practice Manage everything) to edit a
-        // Workspace
-        if (!permissionsSubPage.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
-            permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
-        }
-
-        logout();
-
-        // Starting the test for real
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces");
-
-        // Create a new workspace named 'WorkspaceDescriptionModify_{current
-        // time}'
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, "A workspace description");
+        login();
+        open(TEST_WORKSPACE_URL);
 
         // Modify Workspace description
         String descriptionModified = "Description modified";
-        workspacePage = workspacePage.getEditTab().edit(null, descriptionModified, null);
+        DocumentBasePage workspacePage = asPage(DocumentBasePage.class).getEditTab().edit(null, descriptionModified,
+                null);
 
         assertEquals(descriptionModified, workspacePage.getCurrentFolderishDescription());
-        assertEquals(WORKSPACE_TITLE, workspacePage.getCurrentDocumentTitle());
+        assertEquals(TEST_WORKSPACE_TITLE, workspacePage.getCurrentDocumentTitle());
 
-        // Clean up repository
-        restoreState();
-
-        // Logout
-        logout();
-
-    }
-
-    /**
-     * @since 5.9.2
-     */
-    private void restoreState() throws Exception {
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(TEST_USERNAME);
-        usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
-        DocumentBasePage documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                "Workspaces");
-        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
         logout();
     }
 

@@ -19,13 +19,23 @@
 package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ArchivedVersionsSubPage;
@@ -35,51 +45,42 @@ import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
  * Tests the Archived versions screen.
  */
 public class ITArchivedVersionsTest extends AbstractTest {
-    @Test
-    public void testArchivedVersions() throws Exception {
 
-        // Login as Administrator
-        DocumentBasePage defaultDomainPage = login();
+    @Before
+    public void before() throws DocumentBasePage.UserNotConnectedException {
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, "Test File description");
 
-        // Init repository with a File and its archived versions
-        DocumentBasePage filePage = initRepository(defaultDomainPage);
-
-        // Do the tests
-        filePage = testViewVersions(filePage);
-        filePage = testRestoreVersion(filePage);
-        filePage = testDeleteVersions(filePage);
-
-        // Clean up repository
-        cleanRepository(filePage);
-
-        // Logout
-        logout();
-    }
-
-    /**
-     * Inits the repository with a File document and makes two versions of it.
-     *
-     * @param currentPage the current page
-     * @return the created File document page
-     * @throws Exception if initializing repository fails
-     */
-    @Override
-    protected DocumentBasePage initRepository(DocumentBasePage currentPage) throws Exception {
-
-        // Create test Workspace
-        DocumentBasePage workspacePage = super.initRepository(currentPage);
-
-        // Create test File
-        FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false, null,
-                null, null);
-
+        login();
+        open(TEST_FILE_URL);
+        FileDocumentBasePage filePage = asPage(FileDocumentBasePage.class);
         // Create version 1.0 of the File
         filePage.getEditTab().edit("Test file: modif 1", null, EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
 
         // Create version 2.0 of the File
         filePage.getEditTab().edit("Test file: modif 2", null, EditTabSubPage.MAJOR_VERSION_INCREMENT_VALUE);
 
-        return filePage;
+        logout();
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+    }
+
+    @Test
+    public void testArchivedVersions() throws Exception {
+        login();
+        open(TEST_FILE_URL);
+
+        // Do the tests
+        DocumentBasePage filePage = asPage(DocumentBasePage.class);
+        filePage = testViewVersions(filePage);
+        filePage = testRestoreVersion(filePage);
+        filePage = testDeleteVersions(filePage);
+
+        // Logout
+        logout();
     }
 
     /**
@@ -171,7 +172,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
 
         // Check version labels, there should be one left
         List<String> versionLabels = archivedVersionsPage.getVersionLabels();
-        assertEquals(Arrays.asList("1.0"), versionLabels);
+        assertEquals(Collections.singletonList("1.0"), versionLabels);
 
         // Go back to doc and return it
         return archivedVersionsPage.goToDocumentByBreadcrumb("Test file: modif 1");

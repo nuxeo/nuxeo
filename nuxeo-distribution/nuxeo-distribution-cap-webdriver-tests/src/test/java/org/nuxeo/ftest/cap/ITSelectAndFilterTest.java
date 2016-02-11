@@ -20,17 +20,23 @@ package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_URL;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
-import java.util.Date;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -47,7 +53,17 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
     protected final String RESET_FILTER_XPATH = "cv_document_content_0_resetFilterForm:resetFilter";
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    @Before
+    public void before() {
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, Boolean.toString(true), null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, Boolean.toString(false), null);
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+    }
 
     /**
      * This tests create 2 documents in a workspace, select one of them, filter the other one, clear the filter and make
@@ -58,19 +74,10 @@ public class ITSelectAndFilterTest extends AbstractTest {
      */
     @Test
     public void testSelectAndFilter() throws Exception {
+        login();
+        open(TEST_WORKSPACE_URL);
 
-        DocumentBasePage defaultDomain = login();
-
-        DocumentBasePage workspacePage = createWorkspace(defaultDomain, WORKSPACE_TITLE, null);
-
-        // Create test File 1
-        DocumentBasePage newFile = createFile(workspacePage, Boolean.toString(true), null, false, null, null, null);
-        workspacePage = newFile.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
-
-        // Create test File 2
-        newFile = createFile(workspacePage, Boolean.toString(false), null, false, null, null, null);
-        workspacePage = newFile.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
-
+        DocumentBasePage workspacePage = asPage(DocumentBasePage.class);
         ContentTabSubPage contentTabSubPage = workspacePage.getContentTab();
 
         List<WebElement> trelements = contentTabSubPage.getChildDocumentRows();
@@ -81,7 +88,9 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
         // Select the first document
         trelements.get(0).findElement(By.xpath(CHECK_BOX_XPATH)).click();
-        boolean selectedFileName = Boolean.parseBoolean(trelements.get(0).findElement(By.xpath(DOCUMENT_TITLE_XPATH)).getText());
+        boolean selectedFileName = Boolean.parseBoolean(trelements.get(0)
+                                                                  .findElement(By.xpath(DOCUMENT_TITLE_XPATH))
+                                                                  .getText());
 
         // Filter on the name of the other document
         contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName), 1, AJAX_TIMEOUT_SECONDS * 1000);
@@ -115,8 +124,6 @@ public class ITSelectAndFilterTest extends AbstractTest {
             }
         }
         assertTrue(isSelectionOk);
-
-        deleteWorkspace(workspacePage, WORKSPACE_TITLE);
 
         logout();
     }
