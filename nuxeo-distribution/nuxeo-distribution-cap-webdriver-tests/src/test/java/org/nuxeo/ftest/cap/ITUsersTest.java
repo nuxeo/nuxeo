@@ -23,11 +23,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.ProfilePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserCreationFormPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
@@ -44,18 +46,21 @@ import org.openqa.selenium.By;
 @Features({ FakeSmtpMailServerFeature.class })
 public class ITUsersTest extends AbstractTest {
 
+    @After
+    public void after() {
+        RestHelper.deleteUser("jsmith");
+    }
+
     @Test
     @Ignore
     public void testInviteUser() throws Exception {
 
-
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         String username = TEST_USERNAME + System.currentTimeMillis();
 
-        usersTab.getUserCreatePage().inviteUser(username , username, "lastname1", "company1", "email1",
-                "members");
+        usersTab.getUserCreatePage().inviteUser(username, username, "lastname1", "company1", "email1", "members");
 
-        //Need few seconds to display the search view after
+        // Need few seconds to display the search view after
         UsersGroupsBasePage.findElementWithTimeout(By.id("usersListingView:searchForm:searchText"));
 
         // search user
@@ -63,11 +68,9 @@ public class ITUsersTest extends AbstractTest {
         assertFalse(usersTab.isUserFound(username));
     }
 
-
     @Test
-    public void userCanChangeItsOwnPassword() throws Exception
-    {
-    	String firstname = "firstname";
+    public void userCanChangeItsOwnPassword() throws Exception {
+        String firstname = "firstname";
 
         UsersGroupsBasePage page;
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
@@ -83,7 +86,7 @@ public class ITUsersTest extends AbstractTest {
 
         logout();
 
-        //Change the user password
+        // Change the user password
         String newPassword = "newpwd";
         ProfilePage profilePage = login(username, TEST_PASSWORD).getUserHome().goToProfile();
         profilePage.getChangePasswordUserTab().changePassword(TEST_PASSWORD, newPassword);
@@ -126,8 +129,10 @@ public class ITUsersTest extends AbstractTest {
         // modify a user firstname
         firstname = firstname + "modified";
         usersTab = page.getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.viewUser(TEST_USERNAME).getEditUserTab().editUser(firstname, null, "newcompany", null,
-                "Administrators group").backToTheList();
+        usersTab = usersTab.viewUser(TEST_USERNAME)
+                           .getEditUserTab()
+                           .editUser(firstname, null, "newcompany", null, "Administrators group")
+                           .backToTheList();
 
         // search user using its new firstname
         usersTab = usersTab.searchUser(firstname);

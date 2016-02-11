@@ -20,16 +20,18 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.util.Date;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
@@ -37,25 +39,40 @@ import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Test file upload in Nuxeo DM.
  */
 public class ITFileUploadTest extends AbstractTest {
 
+    protected static final String WORKSPACE_TITLE = ITFileUploadTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
+
+    protected static String wsId;
+
+    @Before
+    public void before() {
+        wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+        wsId = null;
+    }
+
     @Test
     public void testFileUpload() throws Exception {
-
-        // Login as Administrator
-        DocumentBasePage defaultDomainPage = login();
-
-        // Init repository with a test Workspace
-        String wsTitle = ITFileUploadTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
-        DocumentBasePage testWorkspacePage = createWorkspace(defaultDomainPage, wsTitle, "");
+        login();
+        open(String.format(NXDOC_URL_FORMAT, wsId));
 
         // Create a File with an uploaded blob
         String filePrefix = "NX-Webdriver-test-";
-        FileDocumentBasePage fileDocumentBasePage = createFile(testWorkspacePage, "File title", "File description",
-                true, filePrefix, ".txt", "Webdriver test file content.");
+        FileDocumentBasePage fileDocumentBasePage = createFile(asPage(DocumentBasePage.class), "File title",
+                "File description", true, filePrefix, ".txt", "Webdriver test file content.");
 
         // Check uploaded file name
         String uploadedFileName = fileDocumentBasePage.getFileSummaryTab().getMainContentFileText();
@@ -81,9 +98,6 @@ public class ITFileUploadTest extends AbstractTest {
         assertTrue(sumContentText.contains("Drop files here"));
         assertFalse(sumContentText.contains(uploadedFileName));
 
-        // Clean up repository
-        deleteWorkspace(fileDocumentBasePage, wsTitle);
-
         // Logout
         logout();
     }
@@ -95,19 +109,15 @@ public class ITFileUploadTest extends AbstractTest {
      */
     @Test
     public void testFileUploadOnValidationError() throws Exception {
-
-        // Login as Administrator
-        DocumentBasePage defaultDomainPage = login();
-
-        // Init repository with a test Workspace
-        String wsTitle = ITSearchTabTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
-        DocumentBasePage testWorkspacePage = createWorkspace(defaultDomainPage, wsTitle, "");
+        login();
+        open(String.format(NXDOC_URL_FORMAT, wsId));
 
         // Create a File with an uploaded blob
         String filePrefix = "NX-Webdriver-test-";
         // do not fill the title: expect a validation error to occur
-        FileCreationFormPage fileCreationFormPage = testWorkspacePage.getContentTab().getDocumentCreatePage("File",
-                FileCreationFormPage.class);
+        FileCreationFormPage fileCreationFormPage = asPage(DocumentBasePage.class).getContentTab()
+                                                                                  .getDocumentCreatePage("File",
+                                                                                          FileCreationFormPage.class);
         FileCreationFormPage creationPageAfterError = fileCreationFormPage.createFileDocumentWithoutTitle(filePrefix,
                 ".txt", "Webdriver test file content.");
 
@@ -128,9 +138,6 @@ public class ITFileUploadTest extends AbstractTest {
         String uploadedFileName = fileDocumentBasePage.getFileSummaryTab().getMainContentFileText();
         assertTrue("Wrong uploaded file name '" + uploadedFileName + "', expected it to contain '" + filePrefix + "'",
                 uploadedFileName.contains(filePrefix));
-
-        // Clean up repository
-        deleteWorkspace(fileDocumentBasePage, wsTitle);
 
         // Logout
         logout();

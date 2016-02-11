@@ -21,6 +21,8 @@
 package org.nuxeo.functionaltests;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Credentials;
 import okhttp3.MediaType;
@@ -47,29 +49,51 @@ public class RestHelper {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private static final List<String> documentIdsToDelete = new ArrayList<>();
+
+    private static final List<String> documentPathsToDelete = new ArrayList<>();
+
+    private static final List<String> usersToDelete = new ArrayList<>();
+
     private RestHelper() {
         // helper class
     }
 
-    public static String createUser(String username, String password) throws IOException {
+    public static void cleanup() {
+        documentIdsToDelete.forEach(RestHelper::deleteDocument);
+        documentIdsToDelete.clear();
+        documentPathsToDelete.clear();
+
+        usersToDelete.forEach(RestHelper::deleteUser);
+        usersToDelete.clear();
+    }
+
+    public static String createUser(String username, String password) {
         return createUser(username, password, null, null, null, null, null);
     }
 
     public static String createUser(String username, String password, String firstName, String lastName,
-            String company, String email, String group) throws IOException {
+            String company, String email, String group) {
         String json = buildUserJSON(username, password, firstName, lastName, company, email, group);
 
         RequestBody body = RequestBody.create(JSON, json);
         String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1/user" }, "/");
         Request request = newRequest().url(url).post(body).build();
-        Response response = client.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            throw new RuntimeException(String.format("Unable to create user '%s'", username));
-        }
 
-        try (ResponseBody responseBody = response.body()) {
-            JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
-            return jsonNode.get("id").getTextValue();
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new RuntimeException(String.format("Unable to create user '%s'", username));
+            }
+
+            try (ResponseBody responseBody = response.body()) {
+                JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
+                String id = jsonNode.get("id").getTextValue();
+                usersToDelete.add(id);
+                return id;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -107,40 +131,65 @@ public class RestHelper {
         return sb.toString();
     }
 
-    public static void deleteUser(String username) throws IOException {
+    public static void deleteUser(String username) {
         String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1/user", username }, "/");
         Request request = newRequest().url(url).delete().build();
-        Response response = client.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            throw new RuntimeException(String.format("Unable to delete user '%s'", username));
+        try {
+            client.newCall(request).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static String createDocument(String parentPath, String type, String title, String description)
-            throws IOException {
+    public static String createDocument(String idOrPath, String type, String title, String description) {
         String json = buildDocumentJSON(type, title, description);
 
         RequestBody body = RequestBody.create(JSON, json);
-        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1/path", parentPath }, "/");
+        String segment = idOrPath.startsWith("/") ? "path" : "id";
+        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1", segment, idOrPath }, "/");
         Request request = newRequest().url(url).post(body).build();
-        Response response = client.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            throw new RuntimeException(String.format("Unable to create document '%s' in '%s'", title, parentPath));
-        }
 
-        try (ResponseBody responseBody = response.body()) {
-            JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
-            return jsonNode.get("uid").getTextValue();
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new RuntimeException(String.format("Unable to create document '%s' in '%s'", title, idOrPath));
+            }
+
+            try (ResponseBody responseBody = response.body()) {
+                JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
+                String docId = jsonNode.get("uid").getTextValue();
+
+                String path = jsonNode.get("path").getTextValue();
+                // do we already have to delete one parent?
+                boolean toDelete = true;
+                for (String docPath : documentPathsToDelete) {
+                    if (path.startsWith(docPath)) {
+                        toDelete = false;
+                        break;
+                    }
+                }
+                if (toDelete) {
+                    documentIdsToDelete.add(docId);
+                    documentPathsToDelete.add(path);
+                }
+
+                return docId;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public static void deleteDocument(String id) throws IOException {
-        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1/id", id }, "/");
+    public static void deleteDocument(String id) {
+        String segment = id.startsWith("/") ? "path" : "id";
+        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1", segment, id }, "/");
         Request request = newRequest().url(url).delete().build();
-        Response response = client.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            throw new RuntimeException(String.format("Unable to delete document '%s'", id));
+        try {
+            client.newCall(request).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
     }
 
     private static String buildDocumentJSON(String type, String title, String description) {
@@ -159,29 +208,31 @@ public class RestHelper {
         return sb.toString();
     }
 
-    public static void addPermission(String path, String username, String permission) throws IOException {
-        String json = buildAddPermissionJSON(path, username, permission);
-
+    public static void addPermission(String pathOrId, String username, String permission) {
+        String json = buildAddPermissionJSON(pathOrId, username, permission);
         RequestBody body = RequestBody.create(AUTOMATION_JSON, json);
-
         String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1/automation",
                 "Document.AddPermission" }, "/");
         Request request = newRequest().url(url).post(body).build();
-        Response response = client.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            throw new RuntimeException(String.format("Unable to add permission '%s' for user '%s' on '%s'", permission,
-                    username, path));
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new RuntimeException(String.format("Unable to add permission '%s' for user '%s' on '%s'",
+                        permission, username, pathOrId));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private static String buildAddPermissionJSON(String path, String username, String permission) {
+    private static String buildAddPermissionJSON(String pathOrId, String username, String permission) {
         StringBuilder sb = new StringBuilder();
         sb.append("{").append("\n");
         sb.append("\"params\": {").append("\n");
         sb.append("\"username\": \"").append(username).append("\",\n");
         sb.append("\"permission\": \"").append(permission).append("\"\n");
         sb.append("}").append(",\n");
-        sb.append("\"input\": \"").append(path).append("\"\n");
+        sb.append("\"input\": \"").append(pathOrId).append("\"\n");
         sb.append("}");
         return sb.toString();
     }

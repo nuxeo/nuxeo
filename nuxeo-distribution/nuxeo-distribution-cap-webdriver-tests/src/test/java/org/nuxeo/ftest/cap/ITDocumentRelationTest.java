@@ -18,8 +18,10 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.io.IOException;
 import java.util.Date;
@@ -28,14 +30,16 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Document Relations test.
@@ -50,30 +54,19 @@ public class ITDocumentRelationTest extends AbstractTest {
 
     private final String FILE_NAME2 = "File2";
 
+    private static String wsId;
+
     @Before
     public void setUp() throws UserNotConnectedException, IOException {
-        DocumentBasePage documentBasePage = login();
-
-        documentBasePage = documentBasePage.getNavigationSubPage().goToDocument("Workspaces");
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
-
-        // Create test File 1
-        DocumentBasePage newFile = createFile(workspacePage, FILE_NAME1, null, false, null, null, null);
-
-        workspacePage = newFile.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
-
-        // Create test File 2
-        newFile = createFile(workspacePage, FILE_NAME2, null, false, null, null, null);
-        logout();
+        wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
+        RestHelper.createDocument(wsId, FILE_TYPE, FILE_NAME1, null);
+        RestHelper.createDocument(wsId, FILE_TYPE, FILE_NAME2, null);
     }
 
     @After
     public void tearDown() throws UserNotConnectedException {
-        DocumentBasePage documentBasePage = login();
-
-        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
-
-        logout();
+        RestHelper.cleanup();
+        wsId = null;
     }
 
     /**
@@ -84,12 +77,10 @@ public class ITDocumentRelationTest extends AbstractTest {
      */
     @Test
     public void testSimpleRelationBetweenTwoDocuments() throws UserNotConnectedException {
-        DocumentBasePage documentBasePage = login();
+        login();
+        open(String.format(NXDOC_URL_FORMAT, wsId));
 
-        documentBasePage = documentBasePage.getContentTab().goToDocument("Workspaces").getContentTab().goToDocument(
-                WORKSPACE_TITLE);
-
-        documentBasePage = documentBasePage.getContentTab().goToDocument(FILE_NAME1);
+        DocumentBasePage documentBasePage = asPage(DocumentBasePage.class).getContentTab().goToDocument(FILE_NAME1);
 
         RelationTabSubPage relationTabSubPage = documentBasePage.getRelationTab();
 

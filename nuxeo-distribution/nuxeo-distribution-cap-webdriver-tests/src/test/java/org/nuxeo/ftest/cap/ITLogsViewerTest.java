@@ -26,11 +26,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.monitoring.LogsPage;
-
 import org.openqa.selenium.WebElement;
 
 /**

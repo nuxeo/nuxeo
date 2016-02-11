@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ftest.cap;
 
+import java.util.Date;
+
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,8 +29,6 @@ import org.nuxeo.functionaltests.pages.admincenter.activity.RepositoryAnalyticsP
 import org.nuxeo.functionaltests.pages.admincenter.activity.SearchAnalyticsPage;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import java.util.Date;
-
 /**
  * @since 7.10
  */
@@ -36,6 +36,7 @@ import java.util.Date;
 public class ITActivityDashboardsTest extends AbstractTest {
 
     private static final Date endDate = new Date();
+
     private static final Date startDate = DateUtils.addDays(endDate, -7);
 
     @Test

@@ -20,18 +20,21 @@ package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.util.Date;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.search.QuickSearchSubPage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.nuxeo.functionaltests.pages.search.SearchResultsSubPage;
@@ -64,52 +67,24 @@ public class ITSuggestBoxTest extends AbstractTest {
 
     private static final String VALUE_WITH_SPECIALS_CHAR = "h\u00e9h\u00e9";
 
-    /**
-     * Init the data for the tests.
-     *
-     * @throws Exception
-     */
-    protected void initTest() throws Exception {
-        // Login as Administrator
-        DocumentBasePage defaultDomainPage = login();
-        // Init repository with a File and its archived versions
-        DocumentBasePage wsPage = createWorkspace(defaultDomainPage, WORKSPACE_TITLE, "Workspace for Webdriver test.");
-
-        // Create test Files
-        FileDocumentBasePage file01Page = createFile(wsPage, FILE_01_NAME, "Test File description", false, null, null,
-                null);
-        wsPage = file01Page.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
-        FileDocumentBasePage file02Page = createFile(wsPage, FILE_02_NAME, "Test File description", false, null, null,
-                null);
-        wsPage = file02Page.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
-        FileDocumentBasePage file03Page = createFile(wsPage, FILE_03_NAME, "Test File description", false, null, null,
-                null);
-        wsPage = file03Page.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
-
-        // Create test users
-        createTestUser(USER1_NAME, USER1_NAME);
-        createTestUser(USER2_NAME, USER2_NAME);
+    @Before
+    public void before() {
+        RestHelper.createUser(USER1_NAME, USER1_NAME, USER1_NAME, "lastname1", "company1", "email1", "members");
+        RestHelper.createUser(USER2_NAME, USER2_NAME, USER2_NAME, "lastname1", "company1", "email1", "members");
+        String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE,
+                "Workspace for Webdriver test.");
+        RestHelper.createDocument(wsId, FILE_TYPE, FILE_01_NAME, "Test File description");
+        RestHelper.createDocument(wsId, FILE_TYPE, FILE_02_NAME, "Test File description");
+        RestHelper.createDocument(wsId, FILE_TYPE, FILE_03_NAME, "Test File description");
     }
 
-    protected void createTestUser(String username, String pswd) throws Exception {
-        UsersGroupsBasePage page;
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(username);
-        if (!usersTab.isUserFound(username)) {
-            page = usersTab.getUserCreatePage().createUser(username, username, "lastname1", "company1", "email1", pswd,
-                    "members");
-            usersTab = page.getUsersTab(true);
-        }
-        // search user
-        usersTab = usersTab.searchUser(username);
-        assertTrue(usersTab.isUserFound(username));
-        logout();
+    @After
+    public void after() {
+        RestHelper.cleanup();
     }
 
     @Test
     public void simpleSearchTest() throws Exception {
-        initTest();
-
         // Test a simple search
         login();
         Select2WidgetElement searchElement = new Select2WidgetElement(driver,
@@ -135,9 +110,6 @@ public class ITSuggestBoxTest extends AbstractTest {
         userPage.checkUserName(USER1_NAME);
 
         logout();
-        // Delete the workspace created
-        DocumentBasePage defaultDomainPage = login();
-        deleteWorkspace(defaultDomainPage, WORKSPACE_TITLE);
     }
 
     @Test

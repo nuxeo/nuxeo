@@ -20,19 +20,27 @@ package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.io.IOException;
 import java.util.Date;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.openqa.selenium.By;
 
 /**
@@ -46,15 +54,23 @@ public class ITTaggingTest extends AbstractTest {
 
     public final static String SELECT2_TAG_ELT_ID = "s2id_nxl_grid_summary_layout:nxw_summary_current_document_tagging_form:nxw_summary_current_document_tagging_select2";
 
+    @Before
+    public void before() {
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, null);
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+    }
+
     @Test
     public void testAddAndRemoveTagOnDocument() throws UserNotConnectedException, IOException {
-        DocumentBasePage documentBasePage = login();
+        login();
+        open(TEST_FILE_URL);
 
-        // Create test File
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
-        FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description",
-                false, null, null, null);
-
+        DocumentBasePage fileDocumentBasePage = asPage(DocumentBasePage.class);
         Select2WidgetElement tagWidget = new Select2WidgetElement(driver,
                 Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)), true);
         assertTrue(tagWidget.getSelectedValues().isEmpty());
@@ -85,12 +101,4 @@ public class ITTaggingTest extends AbstractTest {
         tagWidget = new Select2WidgetElement(driver, Locator.findElementWithTimeout(By.id(SELECT2_TAG_ELT_ID)), true);
         assertEquals(1, tagWidget.getSelectedValues().size());
     }
-
-    @After
-    public void tearDown() throws UserNotConnectedException {
-        DocumentBasePage documentBasePage = login();
-        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
-        logout();
-    }
-
 }

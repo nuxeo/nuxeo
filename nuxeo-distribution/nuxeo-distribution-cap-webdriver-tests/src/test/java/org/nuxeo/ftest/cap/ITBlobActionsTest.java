@@ -20,18 +20,22 @@ package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_URL;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
-import org.nuxeo.functionaltests.pages.NavigationSubPage;
-import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
-import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -42,37 +46,31 @@ import org.openqa.selenium.WebElement;
  */
 public class ITBlobActionsTest extends AbstractTest {
 
-    public final static String WORKSPACE_ROOT = "Workspaces";
-
-    public final static String WORKSPACE_NAME = "WorkspaceTest";
-
-    public final static String WORKSPACE_DESC = "Workspace Test Description";
-
     public final static String DOCUMENT_NAME = "DocumentTest";
 
     public final static String DOCUMENT_DESC = "Document Test Description";
 
     public static final String PREVIEW_FILE_REGEX = ".*openFancyBox\\('.*/api/v1/repo/default/id/.*/@blob/file:content/@preview/'.*\\).*";
 
+    @Before
+    public void before() {
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+    }
+
     @Test
     public void testBlobPreviewAction() throws Exception {
-
-        // Login
-        DocumentBasePage home = login();
-
-        // Navigate to workspaces root
-        NavigationSubPage domainContent = home.getNavigationSubPage();
-        DocumentBasePage workspacesPage = domainContent.goToDocument(WORKSPACE_ROOT);
-        WorkspacesContentTabSubPage workspacesContent = workspacesPage.getWorkspacesContentTab();
-
-        // Create a workspace and navigate into it
-        WorkspaceFormPage workspaceFormPage = workspacesContent.getWorkspaceCreatePage();
-        DocumentBasePage workspacePage = workspaceFormPage.createNewWorkspace(WORKSPACE_NAME, WORKSPACE_DESC);
+        login();
+        open(TEST_WORKSPACE_URL);
 
         // Create a PDF File
         String filePrefix = "NX-Webdriver-test-";
-        FileDocumentBasePage filePage = createFile(workspacePage, DOCUMENT_NAME, DOCUMENT_DESC, true, filePrefix,
-                ".pdf", "Webdriver test file content.");
+        FileDocumentBasePage filePage = createFile(asPage(DocumentBasePage.class), DOCUMENT_NAME, DOCUMENT_DESC, true,
+                filePrefix, ".pdf", "Webdriver test file content.");
 
         // Get actions for main blob
         List<WebElement> actions = filePage.getBlobActions(0);
