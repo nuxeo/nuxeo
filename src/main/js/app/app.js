@@ -91,10 +91,10 @@ function doQuery() {
   });
 }
 
-function run() {
+function run(baseURL = '/nuxeo', username = null, password = null) {
 
   // Setup our connection
-  var nx = new Connection();
+  var nx = new Connection(baseURL, username, password);
   nx.schemas(['*']);
 
   $(() => {

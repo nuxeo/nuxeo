@@ -49,8 +49,9 @@
   <script src="app-build.js"></script>
   <!-- endbuild -->
   <script>
+    var contextPath = '<%= request.getContextPath() %>';
     System.import('app')
-      .then(function(app) { app.run(); })
+      .then(function(app) { app.run(contextPath); })
       .catch(console.error.bind(console));
   </script>
 </body>
