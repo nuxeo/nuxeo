@@ -137,9 +137,9 @@ body {
 }
 
 .login_input {
-  border: 1px solid #aaa;
+  border: 0;
   border-radius: 2px;
-  box-shadow: 1px 1px 2px #e0e0e0 inset;
+  box-shadow: 1px 1px 2px #e0e0e0 inset, 0 1px 2px rgba(0,0,0,0.2);
   padding: .7em;
   margin: 0 0 .4em;
   font-size:115%;
@@ -217,14 +217,15 @@ body {
 }
 
 .feedbackMessage {
-  border-bottom: 1px dotted #ccc;
-  color: #a0a0a0 ;
-  font-size: 100%;
+  background-color: rgba(255,255,255,0.8);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  color: #00adff ;
+  font-size: 95%;
   margin: 0.5em 0;
   padding: 0.5em 0;
   width: 220px;
   text-align: center;
-  border-top: 1px dotted #ccc;
 }
 
 .errorMessage {
