@@ -56,6 +56,6 @@ public class SpreadsheetActions implements Serializable {
             cv = URLEncoder.encode(encoded, "UTF-8");
         }
 
-        return VirtualHostHelper.getContextPathProperty() + "/spreadsheet/index.html?cv=" + cv;
+        return VirtualHostHelper.getContextPathProperty() + "/spreadsheet/?cv=" + cv;
     }
 }
