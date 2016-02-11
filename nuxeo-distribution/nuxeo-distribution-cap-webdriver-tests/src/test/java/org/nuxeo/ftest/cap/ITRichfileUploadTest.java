@@ -21,6 +21,13 @@ package org.nuxeo.ftest.cap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.io.IOException;
 import java.util.Date;
@@ -30,12 +37,13 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
@@ -71,24 +79,24 @@ public class ITRichfileUploadTest extends AbstractTest {
 
     private final static String WORKSPACE_TITLE = ITRichfileUploadTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
+    @Before
+    public void before() {
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, null);
+    }
+
     @After
-    public void tearDown() throws UserNotConnectedException {
-        DocumentBasePage documentBasePage = login();
-        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
-        logout();
+    public void after() throws UserNotConnectedException {
+        RestHelper.cleanup();
     }
 
     @Test
     public void testRichFileUpload() throws IOException, UserNotConnectedException {
-        DocumentBasePage documentBasePage = login();
-
-        // Create test File
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
-        FileDocumentBasePage filePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null,
-                null, null);
+        login();
+        open(TEST_FILE_URL);
 
         // Go to Files tab
-        filePage.clickOnDocumentTabLink(Locator.findElementWithTimeout(By.xpath(FILES_TAB_XPATH)));
+        asPage(DocumentBasePage.class).clickOnDocumentTabLink(Locator.findElementWithTimeout(By.xpath(FILES_TAB_XPATH)));
 
         // check that clear all is not visible
         assertFalse(Locator.findElementWithTimeout(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());
@@ -144,9 +152,12 @@ public class ITRichfileUploadTest extends AbstractTest {
         Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile5);
 
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                StaleElementReferenceException.class);
+                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                                                             .pollingEvery(
+                                                                                     AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
+                                                                                     TimeUnit.MILLISECONDS)
+                                                                             .ignoring(
+                                                                                     StaleElementReferenceException.class);
         Function<WebDriver, Boolean> function = new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -208,9 +219,6 @@ public class ITRichfileUploadTest extends AbstractTest {
         clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
         assertEquals(0, clearLinks.size());
 
-        workspacePage.getAdminCenter();
-
-        // Logout
         logout();
     }
 }

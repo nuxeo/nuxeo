@@ -18,22 +18,25 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.VocabulariesPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;
@@ -42,6 +45,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.google.common.base.Function;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @since 5.9.3
@@ -54,9 +62,21 @@ public class ITVocabularyTest extends AbstractTest {
 
     public final static String SAMPLE_SUBJECT_ENTRY_LABEL = "Comics";
 
-    public final static String TEST_FILE_NAME = "test1";
-
     private final static String WORKSPACE_TITLE = ITVocabularyTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
+
+    private static String fileId;
+
+    @Before
+    public void before() {
+        String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
+        fileId = RestHelper.createDocument(wsId, FILE_TYPE, TEST_FILE_TITLE, null);
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+        fileId = null;
+    }
 
     /**
      * Edit a document and add a directory entry. Remove the entry from the vocabulary in Admin Center. Check that we
@@ -65,13 +85,9 @@ public class ITVocabularyTest extends AbstractTest {
     @Test
     public void testEntryNotFountAndRemove() throws UserNotConnectedException, IOException {
         try {
-            DocumentBasePage documentBasePage = login();
-
-            // Create test File
-            DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
-            FileDocumentBasePage filePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description", false,
-                    null, null, null);
-            EditTabSubPage editTabSubPage = filePage.getEditTab();
+            login();
+            open(String.format(NXDOC_URL_FORMAT, fileId));
+            EditTabSubPage editTabSubPage = asPage(DocumentBasePage.class).getEditTab();
 
             // add a vocabulary entry
             Select2WidgetElement subjectsWidget = new Select2WidgetElement(
@@ -79,7 +95,7 @@ public class ITVocabularyTest extends AbstractTest {
                     driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']")),
                     true);
             subjectsWidget.selectValue(SAMPLE_SUBJECT_ENTRY_LABEL);
-            documentBasePage = editTabSubPage.save();
+            DocumentBasePage documentBasePage = editTabSubPage.save();
 
             // delete the selected entry in admin center
             VocabulariesPage vocabulariesPage = documentBasePage.getAdminCenter().getVocabulariesPage();
@@ -101,12 +117,14 @@ public class ITVocabularyTest extends AbstractTest {
             }
 
             // The entry should still be attached to the document but with a warning
-            documentBasePage = vocabulariesPage.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
-                    "Workspaces");
+            documentBasePage = vocabulariesPage.exitAdminCenter()
+                                               .getHeaderLinks()
+                                               .getNavigationSubPage()
+                                               .goToDocument("Workspaces");
 
             documentBasePage = documentBasePage.getContentTab().goToDocument(WORKSPACE_TITLE);
 
-            editTabSubPage = documentBasePage.getContentTab().goToDocument(TEST_FILE_NAME).getEditTab();
+            editTabSubPage = documentBasePage.getContentTab().goToDocument(TEST_FILE_TITLE).getEditTab();
             subjectsWidget = new Select2WidgetElement(
                     driver,
                     driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']")),

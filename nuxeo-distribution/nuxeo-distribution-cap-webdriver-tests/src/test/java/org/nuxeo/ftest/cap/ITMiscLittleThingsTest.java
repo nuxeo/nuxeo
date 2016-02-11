@@ -140,7 +140,7 @@ public class ITMiscLittleThingsTest extends AbstractTest {
     }
 
     protected void waitForXmlExport() {
-        Locator.waitUntilGivenFunction(new Function<WebDriver,Boolean>() {
+        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver input) {
                 try {

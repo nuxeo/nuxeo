@@ -18,25 +18,29 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.util.Date;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Select2 feature test.
@@ -53,22 +57,20 @@ public class ITSelect2Test extends AbstractTest {
 
     public static final String S2_COVERAGE_FIELD_XPATH = "//*[@id='s2id_document_edit:nxl_dublincore:nxw_coverage_1_select2']/a/span";
 
-    /**
-     * Delete created user and data.
-     *
-     * @throws UserNotConnectedException
-     * @since 5.7.3
-     */
-    private void restoreSate() throws Exception {
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(TEST_USERNAME);
-        usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
-        DocumentBasePage documentBasePage = usersTab.exitAdminCenter()
-                                                    .getHeaderLinks()
-                                                    .getNavigationSubPage()
-                                                    .goToDocument("Workspaces");
-        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
-        logout();
+    private static String fileId;
+
+    @Before
+    public void before() {
+        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1", "members");
+        String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
+        fileId = RestHelper.createDocument(wsId, FILE_TYPE, TEST_FILE_TITLE, null);
+        RestHelper.addPermission(wsId, TEST_USERNAME, "Everything");
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+        fileId = null;
     }
 
     /**
@@ -79,46 +81,10 @@ public class ITSelect2Test extends AbstractTest {
      */
     @Test
     public void testSelect2Edit() throws Exception {
-        DocumentBasePage documentBasePage;
+        login(TEST_USERNAME, TEST_PASSWORD);
+        open(String.format(NXDOC_URL_FORMAT, fileId));
 
-        DocumentBasePage s = login();
-
-        // Create a new user if not exist
-        UsersGroupsBasePage page;
-        UsersTabSubPage usersTab = s.getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = usersTab.searchUser(TEST_USERNAME);
-        if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, TEST_USERNAME, "lastname1", "company1",
-                    "email1", TEST_PASSWORD, "members");
-            usersTab = page.getUsersTab(true);
-        } // search user usersTab =
-        usersTab.searchUser(TEST_USERNAME);
-        assertTrue(usersTab.isUserFound(TEST_USERNAME));
-
-        // create a new wokspace and grant all rights to the test user
-        documentBasePage = usersTab.exitAdminCenter()
-                                   .getHeaderLinks()
-                                   .getNavigationSubPage()
-                                   .goToDocument("Workspaces");
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
-        PermissionsSubPage permissionsSubPage = workspacePage.getPermissionsTab();
-        // Need WriteSecurity (so in practice Manage everything) to edit a
-        // Workspace
-        if (!permissionsSubPage.hasPermissionForUser("Manage everything", TEST_USERNAME)) {
-            permissionsSubPage.grantPermissionForUser("Manage everything", TEST_USERNAME);
-        }
-
-        logout();
-
-        // Log as test user and edit the created workdspace
-        documentBasePage = login(TEST_USERNAME, TEST_PASSWORD).getContentTab()
-                                                              .goToDocument("Workspaces")
-                                                              .getContentTab()
-                                                              .goToDocument(WORKSPACE_TITLE);
-
-        // Create test File
-        FileDocumentBasePage filePage = createFile(workspacePage, "Test file for ITSelect2Test#testSelect2Edit", "Test File description", false, null,
-                null, null);
+        FileDocumentBasePage filePage = asPage(FileDocumentBasePage.class);
         EditTabSubPage editTabSubPage = filePage.getEditTab();
 
         Select2WidgetElement subjectsWidget = new Select2WidgetElement(driver,
@@ -153,15 +119,13 @@ public class ITSelect2Test extends AbstractTest {
 
         editTabSubPage.save();
 
-        editTabSubPage = filePage.getEditTab();
+        filePage.getEditTab();
 
         // Make sure we have one subject removed
         savedSubjects = driver.findElements(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']/ul/li/div"));
         assertEquals(savedSubjects.size(), SUBJECTS.length - 1);
 
         logout();
-
-        restoreSate();
     }
 
 }

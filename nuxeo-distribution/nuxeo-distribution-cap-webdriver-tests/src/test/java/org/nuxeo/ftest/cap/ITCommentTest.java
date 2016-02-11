@@ -22,10 +22,15 @@ package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,34 +45,25 @@ import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
  */
 public class ITCommentTest extends AbstractTest {
 
-    private List<String> usersToDelete = new ArrayList<>();
-
-    private List<String> documentsToDelete = new ArrayList<>();
-
     @Before
     public void before() throws Exception {
-        usersToDelete.add(RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, null, null, null, null, "members"));
-        usersToDelete.add(RestHelper.createUser("bree", "bree1", null, null, null, null, "members"));
-        usersToDelete.add(RestHelper.createUser("lbramard", "lbramard1", null, null, null, null, "members"));
-        usersToDelete.add(RestHelper.createUser("jsmith", "jsmith1", null, null, null, null, "members"));
-        documentsToDelete.add(RestHelper.createDocument("/default-domain/workspaces", "Workspace", "ws", null));
-        RestHelper.createDocument("/default-domain/workspaces/ws", "File", "file", null);
+        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, null, null, null, null, "members");
+        RestHelper.createUser("bree", "bree1", null, null, null, null, "members");
+        RestHelper.createUser("lbramard", "lbramard1", null, null, null, null, "members");
+        RestHelper.createUser("jsmith", "jsmith1", null, null, null, null, "members");
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, null);
     }
 
     @After
     public void after() throws IOException {
-        for (String user : usersToDelete) {
-            RestHelper.deleteUser(user);
-        }
-        for (String id : documentsToDelete) {
-            RestHelper.deleteDocument(id);
-        }
+        RestHelper.cleanup();
     }
 
     @Test
     public void testAddComment() throws DocumentBasePage.UserNotConnectedException {
         login(TEST_USERNAME, TEST_PASSWORD);
-        open("/nxpath/default/default-domain/workspaces/ws/file@view_documents");
+        open(TEST_FILE_URL);
 
         CommentsTabSubPage page = asPage(DocumentBasePage.class).getCommentsTab();
         page = page.addComment("Comment number 1");
@@ -77,14 +73,14 @@ public class ITCommentTest extends AbstractTest {
     @Test
     public void testReplyToComment() throws DocumentBasePage.UserNotConnectedException {
         login(TEST_USERNAME, TEST_PASSWORD);
-        open("/nxpath/default/default-domain/workspaces/ws/file@view_documents");
+        open(TEST_FILE_URL);
 
         CommentsTabSubPage page = asPage(DocumentBasePage.class).getCommentsTab();
         page = page.addComment("Comment number 1");
         assertTrue(page.hasComment("Comment number 1"));
 
         login("bree", "bree1");
-        open("/nxpath/default/default-domain/workspaces/ws/file@view_documents");
+        open(TEST_FILE_URL);
         page = asPage(DocumentBasePage.class).getCommentsTab();
         page = page.reply("Answer number 1");
         assertTrue(page.hasComment("Answer number 1"));
@@ -96,7 +92,7 @@ public class ITCommentTest extends AbstractTest {
     @Test
     public void testDeleteComment() throws DocumentBasePage.UserNotConnectedException {
         login("lbramard", "lbramard1");
-        open("/nxpath/default/default-domain/workspaces/ws/file@view_documents");
+        open(TEST_FILE_URL);
 
         CommentsTabSubPage page = asPage(DocumentBasePage.class).getCommentsTab();
         page = page.addComment("Comment number 3");
@@ -109,7 +105,7 @@ public class ITCommentTest extends AbstractTest {
         assertTrue(page.hasComment("Comment number 4"));
 
         login("jsmith", "jsmith1");
-        open("/nxpath/default/default-domain/workspaces/ws/file@view_documents");
+        open(TEST_FILE_URL);
         page = asPage(DocumentBasePage.class).getCommentsTab();
         assertFalse(page.canDelete());
     }

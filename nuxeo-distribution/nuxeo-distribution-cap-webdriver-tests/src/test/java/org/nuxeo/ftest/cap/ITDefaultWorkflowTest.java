@@ -19,20 +19,26 @@
 package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.UserHomePage;
 import org.nuxeo.functionaltests.pages.WorkflowHomePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
 import org.nuxeo.runtime.test.runner.Features;
@@ -59,68 +65,29 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
     private static final String USER_NO_RIGHT = "no_right_workflow";
 
-    @Override
-    protected DocumentBasePage initRepository(DocumentBasePage currentPage) throws Exception {
-        // Create test Workspace
-        DocumentBasePage workspacePage = super.initRepository(currentPage);
-        // Create test File
-        FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false, null,
-                null, null);
-        return filePage;
+    @Before
+    public void before() {
+        RestHelper.createUser(USER_LINNET, USER_LINNET, USER_LINNET, "lastname1", "company1", "email1", "members");
+        RestHelper.createUser(USER_BREE, USER_BREE, USER_BREE, "lastname1", "company1", "email1", "members");
+        RestHelper.createUser(USER_JSMITH, USER_JSMITH, USER_JSMITH, "lastname1", "company1", "email1", "members");
+        RestHelper.createUser(USER_JDOE, USER_JDOE, USER_JDOE, "lastname1", "company1", "email1", "members");
+        RestHelper.createUser(USER_NO_RIGHT, USER_NO_RIGHT, USER_NO_RIGHT, "lastname1", "company1", "email1", null);
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, null);
     }
 
-    protected void createTestUser(String username, String pswd) throws Exception {
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        createTestUser(usersTab, username, pswd, "members");
-        logout();
-    }
-
-    protected UsersTabSubPage createTestUser(UsersTabSubPage usersTab, String username, String pswd) throws Exception {
-        return createTestUser(usersTab, username, pswd, "members");
-    }
-
-    /**
-     * @since 8.3
-     */
-    protected UsersTabSubPage createTestUser(UsersTabSubPage usersTab, String username, String pswd, String group) throws Exception {
-        UsersGroupsBasePage page;
-        usersTab = usersTab.searchUser(username);
-        if (!usersTab.isUserFound(username)) {
-            page = usersTab.getUserCreatePage().createUser(username, username, "lastname1", "company1", "email1", pswd,
-                    group);
-            usersTab = page.getUsersTab(true);
-            // make sure user has been created
-            usersTab = usersTab.searchUser(username);
-            assertTrue(usersTab.isUserFound(username));
-        }
-        return usersTab;
-    }
-
-    protected void deleteTestUser(String username) throws Exception {
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        deleteTestUser(usersTab, username);
-        logout();
-    }
-
-    protected UsersTabSubPage deleteTestUser(UsersTabSubPage usersTab, String username) throws Exception {
-        usersTab = usersTab.searchUser(username);
-        usersTab = usersTab.viewUser(username).deleteUser();
-        usersTab = usersTab.searchUser(username);
-        assertFalse(usersTab.isUserFound(username));
-        return usersTab;
+    @After
+    public void after() {
+        RestHelper.cleanup();
     }
 
     @Test
     public void testDefaultSerialWorkflow() throws Exception {
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = createTestUser(usersTab, USER_NO_RIGHT, USER_NO_RIGHT, null);
-        // create a file doc
-        DocumentBasePage defaultDomainPage = login();
-        DocumentBasePage filePage = initRepository(defaultDomainPage);
-        // start the default serial workflow and choose jdoe_workflow as
+        // start the default serial workflow and choose USER_NO_RIGHT as
         // reviewer
-        filePage = startDefaultSerialWorkflow(filePage, USER_NO_RIGHT);
-
+        login();
+        open(TEST_FILE_URL);
+        startDefaultSerialWorkflow(asPage(DocumentBasePage.class), USER_NO_RIGHT);
         logout();
 
         UserHomePage homePage = getLoginPage().login(USER_NO_RIGHT, USER_NO_RIGHT, UserHomePage.class);
@@ -128,7 +95,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Validate the Document"));
         workflowHomePage.processFirstTask();
-        SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask("Test file");
+        SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
         // check that the open task is displayed on the summary page
         assertTrue(summaryTabPage.workflowAlreadyStarted());
         assertTrue(summaryTabPage.openTaskForCurrentUser());
@@ -150,38 +117,24 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.isTasksDashboardEmpty());
 
-        // cleanup file doc and user
         logout();
-        login();
-        cleanRepository(filePage);
-        logout();
-        deleteTestUser(USER_NO_RIGHT);
     }
 
     @Test
     public void testDefaultParallelWorkflow() throws Exception {
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = createTestUser(usersTab, USER_JDOE, USER_JDOE);
-        usersTab = createTestUser(usersTab, USER_JSMITH, USER_JSMITH);
+        login();
+        open(TEST_FILE_URL);
+        startDefaultParallelWorkflow(asPage(DocumentBasePage.class));
         logout();
 
-        // create a file doc
-        DocumentBasePage defaultDomainPage = login();
-        DocumentBasePage filePage = initRepository(defaultDomainPage);
-        // start the default parallel workflow and choose jdoe_workflow and
-        // jsmith_workflow as
-        // reviewers
-        filePage = startDefaultParallelWorkflow(filePage);
-
-        logout();
-        filePage = login(USER_JDOE, USER_JDOE);
+        DocumentBasePage filePage = login(USER_JDOE, USER_JDOE);
 
         UserHomePage homePage = filePage.getUserHome();
         // check that jdoe_workflow has an open task on his tasks dashboard
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
         workflowHomePage.processFirstTask();
-        SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask("Test file");
+        SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
         // check that the open task is displayed on the summary page
 
         assertTrue(summaryTabPage.workflowAlreadyStarted());
@@ -199,7 +152,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
         workflowHomePage.processFirstTask();
-        summaryTabPage = workflowHomePage.redirectToTask("Test file");
+        summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
         // check that the open task is displayed on the summary page
 
         assertTrue(summaryTabPage.workflowAlreadyStarted());
@@ -219,7 +172,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Consolidate the Review"));
         workflowHomePage.processFirstTask();
-        summaryTabPage = workflowHomePage.redirectToTask("Test file");
+        summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
 
         assertTrue(summaryTabPage.workflowAlreadyStarted());
 
@@ -256,37 +209,17 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.isTasksDashboardEmpty());
 
-        // cleanup file doc and user
-        logout();
-        login();
-        cleanRepository(filePage);
-        logout();
-
-        usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = deleteTestUser(usersTab, USER_JDOE);
-        usersTab = deleteTestUser(usersTab, USER_JSMITH);
         logout();
     }
 
     @Test
     public void testTaskReassignmentAndDelegation() throws Exception {
-        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = createTestUser(usersTab, USER_JDOE, USER_JDOE);
-        usersTab = createTestUser(usersTab, USER_BREE, USER_BREE);
-        usersTab = createTestUser(usersTab, USER_JSMITH, USER_JSMITH);
-        usersTab = createTestUser(usersTab, USER_LINNET, USER_LINNET);
+        login();
+        open(TEST_FILE_URL);
+        startDefaultParallelWorkflow(asPage(DocumentBasePage.class));
         logout();
 
-        // create a file doc
-        DocumentBasePage defaultDomainPage = login();
-        DocumentBasePage filePage = initRepository(defaultDomainPage);
-        // start the default parallel workflow and choose jdoe_workflow and
-        // jsmith_workflow as
-        // reviewers
-        filePage = startDefaultParallelWorkflow(filePage);
-
-        logout();
-        filePage = login(USER_JDOE, USER_JDOE);
+        DocumentBasePage filePage = login(USER_JDOE, USER_JDOE);
 
         UserHomePage homePage = filePage.getUserHome();
         // check that jdoe_workflow has an open task on his tasks dashboard
@@ -307,7 +240,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
         workflowHomePage.processFirstTask();
 
-        SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask("Test file");
+        SummaryTabSubPage summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
         // check that the open task is displayed on the summary page
 
         assertTrue(summaryTabPage.workflowAlreadyStarted());
@@ -336,7 +269,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Give your Opinion"));
         workflowHomePage.processFirstTask();
-        summaryTabPage = workflowHomePage.redirectToTask("Test file");
+        summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
         // check that the open task is displayed on the summary page
 
         assertTrue(summaryTabPage.workflowAlreadyStarted());
@@ -356,7 +289,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Consolidate the Review"));
         workflowHomePage.processFirstTask();
-        summaryTabPage = workflowHomePage.redirectToTask("Test file");
+        summaryTabPage = workflowHomePage.redirectToTask(TEST_FILE_TITLE);
 
         assertTrue(summaryTabPage.workflowAlreadyStarted());
 
@@ -381,17 +314,6 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.isTasksDashboardEmpty());
 
-        // cleanup file doc and user
-        logout();
-        login();
-        cleanRepository(filePage);
-        logout();
-
-        usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        usersTab = deleteTestUser(usersTab, USER_JDOE);
-        usersTab = deleteTestUser(usersTab, USER_JSMITH);
-        usersTab = deleteTestUser(usersTab, USER_BREE);
-        usersTab = deleteTestUser(usersTab, USER_LINNET);
         logout();
     }
 
@@ -399,7 +321,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         // start workflow
         SummaryTabSubPage summaryTabPage = filePage.getSummaryTab();
         summaryTabPage.startDefaultWorkflow();
-        assertTrue(summaryTabPage.workflowTasksForm.getText().contains("Please select some participants for the review"));
+        assertTrue(
+                summaryTabPage.workflowTasksForm.getText().contains("Please select some participants for the review"));
         // click on the workflow tab
         WorkflowTabSubPage workflowTab = filePage.getWorkflow();
         workflowTab.showGraphView();
@@ -415,7 +338,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         // start workflow
         SummaryTabSubPage summaryTabPage = filePage.getSummaryTab();
         summaryTabPage.startDefaultParallelWorkflow();
-        assertTrue(summaryTabPage.workflowTasksForm.getText().contains("Please select some participants for the review"));
+        assertTrue(
+                summaryTabPage.workflowTasksForm.getText().contains("Please select some participants for the review"));
         // click on the workflow tab
         WorkflowTabSubPage workflowTab = filePage.getWorkflow();
         workflowTab.showGraphView();

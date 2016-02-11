@@ -18,22 +18,25 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
+import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
+import static org.nuxeo.ftest.cap.Constants.NXDOC_URL_FORMAT;
 
 import java.util.Date;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test Drag and Drop Import feature.
@@ -42,7 +45,8 @@ import org.openqa.selenium.support.FindBy;
  */
 public class ITDnDImportTest extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = ITDnDImportTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITDnDImportTest.class.getSimpleName() + "_WorkspaceTitle_"
+            + new Date().getTime();
 
     private final static String CVDZ_ID = "CVDZ";
 
@@ -50,10 +54,9 @@ public class ITDnDImportTest extends AbstractTest {
 
     private final static String DROP_ZONE_CSS_CLASS = "dropzone";
 
-    @FindBy(xpath = "//div[@id='CVDZ']")
-    public WebElement dropZone;
-
     private JavascriptExecutor js;
+
+    private static String wsId;
 
     private void dragoverMockFileFF() {
         js.executeScript(String.format("jQuery('#%s').dropzone();", CVDZ_ID));
@@ -70,6 +73,17 @@ public class ITDnDImportTest extends AbstractTest {
 
     }
 
+    @Before
+    public void before() {
+        wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE, null);
+    }
+
+    @After
+    public void after() {
+        RestHelper.cleanup();
+        wsId = null;
+    }
+
     /**
      * Test that the drop zone is reactive.
      *
@@ -80,11 +94,8 @@ public class ITDnDImportTest extends AbstractTest {
     public void testDropZone() throws UserNotConnectedException {
         js = driver;
 
-        DocumentBasePage documentBasePage = login();
-
-        documentBasePage = documentBasePage.getNavigationSubPage().goToDocument("Workspaces");
-
-        createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
+        login();
+        open(String.format(NXDOC_URL_FORMAT, wsId));
 
         WebElement dropzone = driver.findElement(By.id(CVDZ_ID));
 
@@ -100,8 +111,6 @@ public class ITDnDImportTest extends AbstractTest {
         cssClass = dropzone.getAttribute("class");
         assertNotNull(cssClass);
         assertTrue(cssClass.contains(DROP_ZONE_TARGET_CSS_CLASS));
-
-        deleteWorkspace(documentBasePage, WORKSPACE_TITLE);
 
         logout();
     }

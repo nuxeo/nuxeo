@@ -23,12 +23,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.AtomPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.RSSPage;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
