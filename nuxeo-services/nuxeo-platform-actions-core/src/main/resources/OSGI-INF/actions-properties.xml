@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.ActionService.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService"
+    point="configuration">
+    <property name="nuxeo.actions.debug.log_min_duration_ms">-1</property>
+  </extension>
+
+</component>
