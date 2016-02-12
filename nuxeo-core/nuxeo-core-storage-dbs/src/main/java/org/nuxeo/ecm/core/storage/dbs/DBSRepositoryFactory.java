@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import javax.resource.spi.ConnectionManager;
+
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
@@ -49,10 +51,10 @@ public abstract class DBSRepositoryFactory implements RepositoryFactory {
      * This is done so that the connection pool monitor has something to return. In the future we may have an actual
      * pool.
      */
-    protected void installPool() {
+    protected ConnectionManager installPool() {
         NuxeoConnectionManagerConfiguration pool = new NuxeoConnectionManagerConfiguration();
         pool.setName("repository/" + repositoryName);
-        NuxeoContainer.initConnectionManager(pool);
+        return NuxeoContainer.initConnectionManager(pool);
     }
 
 }
