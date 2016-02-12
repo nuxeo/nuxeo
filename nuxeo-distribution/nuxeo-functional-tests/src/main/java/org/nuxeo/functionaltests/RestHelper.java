@@ -45,6 +45,8 @@ public class RestHelper {
 
     private static final MediaType AUTOMATION_JSON = MediaType.parse("application/json+nxrequest");
 
+    private static final String USER_WORKSPACE_PATH_FORMAT = "/default-domain/UserWorkspaces/%s";
+
     private static final OkHttpClient client = new OkHttpClient();
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -64,6 +66,10 @@ public class RestHelper {
         documentIdsToDelete.clear();
         documentPathsToDelete.clear();
 
+        for (String user : usersToDelete) {
+            RestHelper.deleteUser(user);
+            RestHelper.deleteDocument(String.format(USER_WORKSPACE_PATH_FORMAT, user));
+        }
         usersToDelete.forEach(RestHelper::deleteUser);
         usersToDelete.clear();
     }
