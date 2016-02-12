@@ -175,8 +175,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * Perform filter on the given string.
      *
      * @param filter the string to filter
-     * @param expectedDisplayedElt
-     * @param timeout
+     * @param expectedNbOfDisplayedResult
      * @since 5.7.2
      */
     public ContentTabSubPage filterDocument(final String filter, final int expectedNbOfDisplayedResult,
@@ -321,5 +320,17 @@ public class ContentTabSubPage extends DocumentBasePage {
     public DocumentBasePage goToDocument(final int index) {
         getChildDocumentRows().get(index).findElement(By.xpath("td[3]/div/a[1]")).click();
         return asPage(DocumentBasePage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public boolean hasDocumentLink(String title) {
+        try {
+            WebElement element = documentContentForm.findElement(By.linkText(title));
+            return element != null;
+        } catch(NoSuchElementException e) {
+            return false;
+        }
     }
 }

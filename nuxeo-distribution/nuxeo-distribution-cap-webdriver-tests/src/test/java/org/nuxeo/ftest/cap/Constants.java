@@ -39,6 +39,8 @@ public class Constants {
 
     public static final String WORKSPACES_PATH = "/default-domain/workspaces/";
 
+    public static final String WORKSPACES_URL = String.format(NXPATH_URL_FORMAT, WORKSPACES_PATH);
+
     public static final String TEST_WORKSPACE_TITLE = "ws";
 
     public static final String TEST_WORKSPACE_PATH = WORKSPACES_PATH + TEST_WORKSPACE_TITLE + "/";

@@ -39,6 +39,12 @@ public class PermissionsSubPage extends AbstractPage {
     @FindBy(xpath = "//div[contains(@class, 'jsLocalPermissions')]/*/paper-button")
     WebElement newPermission;
 
+    @FindBy(xpath = "//paper-button[@id='block']")
+    WebElement blockPermissions;
+
+    @FindBy(xpath = "//paper-button[@id='unblock']")
+    WebElement unblockPermissions;
+
     public PermissionsSubPage(WebDriver driver) {
         super(driver);
     }
@@ -48,6 +54,9 @@ public class PermissionsSubPage extends AbstractPage {
         boolean hasPermission = false;
         for (WebElement element : elements) {
             List<WebElement> names = element.findElements(By.xpath(".//span[contains(@class, 'tag user')]"));
+            if (names.isEmpty()) {
+                names = element.findElements(By.xpath(".//span[contains(@class, 'tag group')]"));
+            }
             List<WebElement> perms = element.findElements(By.className("label"));
             if (names.size() > 0 && perms.size() > 0) {
                 String title = names.get(0).getAttribute("title");
@@ -99,5 +108,47 @@ public class PermissionsSubPage extends AbstractPage {
 
     protected void waitForPermissionAdded(String permission, String username) {
         Locator.waitUntilGivenFunction(input -> hasPermissionForUser(permission, username));
+    }
+
+    public PermissionsSubPage blockPermissions() {
+        blockPermissions.click();
+        Locator.waitUntilElementPresent(By.xpath("//paper-button[@id='unblock']"));
+        return asPage(PermissionsSubPage.class);
+    }
+
+    public PermissionsSubPage unblockPermissions() {
+        unblockPermissions.click();
+        Locator.waitUntilElementPresent(By.xpath("//paper-button[@id='block']"));
+        return asPage(PermissionsSubPage.class);
+    }
+
+    public PermissionsSubPage deletePermission(String permission, String username) {
+        WebElement deleteButton = findDeleteButton(permission, username);
+        if (deleteButton != null) {
+            deleteButton.click();
+            Locator.waitUntilElementPresent(By.xpath("//h2[contains(text(), 'The following permission will be deleted')]"));
+            driver.findElement(By.xpath("//paper-button[text()='Delete']")).click();
+            Locator.waitUntilElementPresent(By.xpath("//span[text()='Permission deleted.']"));
+        }
+        return asPage(PermissionsSubPage.class);
+    }
+
+    private WebElement findDeleteButton(String permission, String username) {
+        List<WebElement> elements = driver.findElements(By.xpath("//div[contains(@class, 'acl-table-row effective')]"));
+        for (WebElement element : elements) {
+            List<WebElement> names = element.findElements(By.xpath(".//span[contains(@class, 'tag user')]"));
+            if (names.isEmpty()) {
+                names = element.findElements(By.xpath(".//span[contains(@class, 'tag group')]"));
+            }
+            List<WebElement> perms = element.findElements(By.className("label"));
+            if (names.size() > 0 && perms.size() > 0) {
+                String title = names.get(0).getAttribute("title");
+                String perm = perms.get(0).getText();
+                if (title.startsWith(username) && permission.equalsIgnoreCase(perm)) {
+                    return element.findElement(By.xpath(".//paper-icon-button[@icon='delete']"));
+                }
+            }
+        }
+        return null;
     }
 }
