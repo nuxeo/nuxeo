@@ -49,8 +49,6 @@ import com.google.common.base.Function;
  */
 public class ITMiscLittleThingsTest extends AbstractTest {
 
-    private static final String XML_EXPORT_LINK_TEXT = "XML Export";
-
     private static final String EXPECTED_HREF = "http://localhost:8080/nuxeo/nxpath/default/default-domain/workspaces@view_documents?tabIds=%3A";
 
     private static final String EXPECTED_ONCLICK = "if(!(event.ctrlKey||event.shiftKey||event.metaKey||event.button==1)){this.href='http:\\/\\/localhost:8080\\/nuxeo\\/nxpath\\/default\\/default-domain\\/workspaces@view_documents?tabIds=%3A&conversationId=0NXMAIN'}";
@@ -124,33 +122,6 @@ public class ITMiscLittleThingsTest extends AbstractTest {
         graph = workflowsPage.getSerialDocumentReviewGraph();
         assertEquals(1, graph.getWorkflowStartNodes().size());
         assertEquals(1, graph.getWorkflowEndNodes().size());
-    }
-
-    /**
-     * @since 7.1
-     */
-    @Test
-    public void testPDFExport() {
-        WebElement exportActionPageLink = driver.findElement(By.id("nxw_documentExport_form:nxw_documentExport_link"));
-        exportActionPageLink.click();
-        waitForXmlExport();
-        WebElement exportPDFActionLink = driver.findElement(By.linkText(XML_EXPORT_LINK_TEXT));
-        exportPDFActionLink.click();
-        waitForXmlExport();
-    }
-
-    protected void waitForXmlExport() {
-        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver input) {
-                try {
-                    driver.findElement(By.linkText(XML_EXPORT_LINK_TEXT));
-                } catch (NoSuchElementException e) {
-                    return false;
-                }
-                return true;
-            }
-        });
     }
 
 }
