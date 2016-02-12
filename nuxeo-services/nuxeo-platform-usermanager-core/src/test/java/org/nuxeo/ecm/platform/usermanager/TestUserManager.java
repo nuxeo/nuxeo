@@ -35,8 +35,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -1043,6 +1041,23 @@ public class TestUserManager extends UserManagerTestCase {
 
         assertTrue(up1.getGroups().contains(groupNameWithSpaces.trim()));
 
+    }
+
+    @Test
+    public void testCacheAlter() {
+        // Given we use a cache
+        assertNotNull(((UserManagerImpl)userManager).principalCache);
+        // Given a principal
+        NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
+        // When I alter the principal without saving it
+        String value = principal.getFirstName();
+        principal.setFirstName("pfouh");
+        // Then the cached principal is not altered
+        assertEquals(value, userManager.getPrincipal("Administrator").getFirstName());
+        // When I save it
+        userManager.updateUser(principal.getModel());
+        // Then the cached principal is altered
+        assertEquals("pfouh", userManager.getPrincipal("Administrator").getFirstName());
     }
 
 }
