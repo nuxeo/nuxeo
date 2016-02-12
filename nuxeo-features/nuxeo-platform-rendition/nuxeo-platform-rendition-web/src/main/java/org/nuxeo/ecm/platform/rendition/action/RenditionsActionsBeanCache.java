@@ -28,9 +28,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.ui.web.invalidations.AutomaticDocumentBasedInvalidation;
-import org.nuxeo.ecm.platform.ui.web.invalidations.DocumentContextBoundActionBean;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 /**
@@ -40,8 +37,7 @@ import org.nuxeo.ecm.webapp.helpers.EventNames;
  */
 @Name("renditionActionCache")
 @Scope(ScopeType.CONVERSATION)
-@AutomaticDocumentBasedInvalidation
-public class RenditionsActionsBeanCache extends DocumentContextBoundActionBean implements Serializable {
+public class RenditionsActionsBeanCache implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -59,12 +55,8 @@ public class RenditionsActionsBeanCache extends DocumentContextBoundActionBean i
         hasVisibleRenditionsCache.put(excludedKinds, !renditionAction.getVisibleRenditions(excludedKinds).isEmpty());
     }
 
-    @Override
-    protected void resetBeanCache(DocumentModel newCurrentDocumentModel) {
-        resetCache();
-    }
-
-    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED }, create = false)
+    @Observer(value = { EventNames.USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED,
+            EventNames.LOCATION_SELECTION_CHANGED }, create = false)
     @BypassInterceptors
     public void resetCache() {
         hasVisibleRenditionsCache.clear();
