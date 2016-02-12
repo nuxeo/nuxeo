@@ -69,9 +69,6 @@ public class CacheAttributesChecker extends AbstractCache {
         if (key == null) {
             throw new IllegalArgumentException(String.format("Can't put a null key for the cache '%s'!", name));
         }
-        if (value == null) {
-            throw new IllegalArgumentException(String.format("Can't put a null value for the cache '%s'!", name));
-        }
         cache.put(key, value);
     }
 

@@ -38,6 +38,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Deploy({ "org.nuxeo.ecm.core.schema", //
         "org.nuxeo.ecm.core.api", //
         "org.nuxeo.ecm.core", //
+        "org.nuxeo.ecm.core.cache", //
         "org.nuxeo.ecm.core.event", //
         "org.nuxeo.ecm.platform.usermanager.api", //
         "org.nuxeo.ecm.platform.usermanager", //

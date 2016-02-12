@@ -56,7 +56,7 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
     public DetachedNuxeoPrincipal(String principalId, String name, String firstName, String lastName, String password,
             String email, String company, List<String> groups, List<String> allGroups, List<String> roles,
             boolean isAdministrator, boolean isAnonymous) {
-        this.password = principalId;
+        this.principalId = principalId;
         this.name = name;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -96,65 +96,80 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
 
     protected boolean isAnonymous;
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getFirstName() {
         return firstName;
     }
 
+    @Override
     public String getLastName() {
         return lastName;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
 
+    @Override
     public String getCompany() {
         return company;
     }
 
+    @Override
     public String getEmail() {
         return email;
     }
 
+    @Override
     public List<String> getGroups() {
         return groups;
     }
 
+    @Override
     public List<String> getAllGroups() {
         return allGroups;
     }
 
+    @Override
     public boolean isMemberOf(String group) {
-        throw new UnsupportedOperationException();
+        return allGroups.contains(group);
     }
 
+    @Override
     public List<String> getRoles() {
         return roles;
     }
 
+    @Override
     public void setName(String name) {
         throw new UnsupportedOperationException();
 
     }
 
+    @Override
     public void setFirstName(String firstName) {
         throw new UnsupportedOperationException();
 
     }
 
+    @Override
     public void setLastName(String lastName) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setGroups(List<String> groups) {
         throw new UnsupportedOperationException();
 
     }
 
+    @Override
     public void setRoles(List<String> roles) {
         throw new UnsupportedOperationException();
 
@@ -165,33 +180,40 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
         this.email = email;
     }
 
+    @Override
     public void setCompany(String company) {
         throw new UnsupportedOperationException();
 
     }
 
+    @Override
     public void setPassword(String password) {
         throw new UnsupportedOperationException();
 
     }
 
+    @Override
     public String getPrincipalId() {
         return principalId;
     }
 
+    @Override
     public void setPrincipalId(String principalId) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public DocumentModel getModel() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setModel(DocumentModel model) {
         throw new UnsupportedOperationException();
 
     }
 
+    @Override
     public boolean isAdministrator() {
         return isAdministrator;
     }
@@ -201,14 +223,17 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
         return null;
     }
 
+    @Override
     public boolean isAnonymous() {
         return isAnonymous;
     }
 
+    @Override
     public String getOriginatingUser() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setOriginatingUser(String originatingUser) {
         throw new UnsupportedOperationException();
     }

@@ -1,10 +1,20 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.usermanager.test">
 
+  <extension target="org.nuxeo.ecm.core.cache.CacheService"
+    point="caches">
+    <cache name="users" class="org.nuxeo.ecm.core.cache.InMemoryCacheImpl">
+      <ttl>1</ttl><!-- minutes -->
+      <option name="maxSize">10</option>
+      <option name="concurrencyLevel">500</option>
+    </cache>
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
       point="userManager">
     <userManager
         class="org.nuxeo.ecm.platform.usermanager.FakeUserManagerImpl">
+      <userCacheName>users</userCacheName>
       <users>
         <directory>somedir</directory>
         <emailField>mail</emailField>

@@ -73,15 +73,6 @@ public class CacheComplianceFixture {
     }
 
     @Test
-    public void putNullValue() throws Exception {
-        try {
-            defaultCache.put("key-null", null);
-            fail("Should raise exception !");
-        } catch (Exception e) {
-        }
-    }
-
-    @Test
     @Ignore
     public void ttlExpire() throws InterruptedException, IOException {
         // Default config test set the TTL to 1mn, so wait 1mn and 1s

@@ -225,6 +225,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
         if (cacheService != null && descriptor.userCacheName != null) {
             principalCache = cacheService.getCache(descriptor.userCacheName);
+            principalCache.invalidateAll();
         }
 
     }
@@ -539,17 +540,17 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @Override
     public NuxeoPrincipal getPrincipal(String username) {
-        NuxeoPrincipal principal = null;
-        if (useCache()) {
-            principal = (NuxeoPrincipal) principalCache.get(username);
+        if (!useCache()) {
+            return getPrincipal(username, null);
         }
+        if (!principalCache.hasEntry(username)) {
+            principalCache.put(username, getPrincipal(username, null));
+        }
+        NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl) principalCache.get(username);
         if (principal == null) {
-            principal = getPrincipal(username, null);
-            if (useCache() && principal != null) {
-                principalCache.put(username, principal);
-            }
+            return null;
         }
-        return principal;
+        return new NuxeoPrincipalImpl(principal); // should not return cached principal
     }
 
     @Override
