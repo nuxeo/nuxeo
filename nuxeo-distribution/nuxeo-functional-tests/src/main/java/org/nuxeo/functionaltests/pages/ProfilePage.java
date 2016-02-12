@@ -1,3 +1,4 @@
+
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
@@ -18,25 +19,16 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 /**
  * @since 7.3
+ * @deprecated since 8.2, use {@link org.nuxeo.functionaltests.pages.profile.ProfilePage} instead
  */
-public class ProfilePage extends AbstractPage {
+@Deprecated
+public class ProfilePage extends org.nuxeo.functionaltests.pages.profile.ProfilePage {
 
-	public ProfilePage(final WebDriver driver) {
-		super(driver);
-	}
-
-	public OwnUserChangePasswordFormPage getChangePasswordUserTab() {
-		WebElement actionsLink = findElementWithTimeout(By.id("userProfileDropDownMenu"));
-		actionsLink.click();
-		WebElement changePasswordLink = findElementWithTimeout(By.id("userProfileButtons:changePasswordButton"));
-		changePasswordLink.click();
-		return asPage(OwnUserChangePasswordFormPage.class);
-	}
-
+    public ProfilePage(final WebDriver driver) {
+        super(driver);
+    }
 }
