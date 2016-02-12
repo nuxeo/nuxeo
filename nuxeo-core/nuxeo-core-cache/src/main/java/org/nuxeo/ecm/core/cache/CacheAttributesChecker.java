@@ -55,8 +55,7 @@ public class CacheAttributesChecker extends AbstractCache {
     @Override
     public void invalidate(String key) throws IOException {
         if (key == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Can't invalidate a null key for the cache '%s'!", name));
+            throw new IllegalArgumentException(String.format("Can't invalidate a null key for the cache '%s'!", name));
         }
         cache.invalidate(key);
     }
@@ -69,12 +68,7 @@ public class CacheAttributesChecker extends AbstractCache {
     @Override
     public void put(String key, Serializable value) throws IOException {
         if (key == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Can't put a null key for the cache '%s'!", name));
-        }
-        if (value == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Can't put a null value for the cache '%s'!", name));
+            throw new IllegalArgumentException(String.format("Can't put a null key for the cache '%s'!", name));
         }
         cache.put(key, value);
     }

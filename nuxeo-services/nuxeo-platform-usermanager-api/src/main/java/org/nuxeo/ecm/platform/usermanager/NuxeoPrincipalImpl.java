@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -118,6 +119,23 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         dataModel.setData(config.nameKey, name);
         this.isAnonymous = isAnonymous;
         this.isAdministrator = isAdministrator;
+    }
+
+    protected NuxeoPrincipalImpl(NuxeoPrincipalImpl other)  {
+       config = other.config;
+        try {
+            model = other.model.clone();
+        } catch (CloneNotSupportedException cause) {
+            throw new NuxeoException("Cannot clone principal " + this);
+        }
+       dataModel = model.getDataModel(config.schemaName);
+       roles.addAll(other.roles);
+       allGroups = new ArrayList<>(other.allGroups);
+       virtualGroups = new ArrayList<>(other.virtualGroups);
+       isAdministrator = other.isAdministrator;
+       isAnonymous = other.isAnonymous;
+       origUserName = other.origUserName;
+       principalId = other.principalId;
     }
 
     public void setConfig(UserConfig config) {

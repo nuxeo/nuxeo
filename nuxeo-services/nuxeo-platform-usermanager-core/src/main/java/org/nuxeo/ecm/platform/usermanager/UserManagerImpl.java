@@ -223,6 +223,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
         if (descriptor.userCacheName != null) {
             principalCache = cacheService.getCache(descriptor.userCacheName);
+            try {
+				principalCache.invalidateAll();
+			} catch (IOException e) {
+				throw new ClientException("Cannot invalidate cache", e);
+			}
         }
 
     }
@@ -562,21 +567,21 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     @Override
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
-        NuxeoPrincipal principal = null;
+        if (!useCache()) {
+            return getPrincipal(username, null);
+        }
         try {
-            if (useCache()) {
-                principal = (NuxeoPrincipal) principalCache.get(username);
+            if (!principalCache.hasEntry(username)) {
+                principalCache.put(username, getPrincipal(username, null));
             }
+            NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl) principalCache.get(username);
             if (principal == null) {
-                principal = getPrincipal(username, null);
-                if (useCache() && principal != null) {
-                    principalCache.put(username, principal);
-                }
+                return null;
             }
+            return new NuxeoPrincipalImpl(principal); // should not return cached principal
         } catch (IOException e) {
             throw new ClientException(e);
         }
-        return principal;
     }
 
     @Override

@@ -1505,6 +1505,9 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             } catch (PropertyException e) {
                 throw new ClientRuntimeException(e);
             }
+            for (String name:data.getDirtyFields()) {
+                newData.setDirty(name);
+            }
             dm.dataModels.put(key, newData);
         }
         return dm;

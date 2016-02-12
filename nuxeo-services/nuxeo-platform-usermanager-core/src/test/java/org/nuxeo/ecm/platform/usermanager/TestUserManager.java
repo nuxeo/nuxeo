@@ -1073,4 +1073,21 @@ public class TestUserManager extends UserManagerTestCase {
 
     }
 
+    @Test
+    public void testCacheAlter() {
+        // Given we use a cache
+        assertNotNull(((UserManagerImpl)userManager).principalCache);
+        // Given a principal
+        NuxeoPrincipal principal = userManager.getPrincipal("Administrator");
+        // When I alter the principal without saving it
+        String value = principal.getFirstName();
+        principal.setFirstName("pfouh");
+        // Then the cached principal is not altered
+        assertEquals(value, userManager.getPrincipal("Administrator").getFirstName());
+        // When I save it
+        userManager.updateUser(principal.getModel());
+        // Then the cached principal is altered
+        assertEquals("pfouh", userManager.getPrincipal("Administrator").getFirstName());
+    }
+
 }
