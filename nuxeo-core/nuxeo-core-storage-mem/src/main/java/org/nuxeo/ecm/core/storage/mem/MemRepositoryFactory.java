@@ -34,8 +34,7 @@ public class MemRepositoryFactory extends DBSRepositoryFactory {
 
     @Override
     public Object call() {
-        installPool();
-        return new MemRepository((MemRepositoryDescriptor) getRepositoryDescriptor());
+        return new MemRepository(installPool(), (MemRepositoryDescriptor) getRepositoryDescriptor());
     }
 
 }

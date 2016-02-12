@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.naming.NamingException;
+import javax.resource.spi.ConnectionManager;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
@@ -64,7 +65,9 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
+import org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -93,18 +96,21 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     protected LockManager lockManager;
 
+    protected final ConnectionManager cm;
+
     /**
      * @since 7.4 : used to know if the LockManager was provided by this repository or externally
      */
     protected boolean selfRegisteredLockManager = false;
 
-    public DBSRepositoryBase(String repositoryName, FulltextDescriptor fulltextDescriptor) {
+    public DBSRepositoryBase(ConnectionManager cm, String repositoryName, FulltextDescriptor fulltextDescriptor) {
         this.repositoryName = repositoryName;
         if (fulltextDescriptor.getFulltextDisabled()) {
             fulltextConfiguration = null;
         } else {
             fulltextConfiguration = new FulltextConfiguration(fulltextDescriptor);
         }
+        this.cm = cm;
         blobManager = Framework.getService(BlobManager.class);
         initBlobsPaths();
         initLockManager();
@@ -112,6 +118,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     @Override
     public void shutdown() {
+        try {
+            NuxeoContainer.disposeConnectionManager(cm);
+        } catch (RuntimeException e) {
+            LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot dispose connection manager of " + repositoryName);
+        }
         if (selfRegisteredLockManager) {
             LockManagerService lms = Framework.getService(LockManagerService.class);
             if (lms != null) {

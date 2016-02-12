@@ -59,6 +59,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.resource.spi.ConnectionManager;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,9 +74,7 @@ import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.QueryParseException;
-import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
-import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -148,8 +148,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected DBCollection countersColl;
 
-    public MongoDBRepository(MongoDBRepositoryDescriptor descriptor) {
-        super(descriptor.name, descriptor.getFulltextDescriptor());
+    public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
+        super(cm, descriptor.name, descriptor.getFulltextDescriptor());
         try {
             mongoClient = newMongoClient(descriptor);
             coll = getCollection(descriptor, mongoClient);

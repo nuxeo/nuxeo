@@ -45,6 +45,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.resource.spi.ConnectionManager;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -89,8 +91,8 @@ public class MemRepository extends DBSRepositoryBase {
      */
     protected Map<String, State> states;
 
-    public MemRepository(MemRepositoryDescriptor descriptor) {
-        super(descriptor.name, descriptor.getFulltextDescriptor());
+    public MemRepository(ConnectionManager cm, MemRepositoryDescriptor descriptor) {
+        super(cm, descriptor.name, descriptor.getFulltextDescriptor());
         initRepository();
     }
 
