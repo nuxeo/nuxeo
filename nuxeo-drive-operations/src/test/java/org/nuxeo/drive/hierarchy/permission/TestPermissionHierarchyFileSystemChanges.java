@@ -43,9 +43,11 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.hierarchy.permission.factory.PermissionSyncRootFactory;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
+import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -69,11 +71,10 @@ import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.reload.ReloadService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -99,9 +100,6 @@ public class TestPermissionHierarchyFileSystemChanges {
     private static final String SYNC_ROOT_ID_PREFIX = "permissionSyncRootFactory#test#";
 
     private static final String CONTENT_PREFIX = "The content of file ";
-
-    @Inject
-    protected RuntimeHarness harness;
 
     @Inject
     protected EventServiceAdmin eventServiceAdmin;
@@ -157,6 +155,10 @@ public class TestPermissionHierarchyFileSystemChanges {
         TransactionHelper.startTransaction();
         // Wait for personal workspace creation event to be logged in the audit
         eventService.waitForAsyncCompletion();
+
+        // Make sure to set ordered active factories
+        FileSystemItemAdapterServiceImpl fileSystemItemAdapterService = (FileSystemItemAdapterServiceImpl) Framework.getService(FileSystemItemAdapterService.class);
+        fileSystemItemAdapterService.setActiveFactories();
     }
 
     @After
@@ -273,6 +275,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * </pre>
      */
     @Test
+    @LocalDeploy("org.nuxeo.drive.operations.test:OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml")
     public void testRootlessItems() throws Exception {
 
         TransactionHelper.commitOrRollbackTransaction();
@@ -280,10 +283,6 @@ public class TestPermissionHierarchyFileSystemChanges {
         DocumentModel user1Folder1;
         DocumentModel user1Folder2;
         DocumentModel user1File2;
-
-        harness.deployContrib("org.nuxeo.drive.operations.test",
-                "OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml");
-        Framework.getLocalService(ReloadService.class).reload();
 
         TransactionHelper.startTransaction();
         try {
@@ -397,10 +396,6 @@ public class TestPermissionHierarchyFileSystemChanges {
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
-
-        harness.undeployContrib("org.nuxeo.drive.operations.test",
-                "OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml");
-        Framework.getLocalService(ReloadService.class).reload();
     }
 
     protected DocumentModel createFile(CoreSession session, String path, String name, String type, String fileName,
