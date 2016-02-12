@@ -48,6 +48,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.MapValueExpression;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
+import org.nuxeo.ecm.platform.ui.web.util.FaceletDebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
@@ -77,34 +78,41 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     @Override
     public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
-        String template = getTemplateValue(widget);
-        if (template == null) {
-            log.error("Missing template property for widget " + widget.getName() + " in layout "
-                    + widget.getLayoutName());
-            return;
+        long start = FaceletDebugTracer.start();
+
+        try {
+            String template = getTemplateValue(widget);
+            if (template == null) {
+                log.error("Missing template property for widget " + widget.getName() + " in layout "
+                        + widget.getLayoutName());
+                return;
+            }
+            FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
+            TagAttribute templateAttr = getTemplateAttribute(helper);
+            if (templateAttr == null) {
+                templateAttr = helper.createAttribute(TEMPLATE_PROPERTY_NAME, template);
+            }
+            TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(templateAttr);
+            String widgetTagConfigId = widget.getTagConfigId();
+            TagConfig config = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, nextHandler);
+
+            Map<String, ValueExpression> variables = getVariablesForRendering(ctx, helper, widget, widgetTagConfigId,
+                    template);
+
+            List<String> blockedPatterns = new ArrayList<String>();
+            blockedPatterns.add(RenderVariables.widgetVariables.field.name() + "*");
+            blockedPatterns.add(RenderVariables.widgetVariables.fieldOrValue.name());
+            blockedPatterns.add(RenderVariables.widgetVariables.widgetProperty.name() + "_*");
+            blockedPatterns.add(RenderVariables.widgetVariables.widgetProperties.name());
+            blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
+
+            DecorateHandler includeHandler = new DecorateHandler(config);
+            TagHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns,
+                    includeHandler);
+            handler.apply(ctx, parent);
+        } finally {
+            FaceletDebugTracer.trace(start, tagConfig.getTag(), widget.getId(), -1);
         }
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
-        TagAttribute templateAttr = getTemplateAttribute(helper);
-        if (templateAttr == null) {
-            templateAttr = helper.createAttribute(TEMPLATE_PROPERTY_NAME, template);
-        }
-        TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(templateAttr);
-        String widgetTagConfigId = widget.getTagConfigId();
-        TagConfig config = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, nextHandler);
-
-        Map<String, ValueExpression> variables = getVariablesForRendering(ctx, helper, widget, widgetTagConfigId,
-                template);
-
-        List<String> blockedPatterns = new ArrayList<String>();
-        blockedPatterns.add(RenderVariables.widgetVariables.field.name() + "*");
-        blockedPatterns.add(RenderVariables.widgetVariables.fieldOrValue.name());
-        blockedPatterns.add(RenderVariables.widgetVariables.widgetProperty.name() + "_*");
-        blockedPatterns.add(RenderVariables.widgetVariables.widgetProperties.name());
-        blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
-
-        DecorateHandler includeHandler = new DecorateHandler(config);
-        TagHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns, includeHandler);
-        handler.apply(ctx, parent);
     }
 
     /**
