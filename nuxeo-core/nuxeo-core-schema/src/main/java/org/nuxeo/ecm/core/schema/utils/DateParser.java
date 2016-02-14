@@ -25,6 +25,11 @@ import java.util.TimeZone;
  */
 public class DateParser {
 
+    /**
+     * @since 8.2
+     */
+    public static final String W3C_DATE_FORMAT = "%04d-%02d-%02dT%02d:%02d:%02d.%02dZ";
+
     public static Calendar parse(String str) throws ParseException {
         if (str == null) {
             return null;
@@ -94,18 +99,11 @@ public class DateParser {
         }
         Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(date);
-        StringBuilder buf = new StringBuilder(32);
-        return buf.append(cal.get(Calendar.YEAR)).append('-').append(
-                pad(cal.get(Calendar.MONTH) + 1)).append('-').append(
-                pad(cal.get(Calendar.DATE))).append('T').append(
-                pad(cal.get(Calendar.HOUR_OF_DAY))).append(':').append(
-                pad(cal.get(Calendar.MINUTE))).append(':').append(
-                pad(cal.get(Calendar.SECOND))).append('.').append(
-                pad(cal.get(Calendar.MILLISECOND) / 10)).append('Z').toString();
-    }
 
-    private final static String pad(int i) {
-        return i < 10 ? "0".concat(String.valueOf(i)) : String.valueOf(i);
+        return String.format(W3C_DATE_FORMAT, cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DATE),
+                cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
+                cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND) / 10);
     }
 
     private final static int readYear(Calendar cal, String str, int off)
