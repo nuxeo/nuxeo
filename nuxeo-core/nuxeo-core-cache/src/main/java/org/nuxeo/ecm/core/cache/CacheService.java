@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Maxime Hilaire
+ *     Thierry Martins
  *
  */
 package org.nuxeo.ecm.core.cache;
@@ -29,4 +30,9 @@ public interface CacheService {
     public static final String INVALIDATE_ALL = "invalidateAll";
 
     public Cache getCache(String name);
+
+    /**
+     * @since 8.2
+     */
+    public void registerCache(String name, int size, int timeout);
 }

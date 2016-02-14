@@ -41,6 +41,10 @@ public class SQLDirectoryDescriptor {
         subinitial, subfinal, subany
     }
 
+    public static final int CACHE_TIMEOUT_DEFAULT = 0;
+
+    public static final int CACHE_MAX_SIZE_DEFAULT = 0;
+
     public static final int QUERY_SIZE_LIMIT_DEFAULT = 0;
 
     public static final boolean AUTO_INCREMENT_ID_FIELD_DEFAULT = false;
@@ -122,6 +126,12 @@ public class SQLDirectoryDescriptor {
 
     @XNode("@remove")
     private boolean remove = false;
+
+    @XNode("cacheTimeout")
+    public Integer cacheTimeout;
+
+    @XNode("cacheMaxSize")
+    public Integer cacheMaxSize;
 
     @XNode("cacheEntryName")
     public String cacheEntryName = null;
@@ -341,6 +351,14 @@ public class SQLDirectoryDescriptor {
         return this.remove;
     }
 
+    public int getCacheTimeout() {
+        return cacheTimeout == null ? CACHE_TIMEOUT_DEFAULT : cacheTimeout.intValue();
+    }
+
+    public int getCacheMaxSize() {
+        return cacheMaxSize == null ? CACHE_MAX_SIZE_DEFAULT : cacheMaxSize.intValue();
+    }
+
     public SubstringMatchType getSubstringMatchType() {
         return substringMatchType == null ? SubstringMatchType.subinitial : substringMatchType;
     }
@@ -444,6 +462,13 @@ public class SQLDirectoryDescriptor {
 
         remove = other.remove;
 
+        if (other.cacheTimeout != null || overwite) {
+            cacheTimeout = other.cacheTimeout;
+        }
+        if (other.cacheMaxSize != null || overwite) {
+            cacheMaxSize = other.cacheMaxSize;
+        }
+
         if (other.cacheEntryName != null || overwite) {
             cacheEntryName = other.cacheEntryName;
         }
@@ -506,6 +531,8 @@ public class SQLDirectoryDescriptor {
             }
         }
         clone.remove = remove;
+        clone.cacheTimeout = cacheTimeout;
+        clone.cacheMaxSize = cacheMaxSize;
         clone.cacheEntryName = cacheEntryName;
         clone.cacheEntryWithoutReferencesName = cacheEntryWithoutReferencesName;
         clone.negativeCaching = negativeCaching;
