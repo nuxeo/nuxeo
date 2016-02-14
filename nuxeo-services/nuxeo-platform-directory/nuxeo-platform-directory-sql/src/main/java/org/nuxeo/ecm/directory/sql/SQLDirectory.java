@@ -35,6 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.JDBCUtils;
+import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -136,7 +137,22 @@ public class SQLDirectory extends AbstractDirectory {
         // cache parameterization
         cache.setEntryCacheName(config.cacheEntryName);
         cache.setEntryCacheWithoutReferencesName(config.cacheEntryWithoutReferencesName);
+        if (config.cacheEntryName == null && config.getCacheMaxSize() != 0) {
+            cache.setEntryCacheName("cache-" + name);
+            registerCacheFor("cache-" + name);
+        }
+        if (config.cacheEntryWithoutReferencesName == null
+                && config.getCacheMaxSize() != 0) {
+            cache.setEntryCacheWithoutReferencesName(
+                    "cacheWithoutReference-" + name);
+            registerCacheFor("cacheWithoutReference-" + name);
+        }
         cache.setNegativeCaching(config.negativeCaching);
+    }
+
+    private void registerCacheFor(String cacheName) {
+        CacheService cacheService = Framework.getLocalService(CacheService.class);
+        cacheService.registerCache(cacheName, config.getCacheMaxSize(), config.getCacheTimeout() / 60);
     }
 
     /**

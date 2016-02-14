@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,15 @@
  *
  * Contributors:
  *     Maxime Hilaire
+ *     Thierry Martins
  *
  */
 
 package org.nuxeo.ecm.core.cache;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -40,11 +43,22 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
+    /**
+     * @since 8.2
+     */
+    public static final String DEFAULT_CACHE_ID = "default-cache";
+
     public static final ComponentName NAME = new ComponentName(CacheServiceImpl.class.getName());
 
     private static final Log log = LogFactory.getLog(CacheServiceImpl.class);
 
     protected final CacheRegistry cacheRegistry = new CacheRegistry();
+
+    /**
+     * Contains the names of all caches which have not been registered from an extension
+     */
+    protected final List<String> autoregisteredCacheNames = new ArrayList<String>();
+
 
     @Override
     public CacheAttributesChecker getCache(String name) {
@@ -56,8 +70,10 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         if (cacheRegistry.caches.size() > 0) {
             Map<String, CacheDescriptor> descriptors = new HashMap<String, CacheDescriptor>(cacheRegistry.caches);
             for (CacheDescriptor desc : descriptors.values()) {
-                log.warn("Unregistery leaked contribution " + desc.name);
                 cacheRegistry.contributionRemoved(desc.name, desc);
+                if (!autoregisteredCacheNames.remove(desc.name)) {
+                    log.warn("Unregistery leaked contribution xx " + desc.name);
+                }
             }
         }
     }
@@ -89,6 +105,26 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     public void registerCache(CacheDescriptor descriptor) {
         cacheRegistry.addContribution(descriptor);
+    }
+
+    @Override
+    public void registerCache(String name, int maxSize, int timeout) {
+        CacheDescriptor desc;
+        if (cacheRegistry.caches.get(DEFAULT_CACHE_ID) != null) {
+            desc = new CacheDescriptor(cacheRegistry.caches.get(DEFAULT_CACHE_ID));
+        } else {
+            desc = new CacheDescriptor();
+        }
+        desc.name = name;
+        desc.ttl = timeout;
+        desc.options.put("maxSize", String.valueOf(maxSize));
+        if (cacheRegistry.caches.get(name) == null) {
+            registerCache(desc);
+            autoregisteredCacheNames.add(name);
+        } else {
+            CacheDescriptor oldDesc = cacheRegistry.caches.get(name);
+            cacheRegistry.merge(oldDesc, desc);
+        }
     }
 
     @Override
