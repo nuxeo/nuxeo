@@ -137,22 +137,25 @@ public class SQLDirectory extends AbstractDirectory {
         // cache parameterization
         cache.setEntryCacheName(config.cacheEntryName);
         cache.setEntryCacheWithoutReferencesName(config.cacheEntryWithoutReferencesName);
-        if (config.cacheEntryName == null && config.getCacheMaxSize() != 0) {
-            cache.setEntryCacheName("cache-" + name);
-            registerCacheFor("cache-" + name);
-        }
-        if (config.cacheEntryWithoutReferencesName == null
-                && config.getCacheMaxSize() != 0) {
-            cache.setEntryCacheWithoutReferencesName(
-                    "cacheWithoutReference-" + name);
-            registerCacheFor("cacheWithoutReference-" + name);
-        }
         cache.setNegativeCaching(config.negativeCaching);
-    }
 
-    private void registerCacheFor(String cacheName) {
+        // Cache fallback
         CacheService cacheService = Framework.getLocalService(CacheService.class);
-        cacheService.registerCache(cacheName, config.getCacheMaxSize(), config.getCacheTimeout() / 60);
+        if (cacheService != null) {
+            if (config.cacheEntryName == null && config.getCacheMaxSize() != 0) {
+                cache.setEntryCacheName("cache-" + name);
+                cacheService.registerCache("cache-" + name,
+                        config.getCacheMaxSize(),
+                        config.getCacheTimeout() / 60);
+            }
+            if (config.cacheEntryWithoutReferencesName == null && config.getCacheMaxSize() != 0) {
+                cache.setEntryCacheWithoutReferencesName(
+                        "cacheWithoutReference-" + name);
+                cacheService.registerCache("cacheWithoutReference-" + name,
+                        config.getCacheMaxSize(),
+                        config.getCacheTimeout() / 60);
+            }
+        }
     }
 
     /**
