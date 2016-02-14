@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
  *
  * Contributors:
  *     dmetzler
+ *     tmartins
  */
 package org.nuxeo.ecm.core.schema.utils;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -39,6 +39,45 @@ public class DateParserTest {
 
         cal = DateParser.parse("2012-11-29T13:15:18.176+0200");
         assertEquals(11, cal.get(Calendar.HOUR_OF_DAY));
+
+        cal = DateParser.parse("0002-11-29T23:00:00.00Z");
+        assertEquals(2, cal.get(Calendar.YEAR));
+        assertEquals(Calendar.NOVEMBER, cal.get(Calendar.MONTH));
+    }
+
+    @Test
+    public void testReverseParsingDate() throws Exception {
+        // first test with date set to zero
+        Date d = new Date(0);
+        String s = DateParser.formatW3CDateTime(d);
+
+        Calendar cal = Calendar.getInstance();
+        // test String to Date
+        cal.setTime(DateParser.parseW3CDateTime(s));
+        assertEquals(1970, cal.get(Calendar.YEAR));
+        assertEquals(0, cal.get(Calendar.MONTH));
+
+        // test String to Calendar
+        cal = DateParser.parse(s);
+        assertEquals(1970, cal.get(Calendar.YEAR));
+        assertEquals(0, cal.get(Calendar.MONTH));
+        assertEquals(1, cal.get(Calendar.DAY_OF_MONTH));
+
+        // then test with a regular calendar 2/1/1
+        Calendar gcal = Calendar.getInstance();
+        gcal.set(Calendar.YEAR, 2);
+        gcal.set(Calendar.MONTH, 1); // second month = February
+        gcal.set(Calendar.DAY_OF_MONTH, 1);
+        s = DateParser.formatW3CDateTime(gcal.getTime());
+
+        cal.setTime(DateParser.parseW3CDateTime(s));
+        assertEquals(gcal.get(Calendar.YEAR), cal.get(Calendar.YEAR));
+        assertEquals(Calendar.FEBRUARY, cal.get(Calendar.MONTH));
+
+        cal = DateParser.parse(s);
+        assertEquals(2, cal.get(Calendar.YEAR));
+        assertEquals(1, cal.get(Calendar.MONTH));
+        assertEquals(1, cal.get(Calendar.DAY_OF_MONTH));
     }
 
     @Test
@@ -57,6 +96,5 @@ public class DateParserTest {
 
         cal = DateParser.parse("2012-11-29T13:15:18.176-0100");
         assertEquals(14, cal.get(Calendar.HOUR_OF_DAY));
-
     }
 }
