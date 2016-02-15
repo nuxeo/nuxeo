@@ -48,7 +48,7 @@ class DirectoryEditor extends Select2Editor {
     } else {
       id = entity.properties.id;
     }
-    this._labels[id] = getEntryLabel(entity);
+    this.cellLabels[id] = this.cellLabels[id] || getEntryLabel(entity, this.language);
     return id;
   }
 
@@ -65,8 +65,6 @@ class DirectoryEditor extends Select2Editor {
             directoryName: this.directoryName,
             properties: {
               id: id
-              // TOOD: store label to use in renderer
-              // label: this._labels[id]
             }
           };
         }.bind(this));
@@ -86,6 +84,8 @@ class DirectoryEditor extends Select2Editor {
     var directory = new Directory(connection); // Directory name is a widget property
     // Set the properties
     Object.assign(directory, properties);
+    // Set the language
+    directory.language = this.language || 'en';
     // Perform the search
     return directory.search(term);
   }
@@ -93,7 +93,19 @@ class DirectoryEditor extends Select2Editor {
   // When a dbl10n entry is selected we'll cache the labels to be used
   // by our renderer
   onSelected(evt) {
-    this._labels[evt.choice.computedId] = evt.choice.absoluteLabel;
+    this.cellLabels[evt.choice.computedId] = evt.choice.absoluteLabel;
+  }
+
+  get cellMeta() {
+    return this.instance.getCellMeta(this.row, this.col);
+  }
+
+  get cellLabels() {
+    return this.cellMeta._labels = this.cellMeta._labels || {};
+  }
+
+  get language() {
+    return this.instance.getSettings().language || 'en';
   }
 
   get column() {
@@ -124,16 +136,11 @@ class DirectoryEditor extends Select2Editor {
     return entry.displayLabel;
   }
 
-  selectionFormatter(entry) {
-    var id = this.getEntryId(entry);
-    return this._labels[id] || entry.absoluteLabel;
-  }
-
   formatter(entry) {
-    var label = this._labels[entry.id] || entry.absoluteLabel;
+    var label = this.cellLabels[entry.id] || entry.absoluteLabel;
     // This is used in initSelection and in this case we don't have 'displayLabel'
     if (!label && this.isDbl10n) {
-      label = getEntryLabel(entry);
+      label = getEntryLabel(entry, this.language);
     }
     return label || entry.text;
   }
@@ -148,13 +155,13 @@ class DirectoryEditor extends Select2Editor {
 }
 
 // l10n Label helpers
-function getEntryLabel(entry) {
+function getEntryLabel(entry, lang = 'en') {
   if (entry.properties) {
     var label = '';
     if (entry.properties.parent) {
-      label = getEntryLabel(entry.properties.parent) + '/';
+      label = getEntryLabel(entry.properties.parent, lang) + '/';
     }
-    label += (entry.properties.label_en || entry.properties.label || entry.properties.id);
+    label += (entry.properties['label_' + lang] || entry.properties.label || entry.properties.id);
     return label;
   }
   return entry;
@@ -162,10 +169,15 @@ function getEntryLabel(entry) {
 
 function DirectoryRenderer(instance, td, row, col, prop, value, cellProperties) {
   if (value) {
+    var lang = instance.getSettings().language || 'en';
     if (!Array.isArray(value)) {
-      value = [value];
+      value = (typeof value === 'string') ? value.split(',') : [value];
     }
-    arguments[5] = value.map((v) => getEntryLabel(v)).join(','); // jshint ignore:line
+    var labels = instance.getCellMeta(row, col)._labels;
+    arguments[5] = value.map((v) => {
+      var key = v.properties ? v.properties.id : v;
+      return (labels && labels[key]) ? labels[key] : getEntryLabel(v, lang);
+    }).join(','); // jshint ignore:line
   }
   cellProperties.defaultRenderer.apply(this, arguments);
 }

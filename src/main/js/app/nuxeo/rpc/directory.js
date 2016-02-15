@@ -21,9 +21,10 @@ import {Operation} from './operation';
  */
 class Directory extends Operation {
 
-  constructor(connection, directoryName) {
+  constructor(connection, directoryName, language) {
     super(connection, 'Directory.SuggestEntries');
     this.directoryName = directoryName;
+    this.language = language;
   }
 
   get directoryName() { return this.params.directoryName; }
@@ -42,6 +43,10 @@ class Directory extends Operation {
 
   set localize(flag) {
     this.params.localize = flag;
+  }
+
+  set language(lang) {
+    this.params.lang = lang;
   }
 
   entries() {
