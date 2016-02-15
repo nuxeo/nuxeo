@@ -318,22 +318,7 @@
       <!-- Smart Search -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-smart-query-api</artifactId>
-        <version>${nuxeo.smartsearch.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-smart-query-jsf</artifactId>
-        <version>${nuxeo.smartsearch.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-smart-folder-core</artifactId>
-        <version>${nuxeo.smartsearch.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-smart-folder-jsf</artifactId>
+        <artifactId>nuxeo-platform-smart-search</artifactId>
         <version>${nuxeo.smartsearch.version}</version>
       </dependency>
 
