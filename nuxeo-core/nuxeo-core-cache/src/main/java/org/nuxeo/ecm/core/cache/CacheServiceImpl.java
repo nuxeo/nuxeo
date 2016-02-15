@@ -79,6 +79,13 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     }
 
     @Override
+    public int getApplicationStartedOrder() {
+        return ((DefaultComponent) Framework.getRuntime().getComponentInstance(
+                "org.nuxeo.ecm.core.repository.RepositoryServiceComponent").getInstance()).getApplicationStartedOrder()
+                - 5;
+    }
+
+    @Override
     public void applicationStarted(ComponentContext context) {
         Framework.addListener(new RuntimeServiceListener() {
 
@@ -140,4 +147,12 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         cacheRegistry.removeContribution(descriptor);
     }
 
+
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(CacheRegistry.class)) {
+            return adapter.cast(cacheRegistry);
+        }
+        return super.getAdapter(adapter);
+    }
 }
