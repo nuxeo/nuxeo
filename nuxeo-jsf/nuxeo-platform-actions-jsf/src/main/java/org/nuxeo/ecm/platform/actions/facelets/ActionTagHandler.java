@@ -187,7 +187,7 @@ public class ActionTagHandler extends MetaTagHandler {
                 props.put("link", actionInstance.getLink());
                 props.put("actionId", actionInstance.getId());
                 props.put("action", actionInstance);
-                if (useAjaxForm != null) {
+                if (useAjaxForm != null && !props.containsKey("useAjaxForm")) {
                     props.put("useAjaxForm", useAjaxForm.getValue());
                 }
 
@@ -312,10 +312,8 @@ public class ActionTagHandler extends MetaTagHandler {
                     // resolve form related attributes early
                     boolean discard = helper.createAttribute("discardSurroundingForm",
                             String.valueOf(widgetInstance.getProperty("discardSurroundingForm"))).getBoolean(ctx);
-                    boolean doUseAjaxForm = false;
-                    if (useAjaxForm != null) {
-                        doUseAjaxForm = useAjaxForm.getBoolean(ctx);
-                    }
+                    boolean doUseAjaxForm = helper.createAttribute("useAjaxForm",
+                            String.valueOf(widgetInstance.getProperty("useAjaxForm"))).getBoolean(ctx);
                     if (!discard || doUseAjaxForm) {
                         List<TagAttribute> fattrs = new ArrayList<>();
                         if (doUseAjaxForm) {
