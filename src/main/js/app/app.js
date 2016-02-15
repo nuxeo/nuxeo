@@ -18,6 +18,7 @@ import {Connection} from './nuxeo/connection';
 import {Log} from './ui/log';
 import {Spreadsheet} from './ui/spreadsheet';
 import {parseNXQL} from './nuxeo/util/nxql';
+import {i18n} from './ui/i18n';
 
 // Extract the parameters (content view state and page provider)
 var {cv, pp} = parseParams();
@@ -51,17 +52,17 @@ function setupUI() {
   }
 
   $('#save').click(() => {
-    log.info('Saving...');
+    log.info(i18n('saving'));
     sheet.save().then((results) => {
       if (!results) {
-        log.error('Failed to save changes.');
+        log.error(i18n('failedSave'));
         return;
       }
       var msg;
       if (results.length === 0) {
-        msg = 'Everything up to date.';
+        msg = i18n('upToDate');
       } else {
-        msg = `Saved ${results.length} rows.`;
+        msg = `${results.length} ${i18n('rowsSaved')}`;
       }
       log.info(msg);
     });
@@ -70,7 +71,7 @@ function setupUI() {
   $('input[name=autosave]').click(function() {
     sheet.autosave = $(this).is(':checked');
     if (sheet.autosave) {
-      log.default('Each change is automatically saved.');
+      log.default(i18n('autoSave'));
     } else {
       log.default('');
     }
@@ -108,8 +109,11 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
 
       var pageProvider = (cv) ? cv.pageProviderName : (pp || 'spreadsheet_query');
 
+      // Setup the language
+      var language = (nuxeo && nuxeo.spreadsheet && nuxeo.spreadsheet.language) ? nuxeo.spreadsheet.language.split('_')[0] : 'en';
+
       // Setup the SpreadSheet
-      sheet = new Spreadsheet($('#grid'), nx, layout, resultColumns, pageProvider);
+      sheet = new Spreadsheet($('#grid'), nx, layout, resultColumns, pageProvider, language);
 
       // If we don't have a content view we're done...
       if (isStandalone) {

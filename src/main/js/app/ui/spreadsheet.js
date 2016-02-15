@@ -24,7 +24,7 @@ import {Query} from '../nuxeo/rpc/query';
  */
 class Spreadsheet {
 
-  constructor(container, connection, layout, columns, pageProvider) {
+  constructor(container, connection, layout, columns, pageProvider, language) {
     this.container = container;
     this.connection = connection;
 
@@ -42,7 +42,8 @@ class Spreadsheet {
       contextMenu: ['undo', 'redo'],
       afterChange: this.onChange.bind(this),
       search: true,
-      cells: this.createCell.bind(this)
+      cells: this.createCell.bind(this),
+      language: language
     };
 
     this.query = new Query(connection);
@@ -59,7 +60,7 @@ class Spreadsheet {
 
     this.query.pageProvider = pageProvider;
 
-    new Layout(connection, layout).fetch().then((layout) => {
+    new Layout(connection, layout, language).fetch().then((layout) => {
       // Check which columns to display
       var cols = (!columns) ?
           layout.columns.filter((c) =>  c.selectedByDefault !== false)
