@@ -137,9 +137,9 @@ public class ShibbolethUserMapper implements UserMapper {
         new UnrestrictedSessionRunner(getTargetRepositoryName()) {
             @Override
             public void run() {
-                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND"
-                        + " ecm:mixinType = '"
-                        + userInvitationService.getConfiguration(DEFAULT_REGISTRATION).getRequestDocType() + "' AND"
+                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND "
+                        + "ecm:mixinType = '"
+                        + userInvitationService.getConfiguration(DEFAULT_REGISTRATION).getRequestDocType() + "' AND "
                         + userInvitationService.getConfiguration(DEFAULT_REGISTRATION).getUserInfoUsernameField()
                         + " = '%s' AND ecm:isCheckedInVersion = 0";
                 query = String.format(query, userId);
