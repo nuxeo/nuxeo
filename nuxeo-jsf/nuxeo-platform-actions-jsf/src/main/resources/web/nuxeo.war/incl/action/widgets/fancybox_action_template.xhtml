@@ -46,57 +46,57 @@
       </h:commandButton>
     </c:if>
 
-    <c:if test="#{not empty widgetProperty_iframe}">
+  </c:if>
 
-      <ui:insert name="fancybox_properties_include" />
+  <c:if test="#{not empty widgetProperty_iframe}">
 
-      <nxu:set var="fancyboxJs"
-        value="openFancyBox('#{nxu:javaScriptEscape(widgetProperty_iframe)}', {
-                width: '#{widgetProperty_width}',
-                height: '#{widgetProperty_height}',
-                scrolling: '#{widgetProperty_scrolling}',
-                autoScale: #{widgetProperty_autoScale == null ? true : widgetProperty_autoScale},
-                autoDimensions: #{widgetProperty_autoDimensions == null ? true : widgetProperty_autoDimensions},
-                modal: #{widgetProperty_modal == null ? false : widgetProperty_modal},
-                centerOnScroll: #{widgetProperty_centerOnScroll == null ? true : widgetProperty_centerOnScroll},
-                enableEscapeButton: #{widgetProperty_enableEscapeButton == null ? true : widgetProperty_enableEscapeButton},
-                onClosed: function() {
-                  var theFunction = '#{widgetProperty_onClosed}';
-                  if (theFunction.length !== 0) {
-                    window[theFunction]();
-                  }
+    <ui:insert name="fancybox_properties_include" />
+
+    <nxu:set var="fancyboxJs"
+      value="openFancyBox('#{nxu:javaScriptEscape(widgetProperty_iframe)}', {
+              width: '#{widgetProperty_width}',
+              height: '#{widgetProperty_height}',
+              scrolling: '#{widgetProperty_scrolling}',
+              autoScale: #{widgetProperty_autoScale == null ? true : widgetProperty_autoScale},
+              autoDimensions: #{widgetProperty_autoDimensions == null ? true : widgetProperty_autoDimensions},
+              modal: #{widgetProperty_modal == null ? false : widgetProperty_modal},
+              centerOnScroll: #{widgetProperty_centerOnScroll == null ? true : widgetProperty_centerOnScroll},
+              enableEscapeButton: #{widgetProperty_enableEscapeButton == null ? true : widgetProperty_enableEscapeButton},
+              onClosed: function() {
+                var theFunction = '#{widgetProperty_onClosed}';
+                if (theFunction.length !== 0) {
+                  window[theFunction]();
                 }
-              });">
+              }
+            });">
 
-        <c:if test="#{not widgetProperty_useButton}">
-          <a4j:commandLink id="#{widget.id}_link"
-            execute="@this"
-            ignoreDupResponses="true" requestDelay="100"
-            onclick="#{widgetProperty_onclick};#{fancyboxJs}"
-            disabled="#{!widgetProperty_available}"
-            styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
-            accesskey="#{widgetProperty_accessKey}">
-            <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-            <ui:insert name="inside_action" />
-          </a4j:commandLink>
-        </c:if>
+      <c:if test="#{not widgetProperty_useButton}">
+        <a4j:commandLink id="#{widget.id}_link"
+          execute="@this"
+          ignoreDupResponses="true" requestDelay="100"
+          onclick="#{widgetProperty_onclick};#{fancyboxJs}"
+          disabled="#{!widgetProperty_available}"
+          styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+          accesskey="#{widgetProperty_accessKey}">
+          <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+          <ui:insert name="inside_action" />
+        </a4j:commandLink>
+      </c:if>
 
-        <c:if test="#{widgetProperty_useButton}">
-          <a4j:commandButton id="#{widget.id}_link"
-            execute="@this"
-            ignoreDupResponses="true" requestDelay="100"
-            onclick="#{widgetProperty_onclick};#{fancyboxJs}"
-            value="#{messages[widget.label]}"
-            disabled="#{!widgetProperty_available}"
-            styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
-            accesskey="#{widgetProperty_accessKey}">
-            <ui:insert name="inside_action" />
-          </a4j:commandButton>
-        </c:if>
+      <c:if test="#{widgetProperty_useButton}">
+        <a4j:commandButton id="#{widget.id}_link"
+          execute="@this"
+          ignoreDupResponses="true" requestDelay="100"
+          onclick="#{widgetProperty_onclick};#{fancyboxJs}"
+          value="#{messages[widget.label]}"
+          disabled="#{!widgetProperty_available}"
+          styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+          accesskey="#{widgetProperty_accessKey}">
+          <ui:insert name="inside_action" />
+        </a4j:commandButton>
+      </c:if>
 
-      </nxu:set>
-
-    </c:if>
+    </nxu:set>
 
   </c:if>
 
