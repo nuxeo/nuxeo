@@ -134,7 +134,7 @@ public class WidgetTypeResource {
             }
             if (version != null && conf != null) {
                 String confVersion = conf.getSinceVersion();
-                if (isStriclyBeforeVersion(version, confVersion)) {
+                if (confVersion != null && isStriclyBeforeVersion(version, confVersion)) {
                     continue;
                 }
             }
