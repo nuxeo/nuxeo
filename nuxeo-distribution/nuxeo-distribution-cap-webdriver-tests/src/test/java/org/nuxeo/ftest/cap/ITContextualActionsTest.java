@@ -29,7 +29,7 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.NavigationSubPage;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
-import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
+import org.nuxeo.functionaltests.pages.forms.WorkspaceCreationFormPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.openqa.selenium.By;
 
@@ -73,7 +73,7 @@ public class ITContextualActionsTest extends AbstractTest {
         WorkspacesContentTabSubPage workspacesContent = workspacesPage.getWorkspacesContentTab();
 
         // Create a workspace and navigate into it
-        WorkspaceFormPage workspaceFormPage = workspacesContent.getWorkspaceCreatePage();
+        WorkspaceCreationFormPage workspaceFormPage = workspacesContent.getWorkspaceCreatePage();
         DocumentBasePage workspacePage = workspaceFormPage.createNewWorkspace(WORKSPACE_NAME, WORKSPACE_DESC);
 
         // Create a File with an uploaded blob
