@@ -25,9 +25,9 @@
  */
 package org.nuxeo.functionaltests;
 
-import static org.junit.Assume.assumeFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +54,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.fragment.WebFragment;
@@ -71,7 +70,6 @@ import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.runtime.api.Framework;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -95,6 +93,7 @@ import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+
 import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
 
 /**
@@ -160,8 +159,8 @@ public abstract class AbstractTest {
 
     static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll(
-            "/$", "");
+    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
+                                                 .replaceAll("/$", "");
 
     public static final int LOAD_TIMEOUT_SECONDS = 30;
 
@@ -346,8 +345,9 @@ public abstract class AbstractTest {
                             chromeDriverExecutable.getCanonicalPath()));
                     System.setProperty(SYSPROP_CHROME_DRIVER_PATH, chromeDriverExecutable.getCanonicalPath());
                 } else {
-                    log.error(String.format("Could not find the Chrome driver looking at %s or system path."
-                            + " Download it from %s and set its path with " + "the System property %s.",
+                    log.error(String.format(
+                            "Could not find the Chrome driver looking at %s or system path."
+                                    + " Download it from %s and set its path with " + "the System property %s.",
                             chromeDriverDefaultPath, "http://code.google.com/p/chromedriver/downloads/list",
                             SYSPROP_CHROME_DRIVER_PATH));
                 }
@@ -555,8 +555,7 @@ public abstract class AbstractTest {
         return asPage(pageClassToProxy);
     }
 
-
-    public static void open(String url){
+    public static void open(String url) {
         if (driver != null) {
             new JavaScriptErrorCollector(driver).checkForErrors();
         }
@@ -628,8 +627,8 @@ public abstract class AbstractTest {
             }
         }
 
-        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                             .pollingEvery(POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         try {
             return wait.until(new Function<T, T>() {
                 @Override
@@ -847,11 +846,11 @@ public abstract class AbstractTest {
     protected DocumentBasePage createCollections(DocumentBasePage currentPage, String collectionsTitle,
             String fileDescription) {
         DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = currentPage.getContentTab()
-                                                                                   .getDocumentCreatePage(
-                                                                                           "Collections",
+                                                                                   .getDocumentCreatePage("Collections",
                                                                                            DublinCoreCreationDocumentFormPage.class);
         // Create File
-        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle, fileDescription);
+        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle,
+                fileDescription);
         return documentBasePage;
     }
 

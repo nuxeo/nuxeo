@@ -20,36 +20,26 @@
 
 package org.nuxeo.ftest.cap;
 
+import org.nuxeo.functionaltests.Constants;
+
 /**
  * @since 8.2
  */
-public class Constants {
+public class TestConstants {
 
-    private Constants() {
+    private TestConstants() {
         // Constants class
     }
 
-    public static final String NXPATH_URL_FORMAT = "/nxpath/default%s@view_documents";
-
-    public static final String NXDOC_URL_FORMAT = "/nxdoc/default/%s/view_documents";
-
-    public static final String WORKSPACE_TYPE = "Workspace";
-
-    public static final String FILE_TYPE = "File";
-
-    public static final String WORKSPACES_PATH = "/default-domain/workspaces/";
-
-    public static final String WORKSPACES_URL = String.format(NXPATH_URL_FORMAT, WORKSPACES_PATH);
-
     public static final String TEST_WORKSPACE_TITLE = "ws";
 
-    public static final String TEST_WORKSPACE_PATH = WORKSPACES_PATH + TEST_WORKSPACE_TITLE + "/";
+    public static final String TEST_WORKSPACE_PATH = Constants.WORKSPACES_PATH + TEST_WORKSPACE_TITLE + "/";
 
-    public static final String TEST_WORKSPACE_URL = String.format(NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH);
+    public static final String TEST_WORKSPACE_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH);
 
     public static final String TEST_FILE_TITLE = "file";
 
     public static final String TEST_FILE_PATH = TEST_WORKSPACE_PATH + TEST_FILE_TITLE;
 
-    public static final String TEST_FILE_URL = String.format(NXPATH_URL_FORMAT, TEST_FILE_PATH);
+    public static final String TEST_FILE_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_FILE_PATH);
 }
