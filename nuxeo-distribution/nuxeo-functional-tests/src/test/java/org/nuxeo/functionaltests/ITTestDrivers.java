@@ -57,7 +57,6 @@ public class ITTestDrivers extends AbstractTest {
         assertTrue(taker.takeScreenshot(driver, "firefox").delete());
         assertTrue(taker.dumpPageSource(driver, "firefox").delete());
         quitDriver();
-        stopProxy();
     }
 
     @Ignore("Chrome not used in tests + chromedriver being a bit too finicky")
@@ -69,7 +68,6 @@ public class ITTestDrivers extends AbstractTest {
         assertTrue(taker.takeScreenshot(driver, "google-chrome").delete());
         assertTrue(taker.dumpPageSource(driver, "google-chrome").delete());
         quitDriver();
-        stopProxy();
     }
 
 }

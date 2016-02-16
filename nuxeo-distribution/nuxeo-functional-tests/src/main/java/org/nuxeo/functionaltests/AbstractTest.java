@@ -25,8 +25,6 @@
  */
 package org.nuxeo.functionaltests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 
 import java.io.File;
@@ -43,13 +41,11 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.browsermob.proxy.ProxyServer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
-import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -64,6 +60,7 @@ import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
+import org.nuxeo.functionaltests.proxy.ProxyManager;
 import org.nuxeo.runtime.api.Framework;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -88,6 +85,9 @@ import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
 
@@ -167,15 +167,11 @@ public abstract class AbstractTest {
 
     public static final int POLLING_FREQUENCY_SECONDS = 1;
 
-    private static final int PROXY_PORT = 4444;
-
-    private static final String HAR_NAME = "http-headers.json";
-
     public static final String SYSPROP_CHROME_DRIVER_PATH = "webdriver.chrome.driver";
 
     public static RemoteWebDriver driver;
 
-    protected static ProxyServer proxyServer = null;
+    protected static ProxyManager proxyManager;
 
     /**
      * Logger method to follow what's being run on server logs and take a screenshot of the last page in case of failure
@@ -194,6 +190,7 @@ public abstract class AbstractTest {
 
     @BeforeClass
     public static void initDriver() throws Exception {
+        proxyManager = new ProxyManager();
         String browser = System.getProperty("browser", "firefox");
         // Use the same strings as command-line Selenium
         if (browser.equals("chrome") || browser.equals("firefox")) {
@@ -286,7 +283,7 @@ public abstract class AbstractTest {
         }
 
         JavaScriptError.addExtension(profile);
-        Proxy proxy = startProxy();
+        Proxy proxy = proxyManager.startProxy();
         if (proxy != null) {
             // Does not work, but leave code for when it does
             // Workaround: use 127.0.0.2
@@ -342,7 +339,7 @@ public abstract class AbstractTest {
         DesiredCapabilities dc = DesiredCapabilities.chrome();
         ChromeOptions options = new ChromeOptions();
         options.addArguments(Arrays.asList("--ignore-certificate-errors"));
-        Proxy proxy = startProxy();
+        Proxy proxy = proxyManager.startProxy();
         if (proxy != null) {
             proxy.setNoProxy("");
             dc.setCapability(CapabilityType.PROXY, proxy);
@@ -386,41 +383,10 @@ public abstract class AbstractTest {
         }
 
         try {
-            stopProxy();
+            proxyManager.stopProxy();
+            proxyManager = null;
         } catch (Exception e) {
             log.error("Could not stop proxy: " + e.getMessage());
-        }
-    }
-
-    protected static Proxy startProxy() throws Exception {
-        if (Boolean.TRUE.equals(Boolean.valueOf(System.getProperty("useProxy", "false")))) {
-            proxyServer = new ProxyServer(PROXY_PORT);
-            proxyServer.start();
-            proxyServer.setCaptureHeaders(true);
-            // Block access to tracking sites
-            proxyServer.blacklistRequests("https?://www\\.nuxeo\\.com/embedded/wizard.*", 410);
-            proxyServer.blacklistRequests("https?://.*\\.mktoresp\\.com/.*", 410);
-            proxyServer.blacklistRequests(".*_mchId.*", 410);
-            proxyServer.blacklistRequests("https?://.*\\.google-analytics\\.com/.*", 410);
-            proxyServer.newHar("webdriver-test");
-            Proxy proxy = proxyServer.seleniumProxy();
-            return proxy;
-        } else {
-            return null;
-        }
-    }
-
-    protected static void stopProxy() throws Exception {
-        if (proxyServer != null) {
-            String target = System.getProperty(Environment.NUXEO_LOG_DIR);
-            File harFile;
-            if (target == null) {
-                harFile = new File(HAR_NAME);
-            } else {
-                harFile = new File(target, HAR_NAME);
-            }
-            proxyServer.getHar().writeTo(harFile);
-            proxyServer.stop();
         }
     }
 
