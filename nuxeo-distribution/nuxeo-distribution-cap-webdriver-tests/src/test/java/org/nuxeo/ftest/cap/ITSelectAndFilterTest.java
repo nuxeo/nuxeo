@@ -93,9 +93,8 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
         // Select the first document
         trelements.get(0).findElement(By.xpath(CHECK_BOX_XPATH)).click();
-        boolean selectedFileName = Boolean.parseBoolean(trelements.get(0)
-                                                                  .findElement(By.xpath(DOCUMENT_TITLE_XPATH))
-                                                                  .getText());
+        boolean selectedFileName = Boolean.parseBoolean(
+                trelements.get(0).findElement(By.xpath(DOCUMENT_TITLE_XPATH)).getText());
 
         // Filter on the name of the other document
         contentTabSubPage.filterDocument(Boolean.toString(!selectedFileName), 1, AJAX_TIMEOUT_SECONDS * 1000);

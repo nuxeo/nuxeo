@@ -80,7 +80,8 @@ public class ITSearchTabTest extends AbstractTest {
 
     @Before
     public void setup() throws UserNotConnectedException, IOException {
-        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1", "members");
+        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1",
+                "members");
         String wsId = createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE1_TITLE, null);
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE2_TITLE, null);
         RestHelper.addPermission(wsId, TEST_USERNAME, "Everything");

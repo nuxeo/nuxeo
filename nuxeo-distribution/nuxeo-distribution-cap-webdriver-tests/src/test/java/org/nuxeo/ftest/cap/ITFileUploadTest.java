@@ -87,7 +87,8 @@ public class ITFileUploadTest extends AbstractTest {
         assertFalse(sumContentText.contains("Drop files here"));
         assertTrue(sumContentText.contains(uploadedFileName));
         EditTabSubPage editPage = fileDocumentBasePage.getEditTab();
-        WebElement deleteChoice = Locator.findElementWithTimeout(By.id("document_edit:nxl_file:nxw_file:nxw_file_file:choicedelete"));
+        WebElement deleteChoice = Locator.findElementWithTimeout(
+                By.id("document_edit:nxl_file:nxw_file:nxw_file_file:choicedelete"));
         assertNotNull(deleteChoice);
         deleteChoice.click();
         fileDocumentBasePage = editPage.save().asPage(FileDocumentBasePage.class);

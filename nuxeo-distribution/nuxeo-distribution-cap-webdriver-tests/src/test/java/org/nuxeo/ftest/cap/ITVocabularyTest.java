@@ -90,8 +90,7 @@ public class ITVocabularyTest extends AbstractTest {
             EditTabSubPage editTabSubPage = asPage(DocumentBasePage.class).getEditTab();
 
             // add a vocabulary entry
-            Select2WidgetElement subjectsWidget = new Select2WidgetElement(
-                    driver,
+            Select2WidgetElement subjectsWidget = new Select2WidgetElement(driver,
                     driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']")),
                     true);
             subjectsWidget.selectValue(SAMPLE_SUBJECT_ENTRY_LABEL);
@@ -125,8 +124,7 @@ public class ITVocabularyTest extends AbstractTest {
             documentBasePage = documentBasePage.getContentTab().goToDocument(WORKSPACE_TITLE);
 
             editTabSubPage = documentBasePage.getContentTab().goToDocument(TEST_FILE_TITLE).getEditTab();
-            subjectsWidget = new Select2WidgetElement(
-                    driver,
+            subjectsWidget = new Select2WidgetElement(driver,
                     driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']")),
                     true);
             List<WebElement> selectedEntries = subjectsWidget.getSelectedValues();
@@ -142,8 +140,7 @@ public class ITVocabularyTest extends AbstractTest {
             subjectsWidget.removeFromSelection("art/" + SAMPLE_SUBJECT_ENTRY_ID);
             documentBasePage = editTabSubPage.save();
             editTabSubPage = documentBasePage.getEditTab();
-            subjectsWidget = new Select2WidgetElement(
-                    driver,
+            subjectsWidget = new Select2WidgetElement(driver,
                     driver.findElement(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']")),
                     true);
             assertEquals(0, subjectsWidget.getSelectedValues().size());
