@@ -18,12 +18,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
-import static org.nuxeo.ftest.cap.Constants.NXDOC_URL_FORMAT;
-import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +40,13 @@ import org.openqa.selenium.WebElement;
 
 import com.google.common.base.Function;
 
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
+
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -62,7 +63,8 @@ public class ITVocabularyTest extends AbstractTest {
 
     public final static String SAMPLE_SUBJECT_ENTRY_LABEL = "Comics";
 
-    private final static String WORKSPACE_TITLE = ITVocabularyTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITVocabularyTest.class.getSimpleName() + "_WorkspaceTitle_"
+            + new Date().getTime();
 
     private static String fileId;
 

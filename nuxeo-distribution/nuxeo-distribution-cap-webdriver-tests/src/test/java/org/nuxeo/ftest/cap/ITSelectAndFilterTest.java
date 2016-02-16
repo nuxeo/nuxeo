@@ -18,11 +18,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
-import static org.nuxeo.ftest.cap.Constants.NXDOC_URL_FORMAT;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
-
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +31,11 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -53,7 +53,8 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
     protected final String RESET_FILTER_XPATH = "cv_document_content_0_resetFilterForm:resetFilter";
 
-    private final static String WORKSPACE_TITLE = ITSelectAndFilterTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITSelectAndFilterTest.class.getSimpleName() + "_WorkspaceTitle_"
+            + new Date().getTime();
 
     private static String wsId;
 

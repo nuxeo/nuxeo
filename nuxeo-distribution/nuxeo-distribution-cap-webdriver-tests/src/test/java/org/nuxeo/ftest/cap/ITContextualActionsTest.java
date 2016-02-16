@@ -33,6 +33,8 @@ import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.openqa.selenium.By;
 
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+
 /**
  * Tests the contextual menu actions
  */
@@ -56,7 +58,7 @@ public class ITContextualActionsTest extends AbstractTest {
 
     @After
     public void after() {
-        RestHelper.deleteDocument("/default-domain/workspaces/" + WORKSPACE_NAME);
+        RestHelper.deleteDocument(WORKSPACES_PATH + WORKSPACE_NAME);
     }
 
     @Test

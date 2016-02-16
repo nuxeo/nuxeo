@@ -18,14 +18,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
-import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
-import static org.nuxeo.ftest.cap.Constants.TEST_FILE_URL;
-import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
-import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +43,15 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
+
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

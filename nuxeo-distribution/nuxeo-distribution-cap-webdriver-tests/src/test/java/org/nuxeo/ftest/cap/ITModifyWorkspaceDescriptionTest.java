@@ -20,19 +20,21 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
-import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
-import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_URL;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_URL;
+
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * <p>

@@ -20,10 +20,10 @@ package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
-import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_URL;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_URL;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 
 import java.util.List;
 import java.util.Optional;

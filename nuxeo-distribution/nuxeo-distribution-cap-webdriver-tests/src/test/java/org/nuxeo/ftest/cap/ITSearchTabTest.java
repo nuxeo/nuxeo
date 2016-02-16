@@ -18,11 +18,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.nuxeo.ftest.cap.Constants.NXDOC_URL_FORMAT;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
-import static org.nuxeo.functionaltests.RestHelper.createDocument;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +42,10 @@ import org.nuxeo.functionaltests.pages.search.SearchResultsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -82,7 +81,7 @@ public class ITSearchTabTest extends AbstractTest {
     public void setup() throws UserNotConnectedException, IOException {
         RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1",
                 "members");
-        String wsId = createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE1_TITLE, null);
+        String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE1_TITLE, null);
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE2_TITLE, null);
         RestHelper.addPermission(wsId, TEST_USERNAME, "Everything");
 

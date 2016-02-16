@@ -18,17 +18,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
-import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
-import static org.nuxeo.ftest.cap.Constants.TEST_FILE_URL;
-import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
-import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
-import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +35,19 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
+
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @since 5.7
