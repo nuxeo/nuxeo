@@ -89,8 +89,8 @@ public class ITSafeEditTest extends AbstractTest {
         }
 
         public String getKeyFromLocalStorage(int key) {
-            return (String) js.executeScript(String.format("return window.localStorage.key('%s');",
-                    Integer.valueOf(key)));
+            return (String) js.executeScript(
+                    String.format("return window.localStorage.key('%s');", Integer.valueOf(key)));
         }
 
         public Long getLocalStorageLength() {
@@ -171,7 +171,8 @@ public class ITSafeEditTest extends AbstractTest {
         wait.until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
-                List<WebElement> elts = driver.findElements(By.xpath("//div[contains(.,'A draft of this document has been saved')]"));
+                List<WebElement> elts = driver.findElements(
+                        By.xpath("//div[contains(.,'A draft of this document has been saved')]"));
                 if (!elts.isEmpty()) {
                     return elts.get(0);
                 }

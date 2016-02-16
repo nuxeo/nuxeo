@@ -53,8 +53,8 @@ public class ITWorkListTest extends AbstractTest {
 
         login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces");
 
-        DocumentBasePage.findElementWithTimeout(By.xpath("//div[@id='clipboardCopy']//a[text()='"
-                + TEST_WORKSPACE_TITLE + "']"));
+        DocumentBasePage.findElementWithTimeout(
+                By.xpath("//div[@id='clipboardCopy']//a[text()='" + TEST_WORKSPACE_TITLE + "']"));
 
         logout();
     }

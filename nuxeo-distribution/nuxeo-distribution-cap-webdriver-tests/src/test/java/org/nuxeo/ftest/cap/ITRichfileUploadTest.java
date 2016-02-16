@@ -96,7 +96,8 @@ public class ITRichfileUploadTest extends AbstractTest {
         open(TEST_FILE_URL);
 
         // Go to Files tab
-        asPage(DocumentBasePage.class).clickOnDocumentTabLink(Locator.findElementWithTimeout(By.xpath(FILES_TAB_XPATH)));
+        asPage(DocumentBasePage.class).clickOnDocumentTabLink(
+                Locator.findElementWithTimeout(By.xpath(FILES_TAB_XPATH)));
 
         // check that clear all is not visible
         assertFalse(Locator.findElementWithTimeout(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());
@@ -151,13 +152,10 @@ public class ITRichfileUploadTest extends AbstractTest {
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile5);
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
-                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                                                                             .pollingEvery(
-                                                                                     AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
-                                                                                     TimeUnit.MILLISECONDS)
-                                                                             .ignoring(
-                                                                                     StaleElementReferenceException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(
+                AbstractTest.driver).withTimeout(AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                    .pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS)
+                                    .ignoring(StaleElementReferenceException.class);
         Function<WebDriver, Boolean> function = new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
