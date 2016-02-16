@@ -106,7 +106,7 @@ public class ITExportTest extends AbstractTest {
         try {
             WebElement element = driver.findElement(By.linkText(link));
             return element != null;
-        } catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return false;
         }
     }

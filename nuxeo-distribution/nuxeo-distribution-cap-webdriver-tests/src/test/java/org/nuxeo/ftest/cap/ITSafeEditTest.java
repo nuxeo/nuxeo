@@ -90,8 +90,8 @@ public class ITSafeEditTest extends AbstractTest {
         }
 
         public String getKeyFromLocalStorage(int key) {
-            return (String) js.executeScript(String.format("return window.localStorage.key('%s');",
-                    Integer.valueOf(key)));
+            return (String) js.executeScript(
+                    String.format("return window.localStorage.key('%s');", Integer.valueOf(key)));
         }
 
         public Long getLocalStorageLength() {
@@ -124,7 +124,8 @@ public class ITSafeEditTest extends AbstractTest {
 
     @Before
     public void before() {
-        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1", "members");
+        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1",
+                "members");
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
         RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, null);
         RestHelper.addPermission(TEST_WORKSPACE_PATH, TEST_USERNAME, "Everything");
@@ -164,7 +165,8 @@ public class ITSafeEditTest extends AbstractTest {
         wait.until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
-                List<WebElement> elts = driver.findElements(By.xpath("//div[contains(.,'A draft of this document has been saved')]"));
+                List<WebElement> elts = driver.findElements(
+                        By.xpath("//div[contains(.,'A draft of this document has been saved')]"));
                 if (!elts.isEmpty()) {
                     return elts.get(0);
                 }

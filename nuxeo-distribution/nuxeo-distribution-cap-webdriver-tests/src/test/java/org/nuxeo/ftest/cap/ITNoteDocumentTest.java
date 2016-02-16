@@ -70,8 +70,8 @@ public class ITNoteDocumentTest extends AbstractTest {
         login();
         open(TEST_WORKSPACE_URL);
         // Create a Note
-        NoteDocumentBasePage noteDocumentPage = createNote(asPage(DocumentBasePage.class), NOTE_TITLE,
-                NOTE_DESCRIPTION, true, CONTENT_NOTE);
+        NoteDocumentBasePage noteDocumentPage = createNote(asPage(DocumentBasePage.class), NOTE_TITLE, NOTE_DESCRIPTION,
+                true, CONTENT_NOTE);
         NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
 
         // Test the result
@@ -123,8 +123,8 @@ public class ITNoteDocumentTest extends AbstractTest {
         open(TEST_WORKSPACE_URL);
 
         // Create a Note
-        NoteDocumentBasePage noteDocumentPage = createNote(asPage(DocumentBasePage.class), NOTE_TITLE,
-                NOTE_DESCRIPTION, true, CONTENT_NOTE);
+        NoteDocumentBasePage noteDocumentPage = createNote(asPage(DocumentBasePage.class), NOTE_TITLE, NOTE_DESCRIPTION,
+                true, CONTENT_NOTE);
         // Edit the note
         EditTabSubPage editTab = noteDocumentPage.getEditTab();
         RichEditorElement editor = new RichEditorElement(driver, "document_edit:nxl_note:nxw_note_editor");

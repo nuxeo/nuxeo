@@ -322,8 +322,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         // start workflow
         SummaryTabSubPage summaryTabPage = filePage.getSummaryTab();
         summaryTabPage.startDefaultWorkflow();
-        assertTrue(summaryTabPage.workflowTasksForm.getText()
-                                                   .contains("Please select some participants for the review"));
+        assertTrue(
+                summaryTabPage.workflowTasksForm.getText().contains("Please select some participants for the review"));
         // click on the workflow tab
         WorkflowTabSubPage workflowTab = filePage.getWorkflow();
         workflowTab.showGraphView();
@@ -339,8 +339,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         // start workflow
         SummaryTabSubPage summaryTabPage = filePage.getSummaryTab();
         summaryTabPage.startDefaultParallelWorkflow();
-        assertTrue(summaryTabPage.workflowTasksForm.getText()
-                                                   .contains("Please select some participants for the review"));
+        assertTrue(
+                summaryTabPage.workflowTasksForm.getText().contains("Please select some participants for the review"));
         // click on the workflow tab
         WorkflowTabSubPage workflowTab = filePage.getWorkflow();
         workflowTab.showGraphView();
