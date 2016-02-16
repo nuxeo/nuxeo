@@ -34,7 +34,6 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -47,6 +46,8 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.functionaltests.drivers.ChromeDriverProvider;
+import org.nuxeo.functionaltests.drivers.FirefoxDriverProvider;
 import org.nuxeo.functionaltests.fragment.WebFragment;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -69,10 +70,6 @@ import org.openqa.selenium.Proxy;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.internal.WrapsElement;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.Command;
@@ -88,8 +85,6 @@ import com.google.common.collect.ImmutableMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import net.jsourcerer.webdriver.jserrorcollector.JavaScriptError;
 
 /**
  * Base functions for all pages.
@@ -113,49 +108,14 @@ public abstract class AbstractTest {
      */
     public static final int POLLING_FREQUENCY_MILLISECONDS = 100;
 
+    public static final int POLLING_FREQUENCY_SECONDS = 1;
+
     /**
      * Page Load timeout in seconds.
      *
      * @since 5.9.2
      */
     public static final int PAGE_LOAD_TIME_OUT_SECONDS = 60;
-
-    /**
-     * @since 5.7
-     */
-    public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = "/usr/bin/chromedriver";
-
-    /**
-     * @since 5.7 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" doesn't work
-     */
-    public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = "/Applications/chromedriver";
-
-    /**
-     * @since 5.7
-     */
-    public static final String CHROME_DRIVER_DEFAULT_PATH_WINVISTA = SystemUtils.getUserHome().getPath()
-            + "\\AppData\\Local\\Google\\Chrome\\Application\\chromedriver.exe";
-
-    /**
-     * @since 5.7
-     */
-    public static final String CHROME_DRIVER_DEFAULT_PATH_WINXP = SystemUtils.getUserHome().getPath()
-            + "\\Local Settings\\Application Data\\Google\\Chrome\\Application\\chromedriver.exe";
-
-    /**
-     * @since 5.7
-     */
-    public static final String CHROME_DRIVER_DEFAULT_EXECUTABLE_NAME = "chromedriver";
-
-    /**
-     * @since 5.7
-     */
-    public static final String CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME = "chromedriver.exe";
-
-    static final Log log = LogFactory.getLog(AbstractTest.class);
-
-    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
-                                                 .replaceAll("/$", "");
 
     public static final int LOAD_TIMEOUT_SECONDS = 30;
 
@@ -165,9 +125,65 @@ public abstract class AbstractTest {
 
     public static final int AJAX_SHORT_TIMEOUT_SECONDS = 2;
 
-    public static final int POLLING_FREQUENCY_SECONDS = 1;
+    /**
+     * @since 5.7
+     * @deprecated since 8.2
+     * @see ChromeDriverProvider
+     */
+    @Deprecated
+    public static final String CHROME_DRIVER_DEFAULT_PATH_LINUX = ChromeDriverProvider.CHROME_DRIVER_DEFAULT_PATH_LINUX;
 
-    public static final String SYSPROP_CHROME_DRIVER_PATH = "webdriver.chrome.driver";
+    /**
+     * @since 5.7 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" doesn't work
+     * @deprecated since 8.2
+     * @see ChromeDriverProvider
+     */
+    @Deprecated
+    public static final String CHROME_DRIVER_DEFAULT_PATH_MAC = ChromeDriverProvider.CHROME_DRIVER_DEFAULT_PATH_MAC;
+
+    /**
+     * @since 5.7
+     * @deprecated since 8.2
+     * @see ChromeDriverProvider
+     */
+    @Deprecated
+    public static final String CHROME_DRIVER_DEFAULT_PATH_WINVISTA = ChromeDriverProvider.CHROME_DRIVER_DEFAULT_PATH_WINVISTA;
+
+    /**
+     * @since 5.7
+     * @deprecated since 8.2
+     * @see ChromeDriverProvider
+     */
+    @Deprecated
+    public static final String CHROME_DRIVER_DEFAULT_PATH_WINXP = ChromeDriverProvider.CHROME_DRIVER_DEFAULT_PATH_WINXP;
+
+    /**
+     * @since 5.7
+     * @deprecated since 8.2
+     * @see ChromeDriverProvider
+     */
+    @Deprecated
+    public static final String CHROME_DRIVER_DEFAULT_EXECUTABLE_NAME = ChromeDriverProvider.CHROME_DRIVER_DEFAULT_EXECUTABLE_NAME;
+
+    /**
+     * @since 5.7
+     * @deprecated since 8.2
+     * @see ChromeDriverProvider
+     */
+    @Deprecated
+    public static final String CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME = ChromeDriverProvider.CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
+
+    /**
+     * @deprecated since 8.2
+     * @see ChromeDriverProvider
+     */
+    @Deprecated
+    public static final String SYSPROP_CHROME_DRIVER_PATH = ChromeDriverProvider.SYSPROP_CHROME_DRIVER_PATH;
+
+    static final Log log = LogFactory.getLog(AbstractTest.class);
+
+    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
+                                                 .replaceAll("/$", "");
 
     public static RemoteWebDriver driver;
 
@@ -190,7 +206,6 @@ public abstract class AbstractTest {
 
     @BeforeClass
     public static void initDriver() throws Exception {
-        proxyManager = new ProxyManager();
         String browser = System.getProperty("browser", "firefox");
         // Use the same strings as command-line Selenium
         if (browser.equals("chrome") || browser.equals("firefox")) {
@@ -204,165 +219,25 @@ public abstract class AbstractTest {
     }
 
     protected static void initFirefoxDriver() throws Exception {
-        DesiredCapabilities dc = DesiredCapabilities.firefox();
-        FirefoxProfile profile = new FirefoxProfile();
-        // Disable native events (makes things break on Windows)
-        profile.setEnableNativeEvents(false);
-        // Set English as default language
-        profile.setPreference("general.useragent.locale", "en");
-        profile.setPreference("intl.accept_languages", "en");
-        // Set other confs to speed up FF
-
-        // Speed up firefox by pipelining requests on a single connection
-        profile.setPreference("network.http.keep-alive", true);
-        profile.setPreference("network.http.pipelining", true);
-        profile.setPreference("network.http.proxy.pipelining", true);
-        profile.setPreference("network.http.pipelining.maxrequests", 8);
-
-        // Try to use less memory
-        profile.setPreference("browser.sessionhistory.max_entries", 10);
-        profile.setPreference("browser.sessionhistory.max_total_viewers", 4);
-        profile.setPreference("browser.sessionstore.max_tabs_undo", 4);
-        profile.setPreference("browser.sessionstore.interval", 1800000);
-
-        // disable unresponsive script alerts
-        profile.setPreference("dom.max_script_run_time", 0);
-        profile.setPreference("dom.max_chrome_script_run_time", 0);
-
-        // don't skip proxy for localhost
-        profile.setPreference("network.proxy.no_proxies_on", "");
-
-        // prevent different kinds of popups/alerts
-        profile.setPreference("browser.tabs.warnOnClose", false);
-        profile.setPreference("browser.tabs.warnOnOpen", false);
-        profile.setPreference("extensions.newAddons", false);
-        profile.setPreference("extensions.update.notifyUser", false);
-
-        // disable autoscrolling
-        profile.setPreference("browser.urlbar.autocomplete.enabled", false);
-
-        // downloads conf
-        profile.setPreference("browser.download.useDownloadDir", false);
-
-        // prevent FF from running in offline mode when there's no network
-        // connection
-        profile.setPreference("toolkit.networkmanager.disable", true);
-
-        // prevent FF from giving health reports
-        profile.setPreference("datareporting.policy.dataSubmissionEnabled", false);
-        profile.setPreference("datareporting.healthreport.uploadEnabled", false);
-        profile.setPreference("datareporting.healthreport.service.firstRun", false);
-        profile.setPreference("datareporting.healthreport.service.enabled", false);
-        profile.setPreference("datareporting.healthreport.logging.consoleEnabled", false);
-
-        // start page conf to speed up FF
-        profile.setPreference("browser.startup.homepage", "about:blank");
-        profile.setPreference("pref.browser.homepage.disable_button.bookmark_page", false);
-        profile.setPreference("pref.browser.homepage.disable_button.restore_default", false);
-
-        // misc confs to avoid useless updates
-        profile.setPreference("browser.search.update", false);
-        profile.setPreference("browser.bookmarks.restore_default_bookmarks", false);
-
-        // misc confs to speed up FF
-        profile.setPreference("extensions.ui.dictionary.hidden", true);
-        profile.setPreference("layout.spellcheckDefault", 0);
-        // For FF > 40 ?
-        profile.setPreference("startup.homepage_welcome_url.additional", "about:blank");
-
-        // webdriver logging
-        if (Boolean.TRUE.equals(Boolean.valueOf(System.getenv("nuxeo.log.webriver")))) {
-            String location = System.getProperty("basedir") + File.separator + "target";
-            File outputFolder = new File(location);
-            if (!outputFolder.exists() || !outputFolder.isDirectory()) {
-                outputFolder = null;
-            }
-            File webdriverlogFile = File.createTempFile("webdriver", ".log", outputFolder);
-            profile.setPreference("webdriver.log.file", webdriverlogFile.getAbsolutePath());
-            log.warn("Webdriver logs saved in " + webdriverlogFile);
-        }
-
-        JavaScriptError.addExtension(profile);
+        proxyManager = new ProxyManager();
         Proxy proxy = proxyManager.startProxy();
         if (proxy != null) {
-            // Does not work, but leave code for when it does
-            // Workaround: use 127.0.0.2
             proxy.setNoProxy("");
-            // setProxyPreferences method does not exist with selenium version 2.43.0
-            // profile.setProxyPreferences(proxy);
-            dc.setCapability(CapabilityType.PROXY, proxy);
         }
-        dc.setCapability(FirefoxDriver.PROFILE, profile);
-        driver = new FirefoxDriver(dc);
+        DesiredCapabilities dc = DesiredCapabilities.firefox();
+        dc.setCapability(CapabilityType.PROXY, proxy);
+        driver = new FirefoxDriverProvider().init(dc);
     }
 
     protected static void initChromeDriver() throws Exception {
-        if (System.getProperty(SYSPROP_CHROME_DRIVER_PATH) == null) {
-            String chromeDriverDefaultPath = null;
-            String chromeDriverExecutableName = CHROME_DRIVER_DEFAULT_EXECUTABLE_NAME;
-            if (SystemUtils.IS_OS_LINUX) {
-                chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_LINUX;
-            } else if (SystemUtils.IS_OS_MAC) {
-                chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_MAC;
-            } else if (SystemUtils.IS_OS_WINDOWS_XP) {
-                chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_WINXP;
-                chromeDriverExecutableName = CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
-            } else if (SystemUtils.IS_OS_WINDOWS_VISTA) {
-                chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_WINVISTA;
-                chromeDriverExecutableName = CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
-            } else if (SystemUtils.IS_OS_WINDOWS) {
-                // Unknown default path on other Windows OS. To be completed.
-                chromeDriverExecutableName = CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
-            }
-
-            if (chromeDriverDefaultPath != null && new File(chromeDriverDefaultPath).exists()) {
-                log.warn(String.format("Missing property %s but found %s. Using it...", SYSPROP_CHROME_DRIVER_PATH,
-                        chromeDriverDefaultPath));
-                System.setProperty(SYSPROP_CHROME_DRIVER_PATH, chromeDriverDefaultPath);
-            } else {
-                // Can't find chromedriver in default location, check system
-                // path
-                File chromeDriverExecutable = findExecutableOnPath(chromeDriverExecutableName);
-                if ((chromeDriverExecutable != null) && (chromeDriverExecutable.exists())) {
-                    log.warn(String.format("Missing property %s but found %s. Using it...", SYSPROP_CHROME_DRIVER_PATH,
-                            chromeDriverExecutable.getCanonicalPath()));
-                    System.setProperty(SYSPROP_CHROME_DRIVER_PATH, chromeDriverExecutable.getCanonicalPath());
-                } else {
-                    log.error(String.format(
-                            "Could not find the Chrome driver looking at %s or system path."
-                                    + " Download it from %s and set its path with " + "the System property %s.",
-                            chromeDriverDefaultPath, "http://code.google.com/p/chromedriver/downloads/list",
-                            SYSPROP_CHROME_DRIVER_PATH));
-                }
-            }
-        }
-        DesiredCapabilities dc = DesiredCapabilities.chrome();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments(Arrays.asList("--ignore-certificate-errors"));
+        proxyManager = new ProxyManager();
         Proxy proxy = proxyManager.startProxy();
         if (proxy != null) {
             proxy.setNoProxy("");
-            dc.setCapability(CapabilityType.PROXY, proxy);
         }
-        dc.setCapability(ChromeOptions.CAPABILITY, options);
-        driver = new ChromeDriver(dc);
-    }
-
-    /**
-     * @since 5.7
-     */
-    protected static File findExecutableOnPath(String executableName) {
-        String systemPath = System.getenv("PATH");
-        String[] pathDirs = systemPath.split(File.pathSeparator);
-        File fullyQualifiedExecutable = null;
-        for (String pathDir : pathDirs) {
-            File file = new File(pathDir, executableName);
-            if (file.isFile()) {
-                fullyQualifiedExecutable = file;
-                break;
-            }
-        }
-        return fullyQualifiedExecutable;
+        DesiredCapabilities dc = DesiredCapabilities.chrome();
+        dc.setCapability(CapabilityType.PROXY, proxy);
+        driver = new ChromeDriverProvider().init(dc);
     }
 
     /**
