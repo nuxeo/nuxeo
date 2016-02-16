@@ -104,9 +104,9 @@ public class ITCollectionsTest extends AbstractTest {
         // Check we can not add Domain to a collection
         assertFalse(documentBasePage.isAddToCollectionUpperActionAvailable());
         // Create test File
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
+        DocumentBasePage workspacePage = documentBasePage.createWorkspace(WORKSPACE_TITLE, null);
 
-        FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description",
+        FileDocumentBasePage fileDocumentBasePage = workspacePage.createFile(TEST_FILE_NAME, "Test File description",
                 false, null, null, null);
 
         // Check that collection widget summary is not displayed
@@ -129,7 +129,7 @@ public class ITCollectionsTest extends AbstractTest {
 
         workspacePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
 
-        fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME2, "Test File description", false, null, null,
+        fileDocumentBasePage = workspacePage.createFile(TEST_FILE_NAME2, "Test File description", false, null, null,
                 null);
 
         addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
@@ -229,7 +229,7 @@ public class ITCollectionsTest extends AbstractTest {
         documentBasePage = documentBasePage.switchToPersonalWorkspace();
         DocumentBasePage workspacePage = documentBasePage.getNavigationSubPage().goToDocument("Administrator");
         // Add a file to this collection that test user can't see
-        FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description",
+        FileDocumentBasePage fileDocumentBasePage = workspacePage.createFile(TEST_FILE_NAME, "Test File description",
                 false, null, null, null);
         AddToCollectionForm addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
         addToCollectionForm.setCollection(COLLECTION_NAME_2);
@@ -242,7 +242,7 @@ public class ITCollectionsTest extends AbstractTest {
             documentBasePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(MY_COLLECTIONS_FR_LABEL);
         }
 
-        documentBasePage = createCollection(workspacePage, COLLECTION_NAME_2, COLLECTION_DESCRIPTION_2);
+        documentBasePage = workspacePage.createCollection(COLLECTION_NAME_2, COLLECTION_DESCRIPTION_2);
 
         documentBasePage.getPermissionsTab().grantPermissionForUser(CAN_COLLECT_RIGHT, TEST_USERNAME);
 
@@ -262,7 +262,7 @@ public class ITCollectionsTest extends AbstractTest {
 
         // Create a file in test user workspace and add it to the collection
         documentBasePage = collectionContentTabSubPage.switchToPersonalWorkspace();
-        fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null,
+        fileDocumentBasePage = workspacePage.createFile(TEST_FILE_NAME, "Test File description", false, null, null,
                 null);
         addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
         addToCollectionForm.setCollection(COLLECTION_NAME_2);

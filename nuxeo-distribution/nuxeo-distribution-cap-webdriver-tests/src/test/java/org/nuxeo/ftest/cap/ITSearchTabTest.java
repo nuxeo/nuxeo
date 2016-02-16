@@ -88,8 +88,8 @@ public class ITSearchTabTest extends AbstractTest {
         loginAsTestUser();
         open(String.format(NXDOC_URL_FORMAT, wsId));
 
-        FileDocumentBasePage filePage = createFile(asPage(DocumentBasePage.class), "Test file for ITSearchTabTest",
-                "Test File description", false, null, null, null);
+        FileDocumentBasePage filePage = asPage(DocumentBasePage.class).createFile("Test file for ITSearchTabTest", "Test File description",
+                false, null, null, null);
         EditTabSubPage editTabSubPage = filePage.getEditTab();
 
         Select2WidgetElement subjectsWidget = new Select2WidgetElement(driver,

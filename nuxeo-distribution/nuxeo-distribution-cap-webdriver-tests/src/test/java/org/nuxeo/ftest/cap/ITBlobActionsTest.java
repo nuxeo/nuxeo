@@ -69,7 +69,7 @@ public class ITBlobActionsTest extends AbstractTest {
 
         // Create a PDF File
         String filePrefix = "NX-Webdriver-test-";
-        FileDocumentBasePage filePage = createFile(asPage(DocumentBasePage.class), DOCUMENT_NAME, DOCUMENT_DESC, true,
+        FileDocumentBasePage filePage = asPage(DocumentBasePage.class).createFile(DOCUMENT_NAME, DOCUMENT_DESC, true,
                 filePrefix, ".pdf", "Webdriver test file content.");
 
         // Get actions for main blob
