@@ -26,7 +26,6 @@ import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
 import static org.nuxeo.ftest.cap.Constants.TEST_FILE_URL;
 import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_PATH;
 import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
-import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_URL;
 import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
 import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
@@ -38,7 +37,6 @@ import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;

@@ -30,7 +30,6 @@ import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
 import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -76,8 +75,6 @@ public class ITRichfileUploadTest extends AbstractTest {
     protected static final String STORE_UPLOAD_FILE_INPUT_VALUE_XPATH = "//input[@value='Store Uploaded Files']";
 
     public final static String TEST_FILE_NAME = "test1";
-
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
 
     @Before
     public void before() {

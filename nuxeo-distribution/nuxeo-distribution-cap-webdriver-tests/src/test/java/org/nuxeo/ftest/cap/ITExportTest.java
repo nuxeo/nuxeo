@@ -20,7 +20,6 @@
 
 package org.nuxeo.ftest.cap;
 
-import com.google.common.base.Function;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +30,6 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import static org.junit.Assert.assertFalse;
@@ -44,8 +42,6 @@ import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_TITLE;
 import static org.nuxeo.ftest.cap.Constants.TEST_WORKSPACE_URL;
 import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
 import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
-import static org.nuxeo.functionaltests.Locator.findElement;
-import static org.openqa.selenium.By.linkText;
 
 /**
  * @since 8.2
