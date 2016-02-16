@@ -55,11 +55,6 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
 import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
-import org.nuxeo.functionaltests.pages.forms.CollectionCreationFormPage;
-import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
-import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
-import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
-import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.proxy.ProxyManager;
 import org.nuxeo.runtime.api.Framework;
@@ -82,6 +77,8 @@ import org.openqa.selenium.support.ui.Wait;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
+
+import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -446,7 +443,7 @@ public abstract class AbstractTest {
      * @throws UserNotConnectedException
      */
     public DocumentBasePage login() throws UserNotConnectedException {
-        return login("Administrator", "Administrator");
+        return login(ADMINISTRATOR, ADMINISTRATOR);
     }
 
     public DocumentBasePage login(String username, String password) throws UserNotConnectedException {
@@ -482,6 +479,7 @@ public abstract class AbstractTest {
      * @return the created Workspace page
      * @throws Exception if initializing repository fails
      */
+    @Deprecated
     protected DocumentBasePage initRepository(DocumentBasePage currentPage) throws Exception {
         return createWorkspace(currentPage, "Test Workspace", "Test Workspace for my dear WebDriver.");
     }
@@ -492,28 +490,24 @@ public abstract class AbstractTest {
      * @param currentPage the current page
      * @throws Exception if cleaning repository fails
      */
+    @Deprecated
     protected void cleanRepository(DocumentBasePage currentPage) throws Exception {
         deleteWorkspace(currentPage, "Test Workspace");
     }
 
     /**
-     * Creates a Workspace form the {@code currentPage}.
+     * Creates a Workspace from the {@code currentPage}.
      *
      * @param currentPage the current page
      * @param workspaceTitle the workspace title
      * @param workspaceDescription the workspace description
      * @return the created Workspace page
+     * @deprecated since 8.2: use {@link DocumentBasePage#createWorkspace(String, String)} instead.
      */
+    @Deprecated
     protected DocumentBasePage createWorkspace(DocumentBasePage currentPage, String workspaceTitle,
             String workspaceDescription) {
-        // Go to Workspaces
-        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument("Workspaces");
-        // Get Workspace creation form page
-        WorkspaceFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab().getWorkspaceCreatePage();
-        // Create Workspace
-        DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(workspaceTitle,
-                workspaceDescription);
-        return workspacePage;
+        return currentPage.createWorkspace(workspaceTitle, workspaceDescription);
     }
 
     /**
@@ -521,12 +515,11 @@ public abstract class AbstractTest {
      *
      * @param currentPage the current page
      * @param workspaceTitle the workspace title
+     * @deprecated since 8.2: use {@link DocumentBasePage#deleteWorkspace(String)} instead.
      */
+    @Deprecated
     protected void deleteWorkspace(DocumentBasePage currentPage, String workspaceTitle) {
-        // Go to Workspaces
-        DocumentBasePage workspacesPage = currentPage.getNavigationSubPage().goToDocument("Workspaces");
-        // Delete the Workspace
-        workspacesPage.getContentTab().removeDocument(workspaceTitle);
+        currentPage.deleteWorkspace(workspaceTitle);
     }
 
     /**
@@ -541,16 +534,13 @@ public abstract class AbstractTest {
      * @param fileContent the file content
      * @return the created File page
      * @throws IOException if temporary file creation fails
+     * @deprecated since 8.2: use {@link DocumentBasePage#createFile(String, String, boolean, String, String, String)}
+     *             instead.
      */
+    @Deprecated
     protected FileDocumentBasePage createFile(DocumentBasePage currentPage, String fileTitle, String fileDescription,
             boolean uploadBlob, String filePrefix, String fileSuffix, String fileContent) throws IOException {
-        // Get File creation form page
-        FileCreationFormPage fileCreationFormPage = currentPage.getContentTab().getDocumentCreatePage("File",
-                FileCreationFormPage.class);
-        // Create File
-        FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(fileTitle, fileDescription, uploadBlob,
-                filePrefix, fileSuffix, fileDescription);
-        return filePage;
+        return currentPage.createFile(fileTitle, fileDescription, uploadBlob, filePrefix, fileSuffix, fileContent);
     }
 
     /**
@@ -560,16 +550,12 @@ public abstract class AbstractTest {
      * @param collectionsTitle the Collections container title
      * @param fileDescription the collections description
      * @return the created Collections page
+     * @deprecated since 8.2: use {@link DocumentBasePage#createCollections(String, String)} instead.
      */
+    @Deprecated
     protected DocumentBasePage createCollections(DocumentBasePage currentPage, String collectionsTitle,
             String fileDescription) {
-        DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = currentPage.getContentTab()
-                                                                                   .getDocumentCreatePage("Collections",
-                                                                                           DublinCoreCreationDocumentFormPage.class);
-        // Create File
-        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle,
-                fileDescription);
-        return documentBasePage;
+        return currentPage.createCollections(collectionsTitle, fileDescription);
     }
 
     /**
@@ -579,15 +565,12 @@ public abstract class AbstractTest {
      * @param collectionsTitle the Collections container title
      * @param fileDescription the collection description
      * @return the created Collections page
+     * @deprecated since 8.2: use {@link DocumentBasePage#createCollection(String, String)} instead.
      */
+    @Deprecated
     protected CollectionContentTabSubPage createCollection(DocumentBasePage currentPage, String collectionsTitle,
             String fileDescription) {
-        CollectionCreationFormPage collectionCreationFormPage = currentPage.getContentTab().getDocumentCreatePage(
-                "Collection", CollectionCreationFormPage.class);
-        // Create File
-        CollectionContentTabSubPage documentBasePage = collectionCreationFormPage.createDocument(collectionsTitle,
-                fileDescription);
-        return documentBasePage;
+        return currentPage.createCollection(collectionsTitle, fileDescription);
     }
 
     /**
@@ -636,16 +619,12 @@ public abstract class AbstractTest {
      * @return the created note page.
      * @throws IOException
      * @since 5.9.4
+     * @deprecated since 8.2: use {@link DocumentBasePage#createNote(String, String, boolean, String)} instead.
      */
+    @Deprecated
     protected NoteDocumentBasePage createNote(DocumentBasePage currentPage, String noteTitle, String noteDescription,
             boolean defineNote, String noteContent) throws IOException {
-        // Get the Note creation form
-        NoteCreationFormPage noteCreationPage = currentPage.getContentTab().getDocumentCreatePage("Note",
-                NoteCreationFormPage.class);
-        // Create a Note
-        NoteDocumentBasePage notePage = noteCreationPage.createNoteDocument(noteTitle, noteDescription, defineNote,
-                noteContent);
-        return notePage;
+        return currentPage.createNote(noteTitle, noteDescription, defineNote, noteContent);
     }
 
     /**

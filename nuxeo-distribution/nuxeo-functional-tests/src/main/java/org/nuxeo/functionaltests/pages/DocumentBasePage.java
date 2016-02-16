@@ -19,8 +19,7 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static org.junit.Assert.assertEquals;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +31,11 @@ import org.nuxeo.functionaltests.fragment.AddAllToCollectionForm;
 import org.nuxeo.functionaltests.fragment.AddToCollectionForm;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
+import org.nuxeo.functionaltests.pages.forms.CollectionCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
+import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
@@ -52,6 +56,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import com.google.common.base.Function;
+
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * The nuxeo main document base page
@@ -341,8 +351,8 @@ public class DocumentBasePage extends AbstractPage {
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
-                return StringUtils.isBlank(driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute(
-                        "disabled"));
+                return StringUtils.isBlank(
+                        driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute("disabled"));
             }
         }, StaleElementReferenceException.class);
         AjaxRequestManager arm = new AjaxRequestManager(driver);
@@ -431,6 +441,118 @@ public class DocumentBasePage extends AbstractPage {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Creates a Workspace from this page.
+     *
+     * @param workspaceTitle the workspace title
+     * @param workspaceDescription the workspace description
+     * @return the created Workspace page
+     * @since 8.2
+     */
+    public DocumentBasePage createWorkspace(String workspaceTitle, String workspaceDescription) {
+        // Go to Workspaces
+        DocumentBasePage workspacesPage = getNavigationSubPage().goToDocument(WORKSPACES_TITLE);
+        // Get Workspace creation form page
+        WorkspaceFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab().getWorkspaceCreatePage();
+        // Create Workspace
+        DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(workspaceTitle,
+                workspaceDescription);
+        return workspacePage;
+    }
+
+    /**
+     * Deletes the Workspace with title {@code workspaceTitle} from this page.
+     *
+     * @param workspaceTitle the workspace title
+     * @since 8.2
+     */
+    public void deleteWorkspace(String workspaceTitle) {
+        // Go to Workspaces
+        DocumentBasePage workspacesPage = getNavigationSubPage().goToDocument(WORKSPACES_TITLE);
+        // Delete the Workspace
+        workspacesPage.getContentTab().removeDocument(workspaceTitle);
+    }
+
+    /**
+     * Creates a File from this page.
+     *
+     * @param fileTitle the file title
+     * @param fileDescription the file description
+     * @param uploadBlob true if a blob needs to be uploaded (temporary file created for this purpose)
+     * @param filePrefix the file prefix
+     * @param fileSuffix the file suffix
+     * @param fileContent the file content
+     * @return the created File page
+     * @throws IOException if temporary file creation fails
+     * @since 8.2
+     */
+    public FileDocumentBasePage createFile(String fileTitle, String fileDescription, boolean uploadBlob,
+            String filePrefix, String fileSuffix, String fileContent) throws IOException {
+        // Get File creation form page
+        FileCreationFormPage fileCreationFormPage = getContentTab().getDocumentCreatePage(FILE_TYPE,
+                FileCreationFormPage.class);
+        // Create File
+        FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(fileTitle, fileDescription, uploadBlob,
+                filePrefix, fileSuffix, fileDescription);
+        return filePage;
+    }
+
+    /**
+     * Creates a Collections container from this page.
+     *
+     * @param collectionsTitle the Collections container title
+     * @param fileDescription the collections description
+     * @return the created Collections page
+     * @since 8.2
+     */
+    public DocumentBasePage createCollections(String collectionsTitle, String fileDescription) {
+        DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = getContentTab().getDocumentCreatePage(
+                "Collections", DublinCoreCreationDocumentFormPage.class);
+        // Create File
+        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle,
+                fileDescription);
+        return documentBasePage;
+    }
+
+    /**
+     * Creates a Collection from this page.
+     *
+     * @param collectionsTitle the Collections container title
+     * @param fileDescription the collection description
+     * @return the created Collections page
+     * @since 8.2
+     */
+    public CollectionContentTabSubPage createCollection(String collectionsTitle, String fileDescription) {
+        CollectionCreationFormPage collectionCreationFormPage = getContentTab().getDocumentCreatePage("Collection",
+                CollectionCreationFormPage.class);
+        // Create File
+        CollectionContentTabSubPage documentBasePage = collectionCreationFormPage.createDocument(collectionsTitle,
+                fileDescription);
+        return documentBasePage;
+    }
+
+    /**
+     * Creates a Note from this page.
+     *
+     * @param noteTitle the note title
+     * @param noteDescription the note description
+     * @param defineNote true if the content of the note needs to be defined
+     * @param noteContent the content of the note
+     * @return the created note page.
+     * @throws IOException
+     * @since 8.2
+     */
+    public NoteDocumentBasePage createNote(String noteTitle, String noteDescription, boolean defineNote,
+            String noteContent) throws IOException {
+        // Get the Note creation form
+        NoteCreationFormPage noteCreationPage = getContentTab().getDocumentCreatePage(NOTE_TYPE,
+                NoteCreationFormPage.class);
+        // Create a Note
+        NoteDocumentBasePage notePage = noteCreationPage.createNoteDocument(noteTitle, noteDescription, defineNote,
+                noteContent);
+        return notePage;
     }
 
 }

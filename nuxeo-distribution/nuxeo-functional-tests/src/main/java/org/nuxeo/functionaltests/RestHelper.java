@@ -24,6 +24,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+
+import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
+
 import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -31,10 +37,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-
-import org.apache.commons.lang3.StringUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  * @since 8.2
@@ -46,8 +48,6 @@ public class RestHelper {
     private static final MediaType AUTOMATION_JSON = MediaType.parse("application/json+nxrequest");
 
     private static final String USER_WORKSPACE_PATH_FORMAT = "/default-domain/UserWorkspaces/%s";
-
-    private static final String ADMINISTRATOR = "Administrator";
 
     private static final OkHttpClient client = new OkHttpClient();
 
@@ -87,8 +87,8 @@ public class RestHelper {
         return createUser(username, password, null, null, null, null, null);
     }
 
-    public static String createUser(String username, String password, String firstName, String lastName,
-            String company, String email, String group) {
+    public static String createUser(String username, String password, String firstName, String lastName, String company,
+            String email, String group) {
         String json = buildUserJSON(username, password, firstName, lastName, company, email, group);
 
         RequestBody body = RequestBody.create(JSON, json);
@@ -226,8 +226,8 @@ public class RestHelper {
     public static void addPermission(String pathOrId, String username, String permission) {
         String json = buildAddPermissionJSON(pathOrId, username, permission);
         RequestBody body = RequestBody.create(AUTOMATION_JSON, json);
-        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1/automation",
-                "Document.AddPermission" }, "/");
+        String url = StringUtils.join(
+                new String[] { AbstractTest.NUXEO_URL, "api/v1/automation", "Document.AddPermission" }, "/");
         Request request = newRequest().url(url).post(body).build();
         try {
             Response response = client.newCall(request).execute();
