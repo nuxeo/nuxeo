@@ -17,30 +17,43 @@
  *     Sun Seng David TAN <stan@nuxeo.com>
  *     Antoine Taillefer
  */
-package org.nuxeo.functionaltests.pages.tabs;
+package org.nuxeo.functionaltests.pages.forms;
 
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.forms.WorkspaceCreationFormPage;
+import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
+ * @since 8.2
  */
-public class WorkspacesContentTabSubPage extends ContentTabSubPage {
+public class WorkspaceCreationFormPage extends AbstractPage {
 
     @Required
-    @FindBy(id = "nxw_newWorkspace_form:nxw_newWorkspace")
-    WebElement createNewWorkspaceLink;
+    @FindBy(id = "document_create:nxl_heading:nxw_title")
+    WebElement titleTextInput;
 
-    public WorkspacesContentTabSubPage(WebDriver driver) {
+    @Required
+    @FindBy(id = "document_create:nxl_heading:nxw_description")
+    WebElement descriptionTextInput;
+
+    @Required
+    @FindBy(id = "document_create:nxw_documentCreateButtons_CREATE_WORKSPACE")
+    WebElement createButton;
+
+    public WorkspaceCreationFormPage(WebDriver driver) {
         super(driver);
     }
 
-    public WorkspaceCreationFormPage getWorkspaceCreatePage() {
-        createNewWorkspaceLink.click();
-        return asPage(WorkspaceCreationFormPage.class);
+    public DocumentBasePage createNewWorkspace(String workspaceTitle, String workspaceDescription) {
+        titleTextInput.sendKeys(workspaceTitle);
+        descriptionTextInput.sendKeys(workspaceDescription);
+        createButton.click();
+
+        return asPage(DocumentBasePage.class);
     }
 
 }

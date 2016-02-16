@@ -35,7 +35,7 @@ import org.nuxeo.functionaltests.pages.forms.CollectionCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
-import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
+import org.nuxeo.functionaltests.pages.forms.WorkspaceCreationFormPage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
@@ -455,7 +455,7 @@ public class DocumentBasePage extends AbstractPage {
         // Go to Workspaces
         DocumentBasePage workspacesPage = getNavigationSubPage().goToDocument(WORKSPACES_TITLE);
         // Get Workspace creation form page
-        WorkspaceFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab().getWorkspaceCreatePage();
+        WorkspaceCreationFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab().getWorkspaceCreatePage();
         // Create Workspace
         DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(workspaceTitle,
                 workspaceDescription);

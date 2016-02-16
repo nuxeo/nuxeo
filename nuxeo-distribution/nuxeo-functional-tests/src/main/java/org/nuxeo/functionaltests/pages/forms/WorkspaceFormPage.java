@@ -19,40 +19,17 @@
  */
 package org.nuxeo.functionaltests.pages.forms;
 
-import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 /**
  * @author Sun Seng David TAN <stan@nuxeo.com>
+ * @deprecated since 8.2, use {@link WorkspaceCreationFormPage} instead.
  */
-public class WorkspaceFormPage extends AbstractPage {
-
-    @Required
-    @FindBy(id = "document_create:nxl_heading:nxw_title")
-    WebElement titleTextInput;
-
-    @Required
-    @FindBy(id = "document_create:nxl_heading:nxw_description")
-    WebElement descriptionTextInput;
-
-    @Required
-    @FindBy(id = "document_create:nxw_documentCreateButtons_CREATE_WORKSPACE")
-    WebElement createButton;
+@Deprecated
+public class WorkspaceFormPage extends WorkspaceCreationFormPage {
 
     public WorkspaceFormPage(WebDriver driver) {
         super(driver);
-    }
-
-    public DocumentBasePage createNewWorkspace(String workspaceTitle, String workspaceDescription) {
-        titleTextInput.sendKeys(workspaceTitle);
-        descriptionTextInput.sendKeys(workspaceDescription);
-        createButton.click();
-
-        return asPage(DocumentBasePage.class);
     }
 
 }
