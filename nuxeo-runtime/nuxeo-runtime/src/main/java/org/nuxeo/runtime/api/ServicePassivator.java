@@ -71,11 +71,56 @@ public class ServicePassivator {
         return new Passivator();
     }
 
-    public static Termination proceed(Runnable runnable) {
+    public static Termination proceed(Duration quiet, Duration timeout, boolean enforce, Runnable runnable) {
         return passivate()
+                .withQuietDelay(quiet)
                 .monitor()
+                .withTimeout(timeout)
+                .withEnforceMode(enforce)
                 .await()
                 .proceed(runnable);
+    }
+
+    public static <X extends Exception> void proceed(Duration quiet, Duration timeout,
+            boolean enforce, RunnableCheckException<Exception> runnable, Class<X> oftype) throws X {
+        class CheckExceptionHolder extends RuntimeException {
+
+            private static final long serialVersionUID = 1L;
+
+            CheckExceptionHolder(Throwable cause) {
+                super(cause);
+            }
+
+            void rethrow(Class<X> oftype) throws X {
+                if (getCause() instanceof InterruptedException) {
+                    Thread.currentThread()
+                            .interrupt();
+                }
+                throw oftype.cast(getCause());
+            }
+        }
+        try {
+            ServicePassivator.passivate()
+                    .withQuietDelay(quiet)
+                    .monitor()
+                    .withTimeout(timeout)
+                    .withEnforceMode(enforce)
+                    .await()
+                    .proceed(() -> {
+                        try {
+                            runnable.run();
+                        } catch (Exception cause) {
+                            throw new CheckExceptionHolder(cause);
+                        }
+                    });
+        } catch (CheckExceptionHolder cause) {
+            cause.rethrow(oftype);
+        }
+
+    }
+
+    public interface RunnableCheckException<X extends Exception> {
+        void run() throws X;
     }
 
     /**
@@ -96,7 +141,8 @@ public class ServicePassivator {
         void run() {
             installed = Optional.ofNullable(DefaultServiceProvider.getProvider());
             ServiceProvider passthrough = installed.map(
-                    (Function<ServiceProvider, ServiceProvider>) DelegateProvider::new).orElseGet(
+                    (Function<ServiceProvider, ServiceProvider>) DelegateProvider::new)
+                    .orElseGet(
                             (Supplier<ServiceProvider>) RuntimeProvider::new);
             ServiceProvider waitfor = new WaitForProvider(achieved, passthrough);
             PassivateProvider passivator = new PassivateProvider(Thread.currentThread(), accounting, waitfor,
@@ -175,15 +221,18 @@ public class ServicePassivator {
             }
 
             Optional<Class<?>> inscopeof(Class<?>[] callstack) {
-                for (Class<?> typeof : callstack) {
-                    if (manager.getComponentProvidingService(typeof) != null) {
-                        return Optional.of(typeof);
+                final ComponentManager cm = Framework.getRuntime()
+                        .getComponentManager();
+                if (cm != null) {
+
+                    for (Class<?> typeof : callstack) {
+                        if (cm.getComponentProvidingService(typeof) != null) {
+                            return Optional.of(typeof);
+                        }
                     }
                 }
                 return Optional.empty();
             }
-
-            final ComponentManager manager = Framework.getRuntime().getComponentManager();
 
             final CallstackDumper dumper = new CallstackDumper();
 
@@ -212,7 +261,9 @@ public class ServicePassivator {
                             .append(serviceof)
                             .append(System.lineSeparator());
                     for (Class<?> typeof : callstack) {
-                        builder = builder.append("  ").append(typeof).append(System.lineSeparator());
+                        builder = builder.append("  ")
+                                .append(typeof)
+                                .append(System.lineSeparator());
                     }
                     return builder.toString();
                 }
@@ -250,7 +301,8 @@ public class ServicePassivator {
 
         final TemporalAmount quietDelay;
 
-        final Timer timer = new Timer(ServicePassivator.class.getSimpleName().toLowerCase());
+        final Timer timer = new Timer(ServicePassivator.class.getSimpleName()
+                .toLowerCase());
 
         final TimerTask scheduledTask = new TimerTask() {
 
@@ -267,6 +319,10 @@ public class ServicePassivator {
 
         void run() {
             long delay = TimeUnit.MILLISECONDS.convert(quietDelay.get(ChronoUnit.SECONDS), TimeUnit.SECONDS);
+            if (delay <= 0) {
+                passivated.countDown();
+                return;
+            }
             timer.scheduleAtFixedRate(
                     scheduledTask,
                     delay,
@@ -286,8 +342,15 @@ public class ServicePassivator {
 
         TemporalAmount timeout = Duration.ofSeconds(30);
 
-        public Monitor withTimeout(TemporalAmount timeout) {
-            this.timeout = timeout;
+        boolean enforce = true;
+
+        public Monitor withTimeout(TemporalAmount value) {
+            timeout = value;
+            return this;
+        }
+
+        public Monitor withEnforceMode(boolean value) {
+            enforce = value;
             return this;
         }
 
@@ -304,7 +367,7 @@ public class ServicePassivator {
          * @return
          */
         public Waiter await() {
-            return new Waiter(this, timeout);
+            return new Waiter(this, timeout, enforce);
         }
 
     }
@@ -314,14 +377,17 @@ public class ServicePassivator {
      */
     public static class Waiter {
 
-        Waiter(Monitor monitor, TemporalAmount timeout) {
+        Waiter(Monitor monitor, TemporalAmount timeout, boolean enforce) {
             this.monitor = monitor;
             this.timeout = timeout;
+            this.enforce = enforce;
         }
 
         final Monitor monitor;
 
         final TemporalAmount timeout;
+
+        final boolean enforce;
 
         public Waiter peek(Consumer<Waiter> consumer) {
             consumer.accept(this);
@@ -340,14 +406,23 @@ public class ServicePassivator {
          */
         public Termination proceed(Runnable runnable) {
             try {
-                if (monitor.passivated.await(timeout.get(ChronoUnit.SECONDS), TimeUnit.SECONDS)) {
-                    runnable.run();
+                boolean passivated = monitor.passivated.await(timeout.get(ChronoUnit.SECONDS), TimeUnit.SECONDS);
+                if (!enforce || passivated) {
+                    ClassLoader tcl = Thread.currentThread()
+                            .getContextClassLoader();
+                    try {
+                        runnable.run();
+                    } finally {
+                        Thread.currentThread()
+                                .setContextClassLoader(tcl);
+                    }
                 }
                 return monitor.passivator.accounting.last
                         .<Termination> map(Failure::new)
                         .orElseGet(Success::new);
             } catch (InterruptedException cause) {
-                Thread.currentThread().interrupt();
+                Thread.currentThread()
+                        .interrupt();
                 throw new AssertionError("Interrupted while waiting for passivation", cause);
             } finally {
                 monitor.cancel();
@@ -470,7 +545,8 @@ public class ServicePassivator {
 
         @Override
         public <T> T getService(Class<T> serviceClass) {
-            return Framework.getRuntime().getService(serviceClass);
+            return Framework.getRuntime()
+                    .getService(serviceClass);
         }
 
     }
@@ -494,7 +570,8 @@ public class ServicePassivator {
             try {
                 condition.await();
             } catch (InterruptedException error) {
-                Thread.currentThread().interrupt();
+                Thread.currentThread()
+                        .interrupt();
                 throw new AssertionError("Interrupted while waiting for " + serviceClass);
             }
             return passthrough.getService(serviceClass);

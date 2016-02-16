@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.jar.Manifest;
 
@@ -327,15 +328,19 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "before-reload", this, null));
         try {
             ServicePassivator
-                .proceed(() -> {
-                    log.info("about to send " + id);
-                    Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
-                    if (id.startsWith(FLUSH_EVENT_ID)) {
-                        setFlushedNow();
-                    }
-                }).onFailure(snapshot -> {
-                    throw new UnsupportedOperationException("Detected access, should initiate a reboot " + snapshot.toString());
-                });
+                    .proceed(Duration.ofSeconds(5), Duration.ofSeconds(30), true,
+                            () -> {
+                        log.info("about to send " + id);
+                        Framework.getLocalService(EventService.class)
+                                .sendEvent(new Event(RELOAD_TOPIC, id, this, null));
+                        if (id.startsWith(FLUSH_EVENT_ID)) {
+                            setFlushedNow();
+                        }
+                    })
+                    .onFailure(snapshot -> {
+                        throw new UnsupportedOperationException(
+                                "Detected access, should initiate a reboot " + snapshot.toString());
+                    });
         } finally {
             Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "after-reload", this, null));
             log.info("returning from " + id);

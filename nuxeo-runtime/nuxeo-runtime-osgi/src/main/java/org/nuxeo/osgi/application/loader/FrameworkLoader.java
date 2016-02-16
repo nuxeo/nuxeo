@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +44,7 @@ import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.SystemBundleFile;
+import org.nuxeo.runtime.api.ServicePassivator;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
@@ -120,28 +122,27 @@ public class FrameworkLoader {
         if (!isInitialized) {
             throw new IllegalStateException("Framework is not initialized. Call initialize method first");
         }
-        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+
         try {
-            Thread.currentThread().setContextClassLoader(loader);
-            doStart();
+            ServicePassivator.proceed(
+                    Duration.ofSeconds(0), Duration.ofSeconds(0), false,
+                    FrameworkLoader::doStart, BundleException.class);
         } finally {
-            Thread.currentThread().setContextClassLoader(oldCl);
+            isStarted = true;
         }
-        isStarted = true;
     }
 
     public static synchronized void stop() throws BundleException {
         if (!isStarted) {
             return;
         }
-        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(loader);
-            doStop();
+            ServicePassivator.proceed(
+                    Duration.ofSeconds(5), Duration.ofSeconds(30), false,
+                    FrameworkLoader::doStop, BundleException.class);
         } finally {
-            Thread.currentThread().setContextClassLoader(oldCl);
+            isStarted = false;
         }
-        isStarted = false;
     }
 
     private static void doInitialize(Map<String, Object> hostEnv) {

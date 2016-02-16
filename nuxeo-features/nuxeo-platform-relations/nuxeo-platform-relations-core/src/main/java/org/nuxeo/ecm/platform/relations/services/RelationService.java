@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.Transaction;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -491,43 +493,38 @@ public class RelationService extends DefaultComponent implements RelationManager
             // RepositoryService failed to start, no need to go further
             return;
         }
-        Thread t = new Thread("relation-service-init") {
-            @Override
-            public void run() {
-                Thread.currentThread().setContextClassLoader(RelationService.class.getClassLoader());
-                log.info("Relation Service initialization");
+        Transaction tx = TransactionHelper.suspendTransaction();
+        try {
+            log.info("Relation Service initialization");
 
-                // init jena Graph outside of Tx
+            // init jena Graph outside of Tx
+            for (String graphName : graphDescriptions.keySet()) {
+                GraphDescription desc = graphDescriptions.get(graphName);
+                if (desc.getGraphType()
+                        .equalsIgnoreCase("jena")) {
+                    log.info("create RDF Graph " + graphName);
+                    Graph graph = getGraphByName(graphName);
+                    graph.size();
+                }
+            }
+
+            // init non jena Graph inside a Tx
+            TransactionHelper.startTransaction();
+            try {
                 for (String graphName : graphDescriptions.keySet()) {
                     GraphDescription desc = graphDescriptions.get(graphName);
-                    if (desc.getGraphType().equalsIgnoreCase("jena")) {
+                    if (!desc.getGraphType()
+                            .equalsIgnoreCase("jena")) {
                         log.info("create RDF Graph " + graphName);
                         Graph graph = getGraphByName(graphName);
                         graph.size();
                     }
                 }
-
-                // init non jena Graph inside a Tx
-                TransactionHelper.startTransaction();
-                try {
-                    for (String graphName : graphDescriptions.keySet()) {
-                        GraphDescription desc = graphDescriptions.get(graphName);
-                        if (!desc.getGraphType().equalsIgnoreCase("jena")) {
-                            log.info("create RDF Graph " + graphName);
-                            Graph graph = getGraphByName(graphName);
-                            graph.size();
-                        }
-                    }
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
             }
-        };
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            log.error("Cannot join init thread", e);
+        } finally {
+            TransactionHelper.resumeTransaction(tx);
         }
     }
 
