@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ftest.caprest;
 
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.server.test.AbstractAutomationClientTest;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;

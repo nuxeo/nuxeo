@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.profile.ProfilePage;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserCreationFormPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
@@ -61,7 +62,7 @@ public class ITUsersTest extends AbstractTest {
         usersTab.getUserCreatePage().inviteUser(username, username, "lastname1", "company1", "email1", "members");
 
         // Need few seconds to display the search view after
-        UsersGroupsBasePage.findElementWithTimeout(By.id("usersListingView:searchForm:searchText"));
+        AbstractPage.findElementWithTimeout(By.id("usersListingView:searchForm:searchText"));
 
         // search user
         usersTab = usersTab.searchUser(username);
