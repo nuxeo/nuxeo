@@ -33,17 +33,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
 
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
@@ -172,12 +167,6 @@ public abstract class AbstractTest {
 
     public static final int POLLING_FREQUENCY_SECONDS = 1;
 
-    private static final String FIREBUG_XPI = "firebug-1.6.2-fx.xpi";
-
-    private static final String FIREBUG_VERSION = "1.6.2";
-
-    private static final String FIREBUG_M2 = "firebug/firebug/1.6.2-fx";
-
     private static final int PROXY_PORT = 4444;
 
     private static final String HAR_NAME = "http-headers.json";
@@ -185,8 +174,6 @@ public abstract class AbstractTest {
     public static final String SYSPROP_CHROME_DRIVER_PATH = "webdriver.chrome.driver";
 
     public static RemoteWebDriver driver;
-
-    protected static File tmp_firebug_xpi;
 
     protected static ProxyServer proxyServer = null;
 
@@ -298,7 +285,6 @@ public abstract class AbstractTest {
             log.warn("Webdriver logs saved in " + webdriverlogFile);
         }
 
-        addFireBug(profile);
         JavaScriptError.addExtension(profile);
         Proxy proxy = startProxy();
         if (proxy != null) {
@@ -398,120 +384,11 @@ public abstract class AbstractTest {
             driver.quit();
             driver = null;
         }
-        removeFireBug();
 
         try {
             stopProxy();
         } catch (Exception e) {
             log.error("Could not stop proxy: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Introspects the classpath and returns the list of files in it. FIXME: should use
-     * HarnessRuntime#getClassLoaderFiles that returns the same thing
-     *
-     * @throws Exception
-     */
-    protected static List<String> getClassLoaderFiles() throws Exception {
-        ClassLoader cl = AbstractTest.class.getClassLoader();
-        URL[] urls = null;
-        if (cl instanceof URLClassLoader) {
-            urls = ((URLClassLoader) cl).getURLs();
-        } else if (cl.getClass().getName().equals("org.apache.tools.ant.AntClassLoader")) {
-            Method method = cl.getClass().getMethod("getClasspath");
-            String cp = (String) method.invoke(cl);
-            String[] paths = cp.split(File.pathSeparator);
-            urls = new URL[paths.length];
-            for (int i = 0; i < paths.length; i++) {
-                urls[i] = new URL("file:" + paths[i]);
-            }
-        } else {
-            System.err.println("Unknown classloader type: " + cl.getClass().getName());
-            return null;
-        }
-
-        JarFile surefirebooterJar = null;
-        for (URL url : urls) {
-            URI uri = url.toURI();
-            if (uri.getPath().matches(".*/nuxeo-runtime-[^/]*\\.jar")) {
-                break;
-            } else if (uri.getScheme().equals("file") && uri.getPath().contains("surefirebooter")) {
-                surefirebooterJar = new JarFile(new File(uri));
-            }
-        }
-
-        // special case for maven surefire with useManifestOnlyJar
-        if (surefirebooterJar != null) {
-            try {
-                try {
-                    String cp = surefirebooterJar.getManifest()
-                                                 .getMainAttributes()
-                                                 .getValue(Attributes.Name.CLASS_PATH);
-                    if (cp != null) {
-                        String[] cpe = cp.split(" ");
-                        URL[] newUrls = new URL[cpe.length];
-                        for (int i = 0; i < cpe.length; i++) {
-                            // Don't need to add 'file:' with maven
-                            // surefire >= 2.4.2
-                            String newUrl = cpe[i].startsWith("file:") ? cpe[i] : "file:" + cpe[i];
-                            newUrls[i] = new URL(newUrl);
-                        }
-                        urls = newUrls;
-                    }
-                } finally {
-                    surefirebooterJar.close();
-                }
-            } catch (Exception e) {
-                // skip
-            }
-        }
-        // turn into files
-        List<String> files = new ArrayList<>(urls.length);
-        for (URL url : urls) {
-            files.add(url.toURI().getPath());
-        }
-        return files;
-    }
-
-    private static final String M2_REPO = "repository/";
-
-    protected static void addFireBug(FirefoxProfile profile) throws Exception {
-        // this is preventing from running tests in eclipse
-        // profile.addExtension(AbstractTest.class, "/firebug.xpi");
-
-        File xpi = null;
-        List<String> clf = getClassLoaderFiles();
-        for (String f : clf) {
-            if (f.endsWith("/" + FIREBUG_XPI)) {
-                xpi = new File(f);
-            }
-        }
-        if (xpi == null) {
-            String customM2Repo = System.getProperty("M2_REPO", M2_REPO).replaceAll("/$", "");
-            // try to guess the location in the M2 repo
-            for (String f : clf) {
-                if (f.contains(customM2Repo)) {
-                    String m2 = f.substring(0, f.indexOf(customM2Repo) + customM2Repo.length());
-                    xpi = new File(m2 + "/" + FIREBUG_M2 + "/" + FIREBUG_XPI);
-                    break;
-                }
-            }
-        }
-        if (xpi == null || !xpi.exists()) {
-            log.warn(FIREBUG_XPI + " not found in classloader or local M2 repository");
-            return;
-        }
-        profile.addExtension(xpi);
-
-        // avoid "first run" page
-        profile.setPreference("extensions.firebug.currentVersion", FIREBUG_VERSION);
-    }
-
-    protected static void removeFireBug() {
-        if (tmp_firebug_xpi != null) {
-            tmp_firebug_xpi.delete();
-            tmp_firebug_xpi.getParentFile().delete();
         }
     }
 
