@@ -29,6 +29,8 @@ public class Constants {
         // Constants class
     }
 
+    public static final String ADMINISTRATOR = "Administrator";
+
     public static final String NXPATH_URL_FORMAT = "/nxpath/default%s@view_documents";
 
     public static final String NXDOC_URL_FORMAT = "/nxdoc/default/%s/view_documents";
@@ -46,6 +48,8 @@ public class Constants {
     public static final String WORKSPACE_TYPE = "Workspace";
 
     public static final String FILE_TYPE = "File";
+
+    public static final String NOTE_TYPE = "Note";
 
     public static final String SECTION_TYPE = "Workspace";
 

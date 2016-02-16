@@ -72,7 +72,7 @@ public class ITFileUploadTest extends AbstractTest {
 
         // Create a File with an uploaded blob
         String filePrefix = "NX-Webdriver-test-";
-        FileDocumentBasePage fileDocumentBasePage = createFile(asPage(DocumentBasePage.class), "File title",
+        FileDocumentBasePage fileDocumentBasePage = asPage(DocumentBasePage.class).createFile("File title",
                 "File description", true, filePrefix, ".txt", "Webdriver test file content.");
 
         // Check uploaded file name

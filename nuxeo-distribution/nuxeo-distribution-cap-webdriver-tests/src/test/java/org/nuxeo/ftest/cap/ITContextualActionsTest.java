@@ -78,8 +78,8 @@ public class ITContextualActionsTest extends AbstractTest {
 
         // Create a File with an uploaded blob
         String filePrefix = "NX-Webdriver-test-";
-        FileDocumentBasePage filePage = createFile(workspacePage, DOCUMENT_NAME, DOCUMENT_DESC, true, filePrefix,
-                ".txt", "Webdriver test file content.");
+        FileDocumentBasePage filePage = workspacePage.createFile(DOCUMENT_NAME, DOCUMENT_DESC, true, filePrefix, ".txt",
+                "Webdriver test file content.");
 
         // Verify summary informations
         Assert.assertEquals(DOCUMENT_DESC, filePage.getCurrentDocumentDescription());

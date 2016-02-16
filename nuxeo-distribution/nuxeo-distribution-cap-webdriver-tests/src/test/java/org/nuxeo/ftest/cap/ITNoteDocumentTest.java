@@ -72,7 +72,7 @@ public class ITNoteDocumentTest extends AbstractTest {
         login();
         open(TEST_WORKSPACE_URL);
         // Create a Note
-        NoteDocumentBasePage noteDocumentPage = createNote(asPage(DocumentBasePage.class), NOTE_TITLE, NOTE_DESCRIPTION,
+        NoteDocumentBasePage noteDocumentPage = asPage(DocumentBasePage.class).createNote(NOTE_TITLE, NOTE_DESCRIPTION,
                 true, CONTENT_NOTE);
         NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
 
@@ -125,7 +125,7 @@ public class ITNoteDocumentTest extends AbstractTest {
         open(TEST_WORKSPACE_URL);
 
         // Create a Note
-        NoteDocumentBasePage noteDocumentPage = createNote(asPage(DocumentBasePage.class), NOTE_TITLE, NOTE_DESCRIPTION,
+        NoteDocumentBasePage noteDocumentPage = asPage(DocumentBasePage.class).createNote(NOTE_TITLE, NOTE_DESCRIPTION,
                 true, CONTENT_NOTE);
         // Edit the note
         EditTabSubPage editTab = noteDocumentPage.getEditTab();

@@ -55,8 +55,8 @@ public class ITManageTest extends AbstractTest {
         DocumentBasePage documentBasePage = login();
 
         // Create a file under workspace.
-        DocumentBasePage workspacePage = createWorkspace(documentBasePage, WORKSPACE_TITLE, null);
-        DocumentBasePage filePage = createFile(workspacePage, TEST_FILE_TITLE, null, false, null, null, null);
+        DocumentBasePage workspacePage = documentBasePage.createWorkspace(WORKSPACE_TITLE, null);
+        DocumentBasePage filePage = workspacePage.createFile(TEST_FILE_TITLE, null, false, null, null, null);
 
         // Copy/paste it to get 5 files.
         ContentTabSubPage content = filePage.getHeaderLinks()
