@@ -78,7 +78,7 @@ public class ITSearchTabTest extends AbstractTest {
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE2_TITLE, null);
         RestHelper.addPermission(wsId, TEST_USERNAME, "Everything");
 
-        login();
+        loginAsTestUser();
         open(String.format(NXDOC_URL_FORMAT, wsId));
 
         FileDocumentBasePage filePage = createFile(asPage(DocumentBasePage.class), "Test file",
@@ -101,9 +101,9 @@ public class ITSearchTabTest extends AbstractTest {
 
     @After
     public void after() throws UserNotConnectedException {
-        RestHelper.cleanup();
+        RestHelper.cleanupUsers();
 
-        // test aggregate on deleted user
+        // test aggregate on deleted user, on user workspace
         DocumentBasePage documentBasePage = login();
         SearchPage searchPage = documentBasePage.goToSearchPage();
         DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
@@ -116,6 +116,8 @@ public class ITSearchTabTest extends AbstractTest {
             }
         }
         assertTrue(testUserFound);
+
+        RestHelper.cleanupDocuments();
     }
 
     @Test
