@@ -34,6 +34,7 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.search.QuickSearchSubPage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
@@ -68,8 +69,11 @@ public class ITSuggestBoxTest extends AbstractTest {
     private static final String VALUE_WITH_SPECIALS_CHAR = "h\u00e9h\u00e9";
 
     @Before
-    public void before() {
+    public void before() throws UserNotConnectedException {
         RestHelper.createUser(USER1_NAME, USER1_NAME, USER1_NAME, "lastname1", "company1", "email1", "members");
+        // make sure personal ws created
+        login(USER1_NAME, USER1_NAME);
+        logout();
         RestHelper.createUser(USER2_NAME, USER2_NAME, USER2_NAME, "lastname1", "company1", "email1", "members");
         String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE_TITLE,
                 "Workspace for Webdriver test.");
@@ -101,7 +105,7 @@ public class ITSuggestBoxTest extends AbstractTest {
         FileDocumentBasePage documentPage = asPage(FileDocumentBasePage.class);
         documentPage.checkDocTitle(FILE_01_NAME);
 
-        // Search a user
+        // Search a user, make sure personal ws created first
         searchElement = new Select2WidgetElement(driver, driver.findElement(By.xpath(XPATH_SUGGESTBOX)), true);
         listEntries = searchElement.typeAndGetResult(USER1_NAME);
         assertTrue(listEntries.size() == 2);
