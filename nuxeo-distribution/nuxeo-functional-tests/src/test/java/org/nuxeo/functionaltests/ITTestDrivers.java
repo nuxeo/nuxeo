@@ -57,7 +57,6 @@ public class ITTestDrivers extends AbstractTest {
         assertTrue(taker.takeScreenshot(driver, "firefox").delete());
         assertTrue(taker.dumpPageSource(driver, "firefox").delete());
         quitDriver();
-        removeFireBug();
         stopProxy();
     }
 
