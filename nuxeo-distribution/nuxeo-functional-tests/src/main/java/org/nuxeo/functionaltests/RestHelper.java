@@ -47,6 +47,8 @@ public class RestHelper {
 
     private static final String USER_WORKSPACE_PATH_FORMAT = "/default-domain/UserWorkspaces/%s";
 
+    private static final String ADMINISTRATOR = "Administrator";
+
     private static final OkHttpClient client = new OkHttpClient();
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -62,10 +64,17 @@ public class RestHelper {
     }
 
     public static void cleanup() {
+        cleanupDocuments();
+        cleanupUsers();
+    }
+
+    public static void cleanupDocuments() {
         documentIdsToDelete.forEach(RestHelper::deleteDocument);
         documentIdsToDelete.clear();
         documentPathsToDelete.clear();
+    }
 
+    public static void cleanupUsers() {
         for (String user : usersToDelete) {
             RestHelper.deleteUser(user);
             RestHelper.deleteDocument(String.format(USER_WORKSPACE_PATH_FORMAT, user));
@@ -104,7 +113,7 @@ public class RestHelper {
     }
 
     private static Request.Builder newRequest() {
-        String credential = Credentials.basic("Administrator", "Administrator");
+        String credential = Credentials.basic(ADMINISTRATOR, ADMINISTRATOR);
         return new Request.Builder().header("Authorization", credential);
     }
 
