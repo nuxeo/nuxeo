@@ -32,6 +32,7 @@ import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -80,9 +81,12 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     @Override
     public int getApplicationStartedOrder() {
-        return ((DefaultComponent) Framework.getRuntime().getComponentInstance(
-                "org.nuxeo.ecm.core.repository.RepositoryServiceComponent").getInstance()).getApplicationStartedOrder()
-                - 5;
+        ComponentInstance repositoryComponent = (ComponentInstance) Framework.getRuntime().getComponentInstance(
+                "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
+        if (repositoryComponent == null) {
+            return super.getApplicationStartedOrder();
+        }
+        return ((DefaultComponent) repositoryComponent.getInstance()).getApplicationStartedOrder() - 5;
     }
 
     @Override
