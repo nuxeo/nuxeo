@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
+import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
 
@@ -53,7 +54,7 @@ public class ITWorkListTest extends AbstractTest {
 
         login(TEST_USERNAME, TEST_PASSWORD).getContentTab().goToDocument("Workspaces");
 
-        DocumentBasePage.findElementWithTimeout(
+        AbstractPage.findElementWithTimeout(
                 By.xpath("//div[@id='clipboardCopy']//a[text()='" + TEST_WORKSPACE_TITLE + "']"));
 
         logout();

@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ftest.cap.Constants.FILE_TYPE;
 import static org.nuxeo.ftest.cap.Constants.TEST_FILE_TITLE;
 import static org.nuxeo.ftest.cap.Constants.TEST_FILE_URL;
@@ -29,7 +27,6 @@ import static org.nuxeo.ftest.cap.Constants.WORKSPACES_PATH;
 import static org.nuxeo.ftest.cap.Constants.WORKSPACE_TYPE;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,14 +40,15 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.openqa.selenium.By;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @since 6.0
  */
 public class ITTaggingTest extends AbstractTest {
 
     public final static String TEST_FILE_NAME = "test1";
-
-    private final static String WORKSPACE_TITLE = ITTaggingTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
     public final static String SELECT2_TAG_ELT_ID = "s2id_nxl_grid_summary_layout:nxw_summary_current_document_tagging_form:nxw_summary_current_document_tagging_select2";
 
