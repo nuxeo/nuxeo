@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +43,6 @@ import org.nuxeo.osgi.JarBundleFile;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.osgi.SystemBundle;
 import org.nuxeo.osgi.SystemBundleFile;
-import org.nuxeo.runtime.api.ServicePassivator;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkEvent;
@@ -124,9 +122,7 @@ public class FrameworkLoader {
         }
 
         try {
-            ServicePassivator.proceed(
-                    Duration.ofSeconds(0), Duration.ofSeconds(0), false,
-                    FrameworkLoader::doStart, BundleException.class);
+            doStart();
         } finally {
             isStarted = true;
         }
@@ -137,9 +133,7 @@ public class FrameworkLoader {
             return;
         }
         try {
-            ServicePassivator.proceed(
-                    Duration.ofSeconds(5), Duration.ofSeconds(30), false,
-                    FrameworkLoader::doStop, BundleException.class);
+            doStop();
         } finally {
             isStarted = false;
         }

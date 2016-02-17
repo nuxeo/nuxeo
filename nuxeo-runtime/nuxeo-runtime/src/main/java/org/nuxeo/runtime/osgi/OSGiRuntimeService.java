@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,6 +53,7 @@ import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.ServicePassivator;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -527,9 +529,10 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
 
     @Override
     public void frameworkEvent(FrameworkEvent event) {
-        if (event.getType() == FrameworkEvent.STARTED) {
-            fireApplicationStarted();
+        if (event.getType() != FrameworkEvent.STARTED) {
+            return;
         }
+        ServicePassivator.proceed(Duration.ofSeconds(0), Duration.ofSeconds(0), false, this::fireApplicationStarted);
     }
 
     private void printStatusMessage() {

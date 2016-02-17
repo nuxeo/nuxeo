@@ -22,6 +22,7 @@ package org.nuxeo.runtime;
 
 import java.io.File;
 import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -111,25 +112,39 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     protected static URL getBuiltinFeatureURL() {
-        return Thread.currentThread().getContextClassLoader().getResource("org/nuxeo/runtime/nx-feature.xml");
+        return Thread.currentThread()
+                .getContextClassLoader()
+                .getResource("org/nuxeo/runtime/nx-feature.xml");
     }
 
     @Override
     public synchronized void start() {
-        if (!isStarted) {
-            if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "false"))) {
-                Level threshold = Level.parse(getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
-                JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
-            }
-            log.info("Starting Nuxeo Runtime service " + getName() + "; version: " + getVersion());
-            // NXRuntime.setInstance(this);
-            manager = createComponentManager();
-            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_START, this));
-            doStart();
-            startExtensions();
-            isStarted = true;
-            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STARTED, this));
+        if (isStarted) {
+            return;
         }
+        if (Boolean.parseBoolean(getProperty(REDIRECT_JUL, "false"))) {
+            Level threshold = Level.parse(getProperty(REDIRECT_JUL_THRESHOLD, "INFO").toUpperCase());
+            JavaUtilLoggingHelper.redirectToApacheCommons(threshold);
+        }
+        log.info("Starting Nuxeo Runtime service " + getName() + "; version: " + getVersion());
+        // NXRuntime.setInstance(this);
+        manager = createComponentManager();
+        Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_START, this));
+        ServicePassivator.passivate()
+                .withQuietDelay(Duration.ofSeconds(0))
+                .monitor()
+                .withTimeout(Duration.ofSeconds(0))
+                .withEnforceMode(false)
+                .await()
+                .proceed(() -> {
+                    try {
+                        doStart();
+                        startExtensions();
+                    } finally {
+                        Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STARTED, this));
+                        isStarted = true;
+                    }
+                });
     }
 
     @Override
@@ -141,19 +156,27 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         try {
             log.info("Stopping Nuxeo Runtime service " + getName() + "; version: " + getVersion());
             Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP, this));
-            try {
-                stopExtensions();
-                doStop();
-                manager.shutdown();
-           } finally {
-                isStarted = false;
-                Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STOPPED, this));
-                manager = null;
-           }
-           JavaUtilLoggingHelper.reset();
-       } finally {
-           isShuttingDown = false;
-       }
+            ServicePassivator.passivate()
+                    .withQuietDelay(Duration.ofSeconds(0))
+                    .monitor()
+                    .withTimeout(Duration.ofSeconds(0))
+                    .withEnforceMode(false)
+                    .await()
+                    .proceed(() -> {
+                        try {
+                            stopExtensions();
+                            doStop();
+                            manager.shutdown();
+                        } finally {
+                            isStarted = false;
+                            Framework.sendEvent(new RuntimeServiceEvent(RuntimeServiceEvent.RUNTIME_STOPPED, this));
+                            manager = null;
+                        }
+                    });
+        } finally {
+            JavaUtilLoggingHelper.reset();
+            isShuttingDown = false;
+        }
     }
 
     @Override
@@ -216,7 +239,10 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        return sb.append(getName()).append(" version ").append(getVersion().toString()).toString();
+        return sb.append(getName())
+                .append(" version ")
+                .append(getVersion().toString())
+                .toString();
     }
 
     @Override
@@ -292,27 +318,37 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     public boolean getStatusMessage(StringBuilder msg) {
         String hr = "======================================================================";
         if (!warnings.isEmpty()) {
-            msg.append(hr).append("\n= Component Loading Errors:\n");
+            msg.append(hr)
+                    .append("\n= Component Loading Errors:\n");
             for (String warning : warnings) {
-                msg.append("  * ").append(warning).append('\n');
+                msg.append("  * ")
+                        .append(warning)
+                        .append('\n');
             }
         }
         Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
         Collection<ComponentName> unstartedRegistrations = manager.getActivatingRegistrations();
         unstartedRegistrations.addAll(manager.getStartFailureRegistrations());
         msg.append(hr)
-           .append("\n= Component Loading Status: Pending: ")
-           .append(pendingRegistrations.size())
-           .append(" / Unstarted: ")
-           .append(unstartedRegistrations.size())
-           .append(" / Total: ")
-           .append(manager.getRegistrations().size())
-           .append('\n');
+                .append("\n= Component Loading Status: Pending: ")
+                .append(pendingRegistrations.size())
+                .append(" / Unstarted: ")
+                .append(unstartedRegistrations.size())
+                .append(" / Total: ")
+                .append(manager.getRegistrations()
+                        .size())
+                .append('\n');
         for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
-            msg.append("  * ").append(e.getKey()).append(" requires ").append(e.getValue()).append('\n');
+            msg.append("  * ")
+                    .append(e.getKey())
+                    .append(" requires ")
+                    .append(e.getValue())
+                    .append('\n');
         }
         for (ComponentName componentName : unstartedRegistrations) {
-            msg.append("  - ").append(componentName).append('\n');
+            msg.append("  - ")
+                    .append(componentName)
+                    .append('\n');
         }
         msg.append(hr);
         return (warnings.isEmpty() && pendingRegistrations.isEmpty() && unstartedRegistrations.isEmpty());

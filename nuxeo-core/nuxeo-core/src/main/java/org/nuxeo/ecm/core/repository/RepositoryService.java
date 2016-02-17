@@ -72,7 +72,7 @@ public class RepositoryService extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) {
+    public void activate(ComponentContext context) {
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override
@@ -84,6 +84,10 @@ public class RepositoryService extends DefaultComponent {
                 shutdown();
             }
         });
+    }
+
+    @Override
+    public void applicationStarted(ComponentContext context) {
         RepositoryInitializationHandler handler = RepositoryInitializationHandler.getInstance();
         if (handler == null) {
             return;
