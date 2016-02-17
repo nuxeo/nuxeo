@@ -44,17 +44,34 @@ public class OwnUserChangePasswordFormPage extends AbstractPage {
     @FindBy(xpath = "//input[@value=\"Save\"]")
     WebElement saveButton;
 
+    @FindBy(id = "editUserPassword")
+    WebElement form;
+
     public OwnUserChangePasswordFormPage(WebDriver driver) {
         super(driver);
     }
 
     public OwnUserChangePasswordFormPage changePassword(String password) {
+        return changePassword(password, password);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public OwnUserChangePasswordFormPage changePassword(String password1, String password2) {
         firstPasswordInput.clear();
-        firstPasswordInput.sendKeys(password);
+        firstPasswordInput.sendKeys(password1);
         secondPasswordInput.clear();
-        secondPasswordInput.sendKeys(password);
+        secondPasswordInput.sendKeys(password2);
         saveButton.click();
         return asPage(OwnUserChangePasswordFormPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public WebElement getForm() {
+        return form;
     }
 
 }
