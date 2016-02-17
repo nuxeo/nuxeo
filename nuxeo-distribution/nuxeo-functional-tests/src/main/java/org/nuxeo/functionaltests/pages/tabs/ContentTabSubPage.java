@@ -46,13 +46,25 @@ import static org.junit.Assert.assertNotNull;
  */
 public class ContentTabSubPage extends DocumentBasePage {
 
-    private static final String COPY = "Copy";
+    /**
+     * @since 8.2
+     */
+    public static final String COPY = "Copy";
 
-    private static final String PASTE = "Paste";
+    /**
+     * @since 8.2
+     */
+    public static final String PASTE = "Paste";
 
-    private static final String DELETE = "Delete";
+    /**
+     * @since 8.2
+     */
+    public static final String DELETE = "Delete";
 
-    private static final String ADD_TO_WORKLIST = "Add to Worklist";
+    /**
+     * @since 8.2
+     */
+    public static final String ADD_TO_WORKLIST = "Add to Worklist";
 
     @Required
     @FindBy(id = "document_content")

@@ -45,12 +45,23 @@ public class DublinCoreCreationDocumentFormPage extends AbstractPage {
     @FindBy(id = "document_create:nxw_documentCreateButtons_CREATE_DOCUMENT")
     public WebElement createButton;
 
+    @Required
+    @FindBy(id = "document_create:nxw_documentCreateButtons_CANCEL_DOCUMENT_CREATION")
+    public WebElement cancelButton;
+
     public DublinCoreCreationDocumentFormPage(WebDriver driver) {
         super(driver);
     }
 
     public void create() {
         createButton.click();
+    }
+
+    /**
+     * @since 8.2
+     */
+    public void cancel() {
+        cancelButton.click();
     }
 
     protected void fillDublinCoreFieldsAndCreate(String title, String description) {

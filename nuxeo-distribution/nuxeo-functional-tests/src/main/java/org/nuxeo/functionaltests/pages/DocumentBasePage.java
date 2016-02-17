@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Constants;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.fragment.AddAllToCollectionForm;
@@ -45,6 +46,7 @@ import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.SectionsContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
@@ -202,7 +204,7 @@ public class DocumentBasePage extends AbstractPage {
         return getContentTab(ContentTabSubPage.class);
     }
 
-    public <T extends ContentTabSubPage> T getContentTab(Class<T> tabClass) {
+    public <T> T getContentTab(Class<T> tabClass) {
         clickOnDocumentTabLink(contentTabLink);
         return asPage(tabClass);
     }
@@ -455,11 +457,27 @@ public class DocumentBasePage extends AbstractPage {
         // Go to Workspaces
         DocumentBasePage workspacesPage = getNavigationSubPage().goToDocument(WORKSPACES_TITLE);
         // Get Workspace creation form page
-        WorkspaceCreationFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab().getWorkspaceCreatePage();
+        WorkspaceCreationFormPage workspaceCreationFormPage = workspacesPage.getWorkspacesContentTab()
+                                                                            .getWorkspaceCreatePage();
         // Create Workspace
         DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(workspaceTitle,
                 workspaceDescription);
         return workspacePage;
+    }
+
+    /**
+     * Creates a Section from this page.
+     *
+     * @param sectionTitle the section title
+     * @param sectionDescription the section description
+     * @return the created Section page
+     * @since 8.2
+     */
+    public DocumentBasePage createSection(String sectionTitle, String sectionDescription) {
+        getNavigationSubPage().goToDocument(Constants.SECTIONS_TITLE);
+        DublinCoreCreationDocumentFormPage sectionCreationPage = asPage(
+                SectionsContentTabSubPage.class).getSectionCreatePage();
+        return sectionCreationPage.createDocument(sectionTitle, sectionDescription);
     }
 
     /**

@@ -51,7 +51,7 @@ public class Constants {
 
     public static final String NOTE_TYPE = "Note";
 
-    public static final String SECTION_TYPE = "Workspace";
+    public static final String SECTION_TYPE = "Section";
 
     public static final String FOLDER_TYPE = "Folder";
 
