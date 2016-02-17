@@ -97,7 +97,7 @@ public class ITCopyPasteTest extends AbstractTest {
         List<WebElement> docs = contentTabSubPage.getChildDocumentRows();
 
         assertNotNull(docs);
-        assertEquals(docs.size(), 1);
+        assertEquals(1, docs.size());
         assertNotNull(docs.get(0).findElement(By.linkText(FILE1_NAME)));
     }
 }

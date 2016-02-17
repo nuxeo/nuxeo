@@ -95,18 +95,17 @@ public class ITRichfileUploadTest extends AbstractTest {
         open(TEST_FILE_URL);
 
         // Go to Files tab
-        asPage(DocumentBasePage.class).clickOnDocumentTabLink(
-                Locator.findElementWithTimeout(By.xpath(FILES_TAB_XPATH)));
+        asPage(DocumentBasePage.class).clickOnDocumentTabLink(driver.findElement(By.xpath(FILES_TAB_XPATH)));
 
         // check that clear all is not visible
-        assertFalse(Locator.findElementWithTimeout(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());
+        assertFalse(Locator.findElement(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());
         // select a file
         final String mockFile1 = getTmpFileToUploadPath("dummy", "test", "txt");
-        Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile1);
+        Locator.findElement(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile1);
         // check that submit button appears
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         // check that clear all is visible
-        assertTrue(driver.findElement(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());
+        assertTrue(Locator.findElement(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());
         // check that there is one item with the clear link
         List<WebElement> clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
         assertEquals(1, clearLinks.size());
@@ -124,7 +123,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         // do it again but with two files and use clear all
         final String mockFile2 = getTmpFileToUploadPath("dummy", "test", "txt");
         final String mockFile3 = getTmpFileToUploadPath("dummy", "test", "txt");
-        Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile2);
+        Locator.findElement(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile2);
         Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
         Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile3);
         // check we have 2 items
@@ -172,6 +171,43 @@ public class ITRichfileUploadTest extends AbstractTest {
         List<WebElement> uploadedFiles = driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH));
         assertEquals(2, uploadedFiles.size());
         // remove the first one
+        removeFirstUploadedItem();
+        // check we have 1 uploaded file
+        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                return driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH)).size() == 1;
+            }
+        });
+
+        // reselect file and check Clear All and individual clear are still
+        // rerendered correctly
+        final String mockFile6 = getTmpFileToUploadPath("dummy", "test", "txt");
+        Locator.findElement(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile6);
+        // check that submit button appears
+        Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
+        // check that clear all is visible
+        assertTrue(driver.findElement(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());
+        // check that there is one item with the clear link
+        clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
+        assertEquals(1, clearLinks.size());
+        // clear all
+        Locator.findElementWithTimeoutAndClick(By.xpath(RF_CLEAN_ALL_ID_XPATH));
+        // check submit disappears
+        Locator.waitUntilElementNotPresent(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
+        // check we have 0 items
+        clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
+        assertEquals(0, clearLinks.size());
+
+        // remove remaining item
+        removeFirstUploadedItem();
+        // wait for message to be present for ajax request to be finished before logout
+        Locator.waitForTextPresent(By.id("ambiance-notification"), "File modified");
+
+        logout();
+    }
+
+    protected void removeFirstUploadedItem() {
         Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -188,34 +224,6 @@ public class ITRichfileUploadTest extends AbstractTest {
                 return true;
             }
         }, StaleElementReferenceException.class);
-
-        // check we have 1 uploaded file
-        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                return driver.findElements(By.xpath(NX_UPLOADED_FILES_XPATH)).size() == 1;
-            }
-        });
-
-        // reselect file and check Clear All and individual clear are still
-        // rerendered correctly
-        final String mockFile6 = getTmpFileToUploadPath("dummy", "test", "txt");
-        Locator.findElementWithTimeout(By.xpath(RF_FILE_UPLOAD_INPUT_XPATH)).sendKeys(mockFile6);
-        // check that submit button appears
-        Locator.waitUntilElementPresent(By.xpath(STORE_UPLOAD_FILE_INPUT_VALUE_XPATH));
-        // check that clear all is visible
-        assertTrue(driver.findElement(By.xpath(RF_CLEAN_ALL_ID_XPATH)).isDisplayed());
-        // check that there is one item with the clear link
-        clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
-        assertEquals(1, clearLinks.size());
-        // clear all
-        Locator.findElementWithTimeoutAndClick(By.xpath(RF_CLEAN_ALL_ID_XPATH));
-        // check submit disappears
-        Locator.waitUntilElementNotPresent(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
-        // check we have 0 items
-        clearLinks = driver.findElements(By.xpath(RF_UPLOADED_FILE_ITEMS_XPATH));
-        assertEquals(0, clearLinks.size());
-
-        logout();
     }
+
 }
