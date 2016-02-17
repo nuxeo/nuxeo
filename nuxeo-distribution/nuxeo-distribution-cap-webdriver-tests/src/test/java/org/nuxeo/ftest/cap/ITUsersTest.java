@@ -19,26 +19,28 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.RestHelper;
-import org.nuxeo.functionaltests.pages.profile.ProfilePage;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserCreationFormPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
+import org.nuxeo.functionaltests.pages.profile.OwnUserChangePasswordFormPage;
+import org.nuxeo.functionaltests.pages.profile.ProfilePage;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Create a user in Nuxeo DM.
@@ -90,7 +92,12 @@ public class ITUsersTest extends AbstractTest {
         // Change the user password
         String newPassword = "newpwd";
         ProfilePage profilePage = login(username, TEST_PASSWORD).getUserHome().goToProfile();
-        profilePage.getChangePasswordUserTab().changePassword(TEST_PASSWORD, newPassword);
+        OwnUserChangePasswordFormPage passPage = profilePage.getChangePasswordUserTab().changePassword(TEST_PASSWORD,
+                newPassword, "newpwd_not_matching");
+        assertEquals("Please correct errors.", passPage.getErrorFeedbackMessage());
+        Locator.waitForTextPresent(passPage.getForm(), "Passwords do not match.");
+
+        passPage.changePassword(TEST_PASSWORD, newPassword);
         logout();
 
         login(username, newPassword).getUserHome().goToProfile();
