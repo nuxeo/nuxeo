@@ -40,6 +40,9 @@ import org.openqa.selenium.support.FindBy;
  */
 public class UserCreationFormPage extends UsersGroupsBasePage {
 
+    @FindBy(id = "createUserView:createUser")
+    WebElement form;
+
     @FindBy(name = "createUserView:createUser:nxl_user:nxw_passwordMatcher_immediate_creation")
     List<WebElement> immediateCreation;
 
@@ -86,7 +89,7 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     }
 
     private boolean isObjectChecked(int index) {
-        assert (index < 2 && index >= 0);
+        assert(index < 2 && index >= 0);
         org.junit.Assert.assertNotNull(immediateCreation);
         org.junit.Assert.assertEquals(2, immediateCreation.size());
 
@@ -99,6 +102,15 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
 
     public UsersGroupsBasePage createUser(String username, String firstname, String lastname, String company,
             String email, String password, String group, final boolean invite) throws NoSuchElementException {
+        return createUser(username, firstname, lastname, company, email, password, password, group, invite);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public UsersGroupsBasePage createUser(String username, String firstname, String lastname, String company,
+            String email, String password1, String password2, String group, final boolean invite)
+                    throws NoSuchElementException {
         if (!invite) {
             switchCreationFormPage();
             usernameInput.sendKeys(username);
@@ -106,12 +118,12 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
             lastnameInput.sendKeys(lastname);
             companyInput.sendKeys(company);
             emailInput.sendKeys(email);
-            firstPasswordInput.sendKeys(password);
-            secondPasswordInput.sendKeys(password);
+            firstPasswordInput.sendKeys(password1);
+            secondPasswordInput.sendKeys(password2);
             if (StringUtils.isNotBlank(group)) {
-                Select2WidgetElement groups = new Select2WidgetElement(
-                        driver,
-                        driver.findElement(By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']")),
+                Select2WidgetElement groups = new Select2WidgetElement(driver,
+                        driver.findElement(
+                                By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']")),
                         true);
                 groups.selectValue(group);
             }
@@ -126,9 +138,9 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
             companyInput.sendKeys(company);
             emailInput.sendKeys(email);
             if (StringUtils.isNotBlank(group)) {
-                Select2WidgetElement groups = new Select2WidgetElement(
-                        driver,
-                        driver.findElement(By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']")),
+                Select2WidgetElement groups = new Select2WidgetElement(driver,
+                        driver.findElement(
+                                By.xpath("//div[@id='s2id_createUserView:createUser:nxl_user:nxw_groups_select2']")),
                         true);
                 groups.selectValue(group);
             }
@@ -151,7 +163,13 @@ public class UserCreationFormPage extends UsersGroupsBasePage {
     protected void switchCreationFormPage() {
         if (!isImmediateCreationYesSelected()) {
             immediateCreation.get(1).click();
-            Locator.waitUntilElementPresent(By.id("createUserView:createUser:nxl_user:nxw_passwordMatcher_firstPassword"));
+            Locator.waitUntilElementPresent(
+                    By.id("createUserView:createUser:nxl_user:nxw_passwordMatcher_firstPassword"));
         }
     }
+
+    public WebElement getForm() {
+        return form;
+    }
+
 }

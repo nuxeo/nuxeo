@@ -250,7 +250,6 @@ public class Select2WidgetElement extends WebFragmentImpl {
         }
 
         AjaxRequestManager arm = new AjaxRequestManager(driver);
-        ;
         if (wait4A4J) {
             arm.watchAjaxRequests();
         }
