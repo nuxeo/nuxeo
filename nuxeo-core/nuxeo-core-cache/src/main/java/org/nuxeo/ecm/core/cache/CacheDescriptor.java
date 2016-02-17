@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2016 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -44,10 +44,10 @@ public class CacheDescriptor {
     protected Class<? extends Cache> implClass = InMemoryCacheImpl.class;
 
     @XNode("ttl")
-    protected int ttl = 1;
+    public int ttl = 1;
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> options = new HashMap<String, String>();
+    public Map<String, String> options = new HashMap<String, String>();
 
     protected CacheAttributesChecker cacheChecker;
 
@@ -61,6 +61,13 @@ public class CacheDescriptor {
         this.implClass = implClass;
         this.ttl = ttl;
         this.options.putAll(options);
+    }
+
+    public CacheDescriptor(CacheDescriptor other) {
+        name = other.name;
+        implClass = other.implClass;
+        ttl = other.ttl;
+        options = new HashMap<String, String>(other.options);
     }
 
     @Override

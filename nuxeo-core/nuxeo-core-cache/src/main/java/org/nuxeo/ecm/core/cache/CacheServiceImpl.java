@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2016 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,12 +13,15 @@
  *
  * Contributors:
  *     Maxime Hilaire
+ *     Thierry Martins
  *
  */
 
 package org.nuxeo.ecm.core.cache;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -27,6 +30,7 @@ import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -38,6 +42,8 @@ import org.nuxeo.runtime.model.Extension;
  */
 public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
+    public static final String DEFAULT_CACHE_ID = "default-cache";
+
     public static final ComponentName NAME = new ComponentName(
             CacheServiceImpl.class.getName());
 
@@ -45,9 +51,25 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
 
     protected final CacheRegistry cacheRegistry = new CacheRegistry();
 
+    /**
+     * Contains the names of all caches which have not been registered from an extension
+     */
+    protected final List<String> autoregisteredCacheNames = new ArrayList<>();
+
     @Override
     public CacheAttributesChecker getCache(String name) {
         return cacheRegistry.getCache(name);
+    }
+
+    public CacheAttributesChecker getDefaultCache() {
+        if (getCache(DEFAULT_CACHE_ID) == null) {
+            CacheDescriptor desc = new CacheDescriptor();
+            desc.name = DEFAULT_CACHE_ID;
+            desc.start();
+            autoregisteredCacheNames.add(DEFAULT_CACHE_ID);
+            cacheRegistry.caches.put(DEFAULT_CACHE_ID, desc);
+        }
+        return getCache(DEFAULT_CACHE_ID);
     }
 
     @Override
@@ -55,10 +77,22 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
         if (cacheRegistry.caches.size() > 0) {
             Map<String,CacheDescriptor> descriptors = new HashMap<String, CacheDescriptor>(cacheRegistry.caches);
             for (CacheDescriptor desc : descriptors.values()) {
-                log.warn("Unregistery leaked contribution " + desc.name);
                 cacheRegistry.contributionRemoved(desc.name, desc);
+                if (!autoregisteredCacheNames.remove(desc.name)) {
+                    log.warn("Unregistery leaked contribution " + desc.name);
+                }
             }
         }
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        ComponentInstance repositoryComponent = (ComponentInstance) Framework.getRuntime().getComponentInstance(
+                "org.nuxeo.ecm.core.repository.RepositoryServiceComponent");
+        if (repositoryComponent == null) {
+            return super.getApplicationStartedOrder();
+        }
+        return ((DefaultComponent) repositoryComponent.getInstance()).getApplicationStartedOrder() - 5;
     }
 
     @Override
@@ -87,6 +121,27 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
     }
 
     @Override
+    public void registerCache(String name, int maxSize, int timeout) {
+        CacheDescriptor desc;
+        if (cacheRegistry.caches.get(DEFAULT_CACHE_ID) != null) {
+            desc = new CacheDescriptor(
+                    cacheRegistry.caches.get(DEFAULT_CACHE_ID));
+        } else {
+            desc = new CacheDescriptor();
+        }
+        desc.name = name;
+        desc.ttl = timeout;
+        desc.options.put("maxSize", String.valueOf(maxSize));
+        if (cacheRegistry.caches.get(name) == null) {
+            cacheRegistry.addContribution(desc);;
+            autoregisteredCacheNames.add(name);
+        } else {
+            CacheDescriptor oldDesc = cacheRegistry.caches.get(name);
+            cacheRegistry.merge(oldDesc, desc);
+        }
+    }
+
+    @Override
     public void unregisterExtension(Extension extension)
             throws RuntimeException {
         Object[] contribs = extension.getContributions();
@@ -94,6 +149,14 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
             CacheDescriptor descriptor = (CacheDescriptor) contrib;
             cacheRegistry.removeContribution(descriptor);
         }
+    }
+
+    @Override
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(CacheRegistry.class)) {
+            return adapter.cast(cacheRegistry);
+        }
+        return super.getAdapter(adapter);
     }
 
 }
