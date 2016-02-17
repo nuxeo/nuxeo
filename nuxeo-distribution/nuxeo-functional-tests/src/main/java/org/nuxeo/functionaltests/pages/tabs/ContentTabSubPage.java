@@ -20,25 +20,25 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.contentView.ContentViewElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import com.google.common.base.Function;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents and displaying the current document's
@@ -46,19 +46,13 @@ import com.google.common.base.Function;
  */
 public class ContentTabSubPage extends DocumentBasePage {
 
-    private static final String COPY_BUTTON_XPATH = "//input[@value=\"Copy\"]";
+    private static final String COPY = "Copy";
 
-    private static final String PASTE_BUTTON_XPATH = "//input[@value=\"Paste\"]";
+    private static final String PASTE = "Paste";
 
-    private static final String DELETE_BUTTON_XPATH = "//input[@value=\"Delete\"]";
+    private static final String DELETE = "Delete";
 
-    private static final String ADD_TO_WORKLIST_BUTTON_XPATH = "//input[@value=\"Add to Worklist\"]";
-
-    private static final String SELECT_ALL_BUTTON_XPATH = "//input[@type=\"checkbox\" and @title=\"Select all / deselect all\"]";
-
-    private static final String CHECK_BOX_XPATH = "td/input[@type=\"checkbox\"]";
-
-    private static final String DOCUMENT_TITLE_XPATH = "td//span[@id[starts-with(.,'title_')]]";
+    private static final String ADD_TO_WORKLIST = "Add to Worklist";
 
     @Required
     @FindBy(id = "document_content")
@@ -76,15 +70,16 @@ public class ContentTabSubPage extends DocumentBasePage {
     @FindBy(id = "cv_document_content_0_resetFilterForm:resetFilter")
     WebElement clearFilterButton;
 
-    @FindBy(xpath = "//form[@id=\"document_content\"]//tbody//tr")
-    List<WebElement> childDocumentRows;
-
-    public List<WebElement> getChildDocumentRows() {
-        return childDocumentRows;
-    }
-
     public ContentTabSubPage(WebDriver driver) {
         super(driver);
+    }
+
+    protected ContentViewElement getElement() {
+        return AbstractTest.getWebFragment(By.id("cv_document_content_0_panel"), ContentViewElement.class);
+    }
+
+    public List<WebElement> getChildDocumentRows() {
+        return getElement().getItems();
     }
 
     /**
@@ -93,7 +88,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @param documentTitle
      */
     public DocumentBasePage goToDocument(String documentTitle) {
-        documentContentForm.findElement(By.linkText(documentTitle)).click();
+        getElement().clickOnItemTitle(documentTitle);
         return asPage(DocumentBasePage.class);
     }
 
@@ -115,40 +110,21 @@ public class ContentTabSubPage extends DocumentBasePage {
     }
 
     public DocumentBasePage removeDocument(String documentTitle) {
-        // get all table item and if the link has the documents title, click
-        // (enable) checkbox
-
-        List<WebElement> trelements = documentContentForm.findElement(By.tagName("tbody")).findElements(
-                By.tagName("tr"));
-        for (WebElement trItem : trelements) {
-            try {
-                trItem.findElement(By.linkText(documentTitle));
-                WebElement checkBox = trItem.findElement(By.xpath("td/input[@type=\"checkbox\"]"));
-                checkBox.click();
-                break;
-            } catch (NoSuchElementException e) {
-                // next
-            }
-        }
+        getElement().checkByTitle(documentTitle);
         deleteSelectedDocuments();
-
         return asPage(DocumentBasePage.class);
     }
 
     protected void deleteSelectedDocuments() {
-        findElementWaitUntilEnabledAndClick(By.xpath(DELETE_BUTTON_XPATH));
+        getElement().getSelectionActionByTitle(DELETE).click();
         Alert alert = driver.switchTo().alert();
         assertEquals("Delete selected document(s)?", alert.getText());
         alert.accept();
     }
 
     public DocumentBasePage addToWorkList(String documentTitle) {
-        // get all table item and if the link has the documents title, click
-        // (enable) checkbox
-
-        selectByTitle(documentTitle);
-        findElementWaitUntilEnabledAndClick(By.xpath(ADD_TO_WORKLIST_BUTTON_XPATH));
-
+        getElement().checkByTitle(documentTitle);
+        getElement().getSelectionActionByTitle(ADD_TO_WORKLIST).click();
         return asPage(DocumentBasePage.class);
     }
 
@@ -156,18 +132,13 @@ public class ContentTabSubPage extends DocumentBasePage {
      * Removes all documents visible on current page.
      */
     public ContentTabSubPage removeAllDocuments() {
-        ContentTabSubPage page = asPage(ContentTabSubPage.class);
-        By locator = By.xpath(SELECT_ALL_BUTTON_XPATH);
-        if (!hasElement(locator)) {
+        ContentViewElement cv = getElement();
+        if (cv.getItems().size() == 0) {
             // no document to remove
-            return page;
+            return this;
         }
-        AjaxRequestManager arm = new AjaxRequestManager(driver);
-        arm.begin();
-        findElementWaitUntilEnabledAndClick(By.xpath(SELECT_ALL_BUTTON_XPATH));
-        arm.end();
+        cv.checkAllItems();
         deleteSelectedDocuments();
-
         return asPage(ContentTabSubPage.class);
     }
 
@@ -188,7 +159,7 @@ public class ContentTabSubPage extends DocumentBasePage {
             public Boolean apply(WebDriver driver) {
                 try {
                     return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
-                } catch (NoSuchElementException e) {
+                } catch (NoSuchElementException | StaleElementReferenceException e) {
                     return false;
                 }
             }
@@ -210,7 +181,7 @@ public class ContentTabSubPage extends DocumentBasePage {
             public Boolean apply(WebDriver driver) {
                 try {
                     return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
-                } catch (NoSuchElementException e) {
+                } catch (NoSuchElementException | StaleElementReferenceException e) {
                     return false;
                 }
             }
@@ -235,12 +206,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 8.1
      */
     public ContentTabSubPage selectByIndex(int... indexes) {
-        AjaxRequestManager a = new AjaxRequestManager(driver);
-        for (int i : indexes) {
-            a.watchAjaxRequests();
-            getChildDocumentRows().get(i).findElement(By.xpath(CHECK_BOX_XPATH)).click();
-            a.waitForAjaxRequests();
-        }
+        getElement().checkByIndex(indexes);
         return asPage(ContentTabSubPage.class);
     }
 
@@ -261,25 +227,8 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 8.1
      */
     public ContentTabSubPage selectByTitle(String... titles) {
-        return selectByIndex(convertToIndexes(titles));
-    }
-
-    protected int[] convertToIndexes(String... titles) {
-        List<String> titleList = Arrays.asList(titles);
-        List<Integer> temp = new ArrayList<Integer>();
-        int index = 0;
-        for (WebElement row : childDocumentRows) {
-            String docTitle = row.findElement(By.xpath(DOCUMENT_TITLE_XPATH)).getText();
-            if (docTitle != null && titleList.contains(docTitle)) {
-                temp.add(index);
-            }
-            index++;
-        }
-        int[] result = new int[temp.size()];
-        for (int i = 0; i < temp.size(); i++) {
-            result[i] = temp.get(i);
-        }
-        return result;
+        getElement().checkByTitle(titles);
+        return asPage(ContentTabSubPage.class);
     }
 
     /**
@@ -289,8 +238,8 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage copyByIndex(int... indexes) {
-        selectByIndex(indexes);
-        findElementWaitUntilEnabledAndClick(By.xpath(COPY_BUTTON_XPATH));
+        getElement().checkByIndex(indexes);
+        getElement().getSelectionActionByTitle(COPY).click();
         return asPage(ContentTabSubPage.class);
     }
 
@@ -301,7 +250,9 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage copyByTitle(String... titles) {
-        return copyByIndex(convertToIndexes(titles));
+        getElement().checkByTitle(titles);
+        getElement().getSelectionActionByTitle(COPY).click();
+        return asPage(ContentTabSubPage.class);
     }
 
     /**
@@ -310,7 +261,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage paste() {
-        findElementWaitUntilEnabledAndClick(By.xpath(PASTE_BUTTON_XPATH));
+        getElement().getSelectionActionByTitle(PASTE).click();
         return asPage(ContentTabSubPage.class);
     }
 
@@ -329,7 +280,7 @@ public class ContentTabSubPage extends DocumentBasePage {
         try {
             WebElement element = documentContentForm.findElement(By.linkText(title));
             return element != null;
-        } catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return false;
         }
     }
