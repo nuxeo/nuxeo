@@ -112,16 +112,20 @@ public class ITUsersTest extends AbstractTest {
         UsersGroupsBasePage page;
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
-        if (!usersTab.isUserFound(TEST_USERNAME)) {
-            page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, firstname, "lastname1", "company1", "email1",
-                    TEST_PASSWORD, "members");
-            // no confirmation message anymore
-            // assertEquals(page.getFeedbackMessage(), "User created");
-            usersTab = page.getUsersTab(true);
-        }
+        assertFalse(usersTab.isUserFound(TEST_USERNAME));
+        // check invalid password match
+        page = usersTab.getUserCreatePage().createUser(TEST_USERNAME, firstname, "lastname1", "company1", "email1",
+                TEST_PASSWORD, "foo", "members", false);
+        assertEquals(page.getErrorFeedbackMessage(), "Please correct errors.");
+        UserCreationFormPage creationPage = asPage(UserCreationFormPage.class);
+        Locator.waitForTextPresent(creationPage.getForm(), "Passwords do not match.");
+
+        // start again with passwords match
+        page = creationPage.cancelCreation().getUserCreatePage().createUser(TEST_USERNAME, firstname, "lastname1",
+                "company1", "email1", TEST_PASSWORD, "members", false);
 
         // search user
-        usersTab = usersTab.searchUser(TEST_USERNAME);
+        usersTab = page.getUsersTab(true).searchUser(TEST_USERNAME);
         assertTrue(usersTab.isUserFound(TEST_USERNAME));
 
         // exit admin center and reconnect
