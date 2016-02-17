@@ -42,19 +42,16 @@ public class WebFragmentImpl implements WebFragment {
 
     protected final WebDriver driver;
 
-    protected String id;
-
     protected WebElement element;
 
     public WebFragmentImpl(WebDriver driver, WebElement element) {
         this.driver = driver;
         this.element = element;
-        id = element.getAttribute("id");
     }
 
     @Override
     public String getId() {
-        return id;
+        return element.getAttribute("id");
     }
 
     @Override
@@ -65,7 +62,6 @@ public class WebFragmentImpl implements WebFragment {
     @Override
     public void setElement(WebElement element) {
         this.element = element;
-        id = element.getAttribute("id");
     }
 
     @Override
