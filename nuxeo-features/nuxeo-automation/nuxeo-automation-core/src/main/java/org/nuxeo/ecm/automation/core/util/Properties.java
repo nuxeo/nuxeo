@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, Ronan DANIELLOU <rdaniellou@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core.util;
 
@@ -25,8 +25,6 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import com.google.common.base.Objects;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -107,21 +105,24 @@ public class Properties extends HashMap<String, String> {
         BufferedReader in = new BufferedReader(reader);
         String line = in.readLine();
         String prevLine = null;
+        String lineSeparator = "\n";
         while (line != null) {
-            line = line.trim();
-            if (line.startsWith("#") || line.length() == 0) {
-                prevLine = null;
-                line = in.readLine();
-                continue;
+            if (prevLine == null) {
+                // we start a new property
+                if (line.startsWith("#") || line.length() == 0) {
+                    // skip comments or an empty line
+                    line = in.readLine();
+                    continue;
+                }
             }
             if (line.endsWith("\\") && Boolean.valueOf(multiLineEscape)) {
                 line = line.substring(0, line.length() - 1);
-                prevLine = prevLine != null ? prevLine + line : line;
+                prevLine = (prevLine != null ? prevLine + line : line) + lineSeparator;
                 line = in.readLine();
                 continue;
             }
             if (prevLine != null) {
-                line = prevLine + "\n" + line;
+                line = prevLine + line;
             }
             prevLine = null;
             setPropertyLine(map, line);
@@ -137,7 +138,8 @@ public class Properties extends HashMap<String, String> {
         if (i == -1) {
             throw new IOException("Invalid property line: " + line);
         }
-        map.put(line.substring(0, i).trim(), line.substring(i + 1).trim());
+        // we trim() the key, but not the value: spaces and new lines are legitimate part of the value
+        map.put(line.substring(0, i).trim(), line.substring(i + 1));
     }
 
 }
