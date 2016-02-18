@@ -26,4 +26,5 @@ Nuxeo-Component: OSGI-INF/document-routing-core-types-contrib.xml,
  OSGI-INF/document-routing-escalation-scheduler-contrib.xml,
  OSGI-INF/document-routing-cleanup-contrib.xml,
  OSGI-INF/document-routing-security-contrib.xml,
- OSGI-INF/document-routing-audit-es-filter.xml
+ OSGI-INF/document-routing-audit-es-filter.xml,
+ OSGI-INF/marshallers-contrib.xml

@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util;
+package org.nuxeo.ecm.platform.routing.core.io;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -100,6 +100,7 @@ public class JsonEncodeDecodeUtils {
         jg.writeEndObject();
     }
 
+    @Deprecated
     public static Map<String, Serializable> decodeVariables(JsonNode jsnode,
             Map<String, Serializable> originalVariables, CoreSession session) throws ClassNotFoundException,
             IOException {
