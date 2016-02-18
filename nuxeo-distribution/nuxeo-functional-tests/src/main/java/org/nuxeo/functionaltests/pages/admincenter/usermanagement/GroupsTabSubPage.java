@@ -34,13 +34,14 @@ import org.openqa.selenium.support.FindBy;
  */
 public class GroupsTabSubPage extends UsersGroupsBasePage {
 
-    @Required
     @FindBy(id = "groupsListingView:createGroupActionsForm:createGroupButton")
     WebElement createNewGroupLink;
 
+    @Required
     @FindBy(id = "groupsListingView:searchForm:searchText")
     WebElement searchInput;
 
+    @Required
     @FindBy(id = "groupsListingView:searchForm:searchButton")
     WebElement searchButton;
 

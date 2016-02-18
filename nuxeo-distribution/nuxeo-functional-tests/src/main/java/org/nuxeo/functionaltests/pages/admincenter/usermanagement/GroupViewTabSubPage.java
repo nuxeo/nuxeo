@@ -35,6 +35,10 @@ import static org.junit.Assert.assertEquals;
 public class GroupViewTabSubPage extends UsersGroupsBasePage {
 
     @Required
+    @FindBy(xpath = "//div[@id='nxw_adminCenterSubTabs_tab_content']//h1")
+    WebElement groupName;
+
+    @Required
     @FindBy(linkText = "View")
     WebElement viewGroupTab;
 
@@ -62,7 +66,15 @@ public class GroupViewTabSubPage extends UsersGroupsBasePage {
     }
 
     public GroupsTabSubPage backToTheList() {
-        findElementWaitUntilEnabledAndClick(By.linkText("Back to the list"));
+        findElementWaitUntilEnabledAndClick(By.linkText("Back to the List"));
         return asPage(GroupsTabSubPage.class);
     }
+
+    /**
+     * @since 8.2
+     */
+    public String getGroupName() {
+        return groupName.getText();
+    }
+
 }

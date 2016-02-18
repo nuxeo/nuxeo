@@ -35,13 +35,14 @@ import org.openqa.selenium.support.FindBy;
  */
 public class UsersTabSubPage extends UsersGroupsBasePage {
 
-    @Required
     @FindBy(id = "usersListingView:createUserActionsForm:createUserButton")
     WebElement createNewUserLink;
 
+    @Required
     @FindBy(id = "usersListingView:searchForm:searchText")
     WebElement searchInput;
 
+    @Required
     @FindBy(id = "usersListingView:searchForm:searchButton")
     WebElement searchButton;
 

@@ -98,20 +98,35 @@ public abstract class AbstractPage {
     /**
      * Returns the error feedback message.
      * <p>
-     * If there are more than one error message, always return the second one (not interested by 'Please correct errors'
+     * If there are more than one error message, always return the last one (not interested by 'Please correct errors'
      * message).
      *
      * @since 5.8
      */
     public String getErrorFeedbackMessage() {
+        return getFeedbackMessage("errorFeedback");
+    }
+
+    /**
+     * Returns the info feedback message.
+     * <p>
+     * If there are more than one info message, always return the last one.
+     *
+     * @since 8.2
+     */
+    public String getInfoFeedbackMessage() {
+        return getFeedbackMessage("infoFeedback");
+    }
+
+    protected String getFeedbackMessage(String styleClass) {
         String ret = "";
         try {
             List<WebElement> elements = findElementsWithTimeout(
-                    By.xpath("//div[contains(@class, 'errorFeedback')]/div[@class='ambiance-title']"));
+                    By.xpath("//div[contains(@class, '" + styleClass + "')]/div[@class='ambiance-title']"));
             if (elements.size() == 1) {
                 ret = elements.get(0).getText();
             } else if (elements.size() > 1) {
-                ret = elements.get(1).getText();
+                ret = elements.get(elements.size() - 1).getText();
             }
         } catch (NoSuchElementException e) {
             ret = "";

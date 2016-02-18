@@ -18,6 +18,10 @@
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.openqa.selenium.WebDriver;
@@ -32,15 +36,15 @@ import org.openqa.selenium.support.FindBy;
 public class GroupEditFormPage extends UsersGroupsBasePage {
 
     @Required
-    @FindBy(id = "viewGroupView:editGroup:nxl_group_1:nxw_group_label_1")
+    @FindBy(id = "viewGroupView:editGroup:nxl_group:nxw_group_label")
     WebElement labelInput;
 
     @Required
-    @FindBy(id = "s2id_viewGroupView:editGroup:nxl_group_1:nxw_group_members_1_select2")
+    @FindBy(id = "s2id_viewGroupView:editGroup:nxl_group:nxw_group_members_select2")
     WebElement membersSelect;
 
     @Required
-    @FindBy(id = "s2id_viewGroupView:editGroup:nxl_group_1:nxw_group_subgroups_1_select2")
+    @FindBy(id = "s2id_viewGroupView:editGroup:nxl_group:nxw_group_subgroups_select2")
     WebElement subgroupsSelect;
 
     @Required
@@ -56,12 +60,53 @@ public class GroupEditFormPage extends UsersGroupsBasePage {
         labelInput.sendKeys(label);
     }
 
-    public void setMembers(String... members) {
-        new Select2WidgetElement(driver, membersSelect, true).selectValues(members);
+    /**
+     * @since 8.2
+     */
+    public List<String> getMembers() {
+        return new Select2WidgetElement(driver, membersSelect, true).getSelectedValues()
+                                                                    .stream()
+                                                                    .map(s -> s.getText())
+                                                                    .collect(Collectors.toList());
     }
 
-    public void setSubGroups(String... subgroups) {
+    public GroupEditFormPage setMembers(String... members) {
+        new Select2WidgetElement(driver, membersSelect, true).selectValues(members);
+        return asPage(GroupEditFormPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public GroupEditFormPage addMember(String member) {
+        new Select2WidgetElement(driver, membersSelect, true).selectValue(member);
+        return asPage(GroupEditFormPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public List<String> getSubGroups() {
+        return new Select2WidgetElement(driver, subgroupsSelect, true).getSelectedValues()
+                                                                      .stream()
+                                                                      .map(s -> s.getText())
+                                                                      .collect(Collectors.toList());
+    }
+
+    public GroupEditFormPage setSubGroups(String... subgroups) {
         new Select2WidgetElement(driver, subgroupsSelect, true).selectValues(subgroups);
+        return asPage(GroupEditFormPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public GroupViewTabSubPage save() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        saveButton.click();
+        arm.end();
+        return asPage(GroupViewTabSubPage.class);
     }
 
 }
