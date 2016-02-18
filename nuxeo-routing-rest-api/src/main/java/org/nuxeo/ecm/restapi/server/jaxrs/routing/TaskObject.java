@@ -28,9 +28,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -38,9 +36,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.core.io.TaskCompletionRequest;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskConstants;
-import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.TaskCompletionRequest;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
@@ -49,7 +47,6 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.2
  */
 @WebObject(type = "task")
-@Produces(MediaType.APPLICATION_JSON)
 public class TaskObject extends DefaultObject {
 
     public static final String BASE_QUERY = String.format(
@@ -68,9 +65,8 @@ public class TaskObject extends DefaultObject {
 
     @PUT
     @Path("{taskId}/delegate")
-    @Consumes
-    public Response delegateTask(@PathParam("taskId") String taskId, @QueryParam("delegatedActors") List<String> delegatedActors,
-            @QueryParam("comment") String comment) {
+    public Response delegateTask(@PathParam("taskId") String taskId,
+            @QueryParam("delegatedActors") List<String> delegatedActors, @QueryParam("comment") String comment) {
         Framework.getLocalService(DocumentRoutingService.class).delegateTask(getContext().getCoreSession(), taskId,
                 delegatedActors, comment);
         return Response.ok().status(Status.OK).build();
@@ -78,8 +74,6 @@ public class TaskObject extends DefaultObject {
 
     @PUT
     @Path("{taskId}/{taskAction}")
-    @Consumes({ MediaType.APPLICATION_JSON, "application/json+nxentity" })
-    @Produces(MediaType.APPLICATION_JSON)
     public Response completeTask(@PathParam("taskId") String taskId, @PathParam("taskAction") String action,
             TaskCompletionRequest taskCompletionRequest) {
         Map<String, Object> data = taskCompletionRequest.getDataMap();
@@ -94,8 +88,8 @@ public class TaskObject extends DefaultObject {
     public List<Task> getUserRelatedWorkflowTasks(@QueryParam("userId") String userId,
             @QueryParam("workflowInstanceId") String workflowInstanceId,
             @QueryParam("workflowModelName") String workflowModelName) {
-        return Framework.getService(DocumentRoutingService.class).getTasks(null, userId,
-                workflowInstanceId, workflowModelName, getContext().getCoreSession());
+        return Framework.getService(DocumentRoutingService.class).getTasks(null, userId, workflowInstanceId,
+                workflowModelName, getContext().getCoreSession());
     }
 
     @GET

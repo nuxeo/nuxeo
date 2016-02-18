@@ -18,7 +18,7 @@
  *
  */
 
-package org.nuxeo.ecm.restapi.server.jaxrs.routing.model;
+package org.nuxeo.ecm.platform.routing.core.io;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -34,12 +34,17 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
  */
 public class TaskCompletionRequest {
 
-    protected String comment;
+    private String comment;
 
-    protected Map<String, Serializable> variables;
+    private Map<String, Serializable> variables;
 
-    public TaskCompletionRequest() {
+    private boolean badJsonFormat;
+
+    public TaskCompletionRequest(String comment, Map<String, Serializable> variables, boolean badJsonFormat) {
         super();
+        this.comment = comment;
+        this.variables = variables;
+        this.badJsonFormat = badJsonFormat;
     }
 
     public String getComment() {
@@ -52,7 +57,9 @@ public class TaskCompletionRequest {
             data.put(Constants.VAR_WORKFLOW, getVariables());
             data.put(Constants.VAR_WORKFLOW_NODE, getVariables());
         }
-        data.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
+        if (badJsonFormat) {
+            data.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, badJsonFormat);
+        }
         if (StringUtils.isNotBlank(getComment())) {
             data.put(GraphNode.NODE_VARIABLE_COMMENT, getComment());
         }
@@ -61,14 +68,6 @@ public class TaskCompletionRequest {
 
     public Map<String, Serializable> getVariables() {
         return variables;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public void setVariables(Map<String, Serializable> nodeVariables) {
-        this.variables = nodeVariables;
     }
 
 }

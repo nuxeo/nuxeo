@@ -22,7 +22,6 @@ package org.nuxeo.ecm.restapi.server.jaxrs.routing;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -44,7 +43,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 import org.nuxeo.ecm.platform.routing.core.impl.jsongraph.JsonGraphRoute;
-import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.WorkflowRequest;
+import org.nuxeo.ecm.platform.routing.core.io.WorkflowRequest;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
@@ -68,8 +67,6 @@ public class WorkflowObject extends DefaultObject {
     }
 
     @POST
-    @Consumes({ MediaType.APPLICATION_JSON, "application/json+nxentity" })
-    @Produces(MediaType.APPLICATION_JSON)
     public Response createWorkflowInstance(WorkflowRequest workflowRequest) {
         final String workflowInstanceId = documentRoutingService.createNewInstance(
                 workflowRequest.getWorkflowModelName(), workflowRequest.getAttachedDocumentIds(),

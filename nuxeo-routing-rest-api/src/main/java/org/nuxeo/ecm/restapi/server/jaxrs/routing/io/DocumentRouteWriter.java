@@ -36,7 +36,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
-import org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util.JsonEncodeDecodeUtils;
+import org.nuxeo.ecm.platform.routing.core.io.JsonEncodeDecodeUtils;
 
 /**
  * @since 7.2

@@ -18,7 +18,7 @@
  *
  */
 
-package org.nuxeo.ecm.restapi.server.jaxrs.routing.model;
+package org.nuxeo.ecm.platform.routing.core.io;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,6 +38,17 @@ public class WorkflowRequest {
 
     public WorkflowRequest() {
         super();
+    }
+
+    /**
+     * @since 8.2
+     */
+    public WorkflowRequest(String workflowModelName, List<String> attachedDocumentIds,
+            Map<String, Serializable> variables) {
+        super();
+        this.attachedDocumentIds = attachedDocumentIds;
+        this.variables = variables;
+        this.workflowModelName = workflowModelName;
     }
 
     public List<String> getAttachedDocumentIds() {

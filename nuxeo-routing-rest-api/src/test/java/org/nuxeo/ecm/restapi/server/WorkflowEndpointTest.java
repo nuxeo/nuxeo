@@ -55,7 +55,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
-
 import com.ibm.icu.util.Calendar;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -92,8 +91,8 @@ public class WorkflowEndpointTest extends BaseTest {
         String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
                 + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
                 + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
-                + "\"participants\": \"[\\\"user:Administrator\\\"]\","
-                + "\"assignees\": \"[\\\"user:Administrator\\\"]\"" + "}" + "}";
+                + "\"participants\": [\"user:Administrator\"],"
+                + "\"assignees\": [\"user:Administrator\"]" + "}" + "}";
         return jsonBody;
     }
 
@@ -103,7 +102,7 @@ public class WorkflowEndpointTest extends BaseTest {
         String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
                 + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
                 + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
-                + "\"participants\": \"[\\\"user:Administrator\\\"]\"," + "\"review_result\": \"blabablaa\"" + "}"
+                + "\"participants\": [\"user:Administrator\"]," + "\"review_result\": \"blabablaa\"" + "}"
                 + "}";
         return jsonBody;
     }
