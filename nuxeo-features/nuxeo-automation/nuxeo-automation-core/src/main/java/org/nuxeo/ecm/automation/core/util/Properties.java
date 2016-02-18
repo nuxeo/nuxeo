@@ -1,13 +1,20 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, Ronan DANIELLOU <rdaniellou@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core.util;
 
@@ -18,14 +25,11 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-
+import com.google.common.base.Objects;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.runtime.api.Framework;
-
-import com.google.common.base.Objects;
 
 /**
  * Inline properties file content. This class exists to have a real type for parameters accepting properties content.
@@ -53,7 +57,7 @@ public class Properties extends HashMap<String, String> {
         super(props);
     }
 
-    public Properties(String content) throws Exception {
+    public Properties(String content) throws IOException {
         StringReader reader = new StringReader(content);
         loadProperties(reader, this);
     }
@@ -91,31 +95,34 @@ public class Properties extends HashMap<String, String> {
         }
     }
 
-    public static Map<String, String> loadProperties(Reader reader) throws Exception {
+    public static Map<String, String> loadProperties(Reader reader) throws IOException {
         Map<String, String> map = new HashMap<String, String>();
         loadProperties(reader, map);
         return map;
     }
 
-    public static void loadProperties(Reader reader, Map<String, String> map) throws Exception {
+    public static void loadProperties(Reader reader, Map<String, String> map) throws IOException {
         BufferedReader in = new BufferedReader(reader);
         String line = in.readLine();
         String prevLine = null;
+        String lineSeparator = "\n";
         while (line != null) {
-            line = line.trim();
-            if (line.startsWith("#") || line.length() == 0) {
-                prevLine = null;
-                line = in.readLine();
-                continue;
+            if (prevLine == null) {
+                // we start a new property
+                if (line.startsWith("#") || line.length() == 0) {
+                    // skip comments or an empty line
+                    line = in.readLine();
+                    continue;
+                }
             }
             if (line.endsWith("\\") && Boolean.valueOf(multiLineEscape)) {
                 line = line.substring(0, line.length() - 1);
-                prevLine = prevLine != null ? prevLine + line : line;
+                prevLine = (prevLine != null ? prevLine + line : line) + lineSeparator;
                 line = in.readLine();
                 continue;
             }
             if (prevLine != null) {
-                line = prevLine + "\n" + line;
+                line = prevLine + line;
             }
             prevLine = null;
             setPropertyLine(map, line);
@@ -126,12 +133,13 @@ public class Properties extends HashMap<String, String> {
         }
     }
 
-    protected static void setPropertyLine(Map<String, String> map, String line) throws Exception {
+    protected static void setPropertyLine(Map<String, String> map, String line) throws IOException {
         int i = line.indexOf('=');
         if (i == -1) {
             throw new IOException("Invalid property line: " + line);
         }
-        map.put(line.substring(0, i).trim(), line.substring(i + 1).trim());
+        // we trim() the key, but not the value: spaces and new lines are legitimate part of the value
+        map.put(line.substring(0, i).trim(), line.substring(i + 1));
     }
 
 }
