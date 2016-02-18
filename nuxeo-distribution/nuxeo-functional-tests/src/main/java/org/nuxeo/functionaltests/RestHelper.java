@@ -76,7 +76,6 @@ public class RestHelper {
 
     public static void cleanupUsers() {
         for (String user : usersToDelete) {
-            RestHelper.deleteUser(user);
             RestHelper.deleteDocument(String.format(USER_WORKSPACE_PATH_FORMAT, user));
         }
         usersToDelete.forEach(RestHelper::deleteUser);
