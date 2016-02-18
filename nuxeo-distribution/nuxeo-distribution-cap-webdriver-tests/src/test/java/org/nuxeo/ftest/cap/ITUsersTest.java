@@ -123,6 +123,7 @@ public class ITUsersTest extends AbstractTest {
         // start again with passwords match
         page = creationPage.cancelCreation().getUserCreatePage().createUser(TEST_USERNAME, firstname, "lastname1",
                 "company1", "email1", TEST_PASSWORD, "members", false);
+        assertEquals("User created.", page.getInfoFeedbackMessage());
 
         // search user
         usersTab = page.getUsersTab(true).searchUser(TEST_USERNAME);
