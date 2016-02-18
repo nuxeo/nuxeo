@@ -37,7 +37,7 @@ import static org.nuxeo.functionaltests.Constants.SECTIONS_PATH;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Test workspace structure creation.
+ * Test section structure creation.
  *
  * @since 8.2
  */

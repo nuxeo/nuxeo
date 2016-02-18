@@ -21,6 +21,7 @@ package org.nuxeo.functionaltests;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -47,6 +48,11 @@ public class ITTestDrivers extends AbstractTest {
         // Do not init driver
     }
 
+    @AfterClass
+    public static void quitDriver() {
+        // Do not quit driver
+    }
+
     @Test
     public void testFireFox() throws Exception {
         initFirefoxDriver();
@@ -56,7 +62,7 @@ public class ITTestDrivers extends AbstractTest {
         ScreenshotTaker taker = new ScreenshotTaker();
         assertTrue(taker.takeScreenshot(driver, "firefox").delete());
         assertTrue(taker.dumpPageSource(driver, "firefox").delete());
-        quitDriver();
+        super.quitDriver();
     }
 
     @Ignore("Chrome not used in tests + chromedriver being a bit too finicky")
@@ -67,7 +73,7 @@ public class ITTestDrivers extends AbstractTest {
         ScreenshotTaker taker = new ScreenshotTaker();
         assertTrue(taker.takeScreenshot(driver, "google-chrome").delete());
         assertTrue(taker.dumpPageSource(driver, "google-chrome").delete());
-        quitDriver();
+        super.quitDriver();
     }
 
 }
