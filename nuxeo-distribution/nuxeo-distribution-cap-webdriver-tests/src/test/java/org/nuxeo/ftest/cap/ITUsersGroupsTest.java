@@ -75,8 +75,6 @@ public class ITUsersGroupsTest extends AbstractTest {
         groupsPage.searchGroup("foo");
         Locator.waitForTextPresent(By.id("groupsListingView:groups_listing"), "No group matches the entered criteria.");
         logout();
-
-        logout();
     }
 
 
