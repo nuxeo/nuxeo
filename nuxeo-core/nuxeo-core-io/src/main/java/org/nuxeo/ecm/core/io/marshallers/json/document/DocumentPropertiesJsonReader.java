@@ -108,8 +108,14 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
             } else {
                 String shemaName = ctx.getParameter(DEFAULT_SCHEMA_NAME);
                 Schema schema = schemaManager.getSchema(shemaName);
+                if (schema == null) {
+                    continue;
+                }
                 field = schema.getField(propertyName);
                 parent = new DocumentPartImpl(schema);
+            }
+            if (field == null) {
+                continue;
             }
             Property property = readProperty(parent, field, propertyNode.getValue());
             if (property != null) {
