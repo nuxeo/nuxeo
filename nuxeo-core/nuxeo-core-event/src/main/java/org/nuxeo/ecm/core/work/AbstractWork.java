@@ -434,7 +434,7 @@ public abstract class AbstractWork implements Work {
                 cleanUp(ok, exc);
             } finally {
                 if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                    if (!ok) {
+                    if (!ok || isSuspending()) {
                         TransactionHelper.setTransactionRollbackOnly();
                     }
                     TransactionHelper.commitOrRollbackTransaction();
@@ -471,9 +471,11 @@ public abstract class AbstractWork implements Work {
                 log.debug("Suspended work: " + this);
             } else {
                 if (!(e instanceof ConcurrentUpdateException)) {
-                    log.error("Exception during work: " + this, e);
-                    if (WorkSchedulePath.captureStack) {
-                        WorkSchedulePath.log.error("Work schedule path", getSchedulePath().getStack());
+                    if (!isSuspending() || !(e instanceof InterruptedException)) {
+                        log.error("Exception during work: " + this, e);
+                        if (WorkSchedulePath.captureStack) {
+                            WorkSchedulePath.log.error("Work schedule path", getSchedulePath().getStack());
+                        }
                     }
                 }
             }
