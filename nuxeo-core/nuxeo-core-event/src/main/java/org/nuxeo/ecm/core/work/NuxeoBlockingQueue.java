@@ -146,25 +146,18 @@ public abstract class NuxeoBlockingQueue extends AbstractQueue<Runnable> impleme
      */
     private class Iter implements Iterator<Runnable> {
 
-        public Iter() {
-            throw new UnsupportedOperationException();
-        }
-
         @Override
         public boolean hasNext() {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException();
+            return false;
         }
 
         @Override
         public Runnable next() {
-            // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
 
         @Override
         public void remove() {
-            // TODO Auto-generated method stub
             throw new UnsupportedOperationException();
         }
     }

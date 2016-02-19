@@ -135,9 +135,6 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
     public Runnable pollElement() {
         try {
             Work work = queuing.getWorkFromQueue(queueId);
-            if (work != null) {
-                log.debug("Remove scheduled " + work);
-            }
             return work == null ? null : new WorkHolder(work);
         } catch (IOException e) {
             if (delayExpired(LAST_IO_EXCEPTION)) {

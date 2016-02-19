@@ -17,10 +17,29 @@
  */
 package org.nuxeo.ecm.core.work;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.naming.NamingException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.EventServiceComponent;
@@ -39,30 +58,10 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.naming.NamingException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
 
 /**
  * The implementation of a {@link WorkManager}. This delegates the queuing implementation to a {@link WorkQueuing}
@@ -363,22 +362,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         for (WorkThreadPoolExecutor executor : list) {
             executor.shutdownAndSuspend();
         }
-
-        long t0 = System.currentTimeMillis();
-        long delay = unit.toMillis(timeout);
-
-        // wait for termination or suspension
-        boolean terminated = true;
-        for (WorkThreadPoolExecutor executor : list) {
-            long remaining = remainingMillis(t0, delay);
-            if (!executor.awaitTerminationOrSave(remaining, TimeUnit.MILLISECONDS)) {
-                terminated = false;
-                // hard shutdown for remaining tasks
-                executor.shutdownNow();
-            }
-        }
-
-        return terminated;
+        // don't wait anymore, running will always abort
+        return true;
     }
 
     protected long remainingMillis(long t0, long delay) {
@@ -482,20 +467,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     /**
-     * A handler for rejected tasks that discards them.
-     */
-    public static class CancelingPolicy implements RejectedExecutionHandler {
-
-        public static final CancelingPolicy INSTANCE = new CancelingPolicy();
-
-        @Override
-        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            ((WorkThreadPoolExecutor) executor).removedFromQueue(r);
-        }
-    }
-
-
-    /**
      * A {@link ThreadPoolExecutor} that keeps available the list of running tasks.
      * <p>
      * Completed tasks are passed to another queue.
@@ -513,7 +484,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          * List of running Work instances, in order to be able to interrupt them if requested.
          */
         // @GuardedBy("itself")
-        protected final List<Work> running;
+        protected final ConcurrentLinkedQueue<Work> running;
 
         // metrics, in cluster mode these counters must be aggregated, no logic should rely on them
         // Number of work scheduled by this instance
@@ -531,7 +502,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                                          TimeUnit unit, ThreadFactory threadFactory) {
             super(corePoolSize, maximumPoolSize, keepAliveTime, unit, queuing.initWorkQueue(queueId), threadFactory);
             this.queueId = queueId;
-            running = new LinkedList<Work>();
+            running = new ConcurrentLinkedQueue<Work>();
             // init metrics
             scheduledCount = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "scheduled", "count"));
             runningCount = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "running"));
@@ -582,38 +553,34 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         @Override
         protected void beforeExecute(Thread t, Runnable r) {
             Work work = WorkHolder.getWork(r);
+            if (started == false || shutdownInProgress == true) {
+                work.setWorkInstanceState(State.SCHEDULED);
+                queuing.workSchedule(queueId, work);
+                return;
+            }
             work.setWorkInstanceState(State.RUNNING);
             queuing.workRunning(queueId, work);
-            synchronized (running) {
-                running.add(work);
-            }
-            // metrics
+            running.add(work);
             runningCount.inc();
         }
 
         @Override
         protected void afterExecute(Runnable r, Throwable t) {
             Work work = WorkHolder.getWork(r);
-            synchronized (running) {
-                running.remove(work);
-            }
-            State state;
-            if (t == null) {
-                if (work.isWorkInstanceSuspended()) {
-                    state = State.SCHEDULED;
-                } else {
-                    state = State.COMPLETED;
+            try {
+                if (work.isSuspending()) {
+                    return;
                 }
-            } else {
-                state = State.FAILED;
+                work.setWorkInstanceState(t == null ? State.COMPLETED : State.FAILED);
+                queuing.workCompleted(queueId, work);
+            } finally {
+                // metrics
+                running.remove(work);
+                runningCount.dec();
+                completedCount.inc();
+                workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
+                completionSynchronizer.signalCompletedWork();
             }
-            work.setWorkInstanceState(state);
-            queuing.workCompleted(queueId, work);
-            // metrics
-            runningCount.dec();
-            completedCount.inc();
-            workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
-            completionSynchronizer.signalCompletedWork();
         }
 
         // called during shutdown
@@ -626,23 +593,22 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
 
         /**
-         * Initiates a shutdown of this executor and asks for work instances to suspend themselves. The scheduled work
-         * instances are drained and suspended.
+         * Initiates a shutdown of this executor and asks for work instances to suspend themselves.
          */
         public void shutdownAndSuspend() {
-            // rejected tasks will be discarded
-            setRejectedExecutionHandler(CancelingPolicy.INSTANCE);
+            // don't consume the queue anymore
+            ((NuxeoBlockingQueue) getQueue()).setActive(false);
             // shutdown the executor
-            // if a new task is scheduled it will be rejected -> discarded
             shutdown();
-            // request all scheduled work instances to suspend (cancel)
-            int n = queuing.setSuspending(queueId);
-            // request all running work instances to suspend (stop)
+            // suspend and reschedule all running work
             synchronized (running) {
                 for (Work work : running) {
+                    work.setWorkInstanceState(State.SCHEDULED);
+                    queuing.workSchedule(queueId, work);
                     work.setWorkInstanceSuspending();
                 }
             }
+            shutdownNow();
         }
 
         /**
@@ -885,6 +851,9 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     @Override
     public boolean awaitCompletion(String queueId, long duration, TimeUnit unit) throws InterruptedException {
+        if (!isStarted()) {
+            return true;
+        }
         long durationInMs = TimeUnit.MILLISECONDS.convert(duration, unit);
         long deadline = getTimestampAfter(durationInMs);
         int pause = (int) Math.min(duration, 500L);
