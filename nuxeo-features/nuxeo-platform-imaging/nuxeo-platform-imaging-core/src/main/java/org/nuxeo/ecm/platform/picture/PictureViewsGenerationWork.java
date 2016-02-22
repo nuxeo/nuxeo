@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Work generating the different picture views for a Picture.
@@ -95,10 +94,6 @@ public class PictureViewsGenerationWork extends AbstractWork {
             throw new RuntimeException(e);
         }
 
-        if (!TransactionHelper.isTransactionActive()) {
-            startTransaction();
-        }
-        openSystemSession();
         if (!session.exists(new IdRef(docId))) {
             setStatus("Nothing to process");
             return;
