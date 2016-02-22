@@ -39,20 +39,23 @@ public class ShibbolethUserInfo extends UserIdentificationInfo {
 
     protected Set<String> roles;
 
+    protected String email;
+
     private ShibbolethUserInfo(String emailAsUserName, String password) {
         super(emailAsUserName, password);
     }
 
-    public ShibbolethUserInfo(String emailAsUserName, String password, String firstName, String lastName, String company) {
-        super(emailAsUserName, password);
+    public ShibbolethUserInfo(String username, String password, String firstName, String lastName, String company, String email) {
+        super(username, password);
 
-        if (emailAsUserName == null || StringUtils.isEmpty(emailAsUserName)) {
+        if (username == null || StringUtils.isEmpty(username)) {
             throw new IllegalStateException("A valid username should always be provided");
         }
 
         this.firstName = firstName;
         this.lastName = lastName;
         this.company = company;
+        this.email = email;
     }
 
     public String getFirstName() {
@@ -65,6 +68,10 @@ public class ShibbolethUserInfo extends UserIdentificationInfo {
 
     public String getCompany() {
         return company;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public Set<String> getRoles() {
