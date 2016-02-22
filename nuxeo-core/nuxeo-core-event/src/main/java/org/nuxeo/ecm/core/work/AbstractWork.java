@@ -351,8 +351,10 @@ public abstract class AbstractWork implements Work {
             } else if (e instanceof InterruptedException) {
                 // restore interrupted status for the thread pool worker
                 Thread.currentThread().interrupt();
+                if (!isSuspending()) {
+                    throw new RuntimeException(e);
+                }
             }
-            throw new RuntimeException(e);
         } finally {
             WorkSchedulePath.handleReturn();
             try {

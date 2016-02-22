@@ -658,7 +658,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             synchronized (running) {
                 for (Work work : running) {
                     work.setWorkInstanceState(State.SCHEDULED);
-                    submit(new WorkHolder(work));
+                    submit(work);
                     work.setWorkInstanceSuspending();
                 }
             }
