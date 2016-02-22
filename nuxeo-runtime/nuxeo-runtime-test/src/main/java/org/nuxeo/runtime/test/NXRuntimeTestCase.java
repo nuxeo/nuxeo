@@ -69,6 +69,7 @@ import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 
@@ -182,8 +183,19 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      */
     @Override
     public void fireFrameworkStarted() throws Exception {
-        osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED,
-                runtimeBundle, null));
+        boolean txStarted = TransactionHelper.startTransaction();
+        boolean txFinished = false;
+        try {
+            osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, runtimeBundle, null));
+            txFinished = true;
+        } finally {
+            if (!txFinished) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+            if (txStarted) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
     }
 
     @After
