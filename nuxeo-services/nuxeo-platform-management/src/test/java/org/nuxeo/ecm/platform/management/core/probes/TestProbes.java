@@ -16,41 +16,43 @@
  */
 package org.nuxeo.ecm.platform.management.core.probes;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import javax.inject.Inject;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.management.statuses.ProbeScheduler;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ResourcePublisher;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
-public class TestProbes extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.runtime.management", //
+    "org.nuxeo.ecm.core.management", //
+    "org.nuxeo.ecm.platform.management" })
+public class TestProbes {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.runtime.management");
-        deployBundle("org.nuxeo.ecm.core.management");
-        deployBundle("org.nuxeo.ecm.platform.management");
-        openSession();
-        fireFrameworkStarted();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
-    }
+	@Inject
+	CoreSession session;
+	
 
     @Test
     public void testScheduling() throws MalformedObjectNameException {
