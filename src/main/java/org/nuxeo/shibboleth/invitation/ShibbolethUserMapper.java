@@ -18,11 +18,14 @@
 package org.nuxeo.shibboleth.invitation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -69,43 +72,22 @@ public class ShibbolethUserMapper implements UserMapper {
     public NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject, boolean createIfNeeded, boolean update,
             Map<String, Serializable> params) {
 
+        String email = (String) ((Map) userObject).get("email");
         ShibbolethUserInfo userInfo = new ShibbolethUserInfo((String) ((Map) userObject).get("username"),
                 (String) ((Map) userObject).get("password"), (String) ((Map) userObject).get("firstName"),
-                (String) ((Map) userObject).get("lastName"), (String) ((Map) userObject).get("company"));
+                (String) ((Map) userObject).get("lastName"), (String) ((Map) userObject).get("company"), email);
 
         // Check if email has been provided and if invitation has been assigned to a user with email as username
         DocumentModel userDoc = null;
-        String mail = (String) ((Map) userObject).get("email");
         String userName = userInfo.getUserName();
-        if (mail != null && !mail.isEmpty()) {
-            userDoc = findUser(mail);
+        if (email != null && !email.isEmpty()) {
+            userDoc = findUser(email);
         }
-        if (userDoc != null) {
-            // Update target document ACLs;
-            DocumentModelList targetDocs = getTargetDocuments(mail);
-            for (DocumentModel targetDoc : targetDocs) {
-                for (ACL acl : targetDoc.getACP().getACLs()) {
-                    for (ACE oldACE : acl.getACEs()) {
-                        if (oldACE.getUsername().equals(mail)) {
-                            ACE newACE = ACE.builder(userName, oldACE.getPermission())
-                                            .creator(oldACE.getCreator())
-                                            .begin(oldACE.getBegin())
-                                            .end(oldACE.getEnd())
-                                            .build();
-                            new UnrestrictedSessionRunner(getTargetRepositoryName()) {
-                                @Override
-                                public void run() {
-                                    session.replaceACE(targetDoc.getRef(), acl.getName(), oldACE, newACE);
-                                }
-                            }.runUnrestricted();
-                        }
-                    }
-                }
-            }
+        if (userDoc != null && userName != null) {
+            updateACP(userName, email, userDoc);
         } else {
             userDoc = findUser(userInfo.getUserName());
         }
-
         if (userDoc == null) {
             userDoc = createUser(userInfo);
         }
@@ -114,6 +96,50 @@ public class ShibbolethUserMapper implements UserMapper {
 
         String userId = (String) userDoc.getPropertyValue(userManager.getUserIdField());
         return userManager.getPrincipal(userId);
+    }
+
+    protected void updateACP(String userName, String email, DocumentModel userDoc) {
+        new UnrestrictedSessionRunner(getTargetRepositoryName()) {
+            @Override
+            public void run() {
+                userManager.deleteUser(userDoc);
+                userDoc.setPropertyValue("user:username",userName);
+                userManager.createUser(userDoc);
+                // Fetching the registrations
+                UserInvitationService userInvitationService = Framework.getLocalService(UserRegistrationService.class);
+                DocumentModelList registrationDocuments = new DocumentModelListImpl();
+                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND "
+                        + "ecm:mixinType = '"
+                        + userInvitationService.getConfiguration(DEFAULT_REGISTRATION).getRequestDocType() + "' AND "
+                        + userInvitationService.getConfiguration(DEFAULT_REGISTRATION).getUserInfoUsernameField()
+                        + " = '%s' AND ecm:isCheckedInVersion = 0";
+                query = String.format(query, email);
+                registrationDocuments.addAll(session.query(query));
+                Map<String, DocumentModel> targetDocuments = new HashMap<>();
+                // Fetching the target documents
+                for (DocumentModel doc : registrationDocuments) {
+                    String docId = (String) doc.getPropertyValue("docinfo:documentId");
+                    if (docId != null && !targetDocuments.keySet().contains(docId))
+                        targetDocuments.put(docId, session.getDocument(new IdRef(docId)));
+                }
+                // Update target document ACLs;
+                List<DocumentModel> targetDocs = new ArrayList<>(targetDocuments.values());
+                for (DocumentModel targetDoc : targetDocs) {
+                    for (ACL acl : targetDoc.getACP().getACLs()) {
+                        for (ACE oldACE : acl.getACEs()) {
+                            if (oldACE.getUsername().equals(email)) {
+                                ACE newACE = ACE.builder(userName, oldACE.getPermission())
+                                                .creator(oldACE.getCreator())
+                                                .begin(oldACE.getBegin())
+                                                .end(oldACE.getEnd())
+                                                .build();
+                                session.replaceACE(targetDoc.getRef(), acl.getName(), oldACE, newACE);
+                            }
+                        }
+                    }
+                }
+            }
+        }.runUnrestricted();
     }
 
     protected DocumentModel createUser(ShibbolethUserInfo userInfo) {
@@ -129,24 +155,6 @@ public class ShibbolethUserMapper implements UserMapper {
             throw new RuntimeException(message);
         }
         return userDoc;
-    }
-
-    protected DocumentModelList getTargetDocuments(String userId) {
-        UserInvitationService userInvitationService = Framework.getLocalService(UserRegistrationService.class);
-        final DocumentModelList registrationDocs = new DocumentModelListImpl();
-        new UnrestrictedSessionRunner(getTargetRepositoryName()) {
-            @Override
-            public void run() {
-                String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND "
-                        + "ecm:mixinType = '"
-                        + userInvitationService.getConfiguration(DEFAULT_REGISTRATION).getRequestDocType() + "' AND "
-                        + userInvitationService.getConfiguration(DEFAULT_REGISTRATION).getUserInfoUsernameField()
-                        + " = '%s' AND ecm:isCheckedInVersion = 0";
-                query = String.format(query, userId);
-                registrationDocs.addAll(session.query(query));
-            }
-        }.runUnrestricted();
-        return registrationDocs;
     }
 
     @Override
@@ -168,8 +176,7 @@ public class ShibbolethUserMapper implements UserMapper {
     }
 
     private DocumentModel updateUser(DocumentModel userDoc, ShibbolethUserInfo userInfo) {
-        userDoc.setPropertyValue(userManager.getUserIdField(), userInfo.getUserName());
-        userDoc.setPropertyValue(userManager.getUserEmailField(), userInfo.getUserName());
+        userDoc.setPropertyValue(userManager.getUserEmailField(), userInfo.getEmail());
         userDoc.setProperty(userSchemaName, "firstName", userInfo.getFirstName());
         userDoc.setProperty(userSchemaName, "lastName", userInfo.getLastName());
         userDoc.setProperty(userSchemaName, "password", userInfo.getPassword());
