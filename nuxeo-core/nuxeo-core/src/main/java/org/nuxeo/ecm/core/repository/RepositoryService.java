@@ -92,16 +92,6 @@ public class RepositoryService extends DefaultComponent {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         boolean started = false;
         boolean ok = false;
-        { // open repositories without a tx active
-            Transaction tx = TransactionHelper.suspendTransaction();
-            try {
-                for (String name : repositoryManager.getRepositoryNames()) {
-                    openRepository(name);
-                }
-            } finally {
-                TransactionHelper.resumeTransaction(tx);
-            }
-        }
         // initialize repositories with a tx active
         try {
             started = !TransactionHelper.isTransactionActive()

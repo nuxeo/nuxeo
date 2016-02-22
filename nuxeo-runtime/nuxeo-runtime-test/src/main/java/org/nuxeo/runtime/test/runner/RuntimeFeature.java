@@ -47,6 +47,7 @@ import com.google.inject.Binder;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
+@Deploy("org.nuxeo.runtime.jtajca")
 public class RuntimeFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(RuntimeFeature.class);
