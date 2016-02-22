@@ -609,7 +609,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             Work work = WorkHolder.getWork(r);
             if (started == false || shutdownInProgress == true) {
                 work.setWorkInstanceState(State.SCHEDULED);
-                submit(r);
+                submit(work);
                 return;
             }
             work.setWorkInstanceState(State.RUNNING);

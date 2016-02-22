@@ -36,7 +36,7 @@ public class TestRedisWorkShutdown {
 
     static Log log = LogFactory.getLog(TestRedisWorkShutdown.class);
 
-    static CountDownLatch done = new CountDownLatch(2);
+    static CountDownLatch canShutdown = new CountDownLatch(2);
 
     static CountDownLatch canProceed = new CountDownLatch(1);
 
@@ -57,13 +57,12 @@ public class TestRedisWorkShutdown {
         public void work() {
             try {
                 log.debug(id + " waiting for shutdown");
+                canShutdown.countDown();
                 canProceed.await(1, TimeUnit.MINUTES);
                 Assert.assertThat(isSuspending(), Matchers.is(true));
             } catch (InterruptedException cause) {
                 Thread.currentThread()
                         .interrupt();
-            } finally {
-                done.countDown();
             }
         }
 
@@ -84,11 +83,11 @@ public class TestRedisWorkShutdown {
         try {
             works.schedule(new MyWork("first"));
             works.schedule(new MyWork("second"));
+            canShutdown.await();
             works.shutdown(0, TimeUnit.SECONDS);
         } finally {
             canProceed.countDown();
         }
-        Assert.assertThat(done.await(10, TimeUnit.SECONDS), Matchers.is(true));
         List<Work> scheduled = new ScheduledRetriever().listScheduled();
         Assert.assertThat(scheduled.size(), Matchers.is(2));
     }
@@ -107,7 +106,7 @@ public class TestRedisWorkShutdown {
         }
 
         byte[] queueBytes() {
-            return keyBytes("sched:default");
+            return keyBytes("queue:default");
         }
 
         byte[] dataKey() {
@@ -119,7 +118,7 @@ public class TestRedisWorkShutdown {
                     .execute(new RedisCallable<List<Work>>() {
                         @Override
                         public List<Work> call(Jedis jedis) {
-                            Set<byte[]> keys = jedis.smembers(queueBytes());
+                            List<byte[]> keys = jedis.lrange(queueBytes(), 0, -1);
                             List<Work> list = new ArrayList<Work>(keys.size());
                             for (byte[] workIdBytes : keys) {
                                 // get data
