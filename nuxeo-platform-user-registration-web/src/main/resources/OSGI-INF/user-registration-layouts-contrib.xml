@@ -59,6 +59,14 @@
           <widget>user_request_lastName</widget>
         </column>
 
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">userinfo:groups</property>
+          </properties>
+          <widget>user_request_groups</widget>
+        </column>
+
         <column name="creation_date">
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
@@ -335,6 +343,18 @@
       </labels>
       <fields>
         <field>data.userinfo.lastName</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_groups" type="multipleUsersSuggestion">
+      <labels>
+        <label mode="any">label.userinfo.groups</label>
+      </labels>
+      <fields>
+        <field>data.userinfo.groups</field>
       </fields>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
