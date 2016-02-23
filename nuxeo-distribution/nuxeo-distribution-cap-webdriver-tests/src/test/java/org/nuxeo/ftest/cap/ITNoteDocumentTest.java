@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,15 @@ import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.NoteSummaryTabSubPage;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_URL;
 
+import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
 import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
 import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 
@@ -137,6 +140,37 @@ public class ITNoteDocumentTest extends AbstractTest {
         String expectedText = String.format("%s%s", CONTENT_NOTE_EDITED, CONTENT_NOTE);
         NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
         assertEquals(expectedText, noteSummaryPage.getTextBlockContentText().replace("\n", ""));
+
+        logout();
+    }
+
+    /**
+     * Tests canceling note creation with a safe edit prompt.
+     *
+     * @since 8.2
+     * @throws Exception
+     */
+    @Test
+    public void testCancelNote() throws Exception {
+        login();
+        open(TEST_WORKSPACE_URL);
+
+        // fill the node creation form but do not submit it
+        NoteCreationFormPage page = asPage(DocumentBasePage.class).getContentTab().getDocumentCreatePage(
+            NOTE_TYPE, NoteCreationFormPage.class).fillCreateNoteForm(NOTE_TITLE, NOTE_DESCRIPTION,
+            true, CONTENT_NOTE);
+
+        // go back to the parent folder
+        WebElement breadcrumb = driver.findElement(By.xpath("//form[@id='breadcrumbForm']"))
+                                        .findElement(By.linkText(TEST_WORKSPACE_TITLE));
+        assertTrue(breadcrumb.isDisplayed());
+        breadcrumb.click();
+        Alert alert = driver.switchTo().alert();
+        assertEquals("This page is asking you to confirm that you want to leave - data you have entered may not be saved.", alert.getText());
+        alert.accept();
+
+        // test the result
+        asPage(DocumentBasePage.class).checkDocTitle(TEST_WORKSPACE_TITLE);
 
         logout();
     }
