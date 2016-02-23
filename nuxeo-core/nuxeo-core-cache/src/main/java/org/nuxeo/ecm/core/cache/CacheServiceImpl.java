@@ -71,7 +71,7 @@ public class CacheServiceImpl extends DefaultComponent implements CacheService {
             for (CacheDescriptor desc : descriptors.values()) {
                 cacheRegistry.contributionRemoved(desc.name, desc);
                 if (!autoregisteredCacheNames.remove(desc.name)) {
-                    log.warn("Unregistery leaked contribution xx " + desc.name);
+                    log.warn("Unregistery leaked contribution " + desc.name);
                 }
             }
         }

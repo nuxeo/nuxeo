@@ -40,7 +40,6 @@ public class CacheReloadListener implements EventListener {
         if (!ReloadEventNames.FLUSH_EVENT_ID.equals(event.getId())) {
             return;
         }
-        log.warn("handleEvent = " + event.getId());
         CacheRegistry registry = Framework.getService(CacheRegistry.class);
         registry.start();
     }
