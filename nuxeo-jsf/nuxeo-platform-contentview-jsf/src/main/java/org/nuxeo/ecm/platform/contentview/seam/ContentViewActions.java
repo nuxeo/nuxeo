@@ -142,13 +142,6 @@ public class ContentViewActions implements Serializable {
             return items;
         }
         List<Long> values = new ArrayList<Long>();
-        if (cv.getUseGlobalPageSize()) {
-            // add the global page size if not present
-            Long globalSize = getGlobalPageSize();
-            if (globalSize != null && globalSize > 0 && !values.contains(globalSize)) {
-                values.add(globalSize);
-            }
-        }
         long maxPageSize = 0;
         PageProvider<?> pp = cv.getCurrentPageProvider();
         if (pp != null) {
@@ -159,6 +152,13 @@ public class ContentViewActions implements Serializable {
                 values.addAll(options);
             }
             maxPageSize = pp.getMaxPageSize();
+        }
+        if (cv.getUseGlobalPageSize()) {
+            // add the global page size if not present
+            Long globalSize = getGlobalPageSize();
+            if (globalSize != null && globalSize > 0 && !values.contains(globalSize)) {
+                values.add(globalSize);
+            }
         }
         Collections.sort(values);
         for (Long value : values) {
