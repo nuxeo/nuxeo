@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package org.nuxeo.functionaltests.pages.forms;
 
 import org.nuxeo.functionaltests.forms.RichEditorElement;
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
 import org.openqa.selenium.WebDriver;
 
@@ -38,6 +39,13 @@ public class NoteCreationFormPage extends DublinCoreCreationDocumentFormPage {
 
     public NoteDocumentBasePage createNoteDocument(String title, String description, boolean defineNote,
             String noteContent) {
+        fillCreateNoteForm(title, description, defineNote, noteContent);
+        create();
+        return asPage(NoteDocumentBasePage.class);
+    }
+
+    public NoteCreationFormPage fillCreateNoteForm(String title, String description, boolean defineNote,
+        String noteContent) {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
 
@@ -46,7 +54,6 @@ public class NoteCreationFormPage extends DublinCoreCreationDocumentFormPage {
             editor.setInputValue(noteContent);
         }
 
-        create();
-        return asPage(NoteDocumentBasePage.class);
+        return this;
     }
 }
