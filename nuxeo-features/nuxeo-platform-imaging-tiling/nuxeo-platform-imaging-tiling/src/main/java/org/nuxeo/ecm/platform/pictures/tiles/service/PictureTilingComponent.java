@@ -245,7 +245,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
             }
 
             if (needToConvert(blob)) {
-                inputFilePath = inputFilePath.replaceFirst("\\..*", ".jpg");
+                inputFilePath = FilenameUtils.removeExtension(inputFilePath) + ".jpg";
             }
 
             File inputFile = new File(inputFilePath);
