@@ -511,15 +511,28 @@ public class RelationService extends DefaultComponent implements RelationManager
             TransactionHelper.resumeTransaction(tx);
         }
 
-
         // init non jena Graph inside a Tx
-        for (String graphName : graphDescriptions.keySet()) {
-            GraphDescription desc = graphDescriptions.get(graphName);
-            if (!desc.getGraphType()
-                    .equalsIgnoreCase("jena")) {
-                log.info("create RDF Graph " + graphName);
-                Graph graph = getGraphByName(graphName);
-                graph.size();
+        if (tx == null) {
+            TransactionHelper.startTransaction();
+        }
+        boolean txErrors = true;
+        try {
+            for (String graphName : graphDescriptions.keySet()) {
+                GraphDescription desc = graphDescriptions.get(graphName);
+                if (!desc.getGraphType()
+                        .equalsIgnoreCase("jena")) {
+                    log.info("create RDF Graph " + graphName);
+                    Graph graph = getGraphByName(graphName);
+                    graph.size();
+                }
+            }
+            txErrors = false;
+        } finally {
+            if (txErrors) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+            if (tx == null) {
+                TransactionHelper.commitOrRollbackTransaction();
             }
         }
     }
