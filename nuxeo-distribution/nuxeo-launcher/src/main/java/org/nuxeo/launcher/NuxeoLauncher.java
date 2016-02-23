@@ -257,6 +257,8 @@ public abstract class NuxeoLauncher {
      */
     protected static final String OPTION_SET = "set";
 
+    private static final String OPTION_SET_ARG_NAME = "template";
+
     private static final String OPTION_SET_DESC = String.format(
             "Set the value for a given key.\n"
                     + "The value is stored in {{%s}} by default unless a template name is provided; if so, it is then stored in the template's {{%s}} file.\n"
@@ -486,9 +488,10 @@ public abstract class NuxeoLauncher {
             + "\"status\", \"showconf\", \"mp-show\", \"mp-set\", \"config\", \"encrypt\", \"decrypt\", \"help\".\n"
             + "\nThe following commands cannot be executed on a running server: \"pack\", \"mp-init\", \"mp-purge\", "
             + "\"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", \"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", "
-            + "\"mp-reset\".";
+            + "\"mp-reset\".\n"
+            + "\nCommand parameters may need to be prefixed with '--' to separate them from option arguments when confusion arises.";
 
-    private static final String OPTION_HELP_USAGE = "        nuxeoctl <command> [command parameters] [options]\n\n";
+    private static final String OPTION_HELP_USAGE = "        nuxeoctl <command> [options] [--] [command parameters]\n\n";
 
     private static final String OPTION_HELP_HEADER = "SYNOPSIS\n"
             + "        nuxeoctl encrypt [--encrypt <algorithm>] [<clearValue>..] [-d [<categories>]|-q]\n"
@@ -496,7 +499,7 @@ public abstract class NuxeoLauncher {
             + "                If <clearValue> is not provided, it is read from stdin.\n\n"
             + "        nuxeoctl decrypt '<cryptedValue>'.. [-d [<categories>]|-q]\n" //
             + "                Output decrypted value for <cryptedValue>. The secret key is read from stdin.\n\n"
-            + "        nuxeoctl config [--encrypt [<algorithm>]] [--set [<template>]] [<key> <value>].. <key> [<value>] [-d [<categories>]|-q]\n"
+            + "        nuxeoctl config [<key> <value>].. <key> [<value>] [--encrypt [<algorithm>]] [--set [<template>]] [-d [<categories>]|-q]\n"
             + "                Set template or global parameters.\n"
             + "                If <value> is not provided and the --set 'option' is used, then the value is read from stdin.\n\n"
             + "        nuxeoctl config [--get] <key>.. [-d [<categories>]|-q]\n"
@@ -581,7 +584,7 @@ public abstract class NuxeoLauncher {
 
     private ConnectBroker connectBroker = null;
 
-    private CommandLine cmdLine;
+    CommandLine cmdLine;
 
     private boolean ignoreMissing = false;
 
@@ -1032,7 +1035,13 @@ public abstract class NuxeoLauncher {
             { // Config options (mutually exclusive)
                 OptionGroup configOptions = new OptionGroup();
                 // Set option
-                configOptions.addOption(Option.builder().longOpt(OPTION_SET).desc(OPTION_SET_DESC).build());
+                configOptions.addOption(Option.builder()
+                                              .longOpt(OPTION_SET)
+                                              .desc(OPTION_SET_DESC)
+                                              .hasArg()
+                                              .argName(OPTION_SET_ARG_NAME)
+                                              .optionalArg(true)
+                                              .build());
                 configOptions.addOption(Option.builder().longOpt(OPTION_GET).desc(OPTION_GET_DESC).build());
                 configOptions.addOption(Option.builder()
                                               .longOpt(OPTION_GET_REGEXP)
