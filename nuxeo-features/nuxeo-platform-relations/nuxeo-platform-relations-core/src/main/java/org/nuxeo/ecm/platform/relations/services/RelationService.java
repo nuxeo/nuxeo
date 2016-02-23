@@ -548,18 +548,32 @@ public class RelationService extends DefaultComponent implements
         }
 
         // init non jena Graph inside a Tx
-        for (String graphName : graphDescriptions.keySet()) {
-            GraphDescription desc = graphDescriptions.get(graphName);
-            if (!desc.getGraphType()
-                    .equalsIgnoreCase("jena")) {
-                log.info("create RDF Graph " + graphName);
-                try {
-                    Graph graph = getGraphByName(graphName);
-                    graph.size();
-                } catch (ClientException e) {
-                    log.error("Error while initializing graph "
-                            + graphName, e);
+        if (tx == null) {
+            TransactionHelper.startTransaction();
+        }
+        boolean txErrors = true;
+        try {
+            for (String graphName : graphDescriptions.keySet()) {
+                GraphDescription desc = graphDescriptions.get(graphName);
+                if (!desc.getGraphType()
+                        .equalsIgnoreCase("jena")) {
+                    log.info("create RDF Graph " + graphName);
+                    try {
+                        Graph graph = getGraphByName(graphName);
+                        graph.size();
+                    } catch (ClientException e) {
+                        log.error("Error while initializing graph "
+                                + graphName, e);
+                    }
                 }
+            }
+            txErrors = false;
+        } finally {
+            if (txErrors) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+            if (tx == null) {
+                TransactionHelper.commitOrRollbackTransaction();
             }
         }
     }
