@@ -16,16 +16,15 @@
  */
 package org.nuxeo.launcher;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -175,6 +174,72 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
                         + clidLines.get(1), "expected clid");
         assertEquals("Not the right instance.clid file: ",
                 expectedClid.getCLID(), info.clid);
+    }
+
+    /**
+     * NXP-19071: avoid confusion with the command parameters when passing an argument to an option, or when calling
+     * without argument an option which accepts optional arguments.
+     *
+     * @throws Exception
+     * @since 8.2
+     */
+    @Test
+    public void testParamSeparator() throws Exception {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        NuxeoLauncher launcher;
+        // failing syntax: "value1" is parsed as an argument to "--encrypt" option
+        launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "value1", "value2" });
+        assertTrue(launcher.commandIs("encrypt"));
+        assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_ENCRYPT));
+        assertEquals("value1", launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_ENCRYPT));
+        assertArrayEquals(new String[] { "value2" }, launcher.params);
+        try {
+            launcher.encrypt();
+            fail("Expected 'java.security.NoSuchAlgorithmException: Cannot find any provider supporting value1'");
+        } catch (NoSuchAlgorithmException e) {
+            assertEquals("Cannot find any provider supporting value1", e.getMessage());
+        }
+
+        // working syntax: "value1" is a parsed as a parameter to "encrypt" command
+        // 1) option without argument placed at the end
+        launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "value1", "value2", "--encrypt" });
+        checkParsing(launcher);
+        // 2) option with an argument
+        launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "AES/ECB/PKCS5Padding",
+                "value1", "value2" });
+        checkParsing(launcher);
+        // 3) option without argument separated with "--"
+        launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "--", "value1", "value2" });
+        checkParsing(launcher);
+
+        // Check specific case of the "--set" option
+        launcher = NuxeoLauncher.createLauncher(new String[] { "config", "--set", "someTemplate", "someKey" });
+        assertTrue(launcher.commandIs("config"));
+        assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_SET));
+        assertEquals("someTemplate", launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_SET));
+        assertArrayEquals(new String[] { "someKey" }, launcher.params);
+
+        launcher = NuxeoLauncher.createLauncher(new String[] { "config", "--set", "--", "someKey" });
+        assertTrue(launcher.commandIs("config"));
+        assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_SET));
+        assertEquals(null, launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_SET));
+        assertArrayEquals(new String[] { "someKey" }, launcher.params);
+
+        launcher = NuxeoLauncher.createLauncher(new String[] { "config", "someKey", "--set" });
+        assertTrue(launcher.commandIs("config"));
+        assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_SET));
+        assertEquals(null, launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_SET));
+        assertArrayEquals(new String[] { "someKey" }, launcher.params);
+    }
+
+    private void checkParsing(NuxeoLauncher launcher) throws ConfigurationException, GeneralSecurityException {
+        assertTrue(launcher.commandIs("encrypt"));
+        assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_ENCRYPT));
+        assertEquals("AES/ECB/PKCS5Padding",
+                launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_ENCRYPT, "AES/ECB/PKCS5Padding"));
+        assertArrayEquals(new String[] { "value1", "value2" }, launcher.params);
+        launcher.encrypt();
     }
 
     @Override
