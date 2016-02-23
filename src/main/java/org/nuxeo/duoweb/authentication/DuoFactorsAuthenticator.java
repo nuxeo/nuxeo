@@ -50,6 +50,8 @@ import org.nuxeo.runtime.api.Framework;
 import com.duosecurity.DuoWeb;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.START_PAGE_SAVE_KEY;
 
 /**
  * Authentication filter handles two factors authentication via Duo
@@ -103,6 +105,9 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         HttpSession session = httpRequest.getSession(false);
         if (session == null || session.getAttribute(ONE_FACTOR_CHECK) == null
                 || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
+            if (session != null)
+                session.setAttribute(START_PAGE_SAVE_KEY, getRequestedUrl
+                        (httpRequest));
             super.handleLoginPrompt(httpRequest, httpResponse, baseURL);
             return Boolean.TRUE;
         } else if ((Boolean) session.getAttribute(ONE_FACTOR_CHECK)
@@ -123,6 +128,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
                 String key = Integer.toHexString(userIdent.hashCode());
                 credentials.put(key, userIdent);
                 parameters.put(POST_ACTION, postUrl + "?" + HASHCODE + "=" + key);
+                parameters.put(REQUESTED_URL, httpRequest.getParameter(REQUESTED_URL));
                 redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl, parameters);
                 httpResponse.sendRedirect(redirectUrl);
             } catch (IOException e) {
@@ -273,4 +279,19 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         }
     }
 
+    protected String getRequestedUrl(HttpServletRequest httpRequest) {
+        String completeURI = httpRequest.getRequestURI();
+        String qs = httpRequest.getQueryString();
+        String context = httpRequest.getContextPath() + '/';
+        String requestPage = completeURI.substring(context.length());
+        if (qs != null && qs.length() > 0) {
+            // remove conversationId if present
+            if (qs.contains("conversationId")) {
+                qs = qs.replace("conversationId", "old_conversationId");
+            }
+            requestPage = requestPage + '?' + qs;
+        }
+        return requestPage;
+    }
 }
+
