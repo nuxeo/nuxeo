@@ -17,24 +17,10 @@
 
 package org.nuxeo.duoweb.authentication;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.WeakHashMap;
 import com.duosecurity.DuoWeb;
-import javax.security.auth.login.LoginException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.login.LoginPlugin;
@@ -57,6 +43,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.WeakHashMap;
+
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants
+        .START_PAGE_SAVE_KEY;
 
 
 /**
@@ -101,6 +92,9 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         HttpSession session = httpRequest.getSession(false);
         if (session == null || session.getAttribute(ONE_FACTOR_CHECK) == null
                 || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
+            if (session != null)
+                session.setAttribute(START_PAGE_SAVE_KEY, getRequestedUrl
+                        (httpRequest));
             super.handleLoginPrompt(httpRequest, httpResponse, baseURL);
             return Boolean.TRUE;
         } else if ((Boolean) session.getAttribute(ONE_FACTOR_CHECK)
@@ -118,6 +112,8 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
                 parameters.put(SIG_REQUEST, request_sig);
                 parameters.put(HOST_REQUEST, HOST);
                 parameters.put(POST_ACTION, postUrl);
+                // Handle callback context
+                parameters.put(REQUESTED_URL, httpRequest.getParameter(REQUESTED_URL));
                 redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl, parameters);
                 httpResponse.sendRedirect(redirectUrl);
             } catch (IOException e) {
@@ -270,4 +266,19 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         }
     }
 
+    protected String getRequestedUrl(HttpServletRequest httpRequest) {
+        String completeURI = httpRequest.getRequestURI();
+        String qs = httpRequest.getQueryString();
+        String context = httpRequest.getContextPath() + '/';
+        String requestPage = completeURI.substring(context.length());
+        if (qs != null && qs.length() > 0) {
+            // remove conversationId if present
+            if (qs.contains("conversationId")) {
+                qs = qs.replace("conversationId", "old_conversationId");
+            }
+            requestPage = requestPage + '?' + qs;
+        }
+        return requestPage;
+    }
 }
+
