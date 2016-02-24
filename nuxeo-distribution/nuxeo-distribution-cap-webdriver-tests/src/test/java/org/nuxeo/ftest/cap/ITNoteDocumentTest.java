@@ -25,6 +25,7 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.forms.RichEditorElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
@@ -151,27 +152,34 @@ public class ITNoteDocumentTest extends AbstractTest {
      * @throws Exception
      */
     @Test
-    public void testCancelNote() throws Exception {
-        login();
-        open(TEST_WORKSPACE_URL);
+    public void testCancelNote() throws UserNotConnectedException {
+        try {
+            login();
+            open(TEST_WORKSPACE_URL);
 
-        // fill the node creation form but do not submit it
-        NoteCreationFormPage page = asPage(DocumentBasePage.class).getContentTab().getDocumentCreatePage(
-            NOTE_TYPE, NoteCreationFormPage.class).fillCreateNoteForm(NOTE_TITLE, NOTE_DESCRIPTION,
-            true, CONTENT_NOTE);
+            // fill the node creation form but do not submit it
+            NoteCreationFormPage page = asPage(DocumentBasePage.class)
+                                                .getContentTab()
+                                                .getDocumentCreatePage(NOTE_TYPE, NoteCreationFormPage.class)
+                                                .fillCreateNoteForm(NOTE_TITLE, NOTE_DESCRIPTION, true, CONTENT_NOTE);
 
-        // go back to the parent folder
-        WebElement breadcrumb = driver.findElement(By.xpath("//form[@id='breadcrumbForm']"))
-                                        .findElement(By.linkText(TEST_WORKSPACE_TITLE));
-        assertTrue(breadcrumb.isDisplayed());
-        breadcrumb.click();
-        Alert alert = driver.switchTo().alert();
-        assertEquals("This page is asking you to confirm that you want to leave - data you have entered may not be saved.", alert.getText());
-        alert.accept();
+            // go back to the parent folder
+            WebElement breadcrumb = driver.findElement(By.xpath("//form[@id='breadcrumbForm']")).findElement(
+                    By.linkText(TEST_WORKSPACE_TITLE));
+            assertTrue(breadcrumb.isDisplayed());
+            breadcrumb.click();
+            Alert alert = driver.switchTo().alert();
+            assertEquals(
+                    "This page is asking you to confirm that you want to leave - data you have entered may not be saved.",
+                    alert.getText());
+            alert.accept();
 
-        // test the result
-        asPage(DocumentBasePage.class).checkDocTitle(TEST_WORKSPACE_TITLE);
+            // test the result
+            asPage(DocumentBasePage.class).checkDocTitle(TEST_WORKSPACE_TITLE);
+        } finally {
 
-        logout();
+            logout();
+        }
+
     }
 }
