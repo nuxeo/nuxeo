@@ -109,13 +109,17 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void reloadSeamComponents() {
         log.info("Reload Seam components");
-        triggerReload(RELOAD_SEAM_EVENT_ID);
+        Framework.getLocalService(EventService.class)
+                .sendEvent(new Event(RELOAD_TOPIC, RELOAD_SEAM_EVENT_ID, this, null));
     }
 
     @Override
     public void flush() {
         log.info("Flush caches");
-        triggerReloadWithNewTransaction(FLUSH_EVENT_ID);
+        Framework.getLocalService(EventService.class)
+                .sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this, null));
+        flushJaasCache();
+        setFlushedNow();
     }
 
     @Override
@@ -129,7 +133,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     @Override
     public void flushSeamComponents() {
         log.info("Flush Seam components");
-        triggerReload(FLUSH_SEAM_EVENT_ID);
+        Framework.getLocalService(EventService.class)
+                .sendEvent(new Event(RELOAD_TOPIC, FLUSH_SEAM_EVENT_ID, this, null));
+        setFlushedNow();
     }
 
     @Override
@@ -318,60 +324,52 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         return msg.toString();
     }
 
-    protected void triggerReload(String id) {
-        if (id.equals(RELOAD_SEAM_EVENT_ID)) {
-            log.info("about to send " + id);
-            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
-            return;
-        }
-        log.info("about to passivate for " + id);
-        Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "before-reload", this, null));
-        try {
-            ServicePassivator
-                    .proceed(Duration.ofSeconds(5), Duration.ofSeconds(30), true,
-                            () -> {
-                        log.info("about to send " + id);
-                        Framework.getLocalService(EventService.class)
-                                .sendEvent(new Event(RELOAD_TOPIC, id, this, null));
-                        if (id.startsWith(FLUSH_EVENT_ID)) {
-                            setFlushedNow();
-                        }
-                    })
-                    .onFailure(snapshot -> {
-                        throw new UnsupportedOperationException(
-                                "Detected access, should initiate a reboot " + snapshot.toString());
-                    });
-        } finally {
-            Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "after-reload", this, null));
-            log.info("returning from " + id);
-        }
-    }
 
     protected void triggerReloadWithNewTransaction(String id) {
         if (TransactionHelper.isTransactionMarkedRollback()) {
             throw new AssertionError("The calling transaction is marked rollback");
-        } else if (TransactionHelper.isTransactionActive()) { // should flush
-                                                              // the calling
-                                                              // transaction
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
         }
+        Transaction tx = TransactionHelper.suspendTransaction();
+        TransactionHelper.startTransaction();
         try {
             try {
-                triggerReload(id);
+                triggerReloadWithPassivate(id);
             } catch (RuntimeException cause) {
                 TransactionHelper.setTransactionRollbackOnly();
                 throw cause;
             }
         } finally {
-            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                boolean wasRollbacked = TransactionHelper.isTransactionMarkedRollback();
-                TransactionHelper.commitOrRollbackTransaction();
-                TransactionHelper.startTransaction();
+            boolean wasRollbacked = TransactionHelper.isTransactionMarkedRollback();
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.resumeTransaction(tx);
+            if (TransactionHelper.isTransactionActive()) {
                 if (wasRollbacked) {
                     TransactionHelper.setTransactionRollbackOnly();
                 }
+                TransactionHelper.commitOrRollbackTransaction(); // should flush
+                TransactionHelper.startTransaction();
             }
+        }
+    }
+
+    protected void triggerReloadWithPassivate(String id) {
+        log.info("about to passivate for " + id);
+        Framework.getLocalService(EventService.class)
+                .sendEvent(new Event(RELOAD_TOPIC, "before-reload", this, null));
+        try {
+            ServicePassivator.proceed(Duration.ofSeconds(5), Duration.ofSeconds(30), true, () -> {
+                log.info("about to send " + id);
+                Framework.getLocalService(EventService.class)
+                        .sendEvent(new Event(RELOAD_TOPIC, id, this, null));
+            })
+                    .onFailure(snapshot -> {
+                        throw new UnsupportedOperationException(
+                                "Detected access, should initiate a reboot " + snapshot.toString());
+                    });
+        } finally {
+            Framework.getLocalService(EventService.class)
+                    .sendEvent(new Event(RELOAD_TOPIC, "after-reload", this, null));
+            log.info("returning from " + id);
         }
     }
 }
