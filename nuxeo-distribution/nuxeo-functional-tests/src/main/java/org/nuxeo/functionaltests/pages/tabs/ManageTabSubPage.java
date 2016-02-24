@@ -34,6 +34,9 @@ public class ManageTabSubPage extends DocumentBasePage {
     @FindBy(xpath = "//a[contains(@id,'nxw_TAB_TRASH_CONTENT')]/span")
     WebElement trashLink;
 
+    @FindBy(xpath = "//a[contains(@id,'nxw_TAB_LOCAL_CONFIGURATION')]/span")
+    WebElement localConfigLink;
+
     public ManageTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -51,6 +54,14 @@ public class ManageTabSubPage extends DocumentBasePage {
     public TrashSubPage getTrashSubTab() {
         clickOnDocumentTabLink(trashLink);
         return asPage(TrashSubPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public LocalConfigSubPage getLocalConfigSubTabe() {
+        clickOnDocumentTabLink(localConfigLink);
+        return asPage(LocalConfigSubPage.class);
     }
 
 }
