@@ -39,6 +39,8 @@ public class TestConstants {
 
     public static final String TEST_FILE_TITLE = "file";
 
+    public static final String TEST_FOLDER_TITLE = "folder";
+
     public static final String TEST_FILE_PATH = TEST_WORKSPACE_PATH + TEST_FILE_TITLE;
 
     public static final String TEST_FILE_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_FILE_PATH);
