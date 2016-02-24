@@ -54,11 +54,11 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     /** Lister name or names. */
     protected String listenerName;
 
-    protected List<Event> reconnectedEvents;
+    protected transient List<Event> reconnectedEvents;
 
-    protected LoginContext loginCtx;
+    protected transient LoginContext loginCtx;
 
-    protected CoreSession reconnectedCoreSession;
+    protected transient CoreSession reconnectedCoreSession;
 
     private static final Log log = LogFactory.getLog(ReconnectedEventBundleImpl.class);
 
