@@ -133,6 +133,7 @@ public class TestRenditionPublication {
         testDoc.setProperty("dublincore", "title", "MyTestNoteDoc");
         testDoc.setProperty("dublincore", "description", "Simple note sample");
 
+        testDoc.setProperty("note", "mime_type", "text/html");
         testDoc.setProperty("note", "note", "<html><body><p> Simple <b> Note </b> with <i>text</i></body></html>");
 
         testDoc = session.createDocument(testDoc);

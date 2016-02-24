@@ -20,6 +20,7 @@ package org.nuxeo.template.processors;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -30,12 +31,13 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.ContentInputType;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
@@ -75,30 +77,9 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
             try {
                 if (param.isSourceValue()) {
                     if (param.getType() == InputType.Content) {
-
                         if (ContentInputType.HtmlPreview.getValue().equals(param.getSource())) {
-                            HtmlPreviewAdapter preview = templateBasedDocument.getAdaptedDoc().getAdapter(
-                                    HtmlPreviewAdapter.class);
-                            String htmlValue = "";
-                            if (preview != null) {
-                                List<Blob> blobs = preview.getFilePreviewBlobs();
-                                if (blobs.size() > 0) {
-                                    Blob htmlBlob = preview.getFilePreviewBlobs().get(0);
-                                    if (htmlBlob != null) {
-                                        htmlValue = htmlBlob.getString();
-                                    }
-                                }
-                            } else {
-                                BlobHolder bh = templateBasedDocument.getAdaptedDoc().getAdapter(BlobHolder.class);
-                                if (bh != null) {
-                                    Blob htmlBlob = bh.getBlob();
-                                    if (htmlBlob != null && htmlBlob.getMimeType() != null
-                                            && htmlBlob.getMimeType().startsWith("text/")) {
-                                        htmlValue = htmlBlob.getString();
-                                    }
-                                }
-                            }
-                            htmlValue = handleHtmlField(param.getName(), htmlValue);
+                            BlobHolder bh = templateBasedDocument.getAdaptedDoc().getAdapter(BlobHolder.class);
+                            String htmlValue = handleHtmlField(param.getName(), getHtmlValue(bh));
                             context.put(param.getName(), htmlValue);
                             continue;
                         } else if (ContentInputType.BlobContent.getValue().equals(param.getSource())) {
@@ -130,9 +111,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                     }
 
                     if (value != null) {
-                        if (param.getType() == InputType.Content) {
-
-                        } else {
+                        if (param.getType() != InputType.Content) {
                             if (Blob.class.isAssignableFrom(value.getClass())) {
                                 Blob blob = (Blob) value;
                                 if (param.getType() == InputType.PictureProperty) {
@@ -191,6 +170,29 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                 log.warn("Unable to handle binding for param " + param.getName(), e);
             }
         }
+    }
+
+    protected String getHtmlValue(BlobHolder bh) throws IOException {
+        if (bh == null) {
+            return "";
+        }
+
+        Blob blob = bh.getBlob();
+        if (blob != null && "text/html".equals(blob.getMimeType())) {
+            return blob.getString();
+        }
+
+        ConversionService conversion = Framework.getService(ConversionService.class);
+        BlobHolder htmlBh = conversion.convertToMimeType("text/html", bh, Collections.emptyMap());
+        if (htmlBh != null) {
+            return htmlBh.getBlob().getString();
+        }
+
+        if (blob != null && blob.getMimeType() != null && blob.getMimeType().startsWith("text/")) {
+            return blob.getString();
+        }
+
+        return "";
     }
 
 }
