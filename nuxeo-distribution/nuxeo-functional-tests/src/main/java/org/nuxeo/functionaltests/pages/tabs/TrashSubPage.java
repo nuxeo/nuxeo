@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
+ *     <a href="mailto:gbarata@nuxeo.com">Gabriel</a>
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -22,9 +23,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.contentView.ContentViewElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -39,6 +43,8 @@ public class TrashSubPage extends AbstractPage {
     protected static final String SELECT_ALL_BUTTON_ID = "document_trash_content:nxl_document_listing_table:listing_table_selection_box_with_current_document_header";
 
     protected static final String PERMANENT_DELETE_BUTTON_ID = "document_trash_content_buttons:nxw_CURRENT_SELECTION_DELETE_form:nxw_CURRENT_SELECTION_DELETE";
+
+    protected static final String RESTORE_BUTTON_ID = "document_trash_content_buttons:nxw_CURRENT_SELECTION_UNDELETE_form:nxw_CURRENT_SELECTION_UNDELETE";
 
     protected static final String EMPTY_TRASH_BUTTON_ID = "document_trash_content_buttons:nxw_CURRENT_SELECTION_EMPTY_TRASH_form:nxw_CURRENT_SELECTION_EMPTY_TRASH";
 
@@ -83,6 +89,65 @@ public class TrashSubPage extends AbstractPage {
         deleteSelectedDocuments();
 
         return asPage(TrashSubPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public TrashSubPage goToDocument(final int index) {
+        getChildDocumentRows().get(index).findElement(By.xpath("td[3]/div/a[1]")).click();
+        return asPage(TrashSubPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public TrashSubPage goToDocument(String documentTitle) {
+        getElement().clickOnItemTitle(documentTitle);
+        return asPage(TrashSubPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public TrashSubPage selectByTitle(String... titles) {
+        getElement().checkByTitle(titles);
+        return asPage(TrashSubPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public DocumentBasePage restoreDocument(String... titles) {
+        getElement().checkByTitle(titles);
+        restoreSelectedDocuments();
+        return asPage(DocumentBasePage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public TrashSubPage purgeDocument(String... titles) {
+        getElement().checkByTitle(titles);
+        deleteSelectedDocuments();
+        return asPage(TrashSubPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    protected ContentViewElement getElement() {
+        return AbstractTest.getWebFragment(By.id("cv_document_trash_content_0_panel"), ContentViewElement.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    protected void restoreSelectedDocuments() {
+        findElementWaitUntilEnabledAndClick(By.id(RESTORE_BUTTON_ID));
+        Alert alert = driver.switchTo().alert();
+        assertEquals("Undelete selected document(s)?", alert.getText());
+        alert.accept();
     }
 
     protected void deleteSelectedDocuments() {
