@@ -24,16 +24,18 @@ package org.nuxeo.runtime.reload;
  */
 public class ReloadEventNames {
 
-    public static final String FLUSH_EVENT_ID = "flush";
+    public static final String FLUSH_EVENT_ID = ReloadService.FLUSH_EVENT_ID;
 
-    public static final String FLUSH_SEAM_EVENT_ID = "flushSeamComponents";
+    public static final String FLUSH_SEAM_EVENT_ID = ReloadService.FLUSH_SEAM_EVENT_ID;
 
-    public static final String BEFORE_RELOAD_EVENT_ID = "before-reload";
+    public static final String BEFORE_RELOAD_EVENT_ID = ReloadService.BEFORE_RELOAD_EVENT_ID;
 
-    public static final String AFTER_RELOAD_EVENT_ID = "after-reload";
+    public static final String AFTER_RELOAD_EVENT_ID = ReloadService.AFTER_RELOAD_EVENT_ID;
 
-    public static final String RELOAD_EVENT_ID = "reload";
+    public static final String RELOAD_EVENT_ID = ReloadService.RELOAD_EVENT_ID;
 
-    public static final String RELOAD_SEAM_EVENT_ID = "reloadSeamComponents";
+    public static final String RELOAD_SEAM_EVENT_ID = ReloadService.RELOAD_SEAM_EVENT_ID;
+
+    public static final String RELOAD_REPOSITORIES_ID = ReloadService.RELOAD_REPOSITORIES_ID;
 
 }

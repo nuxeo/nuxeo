@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.jar.Manifest;
 
+import javax.transaction.Transaction;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
@@ -86,8 +88,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 			log.debug("Starting reload");
 		}
 		reloadProperties();
-		EventService eventService = Framework.getLocalService(EventService.class);
-		eventService.sendEvent(new Event(RELOAD_TOPIC, RELOAD_EVENT_ID, this, null));
+		triggerReloadWithNewTransaction(RELOAD_EVENT_ID);
 		if (log.isDebugEnabled()) {
 			log.debug("Reload done");
 		}
@@ -102,8 +103,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 	@Override
 	public void reloadRepository() throws Exception {
 		log.info("Reload repository");
-		Framework.getLocalService(EventService.class)
-				.sendEvent(new Event(RELOAD_TOPIC, RELOAD_REPOSITORIES_ID, this, null));
+		triggerReloadWithNewTransaction(RELOAD_REPOSITORIES_ID);
 	}
 
 	@Override
@@ -118,9 +118,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 		if (log.isDebugEnabled()) {
 			log.debug("Starting flush");
 		}
+		Framework.getLocalService(EventService.class)
+			.sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this, null));
 		flushJaasCache();
-		EventService eventService = Framework.getLocalService(EventService.class);
-		eventService.sendEvent(new Event(RELOAD_TOPIC, FLUSH_EVENT_ID, this, null));
 		setFlushedNow();
 		if (log.isDebugEnabled()) {
 			log.debug("Flush done");
@@ -325,13 +325,36 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 		runtime.getStatusMessage(msg);
 		return msg.toString();
 	}
-
-	protected void triggerReload(final String id) {
-		if (id.equals(RELOAD_SEAM_EVENT_ID)) {
-			log.info("about to send " + id);
-			Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, id, this, null));
-			return;
+	
+	
+	protected void triggerReloadWithNewTransaction(String id) {
+		if (TransactionHelper.isTransactionMarkedRollback()) {
+			throw new AssertionError("The calling transaction is marked rollback");
 		}
+		Transaction tx = TransactionHelper.suspendTransaction();
+		TransactionHelper.startTransaction();
+		try {
+			try {
+				triggerReloadWithPassivate(id);
+			} catch (RuntimeException cause) {
+				TransactionHelper.setTransactionRollbackOnly();
+				throw cause;
+			}
+		} finally {
+			boolean wasRollbacked = TransactionHelper.isTransactionMarkedRollback();
+			TransactionHelper.commitOrRollbackTransaction();
+			TransactionHelper.resumeTransaction(tx);
+			if (TransactionHelper.isTransactionActive()) {
+				if (wasRollbacked) {
+					TransactionHelper.setTransactionRollbackOnly();
+				}
+				TransactionHelper.commitOrRollbackTransaction(); // should flush
+				TransactionHelper.startTransaction();
+			}
+		}
+	}
+
+	protected void triggerReloadWithPassivate(final String id) {
 		log.info("about to passivate for " + id);
 		Framework.getLocalService(EventService.class).sendEvent(new Event(RELOAD_TOPIC, "before-reload", this, null));
 		try {
@@ -351,39 +374,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
 							"Detected access, should initiate a reboot " + snapshot.toString());
 				}
 			});
-
 		} finally {
 			Framework.getLocalService(EventService.class)
 					.sendEvent(new Event(RELOAD_TOPIC, "after-reload", this, null));
 			log.info("returning from " + id);
 		}
 	}
-
-	protected void triggerReloadWithNewTransaction(String id) {
-		if (TransactionHelper.isTransactionMarkedRollback()) {
-			throw new AssertionError("The calling transaction is marked rollback");
-		} else if (TransactionHelper.isTransactionActive()) { // should flush
-																// the calling
-																// transaction
-			TransactionHelper.commitOrRollbackTransaction();
-			TransactionHelper.startTransaction();
-		}
-		try {
-			try {
-				triggerReload(id);
-			} catch (RuntimeException cause) {
-				TransactionHelper.setTransactionRollbackOnly();
-				throw cause;
-			}
-		} finally {
-			if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-				boolean wasRollbacked = TransactionHelper.isTransactionMarkedRollback();
-				TransactionHelper.commitOrRollbackTransaction();
-				TransactionHelper.startTransaction();
-				if (wasRollbacked) {
-					TransactionHelper.setTransactionRollbackOnly();
-				}
-			}
-		}
-	}
+	
 }
