@@ -31,6 +31,7 @@ import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartFormRequestReader;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartRequestReader;
 import org.nuxeo.ecm.automation.server.AutomationServer;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -74,6 +75,8 @@ public class AutomationModule extends WebEngineModule {
         }
 
         result.add(new JsonFactoryProvider());
+        // nuxeo-core-io MarshallerRegistry service reading and writing
+        result.add(new JsonCoreIODelegate());
         return result;
     }
 

@@ -26,7 +26,9 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.ENTITY_FIELD_N
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
@@ -70,7 +72,9 @@ public abstract class ExtensibleEntityJsonWriter<EntityType> extends AbstractJso
     @Override
     public void write(EntityType entity, JsonGenerator jg) throws IOException {
         jg.writeStartObject();
-        ctx.setParameterValues(RenderingContext.RESPONSE_HEADER_ENTITY_TYPE_KEY, this.entityType);
+        List<Object> entityList = new ArrayList<>();
+        entityList.add(this.entityType);
+        ctx.addParameterListValues(RenderingContext.RESPONSE_HEADER_ENTITY_TYPE_KEY, entityList);
         jg.writeStringField(ENTITY_FIELD_NAME, entityType);
         writeEntityBody(entity, jg);
         try {
