@@ -19,7 +19,7 @@
 
 package org.nuxeo.functionaltests.pages.forms;
 
-import org.nuxeo.functionaltests.pages.ForumDocumentBasePage;
+import org.nuxeo.functionaltests.pages.tabs.ForumTabSubPage;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -31,10 +31,10 @@ public class ForumCreationFormPage extends DublinCoreCreationDocumentFormPage {
         super(driver);
     }
 
-    public ForumDocumentBasePage createForumDocument(String title, String description) {
+    public ForumTabSubPage createForumDocument(String title, String description) {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
         create();
-        return asPage(ForumDocumentBasePage.class);
+        return asPage(ForumTabSubPage.class);
     }
 }

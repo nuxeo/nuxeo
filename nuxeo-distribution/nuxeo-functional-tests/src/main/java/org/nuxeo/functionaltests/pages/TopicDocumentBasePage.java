@@ -24,8 +24,9 @@ import org.openqa.selenium.WebDriver;
 /**
  * @since 8.2
  */
-public class ForumDocumentBasePage extends DocumentBasePage {
-    public ForumDocumentBasePage(WebDriver driver) {
+public class TopicDocumentBasePage extends DocumentBasePage {
+
+    public TopicDocumentBasePage(WebDriver driver) {
         super(driver);
     }
 }

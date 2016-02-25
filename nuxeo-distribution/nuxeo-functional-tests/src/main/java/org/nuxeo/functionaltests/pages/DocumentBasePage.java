@@ -40,18 +40,7 @@ import org.nuxeo.functionaltests.pages.forms.ForumCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceCreationFormPage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
-import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
-import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.SectionsContentTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
-import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -132,6 +121,9 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Comments']")
     public WebElement commentsTabLink;
+
+    @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Forum']")
+    public WebElement forumTabLink;
 
     @Required
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']")
@@ -297,6 +289,14 @@ public class DocumentBasePage extends AbstractPage {
     public CommentsTabSubPage getCommentsTab() {
         clickOnDocumentTabLink(commentsTabLink);
         return asPage(CommentsTabSubPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public ForumTabSubPage getForumTab() {
+        clickOnDocumentTabLink(forumTabLink);
+        return asPage(ForumTabSubPage.class);
     }
 
     /**
@@ -584,12 +584,12 @@ public class DocumentBasePage extends AbstractPage {
      * @return the created forum page
      * @since 8.2
      */
-    public ForumDocumentBasePage createForum(String forumTitle, String forumDescription) {
+    public ForumTabSubPage createForum(String forumTitle, String forumDescription) {
         // Get a Forum creation form
         ForumCreationFormPage forumCreationFormPage = getContentTab().getDocumentCreatePage(FORUM_TYPE,
             ForumCreationFormPage.class);
         // Create a Forum
-        ForumDocumentBasePage forumPage = forumCreationFormPage.createForumDocument(forumTitle, forumDescription);
+        ForumTabSubPage forumPage = forumCreationFormPage.createForumDocument(forumTitle, forumDescription);
         return forumPage;
     }
 
