@@ -31,6 +31,7 @@ import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -131,6 +132,18 @@ public class TrashSubPage extends AbstractPage {
         getElement().checkByTitle(titles);
         deleteSelectedDocuments();
         return asPage(TrashSubPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public boolean hasDocumentLink(String title) {
+        try {
+            WebElement element = documentContentForm.findElement(By.linkText(title));
+            return element != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
     /**

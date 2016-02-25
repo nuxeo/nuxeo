@@ -33,6 +33,7 @@ import org.openqa.selenium.WebElement;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_FOLDER_TITLE;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
@@ -80,7 +81,7 @@ public class ITVerifyDeleteDocumentContentTest extends AbstractTest {
 
             // go to the trash tab and check that now New button is present
             TrashSubPage trashPage = asPage(DocumentBasePage.class).getManageTab().getTrashSubTab();
-            assertEquals(1, trashPage.getChildDocumentRows().size());
+            assertTrue(trashPage.hasDocumentLink(TEST_FOLDER_TITLE));
             assertEquals(0, driver.findElements(By.xpath("//form[@id='nxw_newDocument_form']")).size());
 
             // go to folder and check contents
@@ -94,11 +95,11 @@ public class ITVerifyDeleteDocumentContentTest extends AbstractTest {
             // test restore and delete buttons and restore note
             trashPage.selectByTitle("note to restore 1"); // tick and check buttons
             assertEquals(1, driver.findElements(
-                            By.xpath("//form[@id='document_trash_content_buttons:nxw_CURRENT_SELECTION_DELETE_form']"))
-                          .size());
+                By.xpath("//form[@id='document_trash_content_buttons:nxw_CURRENT_SELECTION_DELETE_form']"))
+                .size());
             assertEquals(1, driver.findElements(
-                            By.xpath("//form[@id='document_trash_content_buttons:nxw_CURRENT_SELECTION_UNDELETE_form']"))
-                          .size());
+                By.xpath("//form[@id='document_trash_content_buttons:nxw_CURRENT_SELECTION_UNDELETE_form']"))
+                .size());
             trashPage.selectByTitle("note to restore 1"); // untick
             filePage = trashPage.restoreDocument("note to restore 1");
 
