@@ -149,7 +149,7 @@ public class WorkflowEndpointTest extends BaseTest {
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
-        final String createdWorflowInstanceId = node.get("uid").getTextValue();
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
 
         // Check GET /api/id/{documentId}/@workflow/
         response = getResponse(RequestType.GET, "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME);
