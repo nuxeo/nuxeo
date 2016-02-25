@@ -657,6 +657,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             // suspend and reschedule all running work
             synchronized (running) {
                 for (Work work : running) {
+                    log.debug("re-scheduling " + work);
                     work.setWorkInstanceState(State.SCHEDULED);
                     submit(work);
                     work.setWorkInstanceSuspending();

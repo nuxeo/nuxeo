@@ -18,6 +18,9 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.runtime.api.LambdaAdaptor.Consumer;
 import org.nuxeo.runtime.api.LambdaAdaptor.Function;
 import org.nuxeo.runtime.api.LambdaAdaptor.Optional;
@@ -119,6 +122,8 @@ public class ServicePassivator {
 			run();
 		}
 
+                final Log log = LogFactory.getLog(ServicePassivator.class);
+
 		final CountDownLatch achieved = new CountDownLatch(1);
 
 		final Accounting accounting = new Accounting();
@@ -142,6 +147,7 @@ public class ServicePassivator {
 			PassivateProvider passivator = new PassivateProvider(Thread.currentThread(), accounting, waitfor,
 					passthrough);
 			DefaultServiceProvider.setProvider(passivator);
+                        log.debug("installed passivator", log.isTraceEnabled() ? new Throwable("stack trace") : null);
 		}
 
 		void resetProvider() {
@@ -157,6 +163,7 @@ public class ServicePassivator {
 				DefaultServiceProvider.setProvider(installed.orElse(null));
 			} finally {
 				achieved.countDown();
+                                log.debug("uninstalled passivator");
 			}
 		}
 
@@ -323,6 +330,7 @@ public class ServicePassivator {
 				return;
 			}
 			timer.scheduleAtFixedRate(scheduledTask, delay, delay);
+                        passivator.log.debug("monitoring accesses");
 		}
 
 		/**
@@ -404,8 +412,10 @@ public class ServicePassivator {
 		 */
 		public Termination proceed(Runnable runnable) {
 			try {
+                                monitor.passivator.log.debug("waiting " + timeout + "s for passivation");
 				boolean passivated = monitor.passivated.await(timeout, TimeUnit.SECONDS);
 				if (!enforce || passivated) {
+                                        monitor.passivator.log.debug("proceeding");
 					ClassLoader tcl = Thread.currentThread().getContextClassLoader();
 					try {
 						runnable.run();
