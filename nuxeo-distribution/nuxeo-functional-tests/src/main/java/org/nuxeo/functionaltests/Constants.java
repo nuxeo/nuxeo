@@ -55,4 +55,6 @@ public class Constants {
 
     public static final String FOLDER_TYPE = "Folder";
 
+    public static final String FORUM_TYPE = "Forum";
+
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
  *     Antoine Taillefer
+ *     Gabriel Barata
  */
 package org.nuxeo.functionaltests.pages;
 
@@ -35,6 +36,7 @@ import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.forms.CollectionCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.ForumCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceCreationFormPage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
@@ -60,6 +62,7 @@ import org.openqa.selenium.support.FindBy;
 import com.google.common.base.Function;
 
 import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.FORUM_TYPE;
 import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
 import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
 
@@ -461,7 +464,7 @@ public class DocumentBasePage extends AbstractPage {
                                                                             .getWorkspaceCreatePage();
         // Create Workspace
         DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(workspaceTitle,
-                workspaceDescription);
+            workspaceDescription);
         return workspacePage;
     }
 
@@ -510,7 +513,7 @@ public class DocumentBasePage extends AbstractPage {
             String filePrefix, String fileSuffix, String fileContent) throws IOException {
         // Get File creation form page
         FileCreationFormPage fileCreationFormPage = getContentTab().getDocumentCreatePage(FILE_TYPE,
-                FileCreationFormPage.class);
+            FileCreationFormPage.class);
         // Create File
         FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(fileTitle, fileDescription, uploadBlob,
                 filePrefix, fileSuffix, fileDescription);
@@ -530,7 +533,7 @@ public class DocumentBasePage extends AbstractPage {
                 "Collections", DublinCoreCreationDocumentFormPage.class);
         // Create File
         DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle,
-                fileDescription);
+            fileDescription);
         return documentBasePage;
     }
 
@@ -569,8 +572,25 @@ public class DocumentBasePage extends AbstractPage {
                 NoteCreationFormPage.class);
         // Create a Note
         NoteDocumentBasePage notePage = noteCreationPage.createNoteDocument(noteTitle, noteDescription, defineNote,
-                noteContent);
+            noteContent);
         return notePage;
+    }
+
+    /**
+     * Creates a forum on this page.
+     *
+     * @param forumTitle the forum title
+     * @param forumDescription the forum description
+     * @return the created forum page
+     * @since 8.2
+     */
+    public ForumDocumentBasePage createForum(String forumTitle, String forumDescription) {
+        // Get a Forum creation form
+        ForumCreationFormPage forumCreationFormPage = getContentTab().getDocumentCreatePage(FORUM_TYPE,
+            ForumCreationFormPage.class);
+        // Create a Forum
+        ForumDocumentBasePage forumPage = forumCreationFormPage.createForumDocument(forumTitle, forumDescription);
+        return forumPage;
     }
 
 }
