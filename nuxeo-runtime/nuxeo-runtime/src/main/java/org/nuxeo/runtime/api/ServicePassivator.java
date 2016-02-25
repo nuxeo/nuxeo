@@ -27,6 +27,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.api.ServicePassivator.Passivator.Accounting;
 import org.nuxeo.runtime.api.ServicePassivator.Passivator.Accounting.InScopeOfContext;
 import org.nuxeo.runtime.api.ServicePassivator.Termination.Failure;
@@ -128,6 +130,8 @@ public class ServicePassivator {
      */
     public static class Passivator {
 
+        final Log log = LogFactory.getLog(ServicePassivator.class);
+
         Passivator() {
             run();
         }
@@ -148,15 +152,7 @@ public class ServicePassivator {
             PassivateProvider passivator = new PassivateProvider(Thread.currentThread(), accounting, waitfor,
                     passthrough);
             DefaultServiceProvider.setProvider(passivator);
-        }
-
-        void resetProvider() {
-            PassivateProvider passivator = (PassivateProvider) DefaultServiceProvider.getProvider();
-            ServiceProvider previous = passivator.passthrough instanceof DelegateProvider
-                    ? ((DelegateProvider) passivator.passthrough).next
-                    : null;
-            DefaultServiceProvider.setProvider(previous);
-
+            log.debug("installed passivator", log.isTraceEnabled() ? new Throwable("stack trace") : null);
         }
 
         void commit() {
@@ -164,6 +160,7 @@ public class ServicePassivator {
                 DefaultServiceProvider.setProvider(installed.orElse(null));
             } finally {
                 achieved.countDown();
+                log.debug("uninstalled passivator");
             }
         }
 
@@ -327,6 +324,7 @@ public class ServicePassivator {
                     scheduledTask,
                     delay,
                     delay);
+            passivator.log.debug("monitoring accesses");
         }
 
         /**
@@ -406,8 +404,11 @@ public class ServicePassivator {
          */
         public Termination proceed(Runnable runnable) {
             try {
-                boolean passivated = monitor.passivated.await(timeout.get(ChronoUnit.SECONDS), TimeUnit.SECONDS);
+                final long delay = timeout.get(ChronoUnit.SECONDS);
+                monitor.passivator.log.debug("waiting " + delay + "s for passivation");
+                boolean passivated = monitor.passivated.await(delay, TimeUnit.SECONDS);
                 if (!enforce || passivated) {
+                    monitor.passivator.log.debug("proceeding");
                     ClassLoader tcl = Thread.currentThread()
                             .getContextClassLoader();
                     try {
