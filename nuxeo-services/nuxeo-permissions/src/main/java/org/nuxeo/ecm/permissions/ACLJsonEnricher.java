@@ -155,7 +155,7 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
     }
 
     protected void writePrincipalOrGroup(String propertyName, String value, JsonGenerator jg) throws IOException {
-        if (ctx.getFetched(NAME).contains(propertyName)) {
+        if (value != null && ctx.getFetched(NAME).contains(propertyName)) {
             try (Closeable resource = ctx.wrap().controlDepth().open()) {
                 UserManager userManager = Framework.getService(UserManager.class);
                 Object entity = userManager.getPrincipal(value);
