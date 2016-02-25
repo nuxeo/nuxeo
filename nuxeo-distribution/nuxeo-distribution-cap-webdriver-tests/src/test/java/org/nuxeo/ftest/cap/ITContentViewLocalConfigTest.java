@@ -34,6 +34,8 @@ import org.openqa.selenium.WebElement;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_FOLDER_TITLE;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
@@ -85,11 +87,9 @@ public class ITContentViewLocalConfigTest extends AbstractTest {
                                          .goToDocument(TEST_FOLDER_TITLE)
                                          .getContentTab(TrashSubPage.class);
 
-            List<WebElement> children = trashPage.getChildDocumentRows();
-            assertEquals(1, children.size());
-            assertEquals("localConfigNote", children.get(0).findElement(By.xpath("td[3]")).getText());
+            assertTrue(trashPage.hasDocumentLink("localConfigNote"));
             trashPage.restoreDocument("localConfigNote");
-            assertEquals(0, children.size());
+            assertFalse(trashPage.hasDocumentLink("localConfigNote"));
 
             ContentTabSubPage contentTab = asPage(DocumentBasePage.class).goToDocumentByBreadcrumb(TEST_WORKSPACE_TITLE)
                                                                          .getManageTab()
@@ -99,10 +99,7 @@ public class ITContentViewLocalConfigTest extends AbstractTest {
                                                                          .goToDocument(TEST_FOLDER_TITLE)
                                                                          .getContentTab();
 
-            children = contentTab.getChildDocumentRows();
-            assertEquals(1, children.size());
-            assertEquals("localConfigNote", children.get(0).findElement(By.xpath("td[3]")).getText());
-
+            assertTrue(contentTab.hasDocumentLink("localConfigNote"));
         } finally {
             logout();
         }
