@@ -57,4 +57,6 @@ public class Constants {
 
     public static final String FORUM_TYPE = "Forum";
 
+    public static final String TOPIC_TYPE = "Thread";
+
 }
