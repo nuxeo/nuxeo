@@ -56,6 +56,7 @@ class Select2Editor extends Handsontable.editors.Select2Editor {
   open() {
     super.open();
     this.$textarea.on('selected', this.onSelected.bind(this));
+    this.$textarea.on('select2-selected', this.onSelected.bind(this));
     this.$textarea.on('select2-removed', this.onRemoved.bind(this));
   }
 

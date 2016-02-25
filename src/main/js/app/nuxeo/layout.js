@@ -21,18 +21,18 @@ import {Widget} from './widget';
  * Layout
  */
 class Layout {
-  constructor(conn, name) {
+  constructor(conn, name, lang) {
     this.conn = conn;
     this.name = name;
+    this.lang = lang;
     this.widgets = {};
   }
 
   fetch() {
     return new Promise((resolve, reject) => {
-      var request = this.conn.request('/site/layout-manager/layouts/json?layoutName=' + this.name).repositoryName(undefined);
+      var request = this.conn.request('/site/layout-manager/layouts/json?layoutName=' + this.name + '&lang=' + this.lang).repositoryName(undefined);
       request._url = this.conn.baseURL;
 
-      console.log(`Fetching layout ${this.name}`);
       request.get((error, def) => {
         if (error) {
           reject(Error(error));

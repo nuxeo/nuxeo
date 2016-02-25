@@ -23,6 +23,8 @@ class DirectoryEditor extends Select2Editor {
     var directory = new Directory(connection); // Directory name is a widget property
     // Set the properties
     Object.assign(directory, properties);
+    // Set the language
+    directory.language = this.language;
     // Perform the search
     return directory.search(term);
   }
@@ -46,7 +48,13 @@ class DirectoryEditor extends Select2Editor {
       }
     }
     // If not add then add it
-    labels.push({id: choice.computedId, label_en: choice.absoluteLabel});
+    var label = {id: choice.computedId};
+    label['label_' + this.language] = choice.absoluteLabel;
+    labels.push(label);
+  }
+
+  get language() {
+    return this.instance.getSettings().language || 'en';
   }
 
   get column() {
@@ -78,7 +86,7 @@ class DirectoryEditor extends Select2Editor {
     // This is used in initSelection and in this case we don't have 'displayLabel'
     if (!label && this.isDbl10n) {
       var ctx = this.sourceData.contextParameters;
-      label = getLabel(ctx, this.column, entry.id);
+      label = getLabel(this.language, ctx, this.column, entry.id);
     }
     return label || entry.text;
   }
@@ -94,26 +102,27 @@ class DirectoryEditor extends Select2Editor {
 
 function DirectoryRenderer(instance, td, row, col, prop, value, cellProperties) {
   var ctx = instance.getSourceDataAtRow(row).contextParameters;
+  var lang = instance.getSettings().language ;
   if (value) {
     if (!Array.isArray(value)) {
       value = value.split(',');
     }
-    arguments[5] = getLabels(ctx, cellProperties, value).join(',');
+    arguments[5] = getLabels(lang, ctx, cellProperties, value).join(',');
   }
   cellProperties.defaultRenderer.apply(this, arguments);
 }
 
 // l10n Label helpers
-function findLabel(id, entries) {
+function findLabel(lang, id, entries) {
   for (var e of entries) {
     if (id === e.id) {
-      return e.label_en;
+      return e['label_' + lang];
     }
   }
   return id;
 }
 
-function getLabels(ctx, column, ids) {
+function getLabels(lang, ctx, column, ids) {
   var field = column.widget.field,
       directoryName = column.widget.properties.directoryName;
 
@@ -121,12 +130,12 @@ function getLabels(ctx, column, ids) {
     return ids;
   }
   var directoryEntries = ctx[directoryName][field];
-  return ids.map((id) => findLabel(id, directoryEntries));
+  return ids.map((id) => findLabel(lang, id, directoryEntries));
 
 }
 
-function getLabel(ctx, column, id) {
-  return getLabels(ctx, column, [id])[0];
+function getLabel(lang, ctx, column, id) {
+  return getLabels(lang, ctx, column, [id])[0];
 }
 
 export {DirectoryEditor, DirectoryRenderer};
