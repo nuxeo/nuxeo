@@ -19,10 +19,6 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.el.DocumentModelResolver;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
@@ -73,14 +69,16 @@ public class ValueExpressionHelper {
         } else if (isFormattedAsELExpression(fieldName)) {
             // already formatted as an EL expression => ignore schema name, do
             // not resolve field and do not modify expression format
-            String format = "%s.%s";
-            if (fieldName.startsWith(".") || fieldName.startsWith("[")) {
-                format = "%s%s";
+            StringBuilder builder = new StringBuilder();
+            builder.append(valueName);
+            if (!fieldName.startsWith(".") && !fieldName.startsWith("[")) {
+                builder.append(".");
             }
-            return String.format(format, valueName, fieldName);
+            builder.append(fieldName);
+            return builder.toString();
         } else {
-            List<String> expressionElements = new ArrayList<String>();
-            expressionElements.add(valueName);
+            StringBuilder builder = new StringBuilder();
+            builder.append(valueName);
 
             // try to resolve schema name/prefix
             String schemaName = field.getSchemaName();
@@ -94,26 +92,28 @@ public class ValueExpressionHelper {
             }
 
             if (schemaName != null) {
-                expressionElements.add(String.format("['%s']", schemaName));
+                builder.append("['").append(schemaName).append("']");
             }
 
             // handle xpath expressions
             String[] splittedFieldName = fieldName.split("/");
             for (String item : splittedFieldName) {
+                builder.append("[");
                 try {
-                    expressionElements.add(String.format("[%s]", Integer.valueOf(Integer.parseInt(item))));
+                    builder.append(Integer.parseInt(item));
                 } catch (NumberFormatException e) {
-                    expressionElements.add(String.format("['%s']", item));
+                    builder.append("'").append(item).append("'");
                 }
+                builder.append("]");
             }
 
-            return StringUtils.join(expressionElements, "");
+            return builder.toString();
         }
     }
 
     public static String createExpressionString(String valueName, FieldDefinition field) {
         String bareExpression = createBareExpressionString(valueName, field);
-        return String.format("#{%s}", bareExpression);
+        return "#{" + bareExpression + "}";
     }
 
 }
