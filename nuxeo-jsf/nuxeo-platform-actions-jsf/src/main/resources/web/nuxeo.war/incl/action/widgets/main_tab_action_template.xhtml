@@ -6,25 +6,16 @@
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:h="http://java.sun.com/jsf/html">
 
-  <nxu:set var="requireDocument" value="#{action.properties.requireDocument}"
-    cache="true">
-  <nxu:set var="onclick"
-    value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
-    cache="true">
-
-    <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(action.id)}"
-      repositoryName="#{navigationContext.currentServerLocation.name}"
-      view="#{mainTabsActions.getViewFor(action)}"
-      pattern="#{mainTabsActions.getPatternFor(action)}"
-      addTabInfo="false"
-      target="#{action.properties.target}"
-      tabs="MAIN_TABS:#{action.id}"
-      onclick="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
-      accesskey="#{action.accessKey}">
-      <h:outputText value="#{messages[action.label]}" />
-    </nxd:restDocumentLink>
-
-  </nxu:set>
-  </nxu:set>
+  <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(widgetProperty_actionId)}"
+    repositoryName="#{navigationContext.currentServerLocation.name}"
+    view="#{mainTabsActions.getViewFor(widgetProperty_action)}"
+    pattern="#{mainTabsActions.getPatternFor(widgetProperty_action)}"
+    addTabInfo="false"
+    target="#{widgetProperty_target}"
+    tabs="MAIN_TABS:#{widgetProperty_actionId}"
+    onclick="#{widgetProperty_onclick}"
+    accesskey="#{widgetProperty_accessKey}">
+    <h:outputText value="#{messages[widget.label]}" />
+  </nxd:restDocumentLink>
 
 </c:if>
