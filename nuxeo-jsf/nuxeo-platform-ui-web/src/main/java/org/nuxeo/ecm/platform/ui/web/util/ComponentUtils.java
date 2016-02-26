@@ -152,11 +152,26 @@ public final class ComponentUtils {
     }
 
     public static Object getAttributeValue(UIComponent component, String attributeName, Object defaultValue) {
-        Object value = component.getAttributes().get(attributeName);
+        return getAttributeValue(component, attributeName, Object.class, defaultValue, false);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public static <T> T getAttributeValue(UIComponent component, String name, Class<T> klass, T defaultValue,
+            boolean required) {
+        Object value = component.getAttributes().get(name);
         if (value == null) {
             value = defaultValue;
         }
-        return value;
+        if (required && value == null) {
+            throw new IllegalArgumentException("Component attribute with name '" + name + "' cannot be null: " + value);
+        }
+        if (value == null || value.getClass().isAssignableFrom(klass)) {
+            return (T) value;
+        }
+        throw new IllegalArgumentException(
+                "Component attribute with name '" + name + "' is not a " + klass + ": " + value);
     }
 
     public static Object getAttributeOrExpressionValue(FacesContext context, UIComponent component,

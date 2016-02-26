@@ -502,14 +502,7 @@ public class SelectionActionsBean implements Serializable {
     }
 
     protected String getStringAttribute(UIComponent component, String name, boolean required) {
-        Object value = component.getAttributes().get(name);
-        if (required && value == null) {
-            throw new IllegalArgumentException("Component attribute with name '" + name + "' cannot be null: " + value);
-        }
-        if (value == null || value instanceof String) {
-            return (String) value;
-        }
-        throw new IllegalArgumentException("Component attribute with name '" + name + "' is not a String: " + value);
+        return ComponentUtils.getAttributeValue(component, name, String.class, null, required);
     }
 
     protected Object retrieveSourceComponentValue(UIComponent base, String targetId) {
