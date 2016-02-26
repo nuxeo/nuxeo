@@ -11,7 +11,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Nuxeo
 Eclipse-LazyStart: true
 Bundle-Version: 0.0.0.SNAPSHOT
-Nuxeo-Component: OSGI-INF/actions-framework.xml
+Nuxeo-Component: OSGI-INF/actions-properties.xml,
+  OSGI-INF/actions-framework.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.annotation;version="1.0",
  javax.ejb,
