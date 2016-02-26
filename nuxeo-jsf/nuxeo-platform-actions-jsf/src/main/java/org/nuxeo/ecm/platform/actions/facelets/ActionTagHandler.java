@@ -56,6 +56,7 @@ import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.FormTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.ui.web.util.FaceletDebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.TagAttributesImpl;
@@ -116,11 +117,16 @@ public class ActionTagHandler extends MetaTagHandler {
      * widget level, and {@link RenderVariables.globalVariables#document}.
      */
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
+        long start = FaceletDebugTracer.start();
         Action actionInstance = null;
-        if (action != null) {
-            actionInstance = (Action) action.getObject(ctx, Action.class);
-        }
-        if (actionInstance != null) {
+
+        try {
+            if (action != null) {
+                actionInstance = (Action) action.getObject(ctx, Action.class);
+            }
+            if (actionInstance == null) {
+                return;
+            }
 
             VariableMapper orig = ctx.getVariableMapper();
             try {
@@ -263,84 +269,85 @@ public class ActionTagHandler extends MetaTagHandler {
                 wDef.setDynamic(true);
                 WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
                 Widget widgetInstance = layoutService.createWidget(ctx, wDef, modeValue, bareValueName, null);
-                if (widgetInstance != null) {
-                    // set unique id on widget before exposing it to the context
-                    FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
-                    WidgetTagHandler.generateWidgetId(ctx, helper, widgetInstance, false);
-
-                    // expose widget variables
-                    WidgetTagHandler.exposeWidgetVariables(ctx, vm, widgetInstance, null, false);
-
-                    // create widget handler
-                    TagAttributes wattrs = FaceletHandlerHelper.getTagAttributes();
-                    wattrs = FaceletHandlerHelper.addTagAttribute(wattrs,
-                            helper.createAttribute(RenderVariables.widgetVariables.widget.name(),
-                                    "#{" + RenderVariables.widgetVariables.widget.name() + "}"));
-                    wattrs = FaceletHandlerHelper.addTagAttribute(wattrs,
-                            helper.createAttribute("value", value.getValue()));
-                    TagConfig wconfig = TagConfigFactory.createTagConfig(config, config.getTagId(), wattrs,
-                            nextHandler);
-                    FaceletHandler handler = new WidgetTagHandler(wconfig);
-
-                    // expose ajax render props to the context
-                    String reRender = (String) props.get("ajaxReRender");
-                    if (!StringUtils.isEmpty(reRender)) {
-                        ExpressionFactory eFactory = ctx.getExpressionFactory();
-                        ValueExpression ve = eFactory.createValueExpression(
-                                "#{nxu:joinRender(ajaxReRender, " + reRender + ")}", String.class);
-                        vm.setVariable("ajaxReRender", ve);
-                    }
-
-                    // create form handler if needed
-                    boolean doAddForm = false;
-                    if (addForm != null) {
-                        doAddForm = addForm.getBoolean(ctx);
-                    }
-                    if (!doAddForm) {
-                        // check if addForm information held by the action configuration
-                        doAddForm = helper.createAttribute("addForm",
-                                String.valueOf(widgetInstance.getProperty("addForm"))).getBoolean(ctx);
-                    }
-                    if (doAddForm) {
-                        // resolve form related attributes early
-                        boolean discard = helper.createAttribute("discardSurroundingForm",
-                                String.valueOf(widgetInstance.getProperty("discardSurroundingForm"))).getBoolean(ctx);
-                        boolean doUseAjaxForm = false;
-                        if (useAjaxForm != null) {
-                            doUseAjaxForm = useAjaxForm.getBoolean(ctx);
-                        }
-                        if (!discard || doUseAjaxForm) {
-                            List<TagAttribute> fattrs = new ArrayList<>();
-                            if (doUseAjaxForm) {
-                                Object ajaxProp = widgetInstance.getProperty("ajaxSupport");
-                                if (ajaxProp == null) {
-                                    ajaxProp = widgetInstance.getProperty("supportAjax");
-                                }
-                                fattrs.add(helper.createAttribute("useAjaxForm", String.valueOf(ajaxProp)));
-                            }
-                            fattrs.add(helper.createAttribute("disableMultipartForm",
-                                    String.valueOf(widgetInstance.getProperty("disableMultipartForm"))));
-                            fattrs.add(helper.createAttribute("disableDoubleClickShield",
-                                    String.valueOf(widgetInstance.getProperty("disableDoubleClickShield"))));
-                            fattrs.add(helper.createAttribute("styleClass",
-                                    formStyleClass != null ? formStyleClass.getValue() : null));
-                            fattrs.add(helper.createAttribute("id", widgetInstance.getId() + "_form"));
-
-                            TagConfig fconfig = TagConfigFactory.createTagConfig(config, config.getTagId(),
-                                    new TagAttributesImpl(fattrs.toArray(new TagAttribute[] {})), handler);
-                            handler = new FormTagHandler(fconfig);
-                        }
-                    }
-
-                    handler.apply(ctx, parent);
+                if (widgetInstance == null) {
+                    return;
                 }
+                // set unique id on widget before exposing it to the context
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
+                WidgetTagHandler.generateWidgetId(ctx, helper, widgetInstance, false);
+
+                // expose widget variables
+                WidgetTagHandler.exposeWidgetVariables(ctx, vm, widgetInstance, null, false);
+
+                // create widget handler
+                TagAttributes wattrs = FaceletHandlerHelper.getTagAttributes();
+                wattrs = FaceletHandlerHelper.addTagAttribute(wattrs,
+                        helper.createAttribute(RenderVariables.widgetVariables.widget.name(),
+                                "#{" + RenderVariables.widgetVariables.widget.name() + "}"));
+                wattrs = FaceletHandlerHelper.addTagAttribute(wattrs,
+                        helper.createAttribute("value", value.getValue()));
+                TagConfig wconfig = TagConfigFactory.createTagConfig(config, config.getTagId(), wattrs, nextHandler);
+                FaceletHandler handler = new WidgetTagHandler(wconfig);
+
+                // expose ajax render props to the context
+                String reRender = (String) props.get("ajaxReRender");
+                if (!StringUtils.isEmpty(reRender)) {
+                    ExpressionFactory eFactory = ctx.getExpressionFactory();
+                    ValueExpression ve = eFactory.createValueExpression(
+                            "#{nxu:joinRender(ajaxReRender, " + reRender + ")}", String.class);
+                    vm.setVariable("ajaxReRender", ve);
+                }
+
+                // create form handler if needed
+                boolean doAddForm = false;
+                if (addForm != null) {
+                    doAddForm = addForm.getBoolean(ctx);
+                }
+                if (!doAddForm) {
+                    // check if addForm information held by the action configuration
+                    doAddForm = helper.createAttribute("addForm", String.valueOf(widgetInstance.getProperty("addForm")))
+                                      .getBoolean(ctx);
+                }
+                if (doAddForm) {
+                    // resolve form related attributes early
+                    boolean discard = helper.createAttribute("discardSurroundingForm",
+                            String.valueOf(widgetInstance.getProperty("discardSurroundingForm"))).getBoolean(ctx);
+                    boolean doUseAjaxForm = false;
+                    if (useAjaxForm != null) {
+                        doUseAjaxForm = useAjaxForm.getBoolean(ctx);
+                    }
+                    if (!discard || doUseAjaxForm) {
+                        List<TagAttribute> fattrs = new ArrayList<>();
+                        if (doUseAjaxForm) {
+                            Object ajaxProp = widgetInstance.getProperty("ajaxSupport");
+                            if (ajaxProp == null) {
+                                ajaxProp = widgetInstance.getProperty("supportAjax");
+                            }
+                            fattrs.add(helper.createAttribute("useAjaxForm", String.valueOf(ajaxProp)));
+                        }
+                        fattrs.add(helper.createAttribute("disableMultipartForm",
+                                String.valueOf(widgetInstance.getProperty("disableMultipartForm"))));
+                        fattrs.add(helper.createAttribute("disableDoubleClickShield",
+                                String.valueOf(widgetInstance.getProperty("disableDoubleClickShield"))));
+                        fattrs.add(helper.createAttribute("styleClass",
+                                formStyleClass != null ? formStyleClass.getValue() : null));
+                        fattrs.add(helper.createAttribute("id", widgetInstance.getId() + "_form"));
+
+                        TagConfig fconfig = TagConfigFactory.createTagConfig(config, config.getTagId(),
+                                new TagAttributesImpl(fattrs.toArray(new TagAttribute[] {})), handler);
+                        handler = new FormTagHandler(fconfig);
+                    }
+                }
+
+                handler.apply(ctx, parent);
 
             } finally {
                 ctx.setVariableMapper(orig);
             }
 
+        } finally {
+            FaceletDebugTracer.trace(start, config.getTag(), actionInstance == null ? null : actionInstance.getId());
         }
-
     }
 
     @Override
