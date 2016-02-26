@@ -254,9 +254,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         ctx.setVariableMapper(vm);
         ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(widget, Widget.class);
         vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
-        vm.setVariable(
-                String.format("%s_%s", RenderVariables.widgetVariables.widget.name(),
-                        Integer.valueOf(widget.getLevel())), widgetVe);
+        vm.setVariable(RenderVariables.widgetVariables.widget.name() + "_" + widget.getLevel(), widgetVe);
         // TODO NXP-13280: expose widget controls too when they can be
         // retrieved from tag attributes
         try {

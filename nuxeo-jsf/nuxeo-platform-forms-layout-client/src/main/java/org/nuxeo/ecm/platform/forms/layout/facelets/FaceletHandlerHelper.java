@@ -519,8 +519,8 @@ public final class FaceletHandlerHelper {
      */
     public ComponentHandler getErrorComponentHandler(String tagConfigId, String errorMessage) {
         FaceletHandler leaf = new org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler();
-        TagAttribute valueAttr = createAttribute("value", "<span style=\"color:red;font-weight:bold;\">ERROR: "
-                + errorMessage + "</span><br />");
+        TagAttribute valueAttr = createAttribute("value",
+                "<span style=\"color:red;font-weight:bold;\">ERROR: " + errorMessage + "</span><br />");
         TagAttribute escapeAttr = createAttribute("escape", "false");
         ComponentHandler output = getHtmlComponentHandler(tagConfigId,
                 FaceletHandlerHelper.getTagAttributes(valueAttr, escapeAttr), leaf, HtmlOutputText.COMPONENT_TYPE, null);
@@ -637,7 +637,7 @@ public final class FaceletHandlerHelper {
             if (bean.isDevModeSet()) {
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
                 ValueExpression disableDevAttr = eFactory.createValueExpression(ctx,
-                        String.format("#{%s}", DEV_MODE_DISABLED_VARIABLE), Boolean.class);
+                        "#{" + DEV_MODE_DISABLED_VARIABLE + "}", Boolean.class);
                 if (!Boolean.TRUE.equals(disableDevAttr.getValue(ctx))) {
                     return true;
                 }

@@ -72,15 +72,15 @@ public class NuxeoWroModelFactory implements WroModelFactory {
         ro.isdc.wro.model.resource.ResourceType type = toWroResourceType(resource.getType());
         if (type == null) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Cannot handle resource type '%s' for resource '%s'", resource.getType(),
-                        resource.getName()));
+                log.debug("Cannot handle resource type '" + resource.getType() + "' for resource '" + resource.getName()
+                        + "'");
             }
             return null;
         }
         String uri = NuxeoUriLocator.getUri(resource);
         if (uri == null) {
-            log.error(String.format("Cannot handle resource '%s' for bundle '%s': no uri resolved", resource.getName(),
-                    bundle));
+            log.error(
+                    "Cannot handle resource '" + resource.getName() + "' for bundle '" + bundle + "': no uri resolved");
             return null;
         }
         ro.isdc.wro.model.resource.Resource res = ro.isdc.wro.model.resource.Resource.create(uri, type);

@@ -80,8 +80,7 @@ public class SubWidgetTagHandler extends TagHandler {
         Widget widget = null;
         String widgetVariableName = RenderVariables.widgetVariables.widget.name();
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        TagAttribute widgetAttribute = helper.createAttribute(widgetVariableName,
-                String.format("#{%s}", widgetVariableName));
+        TagAttribute widgetAttribute = helper.createAttribute(widgetVariableName, "#{" + widgetVariableName + "}");
         if (widgetAttribute != null) {
             widget = (Widget) widgetAttribute.getObject(ctx, Widget.class);
         }
@@ -126,8 +125,7 @@ public class SubWidgetTagHandler extends TagHandler {
             ValueExpression subWidgetIndexVe = eFactory.createValueExpression(Integer.valueOf(subWidgetCounter),
                     Integer.class);
             variables.put(RenderVariables.widgetVariables.widgetIndex.name(), subWidgetIndexVe);
-            variables.put(String.format("%s_%s", RenderVariables.widgetVariables.widgetIndex.name(), level),
-                    subWidgetIndexVe);
+            variables.put(RenderVariables.widgetVariables.widgetIndex.name() + "_" + level, subWidgetIndexVe);
 
             // XXX: expose widget controls too, need to figure out
             // why controls cannot be references to widget.controls like
@@ -135,7 +133,7 @@ public class SubWidgetTagHandler extends TagHandler {
             if (subWidget != null) {
                 for (Map.Entry<String, Serializable> ctrl : subWidget.getControls().entrySet()) {
                     String key = ctrl.getKey();
-                    String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetControl.name(), key);
+                    String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
                     Serializable value = ctrl.getValue();
                     variables.put(name, eFactory.createValueExpression(value, Object.class));
                 }

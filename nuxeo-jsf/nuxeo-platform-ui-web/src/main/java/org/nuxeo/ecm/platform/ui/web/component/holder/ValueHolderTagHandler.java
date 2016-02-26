@@ -128,8 +128,8 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
             if (comp != null) {
                 className = comp.getClass().getName();
             }
-            log.error(String.format("Associated component with class '%s' is not"
-                    + " a UIValueHolder instance => cannot " + "retrieve value to expose.", className));
+            log.error("Associated component with class '" + className
+                    + "' is not a UIValueHolder instance => cannot retrieve value to expose.");
         }
         return null;
     }

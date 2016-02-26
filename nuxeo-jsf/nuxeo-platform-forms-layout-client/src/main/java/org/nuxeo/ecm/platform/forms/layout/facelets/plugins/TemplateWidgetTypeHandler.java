@@ -150,7 +150,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         Map<String, ValueExpression> mappedExpressions = new HashMap<String, ValueExpression>();
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
             String key = prop.getKey();
-            String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetProperty.name(), key);
+            String name = RenderVariables.widgetVariables.widgetProperty.name() + "_" + key;
             String value;
             Serializable valueInstance = prop.getValue();
             if (!layoutService.referencePropertyAsExpression(key, valueInstance, widget.getType(),
@@ -160,7 +160,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
             } else {
                 // create a reference so that it's a real expression and it's
                 // not kept (cached) in a component value on ajax refresh
-                value = String.format("#{%s.properties.%s}", RenderVariables.widgetVariables.widget.name(), key);
+                value = "#{" + RenderVariables.widgetVariables.widget.name() + ".properties." + key + "}";
             }
             ValueExpression ve = eFactory.createValueExpression(ctx, value, Object.class);
             variables.put(name, ve);
@@ -171,8 +171,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         // expose widget controls too
         for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
             String key = ctrl.getKey();
-            String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetControl.name(), key);
-            String value = String.format("#{%s.controls.%s}", RenderVariables.widgetVariables.widget.name(), key);
+            String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
+            String value = "#{" + RenderVariables.widgetVariables.widget.name() + ".controls." + key + "}";
             variables.put(name, eFactory.createValueExpression(ctx, value, Object.class));
         }
         return variables;
@@ -184,7 +184,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         if (index == null) {
             computedName = RenderVariables.widgetVariables.field.name();
         } else {
-            computedName = String.format("%s_%s", RenderVariables.widgetVariables.field.name(), index);
+            computedName = RenderVariables.widgetVariables.field.name() + "_" + index;
         }
         String computedValue = ValueExpressionHelper.createExpressionString(widget.getValueName(), fieldDef);
 

@@ -214,9 +214,8 @@ public class WidgetTagHandler extends MetaTagHandler {
                 // expose widget controls too
                 for (Map.Entry<String, Serializable> ctrl : widgetInstance.getControls().entrySet()) {
                     String key = ctrl.getKey();
-                    String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetControl.name(), key);
-                    String value = String.format("#{%s.controls.%s}", RenderVariables.widgetVariables.widget.name(),
-                            key);
+                    String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
+                    String value = "#{" + RenderVariables.widgetVariables.widget.name() + ".controls." + key + "}";
                     vm.setVariable(name, eFactory.createValueExpression(ctx, value, Object.class));
                 }
             }
@@ -284,12 +283,7 @@ public class WidgetTagHandler extends MetaTagHandler {
             }
 
             variables.put(RenderVariables.globalVariables.value.name(), valueExpr);
-            variables.put(
-                    String.format("%s_%s", RenderVariables.globalVariables.value.name(),
-                            Integer.valueOf(widget.getLevel())), valueExpr);
-            // document as alias to value
-            // variables.put(RenderVariables.globalVariables.document.name(),
-            // valueExpr);
+            variables.put(RenderVariables.globalVariables.value.name() + "_" + widget.getLevel(), valueExpr);
 
             FaceletHandler handlerWithVars = helper.getAliasTagHandler(widget.getTagConfigId(), variables, null,
                     handler);
