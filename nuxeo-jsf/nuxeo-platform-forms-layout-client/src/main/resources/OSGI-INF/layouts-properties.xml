@@ -2,9 +2,19 @@
 
 <component name="org.nuxeo.ecm.platform.forms.layout.properties">
 
-  <extension target="org.nuxeo.runtime.ConfigurationService"
-    point="configuration">
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <property name="nuxeo.jsf.listWidget.compatEnabled">false</property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Configuration property controlling enablement of layout tags
+      variables management, available mainly for backport on maintenance
+      branches, in case optimization broke some behaviors.
+
+      @since 8.2
+    </documentation>
+    <property name="nuxeo.jsf.layout.removeAliasOptims">false</property>
   </extension>
 
 </component>

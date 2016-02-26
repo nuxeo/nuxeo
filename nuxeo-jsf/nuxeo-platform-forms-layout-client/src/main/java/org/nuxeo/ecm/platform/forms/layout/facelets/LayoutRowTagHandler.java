@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
+import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
@@ -39,6 +41,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
+import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 
 /**
  * Layout row recursion tag handler.
@@ -71,10 +75,55 @@ public class LayoutRowTagHandler extends TagHandler {
      * {@link RenderVariables.columnVariables#layoutColumnIndex}, that act are aliases.
      */
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+
+        if (FaceletHandlerHelper.isAliasOptimEnabled()) {
+            applyOptimized(ctx, parent, helper);
+        } else {
+            applyCompat(ctx, parent, helper);
+        }
+    }
+
+    protected void applyOptimized(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper)
+            throws IOException, FacesException, ELException {
+        String rowCountVarName = RenderVariables.layoutVariables.layoutRowCount.name();
+        TagAttribute rowCountAttr = helper.createAttribute(rowCountVarName, "#{" + rowCountVarName + "}");
+        int rowCount = rowCountAttr.getInt(ctx);
+
+        if (rowCount == 0) {
+            return;
+        }
+
+        VariableMapper orig = ctx.getVariableMapper();
+        try {
+            for (int i = 0; i < rowCount; i++) {
+                BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+                ctx.setVariableMapper(vm);
+                // expose row variables
+                ExpressionFactory eFactory = ctx.getExpressionFactory();
+                ValueExpression ve = eFactory.createValueExpression(
+                        "#{" + RenderVariables.layoutVariables.layout.name() + ".rows[" + i + "]}", String.class);
+                ValueExpression rowVe = new MetaValueExpression(ve, ctx.getFunctionMapper(), vm, LayoutRow.class);
+                ValueExpression rowIndexVe = eFactory.createValueExpression(i, Integer.class);
+                String instanceName = getInstanceName();
+                String indexName = getIndexName();
+                vm.setVariable(instanceName, rowVe);
+                vm.addBlockedPattern(instanceName);
+                vm.setVariable(indexName, rowIndexVe);
+                vm.addBlockedPattern(indexName);
+
+                nextHandler.apply(ctx, parent);
+            }
+        } finally {
+            ctx.setVariableMapper(orig);
+        }
+    }
+
+    protected void applyCompat(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper)
+            throws IOException, FacesException, ELException {
         // resolve rows from layout in context
         Layout layout = null;
         String layoutVariableName = RenderVariables.layoutVariables.layout.name();
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         TagAttribute layoutAttribute = helper.createAttribute(layoutVariableName, "#{" + layoutVariableName + "}");
         if (layoutAttribute != null) {
             layout = (Layout) layoutAttribute.getObject(ctx, Layout.class);
@@ -83,7 +132,6 @@ public class LayoutRowTagHandler extends TagHandler {
             log.error("Could not resolve layout " + layoutAttribute);
             return;
         }
-
         LayoutRow[] rows = layout.getRows();
         if (rows == null || rows.length == 0) {
             return;
@@ -113,4 +161,13 @@ public class LayoutRowTagHandler extends TagHandler {
             rowCounter++;
         }
     }
+
+    protected String getInstanceName() {
+        return RenderVariables.rowVariables.layoutRow.name();
+    }
+
+    protected String getIndexName() {
+        return RenderVariables.rowVariables.layoutRowIndex.name();
+    }
+
 }

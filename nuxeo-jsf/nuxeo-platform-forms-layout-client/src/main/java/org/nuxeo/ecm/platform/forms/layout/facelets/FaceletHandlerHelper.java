@@ -64,6 +64,7 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.SetTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.sun.faces.facelets.tag.TagAttributeImpl;
 import com.sun.faces.facelets.tag.TagAttributesImpl;
@@ -665,4 +666,13 @@ public final class FaceletHandlerHelper {
                 DEV_MODE_DISABLED_VARIABLE, "true", "true", "false", nextHandler);
         return new SetTagHandler(config);
     }
+
+    /**
+     * @since 8.2
+     */
+    public static boolean isAliasOptimEnabled() {
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        return !cs.isBooleanPropertyTrue("nuxeo.jsf.layout.removeAliasOptims");
+    }
+
 }
