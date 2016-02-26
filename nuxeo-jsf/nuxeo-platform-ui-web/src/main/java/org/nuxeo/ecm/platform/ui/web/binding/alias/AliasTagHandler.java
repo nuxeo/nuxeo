@@ -39,6 +39,7 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagException;
 
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -88,7 +89,8 @@ public class AliasTagHandler extends ComponentHandler {
     /**
      * @since 5.6
      */
-    public AliasTagHandler(ComponentConfig config, Map<String, ValueExpression> variables, List<String> blockedPatterns) {
+    public AliasTagHandler(ComponentConfig config, Map<String, ValueExpression> variables,
+            List<String> blockedPatterns) {
         super(config);
         id = getAttribute("id");
         cache = getAttribute("cache");
@@ -98,8 +100,8 @@ public class AliasTagHandler extends ComponentHandler {
     }
 
     @Override
-    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
-            ELException {
+    public void apply(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
         // make sure our parent is not null
         if (parent == null) {
             throw new TagException(tag, "Parent UIComponent was null");
@@ -110,6 +112,46 @@ public class AliasTagHandler extends ComponentHandler {
         if (cache != null) {
             cacheValue = cache.getBoolean(ctx);
         }
+
+        if (isOptimizedAgain()) {
+            applyOptimized(ctx, parent, cacheValue);
+        } else {
+            applyAlias(ctx, parent, cacheValue);
+        }
+    }
+
+    protected boolean isOptimizedAgain() {
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        return !cs.isBooleanPropertyTrue("nuxeo.jsf.removeAliasOptimsReloaded");
+    }
+
+    protected void applyOptimized(FaceletContext ctx, UIComponent parent, boolean cache)
+            throws IOException, FacesException, FaceletException, ELException {
+        VariableMapper orig = ctx.getVariableMapper();
+        try {
+            BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+            vm.setBlockedPatterns(blockedPatterns);
+            if (variables != null) {
+                for (Map.Entry<String, ValueExpression> var : variables.entrySet()) {
+                    if (cache) {
+                        // resolve value and put it as is in variables
+                        Object res = var.getValue().getValue(ctx);
+                        ValueExpression ve = ctx.getExpressionFactory().createValueExpression(res, Object.class);
+                        vm.setVariable(var.getKey(), ve);
+                    } else {
+                        vm.setVariable(var.getKey(), var.getValue());
+                    }
+                }
+            }
+            ctx.setVariableMapper(vm);
+            nextHandler.apply(ctx, parent);
+        } finally {
+            ctx.setVariableMapper(orig);
+        }
+    }
+
+    protected void applyAlias(FaceletContext ctx, UIComponent parent, boolean cacheValue)
+            throws IOException, FacesException, FaceletException, ELException {
         AliasVariableMapper target = new AliasVariableMapper();
         target.setBlockedPatterns(blockedPatterns);
         if (variables != null) {
@@ -138,10 +180,7 @@ public class AliasTagHandler extends ComponentHandler {
             return;
         }
 
-        // resolve the "anchor" attribute to decide whether variable should be
-        // anchored in the tree as a UIAliasHolder
-        boolean createComponent = isAnchored(ctx);
-        applyAliasHandler(ctx, parent, alias, nextHandler, createComponent);
+        applyAliasHandler(ctx, parent, alias, nextHandler);
     }
 
     protected boolean isAnchored(FaceletContext ctx) {
@@ -160,8 +199,10 @@ public class AliasTagHandler extends ComponentHandler {
     }
 
     protected void applyAliasHandler(FaceletContext ctx, UIComponent parent, AliasVariableMapper alias,
-            FaceletHandler nextHandler, boolean createComponent) throws IOException, FacesException, FaceletException,
-            ELException {
+            FaceletHandler nextHandler) throws IOException, FacesException, FaceletException, ELException {
+        // resolve the "anchor" attribute to decide whether variable should be
+        // anchored in the tree as a UIAliasHolder
+        boolean createComponent = isAnchored(ctx);
         if (createComponent) {
             // start by removing component from tree if it is already there, to
             // make sure it's recreated next

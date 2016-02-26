@@ -58,9 +58,7 @@ public class MetaValueExpression extends ValueExpression implements Serializable
 
     /**
      * @see {@link #MetaValueExpression(ValueExpression, FunctionMapper, VariableMapper)}
-     * @deprecated since 7.4: function and variable mapper are needed for resolution to be done in the right context.
      */
-    @Deprecated
     public MetaValueExpression(ValueExpression originalValueExpression) {
         this(originalValueExpression, null, null, Object.class);
     }

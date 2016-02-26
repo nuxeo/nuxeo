@@ -36,6 +36,7 @@ import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagException;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
@@ -101,26 +102,43 @@ public class SetTagHandler extends AliasTagHandler {
             throw new TagException(tag, "Parent UIComponent was null");
         }
 
-        FaceletHandler nextHandler = this.nextHandler;
-        VariableMapper orig = ctx.getVariableMapper();
-        AliasVariableMapper target = new AliasVariableMapper();
-        // generate id before applying (and before generating next handler, in
-        // case of merge of variables, as parent aliases will be exposed to
-        // request then).
-        target.setId(ctx.generateUniqueId(tagId));
-
-        VariableMapper vm = target.getVariableMapperForBuild(orig);
-        ctx.setVariableMapper(vm);
-        try {
-            nextHandler = getAliasVariableMapper(ctx, target);
-        } finally {
-            ctx.setVariableMapper(orig);
+        if (isOptimizedAgain()) {
+            String varStr = var.getValue(ctx);
+            VariableMapper orig = ctx.getVariableMapper();
+            boolean done = false;
+            if (orig instanceof BlockingVariableMapper) {
+                BlockingVariableMapper vm = (BlockingVariableMapper) orig;
+                if (isAcceptingMerge(ctx, vm, varStr)) {
+                    FaceletHandler next = applyOptimized(ctx, parent, vm, varStr);
+                    next.apply(ctx, parent);
+                    done = true;
+                }
+            }
+            if (!done) {
+                try {
+                    BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+                    ctx.setVariableMapper(vm);
+                    FaceletHandler next = applyOptimized(ctx, parent, vm, varStr);
+                    next.apply(ctx, parent);
+                } finally {
+                    ctx.setVariableMapper(orig);
+                }
+            }
+        } else {
+            applyAlias(ctx, parent);
         }
-        apply(ctx, parent, target, nextHandler);
     }
 
     public FaceletHandler getNextHandler() {
         return nextHandler;
+    }
+
+    public boolean isAcceptingMerge(FaceletContext ctx, BlockingVariableMapper vm, String var) {
+        // avoid overriding variable already in the mapper
+        if (vm.hasVariable(var)) {
+            return false;
+        }
+        return isAcceptingMerge(ctx);
     }
 
     public boolean isAcceptingMerge(FaceletContext ctx) {
@@ -136,6 +154,90 @@ public class SetTagHandler extends AliasTagHandler {
             }
         }
         return true;
+    }
+
+    public FaceletHandler applyOptimized(FaceletContext ctx, UIComponent parent, BlockingVariableMapper vm)
+            throws IOException {
+        String varStr = var.getValue(ctx);
+        return applyOptimized(ctx, parent, vm, varStr);
+    }
+
+    public FaceletHandler applyOptimized(FaceletContext ctx, UIComponent parent, BlockingVariableMapper vm,
+            String varStr) throws IOException {
+
+        // handle variable expression
+        boolean cacheValue = false;
+        if (cache != null) {
+            cacheValue = cache.getBoolean(ctx);
+        }
+        boolean resolveTwiceBool = false;
+        if (resolveTwice != null) {
+            resolveTwiceBool = resolveTwice.getBoolean(ctx);
+        }
+
+        ValueExpression ve;
+        if (cacheValue) {
+            // resolve value and put it as is in variable mapper
+            Object res = value.getObject(ctx);
+            if (resolveTwiceBool && res instanceof String && ComponentTagUtils.isValueReference((String) res)) {
+                ve = ctx.getExpressionFactory().createValueExpression(ctx, (String) res, Object.class);
+                res = ve.getValue(ctx);
+            }
+            ve = ctx.getExpressionFactory().createValueExpression(res, Object.class);
+        } else {
+            ve = value.getValueExpression(ctx, Object.class);
+            if (resolveTwiceBool) {
+                boolean localBool = false;
+                if (local != null) {
+                    localBool = local.getBoolean(ctx);
+                }
+                if (localBool) {
+                    ve = new MetaValueExpression(ve);
+                } else {
+                    ve = new MetaValueExpression(ve, ctx.getFunctionMapper(), vm);
+                }
+            }
+        }
+
+        vm.setVariable(varStr, ve);
+
+        if (blockPatterns != null) {
+            String blockedValue = blockPatterns.getValue(ctx);
+            if (!StringUtils.isEmpty(blockedValue)) {
+                // split on "," character
+                vm.setBlockedPatterns(resolveBlockPatterns(blockedValue));
+            }
+        }
+
+        FaceletHandler nextHandler = this.nextHandler;
+        if (nextHandler instanceof SetTagHandler) {
+            // try merging with next handler
+            SetTagHandler next = (SetTagHandler) nextHandler;
+            if (next.isAcceptingMerge(ctx)) {
+                nextHandler = next.applyOptimized(ctx, parent, vm);
+            }
+        }
+
+        return nextHandler;
+    }
+
+    public void applyAlias(FaceletContext ctx, UIComponent parent) throws IOException {
+        FaceletHandler nextHandler = this.nextHandler;
+        VariableMapper orig = ctx.getVariableMapper();
+        AliasVariableMapper target = new AliasVariableMapper();
+        // generate id before applying (and before generating next handler, in
+        // case of merge of variables, as parent aliases will be exposed to
+        // request then).
+        target.setId(ctx.generateUniqueId(tagId));
+
+        VariableMapper vm = target.getVariableMapperForBuild(orig);
+        ctx.setVariableMapper(vm);
+        try {
+            nextHandler = getAliasVariableMapper(ctx, target);
+        } finally {
+            ctx.setVariableMapper(orig);
+        }
+        applyAliasHandler(ctx, parent, target, nextHandler);
     }
 
     public FaceletHandler getAliasVariableMapper(FaceletContext ctx, AliasVariableMapper target) {
