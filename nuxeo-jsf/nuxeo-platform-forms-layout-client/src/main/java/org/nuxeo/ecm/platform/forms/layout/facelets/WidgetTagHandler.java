@@ -48,6 +48,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.ui.web.util.FaceletDebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.el.VariableMapperWrapper;
@@ -140,88 +141,94 @@ public class WidgetTagHandler extends MetaTagHandler {
      * widget level, and {@link RenderVariables.globalVariables#document}.
      */
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
-        // compute value name to set on widget instance in case it's changed
-        // from first computation
-        String valueName = null;
-        if (value != null) {
-            valueName = value.getValue();
-        }
-        if (ComponentTagUtils.isStrictValueReference(valueName)) {
-            valueName = ComponentTagUtils.getBareValueName(valueName);
-        }
-
-        // build handler
-        boolean widgetInstanceBuilt = false;
+        long start = FaceletDebugTracer.start();
         Widget widgetInstance = null;
-        if (widget != null) {
-            widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
-            if (widgetInstance != null && valueName != null) {
-                widgetInstance.setValueName(valueName);
-            }
-        } else {
-            // resolve widget according to name and mode (and optional
-            // category)
-            WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
-            String modeValue = mode.getValue(ctx);
-            String layoutNameValue = null;
-            if (layoutName != null) {
-                layoutNameValue = layoutName.getValue(ctx);
+        try {
+            // compute value name to set on widget instance in case it's changed
+            // from first computation
+            String valueName = null;
+            if (value != null) {
+                valueName = value.getValue();
+            }
+            if (ComponentTagUtils.isStrictValueReference(valueName)) {
+                valueName = ComponentTagUtils.getBareValueName(valueName);
             }
 
-            if (name != null) {
-                String nameValue = name.getValue(ctx);
-                String catValue = null;
-                if (category != null) {
-                    catValue = category.getValue(ctx);
+            // build handler
+            boolean widgetInstanceBuilt = false;
+            if (widget != null) {
+                widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
+                if (widgetInstance != null && valueName != null) {
+                    widgetInstance.setValueName(valueName);
                 }
-                widgetInstance = layoutService.getWidget(ctx, nameValue, catValue, modeValue, valueName,
-                        layoutNameValue);
-                widgetInstanceBuilt = true;
-            } else if (definition != null) {
-                WidgetDefinition widgetDef = (WidgetDefinition) definition.getObject(ctx, WidgetDefinition.class);
-                if (widgetDef != null) {
-                    widgetInstance = layoutService.getWidget(ctx, widgetDef, modeValue, valueName, layoutNameValue);
-                    widgetInstanceBuilt = true;
-                }
-            }
+            } else {
+                // resolve widget according to name and mode (and optional
+                // category)
+                WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
-        }
-        if (widgetInstance != null) {
-            // add additional properties put on tag
-            String widgetPropertyMarker = RenderVariables.widgetVariables.widgetProperty.name() + "_";
-            List<String> reservedVars = Arrays.asList(reservedVarsArray);
-            for (TagAttribute var : vars) {
-                String localName = var.getLocalName();
-                if (!reservedVars.contains(localName)) {
-                    if (localName != null && localName.startsWith(widgetPropertyMarker)) {
-                        localName = localName.substring(widgetPropertyMarker.length());
+                String modeValue = mode.getValue(ctx);
+                String layoutNameValue = null;
+                if (layoutName != null) {
+                    layoutNameValue = layoutName.getValue(ctx);
+                }
+
+                if (name != null) {
+                    String nameValue = name.getValue(ctx);
+                    String catValue = null;
+                    if (category != null) {
+                        catValue = category.getValue(ctx);
                     }
-                    widgetInstance.setProperty(localName, var.getValue());
+                    widgetInstance = layoutService.getWidget(ctx, nameValue, catValue, modeValue, valueName,
+                            layoutNameValue);
+                    widgetInstanceBuilt = true;
+                } else if (definition != null) {
+                    WidgetDefinition widgetDef = (WidgetDefinition) definition.getObject(ctx, WidgetDefinition.class);
+                    if (widgetDef != null) {
+                        widgetInstance = layoutService.getWidget(ctx, widgetDef, modeValue, valueName, layoutNameValue);
+                        widgetInstanceBuilt = true;
+                    }
+                }
+
+            }
+            if (widgetInstance != null) {
+                // add additional properties put on tag
+                String widgetPropertyMarker = RenderVariables.widgetVariables.widgetProperty.name() + "_";
+                List<String> reservedVars = Arrays.asList(reservedVarsArray);
+                for (TagAttribute var : vars) {
+                    String localName = var.getLocalName();
+                    if (!reservedVars.contains(localName)) {
+                        if (localName != null && localName.startsWith(widgetPropertyMarker)) {
+                            localName = localName.substring(widgetPropertyMarker.length());
+                        }
+                        widgetInstance.setProperty(localName, var.getValue());
+                    }
+                }
+
+                VariableMapper orig = ctx.getVariableMapper();
+                try {
+                    if (FaceletHandlerHelper.isAliasOptimEnabled()) {
+                        applyOptimized(ctx, orig, widgetInstance, widgetInstanceBuilt);
+                    } else {
+                        applyCompat(ctx, orig, widgetInstance, widgetInstanceBuilt);
+                    }
+
+                    boolean resolveOnlyBool = false;
+                    if (resolveOnly != null) {
+                        resolveOnlyBool = resolveOnly.getBoolean(ctx);
+                    }
+
+                    if (resolveOnlyBool) {
+                        nextHandler.apply(ctx, parent);
+                    } else {
+                        applyWidgetHandler(ctx, parent, config, widgetInstance, value, true, nextHandler);
+                    }
+                } finally {
+                    ctx.setVariableMapper(orig);
                 }
             }
-
-            VariableMapper orig = ctx.getVariableMapper();
-            try {
-                if (FaceletHandlerHelper.isAliasOptimEnabled()) {
-                    applyOptimized(ctx, orig, widgetInstance, widgetInstanceBuilt);
-                } else {
-                    applyCompat(ctx, orig, widgetInstance, widgetInstanceBuilt);
-                }
-
-                boolean resolveOnlyBool = false;
-                if (resolveOnly != null) {
-                    resolveOnlyBool = resolveOnly.getBoolean(ctx);
-                }
-
-                if (resolveOnlyBool) {
-                    nextHandler.apply(ctx, parent);
-                } else {
-                    applyWidgetHandler(ctx, parent, config, widgetInstance, value, true, nextHandler);
-                }
-            } finally {
-                ctx.setVariableMapper(orig);
-            }
+        } finally {
+            FaceletDebugTracer.trace(start, config.getTag(), widgetInstance == null ? null : widgetInstance.getId());
         }
     }
 
