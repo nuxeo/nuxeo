@@ -1,16 +1,16 @@
-<f:subview xmlns:f="http://java.sun.com/jsf/core"
+<c:if test="#{nxl:isLikeViewMode(widget.mode)}"
   xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:h="http://java.sun.com/jsf/html">
-  <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
-   <c:if test="#{documentManager.hasPermission(field.ref, 'Everything')}">
+  <ui:fragment rendered="#{documentManager.hasPermission(field.ref, 'Everything')}">
     <nxd:restDocumentLink document="#{field}"
-        tab="TAB_MANAGE" subTab="TAB_RIGHTS">
+      tab="TAB_MANAGE" subTab="TAB_RIGHTS">
       <h:graphicImage value="/icons/manage_collection.png"
         alt="#{messages['action.view.manage']}"
         title="#{messages['action.view.manage']}"/>
     </nxd:restDocumentLink>
-    </c:if>
-  </c:if>
-</f:subview>
+  </ui:fragment>
+</c:if>
