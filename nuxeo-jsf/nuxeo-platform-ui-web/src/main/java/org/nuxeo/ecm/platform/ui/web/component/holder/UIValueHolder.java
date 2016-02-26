@@ -368,6 +368,9 @@ public class UIValueHolder extends HtmlInputText implements ResettableComponent 
 
     @Override
     public boolean visitTree(VisitContext visitContext, VisitCallback callback) {
+        if (!isVisitable(visitContext)) {
+            return false;
+        }
         FacesContext facesContext = visitContext.getFacesContext();
         AliasVariableMapper alias = getAliasVariableMapper(facesContext);
         try {
