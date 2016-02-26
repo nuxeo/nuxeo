@@ -6,47 +6,30 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
-  <nxu:set var="resolvedMode"
-    value="#{nxu:test(empty action.properties.widgetMode, widget.mode, action.properties.widgetMode)}">
-  <nxu:set var="displayActionLabel"
-    value="#{action.properties.displayActionLabel}"
-    cache="true">
-  <nxu:set var="displayWidgetLabel"
-    value="#{action.properties.displayWidgetLabel}"
-    cache="true">
-  <nxu:set var="widgetId"
-    value="#{widget.id}"
-    cache="true">
+  <c:if test="#{widgetProperty_displayActionLabel}">
+    <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+    <h:outputText value=" " />
+  </c:if>
 
-    <c:if test="#{displayActionLabel}">
-      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-      <h:outputText value=" " />
-    </c:if>
-
-    <nxl:widget
-      name="#{action.properties.widgetName}"
-      mode="#{resolvedMode}"
-      category="#{empty action.properties.widgetCategory ? '': action.properties.widgetCategory}"
-      layoutName="#{widget.name}"
-      value="#{fieldOrValue}"
-      resolveOnly="true">
-      <nxu:form id="#{widget.id}_form"
-        skip="#{!widgetControl_requireSurroundingForm}"
-        useAjaxForm="#{widgetControl_useAjaxForm}"
-        disableMultipartForm="#{widgetControl_disableMultiPartForm}"
-        styleClass="subWidgetForm"
-        disableDoubleClickShield="#{widgetControl_disableDoubleClickShield}">
-        <c:if test="#{action.properties.displayWidgetLabel}">
-          <ui:include src="/widgets/incl/widget_label_template.xhtml" />
-          <h:outputText value=" " />
-        </c:if>
-        <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
-      </nxu:form>
-    </nxl:widget>
-
-  </nxu:set>
-  </nxu:set>
-  </nxu:set>
-  </nxu:set>
+  <nxl:widget
+    name="#{widgetProperty_widgetName}"
+    mode="#{nxu:test(empty widgetProperty_widgetMode, widget.mode, widgetProperty_widgetMode)}"
+    category="#{empty widgetProperty_widgetCategory ? '': widgetProperty_widgetCategory}"
+    layoutName="#{widget.name}"
+    value="#{fieldOrValue}"
+    resolveOnly="true">
+    <nxu:form id="#{widget.id}_form"
+      skip="#{!widgetControl_requireSurroundingForm}"
+      useAjaxForm="#{widgetControl_useAjaxForm}"
+      disableMultipartForm="#{widgetControl_disableMultiPartForm}"
+      styleClass="subWidgetForm"
+      disableDoubleClickShield="#{widgetControl_disableDoubleClickShield}">
+      <c:if test="#{widgetProperty_displayWidgetLabel}">
+        <ui:include src="/widgets/incl/widget_label_template.xhtml" />
+        <h:outputText value=" " />
+      </c:if>
+      <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
+    </nxu:form>
+  </nxl:widget>
 
 </c:if>

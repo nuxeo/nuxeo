@@ -1,0 +1,22 @@
+<nxu:set var="actionLabel"
+  value="#{messages[widget.label]}"
+  resolveTwice="true"
+  cache="true"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:h="http://java.sun.com/jsf/html">
+  <c:if test="#{not widgetProperty_hideIcon}">
+    <nxu:graphicImage value="#{nxu:test(empty widgetProperty_icon and widgetProperty_hideLabel, '/icons/action_empty.png', widgetProperty_icon)}"
+      title="#{actionLabel}"
+      rendered="#{not empty widgetProperty_icon or widgetProperty_hideLabel}"
+      alt="#{actionLabel}"
+      styleClass="smallIcon tipsyShow #{empty tipsyGravity?'tipsyGravitySE':tipsyGravity} #{widgetProperty_iconStyleClass}" />
+  </c:if>
+  <c:if test="#{not widgetProperty_hideIcon and not widgetProperty_hideLabel}">
+    <h:outputText value=" " />
+  </c:if>
+  <c:if test="#{not widgetProperty_hideLabel}">
+    <h:outputText value="#{actionLabel}"
+      styleClass="actionLabel #{widgetProperty_labelStyleClass}" />
+  </c:if>
+</nxu:set>
