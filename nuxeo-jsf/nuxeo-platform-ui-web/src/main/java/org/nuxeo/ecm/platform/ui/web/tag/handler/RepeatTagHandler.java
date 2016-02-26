@@ -115,11 +115,17 @@ public class RepeatTagHandler extends TagHandler {
     /**
      * @since 8.2
      */
+    protected final TagAttribute id;
+
+    /**
+     * @since 8.2
+     */
     protected final TagAttribute renderTime;
 
     public RepeatTagHandler(TagConfig config) {
         super(config);
         this.config = config;
+        id = getAttribute("id");
         items = getAttribute("items");
         itemsId = getAttribute("itemsId");
         value = getAttribute("value");
@@ -207,7 +213,7 @@ public class RepeatTagHandler extends TagHandler {
             List<TagAttribute> repeatAttrs = new ArrayList<TagAttribute>();
             TagAttribute itemsAttr = getItemsAttribute();
             repeatAttrs.add(createAttribute(config, "value", itemsAttr != null ? itemsAttr.getValue() : null));
-            repeatAttrs.addAll(copyAttributes(config, var, begin, end, step, varStatusAttr, tranzient));
+            repeatAttrs.addAll(copyAttributes(config, id, var, begin, end, step, varStatusAttr, tranzient));
             ComponentConfig repeatConfig = TagConfigFactory.createComponentConfig(config, tagId,
                     new TagAttributesImpl(repeatAttrs.toArray(new TagAttribute[] {})), nextHandler,
                     UIRepeat.COMPONENT_TYPE, null);
