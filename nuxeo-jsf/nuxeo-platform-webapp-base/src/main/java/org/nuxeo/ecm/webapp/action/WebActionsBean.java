@@ -487,6 +487,18 @@ public class WebActionsBean implements WebActions, Serializable {
         return UserAgentMatcher.isHistoryPushStateSupported(ua);
     }
 
+    /**
+     * Returns true if configuration property to remove optimizations around actions (for compatibility) has been
+     * enabled.
+     *
+     * @since 8.2
+     */
+    @Factory(value = "removeActionOptims", scope = ScopeType.SESSION)
+    public boolean removeActionOptims() {
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        return cs.isBooleanPropertyTrue("nuxeo.jsf.actions.removeActionOptims");
+    }
+
     @Observer(value = { EventNames.FLUSH_EVENT }, create = false)
     @BypassInterceptors
     public void onHotReloadFlush() {
