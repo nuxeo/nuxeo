@@ -19,24 +19,26 @@ Needed parameters:
           value="#{nxu:test(empty cvLayout.iconPath, '/icons/document_listing_icon.png', cvLayout.iconPath)}" />
         <c:set var="title"
           value="#{nxu:test(cvLayout.translateTitle, messages[cvLayout.title], cvLayout.title)}" />
-        <c:if test="#{useAjaxForm}">
-          <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
-            render="#{ajaxReRender}"
-            execute="@this">
-            <nxu:graphicImage value="#{iconPath}"
-              title="#{title}"
-              alt="#{title}"
-              styleClass="tipsyShow tipsyGravitySE" />
-          </a4j:commandLink>
-        </c:if>
-        <c:if test="#{not useAjaxForm}">
-          <h:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}">
-            <nxu:graphicImage value="#{iconPath}"
-              title="#{title}"
-              alt="#{title}"
-              styleClass="tipsyShow tipsyGravitySE" />
-          </h:commandLink>
-        </c:if>
+        <c:choose>
+          <c:when test="#{nxu:test(removeActionOptims, useAjaxForm, widgetProperty_useAjaxForm)}">
+            <a4j:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}"
+              render="#{ajaxReRender}"
+              execute="@this">
+              <nxu:graphicImage value="#{iconPath}"
+                title="#{title}"
+                alt="#{title}"
+                styleClass="tipsyShow tipsyGravitySE" />
+            </a4j:commandLink>
+          </c:when>
+          <c:otherwise>
+            <h:commandLink action="#{contentView.setCurrentResultLayout(cvLayout)}">
+              <nxu:graphicImage value="#{iconPath}"
+                title="#{title}"
+                alt="#{title}"
+                styleClass="tipsyShow tipsyGravitySE" />
+            </h:commandLink>
+          </c:otherwise>
+        </c:choose>
       </span>
     </c:forEach>
   </c:if>
