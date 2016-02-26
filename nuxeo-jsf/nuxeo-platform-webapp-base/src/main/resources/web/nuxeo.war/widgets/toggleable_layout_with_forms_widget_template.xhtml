@@ -142,15 +142,12 @@
           </h:form>
 
           <h:panelGroup layout="block" rendered="#{layoutToggled}">
-            <ui:decorate template="/widgets/incl/form_template.xhtml">
-              <ui:param name="addForm" value="true" />
-              <ui:param name="formId" value="#{widget.id}_toggledForm" />
-              <ui:param name="useAjaxForm" value="#{useAjaxForm}" />
-              <ui:param name="onFormSubmit" value="#{nxu:test(useAjaxForm, 'onSubmitToggledForm(); return true;', '')}" />
-              <ui:param name="formStyleClass" value="safeEditEnabled" />
-              <ui:param name="disableDoubleClickShield" value="#{disableDoubleClickShield}" />
-
-              <ui:define name="form_template_content">
+            <nxu:form id="#{widget.id}_toggledForm"
+              useAjaxForm="#{useAjaxForm}"
+              disableMultipartForm="#{widgetControl_disableMultiPartForm}"
+              onsubmit="#{nxu:test(useAjaxForm, 'onSubmitToggledForm(); return true;', '')}"
+              styleClass="safeEditEnabled"
+              disableDoubleClickShield="#{disableDoubleClickShield}">
 
                 <c:if test="#{useAjaxForm}">
                   <h:outputScript target="#{pageJsTarget}">
@@ -227,8 +224,7 @@
                   });
                 </script>
 
-              </ui:define>
-            </ui:decorate>
+            </nxu:form>
           </h:panelGroup>
 
         </ui:define>
