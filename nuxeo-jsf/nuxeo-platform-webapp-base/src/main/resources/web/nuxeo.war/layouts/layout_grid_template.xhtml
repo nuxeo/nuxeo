@@ -22,7 +22,7 @@
             <div class="gridBox #{nxu:test(empty layoutRow.properties[gridStyleClassProp], widgetControl_gridStyleClass, layoutRow.properties[gridStyleClassProp])}">
               <c:if test="#{widget != null}">
                 <nxu:form id="#{widget.id}_form"
-                  add="#{widgetControl_requireSurroundingForm}"
+                  skip="#{!widgetControl_requireSurroundingForm}"
                   useAjaxForm="#{widgetControl_useAjaxForm}"
                   disableMultipartForm="#{widgetControl_disableMultipartForm}"
                   disableDoubleClickShield="#{widgetControl_disableDoubleClickShield}">
