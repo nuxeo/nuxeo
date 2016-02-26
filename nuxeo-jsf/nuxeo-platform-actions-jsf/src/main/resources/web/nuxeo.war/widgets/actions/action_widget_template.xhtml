@@ -29,8 +29,10 @@
     <a4j:outputPanel id="#{actionsPanelId}" layout="block"
       styleClass="#{widgetProperty_styleClass}">
 
-      <ui:decorate template="/incl/action/action_template.xhtml">
-        <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+      <ui:decorate template="/incl/action/generic_action_template.xhtml">
+        <ui:param name="useButton" value="#{widgetProperty_actionsDisplay == 'buttons'}" />
+        <ui:param name="hideLabel" value="#{widgetProperty_actionsDisplay == 'icons'}" />
+        <ui:param name="hideIcon" value="#{widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'links'}" />
         <ui:param name="addForm" value="#{widgetProperty_addForm}" />
         <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
         <ui:param name="formStyleClass" value="displayI subWidgetForm" />

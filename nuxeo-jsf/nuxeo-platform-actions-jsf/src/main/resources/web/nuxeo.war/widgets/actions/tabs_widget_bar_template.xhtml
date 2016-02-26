@@ -1,13 +1,16 @@
-<ui:composition
+<c:if test="true"
   xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <ul>
   <nxu:repeat var="action" items="#{widgetProperty_actions}">
     <li class="#{nxu:test(widgetProperty_currentTabAction.id == action.id, 'selected', '')}">
-      <ui:decorate template="/incl/action/action_template.xhtml">
-        <ui:param name="actionsDisplay" value="#{widgetProperty_actionsDisplay}" />
+      <ui:decorate template="/incl/action/generic_action_template.xhtml">
+        <ui:param name="useButton" value="#{widgetProperty_actionsDisplay == 'buttons'}" />
+        <ui:param name="hideLabel" value="#{widgetProperty_actionsDisplay == 'icons'}" />
+        <ui:param name="hideIcon" value="#{widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'links'}" />
         <ui:param name="parentTabActionCategory" value="#{nxu:test(empty parentTabActionCategory, widgetProperty_category, parentTabActionCategory)}" />
         <ui:param name="ajaxReRender" value="#{nxu:joinRender(tabsPanelId, nxu:joinRender(tabContentPanelId, widgetProperty_ajaxReRender))}" />
         <ui:param name="addForm" value="#{widgetProperty_addForm}" />
@@ -25,4 +28,4 @@
   </ui:include>
 </nxu:repeat>
 
-</ui:composition>
+</c:if>
