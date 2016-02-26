@@ -22,7 +22,7 @@ package org.nuxeo.functionaltests.pages.forms;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
-import org.nuxeo.functionaltests.pages.TopicDocumentBasePage;
+import org.nuxeo.functionaltests.pages.tabs.TopicTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -60,8 +60,8 @@ public class TopicCreationFormPage extends AbstractPage {
         super(driver);
     }
 
-    public TopicDocumentBasePage createTopicDocument(String title, String description, Boolean moderation,
-        String... usersOrGroups) {
+    public TopicTabSubPage createTopicDocument(String title, String description, Boolean moderation,
+            String... usersOrGroups) {
         titleTextInput.sendKeys(title);
         descriptionTextInput.sendKeys(description);
 
@@ -73,14 +73,13 @@ public class TopicCreationFormPage extends AbstractPage {
 
         if (usersOrGroups != null) {
             Select2WidgetElement selectUsersOrGroups = new Select2WidgetElement(
-                driver,
-                driver.findElement(By.xpath(
-                    "//div[@id='s2id_createThread:nxl_user_group_prefixed_suggestion:nxw_selection_select2']")),
-                true);
+                    driver,
+                    driver.findElement(By.xpath("//div[@id='s2id_createThread:nxl_user_group_prefixed_suggestion:nxw_selection_select2']")),
+                    true);
             selectUsersOrGroups.selectValues(usersOrGroups);
         }
 
         createButton.click();
-        return asPage(TopicDocumentBasePage.class);
+        return asPage(TopicTabSubPage.class);
     }
 }
