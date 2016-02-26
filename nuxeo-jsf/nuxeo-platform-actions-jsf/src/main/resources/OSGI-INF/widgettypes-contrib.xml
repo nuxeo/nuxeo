@@ -360,6 +360,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="actions_widget_type_properties_any">
               <rows>
@@ -446,6 +449,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">true</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="action_widget_type_properties_any">
               <rows>
@@ -520,6 +526,9 @@
           <mode>view</mode>
         </supportedModes>
         <properties>
+          <defaultValues mode="any">
+            <property name="trackCurrentAction">false</property>
+          </defaultValues>
           <layouts mode="any">
             <layout name="tabs_widget_type_properties_any">
               <rows>

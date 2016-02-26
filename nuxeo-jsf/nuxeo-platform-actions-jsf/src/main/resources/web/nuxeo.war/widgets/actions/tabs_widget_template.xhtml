@@ -23,6 +23,7 @@
 <nxu:set var="tabWidgetPattern" value="#{widgetProperty_pattern}">
 <nxu:valueHolder id="#{clickedActionIdHolder}"
   var="clickedActionId"
+  skip="#{!widgetProperty_trackCurrentAction}"
   defaultValue="#{widgetProperty_currentTabAction.id}">
 <c:choose>
 
