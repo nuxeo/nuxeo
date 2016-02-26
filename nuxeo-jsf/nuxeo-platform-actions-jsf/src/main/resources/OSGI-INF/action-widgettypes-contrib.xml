@@ -591,9 +591,12 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+        org.nuxeo.ecm.platform.actions.facelets.ActionWidgetTypeHandler
       </handler-class>
       <property name="template">
+        /incl/action/widgets/link_action_template.xhtml
+      </property>
+      <property name="compat_template">
         /incl/action/link_action_template.xhtml
       </property>
       <property name="dev_template">
@@ -679,9 +682,12 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+        org.nuxeo.ecm.platform.actions.facelets.ActionWidgetTypeHandler
       </handler-class>
       <property name="template">
+        /incl/action/widgets/bare_link_action_template.xhtml
+      </property>
+      <property name="compat_template">
         /incl/action/bare_link_action_template.xhtml
       </property>
       <property name="dev_template">
@@ -766,9 +772,12 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+        org.nuxeo.ecm.platform.actions.facelets.ActionWidgetTypeHandler
       </handler-class>
       <property name="template">
+        /incl/action/widgets/fancybox_action_template.xhtml
+      </property>
+      <property name="compat_template">
         /incl/action/fancybox_action_template.xhtml
       </property>
       <property name="dev_template">
@@ -843,9 +852,12 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+        org.nuxeo.ecm.platform.actions.facelets.ActionWidgetTypeHandler
       </handler-class>
       <property name="template">
+        /incl/action/widgets/rest_document_link_action_template.xhtml
+      </property>
+      <property name="compat_template">
         /incl/action/rest_document_link_action_template.xhtml
       </property>
       <property name="dev_template">
@@ -926,9 +938,12 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+        org.nuxeo.ecm.platform.actions.facelets.ActionWidgetTypeHandler
       </handler-class>
       <property name="template">
+        /incl/action/widgets/main_tab_action_template.xhtml
+      </property>
+      <property name="compat_template">
         /incl/action/main_tab_action_template.xhtml
       </property>
       <property name="dev_template">
@@ -1067,9 +1082,12 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+        org.nuxeo.ecm.platform.actions.facelets.ActionWidgetTypeHandler
       </handler-class>
       <property name="template">
+        /incl/action/widgets/widget_action_template.xhtml
+      </property>
+      <property name="compat_template">
         /incl/action/widget_action_template.xhtml
       </property>
       <property name="dev_template">
@@ -1123,9 +1141,12 @@
         </properties>
       </configuration>
       <handler-class>
-        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+        org.nuxeo.ecm.platform.actions.facelets.ActionWidgetTypeHandler
       </handler-class>
       <property name="template">
+        /incl/action/widgets/template_action_template.xhtml
+      </property>
+      <property name="compat_template">
         /incl/action/template_action_template.xhtml
       </property>
       <property name="dev_template">

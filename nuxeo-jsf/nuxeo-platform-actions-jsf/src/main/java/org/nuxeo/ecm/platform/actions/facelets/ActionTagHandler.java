@@ -147,9 +147,6 @@ public class ActionTagHandler extends MetaTagHandler {
                     }
                     props.remove(templateName);
                 }
-                // add up more
-                props.put("immediate", actionInstance.isImmediate());
-                props.put("icon", actionInstance.getIcon());
                 // handle onclick
                 StringBuilder fullOnclick = new StringBuilder();
                 if (BuiltinWidgetModes.VIEW.equals(modeValue) && props.containsKey("confirmMessage")) {
@@ -167,9 +164,14 @@ public class ActionTagHandler extends MetaTagHandler {
                 if (!StringUtils.isEmpty(onclick)) {
                     fullOnclick.append(onclick).append(";");
                 }
+                props.put("immediate", actionInstance.isImmediate());
+                props.put("icon", actionInstance.getIcon());
                 props.put("onclick", actionInstance.getConfirm());
                 props.put("accessKey", actionInstance.getAccessKey());
                 props.put("available", actionInstance.getAvailable());
+                props.put("link", actionInstance.getLink());
+                props.put("actionId", actionInstance.getId());
+                props.put("action", actionInstance);
 
                 // add all extra props passed to the tag
                 String widgetPropertyMarker = RenderVariables.widgetVariables.widgetProperty.name() + "_";
