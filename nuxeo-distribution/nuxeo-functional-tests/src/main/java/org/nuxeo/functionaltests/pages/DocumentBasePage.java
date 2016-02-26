@@ -119,6 +119,9 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Summary']")
     public WebElement summaryTabLink;
 
+    @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Publish']")
+    public WebElement publishTabLink;
+
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Comments']")
     public WebElement commentsTabLink;
 
