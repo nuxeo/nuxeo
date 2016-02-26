@@ -234,6 +234,9 @@ public class UIAliasHolder extends UIOutput {
 
     @Override
     public boolean visitTree(VisitContext visitContext, VisitCallback callback) {
+        if (!isVisitable(visitContext)) {
+            return false;
+        }
         FacesContext facesContext = visitContext.getFacesContext();
         AliasVariableMapper alias = getAliasVariableMapper();
         try {
