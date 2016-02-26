@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
@@ -42,6 +43,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 
 /**
  * Layout widget recursion tag handler.
@@ -77,9 +79,70 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
      * Widget variables exposed: {@link RenderVariables.widgetVariables#widget} , same variable suffixed with "_n" where
      * n is the widget level, and {@link RenderVariables.widgetVariables#widgetIndex}.
      */
-    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
-            ELException {
+    public void apply(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
+        if (FaceletHandlerHelper.isAliasOptimEnabled()) {
+            applyOptimized(ctx, parent);
+        } else {
+            applyCompat(ctx, parent);
+        }
+    }
 
+    protected void applyOptimized(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
+        // resolve widgets from row in context
+        LayoutRow row = null;
+        String rowVariableName = getInstanceName();
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        TagAttribute rowAttribute = helper.createAttribute(rowVariableName, "#{" + rowVariableName + "}");
+        if (rowAttribute != null) {
+            row = (LayoutRow) rowAttribute.getObject(ctx, LayoutRow.class);
+        }
+        if (row == null) {
+            log.error("Could not resolve layout row " + rowAttribute);
+            return;
+        }
+
+        Widget[] widgets = row.getWidgets();
+        if (widgets == null || widgets.length == 0) {
+            return;
+        }
+
+        boolean recomputeIdsBool = false;
+        if (recomputeIds != null) {
+            recomputeIdsBool = recomputeIds.getBoolean(ctx);
+        }
+
+        VariableMapper orig = ctx.getVariableMapper();
+        try {
+            int widgetCounter = 0;
+            for (Widget widget : widgets) {
+                BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+                ctx.setVariableMapper(vm);
+
+                // set unique id on widget before exposing it to the context, but assumes iteration could be done
+                // several times => do not generate id again if already set, unless specified by attribute
+                // "recomputeIds"
+                if (widget != null && (widget.getId() == null || recomputeIdsBool)) {
+                    WidgetTagHandler.generateWidgetId(helper, widget, false);
+                }
+
+                WidgetTagHandler.exposeWidgetVariables(ctx, vm, widget, widgetCounter, true);
+
+                nextHandler.apply(ctx, parent);
+                widgetCounter++;
+            }
+        } finally {
+            ctx.setVariableMapper(orig);
+        }
+    }
+
+    protected String getInstanceName() {
+        return RenderVariables.rowVariables.layoutRow.name();
+    }
+
+    protected void applyCompat(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
         // resolve widgets from row in context
         LayoutRow row = null;
         String rowVariableName = RenderVariables.rowVariables.layoutRow.name();
@@ -152,4 +215,5 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             widgetCounter++;
         }
     }
+
 }
