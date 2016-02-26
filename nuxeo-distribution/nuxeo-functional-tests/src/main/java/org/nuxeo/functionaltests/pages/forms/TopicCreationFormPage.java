@@ -41,19 +41,19 @@ public class TopicCreationFormPage extends AbstractPage {
     public WebElement descriptionTextInput;
 
     @Required
-    @FindBy(xpath = "//input[@id='createThread:j_idt586:0']")
+    @FindBy(xpath = "//input[@type='radio' and @value='true']")
     public WebElement moderationYesRadioButton;
 
     @Required
-    @FindBy(xpath = "//input[@id='createThread:j_idt586:1']")
+    @FindBy(xpath = "//input[@type='radio' and @value='false']")
     public WebElement moderationNoRadioButton;
 
     @Required
-    @FindBy(name = "createThread:j_idt611")
+    @FindBy(xpath = "//input[@type='submit' and @value='Create']")
     public WebElement createButton;
 
     @Required
-    @FindBy(name = "createThread:j_idt612")
+    @FindBy(xpath = "//input[@type='submit' and @value='Cancel']")
     public WebElement cancelButton;
 
     public TopicCreationFormPage(WebDriver driver) {

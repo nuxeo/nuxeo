@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Anahide Tchertchian
+ *     Gabriel Barata
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -25,6 +26,7 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -72,6 +74,24 @@ public class SectionContentTabSubPage extends DocumentBasePage {
         assertEquals("Delete selected document(s)?", alert.getText());
         alert.accept();
         return asPage(DocumentBasePage.class);
+    }
+
+    protected ContentViewElement getElement() {
+        return AbstractTest.getWebFragment(By.id("cv_section_content_0_panel"), ContentViewElement.class);
+    }
+
+    public DocumentBasePage goToDocument(String documentTitle) {
+        getElement().clickOnItemTitle(documentTitle);
+        return asPage(DocumentBasePage.class);
+    }
+
+    public boolean hasDocumentLink(String title) {
+        try {
+            WebElement element = getElement().findElement(By.linkText(title));
+            return element != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
 }
