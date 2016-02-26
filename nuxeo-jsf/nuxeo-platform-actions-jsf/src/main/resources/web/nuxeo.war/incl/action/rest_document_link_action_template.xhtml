@@ -96,14 +96,7 @@
 
 <c:if test="#{widget.mode == 'tab_content'}">
   <c:if test="#{not empty action.link}">
-    <c:choose>
-      <c:when test="#{action.link.startsWith('/')}">
-        <ui:include src="#{action.link}" />
-      </c:when>
-      <c:otherwise>
-        <ui:include src="/#{action.link}" />
-      </c:otherwise>
-    </c:choose>
+    <ui:include src="#{nxu:test(action.link.startsWith('/'), '', '/')}#{action.link}" />
   </c:if>
 </c:if>
 

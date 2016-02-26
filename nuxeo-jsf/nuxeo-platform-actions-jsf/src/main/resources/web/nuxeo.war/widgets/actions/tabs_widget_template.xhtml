@@ -18,7 +18,6 @@
 <nxu:set var="formAdded" value="#{widgetProperty_addForm}" cache="true">
 <nxu:set var="tabsPanelId" value="#{widget.id}_panel" cache="true">
 <nxu:set var="tabContentPanelId" value="#{widget.id}_tab_content" cache="true">
-<nxu:set var="verticalTabs" value="#{widgetProperty_overallDisplay == 'vertical_block'}" cache="true">
 <nxu:set var="showTabsBar" value="#{not widgetProperty_hideSingleTab or widgetProperty_actions.size > 1}">
 <nxu:set var="tabWidgetView" value="#{widgetProperty_view}">
 <nxu:set var="tabWidgetPattern" value="#{widgetProperty_pattern}">
@@ -27,7 +26,7 @@
   defaultValue="#{widgetProperty_currentTabAction.id}">
 <c:choose>
 
-  <c:when test="#{verticalTabs}">
+  <c:when test="#{widgetProperty_overallDisplay == 'vertical_block'}">
     <div class="gridContainer">
       <div class="gridRow">
         <c:if test="#{showTabsBar}">
@@ -65,7 +64,6 @@
 </c:choose>
 
 </nxu:valueHolder>
-</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>
