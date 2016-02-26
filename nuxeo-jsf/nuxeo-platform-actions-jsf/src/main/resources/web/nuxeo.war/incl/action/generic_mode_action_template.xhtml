@@ -19,11 +19,15 @@ Parameters:
 
 </c:if>
 
+<nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}_#{nxu:jsfTagIdEscape(mode)}">
+<nxu:set var="simpleActionWidgetName" value="#{nxu:jsfTagIdEscape(action.id)}_#{nxu:jsfTagIdEscape(mode)}">
+
 <c:choose>
   <c:when test="#{!removeActionOptims}">
 
     <nxa:action action="#{action}"
       value="#{fieldOrValue}"
+      widgetName="#{nxu:test(formAdded, simpleActionWidgetName, defActionWidgetName)}"
       mode="#{mode}"
       addForm="#{addForm}"
       useAjaxForm="#{useAjaxForm}"
@@ -37,9 +41,6 @@ Parameters:
 
   </c:when>
   <c:otherwise>
-
-<nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}_#{nxu:jsfTagIdEscape(mode)}">
-<nxu:set var="simpleActionWidgetName" value="#{nxu:jsfTagIdEscape(action.id)}_#{nxu:jsfTagIdEscape(mode)}">
 
   <nxl:widgetType category="jsfAction"
     name="#{nxu:test(empty action.type, nxu:test(empty actionType, 'link', actionType), action.type)}"
@@ -55,10 +56,10 @@ Parameters:
     clickedActionIdHolder="#{clickedActionIdHolder}"
     value="#{fieldOrValue}" />
 
-</nxu:set>
-</nxu:set>
-
   </c:otherwise>
 </c:choose>
+
+</nxu:set>
+</nxu:set>
 
 </c:if>
