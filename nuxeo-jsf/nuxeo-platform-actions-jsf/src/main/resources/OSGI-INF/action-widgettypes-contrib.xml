@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.actions.actionwidgettypes">
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Configuration property controlling enablement of action widgets
+      optimizations, useful for backport of optimization on maintenance branches.
+
+      @since 8.2
+    </documentation>
+    <property name="nuxeo.jsf.actions.removeActionOptims">false</property>
+  </extension>
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
     point="widgets">
 
