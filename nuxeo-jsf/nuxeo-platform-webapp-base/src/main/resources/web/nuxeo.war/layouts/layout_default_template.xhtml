@@ -37,7 +37,7 @@
                         </div>
                       </c:if>
                       <nxu:form id="#{widget.id}_form"
-                        add="#{widgetControl_requireSurroundingForm}"
+                        skip="#{!widgetControl_requireSurroundingForm}"
                         useAjaxForm="#{widgetControl_useAjaxForm}"
                         disableMultipartForm="#{widgetControl_disableMultipartForm}"
                         onsubmit="#{onFormSubmit}"
@@ -60,7 +60,7 @@
                     value="#{2*layout.columns/layoutRow.size -1 + nxu:test(widget.handlingLabels, 1, 0)}">
                     <td class="fieldColumn" colspan="#{fieldColspan}" dir="auto">
                       <nxu:form id="#{widget.id}_form"
-                        add="#{widgetControl_requireSurroundingForm}"
+                        skip="#{!widgetControl_requireSurroundingForm}"
                         useAjaxForm="#{widgetControl_useAjaxForm}"
                         disableMultipartForm="#{widgetControl_disableMultipartForm}"
                         onsubmit="#{onFormSubmit}"
