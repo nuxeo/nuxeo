@@ -46,13 +46,13 @@ import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 public class LayoutAutomaticGeneration {
 
     public static Document generateLayoutOutput(SchemaManager sm, String schemaName, boolean generateLabels) {
-        String layoutName = String.format("%s", schemaName);
+        String layoutName = schemaName;
 
         Document document = DocumentFactory.getInstance().createDocument();
         document.setName(layoutName);
 
         Element component = document.addElement("component");
-        component.addAttribute("name", String.format("myproject.%s.generatedContrib", layoutName));
+        component.addAttribute("name", "myproject." + layoutName + ".generatedContrib");
 
         Element extension = component.addElement("extension");
         extension.addAttribute("target", "org.nuxeo.ecm.platform.forms.layout.WebLayoutManager");
@@ -111,7 +111,7 @@ public class LayoutAutomaticGeneration {
                     Element labels = widget.addElement("labels");
                     Element label = labels.addElement("label");
                     label.addAttribute("mode", BuiltinModes.ANY);
-                    label.setText(String.format("label.widget.%s.%s", layoutName, fieldName));
+                    label.setText("label.widget." + layoutName + "." + fieldName);
                 }
 
                 Element fieldsElement = widget.addElement("fields");
@@ -148,7 +148,7 @@ public class LayoutAutomaticGeneration {
 
             if (!widgetResolved) {
                 // widget needs to be done by hand for now
-                layout.addComment(String.format("TODO: %s", fieldName));
+                layout.addComment("TODO: " + fieldName);
             }
 
         }

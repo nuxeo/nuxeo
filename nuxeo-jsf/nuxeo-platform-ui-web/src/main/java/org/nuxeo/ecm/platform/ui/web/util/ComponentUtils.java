@@ -49,8 +49,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
-import org.nuxeo.ecm.platform.web.common.ServletHelper;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -351,9 +349,8 @@ public final class ComponentUtils {
             try {
                 return (T) component;
             } catch (ClassCastException e) {
-                log.error(String.format(
-                        "Invalid component with id %s: %s, expected a " + "component with interface %s", componentId,
-                        component, expectedComponentClass));
+                log.error("Invalid component with id '" + componentId + "': " + component
+                        + ", expected a component with interface " + expectedComponentClass);
             }
         }
         return null;

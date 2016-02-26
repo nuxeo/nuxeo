@@ -75,8 +75,7 @@ public class LayoutRowTagHandler extends TagHandler {
         Layout layout = null;
         String layoutVariableName = RenderVariables.layoutVariables.layout.name();
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        TagAttribute layoutAttribute = helper.createAttribute(layoutVariableName,
-                String.format("#{%s}", layoutVariableName));
+        TagAttribute layoutAttribute = helper.createAttribute(layoutVariableName, "#{" + layoutVariableName + "}");
         if (layoutAttribute != null) {
             layout = (Layout) layoutAttribute.getObject(ctx, Layout.class);
         }

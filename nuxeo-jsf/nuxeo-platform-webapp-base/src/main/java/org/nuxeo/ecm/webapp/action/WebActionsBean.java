@@ -352,15 +352,13 @@ public class WebActionsBean implements WebActions, Serializable {
         if (tabAction != null) {
             String[] categories = tabAction.getCategories();
             if (categories == null || categories.length == 0) {
-                log.error(String.format(
-                        "Cannot set subtab with id '%s' " + "as this action does not hold any category",
-                        tabAction.getId()));
+                log.error("Cannot set subtab with id '" + tabAction.getId()
+                        + "' as this action does not hold any category");
                 return;
             }
             if (categories.length != 1) {
-                log.error(String.format("Setting subtab with id '%s' with category '%s': "
-                        + "use webActions#setCurrentTabAction(action, category) " + "to specify another category",
-                        tabAction.getId(), categories[0]));
+                log.error("Setting subtab with id '" + tabAction.getId() + "' with category '" + categories[0]
+                        + "': use webActions#setCurrentTabAction(action, category) to specify another category");
             }
             setCurrentTabAction(categories[0], tabAction);
         }

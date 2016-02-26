@@ -94,13 +94,17 @@ public abstract class SelectAggregateWidgetTypeHandler extends AbstractSelectWid
         }
 
         if (shouldAddWidgetPropsHandler(widget)) {
+            final String itemValue = ComponentTagUtils.getBareValueName(
+                    (String) widget.getProperty(SelectPropertyMappings.itemValue.name()));
+            final String label = new StringBuilder().append("#{")
+                                                    .append(LABELS)
+                                                    .append("[")
+                                                    .append(itemValue)
+                                                    .append("]}")
+                                                    .toString();
             WidgetSelectOption selectOption = new WidgetSelectOptionsImpl(
                     widget.getProperty(SelectPropertyMappings.selectOptions.name()),
-                    (String) widget.getProperty(SelectPropertyMappings.var.name()),
-                    String.format(
-                            "#{%s[%s]}",
-                            LABELS,
-                            ComponentTagUtils.getBareValueName((String) widget.getProperty(SelectPropertyMappings.itemValue.name()))),
+                    (String) widget.getProperty(SelectPropertyMappings.var.name()), label,
                     (String) widget.getProperty(SelectPropertyMappings.itemValue.name()),
                     widget.getProperty(SelectPropertyMappings.itemDisabled.name()),
                     widget.getProperty(SelectPropertyMappings.itemRendered.name()));

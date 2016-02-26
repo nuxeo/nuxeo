@@ -221,14 +221,14 @@ public class EditableListBean {
         UIEditableList listComponent = null;
         String forString = getParameterValue(requestMap, FOR_PARAMETER_NAME);
         if (forString == null) {
-            log.error(String.format("Could not find '%s' parameter in the request map", FOR_PARAMETER_NAME));
+            log.error("Could not find '" + FOR_PARAMETER_NAME + "' parameter in the request map");
         } else {
             UIComponent forComponent = component.findComponent(forString);
             if (forComponent == null) {
                 log.error("Could not find component with id: " + forString);
             } else if (!(forComponent instanceof UIEditableList)) {
-                log.error(String.format("Invalid component with id %s: %s, expected a " + "component with class %s",
-                        forString, forComponent, UIEditableList.class));
+                log.error("Invalid component with id " + forString + ": " + forComponent
+                        + ", expected a component with class " + UIEditableList.class);
             } else {
                 listComponent = (UIEditableList) forComponent;
             }
@@ -240,13 +240,13 @@ public class EditableListBean {
         EditableListModificationType type = null;
         String typeString = getParameterValue(requestMap, TYPE_PARAMETER_NAME);
         if (typeString == null) {
-            log.error(String.format("Could not find '%s' parameter in the request map", TYPE_PARAMETER_NAME));
+            log.error("Could not find '" + TYPE_PARAMETER_NAME + "' parameter in the request map");
         } else {
             try {
                 type = EditableListModificationType.valueOfString(typeString);
             } catch (IllegalArgumentException err) {
-                log.error(String.format("Illegal value for '%s' attribute: %s, " + "should be one of %s",
-                        TYPE_PARAMETER_NAME, typeString, EditableListModificationType.values()));
+                log.error("Illegal value for '" + TYPE_PARAMETER_NAME + "' attribute: " + typeString
+                        + ", should be one of " + EditableListModificationType.values());
             }
         }
         return type;
@@ -256,13 +256,13 @@ public class EditableListBean {
         Integer index = null;
         String indexString = getParameterValue(requestMap, INDEX_PARAMETER_NAME);
         if (indexString == null) {
-            log.error(String.format("Could not find '%s' parameter in the request map", INDEX_PARAMETER_NAME));
+            log.error("Could not find '" + INDEX_PARAMETER_NAME + "' parameter in the request map");
         } else {
             try {
                 index = Integer.valueOf(indexString);
             } catch (NumberFormatException e) {
-                log.error(String.format("Illegal value for '%s' attribute: %s, " + "should be integer",
-                        INDEX_PARAMETER_NAME, indexString));
+                log.error("Illegal value for '" + INDEX_PARAMETER_NAME + "' attribute: " + indexString
+                        + ", should be integer");
             }
         }
         return index;
@@ -275,8 +275,8 @@ public class EditableListBean {
             try {
                 number = Integer.valueOf(numberString);
             } catch (NumberFormatException e) {
-                log.error(String.format("Illegal value for '%s' attribute: %s, " + "should be integer",
-                        NUMBER_PARAMETER_NAME, numberString));
+                log.error("Illegal value for '" + NUMBER_PARAMETER_NAME + "' attribute: " + numberString
+                        + ", should be integer");
             }
         }
         return number;

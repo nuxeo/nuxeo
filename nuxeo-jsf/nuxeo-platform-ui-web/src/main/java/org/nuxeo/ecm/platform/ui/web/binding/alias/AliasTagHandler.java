@@ -146,8 +146,7 @@ public class AliasTagHandler extends ComponentHandler {
 
     protected boolean isAnchored(FaceletContext ctx) {
         ExpressionFactory eFactory = ctx.getExpressionFactory();
-        ValueExpression ve = eFactory.createValueExpression(ctx, String.format("#{%s}", ANCHOR_ENABLED_VARIABLE),
-                Boolean.class);
+        ValueExpression ve = eFactory.createValueExpression(ctx, "#{" + ANCHOR_ENABLED_VARIABLE + "}", Boolean.class);
         if (Boolean.TRUE.equals(ve.getValue(ctx))) {
             return true;
         }
