@@ -465,8 +465,8 @@
   <tag>
     <tag-name>selectBooleanCheckbox</tag-name>
     <component>
-      <component-type>selectBooleanCheckbox</component-type>
-      <renderer-type>selectBooleanCheckbox</renderer-type>
+      <component-type>javax.faces.HtmlSelectBooleanCheckbox</component-type>
+      <renderer-type>javax.faces.NXCheckbox</renderer-type>
       <handler-class>org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler</handler-class>
     </component>
     <description>
