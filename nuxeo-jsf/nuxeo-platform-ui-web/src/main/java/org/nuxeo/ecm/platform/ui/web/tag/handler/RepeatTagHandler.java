@@ -27,6 +27,7 @@ import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.ComponentConfig;
+import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletException;
 import javax.faces.view.facelets.FaceletHandler;
@@ -40,7 +41,6 @@ import com.sun.faces.facelets.component.UIRepeat;
 import com.sun.faces.facelets.tag.TagAttributeImpl;
 import com.sun.faces.facelets.tag.TagAttributesImpl;
 import com.sun.faces.facelets.tag.jstl.core.ForEachHandler;
-import com.sun.faces.facelets.tag.ui.RepeatHandler;
 
 /**
  * Repeat handler, similar to the standard ForEach handler.
@@ -211,7 +211,7 @@ public class RepeatTagHandler extends TagHandler {
             ComponentConfig repeatConfig = TagConfigFactory.createComponentConfig(config, tagId,
                     new TagAttributesImpl(repeatAttrs.toArray(new TagAttribute[] {})), nextHandler,
                     UIRepeat.COMPONENT_TYPE, null);
-            handler = new RepeatHandler(repeatConfig);
+            handler = new ComponentHandler(repeatConfig);
         } else {
             List<TagAttribute> forEachAttrs = new ArrayList<TagAttribute>();
             forEachAttrs.add(createAttribute(config, "items", "#{" + getVarName("items") + "}"));
