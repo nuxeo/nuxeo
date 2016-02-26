@@ -58,7 +58,7 @@ public class FieldDescriptor {
         if (schema == null || schema.length() == 0) {
             return field;
         } else {
-            return String.format("%s:%s", schema, field);
+            return schema + ":" + field;
         }
     }
 

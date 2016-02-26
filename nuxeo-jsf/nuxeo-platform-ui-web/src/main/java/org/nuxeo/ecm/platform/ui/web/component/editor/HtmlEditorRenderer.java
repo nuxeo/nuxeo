@@ -122,12 +122,12 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
                                                       .append("');")
                                                       .toString();
             writer.writeText(scriptContent, null);
-            String ajaxScriptContent = String.format(
-                    "jsf.ajax.addOnEvent(function(data) {if (data.status == \"success\") {%s}});", scriptContent);
+            String ajaxScriptContent = "jsf.ajax.addOnEvent(function(data) {if (data.status == \"success\") {"
+                    + scriptContent + "}});";
             writer.writeText(ajaxScriptContent, null);
-            String scriptContent2 = String.format(
-                    "jQuery(document.getElementById('%s')).closest('form').bind('ajaxsubmit', function() { var editor = tinyMCE.editors['%s']; if (editor != undefined) {editor.save()};});",
-                    clientId, clientId);
+            String scriptContent2 = "jQuery(document.getElementById('" + clientId
+                    + "')).closest('form').bind('ajaxsubmit', function() { var editor = tinyMCE.editors['" + clientId
+                    + "']; if (editor != undefined) {editor.save()};});";
             writer.writeText(scriptContent2, null);
             writer.endElement("script");
         }
@@ -146,7 +146,7 @@ public class HtmlEditorRenderer extends HtmlBasicInputRenderer {
     protected static String generateOptions(Map<String, String> options) {
         List<String> strOptions = new ArrayList<String>();
         for (Map.Entry<String, String> option : options.entrySet()) {
-            strOptions.add(String.format("%s : \"%s\"", option.getKey(), option.getValue()));
+            strOptions.add(option.getKey() + ": \"" + option.getValue() + "\"");
         }
         StringBuilder res = new StringBuilder();
         res.append('{');

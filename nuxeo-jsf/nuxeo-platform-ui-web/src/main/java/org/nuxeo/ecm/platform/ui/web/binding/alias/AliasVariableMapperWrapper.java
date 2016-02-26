@@ -78,7 +78,7 @@ public class AliasVariableMapperWrapper extends VariableMapper {
                         }
                         if (doBlock) {
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format("Blocked expression var='%s'", variable));
+                                log.debug("Blocked expression var='" + variable + "'");
                             }
                             return getNullValueExpression();
                         }

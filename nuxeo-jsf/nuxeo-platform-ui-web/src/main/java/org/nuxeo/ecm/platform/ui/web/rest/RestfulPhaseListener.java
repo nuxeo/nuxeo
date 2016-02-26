@@ -138,8 +138,8 @@ public class RestfulPhaseListener implements PhaseListener {
                         new Class[] { DocumentView.class });
                 action.invoke(context, new Object[0]);
             } catch (ELException | NullPointerException e) {
-                String msg = String.format("Error while trying to flush seam context after "
-                        + "a reload, executing method expression '%s'", SEAM_HOTRELOAD_TRIGGER_ACTION);
+                String msg = "Error while trying to flush seam context after a reload, executing method expression '"
+                        + SEAM_HOTRELOAD_TRIGGER_ACTION + "'";
                 log.error(msg, e);
             }
         }

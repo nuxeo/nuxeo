@@ -123,8 +123,8 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
                 }
                 URL url = contributor.getContext().getLocalResource(path);
                 if (url == null) {
-                    log.error(String.format("Cannot resolve local URL for resource '%s' with path '%s'",
-                            resource.getName(), resource.getPath()));
+                    log.error("Cannot resolve local URL for resource '" + resource.getName() + "' with path '"
+                            + resource.getPath() + "'");
                 } else {
                     String builtUri = url.toString();
                     if (hasWildcard) {
@@ -212,7 +212,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
             for (String dn : deps) {
                 Resource d = getResource(dn);
                 if (d == null) {
-                    log.error(String.format("Unknown resource dependency named '%s'", dn));
+                    log.error("Unknown resource dependency named '" + dn + "'");
                     continue;
                 }
                 if (!ResourceType.matches(type, d)) {
