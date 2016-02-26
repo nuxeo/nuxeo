@@ -12,44 +12,29 @@
 
 <c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}">
 
-<nxu:set var="onclick"
-  value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
-  cache="true">
 <nxu:set var="tabIds"
-  value="#{parentTabActionCategory}:#{action.id}"
-  cache="true">
-<nxu:set var="repositoryName"
-  value="#{nxu:test(empty action.properties.repositoryName, widgetProperty_repositoryName, action.properties.repositoryName)}"
-  cache="true">
-<nxu:set var="confView"
-  value="#{nxu:test(empty action.properties.view, widgetProperty_view, action.properties.view)}"
+  value="#{parentTabActionCategory}:#{widgetProperty_actionId}"
   cache="true">
 <nxu:set var="finalView"
-  value="#{nxu:test(empty tabWidgetView, confView, tabWidgetView)}"
-  cache="true">
-<nxu:set var="pattern"
-  value="#{nxu:test(empty action.properties.pattern, widgetProperty_pattern, action.properties.pattern)}"
+  value="#{nxu:test(empty tabWidgetView, widgetProperty_view, tabWidgetView)}"
   cache="true">
 <nxu:set var="finalPattern"
-  value="#{nxu:test(empty tabWidgetPattern, pattern, tabWidgetPattern)}"
-  cache="true">
-<nxu:set var="target"
-  value="#{nxu:test(empty action.properties.target, widgetProperty_target, action.properties.target)}"
+  value="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}"
   cache="true">
 
 <c:if test="#{not useAjaxForm}">
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
-    repositoryName="#{repositoryName}"
+    repositoryName="#{widgetProperty_repositoryName}"
     view="#{finalView}"
     pattern="#{finalPattern}"
     tabs="#{tabIds}"
     addTabInfo="false"
-    accesskey="#{action.accessKey}"
+    accesskey="#{widgetProperty_accessKey}"
     id="#{widget.id}"
-    target="#{target}"
-    styleClass="#{actionStyleClass} #{action.properties.styleClass}"
-    onclick="#{onclick}">
+    target="#{widgetProperty_target}"
+    styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+    onclick="#{widgetProperty_onclick}">
     <ui:include src="/incl/action/action_icon_label_template.xhtml" />
     <ui:insert name="inside_action" />
   </nxd:restDocumentLink>
@@ -59,21 +44,21 @@
 
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
-    repositoryName="#{repositoryName}"
+    repositoryName="#{widgetProperty_repositoryName}"
     view="#{finalView}"
     pattern="#{finalPattern}"
     tabs="#{tabIds}"
     addTabInfo="false"
-    accesskey="#{action.accessKey}"
+    accesskey="#{widgetProperty_accessKey}"
     id="#{widget.id}_restLink"
     resolveOnly="true"
     var="docUrl">
     <h:commandLink
       id="#{widget.id}"
       action="#{webActions.setCurrentTabIds(tabIds)}"
-      onclick="if (!(jQuery(this).checkSafeEdit())){return false;};history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{onclick}"
-      styleClass="#{actionStyleClass} #{action.properties.styleClass}"
-      accessKey="#{action.accessKey}">
+      onclick="if (!(jQuery(this).checkSafeEdit())){return false;};history.pushState(null, '#{tabIds}', '#{nxu:javaScriptEscape(docUrl)}');#{widgetProperty_onclick}"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+      accessKey="#{widgetProperty_accessKey}">
       <a4j:ajax execute="@this" render="#{ajaxReRender}" />
       <ui:include src="/incl/action/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
@@ -86,17 +71,12 @@
 </nxu:set>
 </nxu:set>
 </nxu:set>
-</nxu:set>
-</nxu:set>
-</nxu:set>
-</nxu:set>
-</nxu:set>
 
 </c:if>
 
 <c:if test="#{widget.mode == 'tab_content'}">
-  <c:if test="#{not empty action.link}">
-    <ui:include src="#{nxu:test(action.link.startsWith('/'), '', '/')}#{action.link}" />
+  <c:if test="#{not empty widgetProperty_link}">
+    <ui:include src="#{nxu:test(widgetProperty_link.startsWith('/'), '', '/')}#{widgetProperty_link}" />
   </c:if>
 </c:if>
 
