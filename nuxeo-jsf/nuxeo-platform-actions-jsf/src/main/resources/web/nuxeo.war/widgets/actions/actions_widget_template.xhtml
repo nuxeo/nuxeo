@@ -45,6 +45,7 @@
                   <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                   <ui:param name="formStyleClass" value="displayI subWidgetForm" />
                   <ui:param name="mode" value="#{widget.mode}" />
+                  <ui:param name="disableFiltered" value="#{widgetProperty_disableFiltered}" />
                 </ui:decorate>
               </span>
               <c:if test="#{not status.last}">
@@ -73,6 +74,7 @@
                   <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                   <ui:param name="formStyleClass" value="displayI subWidgetForm" />
                   <ui:param name="mode" value="#{widget.mode}" />
+                  <ui:param name="disableFiltered" value="#{widgetProperty_disableFiltered}" />
                 </ui:decorate>
               </li>
             </nxu:repeat>
@@ -99,6 +101,7 @@
                       <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                       <ui:param name="formStyleClass" value="subWidgetForm" />
                       <ui:param name="mode" value="#{widget.mode}" />
+                      <ui:param name="disableFiltered" value="#{widgetProperty_disableFiltered}" />
                     </ui:decorate>
                   </li>
                 </nxu:repeat>
@@ -129,6 +132,7 @@
                 <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
                 <ui:param name="formStyleClass" value="subWidgetForm" />
                 <ui:param name="mode" value="#{widget.mode}" />
+                <ui:param name="disableFiltered" value="#{widgetProperty_disableFiltered}" />
               </ui:decorate>
             </div>
           </nxu:repeat>

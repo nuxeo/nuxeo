@@ -6,7 +6,8 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html">
+  xmlns:h="http://java.sun.com/jsf/html"
+  rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}">
 
 <nxu:set var="fancyReRenderId"
   value="#{widget.id}_ajax_panel"
