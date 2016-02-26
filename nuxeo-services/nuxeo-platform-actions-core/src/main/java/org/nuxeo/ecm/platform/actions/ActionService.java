@@ -26,10 +26,17 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -46,16 +53,39 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     private FilterContributionHandler filters;
 
+    protected final MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+
+    private static final String LOG_MIN_DURATION_KEY = "nuxeo.actions.debug.log_min_duration_ms";
+
+    private static final long LOG_MIN_DURATION_NS = Long.parseLong(
+            Framework.getService(ConfigurationService.class).getProperty(LOG_MIN_DURATION_KEY, "-1")) * 1000000;
+
+    private Timer actionsTimer;
+
+    private Timer actionTimer;
+
+    private Timer filtersTimer;
+
+    private Timer filterTimer;
+
     @Override
     public void activate(ComponentContext context) {
         filters = new FilterContributionHandler();
         actions = new ActionContributionHandler(filters);
+        actionsTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "ations"));
+        actionTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "action"));
+        filtersTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "filters"));
+        filterTimer = metrics.timer(MetricRegistry.name("nuxeo", "ActionService", "filter"));
     }
 
     @Override
     public void deactivate(ComponentContext context) {
         actions = null;
         filters = null;
+        actionsTimer = null;
+        actionTimer = null;
+        filtersTimer = null;
+        filterTimer = null;
     }
 
     /**
@@ -127,39 +157,56 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     @Override
     public List<Action> getActions(String category, ActionContext context, boolean hideUnavailableActions) {
-        List<Action> actions = getActionRegistry().getActions(category);
-        if (hideUnavailableActions) {
-            applyFilters(context, actions);
-            return actions;
-        } else {
-            List<Action> allActions = new ArrayList<Action>();
-            allActions.addAll(actions);
-            applyFilters(context, actions);
+        final Timer.Context timerContext = actionsTimer.time();
+        try {
+            List<Action> actions = getActionRegistry().getActions(category);
+            if (hideUnavailableActions) {
+                applyFilters(context, actions);
+                return actions;
+            } else {
+                List<Action> allActions = new ArrayList<Action>();
+                allActions.addAll(actions);
+                applyFilters(context, actions);
 
-            for (Action a : allActions) {
-                a.setAvailable(actions.contains(a));
+                for (Action a : allActions) {
+                    a.setAvailable(actions.contains(a));
+                }
+                return allActions;
             }
-            return allActions;
+        } finally {
+            long duration = timerContext.stop();
+            if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
+                log.info(String.format("Resolving actions for category '%s' took: %.2f ms", category,
+                        duration / 1000000.0));
+            }
         }
     }
 
     @Override
     public Action getAction(String actionId, ActionContext context, boolean hideUnavailableAction) {
-        Action action = getActionRegistry().getAction(actionId);
-        if (action != null) {
-            if (hideUnavailableAction) {
-                if (!checkFilters(context, action)) {
-                    return null;
-                }
-            } else {
-                if (!checkFilters(context, action)) {
-                    action.setAvailable(false);
+        final Timer.Context timerContext = actionTimer.time();
+        try {
+            Action action = getActionRegistry().getAction(actionId);
+            if (action != null) {
+                if (hideUnavailableAction) {
+                    if (!checkFilters(context, action)) {
+                        return null;
+                    }
+                } else {
+                    if (!checkFilters(context, action)) {
+                        action.setAvailable(false);
+                    }
                 }
             }
-        }
 
-        action.setFiltered(true);
-        return action;
+            action.setFiltered(true);
+            return action;
+        } finally {
+            long duration = timerContext.stop();
+            if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
+                log.info(String.format("Resolving action with id '%s' took: %.2f ms", actionId, duration / 1000000.0));
+            }
+        }
     }
 
     @Override
@@ -213,12 +260,20 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     @Override
     public boolean checkFilter(String filterId, ActionContext context) {
-        ActionFilterRegistry filterReg = getFilterRegistry();
-        ActionFilter filter = filterReg.getFilter(filterId);
-        if (filter == null) {
-            return false;
+        final Timer.Context timerContext = filterTimer.time();
+        try {
+            ActionFilterRegistry filterReg = getFilterRegistry();
+            ActionFilter filter = filterReg.getFilter(filterId);
+            if (filter == null) {
+                return false;
+            }
+            return filter.accept(null, context);
+        } finally {
+            long duration = timerContext.stop();
+            if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
+                log.info(String.format("Resolving filter with id '%s' took: %.2f ms", filterId, duration / 1000000.0));
+            }
         }
-        return filter.accept(null, context);
     }
 
     @Override
@@ -227,24 +282,32 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     protected boolean checkFilters(Action action, List<String> filterIds, ActionContext context) {
-        ActionFilterRegistry filterReg = getFilterRegistry();
-        for (String filterId : filterIds) {
-            ActionFilter filter = filterReg.getFilter(filterId);
-            if (filter == null) {
-                continue;
-            }
-            if (!filter.accept(action, context)) {
-                // denying filter found => ignore following filters
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Filter '%s' denied access", filterId));
+        final Timer.Context timerContext = filtersTimer.time();
+        try {
+            ActionFilterRegistry filterReg = getFilterRegistry();
+            for (String filterId : filterIds) {
+                ActionFilter filter = filterReg.getFilter(filterId);
+                if (filter == null) {
+                    continue;
                 }
-                return false;
+                if (!filter.accept(action, context)) {
+                    // denying filter found => ignore following filters
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Filter '%s' denied access", filterId));
+                    }
+                    return false;
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Filter '%s' granted access", filterId));
+                }
             }
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Filter '%s' granted access", filterId));
+            return true;
+        } finally {
+            long duration = timerContext.stop();
+            if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
+                log.info(String.format("Resolving filters %s took: %.2f ms", filterIds, duration / 1000000.0));
             }
         }
-        return true;
     }
 
     @Override
@@ -283,7 +346,10 @@ public class ActionService extends DefaultComponent implements ActionManager {
     protected void registerFilterFactory(FilterFactory ff) {
         getFilterRegistry().removeFilter(ff.id);
         try {
-            ActionFilter filter = (ActionFilter) Thread.currentThread().getContextClassLoader().loadClass(ff.className).newInstance();
+            ActionFilter filter = (ActionFilter) Thread.currentThread()
+                                                       .getContextClassLoader()
+                                                       .loadClass(ff.className)
+                                                       .newInstance();
             filter.setId(ff.id);
             getFilterRegistry().addFilter(filter);
         } catch (ReflectiveOperationException e) {
