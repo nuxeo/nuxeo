@@ -3,8 +3,10 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
-  <ui:include src="#{widgetProperty_action_template}">
-    <ui:insert name="inside_action" />
-  </ui:include>
+  <ui:fragment rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}">
+    <ui:include src="#{widgetProperty_action_template}">
+      <ui:insert name="inside_action" />
+    </ui:include>
+  </ui:fragment>
 
 </c:if>

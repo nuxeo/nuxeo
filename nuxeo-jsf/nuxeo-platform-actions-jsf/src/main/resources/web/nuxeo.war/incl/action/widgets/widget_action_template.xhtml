@@ -6,6 +6,8 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
+<ui:fragment rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}">
+
   <c:if test="#{widgetProperty_displayActionLabel}">
     <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
     <h:outputText value=" " />
@@ -31,5 +33,7 @@
       <nxl:widget widget="#{widget}" value="#{fieldOrValue}" />
     </nxu:form>
   </nxl:widget>
+
+</ui:fragment>
 
 </c:if>

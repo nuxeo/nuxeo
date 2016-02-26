@@ -73,6 +73,7 @@ public class JSFActionContext extends AbstractActionContext implements ActionCon
         ValueExpression documentExpr = expressionFactory.createValueExpression(getCurrentDocument(),
                 DocumentModel.class);
         ValueExpression userExpr = expressionFactory.createValueExpression(getCurrentPrincipal(), NuxeoPrincipal.class);
+        vm.setVariable("actionContextDocument", documentExpr);
         // add variables originally exposed by the action framework,
         // do not add aliases currentDocument and currentUser here as they
         // should already be available in this JSF context
