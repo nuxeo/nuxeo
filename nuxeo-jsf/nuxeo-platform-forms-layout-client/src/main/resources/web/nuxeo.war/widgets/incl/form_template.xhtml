@@ -23,19 +23,14 @@ Templating zone to define:
 
 </c:if>
 
-<c:if test="#{addForm}">
-
-  <h:form id="#{formId}" disableDoubleClickShield="#{disableDoubleClickShield}"
-    enctype="#{useAjaxForm or disableMultipartForm?'':'multipart/form-data'}"
+  <nxu:form id="#{formId}"
+    skip="#{!addForm}"
+    useAjaxForm="#{useAjaxForm}"
+    disableMultipartForm="#{disableMultipartForm}"
+    styleClass="#{formStyleClass}"
     onsubmit="#{onFormSubmit}"
-    styleClass="#{formStyleClass}">
+    disableDoubleClickShield="#{disableDoubleClickShield}">
     <ui:insert name="form_template_content" />
-  </h:form>
-
-</c:if>
-
-<c:if test="#{not addForm}">
-  <ui:insert name="form_template_content" />
-</c:if>
+  </nxu:form>
 
 </c:if>
