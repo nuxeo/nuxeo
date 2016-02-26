@@ -55,9 +55,14 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.ui.web.util.FaceletDebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.el.VariableMapperWrapper;
+import com.sun.faces.facelets.tag.TagAttributeImpl;
+import com.sun.faces.facelets.tag.TagAttributesImpl;
+import com.sun.faces.facelets.tag.ui.ComponentRef;
+import com.sun.faces.facelets.tag.ui.ComponentRefHandler;
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
 
 /**
@@ -130,8 +135,7 @@ public class LayoutTagHandler extends TagHandler {
         definition = getAttribute("definition");
         layout = getAttribute("layout");
         if (name == null && definition == null && layout == null) {
-            throw new TagException(this.tag,
-                    "At least one of attributes 'name', 'layout' or 'definition' is required");
+            throw new TagException(this.tag, "At least one of attributes 'name', 'layout' or 'definition' is required");
         }
         mode = getAttribute("mode");
         value = getRequiredAttribute("value");
@@ -161,126 +165,141 @@ public class LayoutTagHandler extends TagHandler {
             return;
         }
 
-        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
-
-        // add additional properties put on tag
-        Map<String, Serializable> additionalProps = new HashMap<String, Serializable>();
-        List<String> reservedVars = Arrays.asList(reservedVarsArray);
-        for (TagAttribute var : vars) {
-            String localName = var.getLocalName();
-            if (!reservedVars.contains(localName)) {
-                // resolve value as there's no alias value expression exposed
-                // for layout properties
-                additionalProps.put(localName, (Serializable) var.getObject(ctx));
-            }
-        }
-
-        VariableMapper orig = ctx.getVariableMapper();
-
+        long start = FaceletDebugTracer.start();
+        String logId = null;
         try {
-            // expose some layout variables before layout creation so that they
-            // can be used in mode expressions
-            BlockingVariableMapper vm = new BlockingVariableMapper(orig);
-            ctx.setVariableMapper(vm);
 
-            FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-            ExpressionFactory eFactory = ctx.getExpressionFactory();
-            Layout layoutInstance = null;
+            WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
-            String valueName = value.getValue();
-            if (ComponentTagUtils.isStrictValueReference(valueName)) {
-                valueName = ComponentTagUtils.getBareValueName(valueName);
+            // add additional properties put on tag
+            Map<String, Serializable> additionalProps = new HashMap<String, Serializable>();
+            List<String> reservedVars = Arrays.asList(reservedVarsArray);
+            for (TagAttribute var : vars) {
+                String localName = var.getLocalName();
+                if (!reservedVars.contains(localName)) {
+                    // resolve value as there's no alias value expression exposed
+                    // for layout properties
+                    additionalProps.put(localName, (Serializable) var.getObject(ctx));
+                }
             }
 
-            String templateValue = null;
-            if (template != null) {
-                templateValue = template.getValue(ctx);
-            }
+            VariableMapper orig = ctx.getVariableMapper();
 
-            boolean resolveOnlyValue = false;
-            if (resolveOnly != null) {
-                resolveOnlyValue = resolveOnly.getBoolean(ctx);
-            }
+            try {
+                // expose some layout variables before layout creation so that they
+                // can be used in mode expressions
+                BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+                ctx.setVariableMapper(vm);
 
-            if (layout != null) {
-                // resolve layout instance given as attribute
-                layoutInstance = (Layout) layout.getObject(ctx, Layout.class);
-                if (layoutInstance == null) {
-                    String errMsg = "Layout instance not found";
-                    applyErrorHandler(ctx, parent, helper, errMsg);
-                } else {
-                    fillVariablesForLayoutBuild(ctx, eFactory, vm, layoutInstance.getMode());
-                    layoutInstance.setValueName(valueName);
-                    applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
-                            additionalProps, vm, resolveOnlyValue);
-                }
-            } else {
-                // build layout instance from other attributes
-                String modeValue = mode.getValue(ctx);
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+                ExpressionFactory eFactory = ctx.getExpressionFactory();
+                Layout layoutInstance = null;
 
-                List<String> selectedRowsValue = null;
-                boolean selectAllByDefaultValue = false;
-
-                fillVariablesForLayoutBuild(ctx, eFactory, vm, modeValue);
-
-                if (selectedRows != null || selectedColumns != null) {
-                    if (selectedRows != null) {
-                        selectedRowsValue = (List<String>) selectedRows.getObject(ctx, List.class);
-                    } else if (selectedColumns != null) {
-                        List<String> selectedColumnsList = (List<String>) selectedColumns.getObject(ctx, List.class);
-                        // Handle empty selected columns list as null to
-                        // display all columns.
-                        if (selectedColumnsList != null && selectedColumnsList.isEmpty()) {
-                            selectedColumnsList = null;
-                        }
-                        selectedRowsValue = selectedColumnsList;
-                    }
-                }
-                if (selectAllByDefault != null) {
-                    selectAllByDefaultValue = selectAllByDefault.getBoolean(ctx);
+                String valueName = value.getValue();
+                if (ComponentTagUtils.isStrictValueReference(valueName)) {
+                    valueName = ComponentTagUtils.getBareValueName(valueName);
                 }
 
-                if (name != null) {
-                    String layoutCategory = null;
-                    if (category != null) {
-                        layoutCategory = category.getValue(ctx);
-                    }
-
-                    String nameValue = name.getValue(ctx);
-                    List<String> layoutNames = resolveLayoutNames(nameValue);
-                    for (String layoutName : layoutNames) {
-                        layoutInstance = layoutService.getLayout(ctx, layoutName, layoutCategory, modeValue, valueName,
-                                selectedRowsValue, selectAllByDefaultValue);
-                        if (layoutInstance == null) {
-                            String errMsg = "Layout '" + layoutName + "' not found";
-                            applyErrorHandler(ctx, parent, helper, errMsg);
-                        } else {
-                            applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
-                                    additionalProps, vm, resolveOnlyValue);
-                        }
-                    }
+                String templateValue = null;
+                if (template != null) {
+                    templateValue = template.getValue(ctx);
                 }
 
-                if (definition != null) {
-                    LayoutDefinition layoutDef = (LayoutDefinition) definition.getObject(ctx, LayoutDefinition.class);
+                boolean resolveOnlyValue = false;
+                if (resolveOnly != null) {
+                    resolveOnlyValue = resolveOnly.getBoolean(ctx);
+                }
 
-                    if (layoutDef == null) {
-                        String errMsg = "Layout definition resolved to null";
+                if (layout != null) {
+                    // resolve layout instance given as attribute
+                    layoutInstance = (Layout) layout.getObject(ctx, Layout.class);
+                    if (layoutInstance == null) {
+                        String errMsg = "Layout instance not found";
                         applyErrorHandler(ctx, parent, helper, errMsg);
                     } else {
-                        layoutInstance = layoutService.getLayout(ctx, layoutDef, modeValue, valueName,
-                                selectedRowsValue, selectAllByDefaultValue);
+                        fillVariablesForLayoutBuild(ctx, eFactory, vm, layoutInstance.getMode());
+                        layoutInstance.setValueName(valueName);
                         applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
                                 additionalProps, vm, resolveOnlyValue);
                     }
+                } else {
+                    // build layout instance from other attributes
+                    String modeValue = mode.getValue(ctx);
+
+                    List<String> selectedRowsValue = null;
+                    boolean selectAllByDefaultValue = false;
+
+                    fillVariablesForLayoutBuild(ctx, eFactory, vm, modeValue);
+
+                    if (selectedRows != null || selectedColumns != null) {
+                        if (selectedRows != null) {
+                            selectedRowsValue = (List<String>) selectedRows.getObject(ctx, List.class);
+                        } else if (selectedColumns != null) {
+                            List<String> selectedColumnsList = (List<String>) selectedColumns.getObject(ctx,
+                                    List.class);
+                            // Handle empty selected columns list as null to
+                            // display all columns.
+                            if (selectedColumnsList != null && selectedColumnsList.isEmpty()) {
+                                selectedColumnsList = null;
+                            }
+                            selectedRowsValue = selectedColumnsList;
+                        }
+                    }
+                    if (selectAllByDefault != null) {
+                        selectAllByDefaultValue = selectAllByDefault.getBoolean(ctx);
+                    }
+
+                    if (name != null) {
+                        String layoutCategory = null;
+                        if (category != null) {
+                            layoutCategory = category.getValue(ctx);
+                        }
+
+                        String nameValue = name.getValue(ctx);
+                        List<String> layoutNames = resolveLayoutNames(nameValue);
+                        logId = layoutNames.toString();
+                        for (String layoutName : layoutNames) {
+                            layoutInstance = layoutService.getLayout(ctx, layoutName, layoutCategory, modeValue,
+                                    valueName, selectedRowsValue, selectAllByDefaultValue);
+                            if (layoutInstance == null) {
+                                String errMsg = "Layout '" + layoutName + "' not found";
+                                applyErrorHandler(ctx, parent, helper, errMsg);
+                            } else {
+                                applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
+                                        additionalProps, vm, resolveOnlyValue);
+                            }
+                        }
+                    }
+
+                    if (definition != null) {
+                        LayoutDefinition layoutDef = (LayoutDefinition) definition.getObject(ctx,
+                                LayoutDefinition.class);
+
+                        if (layoutDef == null) {
+                            String errMsg = "Layout definition resolved to null";
+                            applyErrorHandler(ctx, parent, helper, errMsg);
+                        } else {
+                            layoutInstance = layoutService.getLayout(ctx, layoutDef, modeValue, valueName,
+                                    selectedRowsValue, selectAllByDefaultValue);
+                            applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
+                                    additionalProps, vm, resolveOnlyValue);
+                            if (layoutInstance != null) {
+                                logId = layoutInstance.getId();
+                            } else {
+                                logId = layoutDef.getName() + " (def)";
+                            }
+                        }
+                    }
                 }
+
+            } finally {
+                // layout resolved => cleanup variable mapper
+                ctx.setVariableMapper(orig);
             }
 
         } finally {
-            // layout resolved => cleanup variable mapper
-            ctx.setVariableMapper(orig);
+            FaceletDebugTracer.trace(start, config.getTag(), logId);
         }
-
     }
 
     /**
@@ -309,7 +328,7 @@ public class LayoutTagHandler extends TagHandler {
     protected void applyLayoutHandler(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper,
             WebLayoutManager layoutService, Layout layoutInstance, String templateValue,
             Map<String, Serializable> additionalProps, BlockingVariableMapper vm, boolean resolveOnly)
-            throws IOException, FacesException, ELException {
+                    throws IOException, FacesException, ELException {
 
         // set unique id on layout, unless layout is only resolved
         if (!resolveOnly) {
@@ -462,135 +481,151 @@ public class LayoutTagHandler extends TagHandler {
 
     @SuppressWarnings("unchecked")
     public void applyCompat(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
-        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
-
-        // add additional properties put on tag
-        Map<String, Serializable> additionalProps = new HashMap<String, Serializable>();
-        List<String> reservedVars = Arrays.asList(reservedVarsArray);
-        for (TagAttribute var : vars) {
-            String localName = var.getLocalName();
-            if (!reservedVars.contains(localName)) {
-                // resolve value as there's no alias value expression exposed
-                // for layout properties
-                additionalProps.put(localName, (Serializable) var.getObject(ctx));
-            }
-        }
-
-        // expose some layout variables before layout creation so that they
-        // can be used in mode expressions
-        VariableMapper orig = ctx.getVariableMapper();
-        VariableMapper vm = new VariableMapperWrapper(orig);
-        ctx.setVariableMapper(vm);
-
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        long start = FaceletDebugTracer.start();
+        String logId = null;
         try {
+
+            WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
+
+            // add additional properties put on tag
+            Map<String, Serializable> additionalProps = new HashMap<String, Serializable>();
+            List<String> reservedVars = Arrays.asList(reservedVarsArray);
+            for (TagAttribute var : vars) {
+                String localName = var.getLocalName();
+                if (!reservedVars.contains(localName)) {
+                    // resolve value as there's no alias value expression exposed
+                    // for layout properties
+                    additionalProps.put(localName, (Serializable) var.getObject(ctx));
+                }
+            }
+
+            // expose some layout variables before layout creation so that they
+            // can be used in mode expressions
+            VariableMapper orig = ctx.getVariableMapper();
+
             Layout layoutInstance = null;
+            FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+            try {
+                VariableMapper vm = new VariableMapperWrapper(orig);
+                ctx.setVariableMapper(vm);
 
-            String valueName = value.getValue();
-            if (ComponentTagUtils.isStrictValueReference(valueName)) {
-                valueName = ComponentTagUtils.getBareValueName(valueName);
-            }
-
-            String templateValue = null;
-            if (template != null) {
-                templateValue = template.getValue(ctx);
-            }
-
-            boolean resolveOnlyValue = false;
-            if (resolveOnly != null) {
-                resolveOnlyValue = resolveOnly.getBoolean(ctx);
-            }
-
-            if (layout != null) {
-                // resolve layout instance given as attribute
-                layoutInstance = (Layout) layout.getObject(ctx, Layout.class);
-                if (layoutInstance == null) {
-                    String errMsg = "Layout instance not found";
-                    applyErrorHandler(ctx, parent, helper, errMsg);
-                } else {
-                    Map<String, ValueExpression> vars = getVariablesForLayoutBuild(ctx, layoutInstance.getMode());
-                    for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
-                        vm.setVariable(var.getKey(), var.getValue());
-                    }
-                    layoutInstance.setValueName(valueName);
-                    applyCompatLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
-                            additionalProps, vars, resolveOnlyValue);
-                }
-            } else {
-                // build layout instance from other attributes
-                String modeValue = mode.getValue(ctx);
-
-                List<String> selectedRowsValue = null;
-                boolean selectAllByDefaultValue = false;
-
-                Map<String, ValueExpression> vars = getVariablesForLayoutBuild(ctx, modeValue);
-                for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
-                    vm.setVariable(var.getKey(), var.getValue());
+                String valueName = value.getValue();
+                if (ComponentTagUtils.isStrictValueReference(valueName)) {
+                    valueName = ComponentTagUtils.getBareValueName(valueName);
                 }
 
-                if (selectedRows != null || selectedColumns != null) {
-                    if (selectedRows != null) {
-                        selectedRowsValue = (List<String>) selectedRows.getObject(ctx, List.class);
-                    } else if (selectedColumns != null) {
-                        List<String> selectedColumnsList = (List<String>) selectedColumns.getObject(ctx, List.class);
-                        // Handle empty selected columns list as null to
-                        // display all columns.
-                        if (selectedColumnsList != null && selectedColumnsList.isEmpty()) {
-                            selectedColumnsList = null;
-                        }
-                        selectedRowsValue = selectedColumnsList;
-                    }
-                }
-                if (selectAllByDefault != null) {
-                    selectAllByDefaultValue = selectAllByDefault.getBoolean(ctx);
+                String templateValue = null;
+                if (template != null) {
+                    templateValue = template.getValue(ctx);
                 }
 
-                if (name != null) {
-                    String layoutCategory = null;
-                    if (category != null) {
-                        layoutCategory = category.getValue(ctx);
-                    }
-
-                    String nameValue = name.getValue(ctx);
-                    List<String> layoutNames = resolveLayoutNames(nameValue);
-                    for (String layoutName : layoutNames) {
-                        layoutInstance = layoutService.getLayout(ctx, layoutName, layoutCategory, modeValue, valueName,
-                                selectedRowsValue, selectAllByDefaultValue);
-                        if (layoutInstance == null) {
-                            String errMsg = "Layout '" + layoutName + "' not found";
-                            applyErrorHandler(ctx, parent, helper, errMsg);
-                        } else {
-                            applyCompatLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
-                                    additionalProps, vars, resolveOnlyValue);
-                        }
-                    }
+                boolean resolveOnlyValue = false;
+                if (resolveOnly != null) {
+                    resolveOnlyValue = resolveOnly.getBoolean(ctx);
                 }
 
-                if (definition != null) {
-                    LayoutDefinition layoutDef = (LayoutDefinition) definition.getObject(ctx, LayoutDefinition.class);
-
-                    if (layoutDef == null) {
-                        String errMsg = "Layout definition resolved to null";
+                if (layout != null) {
+                    // resolve layout instance given as attribute
+                    layoutInstance = (Layout) layout.getObject(ctx, Layout.class);
+                    if (layoutInstance == null) {
+                        String errMsg = "Layout instance not found";
                         applyErrorHandler(ctx, parent, helper, errMsg);
                     } else {
-                        layoutInstance = layoutService.getLayout(ctx, layoutDef, modeValue, valueName,
-                                selectedRowsValue, selectAllByDefaultValue);
+                        Map<String, ValueExpression> vars = getVariablesForLayoutBuild(ctx, layoutInstance.getMode());
+                        for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
+                            vm.setVariable(var.getKey(), var.getValue());
+                        }
+                        layoutInstance.setValueName(valueName);
                         applyCompatLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
                                 additionalProps, vars, resolveOnlyValue);
                     }
+                } else {
+                    // build layout instance from other attributes
+                    String modeValue = mode.getValue(ctx);
+
+                    List<String> selectedRowsValue = null;
+                    boolean selectAllByDefaultValue = false;
+
+                    Map<String, ValueExpression> vars = getVariablesForLayoutBuild(ctx, modeValue);
+                    for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
+                        vm.setVariable(var.getKey(), var.getValue());
+                    }
+
+                    if (selectedRows != null || selectedColumns != null) {
+                        if (selectedRows != null) {
+                            selectedRowsValue = (List<String>) selectedRows.getObject(ctx, List.class);
+                        } else if (selectedColumns != null) {
+                            List<String> selectedColumnsList = (List<String>) selectedColumns.getObject(ctx,
+                                    List.class);
+                            // Handle empty selected columns list as null to
+                            // display all columns.
+                            if (selectedColumnsList != null && selectedColumnsList.isEmpty()) {
+                                selectedColumnsList = null;
+                            }
+                            selectedRowsValue = selectedColumnsList;
+                        }
+                    }
+                    if (selectAllByDefault != null) {
+                        selectAllByDefaultValue = selectAllByDefault.getBoolean(ctx);
+                    }
+
+                    if (name != null) {
+                        String layoutCategory = null;
+                        if (category != null) {
+                            layoutCategory = category.getValue(ctx);
+                        }
+
+                        String nameValue = name.getValue(ctx);
+                        List<String> layoutNames = resolveLayoutNames(nameValue);
+                        logId = layoutNames.toString();
+                        for (String layoutName : layoutNames) {
+                            layoutInstance = layoutService.getLayout(ctx, layoutName, layoutCategory, modeValue,
+                                    valueName, selectedRowsValue, selectAllByDefaultValue);
+                            if (layoutInstance == null) {
+                                String errMsg = "Layout '" + layoutName + "' not found";
+                                applyErrorHandler(ctx, parent, helper, errMsg);
+                            } else {
+                                applyCompatLayoutHandler(ctx, parent, helper, layoutService, layoutInstance,
+                                        templateValue, additionalProps, vars, resolveOnlyValue);
+                            }
+                        }
+                    }
+
+                    if (definition != null) {
+                        LayoutDefinition layoutDef = (LayoutDefinition) definition.getObject(ctx,
+                                LayoutDefinition.class);
+
+                        if (layoutDef == null) {
+                            String errMsg = "Layout definition resolved to null";
+                            applyErrorHandler(ctx, parent, helper, errMsg);
+                        } else {
+                            layoutInstance = layoutService.getLayout(ctx, layoutDef, modeValue, valueName,
+                                    selectedRowsValue, selectAllByDefaultValue);
+                            applyCompatLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
+                                    additionalProps, vars, resolveOnlyValue);
+                            if (layoutInstance != null) {
+                                logId = layoutInstance.getId();
+                            } else {
+                                logId = layoutDef.getName() + " (def)";
+                            }
+                        }
+                    }
                 }
+
+            } finally {
+                // layout resolved => cleanup variable mapper
+                ctx.setVariableMapper(orig);
             }
 
         } finally {
-            // layout resolved => cleanup variable mapper
-            ctx.setVariableMapper(orig);
+            FaceletDebugTracer.trace(start, config.getTag(), logId);
         }
     }
 
     protected void applyCompatLayoutHandler(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper,
             WebLayoutManager layoutService, Layout layoutInstance, String templateValue,
             Map<String, Serializable> additionalProps, Map<String, ValueExpression> vars, boolean resolveOnly)
-            throws IOException, FacesException, ELException {
+                    throws IOException, FacesException, ELException {
 
         // set unique id on layout, unless layout is only resolved
         if (!resolveOnly) {
@@ -609,8 +644,9 @@ public class LayoutTagHandler extends TagHandler {
                         && (value == null || ((value instanceof String) && StringUtils.isBlank((String) value)))) {
                     // do not override property on layout
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Do not override property '%s' with "
-                                + "empty value on layout named '%s'", key, layoutInstance.getName()));
+                        log.debug(String.format(
+                                "Do not override property '%s' with " + "empty value on layout named '%s'", key,
+                                layoutInstance.getName()));
                     }
                 } else {
                     layoutInstance.setProperty(key, value);

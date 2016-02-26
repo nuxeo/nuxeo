@@ -48,4 +48,9 @@
     <property name="nuxeo.jsf.removeAliasOptimsReloaded">false</property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService"
+    point="configuration">
+    <property name="nuxeo.jsf.debug.log_min_duration_ms">-1</property>
+  </extension>
+
 </component>
