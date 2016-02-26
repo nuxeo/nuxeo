@@ -662,8 +662,14 @@ public final class FaceletHandlerHelper {
      * @since 6.0
      */
     public FaceletHandler getDisableDevModeTagHandler(String tagConfigId, FaceletHandler nextHandler) {
+        TagAttribute[] attrs = new TagAttribute[4];
+        attrs[0] = createAttribute("var", DEV_MODE_DISABLED_VARIABLE);
+        attrs[1] = createAttribute("value", "true");
+        attrs[2] = createAttribute("cache", "true");
+        attrs[3] = createAttribute("blockMerge", "true");
+        TagAttributes attributes = new TagAttributesImpl(attrs);
         ComponentConfig config = TagConfigFactory.createAliasTagConfig(tagConfig, tagConfigId,
-                DEV_MODE_DISABLED_VARIABLE, "true", "true", "false", nextHandler);
+                attributes, nextHandler);
         return new SetTagHandler(config);
     }
 
