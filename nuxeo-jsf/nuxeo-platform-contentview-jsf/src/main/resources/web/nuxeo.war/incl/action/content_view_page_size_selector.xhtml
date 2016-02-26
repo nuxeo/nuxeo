@@ -37,7 +37,7 @@ empty:
           styleClass="langSelect">
           <f:convertNumber />
           <f:selectItems value="#{contentViewActions.getPageSizeOptions(contentView)}" />
-          <f:ajax execute="@this" render="#{ajaxReRender}" event="change" />
+          <a4j:ajax execute="@this" render="#{ajaxReRender}" event="change" />
         </h:selectOneMenu>
       </h:form>
     </span>
