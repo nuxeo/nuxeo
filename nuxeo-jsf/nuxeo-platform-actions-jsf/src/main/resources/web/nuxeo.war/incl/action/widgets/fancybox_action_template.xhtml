@@ -1,0 +1,223 @@
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html">
+
+<nxu:set var="fancyboxIdPrefix" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}_">
+<nxu:set var="fancyReRenderId"
+  value="#{fancyboxIdPrefix}ajax_panel"
+  cache="true">
+<nxu:set var="elementsToReRender"
+  value="#{nxu:joinRender(ajaxReRender, fancyReRenderId)}">
+<nxu:set var="iframe"
+  value="#{action.properties.iframe}"
+  resolveTwice="true" cache="true">
+
+<c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}">
+
+  <f:subview id="#{fancyboxIdPrefix}subview">
+  <nxu:set var="onclick"
+    value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
+    cache="true">
+
+    <c:if test="#{empty iframe}">
+
+      <c:if test="#{not widgetProperty_useButton}">
+        <h:commandLink id="#{fancyboxIdPrefix}link"
+          styleClass="#{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+          disabled="#{!action.available}"
+          accesskey="#{action.accessKey}">
+          <f:attribute name="selectedValue" value="#{action.id}" />
+          <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
+          <a4j:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
+          <ui:include src="/incl/action/action_icon_label_template.xhtml">
+            <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
+            <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
+          </ui:include>
+        </h:commandLink>
+      </c:if>
+
+      <c:if test="#{widgetProperty_useButton}">
+        <h:commandButton id="#{fancyboxIdPrefix}link"
+          onclick="#{onclick}"
+          value="#{messages[action.label]}"
+          styleClass="#{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+          disabled="#{!action.available}"
+          accesskey="#{action.accessKey}">
+          <f:attribute name="selectedValue" value="#{action.id}" />
+          <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
+          <a4j:ajax execute="@this" render="#{elementsToReRender}" listener="#{selectionActions.setStaticValue}"/>
+          <ui:insert name="inside_action" />
+        </h:commandButton>
+      </c:if>
+
+    </c:if>
+
+    <c:if test="#{not empty iframe}">
+
+      <ui:decorate template="fancybox_properties_template.xhtml">
+        <ui:define name="fancybox_properties_include">
+
+          <ui:insert name="with_fancybox_properties" />
+
+          <nxu:set var="fancyboxJs"
+            value="openFancyBox('#{nxu:javaScriptEscape(iframe)}', {
+                    width: '#{fancy_width}',
+                    height: '#{fancy_height}',
+                    scrolling: '#{fancy_scrolling}',
+                    autoScale: #{fancy_autoScale},
+                    autoDimensions: #{fancy_autoDimensions},
+                    modal: #{fancy_modal},
+                    centerOnScroll: #{fancy_centerOnScroll},
+                    enableEscapeButton: #{fancy_enableEscapeButton},
+                    onClosed: function() {
+                      var theFunction = '#{fancy_onClosed}';
+                      if (theFunction.length !== 0) {
+                        window[theFunction]();
+                      }
+                    }
+                  });">
+
+            <c:if test="#{not widgetProperty_useButton}">
+              <a4j:commandLink id="#{fancyboxIdPrefix}link"
+                execute="@this"
+                ignoreDupResponses="true" requestDelay="100"
+                onclick="#{onclick};#{fancyboxJs}"
+                disabled="#{!action.available}"
+                styleClass="#{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+                accesskey="#{action.accessKey}">
+                <ui:include src="/incl/action/action_icon_label_template.xhtml">
+                  <ui:param name="hideIcon" value="#{widgetProperty_hideIcon}" />
+                  <ui:param name="hideLabel" value="#{widgetProperty_hideLabel}" />
+                </ui:include>
+                <ui:insert name="inside_action" />
+              </a4j:commandLink>
+            </c:if>
+
+            <c:if test="#{widgetProperty_useButton}">
+              <a4j:commandButton id="#{fancyboxIdPrefix}link"
+                execute="@this"
+                ignoreDupResponses="true" requestDelay="100"
+                onclick="#{onclick};#{fancyboxJs}"
+                value="#{messages[action.label]}"
+                disabled="#{!action.available}"
+                styleClass="#{widgetProperty_actionStyleClass} #{action.properties.styleClass}"
+                accesskey="#{action.accessKey}">
+                <ui:insert name="inside_action" />
+              </a4j:commandButton>
+            </c:if>
+
+          </nxu:set>
+        </ui:define>
+      </ui:decorate>
+
+    </c:if>
+
+  </nxu:set>
+  </f:subview>
+
+</c:if>
+
+<c:if test="#{widget.mode == 'after_view' and empty iframe}">
+
+  <ui:decorate template="fancybox_properties_template.xhtml">
+    <ui:define name="fancybox_properties_include">
+
+      <ui:insert name="with_fancybox_properties" />
+
+      <a4j:outputPanel id="#{fancyboxIdPrefix}ajax_panel" layout="block">
+
+        <nxu:set var="include"
+          value="#{action.properties.include}"
+          resolveTwice="true" cache="true">
+        <nxu:set var="fancyboxFormId"
+          value="#{fancyboxIdPrefix}fancyform"
+          cache="true">
+        <nxu:set
+          var="actionClicked"
+          value="#{clickedActionId == action.id or nxu:hasMessages(fancyboxFormId)}"
+          cache="false">
+
+          <f:subview rendered="#{actionClicked}" id="#{fancyboxIdPrefix}fancy_subview">
+
+            <h:form id="#{fancyboxIdPrefix}closeFancyboxForm">
+              <a4j:jsFunction id="#{fancyboxIdPrefix}closeFancybox"
+                name="#{fancyboxIdPrefix}closeFancybox"
+                render="#{elementsToReRender}" execute="@this">
+                <f:attribute name="selectedValue" value="" />
+                <f:attribute name="targetComponentId" value="#{widgetProperty_clickedActionIdHolder}" />
+                <nxu:actionListenerMethod value="#{selectionActions.setStaticValue}" />
+              </a4j:jsFunction>
+            </h:form>
+
+            <script>
+              jQuery(document).ready(function() {
+                openFancyBox('##{fancyboxIdPrefix}box', {
+                  width: '#{fancy_width}',
+                  height: '#{fancy_height}',
+                  scrolling: '#{fancy_scrolling}',
+                  autoScale: #{fancy_autoScale},
+                  autoDimensions: #{fancy_autoDimensions},
+                  modal: #{fancy_modal},
+                  centerOnScroll: #{fancy_centerOnScroll},
+                  enableEscapeButton: #{fancy_enableEscapeButton},
+                  onClosed: function() {
+                    var theFunction = '#{fancy_onClosed}';
+                    if (theFunction.length !== 0) {
+                      window[theFunction]();
+                    }
+                    #{fancyboxIdPrefix}closeFancybox();
+                  }
+                });
+              });
+            </script>
+            <div style="display:none">
+              <div id="#{fancyboxIdPrefix}box">
+                <c:if test="#{not empty include}">
+                  <ui:include src="#{include}" />
+                </c:if>
+              </div>
+
+              <script type="text/javascript">
+                (function() {
+                  jQuery(document).ready(function() {
+                    var content = jQuery('#fancybox-content .content'),
+                      computedHeight = jQuery('#fancybox-content').height() || 0
+
+                    if (content !== null) {
+                      computedHeight -= jQuery('#fancybox-content h3').outerHeight(true) || 0
+                      computedHeight -= jQuery('#fancybox-content .buttonsGadget').outerHeight(true) || 0
+                      computedHeight -= parseInt(content.css('padding-top'), 10)
+                      computedHeight -= parseInt(content.css('padding-bottom'), 10)
+                      computedHeight -= parseInt(content.css('margin-top'), 10)
+                      computedHeight -= parseInt(content.css('margin-bottom'), 10)
+                      content.height(computedHeight)
+                    }
+                  })
+                })()
+              </script>
+            </div>
+          </f:subview>
+
+        </nxu:set>
+        </nxu:set>
+        </nxu:set>
+
+      </a4j:outputPanel>
+
+    </ui:define>
+  </ui:decorate>
+
+</c:if>
+
+</nxu:set>
+</nxu:set>
+</nxu:set>
+</nxu:set>
+
+</ui:composition>
