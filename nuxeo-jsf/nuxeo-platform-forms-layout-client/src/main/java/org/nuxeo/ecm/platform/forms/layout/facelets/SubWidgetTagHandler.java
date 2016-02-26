@@ -29,6 +29,7 @@ import java.util.Map;
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
@@ -40,6 +41,7 @@ import javax.faces.view.facelets.TagHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 
 /**
  * SubWidget tag handler.
@@ -99,6 +101,41 @@ public class SubWidgetTagHandler extends TagHandler {
             recomputeIdsBool = recomputeIds.getBoolean(ctx);
         }
 
+        if (FaceletHandlerHelper.isAliasOptimEnabled()) {
+            VariableMapper orig = ctx.getVariableMapper();
+            try {
+                applyOptimized(ctx, parent, orig, subWidgets, helper, recomputeIdsBool);
+            } finally {
+                ctx.setVariableMapper(orig);
+            }
+        } else {
+            applyCompat(ctx, parent, subWidgets, helper, recomputeIdsBool);
+        }
+    }
+
+    protected void applyOptimized(FaceletContext ctx, UIComponent parent, VariableMapper orig, Widget[] subWidgets,
+            FaceletHandlerHelper helper, boolean recomputeIdsBool) throws IOException, FacesException, ELException {
+        int subWidgetCounter = 0;
+        for (Widget subWidget : subWidgets) {
+            BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+            ctx.setVariableMapper(vm);
+
+            // set unique id on widget before exposing it to the context, but assumes iteration could be done
+            // several times => do not generate id again if already set, unless specified by attribute
+            // "recomputeIds"
+            if (subWidget != null && (subWidget.getId() == null || recomputeIdsBool)) {
+                WidgetTagHandler.generateWidgetId(ctx, helper, subWidget, false);
+            }
+
+            WidgetTagHandler.exposeWidgetVariables(ctx, vm, subWidget, subWidgetCounter, true);
+
+            nextHandler.apply(ctx, parent);
+            subWidgetCounter++;
+        }
+    }
+
+    protected void applyCompat(FaceletContext ctx, UIComponent parent, Widget[] subWidgets, FaceletHandlerHelper helper,
+            boolean recomputeIdsBool) throws IOException, FacesException, ELException {
         int subWidgetCounter = 0;
         for (Widget subWidget : subWidgets) {
             // set unique id on widget before exposing it to the context, but assumes iteration could be done several
@@ -152,4 +189,5 @@ public class SubWidgetTagHandler extends TagHandler {
             subWidgetCounter++;
         }
     }
+
 }
