@@ -1,12 +1,14 @@
-<h:selectBooleanCheckbox
+<nxh:selectBooleanCheckbox
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
   id="#{widget.id}"
-  value="#{field_0}">
+  value="#{field_0}"
+  resetOnAjax="#{useRepeatRenderTime}">
   <a4j:ajax id="#{widget.id}_ajax_onclick" event="click"
     execute="@this"
     listener="#{documentListingActions.processSelectRow(field_1, contentView.name, contentView.selectionListName, field_0)}"
     render="#{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
-</h:selectBooleanCheckbox>
+</nxh:selectBooleanCheckbox>
