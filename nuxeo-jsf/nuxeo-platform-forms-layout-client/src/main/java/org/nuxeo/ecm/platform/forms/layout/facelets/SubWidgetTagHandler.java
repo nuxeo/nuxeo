@@ -124,7 +124,7 @@ public class SubWidgetTagHandler extends TagHandler {
             // several times => do not generate id again if already set, unless specified by attribute
             // "recomputeIds"
             if (subWidget != null && (subWidget.getId() == null || recomputeIdsBool)) {
-                WidgetTagHandler.generateWidgetId(ctx, helper, subWidget, false);
+                WidgetTagHandler.generateWidgetId(helper, subWidget, false);
             }
 
             WidgetTagHandler.exposeWidgetVariables(ctx, vm, subWidget, subWidgetCounter, true);
