@@ -82,10 +82,16 @@ public class ActionService extends DefaultComponent implements ActionManager {
         Iterator<Action> it = actions.iterator();
         while (it.hasNext()) {
             Action action = it.next();
+            action.setFiltered(true);
             if (!checkFilters(context, action)) {
                 it.remove();
             }
         }
+    }
+
+    @Override
+    public boolean checkFilters(Action action, ActionContext context) {
+        return checkFilters(context, action);
     }
 
     private boolean checkFilters(ActionContext context, Action action) {
@@ -151,6 +157,8 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 }
             }
         }
+
+        action.setFiltered(true);
         return action;
     }
 

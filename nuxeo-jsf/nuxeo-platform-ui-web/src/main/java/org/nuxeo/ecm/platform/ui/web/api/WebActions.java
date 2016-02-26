@@ -98,6 +98,73 @@ public interface WebActions {
     public static final String AJAX_TAB_PROPERTY = "nuxeo.jsf.useAjaxTabs";
 
     /**
+     * Return actions in given document context for given category.
+     *
+     * @param removeFiltered: if true, do not return filtered actions. Useful to display filtered actions as disabled
+     *            (by using using value false).
+     * @param postFilter: if true, do not filter actions. Actions will need to be filtered or disabled at render time.
+     *            Useful to filter actions when filtering context is available at render time only (for instance when
+     *            displaying actions in listings inside a JSF iteration done at render time).
+     * @since 8.2
+     */
+    List<Action> getDocumentActions(DocumentModel document, String category, boolean removeFiltered,
+            boolean postFilter);
+
+    /**
+     * Return action in given document context for given id.
+     * <p>
+     * Returns null if action is not found or filtered (depending on additional parameters).
+     *
+     * @param removeFiltered: if true, do not return filtered actions. Useful to display filtered actions as disabled
+     *            (by using using value false).
+     * @param postFilter: if true, do not filter actions. Actions will need to be filtered or disabled at render time.
+     *            Useful to filter actions when filtering context is available at render time only (for instance when
+     *            displaying actions in listings inside a JSF iteration done at render time).
+     * @since 8.2
+     */
+    Action getDocumentAction(DocumentModel document, String actionId, boolean includeFiltered, boolean postFilter);
+
+    /**
+     * Return actions in given action context for given category.
+     *
+     * @param removeFiltered: if true, do not return filtered actions. Useful to display filtered actions as disabled
+     *            (by using using value false).
+     * @param postFilter: if true, do not filter actions. Actions will need to be filtered or disabled at render time.
+     *            Useful to filter actions when filtering context is available at render time only (for instance when
+     *            displaying actions in listings inside a JSF iteration done at render time).
+     * @since 8.2
+     */
+    List<Action> getActions(ActionContext context, String category, boolean includeFiltered, boolean postFilter);
+
+    /**
+     * Return action in given action context for given id.
+     * <p>
+     * Returns null if action is not found or filtered (depending on additional parameters).
+     *
+     * @param removeFiltered: if true, do not return filtered actions. Useful to display filtered actions as disabled
+     *            (by using using value false).
+     * @param postFilter: if true, do not filter actions. Actions will need to be filtered or disabled at render time.
+     *            Useful to filter actions when filtering context is available at render time only (for instance when
+     *            displaying actions in listings inside a JSF iteration done at render time).
+     * @since 8.2
+     */
+    Action getAction(ActionContext context, String actionId, boolean includeFiltered, boolean postFilter);
+
+    /**
+     * Returns true if filters evaluation for given action, in given document context, grants access.
+     *
+     * @since 8.2
+     */
+    boolean isAvailableForDocument(DocumentModel document, Action action);
+
+    /**
+     * Returns true if filters evaluation for given action, in given action context, grants access.
+     *
+     * @since 8.2
+     */
+    boolean isAvailable(ActionContext context, Action action);
+
+    /**
      * Returns all filtered actions for a given category and given resolution context.
      * <p>
      * Actions are filtered according to filters set on the actions definitions.
@@ -116,7 +183,7 @@ public interface WebActions {
      *
      * @since 5.7
      */
-    List<Action> getActionsList(String category, Boolean hideUnavailableAction);
+    List<Action> getActionsList(String category, Boolean removeFiltered);
 
     /**
      * Returns all filtered actions for a given category and a context built with given current document context,
@@ -128,7 +195,7 @@ public interface WebActions {
      *
      * @since 5.7.3
      */
-    List<Action> getActionsListForDocument(String category, DocumentModel document, boolean hideUnavailableAction);
+    List<Action> getActionsListForDocument(String category, DocumentModel document, boolean removeFiltered);
 
     /**
      * Returns all filtered actions for a given category and given resolution context.
@@ -139,7 +206,7 @@ public interface WebActions {
      *
      * @since 5.7
      */
-    List<Action> getActionsList(String category, ActionContext context, boolean hideUnavailableAction);
+    List<Action> getActionsList(String category, ActionContext context, boolean removeFiltered);
 
     /**
      * Returns all filtered actions for a given category, creating a new context for the filters resolution.
@@ -347,7 +414,7 @@ public interface WebActions {
      * @since 5.7
      * @see ActionManager#getAction(String, ActionContext, boolean)
      */
-    Action getAction(String actionId, boolean hideUnavailableAction);
+    Action getAction(String actionId, boolean removeFiltered);
 
     /**
      * Return action with given id, with context filled with given document.
@@ -355,13 +422,13 @@ public interface WebActions {
      * @since 5.7.3
      * @see ActionManager#getAction(String, ActionContext, boolean)
      */
-    Action getActionForDocument(String actionId, DocumentModel document, boolean hideUnavailableAction);
+    Action getActionForDocument(String actionId, DocumentModel document, boolean removeFiltered);
 
     /**
      * @since 5.6
      * @see ActionManager#getAction(String, ActionContext, boolean)
      */
-    Action getAction(String actionId, ActionContext context, boolean hideUnavailableAction);
+    Action getAction(String actionId, ActionContext context, boolean removeFiltered);
 
     /**
      * Returns true if ajaxified behaviour of tabs is activated on the server, and if history push state is supported by
