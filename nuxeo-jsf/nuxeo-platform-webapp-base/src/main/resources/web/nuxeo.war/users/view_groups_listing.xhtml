@@ -11,8 +11,7 @@
     <ui:define name="groups_search_method">
       <a4j:region id="search_groups_region">
         <!-- search form -->
-        <h:form id="searchForm" ajaxSubmit="true"
-          onsubmit="document.getElementById('groupsListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('groupsListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');">
+        <h:form id="searchForm">
           <h:outputScript target="#{pageJsTarget}">
             jQuery(document).ready(function() {
               jQuery('#groupsListingView\\:searchForm').focusFirst();
@@ -25,12 +24,14 @@
           <h:commandButton id="searchButton"
             value="#{messages['command.search']}"
             action="#{contentViewActions.refreshAndRewind(contentViewName)}"
+            onclick="document.getElementById('groupsListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('groupsListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');"
             styleClass="button">
             <f:ajax execute="@form" render="groupsPanel searchForm" />
           </h:commandButton>
           <h:commandButton id="clearButton"
             value="#{messages['command.clearSearch']}"
             action="#{groupManagementActions.clearSearch}"
+            onclick="document.getElementById('groupsListingView:searchForm:searchButton').setAttribute('disabled', 'disabled');document.getElementById('groupsListingView:searchForm:clearButton').setAttribute('disabled', 'disabled');"
             styleClass="button">
             <f:ajax execute="@form" render="groupsPanel searchForm" />
           </h:commandButton>
