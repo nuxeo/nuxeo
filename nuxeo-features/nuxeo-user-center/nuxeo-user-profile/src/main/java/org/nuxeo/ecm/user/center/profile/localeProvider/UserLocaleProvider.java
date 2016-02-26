@@ -37,7 +37,21 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.6
  */
 public class UserLocaleProvider implements LocaleProvider {
+    
     public static final Log log = LogFactory.getLog(UserLocaleProvider.class);
+    private static final String DEFAULT_LOCALE_PARAM = "nuxeo.locale.default";
+    private Locale defaultLocale = null;
+
+    public UserLocaleProvider() {
+        // Retrieve defaultLocale from nuxeo.conf or fallback on english
+        String locale = Framework.getProperty(DEFAULT_LOCALE_PARAM, Locale.ENGLISH.toString());
+        try {
+            defaultLocale = LocaleUtils.toLocale(locale);
+        } catch (IllegalArgumentException e) {
+            log.error("Locale parse exception:  \"" + locale + "\"", e);
+            defaultLocale = Locale.ENGLISH;
+        }
+    }
 
     @Override
     public Locale getLocale(CoreSession repo) {
@@ -77,20 +91,16 @@ public class UserLocaleProvider implements LocaleProvider {
         return null;
     }
 
-    protected Locale getDefault() {
-        return Locale.ENGLISH;
-    }
-
     @Override
     public Locale getLocaleWithDefault(CoreSession session) {
         Locale locale = getLocale(session);
-        return locale == null ? getDefault() : locale;
+        return locale == null ? defaultLocale : locale;
     }
 
     @Override
     public Locale getLocaleWithDefault(DocumentModel userProfileDoc) {
         Locale locale = getLocale(userProfileDoc);
-        return locale == null ? getDefault() : locale;
+        return locale == null ? defaultLocale : locale;
     }
 
 }
