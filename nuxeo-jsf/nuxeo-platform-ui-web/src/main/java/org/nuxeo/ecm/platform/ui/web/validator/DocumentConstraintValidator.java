@@ -32,6 +32,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -232,23 +233,7 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
         }
         // cleanup / on begin or at end
         if (xpath != null) {
-            class SlashCleaner {
-                protected  String clearXpath(String xpath) {
-                    int i = 0;
-                    int j = xpath.length() - 1;
-                    while(i < xpath.length()) {
-                        if (xpath.charAt(i) != '/') break;
-                        i++;
-                    }
-                    while (j >= 0) {
-                        if (xpath.charAt(j) != '/') break;
-                        j--;
-                    }
-                    if (j - i <= 0) return "";
-                    return xpath.substring(i, j + 1);
-                }
-            }
-            xpath = new SlashCleaner().clearXpath(xpath);
+           xpath = StringUtils.strip(xpath, "/");
         } else if (field == null && xpath == null) {
            return null;
         }
