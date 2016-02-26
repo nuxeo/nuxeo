@@ -33,6 +33,7 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
+import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
@@ -366,10 +367,15 @@ public class LayoutTagHandler extends TagHandler {
         } else {
             if (!StringUtils.isBlank(templateValue)) {
                 TagAttribute srcAttr = helper.createAttribute("template", templateValue);
-                // XXX ComponentRef wrapper needed
                 TagConfig config = TagConfigFactory.createTagConfig(this.config, layoutTagConfigId,
                         FaceletHandlerHelper.getTagAttributes(srcAttr), nextHandler);
-                FaceletHandler includeHandler = new DecorateHandler(config);
+                FaceletHandler templateHandler = new DecorateHandler(config);
+                // NXP-18639: always wrap next include handler in a component ref for tagConfigId to be taken into
+                // account and anchored in the view with this id.
+                ComponentConfig ref = TagConfigFactory.createComponentConfig(this.config, layoutTagConfigId,
+                        new TagAttributesImpl(new TagAttributeImpl[] {}), templateHandler, ComponentRef.COMPONENT_TYPE,
+                        null);
+                FaceletHandler includeHandler = new ComponentRefHandler(ref);
                 if (FaceletHandlerHelper.isDevModeEnabled(ctx)) {
                     // decorate handler with dev handler
                     FaceletHandler devHandler = getDevFaceletHandler(ctx, helper, config, layoutInstance);
