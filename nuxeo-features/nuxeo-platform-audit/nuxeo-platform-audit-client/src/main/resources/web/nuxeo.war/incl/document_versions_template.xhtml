@@ -54,7 +54,8 @@
                     <td>
                       <nxu:set var="actions"
                         value="#{webActions.getUnfiltredActionsList('CURRENT_VERSION_SELECTION_LIST')}"
-                        cache="true">
+                        cache="true"
+                        useAlias="true">
                         <c:forEach var="sel_action" items="#{actions}">
                           <span id="#{sel_action.id}">
                             <nxh:commandButton

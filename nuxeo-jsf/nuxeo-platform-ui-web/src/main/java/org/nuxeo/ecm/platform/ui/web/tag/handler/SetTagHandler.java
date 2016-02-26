@@ -84,6 +84,15 @@ public class SetTagHandler extends AliasTagHandler {
      */
     protected final TagAttribute local;
 
+    /**
+     * Force using of {@link AliasVariableMapper} logics, exposing a reference of to a value that might change between
+     * "restore view" and "render response" phase, to make sure it's not cached by components and resolved again at
+     * "render response" phase.
+     *
+     * @since 8.2
+     */
+    protected final TagAttribute useAlias;
+
     public SetTagHandler(ComponentConfig config) {
         super(config, null);
         var = getRequiredAttribute("var");
@@ -92,6 +101,7 @@ public class SetTagHandler extends AliasTagHandler {
         blockPatterns = getAttribute("blockPatterns");
         blockMerge = getAttribute("blockMerge");
         local = getAttribute("local");
+        useAlias = getAttribute("useAlias");
     }
 
     @Override
@@ -102,7 +112,12 @@ public class SetTagHandler extends AliasTagHandler {
             throw new TagException(tag, "Parent UIComponent was null");
         }
 
-        if (isOptimizedAgain()) {
+        boolean useAliasBool = false;
+        if (useAlias != null) {
+            useAliasBool = useAlias.getBoolean(ctx);
+        }
+
+        if (!useAliasBool && isOptimizedAgain()) {
             String varStr = var.getValue(ctx);
             VariableMapper orig = ctx.getVariableMapper();
             boolean done = false;
@@ -142,10 +157,11 @@ public class SetTagHandler extends AliasTagHandler {
     }
 
     public boolean isAcceptingMerge(FaceletContext ctx) {
-        if (blockMerge != null) {
-            if (blockMerge.getBoolean(ctx)) {
-                return false;
-            }
+        if (useAlias != null && useAlias.getBoolean(ctx)) {
+            return false;
+        }
+        if (blockMerge != null && blockMerge.getBoolean(ctx)) {
+            return false;
         }
         if (blockPatterns != null) {
             String blocked = blockPatterns.getValue(ctx);
