@@ -1,4 +1,4 @@
-<ui:composition
+<c:if test="true"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -16,8 +16,7 @@
         <nxu:repeat var="action" begin="#{widgetProperty_maxActionsNumber}"
           end="#{widgetProperty_actions.size-1}" step="1" items="#{widgetProperty_actions}">
           <li>
-            <ui:include src="/incl/action/action_template.xhtml">
-              <ui:param name="actionsDisplay" value="#{nxu:test(widgetProperty_actionsDisplay == 'buttons' or widgetProperty_actionsDisplay == 'icons', 'icons_links', widgetProperty_actionsDisplay)}" />
+            <ui:include src="/incl/action/generic_action_template.xhtml">
               <ui:param name="ajaxReRender" value="#{widgetProperty_ajaxReRender}" />
               <ui:param name="addForm" value="#{widgetProperty_addForm}" />
               <ui:param name="useAjaxForm" value="#{widgetProperty_useAjaxForm}" />
@@ -38,4 +37,4 @@
 
 </c:if>
 
-</ui:composition>
+</c:if>

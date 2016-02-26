@@ -12,31 +12,17 @@
     value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
     cache="true">
 
-    <c:if test="#{not empty requireDocument}">
-      <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(action.id)}"
-        view="#{mainTabsActions.getViewFor(action)}"
-        pattern="#{mainTabsActions.getPatternFor(action)}"
-        addTabInfo="false"
-        target="#{action.properties.target}"
-        tabs="MAIN_TABS:#{action.id}"
-        onclick="#{onclick}"
-        accesskey="#{action.accessKey}">
-        <h:outputText value="#{messages[action.label]}" />
-      </nxd:restDocumentLink>
-    </c:if>
-    <c:if test="#{empty requireDocument}">
-      <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(action.id)}"
-        repositoryName="#{navigationContext.currentServerLocation.name}"
-        view="#{mainTabsActions.getViewFor(action)}"
-        pattern="#{mainTabsActions.getPatternFor(action)}"
-        addTabInfo="false"
-        target="#{action.properties.target}"
-        tabs="MAIN_TABS:#{action.id}"
-        onclick="#{onclick}"
-        accesskey="#{action.accessKey}">
-        <h:outputText value="#{messages[action.label]}" />
-      </nxd:restDocumentLink>
-    </c:if>
+    <nxd:restDocumentLink document="#{mainTabsActions.getDocumentFor(action.id)}"
+      repositoryName="#{navigationContext.currentServerLocation.name}"
+      view="#{mainTabsActions.getViewFor(action)}"
+      pattern="#{mainTabsActions.getPatternFor(action)}"
+      addTabInfo="false"
+      target="#{action.properties.target}"
+      tabs="MAIN_TABS:#{action.id}"
+      onclick="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
+      accesskey="#{action.accessKey}">
+      <h:outputText value="#{messages[action.label]}" />
+    </nxd:restDocumentLink>
 
   </nxu:set>
   </nxu:set>
