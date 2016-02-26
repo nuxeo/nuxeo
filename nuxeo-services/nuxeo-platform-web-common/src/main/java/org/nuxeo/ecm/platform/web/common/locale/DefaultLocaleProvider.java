@@ -46,4 +46,14 @@ public class DefaultLocaleProvider implements LocaleProvider {
         return TimeZone.getDefault();
     }
 
+    @Override
+    public Locale getLocaleWithDefault(CoreSession session) {
+        return Locale.getDefault();
+    }
+
+    @Override
+    public Locale getLocaleWithDefault(DocumentModel userProfileDoc) {
+        return Locale.getDefault();
+    }
+
 }
