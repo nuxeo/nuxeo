@@ -215,8 +215,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         return provider;
     }
 
-    public Map<String, Serializable> resolvePageProviderProperties(Map<String, String> stringProps)
-            {
+    public Map<String, Serializable> resolvePageProviderProperties(Map<String, String> stringProps) {
         // resolve properties
         Map<String, Serializable> resolvedProps = new HashMap<String, Serializable>();
         for (Map.Entry<String, String> prop : stringProps.entrySet()) {
@@ -229,8 +228,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         FacesContext context = FacesContext.getCurrentInstance();
         Object value = ComponentTagUtils.resolveElExpression(context, elExpression);
         if (value != null && !(value instanceof Serializable)) {
-            log.error(String.format("Error processing expression '%s', " + "result is not serializable: %s",
-                    elExpression, value));
+            log.error("Error processing expression '" + elExpression + "', result is not serializable: " + value);
             return null;
         }
         return (Serializable) value;
@@ -322,7 +320,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         if (cv != null) {
             restoreContentViewState(cv, contentViewState);
         } else {
-            throw new NuxeoException(String.format("Unknown content view with name '%s'", name));
+            throw new NuxeoException("Unknown content view with name '" + name + "'");
         }
         return cv;
     }
@@ -344,9 +342,10 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
             // set on content view
             String searchType = contentView.getSearchDocumentModelType();
             if (!searchDocument.getType().equals(searchType)) {
-                log.warn(String.format("Restored document type '%s' is different from "
-                        + "the one declared on content view with name '%s': should be '%s'",
-                    searchDocument.getType(), contentViewState.getContentViewName(), searchType));
+                log.warn(String.format(
+                        "Restored document type '%s' is different from "
+                                + "the one declared on content view with name '%s': should be '%s'",
+                        searchDocument.getType(), contentViewState.getContentViewName(), searchType));
             }
         }
         Long currentPage = contentViewState.getCurrentPage();

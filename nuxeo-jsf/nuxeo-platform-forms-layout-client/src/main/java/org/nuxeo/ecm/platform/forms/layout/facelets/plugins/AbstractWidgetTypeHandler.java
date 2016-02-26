@@ -82,7 +82,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
         }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
         TagAttribute widgetAttr = helper.createAttribute("widget",
-                String.format("#{%s}", RenderVariables.widgetVariables.widget.name()));
+                "#{" + RenderVariables.widgetVariables.widget.name() + "}");
         TagAttributes devWidgetAttributes;
         if (StringUtils.isBlank(template)) {
             devWidgetAttributes = FaceletHandlerHelper.getTagAttributes(widgetAttr);
@@ -108,8 +108,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
     public String getRequiredProperty(String name) throws WidgetException {
         String value = getProperty(name);
         if (value == null) {
-            throw new WidgetException(String.format(
-                    "Required property %s is missing " + "on widget type configuration", name));
+            throw new WidgetException("Required property '" + name + "' is missing on widget type configuration");
         }
         return value;
     }

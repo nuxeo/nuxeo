@@ -124,7 +124,7 @@ public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetType
             }
         }
         String bundleName = ctx.getFacesContext().getApplication().getMessageBundle();
-        String localizedExpression = String.format("#{%s['%s']}", bundleName, "label.vocabulary.selectValue");
+        String localizedExpression = "#{" + bundleName + "['label.vocabulary.selectValue']}";
         WidgetSelectOption selectOption = new WidgetSelectOptionImpl("", "", localizedExpression, "", Boolean.FALSE,
                 Boolean.TRUE);
         return getBareOptionFaceletHandler(ctx, helper, widget, selectOption, nextHandler);

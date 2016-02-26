@@ -227,7 +227,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             if (!StringUtils.isBlank(extendsFlavorName)) {
                 if (flavors.contains(extendsFlavorName)) {
                     // cyclic dependency => abort
-                    log.error(String.format("Cyclic dependency detected in flavor '%s' hierarchy", flavor.getName()));
+                    log.error("Cyclic dependency detected in flavor '" + flavor.getName() + "' hierarchy");
                     return presets;
                 } else {
                     // retrieve the extended presets
@@ -239,7 +239,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                             presets.addAll(0, parentPresets);
                         }
                     } else {
-                        log.warn(String.format("Extended flavor '%s' " + "not found", extendsFlavorName));
+                        log.warn("Extended flavor '" + extendsFlavorName + "' not found");
                     }
                 }
             }
@@ -333,7 +333,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 if (!StringUtils.isBlank(extendsFlavorName)) {
                     if (flavors.contains(extendsFlavorName)) {
                         // cyclic dependency => abort
-                        log.error(String.format("Cyclic dependency detected in flavor '%s' hierarchy", flavor.getName()));
+                        log.error("Cyclic dependency detected in flavor '" + flavor.getName() + "' hierarchy");
                         return null;
                     } else {
                         // retrieved the extended logo
@@ -342,7 +342,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                         if (extendedFlavor != null) {
                             localLogo = computeLogo(extendedFlavor, flavors);
                         } else {
-                            log.warn(String.format("Extended flavor '%s' " + "not found", extendsFlavorName));
+                            log.warn("Extended flavor '" + extendsFlavorName + "' not found");
                         }
                     }
                 }
@@ -360,7 +360,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 if (!StringUtils.isBlank(extendsFlavorName)) {
                     if (flavors.contains(extendsFlavorName)) {
                         // cyclic dependency => abort
-                        log.error(String.format("Cyclic dependency detected in flavor '%s' hierarchy", flavor.getName()));
+                        log.error("Cyclic dependency detected in flavor '" + flavor.getName() + "' hierarchy");
                         return null;
                     } else {
                         // retrieved the extended colors
@@ -369,7 +369,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                         if (extendedFlavor != null) {
                             localPalette = computePalettePreview(extendedFlavor, flavors);
                         } else {
-                            log.warn(String.format("Extended flavor '%s' " + "not found", extendsFlavorName));
+                            log.warn("Extended flavor '" + extendsFlavorName + "' not found");
                         }
                     }
                 }
@@ -387,7 +387,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 if (!StringUtils.isBlank(extendsFlavorName)) {
                     if (flavors.contains(extendsFlavorName)) {
                         // cyclic dependency => abort
-                        log.error(String.format("Cyclic dependency detected in flavor '%s' hierarchy", flavor.getName()));
+                        log.error("Cyclic dependency detected in flavor '" + flavor.getName() + "' hierarchy");
                         return null;
                     } else {
                         // retrieved the extended icons
@@ -396,7 +396,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                         if (extendedFlavor != null) {
                             localIcons = computeIcons(extendedFlavor, flavors);
                         } else {
-                            log.warn(String.format("Extended flavor '%s' " + "not found", extendsFlavorName));
+                            log.warn("Extended flavor '" + extendsFlavorName + "' not found");
                         }
                     }
                 }
@@ -461,8 +461,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             for (FlavorPresets myPreset : presets) {
                 String content = myPreset.getContent();
                 if (content == null) {
-                    log.error(String.format("Null content for preset with " + "source '%s' in flavor '%s'",
-                            myPreset.getSrc(), flavorName));
+                    log.error("Null content for preset with source '" + myPreset.getSrc() + "' in flavor '" + flavorName
+                            + "'");
                 } else {
                     String cat = myPreset.getCategory();
                     Map<String, String> allEntries;
@@ -502,8 +502,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         for (String cat : presetsByCat.keySet()) {
             Map<String, String> entries = presetsByCat.get(cat);
             for (Map.Entry<String, String> entry : entries.entrySet()) {
-                res.put(String.format("%s (%s %s)", entry.getKey(), ThemeStylingService.FLAVOR_MARKER, cat),
-                        entry.getValue());
+                res.put(entry.getKey() + " (" + ThemeStylingService.FLAVOR_MARKER + " " + cat + ")", entry.getValue());
             }
         }
         return res;

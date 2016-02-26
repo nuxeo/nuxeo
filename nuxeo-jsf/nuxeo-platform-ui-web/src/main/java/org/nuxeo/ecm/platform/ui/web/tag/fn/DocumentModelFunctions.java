@@ -316,7 +316,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                     return titleOrId(doc);
                 }
             } catch (DocumentNotFoundException e) {
-                log.info(String.format("Could not find document with id %s", documentId));
+                log.info("Could not find document with id " + documentId);
             }
         }
         return documentId;
@@ -522,9 +522,9 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                 }
             }
             if (blobLength != null && filename != null) {
-                fileInfo = String.format("%s [%s]", filename, Functions.printFileSize(String.valueOf(blobLength)));
+                fileInfo = filename + " [" + Functions.printFileSize(String.valueOf(blobLength)) + "]";
             } else if (blobLength != null) {
-                fileInfo = String.format("[%s]", Functions.printFileSize(String.valueOf(blobLength)));
+                fileInfo = "[" + Functions.printFileSize(String.valueOf(blobLength)) + "]";
             } else if (filename != null) {
                 fileInfo = filename;
             }
@@ -723,7 +723,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         try {
             sb.append(URLEncoder.encode(value, URL_ENCODE_CHARSET));
         } catch (UnsupportedEncodingException e) {
-            throw new NuxeoException(String.format("could not encode URL parameter: %s=%s", name, value), e);
+            throw new NuxeoException("Could not encode URL parameter: " + name + "=" + value, e);
         }
     }
 
@@ -923,7 +923,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     public static String getPropertyPath(String listPropertyName, int index, String subPropertyName) {
-        return String.format("%s/%s/%s", listPropertyName, index, subPropertyName);
+        return listPropertyName + "/" + index + "/" + subPropertyName;
     }
 
     /**
