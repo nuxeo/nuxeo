@@ -2028,6 +2028,91 @@
     </description>
   </tag>
 
+  <tag>
+    <tag-name>form</tag-name>
+    <handler-class>org.nuxeo.ecm.platform.ui.web.tag.handler.FormTagHandler</handler-class>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler generating a form (or not) depending on attributes values, useful when
+        handling widgets that may need to be surrounded by a form (or not) depending on their
+        configuration.
+       </p>
+      <p>
+        Available since 8.2
+      </p>
+      Example:
+      <pre>
+        &lt;nxu:form id="#{widget.id}_form"
+          useAjaxForm="#{useAjaxForm and supportAjax}"
+          disableDoubleClickShield="#{disableDoubleClickShield}"&gt;
+          &lt;nxl:widget widget="#{widget}" value="#{fieldOrValue}" /&gt;
+        &lt;/nxu:form&gt;
+      </pre>
+      ]]>
+    </description>
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>Value binding resolving to the form id.</description>
+    </attribute>
+    <attribute>
+      <name>skip</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Value binding resolving to a boolean value: if true, the form
+        will not be generated, but the tag content will still be taken into
+        account. Defaults to false.
+      </description>
+    </attribute>
+    <attribute>
+      <name>disableDoubleClickShield</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Value binding resolving to a boolean value: if true, the form
+        will not prevent clicking twice on buttons in the form. Defaults to
+        false.
+      </description>
+    </attribute>
+    <attribute>
+      <name>useAjaxForm</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Value binding resolving to a boolean value: if true, the form
+        enctype attribute will not handle multipart. Defaults to false.
+      </description>
+    </attribute>
+    <attribute>
+      <name>disableMultipartForm</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Value binding resolving to a boolean value: if true, the form
+        enctype attribute will not handle multipart. Defaults to false.
+      </description>
+    </attribute>
+    <attribute>
+      <name>onsubmit</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Javascript method to be called when the form is submitted.
+      </description>
+    </attribute>
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Style class to be set on the form.
+      </description>
+    </attribute>
+  </tag>
+
   <!-- old tomahawk tags, migrated to use RichFaces tags -->
 
   <tag>
