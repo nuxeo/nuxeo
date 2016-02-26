@@ -3,6 +3,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxa="http://nuxeo.org/nxweb/actions"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
 <c:if test="false">
@@ -47,6 +48,24 @@ Templating zones that can be filled when useAjaxForm is set to true:
 - after_action_trigger
 
 </c:if>
+
+<c:choose>
+  <c:when test="#{!removeActionOptims}">
+
+    <nxa:action action="#{action}"
+      value="#{fieldOrValue}"
+      mode="#{mode}"
+      addForm="#{addForm}"
+      useAjaxForm="#{useAjaxForm}"
+      hideIcon="#{hideIcon}"
+      hideLabel="#{hideLabel}"
+      useButton="#{useButton}"
+      actionStyleClass="#{actionStyleClass}"
+      clickedActionIdHolder="#{clickedActionIdHolder}"
+      formStyleClass="#{formStyleClass}" />
+
+  </c:when>
+  <c:otherwise>
 
 <nxu:set var="defActionWidgetName" value="#{idPrefix}#{nxu:jsfTagIdEscape(action.id)}">
 <nxu:set var="actionWidgetName" value="#{nxu:test(formAdded, nxu:jsfTagIdEscape(action.id), defActionWidgetName)}">
@@ -123,5 +142,9 @@ Templating zones that can be filled when useAjaxForm is set to true:
 </nxu:set>
 </nxu:set>
 </nxu:set>
+
+
+  </c:otherwise>
+</c:choose>
 
 </c:if>

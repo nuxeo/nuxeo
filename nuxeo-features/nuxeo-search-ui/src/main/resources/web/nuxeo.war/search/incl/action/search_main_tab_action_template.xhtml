@@ -1,4 +1,5 @@
-<ui:composition xmlns:c="http://java.sun.com/jstl/core"
+<ui:composition
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
@@ -6,7 +7,7 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:a4j="http://richfaces.org/a4j">
 
-  <a4j:outputPanel id="searchMainTab_panel">
+  <a4j:outputPanel id="#{widget.id}">
     <nxd:restDocumentLink document="#{currentDocument}" pattern="search"
       view="search" addTabInfo="false">
       <f:param name="contentViewName"
