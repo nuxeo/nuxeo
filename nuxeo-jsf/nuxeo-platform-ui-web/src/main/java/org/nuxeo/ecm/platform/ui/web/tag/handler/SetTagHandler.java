@@ -36,11 +36,14 @@ import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasTagHandler;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.ui.web.util.FaceletDebugTracer;
 
 /**
  * Tag handler that exposes a variable to the variable map. Behaviour is close to the c:set tag handler except:
@@ -56,6 +59,8 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
  * @since 5.3.1
  */
 public class SetTagHandler extends AliasTagHandler {
+
+    private static final Log log = LogFactory.getLog(SetTagHandler.class);
 
     protected final TagAttribute var;
 
@@ -107,40 +112,47 @@ public class SetTagHandler extends AliasTagHandler {
     @Override
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        // make sure our parent is not null
-        if (parent == null) {
-            throw new TagException(tag, "Parent UIComponent was null");
-        }
+        long start = FaceletDebugTracer.start();
+        String varStr = null;
+        try {
 
-        boolean useAliasBool = false;
-        if (useAlias != null) {
-            useAliasBool = useAlias.getBoolean(ctx);
-        }
+            // make sure our parent is not null
+            if (parent == null) {
+                throw new TagException(tag, "Parent UIComponent was null");
+            }
 
-        if (!useAliasBool && isOptimizedAgain()) {
-            String varStr = var.getValue(ctx);
-            VariableMapper orig = ctx.getVariableMapper();
-            boolean done = false;
-            if (orig instanceof BlockingVariableMapper) {
-                BlockingVariableMapper vm = (BlockingVariableMapper) orig;
-                if (isAcceptingMerge(ctx, vm, varStr)) {
-                    FaceletHandler next = applyOptimized(ctx, parent, vm, varStr);
-                    next.apply(ctx, parent);
-                    done = true;
-                }
+            boolean useAliasBool = false;
+            if (useAlias != null) {
+                useAliasBool = useAlias.getBoolean(ctx);
             }
-            if (!done) {
-                try {
-                    BlockingVariableMapper vm = new BlockingVariableMapper(orig);
-                    ctx.setVariableMapper(vm);
-                    FaceletHandler next = applyOptimized(ctx, parent, vm, varStr);
-                    next.apply(ctx, parent);
-                } finally {
-                    ctx.setVariableMapper(orig);
+
+            if (!useAliasBool && isOptimizedAgain()) {
+                varStr = var.getValue(ctx);
+                VariableMapper orig = ctx.getVariableMapper();
+                boolean done = false;
+                if (orig instanceof BlockingVariableMapper) {
+                    BlockingVariableMapper vm = (BlockingVariableMapper) orig;
+                    if (isAcceptingMerge(ctx, vm, varStr)) {
+                        FaceletHandler next = applyOptimized(ctx, parent, vm, varStr);
+                        next.apply(ctx, parent);
+                        done = true;
+                    }
                 }
+                if (!done) {
+                    try {
+                        BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+                        ctx.setVariableMapper(vm);
+                        FaceletHandler next = applyOptimized(ctx, parent, vm, varStr);
+                        next.apply(ctx, parent);
+                    } finally {
+                        ctx.setVariableMapper(orig);
+                    }
+                }
+            } else {
+                applyAlias(ctx, parent);
             }
-        } else {
-            applyAlias(ctx, parent);
+        } finally {
+            FaceletDebugTracer.trace(start, getTag(), var.getValue());
         }
     }
 
