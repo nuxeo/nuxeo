@@ -27,7 +27,7 @@ import org.nuxeo.functionaltests.Constants;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-import org.nuxeo.functionaltests.pages.TopicDocumentBasePage;
+import org.nuxeo.functionaltests.pages.tabs.TopicTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
@@ -90,7 +90,7 @@ public class ITForumTest extends AbstractTest {
 
         asPage(DocumentBasePage.class).getContentTab()
                                       .createForum(TEST_FORUM_TITLE, TEST_FORUM_DESCRIPTION)
-                                      .getTopicCreatePage("testTopicWithoutModeration", "description", false, null);
+                                      .createTopic("testTopicWithoutModeration", "description", false, null);
 
         logout();
 
@@ -102,6 +102,8 @@ public class ITForumTest extends AbstractTest {
         assertEquals(1, children.size());
         verifyTopicNameAndModeration(children.get(0), "testTopicWithoutModeration", false);
 
+
+
         logout();
     }
 
@@ -110,11 +112,11 @@ public class ITForumTest extends AbstractTest {
         login(TEST_USERNAME, TEST_USERNAME);
         open(TEST_WORKSPACE_URL);
 
-        TopicDocumentBasePage page = asPage(DocumentBasePage.class).getContentTab()
+        TopicTabSubPage page = asPage(DocumentBasePage.class).getContentTab()
                                                                    .createForum(TEST_FORUM_TITLE,
-                                                                           TEST_FORUM_DESCRIPTION)
-                                                                   .getTopicCreatePage("testTopicWithModeration",
-                                                                           "description", true, TEST_USERNAME_2);
+                                                                       TEST_FORUM_DESCRIPTION)
+                                                                   .createTopic("testTopicWithModeration",
+                                                                       "description", true, TEST_USERNAME_2);
 
         assertEquals("testTopicWithModeration", page.getCurrentDocumentTitle());
         List<WebElement> children = page.goToDocumentByBreadcrumb(TEST_FORUM_TITLE).getForumTab().getChildTopicRows();
@@ -122,6 +124,7 @@ public class ITForumTest extends AbstractTest {
 
         logout();
     }
+
 
     private void verifyTopicNameAndModeration(WebElement element, String title, boolean moderated) {
         assertEquals(title, element.findElement(By.xpath("td[3]")).getText());
