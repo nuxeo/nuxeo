@@ -66,6 +66,7 @@
           <defaultValues mode="any">
             <property name="display">block</property>
             <property name="thumbnailHeaderLayout">listing_thumbnail_header</property>
+            <property name="before_template">/layouts/layout_listing_thumbnail_infoview.xhtml</property>
           </defaultValues>
         </properties>
       </configuration>
