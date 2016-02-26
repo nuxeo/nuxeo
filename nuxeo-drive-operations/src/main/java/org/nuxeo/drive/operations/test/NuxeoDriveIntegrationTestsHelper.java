@@ -43,7 +43,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
 
     static final Log log = LogFactory.getLog(NuxeoDriveIntegrationTestsHelper.class);
 
-    public static final String TEST_USER_NAME_PREFIX = "nuxeoDriveTestUser_";
+    public static final String TEST_USER_NAME_PREFIX = "drive";
 
     public static final String TEST_WORKSPACE_PARENT_NAME = "workspaces";
 
