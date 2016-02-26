@@ -22,26 +22,8 @@
   value="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}"
   cache="true">
 
-<c:if test="#{not useAjaxForm}">
-  <nxd:restDocumentLink
-    document="#{fieldOrValue}"
-    repositoryName="#{widgetProperty_repositoryName}"
-    view="#{finalView}"
-    pattern="#{finalPattern}"
-    tabs="#{tabIds}"
-    addTabInfo="false"
-    accesskey="#{widgetProperty_accessKey}"
-    id="#{widget.id}"
-    target="#{widgetProperty_target}"
-    styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
-    onclick="#{widgetProperty_onclick}">
-    <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-    <ui:insert name="inside_action" />
-  </nxd:restDocumentLink>
-</c:if>
-
-<c:if test="#{useAjaxForm}">
-
+<c:choose>
+<c:when test="#{widgetProperty_useAjaxForm and (widgetProperty_ajaxSupport == null ? widgetProperty_supportAjax : widgetProperty_ajaxSupport)}">
   <nxd:restDocumentLink
     document="#{fieldOrValue}"
     repositoryName="#{widgetProperty_repositoryName}"
@@ -60,13 +42,30 @@
       styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
       accessKey="#{widgetProperty_accessKey}">
       <a4j:ajax execute="@this" render="#{ajaxReRender}" />
-      <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
       <ui:insert name="inside_action" />
     </h:commandLink>
-
   </nxd:restDocumentLink>
+</c:when>
 
-</c:if>
+<c:otherwise>
+  <nxd:restDocumentLink
+    document="#{fieldOrValue}"
+    repositoryName="#{widgetProperty_repositoryName}"
+    view="#{finalView}"
+    pattern="#{finalPattern}"
+    tabs="#{tabIds}"
+    addTabInfo="false"
+    accesskey="#{widgetProperty_accessKey}"
+    id="#{widget.id}"
+    target="#{widgetProperty_target}"
+    styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
+    onclick="#{widgetProperty_onclick}">
+    <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
+    <ui:insert name="inside_action" />
+  </nxd:restDocumentLink>
+</c:otherwise>
+</c:choose>
 
 </nxu:set>
 </nxu:set>
