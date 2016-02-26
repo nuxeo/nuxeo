@@ -1,4 +1,4 @@
-<ui:composition
+<ui:fragment
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
@@ -8,7 +8,8 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout">
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  rendered="#{widgetProperty_enabled or widgetProperty_disableFiltered}">
 
 <c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}">
 
@@ -32,6 +33,7 @@
     tabs="#{tabIds}"
     addTabInfo="false"
     accesskey="#{widgetProperty_accessKey}"
+    disabled="#{!widgetProperty_available}"
     id="#{widget.id}_restLink"
     resolveOnly="true"
     var="docUrl">
@@ -57,6 +59,7 @@
     tabs="#{tabIds}"
     addTabInfo="false"
     accesskey="#{widgetProperty_accessKey}"
+    disabled="#{!widgetProperty_available}"
     id="#{widget.id}"
     target="#{widgetProperty_target}"
     styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}"
@@ -79,4 +82,4 @@
   </c:if>
 </c:if>
 
-</ui:composition>
+</ui:fragment>

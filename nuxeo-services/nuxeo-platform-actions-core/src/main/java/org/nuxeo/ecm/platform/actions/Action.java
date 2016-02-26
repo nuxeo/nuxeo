@@ -100,6 +100,11 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
     protected boolean available = true;
 
     /**
+     * @since 8.2
+     */
+    protected boolean filtered = false;
+
+    /**
      * Attribute that provides a hint for action ordering.
      * <p>
      * :XXX: Action ordering remains a problem. We will continue to use the existing strategy of, by default, ordering
@@ -314,6 +319,20 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         this.available = available;
     }
 
+    /**
+     * @since 8.2
+     */
+    public boolean isFiltered() {
+        return filtered;
+    }
+
+    /**
+     * @since 8.2
+     */
+    public void setFiltered(boolean filtered) {
+        this.filtered = filtered;
+    }
+
     public String getHelp() {
         if (help == null) {
             String conf = getStringProperty("help");
@@ -464,6 +483,7 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
             clone.properties = properties.clone();
         }
         clone.available = available;
+        clone.filtered = filtered;
         clone.order = order;
         if (categories != null) {
             clone.categories = categories.clone();
