@@ -363,6 +363,10 @@
     <phase-listener>
       org.nuxeo.ecm.platform.ui.web.rest.RestfulPhaseListener
     </phase-listener>
+
+    <phase-listener>
+      org.nuxeo.ecm.platform.ui.web.rest.JSFDebugPhaseListener
+    </phase-listener>
   </extension>
 
   <extension target="faces-config#COMPONENT">
