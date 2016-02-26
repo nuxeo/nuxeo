@@ -1,15 +1,30 @@
-<c:if test="true"
-  xmlns="http://www.w3.org/1999/xhtml"
+<c:choose
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
-  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
+<c:when test="#{!removeActionOptims}">
+  <nxu:set var="contentViewState"
+    value="#{contentViewRestActions.getContentViewState(contentView)}"
+    cache="true">
+
+    <nxd:restDocumentLink document="#{currentDocument}"
+      view="#{widgetProperty_view}" addTabInfo="false"
+      newConversation="true" target="_blank"
+      styleClass="#{widgetProperty_actionStyleClass} #{widgetProperty_styleClass}">
+      <f:param name="contentViewName" value="#{contentView.name}" />
+      <f:param name="currentPage" value="0" />
+      <f:param name="pageSize" value="0" />
+      <f:param name="contentViewState" value="#{contentViewState}" />
+      <ui:include src="/incl/action/widgets/action_icon_label_template.xhtml" />
+    </nxd:restDocumentLink>
+
+  </nxu:set>
+</c:when>
+
+<c:otherwise>
   <nxu:set var="contentViewState"
     value="#{contentViewRestActions.getContentViewState(contentView)}"
     cache="true">
@@ -29,5 +44,6 @@
     </nxd:restDocumentLink>
 
   </nxu:set>
+</c:otherwise>
 
-</c:if>
+</c:choose>
