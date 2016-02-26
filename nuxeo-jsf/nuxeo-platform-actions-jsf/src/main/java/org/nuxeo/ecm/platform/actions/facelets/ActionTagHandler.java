@@ -231,6 +231,15 @@ public class ActionTagHandler extends MetaTagHandler {
                             nextHandler);
                     FaceletHandler handler = new WidgetTagHandler(wconfig);
 
+                    // expose ajax render props to the context
+                    String reRender = (String) props.get("ajaxReRender");
+                    if (!StringUtils.isEmpty(reRender)) {
+                        ExpressionFactory eFactory = ctx.getExpressionFactory();
+                        ValueExpression ve = eFactory.createValueExpression(
+                                "#{nxu:joinRender(ajaxReRender, " + reRender + ")}", String.class);
+                        vm.setVariable("ajaxReRender", ve);
+                    }
+
                     // create form handler if needed
                     boolean doAddForm = false;
                     if (addForm != null) {
