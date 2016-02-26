@@ -1,0 +1,25 @@
+<c:if test="#{widget.mode != 'after_view' and widget.mode != 'tab_content'}"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:h="http://java.sun.com/jsf/html">
+  <nxu:set var="actionLink" value="#{action.getLink()}"
+    resolveTwice="true"
+    cache="#{action.properties.cacheLink != null ? action.properties.cacheLink : false}">
+    <ui:fragment rendered="#{not empty actionLink}">
+      <nxu:set var="onclick"
+        value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
+        cache="true">
+        <h:outputLink value="#{actionLink}"
+          target="#{action.properties.target}" onclick="#{onclick}"
+          immediate="#{action.immediate}" disabled="#{!action.available}"
+          styleClass="#{actionStyleClass} #{action.properties.styleClass}"
+          accesskey="#{action.accessKey}">
+          <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+          <ui:insert name="inside_action" />
+        </h:outputLink>
+      </nxu:set>
+    </ui:fragment>
+  </nxu:set>
+</c:if>
