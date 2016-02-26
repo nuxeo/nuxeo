@@ -52,9 +52,28 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
 
     protected final TagAttribute var;
 
+    /**
+     * @since 8.2
+     */
+    protected final TagAttribute skip;
+
     public ValueHolderTagHandler(ComponentConfig config) {
         super(config);
         var = getAttribute("var");
+        skip = getAttribute("skip");
+    }
+
+    @Override
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
+        boolean skipValue = false;
+        if (skip != null) {
+            skipValue = skip.getBoolean(ctx);
+        }
+        if (skipValue) {
+            super.applyNextHandler(ctx, parent);
+        } else {
+            super.apply(ctx, parent);
+        }
     }
 
     @Override
