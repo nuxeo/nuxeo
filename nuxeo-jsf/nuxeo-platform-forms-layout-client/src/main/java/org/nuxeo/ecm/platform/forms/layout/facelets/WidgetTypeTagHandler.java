@@ -265,8 +265,8 @@ public class WidgetTypeTagHandler extends TagHandler {
             ctx.setVariableMapper(vm);
 
             // set unique id on widget before exposing it to the context
-            FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
-            WidgetTagHandler.generateWidgetId(ctx, helper, widget, false);
+            FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+            WidgetTagHandler.generateWidgetId(helper, widget, false);
 
             // TODO NXP-13280: retrieve widget controls from tag attributes before exposure
             WidgetTagHandler.exposeWidgetVariables(ctx, vm, widget, null, true);
