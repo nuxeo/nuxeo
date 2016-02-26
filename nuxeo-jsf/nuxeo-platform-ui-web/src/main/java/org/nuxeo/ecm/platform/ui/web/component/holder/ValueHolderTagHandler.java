@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.GenericHtmlComponentHandler;
+import org.nuxeo.ecm.platform.ui.web.util.FaceletDebugTracer;
 
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
@@ -78,43 +79,48 @@ public class ValueHolderTagHandler extends GenericHtmlComponentHandler {
 
     @Override
     public void applyNextHandler(FaceletContext ctx, UIComponent c) throws IOException, FacesException, ELException {
+        long start = FaceletDebugTracer.start();
         String varName = null;
-        boolean varSet = false;
-        if (var != null) {
-            varName = var.getValue(ctx);
-        }
-
-        VariableMapper orig = ctx.getVariableMapper();
-        AliasVariableMapper alias = new AliasVariableMapper();
-        // XXX: reuse the component id as the alias variable mapper id so that
-        // the value holder JSF component can reuse it at render time to expose
-        // the value it keeps
-        String aliasId = (String) c.getAttributes().get(ComponentSupport.MARK_CREATED);
-        alias.setId(aliasId);
-
-        if (!StringUtils.isBlank(varName)) {
-            varSet = true;
-            List<String> blockedPatterns = new ArrayList<String>();
-            blockedPatterns.add(varName);
-            alias.setBlockedPatterns(blockedPatterns);
-        }
-
         try {
-            if (varSet) {
-                Object valueToExpose = retrieveValueToExpose(ctx, c);
-                ExpressionFactory eFactory = ctx.getExpressionFactory();
-                ValueExpression valueVe = eFactory.createValueExpression(valueToExpose, Object.class);
-                alias.setVariable(varName, valueVe);
-                VariableMapper vm = alias.getVariableMapperForBuild(orig);
-                ctx.setVariableMapper(vm);
-                AliasVariableMapper.exposeAliasesToRequest(ctx.getFacesContext(), alias);
+            boolean varSet = false;
+            if (var != null) {
+                varName = var.getValue(ctx);
             }
-            super.applyNextHandler(ctx, c);
+
+            VariableMapper orig = ctx.getVariableMapper();
+            AliasVariableMapper alias = new AliasVariableMapper();
+            // XXX: reuse the component id as the alias variable mapper id so that
+            // the value holder JSF component can reuse it at render time to expose
+            // the value it keeps
+            String aliasId = (String) c.getAttributes().get(ComponentSupport.MARK_CREATED);
+            alias.setId(aliasId);
+
+            if (!StringUtils.isBlank(varName)) {
+                varSet = true;
+                List<String> blockedPatterns = new ArrayList<String>();
+                blockedPatterns.add(varName);
+                alias.setBlockedPatterns(blockedPatterns);
+            }
+
+            try {
+                if (varSet) {
+                    Object valueToExpose = retrieveValueToExpose(ctx, c);
+                    ExpressionFactory eFactory = ctx.getExpressionFactory();
+                    ValueExpression valueVe = eFactory.createValueExpression(valueToExpose, Object.class);
+                    alias.setVariable(varName, valueVe);
+                    VariableMapper vm = alias.getVariableMapperForBuild(orig);
+                    ctx.setVariableMapper(vm);
+                    AliasVariableMapper.exposeAliasesToRequest(ctx.getFacesContext(), alias);
+                }
+                super.applyNextHandler(ctx, c);
+            } finally {
+                if (varSet) {
+                    AliasVariableMapper.removeAliasesExposedToRequest(ctx.getFacesContext(), aliasId);
+                    ctx.setVariableMapper(orig);
+                }
+            }
         } finally {
-            if (varSet) {
-                AliasVariableMapper.removeAliasesExposedToRequest(ctx.getFacesContext(), aliasId);
-                ctx.setVariableMapper(orig);
-            }
+            FaceletDebugTracer.trace(start, getTag(), varName);
         }
     }
 
