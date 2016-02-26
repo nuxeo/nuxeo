@@ -10,8 +10,8 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
-<nxu:set var="defaultForComponentId" value="#{widget.id}_input">
-<nxu:set var="forComponentId" value="#{nxu:test(empty forComponentId, defaultForComponentId, forComponentId)}">
+<nxu:set var="defaultForComponentId" value="#{widget.id}_input" useAlias="true">
+<nxu:set var="forComponentId" value="#{nxu:test(empty forComponentId, defaultForComponentId, forComponentId)}" useAlias="true">
 
   <c:if test="#{not widgetProperty_hideDeleteButton}">
     <a4j:commandLink immediate="true"
