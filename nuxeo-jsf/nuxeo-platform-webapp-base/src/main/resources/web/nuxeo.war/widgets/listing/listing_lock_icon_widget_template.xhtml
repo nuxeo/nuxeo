@@ -1,11 +1,9 @@
 <h:graphicImage value="/icons/lock.gif"
-   xmlns:h="http://java.sun.com/jsf/html"
-   xmlns:c="http://java.sun.com/jstl/core"
-   xmlns:f="http://java.sun.com/jsf/core"
-   id="#{widget.id}"
-   rendered="#{not empty field}">
-   <c:if test="#{not empty field_1}">
-      <f:attribute name="title" value="#{messages['label.summary.by']} #{nxu:userFullName(field_1.owner)}, #{messages['label.summary.the']} #{field_1.created.time}" />
-      <f:attribute name="styleClass" value="tipsyShow" />
-   </c:if>
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  id="#{widget.id}"
+  rendered="#{not empty field and not empty field_1}">
+  <f:attribute name="title" value="#{messages['label.summary.by']} #{nxu:userFullName(field_1.owner)}, #{messages['label.summary.the']} #{field_1.created.time}" />
+  <f:attribute name="styleClass" value="tipsyShow" />
 </h:graphicImage>
