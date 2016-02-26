@@ -36,6 +36,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -86,14 +87,19 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         jg.writeStringField("ecm:uuid", doc.getId());
         jg.writeStringField("ecm:name", doc.getName());
         jg.writeStringField("ecm:title", doc.getTitle());
-        jg.writeStringField("ecm:path", doc.getPathAsString());
-        String[] split = doc.getPathAsString().split("/");
-        if (split.length > 0) {
-            for (int i = 1; i < split.length; i++) {
-                jg.writeStringField("ecm:path.level" + i, split[i]);
+
+        String pathAsString = doc.getPathAsString();
+        jg.writeStringField("ecm:path", pathAsString);
+        if (StringUtils.isNotBlank(pathAsString)) {
+            String[] split = pathAsString.split("/");
+            if (split.length > 0) {
+                for (int i = 1; i < split.length; i++) {
+                    jg.writeStringField("ecm:path.level" + i, split[i]);
+                }
             }
+            jg.writeNumberField("ecm:path.depth", split.length);
         }
-        jg.writeNumberField("ecm:path.depth", split.length);
+
         jg.writeStringField("ecm:primaryType", doc.getType());
         DocumentRef parentRef = doc.getParentRef();
         if (parentRef != null) {
