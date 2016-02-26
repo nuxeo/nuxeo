@@ -44,6 +44,16 @@ public interface LocaleProvider {
     Locale getLocale(DocumentModel userProfileDoc);
 
     /**
+     * @return the Locale to be used or a default Locale
+     */
+    public Locale getLocaleWithDefault(CoreSession session);
+
+    /**
+     * @return the Locale stored in userProfile or a default Locale
+     */
+    public Locale getLocaleWithDefault(DocumentModel userProfileDoc);
+
+    /**
      * @return the Timezone to be used or null to let the caller decides.
      */
     public TimeZone getTimeZone(CoreSession session);

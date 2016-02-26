@@ -41,9 +41,14 @@ public class UserLocaleProvider implements LocaleProvider {
 
     @Override
     public Locale getLocale(CoreSession repo) {
-        UserProfileService userProfileService = Framework.getLocalService(UserProfileService.class);
-        DocumentModel userProfileDoc = userProfileService.getUserProfileDocument(repo);
-        return getLocale(userProfileDoc);
+        try {
+            UserProfileService userProfileService = Framework.getLocalService(UserProfileService.class);
+            DocumentModel userProfileDoc = userProfileService.getUserProfileDocument(repo);
+            return getLocale(userProfileDoc);
+        } catch (Exception ex) {
+            log.error("Can't get Locale", ex);
+            return null;
+        }
     }
 
     @Override
@@ -70,6 +75,22 @@ public class UserLocaleProvider implements LocaleProvider {
         // the timezone is not retrieved from the user profile (cookie and Seam
         // TimezoneSelector)
         return null;
+    }
+
+    protected Locale getDefault() {
+        return Locale.ENGLISH;
+    }
+
+    @Override
+    public Locale getLocaleWithDefault(CoreSession session) {
+        Locale locale = getLocale(session);
+        return locale == null ? getDefault() : locale;
+    }
+
+    @Override
+    public Locale getLocaleWithDefault(DocumentModel userProfileDoc) {
+        Locale locale = getLocale(userProfileDoc);
+        return locale == null ? getDefault() : locale;
     }
 
 }
