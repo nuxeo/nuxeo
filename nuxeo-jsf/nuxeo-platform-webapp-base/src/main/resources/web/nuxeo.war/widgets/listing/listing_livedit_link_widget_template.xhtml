@@ -1,4 +1,4 @@
-<f:subview id="#{widget.id}"
+<c:if test="true"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
@@ -10,11 +10,12 @@
     widgetProperty_category="BLOB_ACTIONS_LISTING" actionContextDocument="#{field}"
     actionsDisplay="icons" />
 
-  <h:outputLink value="#{nxd:liveEditUrl(field, widget.properties.file_schema, widget.properties.file_field_name, widget.properties.filename_field_name)}"
+  <h:outputLink id="#{widget.id}"
+    value="#{nxd:liveEditUrl(field, widget.properties.file_schema, widget.properties.file_field_name, widget.properties.filename_field_name)}"
     rendered="#{liveEditHelper.isDocumentLiveEditable(field, widget.properties.file_schema, widget.properties.file_field_name)}">
     <h:graphicImage value="/icons/application_form_edit.png"
       alt="#{messages['label.document.directEdit']}"
       title="#{messages['label.document.directEdit']}"/>
   </h:outputLink>
 
-</f:subview>
+</c:if>
