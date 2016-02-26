@@ -413,7 +413,7 @@ public final class FaceletHandlerHelper {
                     // and it's not kept (cached) in a component value on
                     // ajax refresh
                     attr = createAttribute(key,
-                            String.format("#{%s.properties.%s}", RenderVariables.widgetVariables.widget.name(), key));
+                            "#{" + RenderVariables.widgetVariables.widget.name() + ".properties." + key + "}");
                 }
                 attrs.add(attr);
             }
