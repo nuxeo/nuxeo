@@ -47,8 +47,8 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.SetTagHandler;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -112,9 +112,9 @@ public class WidgetTypeTagHandler extends TagHandler {
 
     protected final TagAttribute[] vars;
 
-    protected final String[] reservedVarsArray = { "id", "name", "category", "mode", "value", "type", "field",
-            "fields", "widgetName", "label", "helpLabel", "translated", "properties", "ignoreTemplateProperty",
-            "subWidgets", "resolveOnly" };
+    protected final String[] reservedVarsArray = { "id", "name", "category", "mode", "value", "type", "field", "fields",
+            "widgetName", "label", "helpLabel", "translated", "properties", "ignoreTemplateProperty", "subWidgets",
+            "resolveOnly" };
 
     public WidgetTypeTagHandler(TagConfig config) {
         super(config);
@@ -170,7 +170,8 @@ public class WidgetTypeTagHandler extends TagHandler {
         List<String> reservedVars = Arrays.asList(reservedVarsArray);
         Map<String, Serializable> widgetProps = new HashMap<String, Serializable>();
         if (properties != null) {
-            Map<String, Serializable> propertiesValue = (Map<String, Serializable>) properties.getObject(ctx, Map.class);
+            Map<String, Serializable> propertiesValue = (Map<String, Serializable>) properties.getObject(ctx,
+                    Map.class);
             if (propertiesValue != null) {
                 widgetProps.putAll(propertiesValue);
             }
@@ -248,6 +249,43 @@ public class WidgetTypeTagHandler extends TagHandler {
         wDef.setDynamic(true);
         Widget widget = layoutService.createWidget(ctx, wDef, modeValue, valueName, subWidgetsValue);
 
+        if (FaceletHandlerHelper.isAliasOptimEnabled()) {
+            applyOptimized(ctx, parent, widget);
+        } else {
+            applyCompat(ctx, parent, widget);
+        }
+    }
+
+    protected void applyOptimized(FaceletContext ctx, UIComponent parent, Widget widget)
+            throws IOException, ELException {
+        // expose widget variable
+        VariableMapper orig = ctx.getVariableMapper();
+        try {
+            BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+            ctx.setVariableMapper(vm);
+
+            // set unique id on widget before exposing it to the context
+            FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
+            WidgetTagHandler.generateWidgetId(ctx, helper, widget, false);
+
+            // TODO NXP-13280: retrieve widget controls from tag attributes before exposure
+            WidgetTagHandler.exposeWidgetVariables(ctx, vm, widget, null, true);
+
+            boolean resolveOnlyBool = false;
+            if (resolveOnly != null) {
+                resolveOnlyBool = resolveOnly.getBoolean(ctx);
+            }
+            if (resolveOnlyBool) {
+                nextHandler.apply(ctx, parent);
+            } else {
+                WidgetTagHandler.applyWidgetHandler(ctx, parent, config, widget, value, true, nextHandler);
+            }
+        } finally {
+            ctx.setVariableMapper(orig);
+        }
+    }
+
+    protected void applyCompat(FaceletContext ctx, UIComponent parent, Widget widget) throws IOException, ELException {
         // expose widget variable
         VariableMapper orig = ctx.getVariableMapper();
         VariableMapper vm = new VariableMapperWrapper(orig);
@@ -276,8 +314,9 @@ public class WidgetTypeTagHandler extends TagHandler {
                 // anymore, could not reproduce the corresponding bug, to
                 // remove after complementary tests.
                 String setTagConfigId = widget.getTagConfigId();
-                ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(this.config, setTagConfigId,
-                        RenderVariables.widgetVariables.widget.name(), "#{widget}", "true", "true", nextHandler);
+                ComponentConfig aliasConfig = org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory.createAliasTagConfig(
+                        this.config, setTagConfigId, RenderVariables.widgetVariables.widget.name(), "#{widget}", "true",
+                        "true", nextHandler);
                 FaceletHandler handler = new SetTagHandler(aliasConfig);
                 handler.apply(ctx, parent);
             } else {
