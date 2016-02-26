@@ -23,7 +23,6 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.contentView.ContentViewElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.TopicDocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.TopicCreationFormPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -57,13 +56,16 @@ public class ForumTabSubPage extends DocumentBasePage {
         return getElement().getItems();
     }
 
-    public TopicDocumentBasePage getTopicCreatePage(String topicTitle, String topicDescription, Boolean moderated,
-        String... usersOrGroups) {
+    public TopicCreationFormPage getTopicCreatePage() {
         // Create a Topic
         newTopicButtonLink.click();
-        TopicDocumentBasePage topicPage = asPage(TopicCreationFormPage.class).createTopicDocument(topicTitle,
-            topicDescription, moderated, usersOrGroups);
-        return topicPage;
+        return asPage(TopicCreationFormPage.class);
+    }
+
+    public TopicTabSubPage createTopic(String topicTitle, String topicDescription, Boolean moderated,
+            String... usersOrGroups) {
+        // Create a Topic
+        return getTopicCreatePage().createTopicDocument(topicTitle, topicDescription, moderated, usersOrGroups);
     }
 
     public boolean hasTopicLink(String title) {

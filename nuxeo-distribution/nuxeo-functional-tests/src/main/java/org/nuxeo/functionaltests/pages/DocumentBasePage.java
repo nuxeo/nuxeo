@@ -125,6 +125,9 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Forum']")
     public WebElement forumTabLink;
 
+    @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Topic']")
+    public WebElement topicTabLink;
+
     @Required
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']")
     public WebElement tabsBar;
@@ -297,6 +300,14 @@ public class DocumentBasePage extends AbstractPage {
     public ForumTabSubPage getForumTab() {
         clickOnDocumentTabLink(forumTabLink);
         return asPage(ForumTabSubPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public TopicTabSubPage getTopicTab() {
+        clickOnDocumentTabLink(topicTabLink);
+        return asPage(TopicTabSubPage.class);
     }
 
     /**

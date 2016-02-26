@@ -17,16 +17,18 @@
  *     Gabriel Barata
  */
 
-package org.nuxeo.functionaltests.pages;
+package org.nuxeo.functionaltests.pages.tabs;
 
+import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.WebDriver;
 
 /**
  * @since 8.2
  */
-public class TopicDocumentBasePage extends DocumentBasePage {
+public class TopicTabSubPage extends DocumentBasePage {
 
-    public TopicDocumentBasePage(WebDriver driver) {
+    public TopicTabSubPage(WebDriver driver) {
         super(driver);
     }
+
 }
