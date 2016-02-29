@@ -28,15 +28,18 @@ import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -72,6 +75,10 @@ public class TestUserWorkspace {
 
     @Inject
     protected UserWorkspaceService uwm;
+
+    @Inject
+    protected PathSegmentService pathSegments;
+
 
     @Test
     public void testRestrictedAccess() throws Exception {
@@ -238,6 +245,36 @@ public class TestUserWorkspace {
     }
 
     @Test
+    public void testPathSegmentMapping() {
+        DocumentModel context = session.getRootDocument();
+
+        // Automatically create the user workspace
+        DocumentModel uw = uwm.getUserPersonalWorkspace("Jack Von", context);
+
+        assertNotNull(uw);
+        // Check the document name was mapped
+        assertEquals(uw.getPath().lastSegment(), "Jack-Von");
+    }
+
+    @Test
+    public void testWorkspaceNameCollision() {
+        try (CoreSession userSession = coreFeature.openCoreSession(alongname("user1"))) {
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, userSession.getRootDocument());
+            assertNotNull(uw);
+        }
+        try (CoreSession userSession = coreFeature.openCoreSession(alongname("user2"))) {
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, userSession.getRootDocument());
+            assertNotNull(uw);
+        }
+    }
+
+    String alongname(String name) {
+        return StringUtils
+                .repeat("a", pathSegments.getMaxSize())
+                .concat(name);
+    }
+
+    @Test
     public void testUserWorkspaceFinderCompat() {
         DocumentModel context = session.getRootDocument();
 
@@ -246,13 +283,18 @@ public class TestUserWorkspace {
         String parentPath = user1W.getPathAsString().replace("/user1", "");
         DocumentModel uw = session.createDocumentModel(parentPath, "John-Von-Verylonglastname", "Workspace");
         uw = session.createDocument(uw);
+        ACP acp = new ACPImpl();
+        ACE grantEverything = new ACE("John Von Verylonglastname", SecurityConstants.EVERYTHING, true);
+        ACL acl = new ACLImpl();
+        acl.setACEs(new ACE[] { grantEverything });
+        acp.addACL(acl);
+        uw.setACP(acp, true);
+        assertTrue(uw.getPath().lastSegment().length() > pathSegments.getMaxSize());
         session.save();
 
         assertNotNull(uw);
         String johnWorkspacePath = uw.getPathAsString();
         assertTrue(johnWorkspacePath.endsWith("/John-Von-Verylonglastname"));
-
-        session.save();
 
         uw = uwm.getUserPersonalWorkspace("John Von Verylonglastname", context);
         assertNotNull(uw);
@@ -260,15 +302,6 @@ public class TestUserWorkspace {
         assertTrue(uw.getPathAsString().endsWith("/John-Von-Verylonglastname"));
         assertEquals(johnWorkspacePath, uw.getPathAsString());
         assertNull("Document is correctly detached", uw.getSessionId());
-
-        // Automatically create the user workspace
-        uw = uwm.getUserPersonalWorkspace("Jack Von Verylonglastname", context);
-        session.save();
-
-        assertNotNull(uw);
-        String jackWorkspacePath = uw.getPathAsString();
-        // Check the document name was truncated to 24 characters
-        assertTrue(jackWorkspacePath.endsWith("/Jack-Von-Verylonglastnam"));
     }
 
     @Test
@@ -288,4 +321,6 @@ public class TestUserWorkspace {
             assertEquals(user1WorkspacePath, uw.getPathAsString());
         }
     }
+
+
 }

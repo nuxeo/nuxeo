@@ -43,7 +43,7 @@ import org.nuxeo.ecm.platform.userworkspace.constants.UserWorkspaceConstants;
 
 /**
  * Default implementation of the {@link UserWorkspaceService}.
- * 
+ *
  * @author tiry
  */
 public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl implements UserWorkspaceService {
@@ -76,9 +76,8 @@ public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl i
         doc.setACP(acp, true);
     }
 
-    protected DocumentModel doCreateUserWorkspacesRoot(CoreSession unrestrictedSession, PathRef rootRef)
-            {
-
+    @Override
+    protected DocumentModel doCreateUserWorkspacesRoot(CoreSession unrestrictedSession, PathRef rootRef) {
         String parentPath = new Path(rootRef.toString()).removeLastSegments(1).toString();
         DocumentModel doc = unrestrictedSession.createDocumentModel(parentPath,
                 UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT, getUserWorkspaceRootType());
@@ -91,6 +90,7 @@ public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl i
         return doc;
     }
 
+    @Override
     protected DocumentModel doCreateUserWorkspace(CoreSession unrestrictedSession, PathRef wsRef, Principal principal,
             String userName) {
 
