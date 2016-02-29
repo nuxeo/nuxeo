@@ -3191,10 +3191,12 @@
                     deciding whether the toggle button should be displayed or
                     not. Defaults to an EL expression checking permission
                     'Write' on the document. Examples: false,
-                    #{nxd:hasPermission(value, 'Write') and
+                    #{webActions.checkFilter('canToggleLayoutToEditMode') and
                     currentUser.isMemberOf('togglers_groups')}.
                     Default
-                    expression used:
+                    expression used (includes check for permission 'Write',
+                    check if document is in the trash, and check if document is
+                    mutable -- not a proxy nor a version):
                     #{webActions.checkFilter('canToggleLayoutToEditMode')}
                   </label>
                 </helpLabels>
