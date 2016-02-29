@@ -121,6 +121,32 @@ public class AjaxRequestManager {
         });
     }
 
+    /**
+     * Wait for any pending request of the javascript client. Compatible with client 0.24.0 or greater.
+     *
+     * @since 8.2
+     */
+    public void waitForJsClient() {
+        waitUntil(new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                final StringBuilder sb = new StringBuilder();
+                sb.append("if (window.isNxJsClientActive === undefined) {");
+                sb.append("  window.isNxJsClientActive=function() {");
+                sb.append("    var result=false;");
+                sb.append("    jQuery('nuxeo-connection').each(function() {");
+                sb.append("      if(this.active){return result=true;}");
+                sb.append("    });");
+                sb.append("    return result;");
+                sb.append("  }");
+                sb.append("};");
+                sb.append("return window.isNxJsClientActive();");
+                Boolean res = (Boolean) ((JavascriptExecutor) driver).executeScript(sb.toString());
+                return !res;
+            }
+        });
+    }
+
     private void waitUntil(Function<WebDriver, Boolean> function) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
