@@ -45,11 +45,13 @@ public interface LocaleProvider {
 
     /**
      * @return the Locale to be used or a default Locale
+     * @since 8.2
      */
     public Locale getLocaleWithDefault(CoreSession session);
 
     /**
      * @return the Locale stored in userProfile or a default Locale
+     * @since 8.2
      */
     public Locale getLocaleWithDefault(DocumentModel userProfileDoc);
 
