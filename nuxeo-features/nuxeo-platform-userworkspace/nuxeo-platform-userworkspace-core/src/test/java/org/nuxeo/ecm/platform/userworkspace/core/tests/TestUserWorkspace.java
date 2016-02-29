@@ -19,15 +19,20 @@
 
 package org.nuxeo.ecm.platform.userworkspace.core.tests;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.lang.StringUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -46,7 +51,8 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         super("");
     }
 
-    @Before
+    @Override
+	@Before
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core.api");
@@ -62,7 +68,8 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         openSession();
     }
 
-    @After
+    @Override
+	@After
     public void tearDown() throws Exception {
         closeSession();
         if (userSession != null) {
@@ -296,5 +303,24 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
         uw = service.getCurrentUserPersonalWorkspace(userSession, context);
         assertNotNull(uw);
         assertEquals(user1WorkspacePath, uw.getPathAsString());
+    }
+
+    @Test
+    public void testWorkspaceNameCollision() {
+        UserWorkspaceService uwm = Framework.getLocalService(UserWorkspaceService.class);
+        try (CoreSession userSession = openSessionAs(alongname("user1"))) {
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, userSession.getRootDocument());
+            assertNotNull(uw);
+        }
+        try (CoreSession userSession = openSessionAs(alongname("user2"))) {
+            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, userSession.getRootDocument());
+            assertNotNull(uw);
+        }
+    }
+
+    String alongname(String name) {
+        return StringUtils
+                .repeat("a", Framework.getService(PathSegmentService.class).getMaxSize())
+                .concat(name);
     }
 }
