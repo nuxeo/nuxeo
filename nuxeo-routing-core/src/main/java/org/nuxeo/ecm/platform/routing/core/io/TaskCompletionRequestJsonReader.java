@@ -103,7 +103,7 @@ public class TaskCompletionRequestJsonReader extends EntityJsonReader<TaskComple
             String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
 
             NodeAccessRunner nar = new NodeAccessRunner(session, routeId, nodeId);
-            nar.run();
+            nar.runUnrestricted();
             GraphRoute graphRoute = nar.getWorkflowInstance();
             GraphNode node = nar.getNode();
 
