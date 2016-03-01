@@ -4,10 +4,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
-  <h:outputScript library="org.nuxeo.select2" name="#{nxDevModeSet?'select2.js':'select2.min.js'}" target="#{pageJsTarget}" />
   <h:outputScript library="org.nuxeo.select2" name="select2_locale_#{localeSelector.language}.js" target="#{pageJsTarget}" />
-  <h:outputScript library="org.nuxeo.select2" name="#{nxDevModeSet?'nuxeo-select2.js':'nuxeo-select2.min.js'}" target="#{pageJsTarget}" />
-  <h:outputScript library="org.nuxeo.select2" name="#{nxDevModeSet?'nuxeo-select2-init.js':'nuxeo-select2-init.min.js'}" target="#{pageJsTarget}" />
 
   <c:if test="#{widgetProperty_inlinejs != null }">
     <h:outputScript target="#{pageJsTarget}">
