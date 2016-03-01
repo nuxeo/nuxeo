@@ -102,14 +102,16 @@ public class TaskCompletionRequestJsonReader extends EntityJsonReader<TaskComple
             String routeId = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
             String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
 
-            DocumentModel workflowDoc = session.getDocument(new IdRef(routeId));
-            GraphRoute graphRoute = workflowDoc.getAdapter(GraphRoute.class);
-            GraphNode node = graphRoute.getNode(nodeId);
+            NodeAccessRunner nar = new NodeAccessRunner(session, routeId, nodeId);
+            nar.run();
+            GraphRoute graphRoute = nar.getWorkflowInstance();
+            GraphNode node = nar.getNode();
 
             // get the variables
             JsonNode variablesNode = jn.get("variables");
             if (variablesNode != null) {
-                String workflowSchemaFacet = (String) workflowDoc.getPropertyValue(GraphRoute.PROP_VARIABLES_FACET);
+                String workflowSchemaFacet = (String) graphRoute.getDocument().getPropertyValue(
+                        GraphRoute.PROP_VARIABLES_FACET);
                 CompositeType type = schemaManager.getFacet(workflowSchemaFacet);
                 workflowSchema = type.getSchemaNames()[0];
                 variables.putAll(getVariables(variablesNode, workflowSchema));

@@ -16,7 +16,7 @@
  *
  */
 
-package org.nuxeo.ecm.restapi.server.jaxrs.routing.io;
+package org.nuxeo.ecm.platform.routing.core.io;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -42,6 +42,20 @@ public class NodeAccessRunner extends UnrestrictedSessionRunner {
         super(session);
         this.workflowInstanceId = workflowInstanceId;
         this.nodeId = nodeId;
+    }
+
+    /**
+     * @since 8.2
+     */
+    public GraphNode getNode() {
+        return node;
+    }
+
+    /**
+     * @since 8.2
+     */
+    public GraphRoute getWorkflowInstance() {
+        return workflowInstance;
     }
 
     @Override
