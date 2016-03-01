@@ -32,11 +32,11 @@ public interface ReloadService extends TimestampedService {
 
     public static final String FLUSH_EVENT_ID = "flush";
 
-    public static final String BEFORE_RELOAD_EVENT_ID = "reload";
+    public static final String BEFORE_RELOAD_EVENT_ID = "before-reload";
 
     public static final String RELOAD_EVENT_ID = "reload";
 
-    public static final String AFTER_RELOAD_EVENT_ID = "reload";
+    public static final String AFTER_RELOAD_EVENT_ID = "after-reload";
 
     public static final String FLUSH_SEAM_EVENT_ID = FLUSH_EVENT_ID+"SeamComponents";
 
