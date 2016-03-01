@@ -32,6 +32,7 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -60,6 +61,8 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3EncryptionClient;
@@ -328,6 +331,14 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
         if (isNotBlank(endpoint)) {
             amazonS3.setEndpoint(endpoint);
+        }
+
+        // Set region explicitely for regions that reguire Version 4 signature
+        ArrayList<String> V4_ONLY_REGIONS = new ArrayList<String>();
+        V4_ONLY_REGIONS.add("eu-central-1");
+        V4_ONLY_REGIONS.add("ap-northeast-2");
+        if (V4_ONLY_REGIONS.contains(bucketRegion)) {
+            amazonS3.setRegion(Region.getRegion(Regions.fromName(bucketRegion)));
         }
 
         try {
