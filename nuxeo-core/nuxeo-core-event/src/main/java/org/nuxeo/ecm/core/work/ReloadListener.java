@@ -46,7 +46,7 @@ public class ReloadListener implements EventListener {
                 Thread.currentThread().interrupt();
                 LogFactory.getLog(ReloadListener.class).error("Caugh interruption while stopping works manager", cause);
             }
-        } else if (event.getId() == ReloadEventNames.RELOAD_EVENT_ID) {
+        } else if (event.getId() == ReloadEventNames.AFTER_RELOAD_EVENT_ID) {
             Framework.getService(WorkManager.class).init();
         }
     }

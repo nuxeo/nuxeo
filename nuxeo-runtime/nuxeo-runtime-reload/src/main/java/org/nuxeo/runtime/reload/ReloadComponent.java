@@ -355,7 +355,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
     protected void triggerReloadWithPassivate(String id) {
         log.info("about to passivate for " + id);
         Framework.getLocalService(EventService.class)
-                .sendEvent(new Event(RELOAD_TOPIC, "before-reload", this, null));
+                .sendEvent(new Event(RELOAD_TOPIC, BEFORE_RELOAD_EVENT_ID, this, null));
         try {
             ServicePassivator.proceed(Duration.ofSeconds(5), Duration.ofSeconds(30), true, () -> {
                 log.info("about to send " + id);
@@ -368,7 +368,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
                     });
         } finally {
             Framework.getLocalService(EventService.class)
-                    .sendEvent(new Event(RELOAD_TOPIC, "after-reload", this, null));
+                    .sendEvent(new Event(RELOAD_TOPIC, AFTER_RELOAD_EVENT_ID, this, null));
             log.info("returning from " + id);
         }
     }
