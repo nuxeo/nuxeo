@@ -49,6 +49,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Button;
 import org.nuxeo.ecm.platform.routing.core.io.JsonEncodeDecodeUtils;
+import org.nuxeo.ecm.platform.routing.core.io.NodeAccessRunner;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
@@ -88,8 +89,8 @@ public class TaskWriter extends EntityWriter<Task> {
         if (session != null && StringUtils.isNotBlank(workflowInstanceId)) {
             NodeAccessRunner nodeAccessRunner = new NodeAccessRunner(session, workflowInstanceId, nodeId);
             nodeAccessRunner.runUnrestricted();
-            workflowInstance = nodeAccessRunner.workflowInstance;
-            node = nodeAccessRunner.node;
+            workflowInstance = nodeAccessRunner.getWorkflowInstance();
+            node = nodeAccessRunner.getNode();
         }
 
         jg.writeStringField("id", item.getDocument().getId());
