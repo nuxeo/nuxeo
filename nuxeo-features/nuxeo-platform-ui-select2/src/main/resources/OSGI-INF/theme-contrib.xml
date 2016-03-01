@@ -13,6 +13,16 @@
         <processor>sassCss</processor>
       </processors>
     </resource>
+
+    <resource name="nuxeo-select2.js" type="jsfjs">
+      <uri>org.nuxeo.select2:nuxeo-select2.min.js</uri>
+      <require>select2.js</require>
+    </resource>
+    <resource name="nuxeo-select2-init.js" type="jsfjs">
+      <uri>org.nuxeo.select2:nuxeo-select2-init.min.js</uri>
+      <require>nuxeo-select2.js</require>
+    </resource>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
@@ -20,6 +30,8 @@
       <resources append="true">
         <resource>select2.css</resource>
         <resource>nuxeo-select2.scss</resource>
+        <resource>nuxeo-select2.js</resource>
+        <resource>nuxeo-select2-init.js</resource>
       </resources>
     </bundle>
   </extension>
