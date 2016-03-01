@@ -36,7 +36,7 @@
       order="40" facet="DriveSynchronized"
       class="org.nuxeo.drive.hierarchy.permission.factory.PermissionSyncRootFactory">
       <parameters>
-        <parameter name="requiredPermission">ReadWrite</parameter>
+        <parameter name="requiredPermission">Read</parameter>
         <parameter name="userSyncRootParentFactory">userSyncRootParentFactory</parameter>
         <parameter name="sharedSyncRootParentFactory">
           sharedSyncRootParentFactory

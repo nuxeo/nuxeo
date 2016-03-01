@@ -188,6 +188,120 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     /**
+     * This is a utility function to create a tree
+     * Like /Folder A/Folder B/Folder C (depth=3)
+     * /Folder A/Folder B/Folder C/Folder D (depth=4)
+     * 
+     * @param session to use
+     * @param path to start creating the tree
+     * @param depth in number of folder
+     */
+    private void createFolderTree(CoreSession session, String path, Integer depth) {
+        Character letter = 'A';
+        while (depth-- > 0) {
+            createFolder(session, path, "Folder " + letter, "Folder");
+            path += "/Folder " + letter++;
+        }
+    }
+    /**
+     * When an unregistered synchronization root can still be adapted as a FileSystemItem, for example in the case of
+     * the "My Docs" virtual folder in the permission based hierarchy implementation, checks that the related
+     * {@link FileSystemItemChange} computed by the {@link AuditChangeFinder} contains a non null {@code fileSystemItem}
+     * attribute, that is to be used by the client.
+     */
+    @Test
+    public void testRegisteredSyncRootChildChange() throws InterruptedException {
+
+        TransactionHelper.commitOrRollbackTransaction();
+        DocumentModel folderA;
+        DocumentModel folderC;
+        
+        // Create the tree structure
+        TransactionHelper.startTransaction();
+        try {
+            createFolderTree(session1, userWorkspace1.getPathAsString(), 5);
+            folderA = session1.getChild(userWorkspace1.getRef(), "Folder A");
+            DocumentModel folderB = session1.getChild(folderA.getRef(), "Folder B");
+            folderC = session1.getChild(folderB.getRef(), "Folder C");
+            setPermission(session1, folderA, "user2", SecurityConstants.EVERYTHING, true);
+            setPermission(session1, folderC, "user2", SecurityConstants.READ, true);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        lastEventLogId = nuxeoDriveManager.getChangeFinder().getUpperBound();
+        // Register FolderA as a synchronization root for user2
+        TransactionHelper.startTransaction();
+        try {
+            nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), folderA, session2);
+            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
+                    new IdRef(folderA.getId())));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        // Check file system item change
+        TransactionHelper.startTransaction();
+        try {
+            List<FileSystemItemChange> changes = getChanges(principal2);
+            assertEquals(1, changes.size());
+            FileSystemItemChange change = changes.get(0);
+            assertEquals("rootRegistered", change.getEventId());
+            assertEquals("Folder A", change.getFileSystemItemName());
+            assertNotNull(change.getFileSystemItem());
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+
+        // Check file system item change
+        TransactionHelper.startTransaction();
+        try {
+            resetPermissions(session1, folderA.getRef(), "user2");
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+
+        // Check file system item change
+        TransactionHelper.startTransaction();
+        try {
+            List<FileSystemItemChange> changes = getChanges(principal2);
+            assertEquals(1, changes.size());
+            FileSystemItemChange change = changes.get(0);
+            assertEquals("securityUpdated", change.getEventId());
+            assertEquals("Folder A", change.getFileSystemItemName());
+            assertNull(change.getFileSystemItem());
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+
+        // Register Folder C as a synchronization root for user2
+        TransactionHelper.startTransaction();
+        try {
+            nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), folderC, session2);
+            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
+                    new IdRef(folderA.getId())));
+            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
+                    new IdRef(folderC.getId())));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+        
+        // Check file system item change
+        TransactionHelper.startTransaction();
+        try {
+            assertEquals(1, session2.getChildren(folderC.getRef()).size());
+            List<FileSystemItemChange> changes = getChanges(principal2);
+            assertEquals(1, changes.size());
+            FileSystemItemChange change = changes.get(0);
+            assertEquals("rootRegistered", change.getEventId());
+            assertEquals("Folder C", change.getFileSystemItemName());
+            assertNotNull(change.getFileSystemItem());
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+    }
+
+    /**
      * When an unregistered synchronization root can still be adapted as a FileSystemItem, for example in the case of
      * the "My Docs" virtual folder in the permission based hierarchy implementation, checks that the related
      * {@link FileSystemItemChange} computed by the {@link AuditChangeFinder} contains a non null {@code fileSystemItem}

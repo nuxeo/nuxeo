@@ -53,7 +53,7 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
 
     // Required permission to include a folder as a synchronization root,
     // default is ReadWrite
-    protected String requiredPermission = SecurityConstants.READ_WRITE;
+    protected String requiredPermission = SecurityConstants.READ;
 
     protected String userSyncRootParentFactoryName;
 
