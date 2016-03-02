@@ -39,6 +39,9 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
 
+
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * @author arussel
  */
@@ -99,7 +102,6 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             parameters.getListener().beforeSetErrorPageAttribute(unwrappedException, request, response);
             request.setAttribute("exception_message", unwrappedException.getLocalizedMessage());
             request.setAttribute("user_message", getUserMessage(handler.getMessage(), request.getLocale()));
-            request.setAttribute("stackTrace", stackTrace);
             request.setAttribute("securityError", ExceptionHelper.isSecurityError(unwrappedException));
             request.setAttribute("messageBundle", ResourceBundle.getBundle(parameters.getBundleName(),
                     request.getLocale(), Thread.currentThread().getContextClassLoader()));
@@ -107,7 +109,11 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
             if (status >= HttpServletResponse.SC_INTERNAL_SERVER_ERROR) { // 500
                 parameters.getLogger().error(dumpedRequest);
             }
-            request.setAttribute("request_dump", dumpedRequest);
+            request.setAttribute("isDevModeSet", Framework.isDevModeSet());
+            if (Framework.isDevModeSet()) {
+                request.setAttribute("stackTrace", stackTrace);
+                request.setAttribute("request_dump", dumpedRequest);
+            }
 
             parameters.getListener().beforeForwardToErrorPage(unwrappedException, request, response);
             if (!response.isCommitted()) {

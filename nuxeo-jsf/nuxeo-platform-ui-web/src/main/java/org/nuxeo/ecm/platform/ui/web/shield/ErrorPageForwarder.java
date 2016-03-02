@@ -97,9 +97,12 @@ public class ErrorPageForwarder {
         FacesLifecycle.beginExceptionRecovery(facesContext.getExternalContext());
         request.setAttribute("exception_message", exceptionMessage);
         request.setAttribute("user_message", user_message);
-        request.setAttribute("stackTrace", stackTrace);
+        request.setAttribute("isDevModeSet", Framework.isDevModeSet());
+        if (Framework.isDevModeSet()) {
+            request.setAttribute("stackTrace", stackTrace);
+            request.setAttribute("request_dump", getRequestDump(request));
+        }
         request.setAttribute("securityError", securityError);
-        request.setAttribute("request_dump", getRequestDump(request));
         request.getRequestDispatcher("/nuxeo_error.jsp").forward(request, response);
         // FacesLifecycle.endRequest( facesContext.getExternalContext() );
         // facesContext.release();
