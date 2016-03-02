@@ -831,6 +831,11 @@
         <artifactId>nuxeo-liveconnect-box</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-onedrive</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
 
       <!-- Media Publishing -->
       <dependency>
