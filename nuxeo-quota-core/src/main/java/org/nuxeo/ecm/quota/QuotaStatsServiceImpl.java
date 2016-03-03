@@ -230,27 +230,31 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
                         "Select ecm:uuid from Workspace where ecm:parentId = '%s'  "
                                 + "AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ",
                         userWorkspacesId), "NXQL");
-                int size = 0;
-                List<String> allIds = new ArrayList<String>();
-                for (Map<String, Serializable> map : results) {
-                    allIds.add((String) map.get("ecm:uuid"));
-                }
-                results.close();
-                List<String> ids = new ArrayList<String>();
-                WorkManager workManager = Framework.getLocalService(WorkManager.class);
-                for (String id : allIds) {
-                    ids.add(id);
-                    size++;
-                    if (size % DEFAULT_BATCH_SIZE == 0) {
+                try {
+                    int size = 0;
+                    List<String> allIds = new ArrayList<String>();
+                    for (Map<String, Serializable> map : results) {
+                        allIds.add((String) map.get("ecm:uuid"));
+                    }
+                    List<String> ids = new ArrayList<String>();
+                    WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                    for (String id : allIds) {
+                        ids.add(id);
+                        size++;
+                        if (size % DEFAULT_BATCH_SIZE == 0) {
+                            QuotaMaxSizeSetterWork work = new QuotaMaxSizeSetterWork(maxSize, ids,
+                                    session.getRepositoryName());
+                            workManager.schedule(work, true);
+                            ids = new ArrayList<String>(); // don't reuse list
+                        }
+                    }
+                    if (ids.size() > 0) {
                         QuotaMaxSizeSetterWork work = new QuotaMaxSizeSetterWork(maxSize, ids,
                                 session.getRepositoryName());
                         workManager.schedule(work, true);
-                        ids = new ArrayList<String>(); // don't reuse list
                     }
-                }
-                if (ids.size() > 0) {
-                    QuotaMaxSizeSetterWork work = new QuotaMaxSizeSetterWork(maxSize, ids, session.getRepositoryName());
-                    workManager.schedule(work, true);
+                } finally {
+                    results.close();
                 }
             }
         }.runUnrestricted();
