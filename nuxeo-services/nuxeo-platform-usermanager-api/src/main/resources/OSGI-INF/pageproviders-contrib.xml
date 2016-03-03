@@ -23,6 +23,11 @@
       class="org.nuxeo.ecm.platform.usermanager.providers.NuxeoGroupsPageProvider">
       <pageSize>20</pageSize>
     </genericPageProvider>
+    
+    <genericPageProvider name="nuxeo_groups_members_listing"
+      class="org.nuxeo.ecm.platform.usermanager.providers.GroupMemberPageProvider">
+      <pageSize>20</pageSize>
+    </genericPageProvider>
 
   </extension>
 
