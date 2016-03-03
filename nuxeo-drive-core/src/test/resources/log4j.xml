@@ -22,10 +22,16 @@
     </layout>
   </appender>
 
+<!--
+  <category name="org.nuxeo" additivity="false">
+     <priority value="DEBUG"/>
+     <appender-ref ref="FILE"/>
+  </category>
+ -->
+  
   <root>
     <priority value="WARN" />
     <appender-ref ref="CONSOLE" />
-    <appender-ref ref="FILE" />
   </root>
 
 </log4j:configuration>

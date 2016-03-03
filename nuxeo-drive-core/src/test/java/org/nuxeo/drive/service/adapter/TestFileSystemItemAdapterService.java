@@ -28,6 +28,7 @@ import static org.junit.Assert.fail;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -422,7 +423,7 @@ public class TestFileSystemItemAdapterService {
 
         harness.deployContrib("org.nuxeo.drive.core.test",
                 "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
-        Framework.getLocalService(ReloadService.class).reload();
+        reload();
 
         // Re-adapt the sync root to take the override into account
         syncRootItem = (FolderItem) fileSystemItemAdapterService.getFileSystemItem(syncRootFolder);
@@ -627,7 +628,15 @@ public class TestFileSystemItemAdapterService {
 
         harness.undeployContrib("org.nuxeo.drive.core.test",
                 "OSGI-INF/test-nuxeodrive-adapter-service-contrib-override.xml");
-        Framework.getLocalService(ReloadService.class).reload();
+        reload();
     }
 
+    void reload() {
+        Properties lastProps = Framework.getProperties();
+        try {
+            Framework.getLocalService(ReloadService.class).reload();
+        } finally {
+            Framework.getProperties().putAll(lastProps);
+        }
+    }
 }
