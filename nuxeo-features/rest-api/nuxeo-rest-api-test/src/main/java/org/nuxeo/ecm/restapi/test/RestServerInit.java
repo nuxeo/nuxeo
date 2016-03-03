@@ -56,9 +56,9 @@ public class RestServerInit implements RepositoryInit {
      */
     private static final String POWER_USER_LOGIN = "user0";
 
-    public static final String[] FIRSTNAMES = { "Steve", "John", "Georges", "Bill" };
+    public static final String[] FIRSTNAMES = { "Steve", "John", "Georges", "Bill", "Bill" };
 
-    public static final String[] LASTNAMES = { "Jobs", "Lennon", "Harrisson", "Gates" };
+    public static final String[] LASTNAMES = { "Jobs", "Lennon", "Harrisson", "Gates", "Murray" };
 
     public static final String[] GROUPNAMES = { "Stark", "Lannister", "Targaryen", "Greyjoy" };
 
@@ -130,7 +130,16 @@ public class RestServerInit implements RepositoryInit {
 
     private void createUsersAndGroups(UserManager um) throws UserAlreadyExistsException,
             GroupAlreadyExistsException {
+
+        // Create some groups
         for (int idx = 0; idx < 4; idx++) {
+            String groupId = "group" + idx;
+            String groupLabel = GROUPNAMES[idx];
+            createGroup(um, groupId, groupLabel);
+        }
+
+
+        for (int idx = 0; idx < 5; idx++) {
             String userId = "user" + idx;
 
             NuxeoPrincipal principal = um.getPrincipal(userId);
@@ -147,14 +156,8 @@ public class RestServerInit implements RepositoryInit {
             userModel.setProperty(schemaName, "password", userId);
             userModel = um.createUser(userModel);
             principal = um.getPrincipal(userId);
-
-        }
-
-        // Create some groups
-        for (int idx = 0; idx < 4; idx++) {
-            String groupId = "group" + idx;
-            String groupLabel = GROUPNAMES[idx];
-            createGroup(um, groupId, groupLabel);
+            principal.setGroups(Arrays.asList(new String[] { "group1" }));
+            um.updateUser(principal.getModel());
         }
 
         // Create the power user group

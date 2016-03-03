@@ -357,6 +357,22 @@ public class UserGroupTest extends BaseUserTest {
 
     }
 
+    /**
+     * @since 8.2
+     */
+    @Test
+    public void itCanPaginateGroupMembers() throws Exception {
+
+        String[][] expectedResults = new String[][] { new String[] { "dummy", "dummy", "dummy" },
+                new String[] { "dummy" }};
+
+        for (int i = 0; i < expectedResults.length; i++) {
+            JsonNode node = getResponseAsJson(RequestType.GET, "/group/group1/@members", getQueryParamsForPage(i));
+            assertPaging(i, 3, 2, 4, expectedResults[i].length, node);
+        }
+
+    }
+
     @Test
     public void itDoesntWritePassword() throws Exception {
         // When I call JSON for user1
