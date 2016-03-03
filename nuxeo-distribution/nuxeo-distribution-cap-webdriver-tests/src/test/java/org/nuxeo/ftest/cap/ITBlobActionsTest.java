@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,12 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
@@ -28,12 +34,6 @@ import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests blob actions
@@ -80,8 +80,8 @@ public class ITBlobActionsTest extends AbstractTest {
 
         // Check preview action
         Optional<WebElement> preview = actions.stream()
-            .filter((e) -> e.findElement(By.xpath("//img[@title='Preview']")) != null)
-            .findFirst();
+                                              .filter((e) -> e.findElement(By.xpath("//img[@title='Preview']")) != null)
+                                              .findFirst();
         assertTrue(preview.isPresent());
 
         String previewUrl = preview.get().getAttribute("href");
