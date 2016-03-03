@@ -485,7 +485,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
 
         protected void signalCompletion() {
-            final int value = scheduledOrRunning.decrementAndGet();
+        		signalCompletion(-1);
+        }
+
+        protected void signalCompletion(int delta) {
+            int value = scheduledOrRunning.addAndGet(delta);
             if (value == 0) {
                 completionLock.lock();
                 try {
@@ -498,8 +502,12 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 logScheduleAndRunning("completed", value);
             }
             if (completionSynchronizer != this) {
-                completionSynchronizer.signalCompletion();
+                completionSynchronizer.signalCompletion(delta);
             }
+        }
+
+        protected void signalShutdown() {
+        		signalCompletion(-scheduledOrRunning.get());
         }
 
         protected void logScheduleAndRunning(String event, int value) {
@@ -650,20 +658,24 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          * Initiates a shutdown of this executor and asks for work instances to suspend themselves.
          */
         public void shutdownAndSuspend() {
-            // don't consume the queue anymore
-            ((NuxeoBlockingQueue) getQueue()).setActive(false);
-            // shutdown the executor
-            shutdown();
-            // suspend and reschedule all running work
-            synchronized (running) {
-                for (Work work : running) {
-                    log.debug("re-scheduling " + work);
-                    work.setWorkInstanceState(State.SCHEDULED);
-                    submit(work);
-                    work.setWorkInstanceSuspending();
-                }
-            }
-            shutdownNow();
+			try {
+				// don't consume the queue anymore
+				((NuxeoBlockingQueue) getQueue()).setActive(false);
+				// shutdown the executor
+				shutdown();
+				// suspend and reschedule all running work
+				synchronized (running) {
+					for (Work work : running) {
+						log.debug("re-scheduling " + work);
+						work.setWorkInstanceState(State.SCHEDULED);
+						submit(work);
+						work.setWorkInstanceSuspending();
+					}
+				}
+				shutdownNow();
+			} finally {
+				completionSynchronizer.signalShutdown();
+			}
         }
 
         /**
