@@ -978,7 +978,7 @@ public class TestDefaultFileSystemItemFactory {
         }
     }
 
-    void reload() {
+    void reload() throws Exception {
         Properties lastProps = Framework.getProperties();
         try {
             Framework.getLocalService(ReloadService.class).reload();
