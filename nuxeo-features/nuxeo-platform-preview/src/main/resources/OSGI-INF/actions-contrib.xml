@@ -36,12 +36,13 @@
       </properties>
     </action>
 
-    <action id="blobPreview" link="#{previewActions.getPreviewURL(document, blobXPath)}" type="bare_link"
+    <action id="blobPreview" type="fancybox"
             label="label.document.preview" icon="/icons/contextual_menu/preview.png" order="150">
       <category>BLOB_ACTIONS</category>
       <filter-id>hasBlobPreview</filter-id>
       <properties>
-        <property name="target">_blank</property>
+        <property name="iframe">#{previewActions.getPreviewURL(document, blobXPath)}</property>
+        <property name="ajaxSupport">true</property>
       </properties>
     </action>
 

@@ -52,7 +52,7 @@ public class ITBlobActionsTest extends AbstractTest {
 
     public final static String DOCUMENT_DESC = "Document Test Description";
 
-    public static final String PREVIEW_FILE_REGEX = "http://.*/api/v1/repo/default/id/.*/@blob/file:content/@preview/";
+    public static final String PREVIEW_FILE_REGEX = ".*openFancyBox\\('.*/api/v1/repo/default/id/.*/@blob/file:content/@preview/'.*\\).*";
 
     @Test
     public void testBlobPreviewAction() throws Exception {
@@ -84,9 +84,11 @@ public class ITBlobActionsTest extends AbstractTest {
                                               .findFirst();
         assertTrue(preview.isPresent());
 
-        String previewUrl = preview.get().getAttribute("href");
-        assertFalse(StringUtils.isEmpty(previewUrl));
-        assertTrue(previewUrl.matches(PREVIEW_FILE_REGEX));
+        String onclick = preview.get().getAttribute("onclick");
+        assertFalse(StringUtils.isEmpty(onclick));
+        // Remove escaping
+        onclick = onclick.replace("\\\\\\", "");
+        assertTrue(onclick.matches(PREVIEW_FILE_REGEX));
 
         logout();
     }
