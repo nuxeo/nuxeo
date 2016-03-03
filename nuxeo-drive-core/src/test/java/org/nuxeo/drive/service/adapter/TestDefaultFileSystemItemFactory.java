@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -812,11 +813,11 @@ public class TestDefaultFileSystemItemFactory {
 
         harness.deployContrib("org.nuxeo.drive.core.test",
                 "OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
-        Framework.getService(ReloadService.class).reload();
+        reload();
         assertEquals(2, syncRootFolderItem.getChildren().size());
         harness.undeployContrib("org.nuxeo.drive.core.test",
                 "OSGI-INF/test-nuxeodrive-pageproviders-contrib-override.xml");
-        Framework.getService(ReloadService.class).reload();
+        reload();
     }
 
     @Test
@@ -974,6 +975,15 @@ public class TestDefaultFileSystemItemFactory {
             } else {
                 fail(String.format("FileSystemItem %s doesn't match any expected.", fsItem.getId()));
             }
+        }
+    }
+
+    void reload() {
+        Properties lastProps = Framework.getProperties();
+        try {
+            Framework.getLocalService(ReloadService.class).reload();
+        } finally {
+            Framework.getProperties().putAll(lastProps);
         }
     }
 }
