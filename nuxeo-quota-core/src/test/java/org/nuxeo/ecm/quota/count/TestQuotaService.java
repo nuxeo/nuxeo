@@ -18,7 +18,6 @@ package org.nuxeo.ecm.quota.count;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 
@@ -31,7 +30,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
@@ -47,7 +45,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@TransactionalConfig(autoStart = false)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.api", "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.core.event", "org.nuxeo.ecm.quota.core" })
 public class TestQuotaService {
@@ -69,10 +66,11 @@ public class TestQuotaService {
 
     @Test
     public void testSetQuotaOnUserWorkspaces() throws Exception {
+        TransactionHelper.commitOrRollbackTransaction();
+        workManager.awaitCompletion(3, TimeUnit.SECONDS);
         DocumentRef uwRef1;
         DocumentRef uwRef2;
 
-        assertNotNull(workManager);
         TransactionHelper.startTransaction();
         try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
             assertNotNull(uwm);
@@ -85,6 +83,7 @@ public class TestQuotaService {
             assertEquals(creator, "jdoe");
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
+            workManager.awaitCompletion(3, TimeUnit.SECONDS);
         }
         TransactionHelper.startTransaction();
         try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jack")) {
@@ -100,23 +99,25 @@ public class TestQuotaService {
             assertEquals(creator, "jack");
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
+            workManager.awaitCompletion(3, TimeUnit.SECONDS);
         }
-        eventService.waitForAsyncCompletion();
         TransactionHelper.startTransaction();
         try {
             quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(100L, session.getRootDocument(), session);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
+            workManager.awaitCompletion(3, TimeUnit.SECONDS);
         }
-        eventService.waitForAsyncCompletion();
         TransactionHelper.startTransaction();
-        DocumentModel uw1 = session.getDocument(uwRef1);
-        DocumentModel uw2 = session.getDocument(uwRef2);
-        workManager.awaitCompletion("quota", 3, TimeUnit.SECONDS);
-        assertEquals(0, workManager.getQueueSize("quota", null));
-        assertTrue((Long) uw1.getPropertyValue("dss:maxSize") == 100L);
-        assertTrue((Long) uw2.getPropertyValue("dss:maxSize") == 100L);
-        TransactionHelper.commitOrRollbackTransaction();
+        try {
+            DocumentModel uw1 = session.getDocument(uwRef1);
+            DocumentModel uw2 = session.getDocument(uwRef2);
+            assertEquals(uw1.getProperty("dss:maxSize").getValue(Long.class), Long.valueOf(100L));
+            assertEquals(uw2.getProperty("dss:maxSize").getValue(Long.class), Long.valueOf(100L));
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+            workManager.awaitCompletion(3, TimeUnit.SECONDS);
+        }
     }
 
 }
