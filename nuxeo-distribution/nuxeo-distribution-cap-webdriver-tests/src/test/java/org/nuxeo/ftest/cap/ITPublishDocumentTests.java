@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_FOLDER_TITLE;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
@@ -50,8 +51,8 @@ import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 public class ITPublishDocumentTests extends AbstractTest {
 
     protected final static String TEST_SECTION_TITLE = "Test Section " + new Date().getTime();
-
-    private static final String TEST_USERNAME_2 = "ojdoe";
+    private static final String TEST_USERNAME_2 = "linnet";
+    private static final String TEST_USERNAME_3 = "bree";
 
     @Before
     public void before() {
@@ -60,6 +61,10 @@ public class ITPublishDocumentTests extends AbstractTest {
         RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, TEST_SECTION_TITLE, null);
         RestHelper.createUser(TEST_USERNAME, TEST_USERNAME, null, null, null, null, "members");
         RestHelper.createUser(TEST_USERNAME_2, TEST_USERNAME_2, null, null, null, null, "members");
+        RestHelper.createUser(TEST_USERNAME_3, TEST_USERNAME_3, null, null, null, null, "members");
+        RestHelper.addPermission(TEST_WORKSPACE_PATH, TEST_USERNAME, "Write");
+        RestHelper.addPermission(TEST_WORKSPACE_PATH, TEST_USERNAME_2, "Write");
+        RestHelper.addPermission(SECTIONS_PATH, TEST_USERNAME, "Everything");
     }
 
     @After
@@ -74,8 +79,8 @@ public class ITPublishDocumentTests extends AbstractTest {
         open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
 
         asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null)
-                                      .getFilePublishTab()
-                                      .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+                .getFilePublishTab()
+                .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
         assertEquals(
                 "Unpublish",
@@ -87,10 +92,10 @@ public class ITPublishDocumentTests extends AbstractTest {
         assertEquals(
                 "This document is published.",
                 asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class)
-                                              .goToDocument(TEST_FILE_TITLE)
-                                              .findElementWithTimeout(
-                                                      By.xpath("//div[@class='publication_block'] //div //div"))
-                                              .getText());
+                        .goToDocument(TEST_FILE_TITLE)
+                        .findElementWithTimeout(
+                                By.xpath("//div[@class='publication_block'] //div //div"))
+                        .getText());
 
         logout();
 
@@ -101,11 +106,38 @@ public class ITPublishDocumentTests extends AbstractTest {
         assertEquals(
                 "This document is published.",
                 asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class)
-                                              .goToDocument(TEST_FILE_TITLE)
-                                              .findElementWithTimeout(
-                                                      By.xpath("//div[@class='publication_block'] //div //div"))
-                                              .getText());
+                        .goToDocument(TEST_FILE_TITLE)
+                        .findElementWithTimeout(
+                                By.xpath("//div[@class='publication_block'] //div //div"))
+                        .getText());
 
         logout();
     }
+
+    @Test
+    public void testPublishDocumentBySectionReaderForSectionManagerApproval() throws UserNotConnectedException, IOException {
+        login(TEST_USERNAME_2, TEST_USERNAME_2);
+        open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
+        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null)
+                .getFilePublishTab()
+                .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        // No unpublish button
+        assertEquals(0, driver.findElements(By.xpath("//div[@id='publishTreeForm:publishingInfoList'] //a[@class='button']")).size());
+        // Document is waiting for approval
+        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        String publicationSatus = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class)
+                .goToDocument(TEST_FILE_TITLE)
+                .findElementWithTimeout(By.xpath("//div[@class='publication_block'] //div"))
+                .getText();
+        assertTrue(publicationSatus, publicationSatus.contains("This document is waiting for a publication approval"));
+        logout();
+
+        login(TEST_USERNAME_3, TEST_USERNAME_3);
+        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        // The document is not visible until approved
+        assertTrue(driver.getPageSource().contains("This folder contains no document"));
+        logout();
+    }
+
+
 }
