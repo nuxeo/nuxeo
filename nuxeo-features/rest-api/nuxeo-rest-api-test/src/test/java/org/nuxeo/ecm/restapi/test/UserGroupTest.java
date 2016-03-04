@@ -235,7 +235,7 @@ public class UserGroupTest extends BaseUserTest {
     public void itCanAddAGroupToAUser() throws Exception {
         // Given a user and a group
         NuxeoPrincipal principal = um.getPrincipal("user1");
-        NuxeoGroup group = um.getGroup("group1");
+        NuxeoGroup group = um.getGroup("group2");
         assertFalse(principal.isMemberOf(group.getName()));
 
         // When i POST this group
