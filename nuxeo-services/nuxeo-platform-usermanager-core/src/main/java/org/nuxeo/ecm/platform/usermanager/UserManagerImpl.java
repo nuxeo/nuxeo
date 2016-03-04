@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -58,6 +59,9 @@ import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -104,6 +108,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     public static final String INVALIDATE_PRINCIPAL_EVENT_ID = "invalidatePrincipal";
 
     public static final String INVALIDATE_ALL_PRINCIPALS_EVENT_ID = "invalidateAllPrincipals";
+
+    private static final String USER_GROUP_CATEGORY = "userGroup";
 
     protected final DirectoryService dirService;
 
@@ -728,7 +734,21 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         return orderBy;
     }
 
-    protected void notify(String userOrGroupName, String eventId) {
+    /**
+     * @since 8.2
+     */
+    private void notifyCore(String userOrGroupId, String eventId) {
+        Map<String, Serializable> eventProperties = new HashMap<>();
+        eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, USER_GROUP_CATEGORY);
+        eventProperties.put("id", userOrGroupId);
+        NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+        UnboundEventContext envContext = new UnboundEventContext(principal, eventProperties);
+        envContext.setProperties(eventProperties);
+        EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+        eventProducer.fireEvent(envContext.newEvent(eventId));
+    }
+
+    protected void notifyRuntime(String userOrGroupName, String eventId) {
         EventService eventService = Framework.getService(EventService.class);
         eventService.sendEvent(new Event(USERMANAGER_TOPIC, eventId, this, userOrGroupName));
     }
@@ -736,9 +756,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     /**
      * Notifies user has changed so that the JaasCacheFlusher listener can make sure principals cache is reset.
      */
-    protected void notifyUserChanged(String userName) {
+    protected void notifyUserChanged(String userName, String eventId) {
         invalidatePrincipal(userName);
-        notify(userName, USERCHANGED_EVENT_ID);
+        notifyRuntime(userName, USERCHANGED_EVENT_ID);
+        if (eventId != null) {
+            notifyRuntime(userName, eventId);
+            notifyCore(userName, eventId);
+        }
     }
 
     protected void invalidatePrincipal(String userName) {
@@ -750,9 +774,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     /**
      * Notifies group has changed so that the JaasCacheFlusher listener can make sure principals cache is reset.
      */
-    protected void notifyGroupChanged(String groupName) {
+    protected void notifyGroupChanged(String groupName, String eventId) {
         invalidateAllPrincipals();
-        notify(groupName, GROUPCHANGED_EVENT_ID);
+        notifyRuntime(groupName, GROUPCHANGED_EVENT_ID);
+        if (eventId != null) {
+            notifyRuntime(groupName, eventId);
+            notifyCore(groupName, eventId);
+        }
     }
 
     protected void invalidateAllPrincipals() {
@@ -1114,8 +1142,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
                 throw new GroupAlreadyExistsException();
             }
             groupModel = groupDir.createEntry(groupModel);
-            notifyGroupChanged(groupId);
-            notify(groupId, GROUPCREATED_EVENT_ID);
+            notifyGroupChanged(groupId, GROUPCREATED_EVENT_ID);
             return groupModel;
 
         }
@@ -1250,8 +1277,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
             syncDigestAuthPassword(clearUsername, clearPassword);
 
-            notifyUserChanged(userId);
-            notify(userId, USERCREATED_EVENT_ID);
+            notifyUserChanged(userId, USERCREATED_EVENT_ID);
             return userModel;
 
         }
@@ -1274,8 +1300,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
             syncDigestAuthPassword(clearUsername, clearPassword);
 
-            notifyUserChanged(userId);
-            notify(userId, USERMODIFIED_EVENT_ID);
+            notifyUserChanged(userId, USERMODIFIED_EVENT_ID);
         }
     }
 
@@ -1292,11 +1317,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
                 throw new DirectoryException("User does not exist: " + userId);
             }
             userDir.deleteEntry(userId);
-            notifyUserChanged(userId);
-            notify(userId, USERDELETED_EVENT_ID);
+            notifyUserChanged(userId, USERDELETED_EVENT_ID);
 
         } finally {
-            notifyUserChanged(userId);
+            notifyUserChanged(userId, null);
         }
     }
 
@@ -1309,8 +1333,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
                 throw new DirectoryException("group does not exist: " + groupId);
             }
             groupDir.updateEntry(groupModel);
-            notifyGroupChanged(groupId);
-            notify(groupId, GROUPMODIFIED_EVENT_ID);
+            notifyGroupChanged(groupId, GROUPMODIFIED_EVENT_ID);
         }
     }
 
@@ -1327,8 +1350,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
                 throw new DirectoryException("Group does not exist: " + groupId);
             }
             groupDir.deleteEntry(groupId);
-            notifyGroupChanged(groupId);
-            notify(groupId, GROUPDELETED_EVENT_ID);
+            notifyGroupChanged(groupId, GROUPDELETED_EVENT_ID);
         }
     }
 

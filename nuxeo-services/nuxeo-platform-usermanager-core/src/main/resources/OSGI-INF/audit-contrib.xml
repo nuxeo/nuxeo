@@ -1,0 +1,12 @@
+<component name="org.nuxeo.ecm.platform.usermanager.audit" version="1.0">
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+    point="event">
+    <event name="afterWorkflowStarted">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.id}" key="id" />
+      </extendedInfos>
+    </event>
+  </extension>
+
+</component>
