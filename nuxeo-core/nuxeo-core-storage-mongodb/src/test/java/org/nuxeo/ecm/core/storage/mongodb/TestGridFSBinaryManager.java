@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCursor;
-import com.mongodb.MongoServerSelectionException;
+import com.mongodb.MongoServerException;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
@@ -119,7 +119,7 @@ public class TestGridFSBinaryManager {
     public void setUp() throws Exception {
         try {
             removeAllObjects();
-        } catch (MongoServerSelectionException e) {
+        } catch (MongoServerException e) {
             Assume.assumeNoException("MongoDB server is not reachable", e);
         }
     }
