@@ -29,6 +29,7 @@ import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 
 /**
@@ -47,7 +48,9 @@ public class BaseUserTest extends BaseTest {
      * @throws IOException
      */
     protected String getGroupAsJson(NuxeoGroup group) throws IOException {
-        return MarshallerHelper.objectToJson(group, CtxBuilder.get());
+        RenderingContext ctx = CtxBuilder.get();
+        ctx.addParameterValues("fetch.group", "memberUsers");
+        return MarshallerHelper.objectToJson(group, ctx);
     }
 
     /**

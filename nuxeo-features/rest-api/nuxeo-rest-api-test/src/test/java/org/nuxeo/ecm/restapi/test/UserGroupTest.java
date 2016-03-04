@@ -314,11 +314,11 @@ public class UserGroupTest extends BaseUserTest {
     public void itCanPaginateUsers() throws Exception {
 
         String[][] expectedPages = new String[][] { new String[] { "Administrator", "Guest", "user0" },
-                new String[] { "user1", "user2", "user3" }, new String[0] };
+                new String[] { "user1", "user2", "user3" }, new String[] {"user4"} };
 
         for (int i = 0; i < expectedPages.length; i++) {
             JsonNode node = getResponseAsJson(RequestType.GET, "/user/search", getQueryParamsForPage(i));
-            assertPaging(i, 3, 2, 6, expectedPages[i].length, node);
+            assertPaging(i, 3, 3, 7, expectedPages[i].length, node);
             assertUserEntries(node, expectedPages[i]);
 
         }
