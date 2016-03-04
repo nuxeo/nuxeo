@@ -46,11 +46,10 @@ public class NuxeoGroupJsonWriterTest extends AbstractJsonWriterTest.External<Nu
         NuxeoGroup group = userManager.getGroup("administrators");
         JsonAssert json = jsonAssert(group);
         json.isObject();
-        json.properties(5);
+        json.properties(4);
         json.has("entity-type").isEquals("group");
         json.has("groupname").isEquals("administrators");
         json.has("grouplabel").isEquals("Administrators group");
-        json.has("memberUsers").contains("Administrator");
         json.has("memberGroups").length(0);
     }
 
