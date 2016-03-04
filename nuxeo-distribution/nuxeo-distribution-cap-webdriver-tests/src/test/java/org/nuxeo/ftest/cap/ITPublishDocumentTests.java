@@ -27,6 +27,7 @@ import org.nuxeo.functionaltests.Constants;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
+import org.nuxeo.functionaltests.pages.UserHomePage;
 import org.nuxeo.functionaltests.pages.tabs.SectionContentTabSubPage;
 import org.openqa.selenium.By;
 
@@ -139,5 +140,31 @@ public class ITPublishDocumentTests extends AbstractTest {
         logout();
     }
 
+    @Test
+    public void testPublishingApprovalBySectionManager() throws UserNotConnectedException, IOException {
+        login(TEST_USERNAME_2, TEST_USERNAME_2);
+        open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
+        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null)
+                .getFilePublishTab()
+                .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
+        logout();
+
+        // manager has a publication task
+        DocumentBasePage filePage = login(TEST_USERNAME, TEST_USERNAME);
+        UserHomePage homePage = filePage.getUserHome();
+        // TODO this does not work
+        // assertFalse(homePage.isTaskGadgetEmpty());
+
+        // TODO approve document
+
+        // TODO check dashboard my task is empty
+
+        logout();
+
+        // TODO login as bree
+
+        // TODO check that the document is published
+
+    }
 }
