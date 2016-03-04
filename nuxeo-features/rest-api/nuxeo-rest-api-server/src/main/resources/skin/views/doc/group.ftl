@@ -33,7 +33,23 @@
     }
 
   ]
-},{
+},
+{
+  "path": "/group/{groupName}/@members",
+  "description": "Group members adapter",
+  "operations" : [
+    {
+      "method":"GET",
+      "nickname":"getGroupMembers",
+      "type":"userList",
+      <@params names = ["groupname"]/>,
+      "summary":"Get the members of a group",
+      "notes": "",
+      <#include "views/doc/errorresponses.ftl"/>
+    }
+  ]
+},
+{
   "path": "/group/search",
   "description": "Operation on groups",
   "operations" : [
