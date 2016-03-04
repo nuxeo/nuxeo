@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * If there is a current tenant, the UserWorkspaceRoot is stored inside the tenant, otherwise it uses the default
  * behavior of {@link DefaultUserWorkspaceServiceImpl}.
- * 
+ *
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
@@ -75,30 +75,5 @@ public class MultiTenantUserWorkspaceService extends DefaultUserWorkspaceService
         return path.toString();
     }
 
-    /**
-     * Overridden to compute the right user workspace path for an user which is not the current user in the
-     * {@code userCoreSession}.
-     */
-    @Override
-    protected String computePathForUserWorkspace(CoreSession userCoreSession, String userName,
-            DocumentModel currentDocument) {
-
-        String tenantId = getTenantId(userCoreSession, userName);
-        if (StringUtils.isBlank(tenantId)) {
-            // default behavior
-            return super.computePathForUserWorkspace(userCoreSession, userName, currentDocument);
-        } else {
-            // multi-tenant specific
-            return computePathForUserWorkspaceForTenant(userCoreSession, tenantId, userName);
-        }
-    }
-
-    protected String computePathForUserWorkspaceForTenant(CoreSession session, String tenantId, String userName)
-            {
-        String rootPath = computePathUserWorkspaceRootForTenant(session, tenantId);
-        Path path = new Path(rootPath);
-        path = path.append(getUserWorkspaceNameForUser(userName));
-        return path.toString();
-    }
 
 }
