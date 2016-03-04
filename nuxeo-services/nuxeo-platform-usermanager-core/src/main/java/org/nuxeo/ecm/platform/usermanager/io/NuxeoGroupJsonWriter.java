@@ -83,7 +83,7 @@ public class NuxeoGroupJsonWriter extends ExtensibleEntityJsonWriter<NuxeoGroup>
     protected void writeEntityBody(NuxeoGroup group, JsonGenerator jg) throws IOException {
         jg.writeStringField("groupname", group.getName());
         jg.writeStringField("grouplabel", group.getLabel());
-        if (ctx.getFetched(ENTITY_TYPE).contains("members")) {
+        if (ctx.getFetched(ENTITY_TYPE).contains("memberUsers")) {
             jg.writeArrayFieldStart("memberUsers");
             for (String user : group.getMemberUsers()) {
                 jg.writeString(user);
