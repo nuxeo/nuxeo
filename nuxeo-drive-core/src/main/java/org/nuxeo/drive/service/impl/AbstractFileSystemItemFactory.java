@@ -137,15 +137,15 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         try {
             DocumentModel doc = getDocumentByFileSystemId(id, principal);
             return isFileSystemItem(doc);
+        } catch (DocumentSecurityException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("User %s cannot access doc related to id %s, returning false.",
+                        principal.getName(), id));
+            }
+            return false;
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
                 log.debug(String.format("No doc related to id %s, returning false.", id));
-                return false;
-            } else if (e.getCause() instanceof DocumentSecurityException) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("User %s cannot access doc related to id %s, returning false.",
-                            principal.getName(), id));
-                }
                 return false;
             } else {
                 throw e;
@@ -158,15 +158,15 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         try {
             DocumentModel doc = getDocumentByFileSystemId(id, principal);
             return getFileSystemItem(doc);
+        } catch (DocumentSecurityException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("User %s cannot access doc related to id %s, returning null.",
+                        principal.getName(), id));
+            }
+            return null;
         } catch (ClientException e) {
             if (e.getCause() instanceof NoSuchDocumentException) {
                 log.debug(String.format("No doc related to id %s, returning null.", id));
-                return null;
-            } else if (e.getCause() instanceof DocumentSecurityException) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("User %s cannot access doc related to id %s, returning null.",
-                            principal.getName(), id));
-                }
                 return null;
             } else {
                 throw e;
