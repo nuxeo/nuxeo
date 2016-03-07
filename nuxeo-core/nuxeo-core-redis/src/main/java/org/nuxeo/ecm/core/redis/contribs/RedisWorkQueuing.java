@@ -131,7 +131,11 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     protected String redisNamespace;
 
-    protected String delCompletedSha;
+    // lua scripts
+    protected String schedulingWorkSha;
+    protected String runningWorkSha;
+    protected String completedWorkSha;
+    protected String cleanCompletedWorkSha;
 
     public RedisWorkQueuing(WorkManagerImpl mgr, WorkQueueDescriptorRegistry workQueueDescriptors) {
         this.mgr = mgr;
@@ -151,7 +155,10 @@ public class RedisWorkQueuing implements WorkQueuing {
             throw new RuntimeException(e);
         }
         try {
-            delCompletedSha = redisAdmin.load("org.nuxeo.ecm.core.redis", "del-completed");
+            schedulingWorkSha = redisAdmin.load("org.nuxeo.ecm.core.redis", "scheduling-work");
+            runningWorkSha = redisAdmin.load("org.nuxeo.ecm.core.redis", "running-work");
+            completedWorkSha = redisAdmin.load("org.nuxeo.ecm.core.redis", "completed-work");
+            cleanCompletedWorkSha = redisAdmin.load("org.nuxeo.ecm.core.redis", "clean-completed-work");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -504,29 +511,18 @@ public class RedisWorkQueuing implements WorkQueuing {
      * @throws IOException
      */
     public void addScheduledWork(final String queueId, Work work) throws IOException {
-        final byte[] workIdBytes = bytes(work.getId());
-
-        // serialize Work
-        final byte[] workBytes = serializeWork(work);
-
+        final byte[] workId = bytes(work.getId());
+        final byte[] workData = serializeWork(work);
+        final List<byte[]> keys = Arrays.asList(dataKey(), stateKey(), scheduledKey(queueId),queuedKey(queueId));
+        final List<byte[]> args = Arrays.asList(workId, workData, STATE_SCHEDULED);
         redisExecutor.execute(new RedisCallable<Void>() {
 
             @Override
             public Void call(Jedis jedis) {
-                if (redisExecutor.supportPipelined()) {
-                    Pipeline pipe = jedis.pipelined();
-                    pipe.hset(dataKey(), workIdBytes, workBytes);
-                    pipe.hset(stateKey(), workIdBytes, STATE_SCHEDULED);
-                    pipe.lpush(queuedKey(queueId), workIdBytes);
-                    pipe.sadd(scheduledKey(queueId), workIdBytes);
-                    pipe.sync();
-                } else {
-                    jedis.hset(dataKey(), workIdBytes, workBytes);
-                    jedis.hset(stateKey(), workIdBytes, STATE_SCHEDULED);
-                    jedis.lpush(queuedKey(queueId), workIdBytes);
-                    jedis.sadd(scheduledKey(queueId), workIdBytes);
+                jedis.evalsha(schedulingWorkSha.getBytes(), keys, args);
+                if (log.isDebugEnabled()) {
+                    log.debug("Add scheduled " + work);
                 }
-                log.debug("Add scheduled " + work);
                 return null;
             }
 
@@ -634,21 +630,16 @@ public class RedisWorkQueuing implements WorkQueuing {
      * @param work the work
      */
     protected void workSetRunning(final String queueId, Work work) throws IOException {
-        final byte[] workIdBytes = bytes(work.getId());
+        final byte[] workId = bytes(work.getId());
+        final List<byte[]> keys = Arrays.asList(stateKey(), scheduledKey(queueId), runningKey(queueId));
+        final List<byte[]> args = Arrays.asList(workId, STATE_RUNNING);
         redisExecutor.execute(new RedisCallable<Void>() {
 
             @Override
             public Void call(Jedis jedis) {
-                if (redisExecutor.supportPipelined()) {
-                    Pipeline pipe = jedis.pipelined();
-                    pipe.sadd(runningKey(queueId), workIdBytes);
-                    pipe.srem(scheduledKey(queueId), workIdBytes);
-                    pipe.hset(stateKey(), workIdBytes, STATE_RUNNING);
-                    pipe.sync();
-                } else {
-                    jedis.sadd(runningKey(queueId), workIdBytes);
-                    jedis.srem(scheduledKey(queueId), workIdBytes);
-                    jedis.hset(stateKey(), workIdBytes, STATE_RUNNING);
+                jedis.evalsha(runningWorkSha.getBytes(), keys, args);
+                if (log.isDebugEnabled()) {
+                    log.debug("Mark work as running " + work);
                 }
                 return null;
             }
@@ -659,29 +650,18 @@ public class RedisWorkQueuing implements WorkQueuing {
      * Switches a work to state completed, and saves its new state.
      */
     protected void workSetCompleted(final String queueId, final Work work) throws IOException {
-        final byte[] workIdBytes = bytes(work.getId());
-        final byte[] workBytes = serializeWork(work);
+        final byte[] workId = bytes(work.getId());
+        final byte[] workData = serializeWork(work);
+        final byte[] state = bytes(((char) STATE_COMPLETED_B) + String.valueOf(work.getCompletionTime()));
+        final List<byte[]> keys = Arrays.asList(dataKey(), stateKey(), runningKey(queueId), completedKey(queueId));
+        final List<byte[]> args = Arrays.asList(workId, workData, state);
         redisExecutor.execute(new RedisCallable<Void>() {
 
             @Override
             public Void call(Jedis jedis) {
-                byte[] completedBytes = bytes(((char) STATE_COMPLETED_B) + String.valueOf(work.getCompletionTime()));
-                if (redisExecutor.supportPipelined()) {
-                    Pipeline pipe = jedis.pipelined();
-                    // store (updated) content in hash
-                    pipe.hset(dataKey(), workIdBytes, workBytes);
-                    // remove key from running set
-                    pipe.srem(runningKey(queueId), workIdBytes);
-                    // put key in completed set
-                    pipe.sadd(completedKey(queueId), workIdBytes);
-                    // set state to completed
-                    pipe.hset(stateKey(), workIdBytes, completedBytes);
-                    pipe.sync();
-                } else {
-                    jedis.hset(dataKey(), workIdBytes, workBytes);
-                    jedis.srem(runningKey(queueId), workIdBytes);
-                    jedis.sadd(completedKey(queueId), workIdBytes);
-                    jedis.hset(stateKey(), workIdBytes, completedBytes);
+                jedis.evalsha(completedWorkSha.getBytes(), keys, args);
+                if (log.isDebugEnabled()) {
+                    log.debug("Mark work as completed " + work);
                 }
                 return null;
             }
@@ -948,7 +928,7 @@ public class RedisWorkQueuing implements WorkQueuing {
                         List<String> args = new ArrayList<String>(1 + workIds.size());
                         args.add(String.valueOf(completionTime));
                         args.addAll(workIds);
-                        jedis.evalsha(delCompletedSha, keys, args);
+                        jedis.evalsha(cleanCompletedWorkSha, keys, args);
                     }
                 } while (!"0".equals(cursor));
                 return null;
