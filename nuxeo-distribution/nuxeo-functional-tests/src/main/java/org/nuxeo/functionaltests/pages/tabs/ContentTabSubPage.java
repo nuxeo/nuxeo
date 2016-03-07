@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
@@ -34,11 +37,6 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-import com.google.common.base.Function;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * The content tab sub page. Most of the time available for folderish documents and displaying the current document's
@@ -97,7 +95,7 @@ public class ContentTabSubPage extends DocumentBasePage {
     /**
      * Clicking on one of the child with the title.
      *
-     * @param documentTitle
+     * @param documentTitle the document title
      */
     public DocumentBasePage goToDocument(String documentTitle) {
         getElement().clickOnItemTitle(documentTitle);
@@ -158,7 +156,6 @@ public class ContentTabSubPage extends DocumentBasePage {
      * Perform filter on the given string.
      *
      * @param filter the string to filter
-     * @param expectedNbOfDisplayedResult
      * @since 5.7.2
      */
     public ContentTabSubPage filterDocument(final String filter, final int expectedNbOfDisplayedResult,
@@ -166,14 +163,11 @@ public class ContentTabSubPage extends DocumentBasePage {
         filterInput.clear();
         filterInput.sendKeys(filter);
         filterButton.click();
-        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                try {
-                    return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
-                } catch (NoSuchElementException | StaleElementReferenceException e) {
-                    return false;
-                }
+        Locator.waitUntilGivenFunction(driver -> {
+            try {
+                return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
+            } catch (NoSuchElementException | StaleElementReferenceException e) {
+                return false;
             }
         });
         return asPage(ContentTabSubPage.class);
@@ -182,20 +176,15 @@ public class ContentTabSubPage extends DocumentBasePage {
     /**
      * Reset the filter.
      *
-     * @param expectedNbOfDisplayedResult
-     * @param timeout
      * @since 5.7.2
      */
     public ContentTabSubPage clearFilter(final int expectedNbOfDisplayedResult, final int timeout) {
         clearFilterButton.click();
-        Locator.waitUntilGivenFunction(new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                try {
-                    return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
-                } catch (NoSuchElementException | StaleElementReferenceException e) {
-                    return false;
-                }
+        Locator.waitUntilGivenFunction(driver -> {
+            try {
+                return getChildDocumentRows().size() == expectedNbOfDisplayedResult;
+            } catch (NoSuchElementException | StaleElementReferenceException e) {
+                return false;
             }
         });
         return asPage(ContentTabSubPage.class);
@@ -246,7 +235,7 @@ public class ContentTabSubPage extends DocumentBasePage {
     /**
      * Selects documents by their index in the content view and copy them in the clipboard.
      *
-     * @param indexes
+     * @param indexes the indexes
      * @since 5.7.8
      */
     public ContentTabSubPage copyByIndex(int... indexes) {
@@ -258,7 +247,7 @@ public class ContentTabSubPage extends DocumentBasePage {
     /**
      * Selects documents by their title in the content view and copy them in the clipboard.
      *
-     * @param indexes
+     * @param titles the titles
      * @since 5.7.8
      */
     public ContentTabSubPage copyByTitle(String... titles) {

@@ -19,7 +19,6 @@
 package org.nuxeo.functionaltests.pages.forms;
 
 import org.nuxeo.functionaltests.forms.RichEditorElement;
-import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
 import org.openqa.selenium.WebDriver;
 
@@ -31,7 +30,7 @@ import org.openqa.selenium.WebDriver;
 public class NoteCreationFormPage extends DublinCoreCreationDocumentFormPage {
 
     /**
-     * @param driver
+     * @param driver the driver
      */
     public NoteCreationFormPage(WebDriver driver) {
         super(driver);
