@@ -42,7 +42,7 @@ public class OneDriveAuthorizationCodeFlow extends AuthorizationCodeFlow {
 
     private static final String RESOURCE_PARAMETER = "resource";
 
-    private final Optional<String> businessResource;
+    private final String businessResource;
 
     protected OneDriveAuthorizationCodeFlow(Builder builder) {
         super(builder);
@@ -53,7 +53,7 @@ public class OneDriveAuthorizationCodeFlow extends AuthorizationCodeFlow {
     public AuthorizationCodeTokenRequest newTokenRequest(String authorizationCode) {
         OneDriveAuthorizationCodeTokenRequest tokenRequest = new OneDriveAuthorizationCodeTokenRequest(getTransport(),
                 getJsonFactory(), new GenericUrl(getTokenServerEncodedUrl()), authorizationCode);
-        businessResource.ifPresent(resourceURL -> tokenRequest.set(RESOURCE_PARAMETER, resourceURL));
+        tokenRequest.set(RESOURCE_PARAMETER, businessResource);
         return tokenRequest.setClientAuthentication(getClientAuthentication())
                            .setRequestInitializer(getRequestInitializer())
                            .setScopes(getScopes());
@@ -66,7 +66,7 @@ public class OneDriveAuthorizationCodeFlow extends AuthorizationCodeFlow {
 
     public static class Builder extends AuthorizationCodeFlow.Builder {
 
-        Optional<String> businessResource = Optional.empty();
+        String businessResource;
 
         public Builder(AccessMethod method, HttpTransport transport, JsonFactory jsonFactory,
                 GenericUrl tokenServerUrl, HttpExecuteInterceptor clientAuthentication, String clientId,
@@ -80,11 +80,7 @@ public class OneDriveAuthorizationCodeFlow extends AuthorizationCodeFlow {
             return new OneDriveAuthorizationCodeFlow(this);
         }
 
-        public final Optional<String> getBusinessResource() {
-            return businessResource;
-        }
-
-        public Builder setBusinessResource(Optional<String> businessResource) {
+        public Builder setBusinessResource(String businessResource) {
             this.businessResource = Objects.requireNonNull(businessResource);
             return this;
         }

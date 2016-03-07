@@ -20,7 +20,6 @@ package org.nuxeo.ecm.liveconnect.onedrive.oauth;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponse;
@@ -33,9 +32,9 @@ class OneDriveCredential extends Credential {
 
     private static final String RESOURCE_PARAMETER = "resource";
 
-    private final Optional<String> businessResource;
+    private final String businessResource;
 
-    public OneDriveCredential(Credential credential, Optional<String> businessResource) {
+    public OneDriveCredential(Credential credential, String businessResource) {
         super(new Credential.Builder(credential.getMethod()).setTransport(credential.getTransport())
                                                             .setJsonFactory(credential.getJsonFactory())
                                                             .setTokenServerEncodedUrl(
@@ -59,7 +58,7 @@ class OneDriveCredential extends Credential {
         }
         OneDriveRefreshTokenRequest refreshTokenRequest = new OneDriveRefreshTokenRequest(getTransport(),
                 getJsonFactory(), new GenericUrl(getTokenServerEncodedUrl()), refreshToken);
-        businessResource.ifPresent(resourceURL -> refreshTokenRequest.set(RESOURCE_PARAMETER, resourceURL));
+        refreshTokenRequest.set(RESOURCE_PARAMETER, businessResource);
         return refreshTokenRequest.setClientAuthentication(getClientAuthentication())
                                   .setRequestInitializer(getRequestInitializer())
                                   .execute();

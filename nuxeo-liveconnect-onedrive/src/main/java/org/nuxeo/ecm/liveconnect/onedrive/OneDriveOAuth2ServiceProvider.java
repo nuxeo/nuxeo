@@ -68,20 +68,24 @@ public class OneDriveOAuth2ServiceProvider extends AbstractLiveConnectOAuth2Serv
 
     @Override
     public AuthorizationCodeFlow getAuthorizationCodeFlow() {
-        String clientId = getClientId();
-        String clientSecret = getClientSecret();
-        String authorizationServerURL = getAuthorizationServerURL();
         Optional<String> businessResource = getOneDriveForBusinessResource();
+        if (businessResource.isPresent()) {
+            String clientId = getClientId();
+            String clientSecret = getClientSecret();
+            String authorizationServerURL = getAuthorizationServerURL();
 
-        Credential.AccessMethod method = BearerToken.authorizationHeaderAccessMethod();
-        GenericUrl tokenServerUrl = new GenericUrl(getTokenServerURL());
-        HttpExecuteInterceptor clientAuthentication = new ClientParametersAuthentication(clientId, clientSecret);
+            Credential.AccessMethod method = BearerToken.authorizationHeaderAccessMethod();
+            GenericUrl tokenServerUrl = new GenericUrl(getTokenServerURL());
+            HttpExecuteInterceptor clientAuthentication = new ClientParametersAuthentication(clientId, clientSecret);
 
-        return new OneDriveAuthorizationCodeFlow.Builder(method, HTTP_TRANSPORT, JSON_FACTORY, tokenServerUrl,
-                clientAuthentication, clientId, authorizationServerURL).setBusinessResource(businessResource)
-                                                                       .setScopes(getScopes())
-                                                                       .setCredentialDataStore(getCredentialDataStore())
-                                                                       .build();
+            return new OneDriveAuthorizationCodeFlow.Builder(method, HTTP_TRANSPORT, JSON_FACTORY, tokenServerUrl,
+                    clientAuthentication, clientId, authorizationServerURL).setBusinessResource(businessResource)
+                                                                           .setScopes(getScopes())
+                                                                           .setCredentialDataStore(
+                                                                                   getCredentialDataStore())
+                                                                           .build();
+        }
+        return super.getAuthorizationCodeFlow();
     }
 
 }
