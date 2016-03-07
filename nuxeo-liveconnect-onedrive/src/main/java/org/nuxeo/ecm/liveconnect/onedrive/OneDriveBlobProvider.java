@@ -40,6 +40,8 @@ import org.nuxeo.onedrive.client.OneDriveThumbnailSize;
 import com.google.api.client.auth.oauth2.Credential;
 
 /**
+ * Provider for blobs getting information from OneDrive.
+ *
  * @since 8.2
  */
 public class OneDriveBlobProvider extends AbstractLiveConnectBlobProvider<OneDriveOAuth2ServiceProvider> {

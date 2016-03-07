@@ -25,7 +25,7 @@ import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
 import org.nuxeo.onedrive.client.OneDriveFile;
 
 /**
- * @since 8.1
+ * @since 8.2
  */
 public class OneDriveLiveConnectFile extends AbstractLiveConnectFile {
 

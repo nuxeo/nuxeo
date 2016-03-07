@@ -34,7 +34,7 @@ import org.nuxeo.onedrive.client.OneDriveSharingLink;
 import com.eclipsesource.json.JsonObject;
 
 /**
- * @since 8.1
+ * @since 8.2
  */
 public class MockOneDriveBlobProvider extends OneDriveBlobProvider {
 

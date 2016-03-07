@@ -79,7 +79,7 @@ public class OneDriveOAuth2ServiceProvider extends AbstractLiveConnectOAuth2Serv
             HttpExecuteInterceptor clientAuthentication = new ClientParametersAuthentication(clientId, clientSecret);
 
             return new OneDriveAuthorizationCodeFlow.Builder(method, HTTP_TRANSPORT, JSON_FACTORY, tokenServerUrl,
-                    clientAuthentication, clientId, authorizationServerURL).setBusinessResource(businessResource)
+                    clientAuthentication, clientId, authorizationServerURL).setBusinessResource(businessResource.get())
                                                                            .setScopes(getScopes())
                                                                            .setCredentialDataStore(
                                                                                    getCredentialDataStore())

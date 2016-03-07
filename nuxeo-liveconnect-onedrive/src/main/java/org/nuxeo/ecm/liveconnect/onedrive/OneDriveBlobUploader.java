@@ -52,7 +52,7 @@ import com.google.api.client.auth.oauth2.Credential;
 /**
  * JSF Blob Upload based on one drive blobs.
  *
- * @since 8.1
+ * @since 8.2
  */
 public class OneDriveBlobUploader implements JSFBlobUploader {
 
