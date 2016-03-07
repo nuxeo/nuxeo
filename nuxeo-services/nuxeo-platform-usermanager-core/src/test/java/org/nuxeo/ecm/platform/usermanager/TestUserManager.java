@@ -28,7 +28,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1078,6 +1086,62 @@ public class TestUserManager extends UserManagerTestCase {
         userManager.updateUser(principal.getModel());
         // Then the cached principal is altered
         assertEquals("pfouh", userManager.getPrincipal("Administrator").getFirstName());
+    }
+
+
+    @Test
+    public void testPrincipalSerialization() throws IOException, ClassNotFoundException {
+        class DebuggingObjectOutputStream
+            extends ObjectOutputStream {
+
+          final List<Object> stack
+              = new ArrayList<Object>();
+
+          DebuggingObjectOutputStream(
+              OutputStream out) throws IOException {
+            super(out);
+            enableReplaceObject(true);
+          }
+
+          /**
+           * Abuse {@code replaceObject()} as a hook to
+           * maintain our stack.
+           */
+          @Override
+        protected Object replaceObject(Object o) {
+              stack.add(o);
+            return o;
+          }
+
+        }
+
+        class DebuggingObjectInputStream extends ObjectInputStream {
+            DebuggingObjectInputStream(InputStream in) throws IOException {
+                super(in);
+                enableResolveObject(true);
+            }
+
+            final List<Object> stack = new ArrayList<Object>();
+
+            @Override
+            protected Object resolveObject(Object obj) throws IOException {
+                Object resolveObject = super.resolveObject(obj);
+                stack.add(resolveObject);
+                return resolveObject;
+            }
+        }
+        NuxeoPrincipal original = userManager.getPrincipal("Administrator");
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (DebuggingObjectOutputStream oos = new DebuggingObjectOutputStream(bos)) {
+            oos.writeObject(original);
+            assertEquals(NuxeoPrincipalImpl.DataTransferObject.class, oos.stack.get(0).getClass());
+            assertEquals("Administrator", oos.stack.get(1));
+        }
+        try (DebuggingObjectInputStream ois = new DebuggingObjectInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+            assertEquals(original, ois.readObject());
+            assertEquals("Administrator", ois.stack.get(0));
+            assertEquals(NuxeoPrincipalImpl.class, ois.stack.get(1).getClass());
+        }
     }
 
 }

@@ -42,7 +42,6 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.directory.types.contrib");
     }
 
-    @SuppressWarnings({ "SimplifiableJUnitAssertion", "ObjectEqualsNull" })
     @Test
     public void testEquals() {
         NuxeoPrincipalImpl a = new NuxeoPrincipalImpl("foo");
