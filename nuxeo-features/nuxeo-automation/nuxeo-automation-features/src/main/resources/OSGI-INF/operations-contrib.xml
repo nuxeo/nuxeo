@@ -96,6 +96,9 @@
       class="org.nuxeo.ecm.automation.core.operations.services.GetDirectoryEntries" />
 
     <operation
+        class="org.nuxeo.ecm.automation.core.operations.services.UserInvite" />
+
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.services.UserWorkspace" />
 
     <operation
