@@ -25,7 +25,10 @@
  */
 package org.nuxeo.functionaltests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
+import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,7 +62,6 @@ import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.proxy.ProxyManager;
 import org.nuxeo.runtime.api.Framework;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.TimeoutException;
@@ -75,13 +77,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
-
-import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Base functions for all pages.
@@ -179,8 +175,8 @@ public abstract class AbstractTest {
 
     static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo")
-                                                 .replaceAll("/$", "");
+    public static final String NUXEO_URL = System.getProperty("nuxeoURL", "http://localhost:8080/nuxeo").replaceAll(
+            "/$", "");
 
     public static RemoteWebDriver driver;
 
@@ -342,18 +338,15 @@ public abstract class AbstractTest {
             }
         }
 
-        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                                             .pollingEvery(POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+        Wait<T> wait = new FluentWait<>(page).withTimeout(LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
+                POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         try {
-            return wait.until(new Function<T, T>() {
-                @Override
-                public T apply(T aPage) {
-                    String notLoaded = anyElementNotLoaded(elements, fieldNames);
-                    if (notLoaded == null) {
-                        return aPage;
-                    } else {
-                        return null;
-                    }
+            return wait.until(aPage -> {
+                String notLoaded = anyElementNotLoaded(elements, fieldNames);
+                if (notLoaded == null) {
+                    return aPage;
+                } else {
+                    return null;
                 }
             });
         } catch (TimeoutException e) {
@@ -464,12 +457,11 @@ public abstract class AbstractTest {
     /**
      * Login using an invalid credential.
      *
-     * @param username
-     * @param password
+     * @param username the username
+     * @param password the password
      */
     public LoginPage loginInvalid(String username, String password) {
-        LoginPage loginPage = getLoginPage().login(username, password, LoginPage.class);
-        return loginPage;
+        return getLoginPage().login(username, password, LoginPage.class);
     }
 
     /**
@@ -605,7 +597,7 @@ public abstract class AbstractTest {
      * @since 5.7
      */
     protected String getCurrentDocumentId() {
-        return (String) ((JavascriptExecutor) driver).executeScript(String.format("return ctx.currentDocument;"));
+        return (String) driver.executeScript("return ctx.currentDocument;");
     }
 
     /**

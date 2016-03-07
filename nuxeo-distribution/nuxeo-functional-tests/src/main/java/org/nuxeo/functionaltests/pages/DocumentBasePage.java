@@ -20,9 +20,15 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import static org.junit.Assert.assertEquals;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.FORUM_TYPE;
+import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.AjaxRequestManager;
@@ -40,22 +46,26 @@ import org.nuxeo.functionaltests.pages.forms.ForumCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceCreationFormPage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
-import org.nuxeo.functionaltests.pages.tabs.*;
+import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.ForumTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
+import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.SectionsContentTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.TopicTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-import com.google.common.base.Function;
-
-import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.FORUM_TYPE;
-import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * The nuxeo main document base page
@@ -166,7 +176,7 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * Check if the user is connected by looking for an element with the {@code username} as a class.
      *
-     * @param username
+     * @param username the username
      * @throws UserNotConnectedException
      */
     public void checkUserConnected(String username) throws UserNotConnectedException {
@@ -242,17 +252,15 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public List<String> getCurrentStates() {
-        List<WebElement> states = findElementsWithTimeout(By.className("sticker"));
-        List<String> stateLabels = new ArrayList<String>();
-        for (WebElement state : states) {
-            stateLabels.add(state.getText());
-        }
-        return stateLabels;
+        return findElementsWithTimeout(By.className("sticker")).stream()
+                                                               .map(WebElement::getText)
+                                                               .collect(Collectors.toList());
     }
 
     /**
      * @deprecated since 7.3: use {@link #goToWorkspaces()} instead
      */
+    @Deprecated
     public DocumentBasePage getDocumentManagement() {
         return goToWorkspaces();
     }
@@ -367,13 +375,9 @@ public class DocumentBasePage extends AbstractPage {
      * @since 5.9.3
      */
     public AddAllToCollectionForm getAddAllToCollectionPopup() {
-        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                return StringUtils.isBlank(
-                        driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute("disabled"));
-            }
-        }, StaleElementReferenceException.class);
+        Locator.waitUntilGivenFunctionIgnoring(
+                driver -> StringUtils.isBlank(driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute(
+                        "disabled")), StaleElementReferenceException.class);
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
         driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).click();
@@ -396,14 +400,10 @@ public class DocumentBasePage extends AbstractPage {
      */
     public void popupUserMenuActions() {
         userMenuActions.findElement(By.id("nxw_userMenuActions_dropDownMenu")).click();
-        Locator.waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
-            @Override
-            public Boolean apply(WebDriver driver) {
-                return !userMenuActions.findElement(By.xpath("//ul[@class='actionSubList']"))
-                                       .getAttribute("style")
-                                       .equals("display: none;");
-            }
-        }, StaleElementReferenceException.class);
+        Locator.waitUntilGivenFunctionIgnoring(
+                driver -> !userMenuActions.findElement(By.xpath("//ul[@class='actionSubList']"))
+                                          .getAttribute("style")
+                                          .equals("display: none;"), StaleElementReferenceException.class);
     }
 
     /**
@@ -456,10 +456,7 @@ public class DocumentBasePage extends AbstractPage {
     public boolean isMainTabSelected(WebElement tab) {
         WebElement elt = Locator.findParentTag(tab, "li");
         String css = elt.getAttribute("class");
-        if (css != null && css.contains("selected")) {
-            return true;
-        }
-        return false;
+        return css != null && css.contains("selected");
     }
 
     /**
@@ -478,7 +475,7 @@ public class DocumentBasePage extends AbstractPage {
                                                                             .getWorkspaceCreatePage();
         // Create Workspace
         DocumentBasePage workspacePage = workspaceCreationFormPage.createNewWorkspace(workspaceTitle,
-            workspaceDescription);
+                workspaceDescription);
         return workspacePage;
     }
 
@@ -492,8 +489,7 @@ public class DocumentBasePage extends AbstractPage {
      */
     public DocumentBasePage createSection(String sectionTitle, String sectionDescription) {
         getNavigationSubPage().goToDocument(Constants.SECTIONS_TITLE);
-        DublinCoreCreationDocumentFormPage sectionCreationPage = asPage(
-                SectionsContentTabSubPage.class).getSectionCreatePage();
+        DublinCoreCreationDocumentFormPage sectionCreationPage = asPage(SectionsContentTabSubPage.class).getSectionCreatePage();
         return sectionCreationPage.createDocument(sectionTitle, sectionDescription);
     }
 
@@ -527,7 +523,7 @@ public class DocumentBasePage extends AbstractPage {
             String filePrefix, String fileSuffix, String fileContent) throws IOException {
         // Get File creation form page
         FileCreationFormPage fileCreationFormPage = getContentTab().getDocumentCreatePage(FILE_TYPE,
-            FileCreationFormPage.class);
+                FileCreationFormPage.class);
         // Create File
         FileDocumentBasePage filePage = fileCreationFormPage.createFileDocument(fileTitle, fileDescription, uploadBlob,
                 filePrefix, fileSuffix, fileDescription);
@@ -546,8 +542,7 @@ public class DocumentBasePage extends AbstractPage {
         DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = getContentTab().getDocumentCreatePage(
                 "Collections", DublinCoreCreationDocumentFormPage.class);
         // Create File
-        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle,
-            fileDescription);
+        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle, fileDescription);
         return documentBasePage;
     }
 
@@ -586,7 +581,7 @@ public class DocumentBasePage extends AbstractPage {
                 NoteCreationFormPage.class);
         // Create a Note
         NoteDocumentBasePage notePage = noteCreationPage.createNoteDocument(noteTitle, noteDescription, defineNote,
-            noteContent);
+                noteContent);
         return notePage;
     }
 
@@ -601,7 +596,7 @@ public class DocumentBasePage extends AbstractPage {
     public ForumTabSubPage createForum(String forumTitle, String forumDescription) {
         // Get a Forum creation form
         ForumCreationFormPage forumCreationFormPage = getContentTab().getDocumentCreatePage(FORUM_TYPE,
-            ForumCreationFormPage.class);
+                ForumCreationFormPage.class);
         // Create a Forum
         ForumTabSubPage forumPage = forumCreationFormPage.createForumDocument(forumTitle, forumDescription);
         return forumPage;

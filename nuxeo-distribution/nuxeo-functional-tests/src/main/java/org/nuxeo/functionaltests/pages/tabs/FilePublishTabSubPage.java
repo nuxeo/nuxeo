@@ -16,16 +16,15 @@
  * Contributors:
  *     Gabriel Barata
  */
-
 package org.nuxeo.functionaltests.pages.tabs;
+
+import java.util.List;
 
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-import java.util.List;
 
 /**
  * @since 8.2

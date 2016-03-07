@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class GroupEditFormPage extends UsersGroupsBasePage {
     public List<String> getMembers() {
         return new Select2WidgetElement(driver, membersSelect, true).getSelectedValues()
                                                                     .stream()
-                                                                    .map(s -> s.getText())
+                                                                    .map(WebElement::getText)
                                                                     .collect(Collectors.toList());
     }
 
@@ -89,7 +89,7 @@ public class GroupEditFormPage extends UsersGroupsBasePage {
     public List<String> getSubGroups() {
         return new Select2WidgetElement(driver, subgroupsSelect, true).getSelectedValues()
                                                                       .stream()
-                                                                      .map(s -> s.getText())
+                                                                      .map(WebElement::getText)
                                                                       .collect(Collectors.toList());
     }
 
