@@ -115,7 +115,7 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
      *
      * @since 5.7.3
      */
-    static NuxeoPrincipal readJson(JsonParser jp,
+    public static NuxeoPrincipal readJson(JsonParser jp,
             MultivaluedMap<String, String> httpHeaders)
             throws JsonParseException, IOException, ClientException {
         JsonToken tok = jp.nextToken();
