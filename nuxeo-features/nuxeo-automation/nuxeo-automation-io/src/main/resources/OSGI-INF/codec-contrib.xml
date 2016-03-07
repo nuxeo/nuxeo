@@ -2,6 +2,7 @@
 
   <extension point="codecs" target="org.nuxeo.ecm.automation.io.services.IOComponent">
     <codec class="org.nuxeo.ecm.automation.io.services.codec.DocumentModelCodec" />
+    <codec class="org.nuxeo.ecm.automation.io.services.codec.NuxeoPrincipalCodec" />
   </extension>
 
 </component>
