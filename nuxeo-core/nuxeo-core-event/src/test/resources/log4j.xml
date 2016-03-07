@@ -22,14 +22,20 @@
     </layout>
   </appender>
 
-    <category name="org.nuxeo.common.logging">
-      <priority value="DEBUG" />
-    </category>
-
+  <category name="org.nuxeo.ecm.core.work.api.WorkSchedulePath">
+    <priority value="TRACE"/>
+  </category>
+  
+<!--
+  <category name="org.nuxeo" additivity="false">
+     <priority value="DEBUG"/>
+     <appender-ref ref="FILE"/>
+  </category>
+ -->
+  
   <root>
-    <priority value="TRACE" />
+    <priority value="WARNING" />
     <appender-ref ref="CONSOLE" />
-    <appender-ref ref="FILE" />
   </root>
 
 </log4j:configuration>

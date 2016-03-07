@@ -28,6 +28,8 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -443,4 +445,32 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return getOriginatingUser() == null ? getName() : getOriginatingUser();
     }
 
+    static class DataTransferObject implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        final String username;
+
+        final String originatingUser;
+
+        DataTransferObject(NuxeoPrincipal principal) {
+            username = principal.getName();
+            originatingUser = principal.getOriginatingUser();
+        }
+
+        private Object readResolve() throws ObjectStreamException {
+            NuxeoPrincipal principal = Framework.getService(UserManager.class)
+                    .getPrincipal(username);
+            principal.setOriginatingUser(originatingUser);
+            return principal;
+        }
+
+    }
+
+    private Object writeReplace() throws ObjectStreamException {
+        if (true) {
+            return new DataTransferObject(this);
+        }
+        return this;
+    }
 }
