@@ -103,7 +103,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     @Override
     public InvalidationsPair receiveInvalidations() throws StorageException {
         Invalidations invalidations = null;
-        if (clusterNodeHandler != null && connection != null) {
+        if (clusterNodeHandler != null) {
             receiveClusterInvalidations();
             invalidations = queue.getInvalidations();
         }
