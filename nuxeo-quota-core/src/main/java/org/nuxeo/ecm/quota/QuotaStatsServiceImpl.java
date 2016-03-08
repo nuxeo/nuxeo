@@ -223,10 +223,11 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
 
             @Override
             public void run() {
-                try (IterableQueryResult results = session.queryAndFetch(String.format(
+                IterableQueryResult results = session.queryAndFetch(String.format(
                         "Select ecm:uuid from Workspace where ecm:parentId = '%s'  "
                                 + "AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ",
-                        userWorkspacesId), "NXQL")) {
+                        userWorkspacesId), "NXQL");
+                try {
                     int size = 0;
                     List<String> allIds = new ArrayList<String>();
                     for (Map<String, Serializable> map : results) {
@@ -249,6 +250,8 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
                                 session.getRepositoryName());
                         workManager.schedule(work, true);
                     }
+                } finally {
+                    results.close(); 
                 }
             }
         }.runUnrestricted();
