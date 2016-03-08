@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CyclicBarrier;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
@@ -125,18 +124,20 @@ public class TestRenditionService {
         assertRenditionDefinitions(renditionDefinitions, PDF_RENDITION_DEFINITION,
                 "renditionDefinitionWithUnknownOperationChain");
 
-        RenditionDefinition rd = renditionDefinitions.stream().filter(
-                renditionDefinition -> PDF_RENDITION_DEFINITION.equals(
-                        renditionDefinition.getName())).findFirst().get();
+        RenditionDefinition rd = renditionDefinitions.stream()
+                                                     .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(renditionDefinition.getName()))
+                                                     .findFirst()
+                                                     .get();
         assertNotNull(rd);
         assertEquals(PDF_RENDITION_DEFINITION, rd.getName());
         assertEquals("blobToPDF", rd.getOperationChain());
         assertEquals("label.rendition.pdf", rd.getLabel());
         assertTrue(rd.isEnabled());
 
-        rd = renditionDefinitions.stream().filter(
-                renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(
-                        renditionDefinition.getName())).findFirst().get();
+        rd = renditionDefinitions.stream()
+                                 .filter(renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(renditionDefinition.getName()))
+                                 .findFirst()
+                                 .get();
         assertNotNull(rd);
         assertEquals("renditionDefinitionWithCustomOperationChain", rd.getName());
         assertEquals("Dummy", rd.getOperationChain());
@@ -382,10 +383,9 @@ public class TestRenditionService {
             assertNotEquals(rendition.getHostDocument().getRef(), totoRendition.getHostDocument().getRef());
             long adminZipEntryCount = countZipEntries(new ZipInputStream(rendition.getBlob().getStream()));
             long totoZipEntryCount = countZipEntries(new ZipInputStream(totoRendition.getBlob().getStream()));
-            assertTrue(
-                    String.format("Admin rendition entry count %s should be greater than user rendition entry count %s",
-                            adminZipEntryCount, totoZipEntryCount),
-                    adminZipEntryCount > totoZipEntryCount);
+            assertTrue(String.format(
+                    "Admin rendition entry count %s should be greater than user rendition entry count %s",
+                    adminZipEntryCount, totoZipEntryCount), adminZipEntryCount > totoZipEntryCount);
         }
 
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
@@ -470,8 +470,7 @@ public class TestRenditionService {
 
         for (int i = 1; i <= 2; i++) {
             String childFolderName = "childFolder" + i;
-            DocumentModel childFolder = session.createDocumentModel(folder.getPathAsString(), childFolderName,
-                    "Folder");
+            DocumentModel childFolder = session.createDocumentModel(folder.getPathAsString(), childFolderName, "Folder");
             childFolder = session.createDocument(childFolder);
             if (i == 1) {
                 acp = new ACPImpl();
@@ -531,9 +530,8 @@ public class TestRenditionService {
                 adminZipEntryCount, totoZipEntryCount), adminZipEntryCount > totoZipEntryCount);
         Calendar adminModificationDate = rendition.getModificationDate();
         Calendar totoModificationDate = totoRendition.getModificationDate();
-        assertTrue(
-                String.format("Admin rendition modif date %s should be after user rendition modif date %s",
-                        adminModificationDate.toInstant(), totoModificationDate.toInstant()),
+        assertTrue(String.format("Admin rendition modif date %s should be after user rendition modif date %s",
+                adminModificationDate.toInstant(), totoModificationDate.toInstant()),
                 adminModificationDate.after(totoModificationDate));
     }
 
@@ -632,12 +630,12 @@ public class TestRenditionService {
         Blob firstAttachedBlob = createTextBlob("first attached blob", "first");
         Blob secondAttachedBlob = createTextBlob("second attached blob", "second");
 
-        List<Map<String, Serializable>> files = new ArrayList<Map<String, Serializable>>();
-        Map<String, Serializable> file = new HashMap<String, Serializable>();
+        List<Map<String, Serializable>> files = new ArrayList<>();
+        Map<String, Serializable> file = new HashMap<>();
         file.put("file", (Serializable) firstAttachedBlob);
         file.put("filename", firstAttachedBlob.getFilename());
         files.add(file);
-        file = new HashMap<String, Serializable>();
+        file = new HashMap<>();
         file.put("file", (Serializable) secondAttachedBlob);
         file.put("filename", secondAttachedBlob.getFilename());
         files.add(file);
@@ -651,8 +649,7 @@ public class TestRenditionService {
         Blob renditionBlob = bh.getBlob();
         assertNotNull(renditionBlob);
         assertEquals("application/pdf", renditionBlob.getMimeType());
-        List<Map<String, Serializable>> renditionFiles = (List<Map<String, Serializable>>) renditionDocument.getPropertyValue(
-                FILES_FILES_PROPERTY);
+        List<Map<String, Serializable>> renditionFiles = (List<Map<String, Serializable>>) renditionDocument.getPropertyValue(FILES_FILES_PROPERTY);
         assertTrue(renditionFiles.isEmpty());
     }
 
@@ -757,8 +754,7 @@ public class TestRenditionService {
         assertTrue(rendition.getBlob().getString().contains(desc));
 
         // verify the thread renditions
-        List<Rendition> renditions = Arrays.asList(
-                new Rendition[] { t1.getDetachedRendition(), t2.getDetachedRendition() });
+        List<Rendition> renditions = Arrays.asList(t1.getDetachedRendition(), t2.getDetachedRendition());
         for (Rendition rend : renditions) {
             assertNotNull(rend);
             assertTrue(rend.isStored());
@@ -893,8 +889,7 @@ public class TestRenditionService {
 
         DocumentModel doc = session.createDocumentModel("/", "note", "Note");
         doc = session.createDocument(doc);
-        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(
-                doc);
+        List<RenditionDefinition> availableRenditionDefinitions = renditionService.getAvailableRenditionDefinitions(doc);
         assertRenditionDefinitions(availableRenditionDefinitions, "dummyRendition1", "dummyRendition2");
 
         doc = session.createDocumentModel("/", "file", "File");
@@ -935,7 +930,7 @@ public class TestRenditionService {
     }
 
     protected static List<String> renditionNames(List<RenditionDefinition> list) {
-        return list.stream().map(d -> d.getName()).sorted().collect(Collectors.toList());
+        return list.stream().map(RenditionDefinition::getName).sorted().collect(Collectors.toList());
     }
 
 }
