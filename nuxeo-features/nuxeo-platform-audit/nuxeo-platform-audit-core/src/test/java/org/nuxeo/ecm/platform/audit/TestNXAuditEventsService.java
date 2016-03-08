@@ -21,14 +21,16 @@
 
 package org.nuxeo.ecm.platform.audit;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.management.MBeanServer;
@@ -49,6 +51,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.TestNXAuditEventsService.MyInit;
@@ -66,7 +69,6 @@ import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Test the event conf service.
@@ -110,15 +112,16 @@ public class TestNXAuditEventsService {
     @Inject
     CoreSession session;
 
+    @Inject
+    TransactionalFeature txFeature;
+
     @Before
     public void setUp() throws Exception {
         mbeanServer = Framework.getLocalService(ServerLocator.class).lookupServer();
     }
 
-    public void waitForAsyncCompletion() {
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
+    public void waitForAsyncCompletion() throws InterruptedException {
+        txFeature.nextTransaction(20,  TimeUnit.SECONDS);
     }
 
     @Test
@@ -135,7 +138,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testLogDocumentMessageWithoutCategory() {
+    public void testLogDocumentMessageWithoutCategory() throws InterruptedException {
         EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
@@ -164,7 +167,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testLogDocumentMessageWithCategory() {
+    public void testLogDocumentMessageWithCategory() throws InterruptedException {
         EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
         ctx.setProperty("category", "myCategory");
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
@@ -194,7 +197,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testLogMiscMessage() {
+    public void testLogMiscMessage() throws InterruptedException {
 
         DefaultAuditBackend backend = (DefaultAuditBackend) serviceUnderTest;
 
@@ -252,7 +255,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testExtendedInfos() {
+    public void testExtendedInfos() throws InterruptedException {
         DocumentModel rootDocument = session.getRootDocument();
         DocumentModel model = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");

@@ -124,8 +124,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public void deactivate() {
+        super.deactivate();
         if (esClient != null) {
-            esClient.close();
+            try {
+                esClient.close();
+            } finally {
+                esClient = null;
+            }
         }
     }
 
@@ -299,6 +304,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public void addLogEntries(List<LogEntry> entries) {
+
+        if (entries.isEmpty()) {
+            return;
+        }
 
         BulkRequestBuilder bulkRequest = getClient().prepareBulk();
         JsonFactory factory = new JsonFactory();
@@ -505,6 +514,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public void onApplicationStarted() {
+        super.onApplicationStarted();
         if (Boolean.parseBoolean(Framework.getProperty(MIGRATION_FLAG_PROP))) {
             if (!isMigrationDone()) {
                 log.info(String.format(

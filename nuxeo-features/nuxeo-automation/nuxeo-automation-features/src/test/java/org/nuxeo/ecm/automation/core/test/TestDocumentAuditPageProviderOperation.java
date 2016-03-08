@@ -43,7 +43,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -167,8 +167,11 @@ public class TestDocumentAuditPageProviderOperation {
         }
     }
 
+    @Inject
+    TransactionalFeature txFeature;
+
     protected void waitForEventsDispatched() {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        txFeature.nextTransaction();
     }
 
     @Inject

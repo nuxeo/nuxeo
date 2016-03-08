@@ -24,6 +24,7 @@ package org.nuxeo.ecm.platform.audit.api;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -73,4 +74,9 @@ public interface AuditLogger {
      */
     void logEvents(EventBundle eventBundle);
 
+    /**
+     *
+     * @since 8.2
+     */
+    boolean await(long time, TimeUnit unit) throws InterruptedException;
 }

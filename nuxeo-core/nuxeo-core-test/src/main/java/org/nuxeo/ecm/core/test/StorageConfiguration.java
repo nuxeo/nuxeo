@@ -33,7 +33,6 @@ import java.util.function.BiConsumer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository;
 import org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDB2;
@@ -89,23 +88,11 @@ public class StorageConfiguration {
 
     private DatabaseHelper databaseHelper;
 
-    public StorageConfiguration() {
-        initJDBC();
+    final CoreFeature feature;
+
+    public StorageConfiguration(CoreFeature feature) {
         coreType = defaultSystemProperty(CORE_PROPERTY, DEFAULT_CORE);
-        switch (coreType) {
-        case CORE_VCS:
-            isVCS = true;
-            break;
-        case CORE_MEM:
-            isDBS = true;
-            break;
-        case CORE_MONGODB:
-            isDBS = true;
-            initMongoDB();
-            break;
-        default:
-            throw new ExceptionInInitializerError("Unknown test core mode: " + coreType);
-        }
+        this.feature = feature;
     }
 
     protected static String defaultSystemProperty(String name, String def) {
@@ -123,6 +110,24 @@ public class StorageConfiguration {
         }
         Framework.getProperties().setProperty(name, value);
         return value;
+    }
+
+    protected void init() {
+        initJDBC();
+        switch (coreType) {
+        case CORE_VCS:
+            isVCS = true;
+            break;
+        case CORE_MEM:
+            isDBS = true;
+            break;
+        case CORE_MONGODB:
+            isDBS = true;
+            initMongoDB();
+            break;
+        default:
+            throw new ExceptionInInitializerError("Unknown test core mode: " + coreType);
+        }
     }
 
     protected void initJDBC() {
@@ -260,7 +265,7 @@ public class StorageConfiguration {
     }
 
     public void waitForAsyncCompletion() {
-        Framework.getService(EventService.class).waitForAsyncCompletion();
+        feature.waitForAsyncCompletion();
     }
 
     public void waitForFulltextIndexing() {

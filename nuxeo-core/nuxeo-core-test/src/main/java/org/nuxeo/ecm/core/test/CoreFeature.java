@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,12 +39,13 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.ecm.core.test.TransactionalFeature.Waiter;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.URLStreamRef;
@@ -66,6 +68,7 @@ import com.google.inject.Scope;
  * In addition, by injecting the feature itself, some helper methods are available to open new sessions.
  */
 @Deploy({ "org.nuxeo.runtime.management", //
+        "org.nuxeo.runtime.metrics",
         "org.nuxeo.ecm.core.schema", //
         "org.nuxeo.ecm.core.query", //
         "org.nuxeo.ecm.core.api", //
@@ -99,6 +102,8 @@ public class CoreFeature extends SimpleFeature {
 
     protected boolean cleaned;
 
+    protected TransactionalFeature txFeature;
+
     protected class CoreSessionServiceProvider extends ServiceProvider<CoreSession> {
         public CoreSessionServiceProvider() {
             super(CoreSession.class);
@@ -116,14 +121,22 @@ public class CoreFeature extends SimpleFeature {
     }
 
     public StorageConfiguration getStorageConfiguration() {
-        if (storageConfiguration == null) {
-            storageConfiguration = new StorageConfiguration();
-        }
         return storageConfiguration;
     }
 
     @Override
     public void initialize(FeaturesRunner runner) {
+        storageConfiguration = new StorageConfiguration(this);
+        txFeature = runner.getFeature(TransactionalFeature.class);
+        txFeature.addWaiter(new Waiter() {
+
+            @Override
+            public boolean await(long deadline) throws InterruptedException {
+                return Framework.getService(WorkManager.class)
+                        .awaitCompletion(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+            }
+
+        });
         runner.getFeature(RuntimeFeature.class).addServiceProvider(new CoreSessionServiceProvider());
         // init from RepositoryConfig annotations
         RepositoryConfig repositoryConfig = runner.getConfig(RepositoryConfig.class);
@@ -139,6 +152,7 @@ public class CoreFeature extends SimpleFeature {
         granularity = cleanup == Granularity.UNDEFINED ? Granularity.CLASS : cleanup;
     }
 
+
     public Granularity getGranularity() {
         return granularity;
     }
@@ -147,9 +161,10 @@ public class CoreFeature extends SimpleFeature {
     public void start(FeaturesRunner runner) {
         try {
             RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
-            URL blobContribUrl = getStorageConfiguration().getBlobManagerContrib(runner);
+            storageConfiguration.init();
+            URL blobContribUrl = storageConfiguration.getBlobManagerContrib(runner);
             harness.getContext().deploy(new URLStreamRef(blobContribUrl));
-            URL repoContribUrl = getStorageConfiguration().getRepositoryContrib(runner);
+            URL repoContribUrl = storageConfiguration.getRepositoryContrib(runner);
             harness.getContext().deploy(new URLStreamRef(repoContribUrl));
         } catch (IOException e) {
             throw new NuxeoException(e);
@@ -157,7 +172,7 @@ public class CoreFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeRun(FeaturesRunner runner) {
+    public void beforeRun(FeaturesRunner runner) throws InterruptedException {
         // wait for async tasks that may have been triggered by
         // RuntimeFeature (typically repo initialization)
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
@@ -203,25 +218,13 @@ public class CoreFeature extends SimpleFeature {
     public void afterTeardown(FeaturesRunner runner) {
         if (granularity == Granularity.METHOD) {
             cleanupSession(runner);
+        } else {
+            waitForAsyncCompletion();
         }
     }
 
     protected void waitForAsyncCompletion() {
-        boolean tx = TransactionHelper.isTransactionActive();
-        boolean rb = TransactionHelper.isTransactionMarkedRollback();
-        if (tx || rb) {
-            // there may be afterCommit work pending, so we
-            // have to commit the transaction
-            TransactionHelper.commitOrRollbackTransaction();
-        }
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        if (tx || rb) {
-            // restore previous tx status
-            TransactionHelper.startTransaction();
-            if (rb) {
-                TransactionHelper.setTransactionRollbackOnly();
-            }
-        }
+        txFeature.nextTransaction();
     }
 
     protected void cleanupSession(FeaturesRunner runner) {

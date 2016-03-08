@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
+
+  <alias>org.nuxeo.ecm.platform.audit.core.work</alias>
+
+  <require>org.nuxeo.runtime.metrics.MetricsService</require>
+  
   <documentation>
     Service that deals with audit.
     <p />
@@ -128,9 +133,19 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
-    <listener name="auditLoggerListener" async="true" postCommit="true"
+    <listener name="auditLoggerListener" async="false"
       class="org.nuxeo.ecm.platform.audit.listener.AuditEventLogger" />
 
+  </extension>
+  
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="audit">
+      <name>Audit queue</name>
+      <maxThreads>1</maxThreads>
+      <category>auditLoggerListener</category>
+      <!-- clear completed work instances older than 5 min -->
+      <clearCompletedAfterSeconds>300</clearCompletedAfterSeconds>
+    </queue>
   </extension>
 
 </component>

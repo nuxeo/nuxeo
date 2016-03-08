@@ -187,7 +187,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      */
     @Override
     public void fireFrameworkStarted() throws Exception {
-        boolean txStarted = TransactionHelper.startTransaction();
+        boolean txStarted = !TransactionHelper.isTransactionActiveOrMarkedRollback() && TransactionHelper.startTransaction();
         boolean txFinished = false;
         try {
             osgi.fireFrameworkEvent(new FrameworkEvent(FrameworkEvent.STARTED, runtimeBundle, null));

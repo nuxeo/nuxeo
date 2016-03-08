@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.Set;
 
 import javax.el.ELException;
@@ -63,6 +64,9 @@ import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Abstract class to share code between {@link AuditBackend} implementations
@@ -77,9 +81,37 @@ public abstract class AbstractAuditBackend implements AuditBackend {
 
     protected NXAuditEventsService component;
 
+    final AuditBulker bulk = new AuditBulker(this);
+
     @Override
     public void activate(NXAuditEventsService component) {
         this.component = component;
+    }
+
+    @Override
+    public void deactivate() {
+        ;
+    }
+
+    @Override
+    public void onApplicationStarted() {
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP != event.id) {
+                    return;
+                }
+                Framework.removeListener(this);
+                bulk.shutdown();
+            }
+        });
+        bulk.startup();
+    }
+
+    @Override
+    public boolean await(long time, TimeUnit unit) throws InterruptedException {
+        return bulk.await(time, unit);
     }
 
     protected final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(new ExpressionFactoryImpl());
@@ -205,10 +237,6 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         String eventName = event.getName();
         Date eventDate = new Date(event.getTime());
 
-        if (!getAuditableEventNames().contains(event.getName())) {
-            return null;
-        }
-
         LogEntry entry = newLogEntry();
         entry.setEventId(eventName);
         entry.setEventDate(eventDate);
@@ -294,12 +322,14 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         return entry;
     }
 
+    @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category, String path,
             int pageNb, int pageSize) {
         String[] categories = { category };
         return queryLogsByPage(eventIds, dateRange, categories, path, pageNb, pageSize);
     }
 
+    @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String category, String path, int pageNb,
             int pageSize) {
         String[] categories = { category };
@@ -357,37 +387,35 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         return nbSyncedEntries;
     }
 
-    // Default implementations to avoid to have too much code to write in actual
-    // implementation
-    //
-    // these methods are actually overridden in the JPA implementation for
-    // optimization purpose
-
     @Override
-    public void logEvents(EventBundle eventBundle) {
-        boolean processEvents = false;
-        for (String name : getAuditableEventNames()) {
-            if (eventBundle.containsEventName(name)) {
-                processEvents = true;
-                break;
-            }
-        }
-        if (!processEvents) {
+    public void logEvents(EventBundle bundle) {
+        if (!isAuditable(bundle)) {
             return;
         }
-        for (Event event : eventBundle) {
+        for (Event event : bundle) {
             logEvent(event);
         }
     }
 
+    protected boolean isAuditable(EventBundle eventBundle) {
+        for (String name : getAuditableEventNames()) {
+            if (eventBundle.containsEventName(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void logEvent(Event event) {
-        LogEntry entry = buildEntryFromEvent(event);
-        if (entry != null) {
-            List<LogEntry> entries = new ArrayList<>();
-            entries.add(entry);
-            addLogEntries(entries);
+        if (!getAuditableEventNames().contains(event.getName())) {
+            return;
         }
+        LogEntry entry = buildEntryFromEvent(event);
+        if (entry == null) {
+            return;
+        }
+        bulk.offer(entry);
     }
 
     @Override
@@ -405,6 +433,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         return queryLogsByPage(eventIds, (String) null, (String[]) null, null, 0, 10000);
     }
 
+    @Override
     public List<LogEntry> nativeQueryLogs(final String whereClause, final int pageNb, final int pageSize) {
         List<LogEntry> entries = new LinkedList<>();
         for (Object entry : nativeQuery(whereClause, pageNb, pageSize)) {

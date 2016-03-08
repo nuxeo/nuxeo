@@ -18,9 +18,14 @@
 
 package org.nuxeo.ecm.platform.audit;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.persistence.EntityManager;
 
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature.Waiter;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -35,6 +40,19 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @LocalDeploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
 public class AuditFeature extends SimpleFeature {
 
+    @Override
+    public void initialize(FeaturesRunner runner) throws Exception {
+        runner.getFeature(TransactionalFeature.class)
+                .addWaiter(new Waiter() {
+
+                    @Override
+                    public boolean await(long deadline) throws InterruptedException {
+                        return Framework.getService(AuditLogger.class)
+                                .await(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                    }
+
+                });
+    }
     @Override
     public void stop(FeaturesRunner runner) throws Exception {
         clear();

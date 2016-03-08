@@ -22,11 +22,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import javax.persistence.EntityManager;
 
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
@@ -36,6 +33,7 @@ import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Contains the Hibernate based (legacy) implementation
@@ -76,11 +74,29 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
 
     @Override
     public void deactivate() {
+        super.deactivate();
         deactivatePersistenceProvider();
     }
 
     @Override
     public void addLogEntries(final List<LogEntry> entries) {
+        if (entries.isEmpty()) {
+            return;
+        }
+        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.startTransaction();
+            try {
+                getOrCreatePersistenceProvider().run(true, new RunVoid() {
+                    @Override
+                    public void runWith(EntityManager em) {
+                        addLogEntries(em, entries);
+                    }
+                });
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+            return;
+        }
         getOrCreatePersistenceProvider().run(true, new RunVoid() {
             @Override
             public void runWith(EntityManager em) {
@@ -242,20 +258,6 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
         return syncLogCreationEntries(provider, repoId, path, recurs);
     }
 
-    public void addLogEntry(final LogEntry entry) {
-        getOrCreatePersistenceProvider().run(true, new RunCallback<Integer>() {
-            @Override
-            public Integer runWith(EntityManager em) {
-                addLogEntry(em, entry);
-                return 0;
-            }
-        });
-    }
-
-    public void addLogEntry(EntityManager em, LogEntry entry) {
-        LogEntryProvider.createProvider(em).addLogEntry(entry);
-    }
-
     @Override
     public Long getEventsCount(final String eventId) {
         return getOrCreatePersistenceProvider().run(false, new RunCallback<Long>() {
@@ -285,49 +287,6 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
         return LogEntryProvider.createProvider(em).findEventIds();
     }
 
-    @Override
-    public void logEvent(final Event event) {
-        getOrCreatePersistenceProvider().run(true, new RunVoid() {
-            @Override
-            public void runWith(EntityManager em) {
-                logEvent(em, event);
-            }
-        });
-    }
-
-    @Override
-    public void logEvents(final EventBundle eventBundle) {
-        getOrCreatePersistenceProvider().run(true, new RunVoid() {
-            @Override
-            public void runWith(EntityManager em) {
-                logEvents(em, eventBundle);
-            }
-        });
-    }
-
-    protected void logEvents(EntityManager em, EventBundle eventBundle) {
-        boolean processEvents = false;
-        for (String name : getAuditableEventNames()) {
-            if (eventBundle.containsEventName(name)) {
-                processEvents = true;
-                break;
-            }
-        }
-        if (!processEvents) {
-            return;
-        }
-        for (Event event : eventBundle) {
-            logEvent(em, event);
-        }
-    }
-
-    protected void logEvent(EntityManager em, Event event) {
-        LogEntry entry = buildEntryFromEvent(event);
-        if (entry != null) {
-            addLogEntry(em, entry);
-        }
-    }
-
     // Compat APIs
 
     protected List<LogEntry> queryLogsByPage(EntityManager em, String[] eventIds, String dateRange, String category,
@@ -340,11 +299,6 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
             String path, int pageNb, int pageSize) {
         String[] categories = { category };
         return queryLogsByPage(em, eventIds, limit, categories, path, pageNb, pageSize);
-    }
-
-    @Override
-    public void onApplicationStarted() {
-        // Nothing to do
     }
 
     @Override

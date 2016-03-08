@@ -30,13 +30,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
@@ -46,11 +46,10 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.persistence",
         "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
-        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml" })
+        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml", "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:nxaudit-ds.xml", "org.nuxeo.elasticsearch.audit:nxuidsequencer-ds.xml",
@@ -68,6 +67,9 @@ public class TestAuditMigration {
     @Inject
     protected RuntimeHarness harness;
 
+    @Inject
+    TransactionalFeature txFeature;
+
     @Before
     public void setupIndex() throws Exception {
         esa.initIndexes(true);
@@ -76,34 +78,28 @@ public class TestAuditMigration {
     @Test
     public void shouldMigrate() throws Exception {
 
-        // start with JPA based Audit
         NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime().getComponent(
                 NXAuditEventsService.NAME);
         Assert.assertNotNull(audit);
-        AuditBackend backend = audit.getBackend();
-        Assert.assertNotNull(backend);
-        Assert.assertTrue(backend instanceof DefaultAuditBackend);
+
+        // start with JPA based Audit
+        DefaultAuditBackend jpaBackend = (DefaultAuditBackend)new AuditBackendDescriptor().newInstance(audit);
 
         // generate some entries
         List<LogEntry> entries = new ArrayList<>();
-        AuditLogger logger = Framework.getLocalService(AuditLogger.class);
-        Assert.assertNotNull(logger);
 
         for (int i = 0; i < 1000; i++) {
             entries.add(LogEntryGen.doCreateEntry("mydoc", "evt" + i, "cat" + i % 2));
         }
-        logger.addLogEntries(entries);
+        jpaBackend.addLogEntries(entries);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction();
 
-        List<Long> res = (List<Long>) backend.nativeQuery("select count(*) from LogEntry", 1, 20);
+        List<Long> res = (List<Long>) jpaBackend.nativeQuery("select count(*) from LogEntry", 1, 20);
         final long nbEntriesToMigrate = res.get(0).longValue();
         Assert.assertEquals(1000, nbEntriesToMigrate);
 
-        harness.deployBundle("org.nuxeo.elasticsearch.audit");
-        backend = audit.getBackend();
+        AuditBackend backend = audit.getBackend();
         Assert.assertNotNull(backend);
         Assert.assertTrue(backend instanceof ESAuditBackend);
 

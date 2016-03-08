@@ -18,7 +18,12 @@
  */
 package org.nuxeo.ecm.core.test;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -40,6 +45,49 @@ public class TransactionalFeature extends SimpleFeature {
     protected boolean nsOwner;
 
     protected boolean txStarted;
+
+    final List<Waiter> waiters = new LinkedList<>();
+
+    public interface Waiter {
+        boolean await(long deadline) throws InterruptedException;
+    }
+
+    public void addWaiter(Waiter waiter) {
+        waiters.add(waiter);
+    }
+
+    public void nextTransaction() {
+        nextTransaction(2, TimeUnit.MINUTES);
+    }
+
+    public void nextTransaction(long duration, TimeUnit unit) {
+        long deadline = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(duration, unit);
+        boolean tx = TransactionHelper.isTransactionActive();
+        boolean rb = TransactionHelper.isTransactionMarkedRollback();
+        if (tx || rb) {
+            // there may be tx synchronizer pending, so we
+            // have to commit the transaction
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+        try {
+            for (Waiter provider : waiters) {
+                try {
+                    Assert.assertTrue(provider.await(deadline));
+                } catch (InterruptedException cause) {
+                    Thread.currentThread().interrupt();
+                    throw new AssertionError("interrupted while awaiting for asynch completion", cause);
+                }
+            }
+        } finally {
+            if (tx || rb) {
+                // restore previous tx status
+                TransactionHelper.startTransaction();
+                if (rb) {
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+            }
+        }
+    }
 
     protected Class<? extends RepositoryFactory> defaultFactory;
 
