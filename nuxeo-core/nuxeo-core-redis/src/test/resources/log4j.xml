@@ -17,14 +17,26 @@
     <param name="File" value="target/trace.log" />
     <param name="Append" value="false" />
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%n" />
+      <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m%X%n" />
     </layout>
   </appender>
 
-  <category name="org.nuxeo.ecm.core" additivity="true">
-    <priority value="DEBUG" />
+  <category name="org.nuxeo.ecm.core.work.WorkQueuing">
+    <priority value="TRACE" />
     <appender-ref ref="FILE" />
   </category>
+  
+  <category name="org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedConnection">
+    <priority value="TRACE" />
+    <appender-ref ref="FILE" />
+  </category>
+  
+<!--
+  <category name="org.nuxeo.runtime">
+    <priority value="INFO" />
+    <appender-ref ref="FILE" />
+  </category>
+ -->
   
   <root>
     <appender-ref ref="CONSOLE" />

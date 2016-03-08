@@ -75,56 +75,6 @@ public interface WorkManager {
     }
 
     /**
-     * Lists the ids of the existing work queues.
-     *
-     * @return the list of queue ids
-     */
-    List<String> getWorkQueueIds();
-
-    /**
-     * Gets the queue id used for a given work category.
-     *
-     * @param category the category
-     * @return the queue id
-     */
-    String getCategoryQueueId(String category);
-
-    /**
-     * Gets the work queue descriptor for a given queue id.
-     *
-     * @param queueId the queue id
-     * @return the work queue descriptor, or {@code null}
-     */
-    WorkQueueDescriptor getWorkQueueDescriptor(String queueId);
-
-    /**
-     * Starts up this {@link WorkManager} and attempts to resume work previously suspended and saved at
-     * {@link #shutdown} time.
-     */
-    void init();
-
-    /**
-     * Shuts down a work queue and attempts to suspend and save the running and scheduled work instances.
-     *
-     * @param queueId the queue id
-     * @param timeout the time to wait
-     * @param unit the timeout unit
-     * @return {@code true} if shutdown is done, {@code false} if there are still some threads executing after the
-     *         timeout
-     */
-    boolean shutdownQueue(String queueId, long timeout, TimeUnit unit) throws InterruptedException;
-
-    /**
-     * Shuts down this {@link WorkManager} and attempts to suspend and save the running and scheduled work instances.
-     *
-     * @param timeout the time to wait
-     * @param unit the timeout unit
-     * @return {@code true} if shutdown is done, {@code false} if there are still some threads executing after the
-     *         timeout
-     */
-    boolean shutdown(long timeout, TimeUnit unit) throws InterruptedException;
-
-    /**
      * Schedules work for execution at a later time.
      * <p>
      * This method is identical to {@link #schedule(Work, boolean)} with {@code afterCommit = false}.
@@ -164,73 +114,106 @@ public interface WorkManager {
      */
     void schedule(Work work, Scheduling scheduling, boolean afterCommit);
 
+    /** Admin API **/
     /**
-     * Finds a work instance.
+     * Lists the ids of the existing work queues.
      *
-     * @param work the work to find
-     * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
-     * @param useEquals ignored, always uses work id equality
-     * @param pos ignored, pass null
-     * @return the found work instance, or {@code null} if not found
-     * @deprecated since 5.8, use {@link #getWorkState} instead
+     * @return the list of queue ids
      */
-    @Deprecated
-    Work find(Work work, State state, boolean useEquals, int[] pos);
+    List<String> getWorkQueueIds();
 
     /**
-     * Finds a work instance.
+     * Gets the queue id used for a given work category.
      *
-     * @param workId the id of the work to find
-     * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
-     * @return the found work instance, or {@code null} if not found
-     * @since 7.3
+     * @param category the category
+     * @return the queue id
      */
-    Work find(String workId, State state);
+    String getCategoryQueueId(String category);
 
     /**
-     * Finds a work result.
-     *
-     * @param workId the id of the work to find the result
-     * @return the found work result, or {@code null} if there is no result or if work is not {@link State#COMPLETED
-     *         COMPLETED}
-     * @since 7.4
-     */
-    String findResult(String workId);
-
-    /**
-     * Gets the state in which a work instance is.
-     * <p>
-     * This can be {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING RUNNING}, {@link State#COMPLETED COMPLETED},
-     * {@link State#CANCELED} or {@link State#FAILED}.
-     *
-     * @param workId the id of the work to find
-     * @return the work state, or {@code null} if not found
-     * @since 5.8
-     */
-    State getWorkState(String workId);
-
-    /**
-     * Lists the work instances in a given queue in a defined state.
+     * Gets the work queue descriptor for a given queue id.
      *
      * @param queueId the queue id
-     * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
-     * @return the list of work instances in the given state
+     * @return the work queue descriptor, or {@code null}
      */
-    List<Work> listWork(String queueId, State state);
+    WorkQueueDescriptor getWorkQueueDescriptor(String queueId);
+
 
     /**
-     * Lists the work ids in a given queue in a defined state.
+     * Is processing enabled for at least one queue
+     *
+     * @param queueId
+     *
+     * @since 8.3
+     */
+    boolean isProcessingEnabled();
+
+    /**
+     * Set processing for all queues
+     *
+     * @param queueId
+     *
+     * @since 8.3
+     */
+
+    void enableProcessing(boolean value);
+
+    /**
+     * Is processing enabled for a given queue id.
+     *
+     * @param queueId
+     *
+     * @since 8.3
+     */
+    boolean isProcessingEnabled(String queueId);
+
+    /**
+     * Set processing for a given queue id.
+     *
+     * @param queueId
+     * @throws InterruptedException
+     *
+     * @since 8.3
+     */
+    void enableProcessing(String queueId, boolean value) throws InterruptedException;
+
+    /**
+     * Is queuing enabled for a given queue id.
+     *
+     * @param queueId
+     *
+     * @since 8.3
+     */
+    boolean isQueuingEnabled(String queueId);
+
+    /**
+     * Starts up this {@link WorkManager} and attempts to resume work previously suspended and saved at
+     * {@link #shutdown} time.
+     */
+    void init();
+
+    /**
+     * Shuts down a work queue and attempts to suspend and save the running and scheduled work instances.
      *
      * @param queueId the queue id
-     * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
-     * @return the list of work ids in the given state
-     * @since 5.8
+     * @param timeout the time to wait
+     * @param unit the timeout unit
+     * @return {@code true} if shutdown is done, {@code false} if there are still some threads executing after the
+     *         timeout
      */
-    List<String> listWorkIds(String queueId, State state);
+    boolean shutdownQueue(String queueId, long timeout, TimeUnit unit) throws InterruptedException;
+
+    /**
+     * Shuts down this {@link WorkManager} and attempts to suspend and save the running and scheduled work instances.
+     *
+     * @param timeout the time to wait
+     * @param unit the timeout unit
+     * @return {@code true} if shutdown is done, {@code false} if there are still some threads executing after the
+     *         timeout
+     */
+    boolean shutdown(long timeout, TimeUnit unit) throws InterruptedException;
+
+
 
     /**
      * Gets the number of work instances in a given queue in a defined state.
@@ -242,7 +225,9 @@ public interface WorkManager {
      *            {@link State#SCHEDULED SCHEDULED} or {@link State#RUNNING RUNNING})
      * @return the number of work instances in the given state
      * @since 5.8
+     * @deprecated since 5.8,
      */
+    @Deprecated
     int getQueueSize(String queueId, State state);
 
     /**
@@ -254,6 +239,13 @@ public interface WorkManager {
      */
     @Deprecated
     int getNonCompletedWorkSize(String queueId);
+
+    /**
+     * Gets the metrics for the {@code queueId}
+     *
+     * @since 8.3
+     */
+    WorkQueueMetrics getMetrics(String queueId);
 
     /**
      * Waits for completion of work in a given queue.
@@ -277,26 +269,6 @@ public interface WorkManager {
     boolean awaitCompletion(long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
-     * Clears the list of completed work instances for a given queue.
-     *
-     * @param queueId the queue id
-     */
-    void clearCompletedWork(String queueId);
-
-    /**
-     * Clears the list of completed work instances older than the given time.
-     *
-     * @param completionTime the completion time (milliseconds since epoch) before which completed work instances are
-     *            cleared, or {@code 0} for all
-     */
-    void clearCompletedWork(long completionTime);
-
-    /**
-     * Clears the list of completed work instances older than what's configured for each queue.
-     */
-    void cleanup();
-
-    /**
      * @return {@code true} if active
      * @see org.nuxeo.runtime.model.DefaultComponent#applicationStarted(org.nuxeo.runtime.model.ComponentContext)
      * @see #init()
@@ -304,5 +276,65 @@ public interface WorkManager {
      * @since 6.0
      */
     boolean isStarted();
+
+    /** Works lookup API **/
+    /**
+     * Gets the state in which a work instance is.
+     * <p>
+     * This can be {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING RUNNING}, or null.
+     *
+     * @param workId the id of the work to find
+     * @return the work state, or {@code null} if not found
+     * @since 5.8
+     */
+    @Deprecated
+    State getWorkState(String workId);
+
+    /**
+     * Finds a work instance.
+     *
+     * @param work the work to find
+     * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
+     * @param useEquals ignored, always uses work id equality
+     * @param pos ignored, pass null
+     * @return the found work instance, or {@code null} if not found
+     * @deprecated since 5.8, use {@link #getWorkState} instead
+     */
+    @Deprecated
+    Work find(Work work, State state, boolean useEquals, int[] pos);
+
+    /**
+     * Finds a work instance.
+     *
+     * @param workId the id of the work to find
+     * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+     *            RUNNING},  or {@code null} for non-completed
+     * @return the found work instance, or {@code null} if not found
+     * @since 7.3
+     */
+    Work find(String workId, State state);
+
+
+    /**
+     * Lists the work instances in a given queue in a defined state.
+     *
+     * @param queueId the queue id
+     * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+     *            RUNNING}, or {@code null} for non-completed
+     * @return the list of work instances in the given state
+     */
+    List<Work> listWork(String queueId, State state);
+
+    /**
+     * Lists the work ids in a given queue in a defined state.
+     *
+     * @param queueId the queue id
+     * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
+     *            RUNNING}, or {@code null} for non-completed
+     * @return the list of work ids in the given state
+     * @since 5.8
+     */
+    List<String> listWorkIds(String queueId, State state);
 
 }

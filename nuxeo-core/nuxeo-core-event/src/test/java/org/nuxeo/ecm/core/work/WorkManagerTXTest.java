@@ -20,8 +20,6 @@ package org.nuxeo.ecm.core.work;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.nuxeo.ecm.core.work.api.Work.State.CANCELED;
-import static org.nuxeo.ecm.core.work.api.Work.State.COMPLETED;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
 import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 
@@ -30,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -42,7 +41,9 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
 
     protected WorkManager service;
 
-    protected boolean dontClearCompletedWork;
+    void assertMetrics(long scheduled, long running, long completed, long cancelled) {
+        assertEquals(new WorkQueueMetrics(QUEUE, scheduled, running, completed, cancelled), service.getMetrics(QUEUE));
+    }
 
     @Override
     @Before
@@ -54,19 +55,13 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
         fireFrameworkStarted();
         service = Framework.getLocalService(WorkManager.class);
         assertNotNull(service);
-        service.clearCompletedWork(0);
-        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
-        assertEquals(0, service.getQueueSize(QUEUE, RUNNING));
-        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
+        assertMetrics(0, 0, 0, 0);
         TransactionHelper.startTransaction();
     }
 
     @Override
     @After
     public void tearDown() throws Exception {
-        if (!dontClearCompletedWork) {
-            service.clearCompletedWork(0);
-        }
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.setTransactionRollbackOnly();
             TransactionHelper.commitOrRollbackTransaction();
@@ -77,38 +72,28 @@ public class WorkManagerTXTest extends NXRuntimeTestCase {
     @Test
     public void testWorkManagerPostCommit() throws Exception {
         int duration = 1000; // 1s
-        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         SleepWork work = new SleepWork(duration, false);
         service.schedule(work, true);
-        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+        assertMetrics(0, 0, 0, 0);
 
         TransactionHelper.commitOrRollbackTransaction();
 
         Thread.sleep(duration + 1000);
-        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals(1, service.getQueueSize(QUEUE, COMPLETED));
-        // tx commit triggered a release of the scheduled work
-        assertEquals(COMPLETED, work.getWorkInstanceState());
+        assertMetrics(0, 0, 1, 0);
     }
 
     @Test
     public void testWorkManagerRollback() throws Exception {
         Assert.assertTrue(TransactionHelper.isTransactionActive());
         int duration = 1000; // 1s
-        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
         SleepWork work = new SleepWork(duration, false);
         service.schedule(work, true);
-        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
+        assertMetrics(0, 0, 0, 0);
+
         TransactionHelper.setTransactionRollbackOnly();
         TransactionHelper.commitOrRollbackTransaction();
-        // tx rollback cancels the task and removes it
-        assertEquals(0, service.getQueueSize(QUEUE, SCHEDULED));
-        assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
-        assertEquals(CANCELED, work.getWorkInstanceState());
+        assertMetrics(0, 0, 0, 0);
+
     }
 
 }

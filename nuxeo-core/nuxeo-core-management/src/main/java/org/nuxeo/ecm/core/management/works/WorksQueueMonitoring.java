@@ -15,12 +15,8 @@
  */
 package org.nuxeo.ecm.core.management.works;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.nuxeo.ecm.core.work.api.Work;
-import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.api.Framework;
 
 public class WorksQueueMonitoring implements WorksQueueMonitoringMBean {
@@ -36,35 +32,22 @@ public class WorksQueueMonitoring implements WorksQueueMonitoringMBean {
     }
 
     @Override
-    public int getScheduledCount() {
-        return manager().getQueueSize(queueId, State.SCHEDULED);
+    public long[] getMetrics() {
+        WorkQueueMetrics metrics = manager().getMetrics(queueId);
+        return new long[] { metrics.scheduled.longValue(), metrics.running.longValue(), metrics.completed.longValue(),
+                metrics.canceled.longValue() };
     }
 
     @Override
-    public int getRunningCount() {
-        return manager().getQueueSize(queueId, State.RUNNING);
+    public boolean isProcessing() {
+        return manager().isProcessingEnabled(queueId);
     }
 
     @Override
-    public int getCompletedCount() {
-        return manager().getQueueSize(queueId, State.COMPLETED);
-    }
-
-    @Override
-    public String[] getScheduledWorks() {
-        return listWorks(State.SCHEDULED);
-    }
-
-    @Override
-    public String[] getRunningWorks() {
-        return listWorks(State.RUNNING);
-    }
-
-    protected String[] listWorks(State state) {
-        List<String> works = new ArrayList<String>();
-        for (Work work : manager().listWork(queueId, state)) {
-            works.add(work.toString());
-        }
-        return works.toArray(new String[works.size()]);
+    public boolean toggleProcessing() throws InterruptedException {
+        WorkManager manager = manager();
+        boolean enabled = !manager.isProcessingEnabled(queueId);
+        manager.enableProcessing(queueId, enabled);
+        return enabled;
     }
 }

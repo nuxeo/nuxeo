@@ -226,7 +226,7 @@ public class CoreInstance {
         String sessionId = session.getSessionId();
         RegistrationInfo csi = sessions.remove(sessionId);
         if (csi == null) {
-            throw new RuntimeException("Closing unknown CoreSession: " + sessionId);
+            throw new RuntimeException("Closing unknown CoreSession: " + sessionId, csi);
         }
         session.destroy();
     }
@@ -289,7 +289,7 @@ public class CoreInstance {
     }
 
     public Collection<RegistrationInfo> getRegistrationInfos() {
-        return sessions.values();
+        return new ArrayList<>(sessions.values());
     }
 
     public Collection<RegistrationInfo> getRegistrationInfosLive(final boolean onThread) {

@@ -19,15 +19,21 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 
 /**
  * Memory-based {@link BlockingQueue}.
@@ -85,7 +91,9 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
             }
             // turn non-blocking offer into a blocking put
             try {
-                if (Thread.currentThread().getName().startsWith(WorkManagerImpl.THREAD_PREFIX)) {
+                if (Thread.currentThread()
+                        .getName()
+                        .startsWith(WorkManagerImpl.THREAD_PREFIX)) {
                     // use the full queue capacity for reentrant call
                     put(e);
                 } else {
@@ -94,7 +102,8 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
                 }
                 return true;
             } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
+                Thread.currentThread()
+                        .interrupt();
                 throw new RuntimeException("interrupted", ie);
             }
         }
@@ -102,8 +111,16 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
 
     protected final BlockingQueue<Runnable> queue;
 
-    // @GuardedBy("itself")
-    protected final Set<String> workIds;
+    protected final Map<String, Work> works = new HashMap<>();
+
+    protected final Set<String> scheduledWorks = new HashSet<>();
+
+    protected final Set<String> runningWorks = new HashSet<>();
+
+    long scheduledCount;
+    long runningCount;
+    long completedCount;
+    long cancelledCount;
 
     /**
      * Creates a {@link BlockingQueue} with a maximum capacity.
@@ -112,43 +129,14 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
      *
      * @param capacity the capacity, or -1 for unbounded
      */
-    public MemoryBlockingQueue(int capacity) {
+    public MemoryBlockingQueue(String id, MemoryWorkQueuing queuing, int capacity) {
+        super(id, queuing);
         queue = new ReentrantLinkedBlockingQueue<>(capacity);
-        workIds = new HashSet<>();
     }
 
-    /**
-     * Checks if the queue contains a given work id.
-     *
-     * @param workId the work id
-     * @return {@code true} if the queue contains the work id
-     */
-    public boolean containsWorkId(String workId) {
-        synchronized (workIds) {
-            return workIds.contains(workId);
-        }
-    }
-
-    private Runnable addWorkId(Runnable r) {
-        if (r instanceof WorkHolder) {
-            WorkHolder wh = (WorkHolder) r;
-            String id = WorkHolder.getWork(wh).getId();
-            synchronized (workIds) {
-                workIds.add(id);
-            }
-        }
-        return r;
-    }
-
-    private Runnable removeWorkId(Runnable r) {
-        if (r instanceof WorkHolder) {
-            WorkHolder wh = (WorkHolder) r;
-            String id = WorkHolder.getWork(wh).getId();
-            synchronized (workIds) {
-                workIds.remove(id);
-            }
-        }
-        return r;
+    @Override
+    synchronized protected WorkQueueMetrics metrics() {
+        return new WorkQueueMetrics(queueId, scheduledCount, runningCount, completedCount, cancelledCount);
     }
 
     @Override
@@ -159,55 +147,18 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
     @Override
     public void putElement(Runnable r) throws InterruptedException {
         queue.put(r);
-        addWorkId(r);
     }
 
     @Override
     public Runnable pollElement() {
         Runnable r = queue.poll();
-        removeWorkId(r);
         return r;
     }
 
     @Override
     public Runnable take() throws InterruptedException {
         Runnable r = queue.take();
-        removeWorkId(r);
         return r;
-    }
-
-    /*
-     * We can implement iterator, super doesn't have it.
-     */
-    @Override
-    public Iterator<Runnable> iterator() {
-        return new Itr(queue.iterator());
-    }
-
-    private class Itr implements Iterator<Runnable> {
-        private Iterator<Runnable> it;
-
-        private Runnable last;
-
-        public Itr(Iterator<Runnable> it) {
-            this.it = it;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return it.hasNext();
-        }
-
-        @Override
-        public Runnable next() {
-            return last = it.next();
-        }
-
-        @Override
-        public void remove() {
-            it.remove();
-            removeWorkId(last);
-        }
     }
 
     @Override
@@ -218,6 +169,98 @@ public class MemoryBlockingQueue extends NuxeoBlockingQueue {
             return null;
         }
         return queue.poll(nanos, TimeUnit.NANOSECONDS);
+    }
+
+    synchronized WorkQueueMetrics workSchedule(Work work) {
+        String id = work.getId();
+        if (scheduledWorks.contains(id)) {
+            return metrics();
+        }
+        if (!offer(new WorkHolder(work))) {
+            return metrics();
+        }
+        works.put(id, work);
+        scheduledWorks.add(id);
+        scheduledCount += 1;
+        return metrics();
+    }
+
+    synchronized WorkQueueMetrics workRunning(Work work) {
+        String id = work.getId();
+        scheduledWorks.remove(id);
+        works.put(id, work); // update state
+        runningWorks.add(id);
+        scheduledCount -= 1;
+        runningCount += 1;
+        return metrics();
+    }
+
+    synchronized WorkQueueMetrics workCanceled(Work work) {
+        String id = work.getId();
+        for (Iterator<Runnable> it = queue.iterator(); it.hasNext();) {
+            if (id.equals(WorkHolder.getWork(it.next())
+                    .getId())) {
+                it.remove();
+                scheduledWorks.remove(id);
+                works.remove(id);
+                scheduledCount -= 1;
+                cancelledCount +=1 ;
+                break;
+            }
+        }
+        return metrics();
+    }
+
+    synchronized WorkQueueMetrics workCompleted(Work work) {
+        String id = work.getId();
+        if (runningWorks.remove(id) && !scheduledWorks.contains(id)) {
+            works.remove(id);
+        }
+        runningCount -= 1;
+        completedCount += 1;
+        return metrics();
+    }
+
+    synchronized WorkQueueMetrics workRescheduleRunning(Work work) {
+        String id = work.getId();
+        if (!runningWorks.remove(id)) {
+            return metrics();
+        }
+        works.remove(id);
+        runningCount -= 1;
+        return workSchedule(work);
+    }
+
+    synchronized Work lookup(String workId) {
+        return works.get(workId);
+    }
+
+    synchronized List<Work> list() {
+        return new ArrayList<>(works.values());
+    }
+
+    synchronized List<String> keys() {
+        return new ArrayList<>(works.keySet());
+    }
+
+    synchronized List<Work> listScheduled() {
+        return scheduledWorks.stream()
+                .map(works::get)
+                .collect(Collectors.toList());
+    }
+
+    synchronized List<String> scheduledKeys() {
+        return new ArrayList<>(scheduledWorks);
+    }
+
+    synchronized List<Work> listRunning() {
+        return runningWorks.stream()
+                .map(works::get)
+                .collect(Collectors.toList());
+    }
+
+    synchronized List<String> runningKeys() {
+        return new ArrayList<>(runningWorks);
     }
 
 }

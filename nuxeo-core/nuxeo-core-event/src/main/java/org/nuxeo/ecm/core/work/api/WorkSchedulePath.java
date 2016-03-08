@@ -56,8 +56,8 @@ public class WorkSchedulePath implements Serializable {
         }
     }
 
-    public static void toggleCaptureStack() {
-        captureStack = !captureStack;
+    public static boolean toggleCaptureStack() {
+        return captureStack = !captureStack;
     }
 
     public static boolean isCaptureStackEnabled() {

@@ -18,12 +18,6 @@
  */
 package org.nuxeo.ecm.core.redis.contribs;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.work.NuxeoBlockingQueue;
-import org.nuxeo.ecm.core.work.WorkHolder;
-import org.nuxeo.ecm.core.work.api.Work;
-
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.concurrent.BlockingQueue;
@@ -33,6 +27,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.work.NuxeoBlockingQueue;
+import org.nuxeo.ecm.core.work.WorkHolder;
+import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
@@ -58,21 +59,24 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
 
     private static final int REMOTE_POLL_INTERVAL_STDEV_MS = 200;
 
-    protected final String queueId;
-
     protected final RedisWorkQueuing queuing;
 
     protected final Lock lock = new ReentrantLock();
     protected final Condition notEmpty = lock.newCondition();
 
     public RedisBlockingQueue(String queueId, RedisWorkQueuing queuing) {
-        this.queueId = queueId;
+        super(queueId, queuing);
         this.queuing = queuing;
     }
 
     @Override
+    protected WorkQueueMetrics metrics() {
+        return queuing.metrics(queueId);
+    }
+
+    @Override
     public int getQueueSize() {
-        return queuing.getScheduledSize(queueId);
+        return queuing.metrics(queueId).scheduled.intValue();
     }
 
     @Override
@@ -123,7 +127,7 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
         Work work = WorkHolder.getWork(r);
         lock.lock();
         try {
-            queuing.addScheduledWork(queueId, work);
+            queuing.workSetScheduled(queueId, work);
             notEmpty.signal();
         } catch (IOException e) {
             log.error("Failed to add Work: " + work, e);

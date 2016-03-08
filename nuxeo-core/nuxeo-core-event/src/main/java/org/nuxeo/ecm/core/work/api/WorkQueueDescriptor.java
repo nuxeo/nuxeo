@@ -75,13 +75,6 @@ public class WorkQueueDescriptor {
         return maxThreads == null ? DEFAULT_MAX_THREADS : maxThreads.intValue();
     }
 
-    @XNode("clearCompletedAfterSeconds")
-    public Integer clearCompletedAfterSeconds;
-
-    public int getClearCompletedAfterSeconds() {
-        return clearCompletedAfterSeconds == null ? DEFAULT_CLEAR_COMPLETED_AFTER_SECONDS : clearCompletedAfterSeconds.intValue();
-    }
-
     @XNodeList(value = "category", type = HashSet.class, componentType = String.class)
     public Set<String> categories = Collections.emptySet();
 
@@ -106,7 +99,6 @@ public class WorkQueueDescriptor {
         o.processing = processing;
         o.name = name;
         o.maxThreads = maxThreads;
-        o.clearCompletedAfterSeconds = clearCompletedAfterSeconds;
         o.capacity = capacity;
         o.categories = new HashSet<String>(categories);
         return o;
@@ -124,9 +116,6 @@ public class WorkQueueDescriptor {
         }
         if (other.maxThreads != null) {
             maxThreads = other.maxThreads;
-        }
-        if (other.clearCompletedAfterSeconds != null) {
-            clearCompletedAfterSeconds = other.clearCompletedAfterSeconds;
         }
         if (other.capacity != null) {
             capacity = other.capacity;
@@ -157,10 +146,6 @@ public class WorkQueueDescriptor {
             buf.append(" capacity=");
             buf.append(capacity);
         }
-        if (clearCompletedAfterSeconds != null) {
-            buf.append(" clearCompletedAfterSeconds=");
-            buf.append(clearCompletedAfterSeconds);
-        }
         buf.append("]");
         return buf.toString();
     }
@@ -180,7 +165,6 @@ public class WorkQueueDescriptor {
         buf.append(" capacity=");
         buf.append(getCapacity());
         buf.append(" clearCompletedAfterSeconds=");
-        buf.append(getClearCompletedAfterSeconds());
         buf.append(")");
         return buf.toString();
     }

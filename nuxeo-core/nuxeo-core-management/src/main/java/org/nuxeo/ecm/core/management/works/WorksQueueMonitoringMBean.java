@@ -20,14 +20,25 @@ import javax.management.MXBean;
 @MXBean
 public interface WorksQueueMonitoringMBean {
 
-    int getScheduledCount();
+    /**
+     * Gets scheduled/running/completed/cancelled counters at once
+     *
+     * @since 8.3
+     */
+    long[] getMetrics();
 
-    int getRunningCount();
+    /**
+     * Is at least one queue is processing works ?
+     *
+     * @since 8.3
+     */
+    boolean isProcessing();
 
-    int getCompletedCount();
-
-    String[] getScheduledWorks();
-
-    String[] getRunningWorks();
-
+    /**
+     * Toogles processing for all queues
+     * @throws InterruptedException
+     *
+     * @since 8.3
+     */
+    boolean toggleProcessing() throws InterruptedException;
 }

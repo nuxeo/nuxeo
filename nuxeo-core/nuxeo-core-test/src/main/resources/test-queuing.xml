@@ -1,7 +1,7 @@
 <component name="org.nuxeo.ecm.core.test.queuing">
 
   <extension target="org.nuxeo.ecm.core.work.service" point="implementation">
-    <queuing class="org.nuxeo.ecm.core.test.TestWorkQueuing" />
+    <queuing class="org.nuxeo.ecm.core.work.TestWorkQueuing" />
   </extension>
   
 </component>

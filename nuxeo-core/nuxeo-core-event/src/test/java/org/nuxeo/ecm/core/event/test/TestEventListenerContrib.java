@@ -49,13 +49,13 @@ public class TestEventListenerContrib extends NXRuntimeTestCase {
 
     @Test
     public void testMerge() throws Exception {
+        EventService service = Framework.getService(EventService.class);
+        EventServiceImpl serviceImpl = (EventServiceImpl) service;
+        int N =  serviceImpl.getEventListenerList().getInlineListenersDescriptors().size() + 1;
         URL url = EventListenerTest.class.getClassLoader().getResource("test-listeners.xml");
         RuntimeContext rc = deployTestContrib("org.nuxeo.ecm.core.event", url);
 
-        EventService service = Framework.getService(EventService.class);
-        EventServiceImpl serviceImpl = (EventServiceImpl) service;
 
-        int N = 2;
         List<EventListenerDescriptor> inLineDescs = serviceImpl.getEventListenerList().getInlineListenersDescriptors();
         assertEquals(N, inLineDescs.size());
         assertEquals(N, serviceImpl.getEventListenerList().getInLineListeners().size());

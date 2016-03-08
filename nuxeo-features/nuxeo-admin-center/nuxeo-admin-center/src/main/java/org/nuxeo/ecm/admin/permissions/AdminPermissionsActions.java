@@ -132,8 +132,5 @@ public class AdminPermissionsActions implements Serializable {
             return state == Work.State.RUNNING;
         }
 
-        public boolean isComplete() {
-            return state == Work.State.COMPLETED;
-        }
     }
 }

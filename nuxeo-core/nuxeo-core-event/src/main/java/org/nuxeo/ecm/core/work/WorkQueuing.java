@@ -18,14 +18,16 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
+import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
+import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 
 /**
  * Interface describing how the {@link WorkManager} implements queuing.
@@ -43,19 +45,30 @@ import java.util.concurrent.ThreadPoolExecutor;
 public interface WorkQueuing {
 
     /**
-     * Starts up this {@link WorkQueuing} and attempts to resume work previously suspended and saved at
-     * shutdown time.
+     * Initializes queuing datastore
      */
     void init();
 
     /**
-     * Creates a blocking queue of work used by the {@link ThreadPoolExecutor}.
+     * Starts up this {@link WorkQueuing} and attempts to resume work previously suspended and saved at shutdown time.
+     * @return
+     */
+    NuxeoBlockingQueue init(WorkQueueDescriptor config);
+
+    /**
+     * Enable/disable this {@code queueId} processing
+     * @since 8.3
+     */
+    void setActive(String queueId, boolean value);
+
+    /**
+     * Gets the blocking queue of work used by the {@link ThreadPoolExecutor}.
      *
      * @since 8.1
      * @param queueId
      * @return
      */
-    BlockingQueue<Runnable> initWorkQueue(String queueId);
+    NuxeoBlockingQueue getQueue(String queueId);
 
     /**
      * Submit a work to the {@link ThreadPoolExecutor} and put it in the scheduled set.
@@ -64,7 +77,14 @@ public interface WorkQueuing {
      * @param work the work instance
      * @since 8.1
      */
-    boolean workSchedule(String queueId, Work work);
+    void workSchedule(String queueId, Work work);
+
+    /**
+     * Removes a work instance from scheduled set.
+     *
+     * @since 8.3
+     **/
+    void workCanceled(String queueId, Work work);
 
     /**
      * Put the work instance into the running set.
@@ -85,11 +105,18 @@ public interface WorkQueuing {
     void workCompleted(String queueId, Work work);
 
     /**
+     * Moves back a work instance from running set to the scheduled set.
+     *
+     * @since 8.3
+     **/
+    void workReschedule(String queueId, Work work);
+
+    /**
      * Finds a work instance in the scheduled or running or completed sets.
      *
      * @param workId the id of the work to find
      * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for SCHEDULED or RUNNING
+     *        RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for SCHEDULED or RUNNING
      * @return the found work instance, or {@code null} if not found
      */
     Work find(String workId, State state);
@@ -99,17 +126,16 @@ public interface WorkQueuing {
      *
      * @param queueId the queue id
      * @param workId the id of the work to find
-     * @return the work if found, otherwise {@code null}
      * @since 5.8
      */
-    Work removeScheduled(String queueId, String workId);
+    void removeScheduled(String queueId, String workId);
 
     /**
      * Checks if a work instance with the given id is in the given state.
      *
      * @param workId the work id
      * @param state the state, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING RUNNING}, {@link State#COMPLETED
-     *            COMPLETED}, or {@code null} for non-completed
+     *        COMPLETED}, or {@code null} for non-completed
      * @return {@code true} if a work instance with the given id is in the given state
      * @since 5.8
      */
@@ -135,7 +161,7 @@ public interface WorkQueuing {
      *
      * @param queueId the queue id
      * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
+     *        RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
      * @return the list of work instances in the given state
      */
     List<Work> listWork(String queueId, State state);
@@ -145,7 +171,7 @@ public interface WorkQueuing {
      *
      * @param queueId the queue id
      * @param state the state defining the state to look into, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING
-     *            RUNNING}, {@link State#COMPLETED COMPLETED}, or {@code null} for non-completed
+     *        RUNNING},  or {@code null} for non-completed
      * @return the list of work ids in the given state
      */
     List<String> listWorkIds(String queueId, State state);
@@ -155,11 +181,11 @@ public interface WorkQueuing {
      *
      * @param queueId the queue id
      * @param state the state, {@link State#SCHEDULED SCHEDULED}, {@link State#RUNNING RUNNING} or
-     *            {@link State#COMPLETED COMPLETED}
+     *        {@link State#COMPLETED COMPLETED}
      * @return the number of scheduled work instances in the queue
      * @since 5.8
      */
-    int count(String queueId, State state);
+    long count(String queueId, State state);
 
     /**
      * Notifies this queuing that all work should be suspending.
@@ -169,20 +195,79 @@ public interface WorkQueuing {
     int setSuspending(String queueId);
 
     /**
-     * Finds which queues have completed work.
+     * Returns current metrics of queue identified by the {@code queueId}
      *
-     * @return a set of queue ids
-     * @since 5.8
+     * @since 8.3
      */
-    Set<String> getCompletedQueueIds();
+    WorkQueueMetrics metrics(String queueId);
 
     /**
-     * Clears the list of completed work instances older than the given time in the given queue.
+     * Set the callback for debugging purpose
      *
-     * @param queueId the queue id
-     * @param completionTime the completion time (milliseconds since epoch) before which completed work instances are
-     *            cleared, or {@code 0} for all
+     * @since 8.3
      */
-    void clearCompletedWork(String queueId, long completionTime);
+    void listen(Listener listener);
+
+    public interface Listener {
+
+        void queueActivated(WorkQueueMetrics metric);
+
+        void queueDeactivated(WorkQueueMetrics metric);
+
+        void queueChanged(Work work, WorkQueueMetrics metric);
+
+        static Listener lookupListener() {
+            final Log log = LogFactory.getLog(WorkQueuing.class);
+            if (log.isTraceEnabled()) {
+                class Tracing implements Listener {
+                    private final Log log;
+
+                    protected Tracing(Log log) {
+                        this.log = log;
+                    }
+
+                    @Override
+                    public void queueChanged(Work work, WorkQueueMetrics metrics) {
+                        log.trace(String.format("%s -> changed on %s %s",
+                                metrics,
+                                work.getWorkInstanceState(),
+                                work.getSchedulePath()));
+                    }
+
+                    @Override
+                    public void queueActivated(WorkQueueMetrics metrics) {
+                        log.trace(String.format("%s -> activated", metrics));
+                    }
+
+                    @Override
+                    public void queueDeactivated(WorkQueueMetrics metrics) {
+                        log.trace(String.format("%s -> deactivated", metrics));
+                    }
+                }
+
+                return new Tracing(log);
+            } else {
+                class Null implements Listener {
+                    @Override
+                    public void queueActivated(WorkQueueMetrics metric) {
+
+                    }
+
+                    @Override
+                    public void queueDeactivated(WorkQueueMetrics metric) {
+
+                    }
+
+                    @Override
+                    public void queueChanged(Work work, WorkQueueMetrics metric) {
+
+                    }
+                }
+                return new Null();
+            }
+        }
+
+    }
+
 
 }

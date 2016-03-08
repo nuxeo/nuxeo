@@ -19,8 +19,8 @@
  */
 package org.nuxeo.ecm.core.management.works;
 
-import javax.resource.spi.work.WorkManager;
 
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.runtime.api.Framework;
 
@@ -35,13 +35,25 @@ public class WorksMonitoring implements WorksMonitoringMBean {
     }
 
     @Override
-    public void toggleScheduleStackCapture() {
-        WorkSchedulePath.toggleCaptureStack();
+    public boolean toggleScheduleStackCapture() {
+        return WorkSchedulePath.toggleCaptureStack();
     }
 
     @Override
     public boolean isScheduleStackCapture() {
         return WorkSchedulePath.isCaptureStackEnabled();
+    }
+
+    @Override
+    public boolean isProcessing() {
+        return manager().isProcessingEnabled();
+    }
+
+    @Override
+    public boolean toggleProcessing() {
+        final boolean processing = !manager().isProcessingEnabled();
+        manager().enableProcessing(processing);
+        return processing;
     }
 
 }

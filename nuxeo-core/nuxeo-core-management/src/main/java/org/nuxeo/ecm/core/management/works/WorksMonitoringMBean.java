@@ -28,9 +28,24 @@ package org.nuxeo.ecm.core.management.works;
 public interface WorksMonitoringMBean {
 
     /**
+     * Is at least one queue is processing works ?
+     *
+     * @since 8.3
+     */
+    boolean isProcessing();
+
+    /**
+     * Toggles processing on all queues
+     * @return
+     *
+     * @since 8.3
+     */
+    boolean toggleProcessing();
+
+    /**
      * Enable/disable work schedule stack capture
      */
-    void toggleScheduleStackCapture();
+    boolean toggleScheduleStackCapture();
 
     /**
      * is work schedule stack capture enabled ?

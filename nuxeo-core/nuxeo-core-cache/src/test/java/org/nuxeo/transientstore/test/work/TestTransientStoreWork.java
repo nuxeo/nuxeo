@@ -21,8 +21,6 @@ package org.nuxeo.transientstore.test.work;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
@@ -31,13 +29,11 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
-import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -64,45 +60,16 @@ public class TestTransientStoreWork {
     protected TransientStoreService transientStoreService;
 
     @Test
-    public void shouldNotHaveResultForNonExistingWork() {
-        assertNull(workManager.findResult("nonExistingId"));
-    }
-
-    @Test
-    public void shouldNotHaveResultForNonTransientStoreWork() {
-        Work work = new DummyWork();
-        workManager.schedule(work);
-
-        eventService.waitForAsyncCompletion();
-
-        assertNull(workManager.findResult(work.getId()));
-    }
-
-    @Test
-    public void shouldHaveResultForTransientStoreWork() {
-        Work work = new DummyTransientStoreWork();
-        workManager.schedule(work);
-
-        eventService.waitForAsyncCompletion();
-
-        String result = workManager.findResult(work.getId());
-        assertNotNull(result);
-        assertEquals(work.getId() + TransientStoreWork.KEY_SUFFIX, result);
-    }
-
-    @Test
     public void shouldStoreBlobAndParamsInTransientStore() throws IOException {
-        Work work = new DummyTransientStoreWork();
+        TransientStoreWork work = new DummyTransientStoreWork();
         workManager.schedule(work);
 
         eventService.waitForAsyncCompletion();
 
-        String result = workManager.findResult(work.getId());
-        assertNotNull(result);
+        BlobHolder holder = TransientStoreWork.getBlobHolder(work.getEntryKey());
+        assertNotNull(holder);
 
-        TransientStoreService transientStoreService = Framework.getService(TransientStoreService.class);
-        TransientStore transientStore = transientStoreService.getStore(TransientStoreWork.STORE_NAME);
-        Map<String, Serializable> entryParams = transientStore.getParameters(result);
+        Map<String, Serializable> entryParams = holder.getProperties();
         assertEquals(2, entryParams.size());
         Serializable value = entryParams.get("firstparam");
         assertNotNull(value);
@@ -111,7 +78,7 @@ public class TestTransientStoreWork {
         assertNotNull(value);
         assertEquals("secondvalue", value);
 
-        List<Blob> blobs = transientStore.getBlobs(result);
+        List<Blob> blobs = holder.getBlobs();
         assertEquals(1, blobs.size());
         Blob blob = blobs.get(0);
         assertEquals("a simple blob", blob.getString());

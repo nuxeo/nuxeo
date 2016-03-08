@@ -179,11 +179,11 @@ public class ElasticSearchManager {
     }
 
     public String getPendingWorkerCount() {
-        return Integer.valueOf(esa.getPendingWorkerCount()).toString();
+        return Long.valueOf(esa.getPendingWorkerCount()).toString();
     }
 
     public String getRunningWorkerCount() {
-        return Integer.valueOf(esa.getRunningWorkerCount()).toString();
+        return Long.valueOf(esa.getRunningWorkerCount()).toString();
     }
 
     public String getTotalCommandProcessed() {

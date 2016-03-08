@@ -58,11 +58,13 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
         public Varargs invoke(Varargs varargs) {
             String opcode = varargs.checkjstring(1);
             switch (opcode.toLowerCase()) {
-                case "del":
-                    return call(varargs.arg(1), LuaValue.tableOf(varargs, 1));
-
-                case "hset":
-                    return call(varargs.arg(1), LuaValue.tableOf(varargs, 1));
+            case "del":
+            case "hget":
+            case "hset":
+            case "hincrby":
+            case "hdecrby":
+            case "lrem":
+                return call(varargs.arg(1), LuaValue.tableOf(varargs, 1));
             }
             throw new UnsupportedOperationException(opcode);
         }
@@ -70,66 +72,101 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
         @Override
         public LuaValue call(LuaValue luaOpcode, LuaValue luaKey) {
             String opcode = (String) CoerceLuaToJava.coerce(luaOpcode, String.class);
-            String key;
             switch (opcode.toLowerCase()) {
-                case "get":
-                    key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
-                    return valueOfOrFalse(connection.get(key));
-
-                case "del":
-                    if (luaKey.istable() || luaKey.touserdata() instanceof Object[]) {
-                        String[] keys = (String[]) CoerceLuaToJava.coerce(luaKey, String[].class);
-                        return valueOfOrFalse(connection.del(keys));
-                    } else {
-                        key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
-                        return valueOfOrFalse(connection.del(key));
-                    }
-
-                case "keys":
-                    key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
-                    LuaTable table = LuaValue.tableOf();
-                    int i = 0;
-                    for (String value : connection.keys(key)) {
-                        table.rawset(++i, LuaValue.valueOf(value));
-                    }
-                    return table;
-
-                case "hset":
-                    key = (String) CoerceLuaToJava.coerce(luaKey.get(2), String.class);
-                    String field = (String) CoerceLuaToJava.coerce(luaKey.get(3), String.class);
-                    Object value = CoerceLuaToJava.coerce(luaKey.get(4), byte[].class);
-                    return valueOfOrFalse(connection.hset(key.getBytes(), field.getBytes(), (byte[]) value));
+            case "get": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
+                return valueOfOrFalse(connection.get(key));
+            }
+            case "del": {
+                if (luaKey.istable() || luaKey.touserdata() instanceof Object[]) {
+                    String[] keys = (String[]) CoerceLuaToJava.coerce(luaKey, String[].class);
+                    return valueOfOrFalse(connection.del(keys));
+                } else {
+                    String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
+                    return valueOfOrFalse(connection.del(key));
+                }
+            }
+            case "keys": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
+                LuaTable table = LuaValue.tableOf();
+                int i = 0;
+                for (String value : connection.keys(key)) {
+                    table.rawset(++i, LuaValue.valueOf(value));
+                }
+                return table;
+            }
+            case "hget": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey.get(2), String.class);
+                String field = (String) CoerceLuaToJava.coerce(luaKey.get(3), String.class);
+                return valueOfOrFalse(connection.hget(key.getBytes(), field.getBytes()));
+            }
+            case "hset": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey.get(2), String.class);
+                String field = (String) CoerceLuaToJava.coerce(luaKey.get(3), String.class);
+                Object value = CoerceLuaToJava.coerce(luaKey.get(4), byte[].class);
+                return valueOfOrFalse(connection.hset(key.getBytes(), field.getBytes(), (byte[]) value));
+            }
+            case "hincrby": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey.get(2), String.class);
+                String field = (String) CoerceLuaToJava.coerce(luaKey.get(3), String.class);
+                Long value = (Long) CoerceLuaToJava.coerce(luaKey.get(4), Long.class);
+                return valueOfOrFalse(connection.hincrBy(key.getBytes(), field.getBytes(), value.longValue()));
+            }
+            case "lrem": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey.get(2), String.class);
+                Long value = (Long) CoerceLuaToJava.coerce(luaKey.get(3), Long.class);
+                String field = (String) CoerceLuaToJava.coerce(luaKey.get(4), String.class);
+                return valueOfOrFalse(connection.lrem(key.getBytes(), value.longValue(), field.getBytes()));
+            }
             }
             throw new UnsupportedOperationException(opcode);
         }
 
         @Override
-        public LuaValue call(LuaValue luaOpcode, LuaValue luaKey, LuaValue luaArg) {
+        public LuaValue call(LuaValue luaOpcode, LuaValue luaKey, LuaValue luaValue) {
             String opcode = (String) CoerceLuaToJava.coerce(luaOpcode, String.class);
             String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
-            String arg = (String) CoerceLuaToJava.coerce(luaArg, String.class);
+            String value = (String) CoerceLuaToJava.coerce(luaValue, String.class);
             switch (opcode.toLowerCase()) {
-                case "set":
-                    return valueOfOrFalse(connection.set(key, arg));
+            case "set":
+                return valueOfOrFalse(connection.set(key, value));
 
-                case "srem":
-                    return valueOfOrFalse(connection.srem(key, arg));
+            case "srem":
+                return valueOfOrFalse(connection.srem(key, value));
 
-                case "hdel":
-                    return valueOfOrFalse(connection.hdel(key, arg));
+            case "hdel":
+                return valueOfOrFalse(connection.hdel(key, value));
 
-                case "hget":
-                    return valueOfOrFalse(connection.hget(key, arg));
+            case "hget":
+                return valueOfOrFalse(connection.hget(key, value));
 
-                case "sadd":
-                    return valueOfOrFalse(connection.sadd(key, arg));
+            case "sadd":
+                return valueOfOrFalse(connection.sadd(key, value));
 
-                case "lpush":
-                    return valueOfOrFalse(connection.lpush(key, arg));
+            case "lpush":
+                return valueOfOrFalse(connection.lpush(key, value));
             }
             throw new UnsupportedOperationException(opcode);
         }
 
+        @Override
+        public LuaValue call(LuaValue luaOpcode, LuaValue luaKey, LuaValue luaArg1, LuaValue luaArg2) {
+            String opcode = (String) CoerceLuaToJava.coerce(luaOpcode, String.class);
+            String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
+            switch (opcode.toLowerCase()) {
+            case "hincrby": {
+                String field = (String) CoerceLuaToJava.coerce(luaArg1, String.class);
+                Long value = (Long) CoerceLuaToJava.coerce(luaArg2, Long.class);
+                return valueOfOrFalse(connection.hincrBy(key, field, value.longValue()));
+            }
+            case "lrem": {
+                Long value = (Long) CoerceLuaToJava.coerce(luaArg1, Long.class);
+                String field = (String) CoerceLuaToJava.coerce(luaArg2, String.class);
+                return valueOfOrFalse(connection.lrem(key, value.longValue(), field));
+            }
+            }
+            throw new UnsupportedOperationException(opcode);
+        }
     }
 
 }

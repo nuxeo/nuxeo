@@ -168,14 +168,14 @@ public interface ElasticSearchAdmin {
      *
      * @since 7.1
      */
-    int getPendingWorkerCount();
+    long getPendingWorkerCount();
 
     /**
      * Returns the number of indexing worker that are currently running.
      *
      * @since 7.1
      */
-    int getRunningWorkerCount();
+    long getRunningWorkerCount();
 
     /**
      * Returns the total number of command processed by Elasticsearch for this Nuxeo instance. Useful for test

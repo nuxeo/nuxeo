@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.api.Work;
-import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.extension.AutomationRenderer;
@@ -75,44 +74,20 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
 
         if (!ts.exists(key)) {
             Work work = getRenditionWork(key, doc, def);
-            WorkManager wm = Framework.getService(WorkManager.class);
             ts.putParameter(key, WORKERID_KEY, work.getId());
-            wm.schedule(work);
+            List<Blob> blobs = new ArrayList<Blob>();
+            StringBlob emptyBlob = new StringBlob("");
+            emptyBlob.setFilename("inprogress");
+            emptyBlob.setMimeType("text/plain;" + LazyRendition.EMPTY_MARKER);
+            blobs.add(emptyBlob);
+            ts.putBlobs(key, blobs);
+            Framework.getService(WorkManager.class).schedule(work);
         } else {
-            if (ts.isCompleted(key)) {
-                List<Blob> blobs = ts.getBlobs(key);
-                ts.release(key);
-                return blobs;
-            } else {
-                WorkManager wm = Framework.getService(WorkManager.class);
-                String workId = (String) ts.getParameter(key, WORKERID_KEY);
-                Work work = wm.find(workId, State.COMPLETED);
-                if (work == null) {
-                    work = wm.find(workId, State.FAILED);
-                }
-                if (work != null) {
-                    State state = work.getWorkInstanceState();
-                    if (state == State.FAILED) {
-                        // return an empty Blob
-                        List<Blob> blobs = new ArrayList<Blob>();
-                        StringBlob emptyBlob = new StringBlob("");
-                        emptyBlob.setFilename("error");
-                        emptyBlob.setMimeType("text/plain;" + LazyRendition.ERROR_MARKER);
-                        blobs.add(emptyBlob);
-                        ts.release(key);
-                        return blobs;
-                    }
-                }
-            }
+            ts.release(key);
         }
-        // return an empty Blob
-        List<Blob> blobs = new ArrayList<Blob>();
-        StringBlob emptyBlob = new StringBlob("");
-        emptyBlob.setFilename("inprogress");
-        emptyBlob.setMimeType("text/plain;" + LazyRendition.EMPTY_MARKER);
-        blobs.add(emptyBlob);
-        return blobs;
-    }
+
+        return ts.getBlobs(key);
+     }
 
     @Override
     public String getVariant(DocumentModel doc, RenditionDefinition definition) {

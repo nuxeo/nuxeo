@@ -38,17 +38,9 @@ public class WorkQueueDescriptorRegistry extends ContributionFragmentRegistry<Wo
 
     private static final Log log = LogFactory.getLog(WorkQueueDescriptorRegistry.class);
 
-    protected final WorkManagerImpl works;
-
     protected Map<String, WorkQueueDescriptor> registry = new HashMap<String, WorkQueueDescriptor>();
 
-    protected volatile boolean refresh;
-
     protected Map<String, String> categoryToQueueId = new HashMap<String, String>();
-
-    public WorkQueueDescriptorRegistry(WorkManagerImpl works) {
-        this.works = works;
-    }
 
     /**
      * Gets the descriptor for a given queue id.
@@ -56,7 +48,7 @@ public class WorkQueueDescriptorRegistry extends ContributionFragmentRegistry<Wo
      * @param queueId the queue id
      * @return the queue descriptor, or {@code null}
      */
-    public synchronized WorkQueueDescriptor get(String queueId) {
+    public WorkQueueDescriptor get(String queueId) {
         return registry.get(queueId);
     }
 
@@ -65,7 +57,7 @@ public class WorkQueueDescriptorRegistry extends ContributionFragmentRegistry<Wo
      *
      * @return the list of queue ids
      */
-    public synchronized List<String> getQueueIds() {
+    public List<String> getQueueIds() {
         return new ArrayList<String>(registry.keySet());
     }
 
@@ -77,22 +69,14 @@ public class WorkQueueDescriptorRegistry extends ContributionFragmentRegistry<Wo
     @Override
     public void contributionUpdated(String id, WorkQueueDescriptor contrib, WorkQueueDescriptor newOrigContrib) {
         registry.put(id, contrib);
-        refresh = true;
-        if (works.started) {
-            works.activateQueue(contrib);
-        }
     }
 
     @Override
     public void contributionRemoved(String id, WorkQueueDescriptor origContrib) {
-        if (works.started) {
-            works.deactivateQueue(origContrib);
-        }
         registry.remove(id);
-        refresh = true;
     }
 
-    protected synchronized void refresh() {
+    protected void index() {
         for (Entry<String, WorkQueueDescriptor> es : registry.entrySet()) {
             String queueId = es.getKey();
             for (String category : es.getValue().categories) {
@@ -108,9 +92,6 @@ public class WorkQueueDescriptorRegistry extends ContributionFragmentRegistry<Wo
     }
 
     public String getQueueId(String category) {
-        if (refresh) {
-            refresh();
-        }
         return categoryToQueueId.get(category);
     }
 

@@ -71,6 +71,14 @@ public abstract class TransientStoreWork extends AbstractWork {
         return new SimpleBlobHolderWithProperties(blobs, params);
     }
 
+    /**
+     * Returns true if a {@link BlobHolder} is stored for the given {@code key}.
+     * @since 8.3
+     */
+    public static boolean containsBlobHolder(String key) {
+        return getStore().exists(key);
+    }
+
     public static void removeBlobHolder(String key) {
         getStore().remove(key);
     }
@@ -98,8 +106,7 @@ public abstract class TransientStoreWork extends AbstractWork {
         putBlobHolder(entryKey, bh);
     }
 
-    @Override
-    public String getWorkInstanceResult() {
+    public String getEntryKey() {
         return entryKey;
     }
 }

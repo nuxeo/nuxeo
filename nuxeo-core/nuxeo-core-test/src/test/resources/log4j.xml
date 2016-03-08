@@ -21,6 +21,17 @@
       <param name="ConversionPattern" value="%t %d{HH:mm:ss,SSS} %-5p [%C{1}] %m %X%n" />
     </layout>
   </appender>
+  
+    
+  <category name="org.nuxeo.ecm.core.work.WorkQueuing">
+    <priority value="TRACE"/>
+    <appender-ref ref="FILE"/>
+  </category>
+  
+  <category name="org.nuxeo.ecm.core.work.api.WorkSchedulePath">
+    <priority value="TRACE"/>
+    <appender-ref ref="FILE"/>
+  </category>
 
   <logger name="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository">
     <level value="WARN" />
@@ -35,7 +46,6 @@
   <root>
     <priority value="WARN" />
     <appender-ref ref="CONSOLE" />
-    <appender-ref ref="FILE" />
   </root>
 
 </log4j:configuration>

@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.work;
 
-import java.util.concurrent.CountDownLatch;
-
 /**
  * Simple work that just sleeps, mostly used for tests.
  */
@@ -30,21 +28,6 @@ public class SleepWork extends AbstractWork {
     protected long durationMillis;
 
     protected String category;
-
-    /** used for debug. */
-    protected static transient boolean debug;
-
-    /** used for debug. */
-    protected static CountDownLatch readyLatch = new CountDownLatch(1);
-
-    /** used for debug. */
-    protected static CountDownLatch doneLatch = new CountDownLatch(1);
-
-    /** used for debug. */
-    protected static CountDownLatch startLatch = new CountDownLatch(1);
-
-    /** used for debug. */
-    protected static CountDownLatch finishLatch = new CountDownLatch(1);
 
     /**
      * Creates a work instance that does nothing but sleep.
@@ -83,7 +66,6 @@ public class SleepWork extends AbstractWork {
     private void init(long durationMillis, String category, boolean debug) {
         this.durationMillis = durationMillis;
         this.category = category;
-        SleepWork.debug = debug;
         setProgress(Progress.PROGRESS_0_PC);
     }
 
@@ -109,13 +91,6 @@ public class SleepWork extends AbstractWork {
     }
 
     protected void doWork() throws InterruptedException {
-        if (debug) {
-            setStatus("Starting sleep work");
-            readyLatch.countDown();
-            startLatch.await();
-            setStatus("Running sleep work");
-        }
-
         for (;;) {
             long elapsed = System.currentTimeMillis() - getStartTime();
             if (elapsed > durationMillis) {
@@ -126,44 +101,18 @@ public class SleepWork extends AbstractWork {
             if (isSuspending()) {
                 durationMillis -= elapsed; // save state
                 suspended();
-                if (debug) {
-                    doneLatch.countDown();
-                    finishLatch.await();
-                }
                 return;
             }
 
             Thread.sleep(10);
         }
 
-        if (debug) {
-            setStatus("Completed sleep work");
-            setProgress(Progress.PROGRESS_100_PC);
-            doneLatch.countDown();
-            finishLatch.await();
-        }
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + (getId().length() > 10 ? "" : (getId() + ", ")) + durationMillis
                 + "ms, " + getProgress() + ")";
-    }
-
-    public void debugWaitReady() throws InterruptedException {
-        readyLatch.await();
-    }
-
-    public void debugWaitDone() throws InterruptedException {
-        doneLatch.await();
-    }
-
-    public void debugStart() {
-        startLatch.countDown();
-    }
-
-    public void debugFinish() {
-        finishLatch.countDown();
     }
 
 }

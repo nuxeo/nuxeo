@@ -15,22 +15,20 @@
  */
 package org.nuxeo.ecm.core.redis.embedded;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import javax.script.ScriptException;
 
-import redis.clients.jedis.exceptions.JedisException;
-
 import com.lordofthejars.nosqlunit.redis.embedded.EmbeddedJedis;
+
+import redis.clients.jedis.exceptions.JedisException;
 
 public class RedisEmbeddedConnection extends EmbeddedJedis {
 
     protected final RedisEmbeddedLuaEngine lua;
 
-    RedisEmbeddedConnection(RedisEmbeddedFactory reddisEmbeddedFactory) {
+    RedisEmbeddedConnection() {
         lua = new RedisEmbeddedLuaEngine(this);
     }
 

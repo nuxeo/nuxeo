@@ -27,10 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -274,13 +272,13 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
-    public int getPendingWorkerCount() {
+    public long getPendingWorkerCount() {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         return  wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.SCHEDULED);
     }
 
     @Override
-    public int getRunningWorkerCount() {
+    public long getRunningWorkerCount() {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         return runIndexingWorkerCount.get() + wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.RUNNING);
     }

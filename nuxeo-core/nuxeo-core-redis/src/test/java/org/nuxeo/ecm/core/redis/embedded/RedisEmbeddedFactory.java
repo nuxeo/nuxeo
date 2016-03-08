@@ -18,47 +18,108 @@ package org.nuxeo.ecm.core.redis.embedded;
 import static org.joor.Reflect.on;
 
 import java.lang.reflect.Method;
-
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
+import java.util.Arrays;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
-import redis.clients.jedis.Jedis;
-
 import com.lordofthejars.nosqlunit.redis.embedded.NoArgsJedis;
+
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+import redis.clients.jedis.Jedis;
 
 public class RedisEmbeddedFactory implements PooledObjectFactory<Jedis> {
 
-    protected final RedisEmbeddedConnection connection = new RedisEmbeddedConnection(this);
+    final RedisEmbeddedConnection connection = wrapConnection(new RedisEmbeddedConnection());
 
-    protected RedisEmbeddedGuessConnectionError error = new RedisEmbeddedGuessConnectionError.NoError();
-
-    public Jedis createProxy() {
-        return Jedis.class.cast(Enhancer.create(NoArgsJedis.class, new TryFailoverMethod()));
+    RedisEmbeddedConnection wrapConnection(RedisEmbeddedConnection connection) {
+        connection = synchronizedConnection(connection);
+        connection = logConnection(connection);
+        return connection;
     }
 
-    public class TryFailoverMethod implements MethodInterceptor {
-
-        @Override
-        public Object intercept(Object object, Method method, Object[] arguments, MethodProxy proxy) throws Throwable {
-            if (!method.getDeclaringClass().equals(Object.class)) {
-                error.guessError();
-            }
-            return on(connection).call(method.getName(), arguments).get();
+    RedisEmbeddedConnection logConnection(RedisEmbeddedConnection connection) {
+        Log log = LogFactory.getLog(RedisEmbeddedConnection.class);
+        if (!log.isTraceEnabled()) {
+            return connection;
         }
 
+        class Logger implements MethodInterceptor {
+
+
+            @Override
+            public Object intercept(Object object, Method method, Object[] arguments, MethodProxy proxy) throws Throwable {
+
+                try {
+                    Object result = on(connection).call(method.getName(), arguments).get();
+                    log.trace(String.format("%s(%s) <- %s",
+                            method.getName(),
+                            Arrays.deepToString(arguments),
+                            result));
+                    return result;
+                } catch (Throwable error) {
+                    log.trace(String.format("%s(%s) <- %s",
+                            method.getName(),
+                            Arrays.deepToString(arguments),
+                            error));
+                    throw error;
+                }
+            }
+
+            RedisEmbeddedConnection createProxy() {
+                return RedisEmbeddedConnection.class
+                        .cast(Enhancer.create(RedisEmbeddedConnection.class, this));
+            }
+
+        }
+
+        return new Logger().createProxy();
     }
+
+    RedisEmbeddedConnection synchronizedConnection(RedisEmbeddedConnection connection) {
+        class Synchronizer implements MethodInterceptor {
+
+            @Override
+            public Object intercept(Object object, Method method, Object[] arguments, MethodProxy proxy) throws Throwable {
+                synchronized (connection) {
+                    return on(connection).call(method.getName(), arguments).get();
+                }
+            }
+
+            RedisEmbeddedConnection createProxy() {
+                return RedisEmbeddedConnection.class
+                        .cast(Enhancer.create(RedisEmbeddedConnection.class, this));
+            }
+        }
+        return new Synchronizer().createProxy();
+    }
+
+    RedisEmbeddedGuessConnectionError error = new RedisEmbeddedGuessConnectionError.NoError();
 
     protected final RedisEmbeddedLuaEngine lua = new RedisEmbeddedLuaEngine(connection);
 
     @Override
     public PooledObject<Jedis> makeObject() throws Exception {
-        Jedis jedis = createProxy();
+        class TryFailoverMethod implements MethodInterceptor {
+
+            @Override
+            public Object intercept(Object object, Method method, Object[] arguments, MethodProxy proxy)
+                    throws Throwable {
+                if (!method.getDeclaringClass().equals(Object.class)) {
+                    error.guessError();
+                }
+                return on(connection).call(method.getName(), arguments).get();
+            }
+
+            Jedis createProxy() {
+                return Jedis.class.cast(Enhancer.create(NoArgsJedis.class, this));
+            }
+        }
+        Jedis jedis = new TryFailoverMethod().createProxy();
         PooledObject<Jedis> pooled = new DefaultPooledObject<>(jedis);
         LogFactory.getLog(RedisEmbeddedFactory.class).trace("created " + pooled);
         return pooled;
@@ -75,11 +136,13 @@ public class RedisEmbeddedFactory implements PooledObjectFactory<Jedis> {
     }
 
     @Override
-    public void activateObject(PooledObject<Jedis> p) throws Exception {;
+    public void activateObject(PooledObject<Jedis> p) throws Exception {
+        ;
     }
 
     @Override
-    public void passivateObject(PooledObject<Jedis> p) throws Exception {;
+    public void passivateObject(PooledObject<Jedis> p) throws Exception {
+        ;
     }
 
 }

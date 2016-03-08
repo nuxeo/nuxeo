@@ -68,7 +68,9 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -109,6 +111,9 @@ public class TestRenditionService {
 
     @Inject
     protected EventService eventService;
+
+    @Inject
+    protected WorkManager works;
 
     @Inject
     protected RenditionService renditionService;
@@ -311,22 +316,24 @@ public class TestRenditionService {
         nextTransaction();
 
         String renditionName = "lazyDelayedErrorAutomationRendition";
-        Rendition rendition = renditionService.getRendition(file, renditionName);
-        assertNotNull(rendition);
-        Blob blob = rendition.getBlob();
-        assertEquals(0, blob.getLength());
-        String mimeType = blob.getMimeType();
-        assertTrue(mimeType, mimeType.contains(LazyRendition.EMPTY_MARKER));
+        {
+            Rendition rendition = renditionService.getRendition(file, renditionName);
+            assertNotNull(rendition);
+            Blob blob = rendition.getBlob();
+            assertEquals(0, blob.getLength());
+            String mimeType = blob.getMimeType();
+            assertTrue(mimeType, mimeType.contains(LazyRendition.EMPTY_MARKER));
+            nextTransaction();
+        }
 
-        Thread.sleep(2000);
-        eventService.waitForAsyncCompletion(5000);
-
-        rendition = renditionService.getRendition(file, renditionName);
-        blob = rendition.getBlob();
-        mimeType = blob.getMimeType();
-        assertEquals(0, blob.getLength());
-        assertFalse(mimeType, mimeType.contains(LazyRendition.EMPTY_MARKER));
-        assertTrue(mimeType, mimeType.contains(LazyRendition.ERROR_MARKER));
+        {
+            Rendition rendition = renditionService.getRendition(file, renditionName);
+            Blob blob = rendition.getBlob();
+            String mimeType = blob.getMimeType();
+            assertEquals(0, blob.getLength());
+            assertFalse(mimeType, mimeType.contains(LazyRendition.EMPTY_MARKER));
+            assertTrue(mimeType, mimeType.contains(LazyRendition.ERROR_MARKER));
+        }
     }
 
     @Test
@@ -830,11 +837,11 @@ public class TestRenditionService {
 
     }
 
-    protected static void nextTransaction() {
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
+    @Inject
+    TransactionalFeature txFeature;
+
+    protected void nextTransaction() {
+        txFeature.nextTransaction();
     }
 
     @Test

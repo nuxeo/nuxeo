@@ -428,13 +428,13 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     @Override
-    public int getPendingWorkerCount() {
+    public long getPendingWorkerCount() {
         // impl of scheduling is left to the ESService
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public int getRunningWorkerCount() {
+    public long getRunningWorkerCount() {
         // impl of scheduling is left to the ESService
         throw new UnsupportedOperationException("Not implemented");
     }

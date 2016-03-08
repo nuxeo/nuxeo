@@ -1,6 +1,3 @@
---
--- Schedule a work
---
 local dataKey = KEYS[1]
 local stateKey = KEYS[2]
 local countKey = KEYS[3]
@@ -11,11 +8,9 @@ local completedKey = KEYS[7]
 local canceledKey = KEYS[8]
 
 
-local id = ARGV[1]
-local state = ARGV[2]
-local data = ARGV[3]
+local workId = ARGV[1]
 
-if redis.call('SADD', scheduledKey, id) == 0 then
+if redis.call('LREM', queuedKey, 0, workId) == 0 then
   return { 
     redis.call('HINCRBY', countKey, scheduledKey, 0), 
     redis.call('HINCRBY', countKey, runningKey, 0), 
@@ -24,13 +19,13 @@ if redis.call('SADD', scheduledKey, id) == 0 then
   }
 end
 
-redis.call('HSET', dataKey, id, data)
-redis.call('HSET', stateKey, id, state)
-redis.call('LPUSH', queuedKey, id)
+redis.call('SREM', scheduledKey, workId)
+redis.call('HDEL', stateKey, workId)
+redis.call('HDEL', dataKey, workId)
 
 return { 
-    redis.call('HINCRBY', countKey, scheduledKey, 1), 
+    redis.call('HINCRBY', countKey, scheduledKey, -1), 
     redis.call('HINCRBY', countKey, runningKey, 0), 
-    redis.call('HINCRBY', countKey, completedKey, 0),
-    redis.call('HINCRBY', countKey, canceledKey, 0)
+    redis.call('HINCRBY', countKey, completedKey, 0), 
+    redis.call('HINCRBY', countKey, canceledKey, 1) 
 }

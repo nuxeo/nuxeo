@@ -25,6 +25,9 @@ import org.nuxeo.ecm.core.work.AbstractWork;
  * @since 7.4
  */
 public class DummyWork extends AbstractWork {
+
+    private static final long serialVersionUID = 1L;
+
     @Override
     public void work() {
 

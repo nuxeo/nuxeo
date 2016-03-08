@@ -49,10 +49,14 @@ public class WorkHolder implements Runnable {
 
     @Override
     public void run() {
+        final Thread currentThread = Thread.currentThread();
+        String name = currentThread.getName();
+        currentThread.setName(name + ":" + work.getId());
         ThreadEvent.onEnter(this, false).send();
         try {
             work.run();
         } finally {
+            currentThread.setName(name);
             ThreadEvent.onLeave(this).send();
         }
     }

@@ -30,9 +30,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.work.SleepWork;
-import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -57,32 +57,21 @@ public class WorkManagerAdminBean implements Serializable {
         List<String> workQueueIds = workManager.getWorkQueueIds();
         Collections.sort(workQueueIds);
         for (String queueId : workQueueIds) {
-            List<Work> running = workManager.listWork(queueId, State.RUNNING);
-            int scheduled = workManager.getQueueSize(queueId, State.SCHEDULED);
-            int completed = workManager.getQueueSize(queueId, State.COMPLETED);
+            WorkQueueMetrics metrics = workManager.getMetrics(queueId);
+
             Map<String, Object> map = new HashMap<String, Object>();
-            info.add(map);
             map.put("id", queueId);
-            map.put("scheduled", scheduled);
-            map.put("running", running.size());
-            map.put("completed", completed);
-            map.put("runningWorks", running);
+            map.put("scheduled", metrics.scheduled);
+            map.put("completed", metrics.completed);
+            map.put("running", metrics.running);
+            map.put("runningWorks", workManager.listWork(queueId, State.RUNNING));
+            info.add(map);
         }
         return info;
     }
 
     public long getCurrentTimeMillis() {
         return System.currentTimeMillis();
-    }
-
-    public String clearQueueCompletedWork() {
-        getWorkManager().clearCompletedWork(queueId);
-        return null;
-    }
-
-    public String clearAllCompletedWork() {
-        getWorkManager().clearCompletedWork(0);
-        return null;
     }
 
     public String startTestWork() {

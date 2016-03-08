@@ -34,12 +34,20 @@ public class RedisPoolExecutor implements RedisExecutor {
     private Thread monitorThread;
     protected Pool<Jedis> pool;
 
+    protected final ThreadLocal<Jedis> holder = new ThreadLocal<>();
+
     public RedisPoolExecutor(Pool<Jedis> pool) {
         this.pool = pool;
     }
 
     @Override
     public <T> T execute(RedisCallable<T> callable) throws JedisException {
+        { // re-entrance
+            Jedis jedis = holder.get();
+            if (jedis != null) {
+                return callable.call(jedis);
+            }
+        }
         if (monitorThread != null) {
             log.debug(String.format("Redis pool state before getting a conn: active: %d, idle: %s",
                     pool.getNumActive(), pool.getNumIdle()));
@@ -48,6 +56,7 @@ public class RedisPoolExecutor implements RedisExecutor {
         if (monitorThread != null) {
             log.debug("Using conn: " + jedis.getClient().getSocket().getLocalPort());
         }
+        holder.set(jedis);
         boolean brokenResource = false;
         try {
             return callable.call(jedis);
@@ -55,6 +64,7 @@ public class RedisPoolExecutor implements RedisExecutor {
             brokenResource = true;
             throw cause;
         } finally {
+            holder.remove();
             // a disconnected resournce must be marked as broken
             // this happens when the monitoring is stopped
             if (brokenResource || !jedis.isConnected()) {
@@ -86,6 +96,7 @@ public class RedisPoolExecutor implements RedisExecutor {
                             super.proceed(client);
                         }
 
+                        @Override
                         public void onCommand(String command) {
                             if (Thread.currentThread().isInterrupted()) {
                                 // The only way to get out of this thread

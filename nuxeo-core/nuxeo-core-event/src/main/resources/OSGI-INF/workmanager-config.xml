@@ -26,21 +26,4 @@
     </queue>
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService"
-    point="schedule">
-    <schedule id="workManagerCleanup">
-      <event>workManagerCleanup</event>
-      <!-- cleanup every 5 minutes -->
-      <cronExpression>0 0/5 * * * ?</cronExpression>
-    </schedule>
-  </extension>
-
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
-    point="listener">
-    <listener name="workManagerCleanup" async="false"
-      class="org.nuxeo.ecm.core.work.WorkManagerCleanupListener">
-      <event>workManagerCleanup</event>
-    </listener>
-  </extension>
-
 </component>

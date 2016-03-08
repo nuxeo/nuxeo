@@ -175,7 +175,7 @@ public class CoreFeature extends SimpleFeature {
     public void beforeRun(FeaturesRunner runner) throws InterruptedException {
         // wait for async tasks that may have been triggered by
         // RuntimeFeature (typically repo initialization)
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        txFeature.nextTransaction(10, TimeUnit.SECONDS);
         if (granularity != Granularity.METHOD) {
             // we need a transaction to properly initialize the session
             // but it hasn't been started yet by TransactionalFeature
@@ -201,8 +201,12 @@ public class CoreFeature extends SimpleFeature {
         }
         AssertionError leakedErrors = new AssertionError(String.format("leaked %d sessions", leakedInfos.size()));
         for (RegistrationInfo info:leakedInfos) {
-            info.session.close();
-            leakedErrors.addSuppressed(info);
+            try {
+                info.session.close();
+                leakedErrors.addSuppressed(info);
+            } catch (RuntimeException cause) {
+                leakedErrors.addSuppressed(cause);
+            }
         }
         throw leakedErrors;
     }

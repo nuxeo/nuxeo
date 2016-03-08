@@ -13,30 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.nuxeo.ecm.core.test;
-
-import java.util.concurrent.BlockingQueue;
+package org.nuxeo.ecm.core.work;
 
 import org.apache.commons.lang3.SerializationException;
 import org.apache.commons.lang3.SerializationUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.work.MemoryBlockingQueue;
-import org.nuxeo.ecm.core.work.MemoryWorkQueuing;
-import org.nuxeo.ecm.core.work.WorkHolder;
-import org.nuxeo.ecm.core.work.WorkManagerImpl;
-import org.nuxeo.ecm.core.work.WorkQueueDescriptorRegistry;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 
 public class TestWorkQueuing extends MemoryWorkQueuing {
 
-    public TestWorkQueuing(WorkManagerImpl mgr, WorkQueueDescriptorRegistry workQueueDescriptors) {
-        super(mgr, workQueueDescriptors);
+    public TestWorkQueuing(Listener listener) {
+        super(listener);
     }
 
     @Override
-    protected BlockingQueue<Runnable> newBlockingQueue(WorkQueueDescriptor workQueueDescriptor) {
-        return new MemoryBlockingQueue(workQueueDescriptor.getCapacity()) {
+    public MemoryBlockingQueue init(WorkQueueDescriptor config) {
+        MemoryBlockingQueue queue =
+         new MemoryBlockingQueue(config.id, this, config.getCapacity()) {
             @Override
             public void putElement(Runnable r) throws InterruptedException {
                 super.putElement(clone(r));
@@ -47,9 +41,11 @@ public class TestWorkQueuing extends MemoryWorkQueuing {
                 try {
                     return new WorkHolder(SerializationUtils.clone(original));
                 } catch (SerializationException cause) {
-                    throw new NuxeoException("Cannot serialize work of type " + original.getClass().getName());
+                    throw new NuxeoException("Cannot serialize work of type " + original.getClass().getName(), cause);
                 }
             }
         };
+        super.allQueued.put(queue.queueId, queue);
+        return queue;
     }
 }

@@ -21,19 +21,14 @@ package org.nuxeo.ecm.core.work;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
+import java.util.Optional;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
+import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 
 /**
  * Implementation of a {@link WorkQueuing} using in-memory queuing.
@@ -42,388 +37,180 @@ import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
  */
 public class MemoryWorkQueuing implements WorkQueuing {
 
-    private static final Log log = LogFactory.getLog(MemoryWorkQueuing.class);
+    protected final Map<String, MemoryBlockingQueue> allQueued = new HashMap<>();
 
-    protected final WorkManagerImpl mgr;
+    protected Listener listener;
 
-    // @GuardedBy("this")
-    protected final WorkQueueDescriptorRegistry workQueueDescriptors;
-
-    // @GuardedBy("this")
-    protected final Map<String, BlockingQueue<Runnable>> allQueued = new HashMap<>();
-
-    // @GuardedBy("this")
-    // queueId -> workId -> work
-    protected final Map<String, Map<String, Work>> allScheduled = new HashMap<>();
-
-    // @GuardedBy("this")
-    // queueId -> workId -> work
-    protected final Map<String, Map<String, Work>> allRunning = new HashMap<>();
-
-    // @GuardedBy("this")
-    // queueId -> workId -> work
-    protected final Map<String, Map<String, Work>> allCompleted = new HashMap<>();
-
-    public MemoryWorkQueuing(WorkManagerImpl mgr, WorkQueueDescriptorRegistry workQueueDescriptors) {
-        this.mgr = mgr;
-        this.workQueueDescriptors = workQueueDescriptors;
+    public MemoryWorkQueuing(Listener listener) {
+        this.listener = listener;
     }
 
     @Override
-    public synchronized void init() {
-        allQueued.clear();
-        allScheduled.clear();
-        allRunning.clear();
-        allCompleted.clear();
-    }
+    public void init() {
 
-    // called synchronized
-    protected WorkQueueDescriptor getDescriptor(String queueId) {
-        WorkQueueDescriptor descriptor = workQueueDescriptors.get(queueId);
-        if (descriptor == null) {
-            throw new IllegalArgumentException("No such work queue: " + queueId);
-        }
-        return descriptor;
     }
 
     @Override
-    public BlockingQueue<Runnable> initWorkQueue(String queueId) {
-        if (allQueued.containsKey(queueId)) {
-            throw new IllegalStateException(queueId + " was already configured");
+    public MemoryBlockingQueue init(WorkQueueDescriptor config) {
+        int capacity = config.getCapacity();
+        if (capacity <= 0) {
+            capacity = -1; // unbounded
         }
-        final BlockingQueue<Runnable> queue = newBlockingQueue(getDescriptor(queueId));
-        allQueued.put(queueId, queue);
+        MemoryBlockingQueue queue = new MemoryBlockingQueue(config.id, this, capacity);
+        allQueued.put(queue.queueId, queue);
         return queue;
     }
 
-    public BlockingQueue<Runnable> getWorkQueue(String queueId) {
-        if (!allQueued.containsKey(queueId)) {
-            throw new IllegalStateException(queueId + " was not configured yet");
-        }
+    @Override
+    public MemoryBlockingQueue getQueue(String queueId) {
         return allQueued.get(queueId);
     }
 
     @Override
-    public synchronized boolean workSchedule(String queueId, Work work) {
-        boolean ret = getWorkQueue(queueId).offer(new WorkHolder(work));
-        if (ret) {
-            getScheduled(queueId).put(work.getId(), work);
-        }
-        return ret;
-    }
-
-    // called synchronized
-    protected Map<String, Work> getScheduled(String queueId) {
-        Map<String, Work> scheduled = allScheduled.get(queueId);
-        if (scheduled == null) {
-            allScheduled.put(queueId, scheduled = newScheduledMap());
-        }
-        return scheduled;
-    }
-
-    // called synchronized
-    protected Map<String, Work> getRunning(String queueId) {
-        Map<String, Work> running = allRunning.get(queueId);
-        if (running == null) {
-            allRunning.put(queueId, running = newRunningMap());
-        }
-        return running;
-    }
-
-    // called synchronized
-    protected Map<String, Work> getCompleted(String queueId) {
-        Map<String, Work> completed = allCompleted.get(queueId);
-        if (completed == null) {
-            allCompleted.put(queueId, completed = newCompletedMap());
-        }
-        return completed;
-    }
-
-    protected BlockingQueue<Runnable> newBlockingQueue(WorkQueueDescriptor workQueueDescriptor) {
-        int capacity = workQueueDescriptor.getCapacity();
-        if (capacity <= 0) {
-            capacity = -1; // unbounded
-        }
-        return new MemoryBlockingQueue(capacity);
-    }
-
-    protected Map<String, Work> newScheduledMap() {
-        return new HashMap<>();
-    }
-
-    protected Map<String, Work> newRunningMap() {
-        return new HashMap<>();
-    }
-
-    protected Map<String, Work> newCompletedMap() {
-        return new LinkedHashMap<>();
+    public void workSchedule(String queueId, Work work) {
+        listener.queueChanged(work, getQueue(queueId).workSchedule(work));
     }
 
     @Override
-    public synchronized void workRunning(String queueId, Work work) {
-        // at this time the work is already taken from the queue by the thread pool
-        Work ret = getRunning(queueId).put(work.getId(), work);
-        if (ret != null) {
-            log.warn("Running a work with the same ID " + work.getId() + " multiple time, already running " + ret +
-                    ", new work: " + work);
-        }
-        getScheduled(queueId).remove(work.getId());
-        if (log.isTraceEnabled()) {
-            log.trace("Work running " + work.getId() + " on " + queueId + ", total running: " +
-                    count(queueId, State.RUNNING));
-        }
+    public void workCanceled(String queueId, Work work) {
+        listener.queueChanged(work, getQueue(queueId).workCanceled(work));
     }
 
     @Override
-    public synchronized void workCompleted(String queueId, Work work) {
-        if (log.isTraceEnabled()) {
-            log.trace("Work completed " + work.getId());
-        }
-        getCompleted(queueId).put(work.getId(), work);
-        getRunning(queueId).remove(work.getId());
+    public void workRunning(String queueId, Work work) {
+        listener.queueChanged(work, getQueue(queueId).workRunning(work));
+    }
+
+    @Override
+    public void workCompleted(String queueId, Work work) {
+        listener.queueChanged(work, getQueue(queueId).workCompleted(work));
+    }
+
+    @Override
+    public void workReschedule(String queueId, Work work) {
+        listener.queueChanged(work, getQueue(queueId).workRescheduleRunning(work));
+    }
+
+    Optional<Work> lookup(String workId) {
+        return allQueued.values()
+                .stream()
+                .map(queue -> queue.lookup(workId))
+                .filter(work -> work != null)
+                .findAny();
     }
 
     @Override
     public Work find(String workId, State state) {
-        if (state == null) {
-            Work w = findScheduled(workId);
-            if (w == null) {
-                w = findRunning(workId);
-            }
-            return w;
-        }
-        switch (state) {
-        case SCHEDULED:
-            return findScheduled(workId);
-        case RUNNING:
-            return findRunning(workId);
-        case COMPLETED:
-            return findCompleted(workId);
-        default:
-            return null;
-        }
+        return lookup(workId)
+                .filter(work -> work.getWorkInstanceState() == state)
+                .orElse(null);
     }
 
     @Override
     public boolean isWorkInState(String workId, State state) {
-        if (state == null) {
-            return isScheduled(workId) || isRunning(workId);
-        }
-        switch (state) {
-        case SCHEDULED:
-            return isScheduled(workId);
-        case RUNNING:
-            return isRunning(workId);
-        case COMPLETED:
-            return isCompleted(workId);
-        default:
+        Optional<Work> option = lookup(workId);
+        if (!option.isPresent()) {
             return false;
         }
+        if (state == null) {
+            return true;
+        }
+        return option.get()
+                .getWorkInstanceState()
+                .equals(state);
     }
 
     @Override
     public State getWorkState(String workId) {
-        // TODO this is linear, but isScheduled is buggy
-        if (findScheduled(workId) != null) {
-            return State.SCHEDULED;
-        }
-        if (isRunning(workId)) {
-            return State.RUNNING;
-        }
-        if (isCompleted(workId)) {
-            return State.COMPLETED;
-        }
-        return null;
+        return lookup(workId).map(Work::getWorkInstanceState)
+                .orElse(null);
     }
 
     @Override
-    public synchronized List<Work> listWork(String queueId, State state) {
-        switch (state) {
-        case SCHEDULED:
-            return listScheduled(queueId);
-        case RUNNING:
-            return listRunning(queueId);
-        case COMPLETED:
-            return listCompleted(queueId);
-        default:
-            throw new IllegalArgumentException(String.valueOf(state));
-        }
-    }
-
-    @Override
-    public synchronized List<String> listWorkIds(String queueId, State state) {
+    public List<Work> listWork(String queueId, State state) {
+        MemoryBlockingQueue queue = getQueue(queueId);
         if (state == null) {
-            return listNonCompletedIds(queueId);
+            return queue.list();
         }
         switch (state) {
         case SCHEDULED:
-            return listScheduledIds(queueId);
+            return queue.listScheduled();
         case RUNNING:
-            return listRunningIds(queueId);
-        case COMPLETED:
-            return listCompletedIds(queueId);
+            return queue.listRunning();
         default:
             throw new IllegalArgumentException(String.valueOf(state));
         }
     }
 
     @Override
-    public int count(String queueId, State state) {
+    public List<String> listWorkIds(String queueId, State state) {
+        MemoryBlockingQueue queue = getQueue(queueId);
+        if (state == null) {
+            return queue.keys();
+        }
         switch (state) {
         case SCHEDULED:
-            return getScheduledSize(queueId);
+            return queue.scheduledKeys();
         case RUNNING:
-            return getRunningSize(queueId);
-        case COMPLETED:
-            return getCompletedSize(queueId);
+            return queue.runningKeys();
         default:
             throw new IllegalArgumentException(String.valueOf(state));
         }
     }
 
-    protected synchronized int getScheduledSize(String queueId) {
-        Map<String, Work> scheduled = allScheduled.get(queueId);
-        return scheduled == null ? 0 : scheduled.size();
-    }
-
-    protected synchronized int getRunningSize(String queueId) {
-        Map<String, Work> running = allRunning.get(queueId);
-        return running == null ? 0 : running.size();
-    }
-
-    protected synchronized int getCompletedSize(String queueId) {
-        Map<String, Work> completed = allCompleted.get(queueId);
-        return completed == null ? 0 : completed.size();
-    }
-
-    protected synchronized boolean isScheduled(String workId) {
-        return find(workId, allScheduled) != null;
-    }
-
-    protected synchronized boolean isRunning(String workId) {
-        return find(workId, allRunning) != null;
-    }
-
-    protected synchronized boolean isCompleted(String workId) {
-        return find(workId, allCompleted) != null;
-    }
-
-    protected synchronized Work findScheduled(String workId) {
-        return find(workId, allScheduled);
-    }
-
-    protected synchronized Work findRunning(String workId) {
-        return find(workId, allRunning);
-    }
-
-    protected synchronized Work findCompleted(String workId) {
-        return find(workId, allCompleted);
-    }
-
-    private Work find(String workId, Map<String, Map<String, Work>> allWorks) {
-        for (Map<String, Work> works : allWorks.values()) {
-            Work ret = works.get(workId);
-            if (ret != null) {
-                return ret;
-            }
+    @Override
+    public long count(String queueId, State state) {
+        switch (state) {
+        case SCHEDULED:
+            return metrics(queueId).scheduled.longValue();
+        case RUNNING:
+            return metrics(queueId).running.longValue();
+        default:
+            throw new IllegalArgumentException(String.valueOf(state));
         }
-        return null;
-    }
-
-    // called synchronized
-    protected List<Work> listScheduled(String queueId) {
-        return new ArrayList<>(getScheduled(queueId).values());
-    }
-
-    // called synchronized
-    protected List<Work> listRunning(String queueId) {
-        return new ArrayList<>(getRunning(queueId).values());
-    }
-
-    // called synchronized
-    protected List<Work> listCompleted(String queueId) {
-        return new ArrayList<>(getCompleted(queueId).values());
-    }
-
-    // called synchronized
-    protected List<String> listScheduledIds(String queueId) {
-        return new ArrayList<>(getScheduled(queueId).keySet());
-    }
-
-    // called synchronized
-    protected List<String> listRunningIds(String queueId) {
-        return new ArrayList<>(getRunning(queueId).keySet());
-    }
-
-    // called synchronized
-    protected List<String> listNonCompletedIds(String queueId) {
-        List<String> list = listScheduledIds(queueId);
-        list.addAll(listRunningIds(queueId));
-        return list;
-    }
-
-    // called synchronized
-    protected List<String> listCompletedIds(String queueId) {
-        return new ArrayList<>(getCompleted(queueId).keySet());
     }
 
     @Override
-    public Work removeScheduled(String queueId, String workId) {
-        removeFromScheduledSet(queueId, workId);
-        for (Iterator<Runnable> it = getWorkQueue(queueId).iterator(); it.hasNext();) {
-            Runnable r = it.next();
-            Work w = WorkHolder.getWork(r);
-            if (w.getId().equals(workId)) {
-                it.remove();
-                return w;
-            }
+    public synchronized void removeScheduled(String queueId, String workId) {
+        final MemoryBlockingQueue queue = getQueue(queueId);
+        Work work = queue.lookup(workId);
+        if (work == null) {
+            return;
         }
-        return null;
-    }
-
-    protected Work removeFromScheduledSet(String queueId, String workId) {
-        for (Iterator<Work> it = getScheduled(queueId).values().iterator(); it.hasNext();) {
-            Work w = it.next();
-            if (w.getId().equals(workId)) {
-                it.remove();
-                return w;
-            }
-        }
-        return null;
+        work.setWorkInstanceState(State.UNKNOWN);
+        listener.queueChanged(work, queue.workCanceled(work));
     }
 
     @Override
     public int setSuspending(String queueId) {
-        // for in-memory queuing, there's no suspend
-        // drain scheduled queue and mark work canceled
+        MemoryBlockingQueue queue = getQueue(queueId);
         List<Runnable> scheduled = new ArrayList<>();
-        getWorkQueue(queueId).drainTo(scheduled);
+        queue.drainTo(scheduled);
         for (Runnable r : scheduled) {
             Work work = WorkHolder.getWork(r);
-            work.setWorkInstanceState(State.CANCELED);
+            listener.queueChanged(work, queue.workCanceled(work));
         }
-        getScheduled(queueId).clear();
         return scheduled.size();
     }
 
     @Override
-    public Set<String> getCompletedQueueIds() {
-        return new HashSet<>(allCompleted.keySet());
+    public void setActive(String queueId, boolean value) {
+        WorkQueueMetrics metrics = getQueue(queueId).setActive(value);
+        if (value) {
+            listener.queueActivated(metrics);
+        } else {
+            listener.queueDeactivated(metrics);
+        }
     }
 
     @Override
-    public synchronized void clearCompletedWork(String queueId, long completionTime) {
-        Map<String, Work> completed = getCompleted(queueId);
-        if (completionTime <= 0) {
-            completed.clear();
-        } else {
-            for (Iterator<Work> it = completed.values().iterator(); it.hasNext();) {
-                Work w = it.next();
-                if (w.getCompletionTime() < completionTime) {
-                    it.remove();
-                }
-            }
-        }
+    public void listen(Listener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public WorkQueueMetrics metrics(String queueId) {
+        return getQueue(queueId).metrics();
     }
 
 }

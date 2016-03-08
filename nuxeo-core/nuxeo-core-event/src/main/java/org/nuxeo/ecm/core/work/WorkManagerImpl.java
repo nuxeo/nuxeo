@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.work;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,10 +45,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.event.EventServiceComponent;
+import org.nuxeo.ecm.core.work.WorkQueuing.Listener;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
+import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.ecm.core.work.api.WorkQueuingImplDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.runtime.RuntimeServiceEvent;
@@ -91,7 +92,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     // @GuardedBy("itself")
-    protected final WorkQueueDescriptorRegistry workQueueDescriptors = new WorkQueueDescriptorRegistry(this);
+    protected final WorkQueueDescriptorRegistry workQueueDescriptors = new WorkQueueDescriptorRegistry();
 
     // used synchronized
     protected final Map<String, WorkThreadPoolExecutor> executors = new HashMap<>();
@@ -99,11 +100,12 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     protected WorkQueuing queuing = newWorkQueuing(MemoryWorkQueuing.class);
 
     /**
-     * Simple synchronizer to wake up when an in-JVM work is completed. Does not wake up on work completion from
-     * another node in cluster mode.
+     * Simple synchronizer to wake up when an in-JVM work is completed. Does not wake up on work completion from another
+     * node in cluster mode.
      */
     protected class WorkCompletionSynchronizer {
         final protected ReentrantLock lock = new ReentrantLock();
+
         final protected Condition condition = lock.newCondition();
 
         protected boolean waitForCompletedWork(long timeMs) throws InterruptedException {
@@ -155,12 +157,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
     }
 
-    public void registerWorkQueueDescriptor(WorkQueueDescriptor workQueueDescriptor) {
+    void registerWorkQueueDescriptor(WorkQueueDescriptor workQueueDescriptor) {
         String queueId = workQueueDescriptor.id;
         if (WorkQueueDescriptor.ALL_QUEUES.equals(queueId)) {
             Boolean processing = workQueueDescriptor.processing;
-            Boolean queuing = workQueueDescriptor.queuing;
-            if (processing == null && queuing == null) {
+            if (processing == null) {
                 log.error("Ignoring work queue descriptor " + WorkQueueDescriptor.ALL_QUEUES
                         + " with no processing/queuing");
                 return;
@@ -175,7 +176,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 WorkQueueDescriptor wqd = new WorkQueueDescriptor();
                 wqd.id = id;
                 wqd.processing = processing;
-                wqd.queuing = queuing;
                 registerWorkQueueDescriptor(wqd);
             }
             return;
@@ -185,7 +185,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         log.info("Registered work queue " + queueId + " " + wqd.toString());
     }
 
-    public void unregisterWorkQueueDescriptor(WorkQueueDescriptor workQueueDescriptor) {
+    void unregisterWorkQueueDescriptor(WorkQueueDescriptor workQueueDescriptor) {
         String id = workQueueDescriptor.id;
         if (WorkQueueDescriptor.ALL_QUEUES.equals(id)) {
             return;
@@ -194,82 +194,95 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         log.info("Unregistered work queue " + id);
     }
 
-    protected void activateQueue(WorkQueueDescriptor workQueueDescriptor) {
-        String id = workQueueDescriptor.id;
-        WorkThreadPoolExecutor executor = executors.get(id);
+    void activateQueue(WorkQueueDescriptor config) {
+        if (WorkQueueDescriptor.ALL_QUEUES.equals(config.id)) {
+            return;
+        }
+        NuxeoBlockingQueue queue = queuing.getQueue(config.id);
+        if (queue == null) {
+            queue = queuing.init(config);
+        }
+        WorkThreadPoolExecutor executor = executors.get(config.id);
         if (executor == null) {
-            ThreadFactory threadFactory = new NamedThreadFactory(THREAD_PREFIX + id + "-");
-            int maxPoolSize = workQueueDescriptor.getMaxThreads();
-            executor = new WorkThreadPoolExecutor(id, maxPoolSize, maxPoolSize, 0, TimeUnit.SECONDS, threadFactory);
+            ThreadFactory threadFactory = new NamedThreadFactory(THREAD_PREFIX + config.id + "-");
+            int maxPoolSize = config.getMaxThreads();
+            executor = new WorkThreadPoolExecutor(maxPoolSize, maxPoolSize,
+                    0, TimeUnit.SECONDS,
+                    queue, threadFactory);
             // prestart all core threads so that direct additions to the queue
             // (from another Nuxeo instance) can be seen
             executor.prestartAllCoreThreads();
-            executors.put(id, executor);
+            executors.put(config.id, executor);
         }
-        NuxeoBlockingQueue queue = (NuxeoBlockingQueue) executor.getQueue();
-        // get merged contrib
-        // set active state
-        queue.setActive(workQueueDescriptor.isProcessingEnabled());
-        log.info("Activated work queue " + id + " " + workQueueDescriptor.toEffectiveString());
+        queuing.setActive(config.id, config.isProcessingEnabled());
+        log.info("Activated work queue " + config.id + " " + config.toEffectiveString());
     }
 
-    public void deactivateQueue(WorkQueueDescriptor workQueueDescriptor) {
-        if (WorkQueueDescriptor.ALL_QUEUES.equals(workQueueDescriptor.id)) {
+    void deactivateQueue(WorkQueueDescriptor config) {
+        if (WorkQueueDescriptor.ALL_QUEUES.equals(config.id)) {
             return;
         }
-        WorkThreadPoolExecutor executor = executors.get(workQueueDescriptor.id);
+        queuing.setActive(config.id, false);
+        WorkThreadPoolExecutor executor = executors.remove(config.id);
         executor.shutdownAndSuspend();
-        log.info("Deactivated work queue " + workQueueDescriptor.id);
+        log.info("Deactivated work queue " + config.id);
     }
 
-    public void registerWorkQueuingDescriptor(WorkQueuingImplDescriptor descr) {
-        WorkQueuing q = newWorkQueuing(descr.getWorkQueuingClass());
-        registerWorkQueuing(q);
+    void registerWorkQueuingDescriptor(WorkQueuingImplDescriptor descr) {
+        queuing = newWorkQueuing(descr.getWorkQueuingClass());
     }
 
-    public void registerWorkQueuing(WorkQueuing q) {
-        closeQueuing();
-        queuing = q;
-    }
-
-    public void unregisterWorkQueuingDescriptor(WorkQueuingImplDescriptor descr) {
-        unregisterWorkQueing();
-    }
-
-    public void unregisterWorkQueing() {
-        closeQueuing();
+    void unregisterWorkQueuingDescriptor(WorkQueuingImplDescriptor descr) {
         queuing = newWorkQueuing(MemoryWorkQueuing.class);
     }
 
     protected WorkQueuing newWorkQueuing(Class<? extends WorkQueuing> klass) {
-        WorkQueuing q;
         try {
-            Constructor<? extends WorkQueuing> ctor = klass.getConstructor(WorkManagerImpl.class,
-                    WorkQueueDescriptorRegistry.class);
-            q = ctor.newInstance(this, workQueueDescriptors);
+            return klass.getDeclaredConstructor(Listener.class).newInstance(Listener.lookupListener());
         } catch (ReflectiveOperationException | SecurityException e) {
             throw new RuntimeException(e);
         }
-        return q;
     }
 
-    protected void closeQueuing() {
-        try {
-            shutdown(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // restore interrupted status
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected boolean isQueuingEnabled(String queueId) {
+    @Override
+    public boolean isQueuingEnabled(String queueId) {
         WorkQueueDescriptor wqd = getWorkQueueDescriptor(queueId);
         return wqd == null ? false : wqd.isQueuingEnabled();
     }
 
-    protected boolean isProcessingEnabled(String queueId) {
-        WorkQueueDescriptor wqd = getWorkQueueDescriptor(queueId);
-        return wqd == null ? false : wqd.isProcessingEnabled();
+    @Override
+    public void enableProcessing(boolean value) {
+        for (String queueId : workQueueDescriptors.getQueueIds()) {
+            queuing.getQueue(queueId).setActive(value);
+        }
+    }
+
+    @Override
+    public void enableProcessing(String queueId, boolean value) throws InterruptedException {
+        WorkQueueDescriptor config = workQueueDescriptors.get(queueId);
+        if (config == null) {
+            throw new IllegalArgumentException("no such queue " + queueId);
+        }
+        if (!value) {
+            deactivateQueue(config);
+        } else {
+            activateQueue(config);
+        }
+    }
+
+    @Override
+    public boolean isProcessingEnabled() {
+        for (String queueId : workQueueDescriptors.getQueueIds()) {
+            if (queuing.getQueue(queueId).active) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isProcessingEnabled(String queueId) {
+        return queuing.getQueue(queueId).active;
     }
 
     // ----- WorkManager -----
@@ -323,9 +336,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (started) {
                 return;
             }
+            queuing.init();
             completionSynchronizer = new WorkCompletionSynchronizer();
             started = true;
-            queuing.init();
+            workQueueDescriptors.index();
             for (String id : workQueueDescriptors.getQueueIds()) {
                 activateQueue(workQueueDescriptors.get(id));
             }
@@ -334,8 +348,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     protected WorkThreadPoolExecutor getExecutor(String queueId) {
         if (!started) {
-            if (Framework.isTestModeSet() && !Framework.getRuntime().isShuttingDown()) {
-                LogFactory.getLog(WorkManagerImpl.class).warn("Lazy starting of work manager in test mode");
+            if (Framework.isTestModeSet() && !Framework.getRuntime()
+                    .isShuttingDown()) {
+                LogFactory.getLog(WorkManagerImpl.class)
+                        .warn("Lazy starting of work manager in test mode");
                 init();
             } else {
                 throw new IllegalStateException("Work manager not started, could not access to executors");
@@ -366,7 +382,15 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         for (WorkThreadPoolExecutor executor : list) {
             executor.shutdownAndSuspend();
         }
-        // don't wait anymore, running will always abort
+        timeout = TimeUnit.MILLISECONDS.convert(timeout, unit);
+        // wait until threads termination
+        for (WorkThreadPoolExecutor executor : list) {
+            long t0 = System.currentTimeMillis();
+            if (!executor.awaitTermination(timeout, TimeUnit.MILLISECONDS)) {
+                return false;
+            }
+            timeout -= unit.convert(System.currentTimeMillis() - t0, TimeUnit.MILLISECONDS);
+        }
         return true;
     }
 
@@ -402,7 +426,14 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 return;
             }
             Framework.removeListener(this);
-            closeQueuing();
+            try {
+                if (!shutdown(10, TimeUnit.SECONDS)) {
+                    log.error("Some processors are still active");
+                }
+            } catch (InterruptedException cause) {
+                Thread.currentThread().interrupt();
+                log.error("Interrupted during works manager shutdown, continuing runtime shutdown", cause);
+            }
         }
     }
 
@@ -430,7 +461,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (status == Status.STATUS_COMMITTED) {
                 schedule(work, scheduling, false);
             } else if (status == Status.STATUS_ROLLEDBACK) {
-                work.setWorkInstanceState(State.CANCELED);
+                work.setWorkInstanceState(State.UNKNOWN);
             } else {
                 throw new IllegalArgumentException("Unsupported transaction status " + status);
             }
@@ -450,7 +481,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
         public NamedThreadFactory(String prefix) {
             SecurityManager sm = System.getSecurityManager();
-            group = sm == null ? Thread.currentThread().getThreadGroup() : sm.getThreadGroup();
+            group = sm == null ? Thread.currentThread()
+                    .getThreadGroup() : sm.getThreadGroup();
             this.prefix = prefix;
         }
 
@@ -464,7 +496,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
                 @Override
                 public void uncaughtException(Thread t, Throwable e) {
-                    LogFactory.getLog(WorkManagerImpl.class).error("Uncaught error on thread " + t.getName(), e);
+                    LogFactory.getLog(WorkManagerImpl.class)
+                            .error("Uncaught error on thread " + t.getName(), e);
                 }
             });
             return thread;
@@ -503,10 +536,11 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
         protected final Timer workTimer;
 
-        protected WorkThreadPoolExecutor(String queueId, int corePoolSize, int maximumPoolSize, long keepAliveTime,
-                                         TimeUnit unit, ThreadFactory threadFactory) {
-            super(corePoolSize, maximumPoolSize, keepAliveTime, unit, queuing.initWorkQueue(queueId), threadFactory);
-            this.queueId = queueId;
+
+        protected WorkThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime,
+                TimeUnit unit, NuxeoBlockingQueue queue, ThreadFactory threadFactory) {
+            super(corePoolSize, maximumPoolSize, keepAliveTime, unit, queue, threadFactory);
+            queueId = queue.queueId;
             running = new ConcurrentLinkedQueue<Work>();
             // init metrics
             scheduledCount = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "scheduled", "count"));
@@ -547,12 +581,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
          * @throws RuntimeException
          */
         protected void submit(Work work) throws RuntimeException {
-            boolean added = queuing.workSchedule(queueId, work);
-            if (!added) {
-                queuing.removeScheduled(queueId, work.getId());
-                throw new RuntimeException("queue should have blocked");
-            }
-            // DO NOT super.execute(new WorkHolder(work));
+            queuing.workSchedule(queueId, work);
         }
 
         @Override
@@ -563,6 +592,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 queuing.workSchedule(queueId, work);
                 return;
             }
+            log.warn("running " + work + " ("+work.getId()+")");
             work.setWorkInstanceState(State.RUNNING);
             queuing.workRunning(queueId, work);
             running.add(work);
@@ -576,15 +606,15 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 if (work.isSuspending()) {
                     return;
                 }
-                work.setWorkInstanceState(t == null ? State.COMPLETED : State.FAILED);
+                work.setWorkInstanceState(State.UNKNOWN);
                 queuing.workCompleted(queueId, work);
             } finally {
-                // metrics
                 running.remove(work);
                 runningCount.dec();
                 completedCount.inc();
                 workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
                 completionSynchronizer.signalCompletedWork();
+                log.warn("completed " + work + " (" + work.getId() + ")");
             }
         }
 
@@ -593,7 +623,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         // or with tasks drained from the queue
         protected void removedFromQueue(Runnable r) {
             Work work = WorkHolder.getWork(r);
-            work.setWorkInstanceState(State.CANCELED);
+            work.setWorkInstanceState(State.UNKNOWN);
             completionSynchronizer.signalCompletedWork();
         }
 
@@ -608,39 +638,16 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             // suspend and reschedule all running work
             synchronized (running) {
                 for (Work work : running) {
-                    log.debug("re-scheduling " + work);
-                    work.setWorkInstanceState(State.SCHEDULED);
-                    queuing.workSchedule(queueId, work);
                     work.setWorkInstanceSuspending();
+                    work.setWorkInstanceState(State.SCHEDULED);
+                    queuing.workReschedule(queueId, work);
                 }
             }
             shutdownNow();
         }
 
-        /**
-         * Blocks until all work instances have completed after a shutdown and suspend request.
-         *
-         * @param timeout the time to wait
-         * @param unit the timeout unit
-         * @return true if all work stopped or was saved, false if some remaining after timeout
-         */
-        public boolean awaitTerminationOrSave(long timeout, TimeUnit unit) throws InterruptedException {
-            boolean terminated = super.awaitTermination(timeout, unit);
-            if (!terminated) {
-                // drain queue from remaining scheduled work
-                List<Runnable> drained = new ArrayList<>();
-                getQueue().drainTo(drained);
-                for (Runnable r : drained) {
-                    removedFromQueue(r);
-                }
-            }
-            // some work still remaining after timeout
-            return terminated;
-        }
-
-        public Work removeScheduled(String workId) {
-            Work w = queuing.removeScheduled(queueId, workId);
-            return w;
+        public void removeScheduled(String workId) {
+            queuing.removeScheduled(queueId, workId);
         }
 
     }
@@ -672,42 +679,29 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
         work.setWorkInstanceState(State.SCHEDULED);
         WorkSchedulePath.newInstance(work);
-        if (log.isTraceEnabled()) {
-            log.trace("Scheduling work: " + work + " using queue: " + queueId, work.getSchedulePath().getStack());
-        } else if (log.isDebugEnabled()) {
-            log.debug("Scheduling work: " + work + " using queue: " + queueId);
-        }
         switch (scheduling) {
-            case ENQUEUE:
-                break;
-            case CANCEL_SCHEDULED:
-                Work w = getExecutor(queueId).removeScheduled(workId);
-                if (w != null) {
-                    w.setWorkInstanceState(State.CANCELED);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Canceling existing scheduled work before scheduling");
-                    }
+        case ENQUEUE:
+            break;
+        case CANCEL_SCHEDULED:
+            getExecutor(queueId).removeScheduled(workId);
+            break;
+        case IF_NOT_SCHEDULED:
+        case IF_NOT_RUNNING:
+        case IF_NOT_RUNNING_OR_SCHEDULED:
+            // TODO disabled for now because hasWorkInState uses isScheduled
+            // which is buggy
+            boolean disabled = Boolean.TRUE.booleanValue();
+            if (!disabled && hasWorkInState(workId, scheduling.state)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Canceling schedule because found: " + scheduling);
                 }
-                break;
-            case IF_NOT_SCHEDULED:
-            case IF_NOT_RUNNING:
-            case IF_NOT_RUNNING_OR_SCHEDULED:
-                // TODO disabled for now because hasWorkInState uses isScheduled
-                // which is buggy
-                boolean disabled = Boolean.TRUE.booleanValue();
-                if (!disabled && hasWorkInState(workId, scheduling.state)) {
-                    // mark passed work as canceled
-                    work.setWorkInstanceState(State.CANCELED);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Canceling schedule because found: " + scheduling);
-                    }
-                    return;
+                return;
 
-                }
-                break;
+            }
+            break;
 
         }
-        getExecutor(queueId).execute(work);
+        queuing.workSchedule(queueId, work);
     }
 
     /**
@@ -753,7 +747,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                 if (log.isDebugEnabled()) {
                     log.debug("Cancelling schedule because transaction marked rollback-only: " + work);
                 }
-                work.setWorkInstanceState(State.CANCELED);
                 return true;
             } else {
                 if (log.isDebugEnabled()) {
@@ -783,12 +776,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         return queuing.find(workId, state);
     }
 
-    @Override
-    public String findResult(String workId) {
-        Work work = find(workId, State.COMPLETED);
-        return work != null ? work.getWorkInstanceResult() : null;
-    }
-
     /**
      * @param state SCHEDULED, RUNNING or null for both
      */
@@ -813,16 +800,20 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     @Override
+    public WorkQueueMetrics getMetrics(String queueId) {
+        return queuing.metrics(queueId);
+    }
+
+    @Override
     public int getQueueSize(String queueId, State state) {
+        WorkQueueMetrics metrics = getMetrics(queueId);
         if (state == null) {
-            return getScheduledOrRunningSize(queueId);
+            return metrics.scheduled.intValue() + metrics.running.intValue();
         }
         if (state == State.SCHEDULED) {
-            return getScheduledSize(queueId);
+            return metrics.scheduled.intValue();
         } else if (state == State.RUNNING) {
-            return getRunningSize(queueId);
-        } else if (state == State.COMPLETED) {
-            return getCompletedSize(queueId);
+            return metrics.running.intValue();
         } else {
             throw new IllegalArgumentException(String.valueOf(state));
         }
@@ -831,23 +822,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     @Override
     @Deprecated
     public int getNonCompletedWorkSize(String queueId) {
-        return getScheduledOrRunningSize(queueId);
-    }
-
-    protected int getScheduledSize(String queueId) {
-        return queuing.count(queueId, State.SCHEDULED);
-    }
-
-    protected int getRunningSize(String queueId) {
-        return queuing.count(queueId, State.RUNNING);
-    }
-
-    protected int getScheduledOrRunningSize(String queueId) {
-        return getScheduledSize(queueId) + getRunningSize(queueId);
-    }
-
-    protected int getCompletedSize(String queueId) {
-        return queuing.count(queueId, State.COMPLETED);
+        return getQueueSize(queueId, null);
     }
 
     @Override
@@ -867,7 +842,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         log.debug("awaitForCompletion " + durationInMs + " ms");
         do {
             if (noScheduledOrRunningWork(queueId)) {
-                log.debug("Completed");
                 completionSynchronizer.signalCompletedWork();
                 SequenceTracer.stop("done");
                 return true;
@@ -888,55 +862,26 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     protected boolean noScheduledOrRunningWork(String queueId) {
-        if (queueId != null) {
-            boolean ret = getQueueSize(queueId, null) == 0;
-            if (ret == false) {
-                if (log.isTraceEnabled()) {
-                    log.trace(queueId + " not empty, sched: " + getQueueSize(queueId, State.SCHEDULED) +
-                            ", running: " + getQueueSize(queueId, State.RUNNING));
+        if (queueId == null) {
+            for (String id : getWorkQueueIds()) {
+                if (!noScheduledOrRunningWork(id)) {
+                    return false;
                 }
             }
-            return ret;
+            return true;
         }
-        for (String id : getWorkQueueIds()) {
-            if (getQueueSize(id, null) > 0) {
-                if (log.isTraceEnabled()) {
-                    log.trace(id + " not empty, sched: " + getQueueSize(id, State.SCHEDULED) +
-                            ", running: " + getQueueSize(id, State.RUNNING));
-                }
-                return false;
+        boolean ret = getQueueSize(queueId, null) == 0;
+        if (ret == false) {
+            if (log.isTraceEnabled()) {
+                log.trace(queueId + " not empty, sched: " + getQueueSize(queueId, State.SCHEDULED) +
+                        ", running: " + getQueueSize(queueId, State.RUNNING));
             }
+            return false;
+        }
+        if (log.isTraceEnabled()) {
+            log.trace(queueId + " is completed");
         }
         return true;
-    }
-
-    @Override
-    public synchronized void clearCompletedWork(String queueId) {
-        queuing.clearCompletedWork(queueId, 0);
-    }
-
-    @Override
-    public synchronized void clearCompletedWork(long completionTime) {
-        for (String queueId : queuing.getCompletedQueueIds()) {
-            queuing.clearCompletedWork(queueId, completionTime);
-        }
-    }
-
-    @Override
-    public synchronized void cleanup() {
-        log.debug("Clearing old completed work");
-        for (String queueId : queuing.getCompletedQueueIds()) {
-            WorkQueueDescriptor workQueueDescriptor = workQueueDescriptors.get(queueId);
-            if (workQueueDescriptor == null) {
-                // unknown queue
-                continue;
-            }
-            long delay = workQueueDescriptor.getClearCompletedAfterSeconds() * 1000L;
-            if (delay > 0) {
-                long completionTime = System.currentTimeMillis() - delay;
-                queuing.clearCompletedWork(queueId, completionTime);
-            }
-        }
     }
 
     @Override

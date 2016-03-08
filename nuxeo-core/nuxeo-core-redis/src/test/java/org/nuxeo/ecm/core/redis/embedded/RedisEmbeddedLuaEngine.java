@@ -15,17 +15,10 @@
  */
 package org.nuxeo.ecm.core.redis.embedded;
 
-import org.apache.commons.codec.binary.Hex;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.script.LuaScriptEngine;
-import org.luaj.vm2.script.LuaScriptEngineFactory;
-import org.luaj.vm2.script.LuajContext;
-import org.nuxeo.ecm.core.api.NuxeoException;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +26,14 @@ import java.util.Map;
 import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
+
+import org.apache.commons.codec.binary.Hex;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceLuaToJava;
+import org.luaj.vm2.script.LuaScriptEngine;
+import org.luaj.vm2.script.LuaScriptEngineFactory;
+import org.luaj.vm2.script.LuajContext;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 public class RedisEmbeddedLuaEngine {
 
@@ -89,14 +90,7 @@ public class RedisEmbeddedLuaEngine {
         bindings.put("KEYS", keys.toArray(new String[keys.size()]));
         bindings.put("ARGV", args.toArray(new String[args.size()]));
         Object result = script.eval(bindings);
-        if (result instanceof LuaValue) {
-            LuaValue value = (LuaValue) result;
-            if (value.isboolean() && value.toboolean() == false) {
-                return null;
-            }
-            return value.tojstring();
-        }
-        return result;
+        return coerce(result);
     }
 
     public Object evalsha(byte[] sha, List<byte[]> keys, List<byte[]> args) throws ScriptException {
@@ -106,10 +100,24 @@ public class RedisEmbeddedLuaEngine {
         bindings.put("KEYS", keys.toArray());
         bindings.put("ARGV", args.toArray());
         Object result = script.eval(bindings);
+        return coerce(result);
+    }
+
+    protected Object coerce(Object result) {
         if (result instanceof LuaValue) {
             LuaValue value = (LuaValue) result;
             if (value.isboolean() && value.toboolean() == false) {
                 return null;
+            }
+            if (value.istable()) {
+                LuaValue element = value.get(1);
+                if (element.isnumber()) {
+                    return Arrays.asList((Number[])CoerceLuaToJava.coerce(value, Number[].class));
+                }
+                if (element.isstring()) {
+                    return Arrays.asList((String[])CoerceLuaToJava.coerce(value, String[].class));
+                }
+                throw new UnsupportedOperationException("unsupported table of " + element.typename());
             }
             return value.tojstring();
         }

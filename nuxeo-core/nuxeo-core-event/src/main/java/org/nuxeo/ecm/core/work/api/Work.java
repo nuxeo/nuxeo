@@ -24,7 +24,6 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 
 /**
  * A {@link Work} instance gets scheduled and executed by a {@link WorkManager} .
@@ -73,31 +72,9 @@ public interface Work extends Serializable {
          */
         SCHEDULED,
         /**
-         * Work instance was canceled.
-         * <p>
-         * This happens if:
-         * <ul>
-         * <li>it is never scheduled because another instance with the same id was already scheduled or running (when
-         * scheduled with {@link Scheduling#IF_NOT_SCHEDULED}, {@link Scheduling#IF_NOT_RUNNING}, or
-         * {@link Scheduling#IF_NOT_RUNNING_OR_SCHEDULED}),
-         * <li>it is never run because it was scheduled after commit and the transaction rolled back,
-         * <li>it is never run because it was scheduled, but another work with the same id was scheduled with
-         * {@link Scheduling#CANCEL_SCHEDULED}.
-         * </ul>
-         */
-        CANCELED,
-        /**
          * Work instance is running.
          */
         RUNNING,
-        /**
-         * Work instance has completed normally.
-         */
-        COMPLETED,
-        /**
-         * Work instance has completed with an exception.
-         */
-        FAILED,
     }
 
     /**
@@ -410,10 +387,4 @@ public interface Work extends Serializable {
      */
     void setSchedulePath(WorkSchedulePath path);
 
-    /**
-     * CALLED BY THE WORK MANAGER (not user code) to get this work instance's result.
-     *
-     * @since 7.4
-     */
-    String getWorkInstanceResult();
 }

@@ -579,11 +579,6 @@ public abstract class AbstractWork implements Work {
         return isTree;
     }
 
-    @Override
-    public String getWorkInstanceResult() {
-        return null;
-    }
-
     /**
      * Releases the transaction resources by committing the existing transaction (if any). This is recommended before
      * running a long process.

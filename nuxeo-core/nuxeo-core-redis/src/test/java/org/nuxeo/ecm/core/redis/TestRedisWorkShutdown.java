@@ -74,8 +74,9 @@ public class TestRedisWorkShutdown {
     @Inject
     WorkManager works;
 
-    @Inject
-    RedisFeature redis;
+    void assertMetrics(long scheduled, long running, long completed, long cancelled) {
+        assertEquals(new WorkQueueMetrics("default", scheduled, running, completed, cancelled), works.getMetrics("default"));
+    }
 
     @Test
     public void worksArePersisted() throws InterruptedException {

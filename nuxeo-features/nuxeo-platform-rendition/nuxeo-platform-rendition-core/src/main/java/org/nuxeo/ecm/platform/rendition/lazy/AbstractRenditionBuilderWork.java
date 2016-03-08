@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.platform.rendition.lazy;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -28,10 +28,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
-import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
+import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.rendition.service.RenditionServiceImpl;
@@ -41,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */
-public abstract class AbstractRenditionBuilderWork extends AbstractWork implements Work, Serializable {
+public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     private static final long serialVersionUID = 1L;
 
@@ -86,7 +87,24 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
         RenditionDefinition def = ((RenditionServiceImpl) rs).getRenditionDefinition(renditionName);
 
         List<Blob> blobs = doComputeRendition(session, doc, def);
+        doStore(blobs);
+    }
 
+    @Override
+    public void cleanUp(boolean ok, Exception e) {
+        super.cleanUp(ok, e);
+        if (ok) {
+            return;
+        }
+        List<Blob> blobs = new ArrayList<Blob>();
+        StringBlob emptyBlob = new StringBlob("");
+        emptyBlob.setFilename("error");
+        emptyBlob.setMimeType("text/plain;" + LazyRendition.ERROR_MARKER);
+        blobs.add(emptyBlob);
+        doStore(blobs);
+    }
+
+    void doStore(List<Blob> blobs) {
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(getTransientStoreName());
 

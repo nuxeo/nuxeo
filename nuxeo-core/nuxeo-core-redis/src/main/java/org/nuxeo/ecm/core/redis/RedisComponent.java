@@ -36,6 +36,7 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.osgi.framework.Bundle;
+
 import redis.clients.jedis.Jedis;
 
 /**

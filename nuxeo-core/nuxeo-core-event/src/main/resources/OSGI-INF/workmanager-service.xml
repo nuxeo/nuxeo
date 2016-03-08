@@ -8,7 +8,7 @@
   <service>
     <provide interface="org.nuxeo.ecm.core.work.api.WorkManager" />
   </service>
-
+  
   <implementation class="org.nuxeo.ecm.core.work.WorkManagerImpl" />
 
   <extension-point name="queues">

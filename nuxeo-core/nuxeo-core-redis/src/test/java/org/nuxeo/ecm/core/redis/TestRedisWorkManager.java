@@ -56,17 +56,6 @@ public class TestRedisWorkManager extends WorkManagerTest {
         super.testWorkManagerWork();
     }
 
-    @Test
-    @Override
-    public void testClearCompletedBefore() throws Exception {
-        startMonitorRedis();
-        try {
-            super.testClearCompletedBefore();
-        } finally {
-            stopMonitorRedis();
-        }
-    }
-
     private void stopMonitorRedis() {
         monitorRedis = false;
         if (redisExecutor != null) {
