@@ -31,7 +31,7 @@ BEGIN
 
       -- Add the 'Notifiable' facet if needed
       IF NOT 'Notifiable' = ANY (subscription.mixintypes::varchar[]) THEN
-        UPDATE hierarchy SET mixintypes = array_append(mixintypes,'Notifiable');
+        UPDATE hierarchy SET mixintypes = array_append(mixintypes,'Notifiable') WHERE id = subscription.docid;
       END IF;
 
       SELECT MAX(POS) INTO POS1 FROM hierarchy
