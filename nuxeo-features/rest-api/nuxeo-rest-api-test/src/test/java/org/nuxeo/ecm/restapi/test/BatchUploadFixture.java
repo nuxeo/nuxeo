@@ -136,7 +136,6 @@ public class BatchUploadFixture extends BaseTest {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/octet-stream");
         headers.put("X-Upload-Type", "normal");
-        headers.put("Content-Length", fileSize1);
         headers.put("X-File-Name", fileName1);
         headers.put("X-File-Size", fileSize1);
         headers.put("X-File-Type", mimeType);
@@ -270,7 +269,6 @@ public class BatchUploadFixture extends BaseTest {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/octet-stream");
         headers.put("X-Upload-Type", "normal");
-        headers.put("Content-Length", fileSize);
         headers.put("X-File-Name", fileName);
         headers.put("X-File-Size", fileSize);
         headers.put("X-File-Type", mimeType);
@@ -327,7 +325,6 @@ public class BatchUploadFixture extends BaseTest {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/octet-stream");
         headers.put("X-Upload-Type", "chunked");
-        headers.put("Content-Length", chunkLength1);
         headers.put("X-Upload-Chunk-Index", "0");
         headers.put("X-Upload-Chunk-Count", "3");
         headers.put("X-File-Name", fileName);
@@ -375,7 +372,6 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("3", node.get("chunkCount").getValueAsText());
 
         // Chunk 3
-        headers.put("Content-Length", chunkLength3);
         headers.put("X-Upload-Chunk-Index", "2");
         response = getResponse(RequestType.POST, "upload/" + batchId + "/0", chunk3, headers);
         assertEquals(308, response.getStatus());
@@ -421,7 +417,6 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("3", node.get("chunkCount").getValueAsText());
 
         // Chunk 2
-        headers.put("Content-Length", chunkLength2);
         headers.put("X-Upload-Chunk-Index", "1");
         response = getResponse(RequestType.POST, "upload/" + batchId + "/0", chunk2, headers);
         assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
@@ -522,7 +517,6 @@ public class BatchUploadFixture extends BaseTest {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/octet-stream");
         headers.put("X-Upload-Type", "chunked");
-        headers.put("Content-Length", chunkLength2);
         headers.put("X-Upload-Chunk-Index", "1");
         headers.put("X-Upload-Chunk-Count", "2");
         headers.put("X-File-Name", fileName);
@@ -542,7 +536,6 @@ public class BatchUploadFixture extends BaseTest {
         assertEquals("2", node.get("chunkCount").getValueAsText());
 
         // Chunk 1
-        headers.put("Content-Length", chunkLength1);
         headers.put("X-Upload-Chunk-Index", "0");
         response = getResponse(RequestType.POST, "upload/" + batchId + "/0", chunk1, headers);
         assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
