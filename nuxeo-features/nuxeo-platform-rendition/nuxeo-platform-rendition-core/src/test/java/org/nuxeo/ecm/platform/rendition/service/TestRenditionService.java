@@ -754,11 +754,12 @@ public class TestRenditionService {
         assertTrue(rendition.getBlob().getString().contains(desc));
 
         // verify the thread renditions
+        StorageConfiguration storageConfig = coreFeature.getStorageConfiguration();
         List<Rendition> renditions = Arrays.asList(t1.getDetachedRendition(), t2.getDetachedRendition());
         for (Rendition rend : renditions) {
             assertNotNull(rend);
             assertTrue(rend.isStored());
-            assertTrue(!cal.before(rend.getModificationDate()));
+            storageConfig.assertNotBeforeTimestamp(cal, rend.getModificationDate());
             assertNotNull(rend.getBlob());
             assertTrue(rendition.getBlob().getString().contains(desc));
         }

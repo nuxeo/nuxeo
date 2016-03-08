@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.dublincore;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
@@ -33,6 +32,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -72,11 +72,18 @@ public class TestDublinCoreStorage {
     @Inject
     protected CoreFeature feature;
 
+    protected StorageConfiguration storageConfiguration;
+
     @Inject
     protected CoreSession session;
 
     @Inject
     protected RuntimeHarness runtimeHarness;
+
+    @Before
+    public void before() {
+        storageConfiguration = feature.getStorageConfiguration();
+    }
 
     @Test
     public void testStorageService() {
@@ -339,6 +346,7 @@ public class TestDublinCoreStorage {
     @Test
     public void testCopyDocument() throws Exception {
         DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
+        storageConfiguration.maybeSleepToNextSecond();
         DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008");
 
         waitForAsyncCompletion();
@@ -351,6 +359,7 @@ public class TestDublinCoreStorage {
     @Test
     public void testCopyDocumentWithResetCoreMetadata() throws Exception {
         DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
+        storageConfiguration.maybeSleepToNextSecond();
         DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008", CopyOption.RESET_CREATOR);
 
         waitForAsyncCompletion();
@@ -366,6 +375,7 @@ public class TestDublinCoreStorage {
                 "OSGI-INF/reset-creator-contrib.xml");
 
         DocumentModel file = session.createDocument(session.createDocumentModel("/", "file-007", "File"));
+        storageConfiguration.maybeSleepToNextSecond();
         DocumentModel copy = session.copy(file.getRef(), file.getParentRef(), "file-008");
 
         waitForAsyncCompletion();
@@ -376,13 +386,11 @@ public class TestDublinCoreStorage {
     }
 
     private void assertEqualsCalendar(Object expected, Object actual) {
-        StorageConfiguration storageConfig = feature.getStorageConfiguration();
-        assertEquals(storageConfig.convertToStoredCalendar((Calendar) expected), actual);
+        storageConfiguration.assertEqualsTimestamp((Calendar) expected, (Calendar) actual);
     }
 
     private void assertNotEqualsCalendar(Object expected, Object actual) {
-        StorageConfiguration storageConfig = feature.getStorageConfiguration();
-        assertNotEquals(storageConfig.convertToStoredCalendar((Calendar) expected), actual);
+        storageConfiguration.assertNotEqualsTimestamp((Calendar) expected, (Calendar) actual);
     }
 
     protected void waitForAsyncCompletion() {
