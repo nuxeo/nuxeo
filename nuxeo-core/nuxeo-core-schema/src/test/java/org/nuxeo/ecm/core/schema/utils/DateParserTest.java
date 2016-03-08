@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -45,6 +46,9 @@ public class DateParserTest {
 
     @Test
     public void testReverseParsingDate() throws Exception {
+        // NXP-19153: force time zone
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
         // first test with date set to zero
         Date d = new Date(0);
         String s = DateParser.formatW3CDateTime(d);
