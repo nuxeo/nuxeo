@@ -60,12 +60,12 @@
     <c:set var="hideIcon" value="#{widgetProperty_hideIcon}" />
 
     <div class="UserSuggestionInput">
-      <c:forEach items="#{field}" var="item">
+      <ui:repeat value="#{field}" var="item">
           <nxu:set var="info"
             value="#{widgetProperty_prefixed ? userSuggestionActions.getPrefixedUserInfo(item) : userSuggestionActions.getUserInfo(item)}">
             <ui:include src="user_group_display_template.xhtml" />
           </nxu:set>
-      </c:forEach>
+      </ui:repeat>
     </div>
 
   </c:if>
