@@ -326,10 +326,12 @@ public class StorageConfiguration {
             // as datetime in SQL Server are rounded to increments of .000, .003, or .007 seconds
             long milliseconds = timestamp % 10;
             long newTimestamp = timestamp - milliseconds;
-            if (milliseconds >= 7) {
-                newTimestamp += 7;
-            } else if (milliseconds >= 3) {
+            if (milliseconds > 0 && milliseconds <= 3) {
                 newTimestamp += 3;
+            } else if (milliseconds > 3 && milliseconds <= 7) {
+                newTimestamp += 7;
+            } else if (milliseconds > 7) {
+                newTimestamp += 10;
             }
             return newTimestamp;
         }
