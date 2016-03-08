@@ -26,6 +26,10 @@ import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFIL
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_PHONENUMBER_FIELD;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.Blob;
@@ -45,6 +49,8 @@ import org.nuxeo.runtime.api.Framework;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class UserProfileEnricher extends AbstractJsonEnricher<NuxeoPrincipal> {
 
+    private static final DateFormat FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
     public static final String NAME = "userprofile";
 
     public UserProfileEnricher() {
@@ -62,21 +68,27 @@ public class UserProfileEnricher extends AbstractJsonEnricher<NuxeoPrincipal> {
             if (up == null) {
                 jg.writeNull();
             } else {
-                jg.writeStartObject();
+                try {
+                    jg.writeStartObject();
 
-                jg.writeStringField("birthdate", (String) up.getPropertyValue(USER_PROFILE_BIRTHDATE_FIELD));
-                jg.writeStringField("phonenumber", (String) up.getPropertyValue(USER_PROFILE_PHONENUMBER_FIELD));
+                    Serializable propertyValue = up.getPropertyValue(USER_PROFILE_BIRTHDATE_FIELD);
+                    jg.writeStringField(
+                            "birthdate",
+                            propertyValue == null ? null
+                                    : FORMATTER.format(((GregorianCalendar) propertyValue).getTime()));
+                    jg.writeStringField("phonenumber", (String) up.getPropertyValue(USER_PROFILE_PHONENUMBER_FIELD));
 
-                Blob avatar = (Blob) up.getPropertyValue(USER_PROFILE_AVATAR_FIELD);
-                if (avatar != null) {
-                    DownloadService downloadService = Framework.getService(DownloadService.class);
-                    String url = downloadService.getDownloadUrl(up, USER_PROFILE_AVATAR_FIELD, avatar.getFilename());
-                    jg.writeStringField("avatar", ctx.getBaseUrl() + url);
-                } else {
-                    jg.writeNullField("avatar");
+                    Blob avatar = (Blob) up.getPropertyValue(USER_PROFILE_AVATAR_FIELD);
+                    if (avatar != null) {
+                        DownloadService downloadService = Framework.getService(DownloadService.class);
+                        String url = downloadService.getDownloadUrl(up, USER_PROFILE_AVATAR_FIELD, avatar.getFilename());
+                        jg.writeStringField("avatar", ctx.getBaseUrl() + url);
+                    } else {
+                        jg.writeNullField("avatar");
+                    }
+                } finally {
+                    jg.writeEndObject();
                 }
-
-                jg.writeEndObject();
             }
         }
     }

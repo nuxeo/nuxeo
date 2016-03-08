@@ -19,10 +19,12 @@
 
 package org.nuxeo.ecm.user.center.profile.rest;
 
+import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_BIRTHDATE_FIELD;
 import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFILE_PHONENUMBER_FIELD;
 import static org.nuxeo.ecm.user.center.profile.rest.UserProfileEnricher.NAME;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -62,6 +64,7 @@ public class UserProfileEnricherTest extends AbstractJsonWriterTest.External<Nux
         UserProfileService ups = Framework.getLocalService(UserProfileService.class);
         DocumentModel up = ups.getUserProfileDocument(session);
         up.setPropertyValue(USER_PROFILE_PHONENUMBER_FIELD, "mynumber");
+        up.setPropertyValue(USER_PROFILE_BIRTHDATE_FIELD, new Date());
         session.saveDocument(up);
         session.save();
     }
