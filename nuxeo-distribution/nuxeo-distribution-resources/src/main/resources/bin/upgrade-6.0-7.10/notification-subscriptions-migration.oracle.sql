@@ -12,17 +12,14 @@
 -- https://oracle-base.com/dba/miscellaneous/conversion_api.sql
 
 
-CREATE OR REPLACE FUNCTION new_uuid
+CREATE OR REPLACE FUNCTION new_uuid(l_seed BINARY_INTEGER)
    RETURN VARCHAR2
 AS
-   l_seed         BINARY_INTEGER;
    l_random_num   NUMBER (5);
-
    l_date         VARCHAR2 (25);
    l_random       VARCHAR2 (4);
    l_ip_address   VARCHAR2 (12);
 BEGIN
-   l_seed := TO_NUMBER (TO_CHAR (SYSDATE, 'YYYYDDMMSS'));
    DBMS_RANDOM.initialize (val => l_seed);
    l_random_num := TRUNC (DBMS_RANDOM.VALUE (low => 1, high => 65535));
    DBMS_RANDOM.TERMINATE;
@@ -59,6 +56,7 @@ IS
    POS1         PLS_INTEGER;
    POS2         PLS_INTEGER;
    notif_uuid   NOTIFICATIONENTRY.id%TYPE;
+   l_seed       BINARY_INTEGER;
 
    CURSOR NOTIFIEDDOC
    IS
@@ -66,6 +64,7 @@ IS
         FROM usersubscription, hierarchy
        WHERE usersubscription.docid = hierarchy.id;
 BEGIN
+   l_seed := TO_NUMBER (TO_CHAR (SYSDATE, 'YYYYDDMMSS'));
    TOTALCNT := 0;
    DBMS_OUTPUT.put_line (
       'Migrating usersubscription table to document facet');
@@ -87,7 +86,7 @@ BEGIN
         INTO CNT
         FROM hierarchy
        WHERE     hierarchy.ID = subscription.docid
-             AND hierarchy.MIXINTYPES LIKE '|Notifiable|';
+             AND hierarchy.MIXINTYPES LIKE '%|Notifiable|%';
 
       IF CNT = 0
       THEN
@@ -97,7 +96,7 @@ BEGIN
          IF subscription.mixintypes IS NULL OR LENGTH (subscription.mixintypes) = 0
          THEN
             UPDATE hierarchy
-               SET mixintypes = mixintypes || ('|Notifiable|')
+               SET mixintypes = '|Notifiable|'
              WHERE id = subscription.docid;
          ELSE
             UPDATE hierarchy
@@ -142,7 +141,7 @@ BEGIN
          IF notif_uuid IS NULL
          THEN
             -- If not, we create the hierarchy node and its notificationEntry
-            notif_uuid := new_uuid ();
+            notif_uuid := new_uuid (l_seed);
 
             INSERT INTO hierarchy (id,
                                    parentid,
