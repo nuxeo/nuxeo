@@ -15,43 +15,37 @@
  *
  * Contributors:
  *     Thomas Roger
- *
+ *     Yannis JULIENNE
  */
-
 package org.nuxeo.functionaltests;
 
+import static org.nuxeo.functionaltests.AbstractTest.NUXEO_URL;
 import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-
-import okhttp3.Credentials;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.client.api.NuxeoClient;
+import org.nuxeo.client.api.objects.Document;
+import org.nuxeo.client.api.objects.acl.ACE;
+import org.nuxeo.client.api.objects.user.Group;
+import org.nuxeo.client.api.objects.user.User;
+import org.nuxeo.client.internals.spi.NuxeoClientException;
 
 /**
  * @since 8.3
  */
 public class RestHelper {
 
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-    private static final MediaType AUTOMATION_JSON = MediaType.parse("application/json+nxrequest");
+    private static final NuxeoClient CLIENT = new NuxeoClient(NUXEO_URL, ADMINISTRATOR, ADMINISTRATOR);
 
     private static final String USER_WORKSPACE_PATH_FORMAT = "/default-domain/UserWorkspaces/%s";
-
-    private static final OkHttpClient client = new OkHttpClient();
-
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private static final List<String> documentIdsToDelete = new ArrayList<>();
 
@@ -60,6 +54,8 @@ public class RestHelper {
     private static final List<String> usersToDelete = new ArrayList<>();
 
     private static final List<String> groupsToDelete = new ArrayList<>();
+
+    protected static final Log log = LogFactory.getLog(RestHelper.class);
 
     private RestHelper() {
         // helper class
@@ -79,7 +75,11 @@ public class RestHelper {
 
     public static void cleanupUsers() {
         for (String user : usersToDelete) {
-            RestHelper.deleteDocument(String.format(USER_WORKSPACE_PATH_FORMAT, user));
+            try{
+                RestHelper.deleteDocument(String.format(USER_WORKSPACE_PATH_FORMAT, user));
+            }catch(NuxeoClientException e){
+                log.warn("User workspace not deleted for "+user+" (propably not found)");
+            }
         }
         usersToDelete.forEach(RestHelper::deleteUser);
         usersToDelete.clear();
@@ -94,85 +94,24 @@ public class RestHelper {
         return createUser(username, password, null, null, null, null, null);
     }
 
-    public static String createUser(String username, String password, String firstName, String lastName, String company,
-            String email, String group) {
-        String json = buildUserJSON(username, password, firstName, lastName, company, email, group);
-
-        RequestBody body = RequestBody.create(JSON, json);
-        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/user"));
-        Request request = newRequest().url(url).post(body).build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new RuntimeException(String.format("Unable to create user '%s'", username));
-            }
-
-            try (ResponseBody responseBody = response.body()) {
-                JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
-                String id = jsonNode.get("id").getTextValue();
-                usersToDelete.add(id);
-                return id;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static String buildUserJSON(String username, String password, String firstName, String lastName,
+    public static String createUser(String username, String password, String firstName, String lastName,
             String company, String email, String group) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"entity-type\": \"user\"").append(",\n");
-        sb.append("\"id\": \"").append(username).append("\",\n");
-        sb.append("\"properties\": {").append("\n");
-        if (firstName != null) {
-            sb.append("\"firstName\": \"").append(firstName).append("\",\n");
-        }
-        if (lastName != null) {
-            sb.append("\"lastName\": \"").append(lastName).append("\",\n");
-        }
-        if (email != null) {
-            sb.append("\"email\": \"").append(email).append("\",\n");
-        }
-        if (company != null) {
-            sb.append("\"company\": \"").append(company).append("\",\n");
-        }
-        if (group != null) {
-            sb.append("\"groups\": [\"").append(group).append("\"]").append(",\n");
-        }
-        sb.append("\"username\": \"").append(username).append("\",\n");
-        sb.append("\"password\": \"").append(password).append("\"\n");
-        sb.append("}").append("\n");
-        sb.append("}");
-        return sb.toString();
+        User user = new User();
+        user.setUserName(username);
+        //TODO add something to replace user.setPassword(password);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setCompany(company);
+        user.setEmail(email);
+        user.setGroups(Collections.singletonList(group));
+
+        String id = CLIENT.getUserManager().createUser(user).getId();
+        usersToDelete.add(id);
+        return id;
     }
 
     public static void deleteUser(String username) {
-        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/user", username));
-        Request request = newRequest().url(url).delete().build();
-        try {
-            client.newCall(request).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void removePermissions(String pathOrId, String username) {
-        String json = buildRemovePermissionJSON(pathOrId, username);
-        RequestBody body = RequestBody.create(AUTOMATION_JSON, json);
-        String url = String.join("/",
-                Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/automation", "Document.RemovePermission"));
-        Request request = newRequest().url(url).post(body).build();
-        try {
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new RuntimeException(
-                        String.format("Unable to delete permissions for user '%s' on '%s'", username, pathOrId));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        CLIENT.getUserManager().deleteUser(username);
     }
 
     public static void createGroup(String name, String label) {
@@ -180,175 +119,81 @@ public class RestHelper {
     }
 
     public static void createGroup(String name, String label, String[] members, String[] subGroups) {
-        String json = buildGroupJSON(name, label, members, subGroups);
-
-        RequestBody body = RequestBody.create(JSON, json);
-
-        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/group"));
-        Request request = newRequest().url(url).post(body).build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new RuntimeException(String.format("Unable to create group '%s'", name));
-            }
-            groupsToDelete.add(name);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        Group group = new Group();
+        group.setGroupName(name);
+        group.setGroupLabel(label);
+        if (members != null) {
+            group.setMemberUsers(Arrays.asList(members));
         }
-    }
+        if (subGroups != null) {
+            group.setMemberGroups(Arrays.asList(subGroups));
+        }
 
-    private static String buildGroupJSON(String name, String label, String[] members, String[] subGroups) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"entity-type\": \"group\"").append(",\n");
-        sb.append("\"groupname\": \"").append(name).append("\",\n");
-        sb.append("\"grouplabel\": \"").append(label).append("\",\n");
-        appendJSONArray(sb, "memberUsers", members, subGroups != null);
-        appendJSONArray(sb, "memberGroups", subGroups, false);
-        sb.append("}");
-        return sb.toString();
+        CLIENT.getUserManager().createGroup(group);
+        groupsToDelete.add(name);
     }
 
     public static void deleteGroup(String name) {
-        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/group", name));
-        Request request = newRequest().url(url).delete().build();
-        try {
-            client.newCall(request).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        CLIENT.getUserManager().deleteGroup(name);
     }
 
     public static String createDocument(String idOrPath, String type, String title, String description) {
-        String json = buildDocumentJSON(type, title, description);
-
-        RequestBody body = RequestBody.create(JSON, json);
-        String segment = idOrPath.startsWith("/") ? "path" : "id";
-        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1", segment, idOrPath));
-        Request request = newRequest().url(url).post(body).build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new RuntimeException(String.format("Unable to create document '%s' in '%s'", title, idOrPath));
-            }
-
-            try (ResponseBody responseBody = response.body()) {
-                JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
-                String docId = jsonNode.get("uid").getTextValue();
-
-                String path = jsonNode.get("path").getTextValue();
-                // do we already have to delete one parent?
-                boolean toDelete = true;
-                for (String docPath : documentPathsToDelete) {
-                    if (path.startsWith(docPath)) {
-                        toDelete = false;
-                        break;
-                    }
-                }
-                if (toDelete) {
-                    documentIdsToDelete.add(docId);
-                    documentPathsToDelete.add(path);
-                }
-
-                return docId;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        Document document = new Document(title, type);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("dc:title", title);
+        if (description != null) {
+            properties.put("dc:description", description);
         }
+        document.setProperties(properties);
+
+        if (idOrPath.startsWith("/")) {
+            document = CLIENT.repository().createDocumentByPath(idOrPath, document);
+        } else {
+            document = CLIENT.repository().createDocumentById(idOrPath, document);
+        }
+
+        String docId = document.getId();
+        String docPath = document.getPath();
+        // do we already have to delete one parent?
+        if (documentPathsToDelete.stream().noneMatch(docPath::startsWith)) {
+            documentIdsToDelete.add(docId);
+            documentPathsToDelete.add(docPath);
+        }
+        return docId;
     }
 
     public static void deleteDocument(String idOrPath) {
-        String segment = idOrPath.startsWith("/") ? "path" : "id";
-        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1", segment, idOrPath));
-        Request request = newRequest().url(url).delete().build();
-        try {
-            client.newCall(request).execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    private static String buildDocumentJSON(String type, String title, String description) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"entity-type\": \"document\"").append(",\n");
-        sb.append("\"type\": \"").append(type).append("\",\n");
-        sb.append("\"name\": \"").append(title).append("\",\n");
-        sb.append("\"properties\": {").append("\n");
-        if (description != null) {
-            sb.append("\"dc:description\": \"").append(description).append("\",\n");
-        }
-        sb.append("\"dc:title\": \"").append(title).append("\"\n");
-        sb.append("}").append("\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
-    public static void addPermission(String pathOrId, String username, String permission) {
-        String json = buildAddPermissionJSON(pathOrId, username, permission);
-        RequestBody body = RequestBody.create(AUTOMATION_JSON, json);
-        String url = String.join("/",
-                Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/automation", "Document.AddPermission"));
-        Request request = newRequest().url(url).post(body).build();
-        try {
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new RuntimeException(String.format("Unable to add permission '%s' for user '%s' on '%s'",
-                        permission, username, pathOrId));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        // TODO change that by proper deleteDocument(String)
+        if (idOrPath.startsWith("/")) {
+            CLIENT.repository().deleteDocument(CLIENT.repository().fetchDocumentByPath(idOrPath));
+        } else {
+            CLIENT.repository().deleteDocument(CLIENT.repository().fetchDocumentById(idOrPath));
         }
     }
 
-    private static String buildAddPermissionJSON(String pathOrId, String username, String permission) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{").append("\n");
-        sb.append("\"params\": {").append("\n");
-        sb.append("\"username\": \"").append(username).append("\",\n");
-        sb.append("\"permission\": \"").append(permission).append("\"\n");
-        sb.append("}").append(",\n");
-        sb.append("\"input\": \"").append(pathOrId).append("\"\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
-    private static String buildRemovePermissionJSON(String pathOrId, String username) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{").append("\n");
-        sb.append("\"params\": {").append("\n");
-        sb.append("\"user\": \"").append(username).append("\"\n");
-        sb.append("}").append(",\n");
-        sb.append("\"input\": \"").append(pathOrId).append("\"\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
-    private static Request.Builder newRequest() {
-        String credential = Credentials.basic(ADMINISTRATOR, ADMINISTRATOR);
-        return new Request.Builder().header("Authorization", credential);
-    }
-
-    private static StringBuilder appendJSONArray(StringBuilder sb, String key, String[] array, boolean comma) {
-        if (array != null) {
-            sb.append("\"").append(key).append("\": [").append("\n");
-            for (int i = 0; i < array.length; i++) {
-                if (i > 0) {
-                    sb.append(", ");
-                }
-                sb.append("\"").append(array[i]).append("\"");
-            }
-            sb.append("]");
-            if (comma) {
-                sb.append(",\n");
-            } else {
-                sb.append("\n");
-            }
+    public static void addPermission(String idOrPath, String username, String permission) {
+        Document document;
+        if (idOrPath.startsWith("/")) {
+            document = CLIENT.repository().fetchDocumentByPath(idOrPath);
+        } else {
+            document = CLIENT.repository().fetchDocumentById(idOrPath);
         }
-        return sb;
+
+        ACE ace = new ACE();
+        ace.setUsername(username);
+        ace.setPermission(permission);
+        document.addPermission(ace);
+    }
+
+    public static void removePermissions(String idOrPath, String username) {
+        Document document;
+        if (idOrPath.startsWith("/")) {
+            document = CLIENT.repository().fetchDocumentByPath(idOrPath);
+        } else {
+            document = CLIENT.repository().fetchDocumentById(idOrPath);
+        }
+
+        document.removePermission(username);
     }
 
 }
