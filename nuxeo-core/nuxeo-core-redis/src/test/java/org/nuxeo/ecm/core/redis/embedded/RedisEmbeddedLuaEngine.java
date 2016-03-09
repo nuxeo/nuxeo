@@ -15,8 +15,17 @@
  */
 package org.nuxeo.ecm.core.redis.embedded;
 
+import org.apache.commons.codec.binary.Hex;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.script.LuaScriptEngine;
+import org.luaj.vm2.script.LuaScriptEngineFactory;
+import org.luaj.vm2.script.LuajContext;
+import org.nuxeo.ecm.core.api.NuxeoException;
+
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +33,6 @@ import java.util.Map;
 import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
-
-import org.apache.commons.codec.binary.Hex;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.script.LuaScriptEngine;
-import org.luaj.vm2.script.LuaScriptEngineFactory;
-import org.luaj.vm2.script.LuajContext;
-import org.nuxeo.ecm.core.api.NuxeoException;
 
 public class RedisEmbeddedLuaEngine {
 
@@ -96,4 +98,22 @@ public class RedisEmbeddedLuaEngine {
         }
         return result;
     }
+
+    public Object evalsha(byte[] sha, List<byte[]> keys, List<byte[]> args) throws ScriptException {
+        String shaStr = new String(sha, StandardCharsets.US_ASCII);
+        final CompiledScript script = binaries.get(shaStr);
+        Bindings bindings = engine.createBindings();
+        bindings.put("KEYS", keys.toArray());
+        bindings.put("ARGV", args.toArray());
+        Object result = script.eval(bindings);
+        if (result instanceof LuaValue) {
+            LuaValue value = (LuaValue) result;
+            if (value.isboolean() && value.toboolean() == false) {
+                return null;
+            }
+            return value.tojstring();
+        }
+        return result;
+    }
+
 }
