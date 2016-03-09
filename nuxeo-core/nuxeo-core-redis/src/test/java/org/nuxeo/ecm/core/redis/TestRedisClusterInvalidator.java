@@ -62,7 +62,7 @@ public class TestRedisClusterInvalidator {
     }
 
     private void assumeTrueRedisServer() {
-        Assume.assumeTrue("Require a true Redis server with pipelined and pubsub support",
+        Assume.assumeTrue("Require a true Redis server with pubsub support",
                 "server".equals(Framework.getProperty("nuxeo.test.redis.mode")));
     }
 

@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.redis.contribs;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -30,8 +28,11 @@ import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.runtime.api.Framework;
 import redis.clients.jedis.JedisPubSub;
-import redis.clients.jedis.Pipeline;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -59,9 +60,9 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
     // Max delay to wait for a channel subscription
     protected static final long TIMEOUT_SUBSCRIBE_SECOND = 10;
 
-    protected static final String STARTED_KEY = "started";
+    protected static final String STARTED_FIELD = "started";
 
-    protected static final String LAST_INVAL_KEY = "lastInvalSent";
+    protected static final String LAST_INVAL_FIELD = "lastInvalSent";
 
     protected String nodeId;
 
@@ -81,6 +82,9 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
 
     private CountDownLatch subscribeLatch;
 
+    private String registerSha;
+    private String sendSha;
+
     @Override
     public void initialize(String nodeId, RepositoryImpl repository) {
         this.nodeId = nodeId;
@@ -88,6 +92,12 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
         redisExecutor = Framework.getLocalService(RedisExecutor.class);
         RedisAdmin redisAdmin = Framework.getService(RedisAdmin.class);
         namespace = redisAdmin.namespace(PREFIX, repositoryName);
+        try {
+            registerSha = redisAdmin.load("org.nuxeo.ecm.core.redis", "register-node-inval");
+            sendSha = redisAdmin.load("org.nuxeo.ecm.core.redis", "send-inval");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         receivedInvals = new Invalidations();
         createSubscriberThread();
         registerNode();
@@ -101,7 +111,7 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
         subscriberThread.setPriority(Thread.NORM_PRIORITY);
         subscriberThread.start();
         try {
-            if (! subscribeLatch.await(TIMEOUT_SUBSCRIBE_SECOND, TimeUnit.SECONDS)) {
+            if (!subscribeLatch.await(TIMEOUT_SUBSCRIBE_SECOND, TimeUnit.SECONDS)) {
                 log.error("Redis channel subscripion timeout after " + TIMEOUT_SUBSCRIBE_SECOND +
                         "s, continuing but this node may not receive cluster invalidations");
             }
@@ -149,15 +159,15 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
     }
 
     protected void registerNode() {
-        startedDateTime = getCurrentDateTime();
-        log.info("Registering node: " + nodeId);
+        final String startedDateTime = getCurrentDateTime();
+        final List<String> keys = Arrays.asList(getNodeKey());
+        final List<String> args = Arrays.asList(STARTED_FIELD, startedDateTime,
+                Integer.valueOf(TIMEOUT_REGISTER_SECOND).toString());
+        log.debug("Registering node: " + nodeId);
+
         redisExecutor.execute(jedis -> {
-            String key = getNodeKey();
-            Pipeline pipe = jedis.pipelined();
-            pipe.hset(key, "started", startedDateTime);
-            // Use an expiration so we can access info after a shutdown
-            pipe.expire(key, TIMEOUT_REGISTER_SECOND);
-            pipe.sync();
+            jedis.evalsha(registerSha, keys, args);
+            log.info("Node registered: " + nodeId);
             return null;
         });
     }
@@ -192,24 +202,26 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
 
     @Override
     public void sendInvalidations(Invalidations invals) {
-        redisExecutor.execute(jedis -> {
-            RedisInvalidations rInvals = new RedisInvalidations(nodeId, invals);
-            if (log.isTraceEnabled()) {
-                log.trace("Sending invalidations: " + rInvals);
-            }
-            String key = getNodeKey();
+        final String startedDateTime = getCurrentDateTime();
+        RedisInvalidations rInvals = new RedisInvalidations(nodeId, invals);
+        if (log.isTraceEnabled()) {
+            log.trace("Sending invalidations: " + rInvals);
+        }
+        final List<String> keys = Arrays.asList(getChannelName(), getNodeKey());
+        final List<String> args;
+        try {
+            args = Arrays.asList(rInvals.serialize(), STARTED_FIELD, startedDateTime,
+                    LAST_INVAL_FIELD, getCurrentDateTime(), Integer.valueOf(TIMEOUT_REGISTER_SECOND).toString());
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
 
-            try {
-                Pipeline pipe = jedis.pipelined();
-                pipe.publish(getChannelName(), rInvals.serialize());
-                pipe.hset(key, STARTED_KEY, startedDateTime);
-                pipe.hset(key, LAST_INVAL_KEY, getCurrentDateTime());
-                pipe.expire(key, TIMEOUT_REGISTER_SECOND);
-                pipe.sync();
-                return null;
-            } catch (IOException e) {
-                throw new NuxeoException(e);
+        redisExecutor.execute(jedis -> {
+            jedis.evalsha(sendSha, keys, args);
+            if (log.isTraceEnabled()) {
+                log.trace("invals sent");
             }
+            return null;
         });
     }
 

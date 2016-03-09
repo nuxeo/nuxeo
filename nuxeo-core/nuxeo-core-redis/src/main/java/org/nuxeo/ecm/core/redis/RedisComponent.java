@@ -36,7 +36,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 import org.osgi.framework.Bundle;
-
 import redis.clients.jedis.Jedis;
 
 /**
@@ -149,7 +148,7 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
         this.executor = executor;
         try {
             delsha = load("org.nuxeo.ecm.core.redis", "del-keys");
-        } catch (IOException cause) {
+        } catch (RuntimeException cause) {
             executor = null;
             throw new NuxeoException("Cannot activate redis executor", cause);
         }
@@ -168,14 +167,24 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
     }
 
     @Override
-    public String load(String bundleName, String scriptName) throws IOException {
+    public String load(String bundleName, String scriptName) {
         Bundle b = Framework.getRuntime().getBundle(bundleName);
         URL loc = b.getEntry(scriptName + ".lua");
-        InputStream is = loc.openStream();
-        final StrBuilder builder = new StrBuilder();
-        for (String line : IOUtils.readLines(is)) {
-            builder.appendln(line);
+        if (loc == null) {
+            throw new RuntimeException("Fail to load lua script: " + scriptName);
         }
+        InputStream is = null;
+        final StrBuilder builder;
+        try {
+            is = loc.openStream();
+            builder = new StrBuilder();
+            for (String line : IOUtils.readLines(is)) {
+                builder.appendln(line);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Fail to load lua script: " + scriptName, e);
+        }
+
         return executor.execute(new RedisCallable<String>() {
             @Override
             public String call(Jedis jedis) {
