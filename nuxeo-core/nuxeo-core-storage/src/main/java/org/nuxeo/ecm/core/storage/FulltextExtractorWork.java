@@ -153,9 +153,14 @@ public abstract class FulltextExtractorWork extends AbstractWork {
         }
         if (!indexesAndText.isEmpty()) {
             Work work = new FulltextUpdaterWork(repositoryName, docId, false, true, indexesAndText);
-            WorkManager workManager = Framework.getLocalService(WorkManager.class);
-            workManager.schedule(work, true);
+            if (!fulltextConfiguration.fulltextSearchDisabled) {
+                WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                workManager.schedule(work, true);
+            } else {
+                ((FulltextUpdaterWork)work).updateWithSession(session);
+            }
         }
+
     }
 
     @Override

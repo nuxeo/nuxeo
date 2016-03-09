@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -117,6 +118,13 @@ public class FulltextUpdaterWork extends AbstractWork {
         setStatus("Saving");
         session.save();
         setStatus("Done");
+    }
+
+    protected void updateWithSession(CoreSession session) {
+        CoreSession tmp = this.session;
+        this.session = session;
+        update();
+        this.session = tmp;
     }
 
     protected void update() {

@@ -883,6 +883,9 @@ public class DBSTransactionState {
         // TODO XXX make configurable, see also FulltextExtractorWork
         FulltextParser fulltextParser = new DefaultFulltextParser();
         FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
+        if (fulltextConfiguration.fulltextSearchDisabled) {
+            return;
+        }
         // update simpletext on documents with dirty strings
         for (String id : docsWithDirtyStrings) {
             if (id == null) {

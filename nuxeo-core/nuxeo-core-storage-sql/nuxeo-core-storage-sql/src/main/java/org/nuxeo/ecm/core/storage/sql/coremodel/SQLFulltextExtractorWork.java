@@ -56,7 +56,7 @@ public class SQLFulltextExtractorWork extends FulltextExtractorWork {
             } catch (InstantiationException e) {
                 log.error("Failed to instantiate " + fulltextParserClass.getCanonicalName(), e);
             } catch (IllegalAccessException e) {
-                log.error(e);
+                log.error("Failed to instantiate " + fulltextParserClass.getCanonicalName(), e);
             }
         }
     }

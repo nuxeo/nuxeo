@@ -58,6 +58,7 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
@@ -394,6 +395,10 @@ public class SessionImpl implements Session, XAResource {
     }
 
     protected void getFulltextSimpleWorks(List<Work> works, Set<Serializable> dirtyStrings) {
+        FulltextConfiguration fulltextConfiguration = model.getFulltextConfiguration();
+        if (fulltextConfiguration.fulltextSearchDisabled) {
+            return;
+        }
         // update simpletext on documents with dirty strings
         for (Serializable docId : dirtyStrings) {
             if (docId == null) {
@@ -414,21 +419,21 @@ public class SessionImpl implements Session, XAResource {
             String documentType = document.getPrimaryType();
             String[] mixinTypes = document.getMixinTypes();
 
-            if (!model.getFulltextConfiguration().isFulltextIndexable(documentType)) {
+            if (!fulltextConfiguration.isFulltextIndexable(documentType)) {
                 continue;
             }
             document.getSimpleProperty(Model.FULLTEXT_JOBID_PROP).setValue(model.idToString(document.getId()));
             FulltextFinder fulltextFinder = new FulltextFinder(fulltextParser, document, this);
             List<IndexAndText> indexesAndText = new LinkedList<IndexAndText>();
-            for (String indexName : model.getFulltextConfiguration().indexNames) {
+            for (String indexName : fulltextConfiguration.indexNames) {
                 Set<String> paths;
-                if (model.getFulltextConfiguration().indexesAllSimple.contains(indexName)) {
+                if (fulltextConfiguration.indexesAllSimple.contains(indexName)) {
                     // index all string fields, minus excluded ones
                     // TODO XXX excluded ones...
                     paths = model.getSimpleTextPropertyPaths(documentType, mixinTypes);
                 } else {
                     // index configured fields
-                    paths = model.getFulltextConfiguration().propPathsByIndexSimple.get(indexName);
+                    paths = fulltextConfiguration.propPathsByIndexSimple.get(indexName);
                 }
                 String text = fulltextFinder.findFulltext(paths);
                 indexesAndText.add(new IndexAndText(indexName, text));
