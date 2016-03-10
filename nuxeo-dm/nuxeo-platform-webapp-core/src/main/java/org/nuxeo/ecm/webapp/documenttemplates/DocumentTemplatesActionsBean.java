@@ -168,7 +168,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         String name = pss.generatePathSegment(doc);
         CopyOption opt = null;
-        if (Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(RESET_CREATOR_PROPERTY)) {
+        if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(RESET_CREATOR_PROPERTY)) {
             opt = CopyOption.RESET_CREATOR;
         }
         DocumentModel created = documentManager.copy(new IdRef(selectedTemplateId), currentDocRef, name, opt);
