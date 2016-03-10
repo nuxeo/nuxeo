@@ -12,39 +12,37 @@
 -- https://oracle-base.com/dba/miscellaneous/conversion_api.sql
 
 
-CREATE OR REPLACE FUNCTION new_uuid(l_seed BINARY_INTEGER)
+CREATE OR REPLACE FUNCTION RANDOM_STRING(size NUMBER(5))
+RETURN VARCHAR2
+AS 
+  l_random       VARCHAR2 (12);
+BEGIN
+  l_random := '';
+   FOR i IN 1..size LOOP
+      l_random := l_random  || RPAD (conversion_api.to_hex (TRUNC (DBMS_RANDOM.VALUE (low => 1, high => 65535))),4,'0');
+  END LOOP;
+  RETURN l_random;
+END;
+/
+
+
+CREATE OR REPLACE FUNCTION new_uuid
    RETURN VARCHAR2
 AS
-   l_random_num   NUMBER (5);
-   l_date         VARCHAR2 (25);
-   l_random       VARCHAR2 (4);
-   l_ip_address   VARCHAR2 (12);
 BEGIN
-   DBMS_RANDOM.initialize (val => l_seed);
-   l_random_num := TRUNC (DBMS_RANDOM.VALUE (low => 1, high => 65535));
-   DBMS_RANDOM.TERMINATE;
+   
+   
 
-   l_date :=
-      conversion_api.to_hex (
-         TO_NUMBER (TO_CHAR (SYSTIMESTAMP, 'FFSSMIHH24DDMMYYYY')));
-   l_random := RPAD (conversion_api.to_hex (l_random_num), 4, '0');
-   l_ip_address :=
-      conversion_api.to_hex (
-         TO_NUMBER (
-            REPLACE (
-               NVL (SYS_CONTEXT ('USERENV', 'IP_ADDRESS'), '123.123.123.123'),
-               '.',
-               '')));
-
-   RETURN    LOWER(SUBSTR (l_date, 1, 8)
+   
+   RETURN    RANDOM_STRING(2)
           || '-'
-          || SUBSTR (l_date, 9, 4)
+          || RANDOM_STRING(1)
           || '-'
-          || SUBSTR (l_date, 13, 4)
+          || RANDOM_STRING(1)
           || '-'
-          || RPAD (SUBSTR (l_date, 17), 4, '0')
+          || RANDOM_STRING(1)
           || '-'
-          || RPAD (l_random || l_ip_address, 12, '0'));
+          || RANDOM_STRING(3)
 END;
 /
 
@@ -64,7 +62,6 @@ IS
         FROM usersubscription, hierarchy
        WHERE usersubscription.docid = hierarchy.id;
 BEGIN
-   l_seed := TO_NUMBER (TO_CHAR (SYSDATE, 'YYYYDDMMSS'));
    TOTALCNT := 0;
    DBMS_OUTPUT.put_line (
       'Migrating usersubscription table to document facet');
@@ -141,7 +138,7 @@ BEGIN
          IF notif_uuid IS NULL
          THEN
             -- If not, we create the hierarchy node and its notificationEntry
-            notif_uuid := new_uuid (l_seed);
+            notif_uuid := new_uuid ();
 
             INSERT INTO hierarchy (id,
                                    parentid,
