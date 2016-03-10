@@ -93,8 +93,8 @@ public class GroupEditFormPage extends UsersGroupsBasePage {
                                                                       .collect(Collectors.toList());
     }
 
-    public GroupEditFormPage setSubGroups(String... subgroups) {
-        new Select2WidgetElement(driver, subgroupsSelect, true).selectValues(subgroups);
+    public GroupEditFormPage setSubGroups(String... subGroups) {
+        new Select2WidgetElement(driver, subgroupsSelect, true).selectValues(subGroups);
         return asPage(GroupEditFormPage.class);
     }
 

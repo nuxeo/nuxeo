@@ -22,6 +22,7 @@ package org.nuxeo.functionaltests.pages;
 
 import static org.junit.Assert.assertEquals;
 import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.FOLDER_TYPE;
 import static org.nuxeo.functionaltests.Constants.FORUM_TYPE;
 import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
 import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
@@ -42,6 +43,7 @@ import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.forms.CollectionCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
+import org.nuxeo.functionaltests.pages.forms.FolderCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.ForumCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceCreationFormPage;
@@ -50,6 +52,7 @@ import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.FilesTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ForumTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
@@ -60,6 +63,7 @@ import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.TopicTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkflowTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.WorkspacesContentTabSubPage;
+import org.nuxeo.functionaltests.pages.workspace.WorkspaceHomePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -113,6 +117,9 @@ public class DocumentBasePage extends AbstractPage {
 
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Edit']")
     public WebElement editTabLink;
+
+    @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Files']")
+    public WebElement filesTabLink;
 
     @FindBy(xpath = "//div[@id='nxw_documentTabs_panel']//a/span[text()='Permissions']")
     public WebElement permissionsTabLink;
@@ -268,6 +275,11 @@ public class DocumentBasePage extends AbstractPage {
     public EditTabSubPage getEditTab() {
         clickOnDocumentTabLink(editTabLink);
         return asPage(EditTabSubPage.class);
+    }
+
+    public FilesTabSubPage getFilesTab() {
+        clickOnDocumentTabLink(filesTabLink);
+        return asPage(FilesTabSubPage.class);
     }
 
     public PermissionsSubPage getPermissionsTab() {
@@ -443,9 +455,9 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * @since 7.3
      */
-    public DocumentBasePage goToWorkspaces() {
+    public WorkspaceHomePage goToWorkspaces() {
         documentManagementLink.click();
-        return asPage(DocumentBasePage.class);
+        return asPage(WorkspaceHomePage.class);
     }
 
     /**
@@ -504,6 +516,18 @@ public class DocumentBasePage extends AbstractPage {
         DocumentBasePage workspacesPage = getNavigationSubPage().goToDocument(WORKSPACES_TITLE);
         // Delete the Workspace
         workspacesPage.getContentTab().removeDocument(workspaceTitle);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public FolderDocumentBasePage createFolder(String folderTitle, String folderDescription) {
+        // Get Folder creation form page
+        FolderCreationFormPage folderCreationFormPage = getContentTab().getDocumentCreatePage(FOLDER_TYPE,
+                FolderCreationFormPage.class);
+        // Create Folder
+        FolderDocumentBasePage folderPage = folderCreationFormPage.createFolderDocument(folderTitle, folderDescription);
+        return folderPage;
     }
 
     /**
