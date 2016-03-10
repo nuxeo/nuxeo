@@ -18,6 +18,8 @@ package org.nuxeo.ecm.quota.count;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 
 import java.util.concurrent.TimeUnit;
 
@@ -66,12 +68,9 @@ public class TestQuotaService {
 
     @Test
     public void testSetQuotaOnUserWorkspaces() throws Exception {
-        TransactionHelper.commitOrRollbackTransaction();
-        workManager.awaitCompletion(3, TimeUnit.SECONDS);
         DocumentRef uwRef1;
         DocumentRef uwRef2;
 
-        TransactionHelper.startTransaction();
         try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
             assertNotNull(uwm);
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
@@ -82,10 +81,8 @@ public class TestQuotaService {
             String creator = (String) uw.getProperty("dublincore", "creator");
             assertEquals(creator, "jdoe");
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-            workManager.awaitCompletion(3, TimeUnit.SECONDS);
+            nextTransaction();
         }
-        TransactionHelper.startTransaction();
         try (CoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jack")) {
             uwm = Framework.getLocalService(UserWorkspaceService.class);
             assertNotNull(uwm);
@@ -105,19 +102,18 @@ public class TestQuotaService {
         try {
             quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(100L, session.getRootDocument(), session);
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-            workManager.awaitCompletion(3, TimeUnit.SECONDS);
+            nextTransaction();
         }
+        DocumentModel uw1 = session.getDocument(uwRef1);
+        DocumentModel uw2 = session.getDocument(uwRef2);
+        assertEquals(uw1.getProperty("dss:maxSize").getValue(Long.class), Long.valueOf(100L));
+        assertEquals(uw2.getProperty("dss:maxSize").getValue(Long.class), Long.valueOf(100L));
+    }
+
+    void nextTransaction() throws InterruptedException {
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        try {
-            DocumentModel uw1 = session.getDocument(uwRef1);
-            DocumentModel uw2 = session.getDocument(uwRef2);
-            assertEquals(uw1.getProperty("dss:maxSize").getValue(Long.class), Long.valueOf(100L));
-            assertEquals(uw2.getProperty("dss:maxSize").getValue(Long.class), Long.valueOf(100L));
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-            workManager.awaitCompletion(3, TimeUnit.SECONDS);
-        }
+        assertTrue(workManager.awaitCompletion(3, TimeUnit.SECONDS));
     }
 
 }
