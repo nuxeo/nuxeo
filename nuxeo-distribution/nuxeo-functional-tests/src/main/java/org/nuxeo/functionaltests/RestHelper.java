@@ -24,9 +24,9 @@ import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -59,6 +59,8 @@ public class RestHelper {
 
     private static final List<String> usersToDelete = new ArrayList<>();
 
+    private static final List<String> groupsToDelete = new ArrayList<>();
+
     private RestHelper() {
         // helper class
     }
@@ -66,6 +68,7 @@ public class RestHelper {
     public static void cleanup() {
         cleanupDocuments();
         cleanupUsers();
+        cleanupGroups();
     }
 
     public static void cleanupDocuments() {
@@ -82,16 +85,21 @@ public class RestHelper {
         usersToDelete.clear();
     }
 
+    public static void cleanupGroups() {
+        groupsToDelete.forEach(RestHelper::deleteGroup);
+        groupsToDelete.clear();
+    }
+
     public static String createUser(String username, String password) {
         return createUser(username, password, null, null, null, null, null);
     }
 
-    public static String createUser(String username, String password, String firstName, String lastName, String company,
-            String email, String group) {
+    public static String createUser(String username, String password, String firstName, String lastName,
+            String company, String email, String group) {
         String json = buildUserJSON(username, password, firstName, lastName, company, email, group);
 
         RequestBody body = RequestBody.create(JSON, json);
-        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1/user" }, "/");
+        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/user"));
         Request request = newRequest().url(url).post(body).build();
 
         try {
@@ -109,11 +117,6 @@ public class RestHelper {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private static Request.Builder newRequest() {
-        String credential = Credentials.basic(ADMINISTRATOR, ADMINISTRATOR);
-        return new Request.Builder().header("Authorization", credential);
     }
 
     private static String buildUserJSON(String username, String password, String firstName, String lastName,
@@ -146,7 +149,52 @@ public class RestHelper {
     }
 
     public static void deleteUser(String username) {
-        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1/user", username }, "/");
+        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/user", username));
+        Request request = newRequest().url(url).delete().build();
+        try {
+            client.newCall(request).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void createGroup(String name, String label) {
+        createGroup(name, label, null, null);
+    }
+
+    public static void createGroup(String name, String label, String[] members, String[] subGroups) {
+        String json = buildGroupJSON(name, label, members, subGroups);
+
+        RequestBody body = RequestBody.create(JSON, json);
+
+        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/group"));
+        Request request = newRequest().url(url).post(body).build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new RuntimeException(String.format("Unable to create group '%s'", name));
+            }
+            groupsToDelete.add(name);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String buildGroupJSON(String name, String label, String[] members, String[] subGroups) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"entity-type\": \"group\"").append(",\n");
+        sb.append("\"groupname\": \"").append(name).append("\",\n");
+        sb.append("\"grouplabel\": \"").append(label).append("\",\n");
+        appendJSONArray(sb, "memberUsers", members, subGroups != null);
+        appendJSONArray(sb, "memberGroups", subGroups, false);
+        sb.append("}");
+        return sb.toString();
+    }
+
+    public static void deleteGroup(String name) {
+        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/group", name));
         Request request = newRequest().url(url).delete().build();
         try {
             client.newCall(request).execute();
@@ -160,7 +208,7 @@ public class RestHelper {
 
         RequestBody body = RequestBody.create(JSON, json);
         String segment = idOrPath.startsWith("/") ? "path" : "id";
-        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1", segment, idOrPath }, "/");
+        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1", segment, idOrPath));
         Request request = newRequest().url(url).post(body).build();
 
         try {
@@ -194,9 +242,9 @@ public class RestHelper {
         }
     }
 
-    public static void deleteDocument(String id) {
-        String segment = id.startsWith("/") ? "path" : "id";
-        String url = StringUtils.join(new String[] { AbstractTest.NUXEO_URL, "api/v1", segment, id }, "/");
+    public static void deleteDocument(String idOrPath) {
+        String segment = idOrPath.startsWith("/") ? "path" : "id";
+        String url = String.join("/", Arrays.asList(AbstractTest.NUXEO_URL, "api/v1", segment, idOrPath));
         Request request = newRequest().url(url).delete().build();
         try {
             client.newCall(request).execute();
@@ -225,8 +273,8 @@ public class RestHelper {
     public static void addPermission(String pathOrId, String username, String permission) {
         String json = buildAddPermissionJSON(pathOrId, username, permission);
         RequestBody body = RequestBody.create(AUTOMATION_JSON, json);
-        String url = StringUtils.join(
-                new String[] { AbstractTest.NUXEO_URL, "api/v1/automation", "Document.AddPermission" }, "/");
+        String url = String.join("/",
+                Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/automation", "Document.AddPermission"));
         Request request = newRequest().url(url).post(body).build();
         try {
             Response response = client.newCall(request).execute();
@@ -249,6 +297,30 @@ public class RestHelper {
         sb.append("\"input\": \"").append(pathOrId).append("\"\n");
         sb.append("}");
         return sb.toString();
+    }
+
+    private static Request.Builder newRequest() {
+        String credential = Credentials.basic(ADMINISTRATOR, ADMINISTRATOR);
+        return new Request.Builder().header("Authorization", credential);
+    }
+
+    private static StringBuilder appendJSONArray(StringBuilder sb, String key, String[] array, boolean comma) {
+        if (array != null) {
+            sb.append("\"").append(key).append("\": [").append("\n");
+            for (int i = 0; i < array.length - 1; i++) {
+                if (i > 0) {
+                    sb.append(", ");
+                }
+                sb.append("\"").append(array[i]).append("\"");
+            }
+            sb.append("]");
+            if (comma) {
+                sb.append(",\n");
+            } else {
+                sb.append("\n");
+            }
+        }
+        return sb;
     }
 
 }
