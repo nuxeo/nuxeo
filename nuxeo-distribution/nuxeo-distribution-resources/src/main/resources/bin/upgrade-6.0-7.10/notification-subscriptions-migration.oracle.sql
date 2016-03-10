@@ -12,13 +12,13 @@
 -- https://oracle-base.com/dba/miscellaneous/conversion_api.sql
 
 
-CREATE OR REPLACE FUNCTION RANDOM_STRING(size NUMBER(5))
+CREATE OR REPLACE FUNCTION RANDOM_STRING(l_size NUMBER)
 RETURN VARCHAR2
 AS 
   l_random       VARCHAR2 (12);
 BEGIN
   l_random := '';
-   FOR i IN 1..size LOOP
+   FOR i IN 1..l_size LOOP
       l_random := l_random  || RPAD (conversion_api.to_hex (TRUNC (DBMS_RANDOM.VALUE (low => 1, high => 65535))),4,'0');
   END LOOP;
   RETURN l_random;
@@ -30,11 +30,11 @@ CREATE OR REPLACE FUNCTION new_uuid
    RETURN VARCHAR2
 AS
 BEGIN
-   
-   
 
-   
-   RETURN    RANDOM_STRING(2)
+
+
+
+   RETURN    LOWER(RANDOM_STRING(2)
           || '-'
           || RANDOM_STRING(1)
           || '-'
@@ -42,7 +42,7 @@ BEGIN
           || '-'
           || RANDOM_STRING(1)
           || '-'
-          || RANDOM_STRING(3)
+          || RANDOM_STRING(3));
 END;
 /
 
