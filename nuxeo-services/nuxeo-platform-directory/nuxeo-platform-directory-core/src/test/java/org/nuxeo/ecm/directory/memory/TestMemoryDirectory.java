@@ -60,6 +60,7 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
     static final String SCHEMA_NAME = "myschema";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

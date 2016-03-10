@@ -166,10 +166,12 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
         return addresses;
     }
 
+    @Override
     public List<DNSServiceEntry> resolveLDAPDomainServers(final String domain) throws NamingException {
         return resolveDnsServiceRecord(LDAP_SERVICE_PREFIX, domain);
     }
 
+    @Override
     public List<DNSServiceEntry> resolveLDAPDomainServers(final String domain, final String prefix)
             throws NamingException {
         return resolveDnsServiceRecord(prefix, domain);

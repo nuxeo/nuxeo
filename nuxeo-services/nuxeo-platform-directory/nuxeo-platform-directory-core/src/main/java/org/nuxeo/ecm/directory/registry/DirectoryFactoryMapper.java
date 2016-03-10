@@ -65,6 +65,7 @@ public class DirectoryFactoryMapper {
         this.factories = factories;
     }
 
+    @Override
     public DirectoryFactoryMapper clone() {
         DirectoryFactoryMapper clone = new DirectoryFactoryMapper();
         clone.setDirectoryName(directoryName);

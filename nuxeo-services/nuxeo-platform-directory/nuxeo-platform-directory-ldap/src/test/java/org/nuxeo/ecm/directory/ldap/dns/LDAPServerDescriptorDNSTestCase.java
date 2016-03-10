@@ -44,6 +44,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
 
     private final class MockDNSService implements DNSServiceResolver {
 
+        @Override
         public List<DNSServiceEntry> resolveLDAPDomainServers(String domain, String prefix) {
             List<DNSServiceEntry> entries = new ArrayList<DNSServiceEntry>();
             if (prefix.equals("_gc._tcp")) {
@@ -54,6 +55,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
             return entries;
         }
 
+        @Override
         public List<DNSServiceEntry> resolveLDAPDomainServers(String domain) {
             List<DNSServiceEntry> entries = new ArrayList<DNSServiceEntry>();
             entries.add(new DNSServiceEntry("localhost", 389, 0, 100));
@@ -77,6 +79,7 @@ public class LDAPServerDescriptorDNSTestCase extends NXRuntimeTestCase {
 
     private MockDNSService dns;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();

@@ -46,6 +46,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
         return Thread.currentThread().getContextClassLoader().getResource(resource);
     }
 
+    @Override
     @Test
     public void setUp() throws Exception {
         super.setUp();

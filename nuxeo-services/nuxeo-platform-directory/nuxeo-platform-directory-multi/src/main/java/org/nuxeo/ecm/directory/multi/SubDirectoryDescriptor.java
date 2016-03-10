@@ -50,6 +50,7 @@ public class SubDirectoryDescriptor {
     /**
      * @since 5.6
      */
+    @Override
     public SubDirectoryDescriptor clone() {
         SubDirectoryDescriptor clone = new SubDirectoryDescriptor();
         clone.name = name;

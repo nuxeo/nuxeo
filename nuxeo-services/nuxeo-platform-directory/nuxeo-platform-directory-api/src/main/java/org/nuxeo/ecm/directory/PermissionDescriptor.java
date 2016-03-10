@@ -26,7 +26,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * Common permission descriptor for all directory that use security check
- * 
+ *
  * @since 6.0
  */
 @XObject(value = "permission")
@@ -41,6 +41,7 @@ public class PermissionDescriptor {
     @XNodeList(value = "user", type = String[].class, componentType = String.class)
     public String[] users;
 
+    @Override
     public PermissionDescriptor clone() {
         PermissionDescriptor clone = new PermissionDescriptor();
         clone.name = name;

@@ -107,6 +107,7 @@ public class DNSServiceEntry implements Comparable<DNSServiceEntry> {
     /**
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
+    @Override
     public int compareTo(DNSServiceEntry o) {
         if (o.priority == priority) {
             return o.weight - weight;

@@ -43,10 +43,12 @@ public abstract class AbstractReference implements Reference {
 
     protected String fieldName;
 
+    @Override
     public String getFieldName() {
         return fieldName;
     }
 
+    @Override
     public Directory getSourceDirectory() throws DirectoryException {
         if (sourceDirectory == null) {
             sourceDirectory = getDirectoryService().getDirectory(sourceDirectoryName);
@@ -54,11 +56,13 @@ public abstract class AbstractReference implements Reference {
         return sourceDirectory;
     }
 
+    @Override
     public void setSourceDirectoryName(String sourceDirectoryName) {
         sourceDirectory = null;
         this.sourceDirectoryName = sourceDirectoryName;
     }
 
+    @Override
     public Directory getTargetDirectory() throws DirectoryException {
         if (targetDirectory == null) {
             targetDirectory = getDirectoryService().getDirectory(targetDirectoryName);
@@ -66,6 +70,7 @@ public abstract class AbstractReference implements Reference {
         return targetDirectory;
     }
 
+    @Override
     public void setTargetDirectoryName(String targetDirectoryName) {
         targetDirectory = null;
         this.targetDirectoryName = targetDirectoryName;
@@ -81,6 +86,7 @@ public abstract class AbstractReference implements Reference {
     /**
      * @since 5.6
      */
+    @Override
     public AbstractReference clone() {
         AbstractReference clone = newInstance();
         clone.sourceDirectoryName = sourceDirectoryName;

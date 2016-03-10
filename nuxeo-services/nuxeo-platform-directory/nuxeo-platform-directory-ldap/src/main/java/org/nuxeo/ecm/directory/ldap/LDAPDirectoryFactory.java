@@ -48,10 +48,12 @@ public class LDAPDirectoryFactory extends DefaultComponent implements DirectoryF
 
     protected LDAPServerRegistry servers;
 
+    @Override
     public Directory getDirectory(String name) {
         return proxies.getDirectory(name);
     }
 
+    @Override
     public List<Directory> getDirectories() {
         List<Directory> directories = new ArrayList<Directory>();
         directories.addAll(proxies.getDirectories());
@@ -62,6 +64,7 @@ public class LDAPDirectoryFactory extends DefaultComponent implements DirectoryF
         return servers.getServer(name);
     }
 
+    @Override
     public String getName() {
         return NAME;
     }
@@ -140,6 +143,7 @@ public class LDAPDirectoryFactory extends DefaultComponent implements DirectoryF
         }
     }
 
+    @Override
     public void shutdown() throws DirectoryException {
         for (Directory directory : proxies.getDirectories()) {
             directory.shutdown();

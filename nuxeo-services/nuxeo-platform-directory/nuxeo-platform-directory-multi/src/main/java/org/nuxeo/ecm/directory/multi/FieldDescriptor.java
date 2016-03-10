@@ -44,6 +44,7 @@ public class FieldDescriptor {
     /**
      * @since 5.6
      */
+    @Override
     public FieldDescriptor clone() {
         FieldDescriptor clone = new FieldDescriptor();
         clone.name = name;

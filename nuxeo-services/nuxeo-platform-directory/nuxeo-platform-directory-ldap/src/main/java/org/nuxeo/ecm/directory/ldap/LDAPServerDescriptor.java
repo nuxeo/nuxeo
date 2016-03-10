@@ -359,6 +359,7 @@ public class LDAPServerDescriptor {
             return url.hashCode();
         }
 
+        @Override
         public String getUrl() throws NamingException {
             return url.getValue();
         }

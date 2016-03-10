@@ -44,6 +44,7 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
 
     protected Pattern pattern;
 
+    @Override
     public DocumentModel adapt(Directory directory, DocumentModel entry) throws DirectoryException {
         if (fieldName == null || pattern == null) {
             log.warn(getClass().getName() + " is missing configuration parameters");
@@ -71,6 +72,7 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
         return entry;
     }
 
+    @Override
     public void setParameter(String name, String value) {
         if ("fieldName".equals(name)) {
             fieldName = value;

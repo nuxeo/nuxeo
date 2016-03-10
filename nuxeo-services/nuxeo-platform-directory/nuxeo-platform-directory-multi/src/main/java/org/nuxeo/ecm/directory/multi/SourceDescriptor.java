@@ -50,6 +50,7 @@ public class SourceDescriptor {
     /**
      * @since 5.6
      */
+    @Override
     public SourceDescriptor clone() {
         SourceDescriptor clone = new SourceDescriptor();
         clone.name = name;

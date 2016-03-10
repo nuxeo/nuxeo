@@ -46,6 +46,7 @@ public class MemoryDirectoryFactory implements DirectoryFactory {
         directoryService = Framework.getService(DirectoryService.class);
     }
 
+    @Override
     public String getName() {
         return "memdirs";
     }
@@ -62,13 +63,16 @@ public class MemoryDirectoryFactory implements DirectoryFactory {
         directories.remove(directoryName);
     }
 
+    @Override
     public Directory getDirectory(String name) {
         return directories.get(name);
     }
 
+    @Override
     public void shutdown() {
     }
 
+    @Override
     public List<Directory> getDirectories() {
         return new ArrayList<Directory>(directories.values());
     }

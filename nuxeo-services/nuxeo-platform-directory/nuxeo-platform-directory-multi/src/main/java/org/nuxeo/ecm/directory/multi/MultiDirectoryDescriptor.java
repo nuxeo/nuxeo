@@ -97,6 +97,7 @@ public class MultiDirectoryDescriptor implements Cloneable {
     /**
      * @since 5.6
      */
+    @Override
     public MultiDirectoryDescriptor clone() {
         MultiDirectoryDescriptor clone = new MultiDirectoryDescriptor();
         clone.name = name;

@@ -106,6 +106,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         return directoryName;
     }
 
+    @Override
     public Directory getDirectory(String directoryName) throws DirectoryException {
         if (directoryName == null) {
             return null;
@@ -123,6 +124,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         return null;
     }
 
+    @Override
     public Directory getDirectory(String name, DocumentModel documentContext) throws DirectoryException {
         if (name == null) {
             return null;
@@ -154,6 +156,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         return dir;
     }
 
+    @Override
     public List<Directory> getDirectories() throws DirectoryException {
         List<Directory> directoryList = new ArrayList<Directory>();
         for (DirectoryFactory factory : factories.getFactories()) {
@@ -208,6 +211,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         }
     }
 
+    @Override
     public void registerDirectory(String directoryName, DirectoryFactory factory) {
         // compatibility code to add otherwise missing memory factory (as it's
         // not registered via extension points)
@@ -218,11 +222,13 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         factoriesByDirectoryName.addContribution(contrib);
     }
 
+    @Override
     public void unregisterDirectory(String directoryName, DirectoryFactory factory) {
         DirectoryFactoryMapper contrib = new DirectoryFactoryMapper(directoryName, factory.getName());
         factoriesByDirectoryName.removeContribution(contrib);
     }
 
+    @Override
     public List<String> getDirectoryNames() throws DirectoryException {
         List<Directory> directories = getDirectories();
         List<String> directoryNames = new ArrayList<String>();
@@ -232,26 +238,32 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         return directoryNames;
     }
 
+    @Override
     public String getDirectorySchema(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getSchema();
     }
 
+    @Override
     public String getDirectoryIdField(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getIdField();
     }
 
+    @Override
     public String getDirectoryPasswordField(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getPasswordField();
     }
 
+    @Override
     public Session open(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getSession();
     }
 
+    @Override
     public Session open(String directoryName, DocumentModel documentContext) throws DirectoryException {
         return getDirectoryOrFail(directoryName, documentContext).getSession();
     }
 
+    @Override
     public String getParentDirectoryName(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getParentDirectory();
     }

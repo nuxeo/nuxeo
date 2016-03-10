@@ -35,6 +35,7 @@ public class DefaultLdapExceptionProcessor implements LdapExceptionProcessor {
 
     protected Pattern err53 = Pattern.compile(".*\\[LDAP: error code 53 - (.*)\\].*");
 
+    @Override
     public RecoverableClientException extractRecoverableException(Exception e) {
 
         String errMsg = e.getMessage();

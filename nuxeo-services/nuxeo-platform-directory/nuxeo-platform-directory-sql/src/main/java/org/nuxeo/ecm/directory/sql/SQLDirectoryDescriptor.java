@@ -490,6 +490,7 @@ public class SQLDirectoryDescriptor {
         computeMultiTenantId = other.computeMultiTenantId;
     }
 
+    @Override
     public SQLDirectoryDescriptor clone() {
         SQLDirectoryDescriptor clone = new SQLDirectoryDescriptor();
         clone.name = name;

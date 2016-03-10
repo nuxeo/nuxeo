@@ -64,6 +64,7 @@ public class SQLStaticFilter implements Serializable {
         return table.getColumn(column);
     }
 
+    @Override
     public SQLStaticFilter clone() {
         SQLStaticFilter clone = new SQLStaticFilter();
         clone.column = column;

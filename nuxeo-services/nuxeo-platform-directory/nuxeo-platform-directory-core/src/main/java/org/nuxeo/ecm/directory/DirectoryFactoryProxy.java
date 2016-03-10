@@ -58,14 +58,17 @@ public class DirectoryFactoryProxy implements DirectoryFactory {
         return factory;
     }
 
+    @Override
     public Directory getDirectory(String name) throws DirectoryException {
         return getRealObject().getDirectory(name);
     }
 
+    @Override
     public String getName() {
         return getRealObject().getName();
     }
 
+    @Override
     public void shutdown() throws DirectoryException {
         if (factory != null) {
             factory.shutdown();
@@ -73,6 +76,7 @@ public class DirectoryFactoryProxy implements DirectoryFactory {
         }
     }
 
+    @Override
     public List<Directory> getDirectories() throws DirectoryException {
         return getRealObject().getDirectories();
     }

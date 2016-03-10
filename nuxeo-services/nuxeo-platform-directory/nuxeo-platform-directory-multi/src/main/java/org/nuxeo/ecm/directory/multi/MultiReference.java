@@ -49,10 +49,12 @@ public class MultiReference extends AbstractReference {
         this.fieldName = fieldName;
     }
 
+    @Override
     public void addLinks(String sourceId, List<String> targetIds) throws DirectoryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void addLinks(List<String> sourceIds, String targetId) throws DirectoryException {
         throw new UnsupportedOperationException();
     }
@@ -86,8 +88,10 @@ public class MultiReference extends AbstractReference {
         return x;
     }
 
+    @Override
     public List<String> getSourceIdsForTarget(final String targetId) throws DirectoryException {
         return doCollect(new Collector() {
+            @Override
             public List<String> collect(List<Reference> refs) throws DirectoryException {
                 List<String> sourceIds = new ArrayList<>(1);
                 for (Reference ref : refs) {
@@ -98,8 +102,10 @@ public class MultiReference extends AbstractReference {
         });
     }
 
+    @Override
     public List<String> getTargetIdsForSource(final String sourceId) throws DirectoryException {
         return doCollect(new Collector() {
+            @Override
             public List<String> collect(List<Reference> refs) throws DirectoryException {
                 List<String> targetIds = new ArrayList<>(1);
                 for (Reference ref : refs) {
@@ -110,18 +116,22 @@ public class MultiReference extends AbstractReference {
         });
     }
 
+    @Override
     public void removeLinksForSource(String sourceId) throws DirectoryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void removeLinksForTarget(String targetId) throws DirectoryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
         throw new UnsupportedOperationException();
     }

@@ -65,6 +65,7 @@ public class FilterExpressionCorrector {
      */
     private static final ICorrectorJob notJob = new ICorrectorJob() {
 
+        @Override
         public String run(final String filter) {
 
             final StringBuffer newString = new StringBuffer();
