@@ -50,6 +50,7 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         super.setUp();
         deployBundle("org.nuxeo.runtime.jtajca");
+        deployBundle("org.nuxeo.runtime.datasource");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.schema");
@@ -57,6 +58,8 @@ public abstract class SQLBackendTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.storage");
         deployBundle("org.nuxeo.ecm.core.storage.sql");
         DatabaseHelper.DATABASE.setUp();
+        deployTestContrib("org.nuxeo.ecm.core.storage", "OSGI-INF/test-repo-ds.xml");
+        fireFrameworkStarted();
         repository = newRepository(-1);
     }
 

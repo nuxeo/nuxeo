@@ -60,4 +60,11 @@ public class JDBCMapperTxSuspender implements InvocationHandler {
         return (Mapper) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
                 new Class<?>[] { Mapper.class }, new JDBCMapperTxSuspender(mapper));
     }
+
+    public static Mapper unwrap(Mapper mapper) {
+        if (!Proxy.isProxyClass(mapper.getClass())) {
+            return mapper;
+        }
+        return ((JDBCMapperTxSuspender) Proxy.getInvocationHandler(mapper)).mapper;
+    }
 }
