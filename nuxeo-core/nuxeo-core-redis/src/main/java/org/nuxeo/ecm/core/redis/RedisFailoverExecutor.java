@@ -60,9 +60,4 @@ public class RedisFailoverExecutor implements RedisExecutor {
         return executor.getPool();
     }
 
-    @Override
-    public boolean supportPipelined() {
-        return executor.supportPipelined();
-    }
-
 }

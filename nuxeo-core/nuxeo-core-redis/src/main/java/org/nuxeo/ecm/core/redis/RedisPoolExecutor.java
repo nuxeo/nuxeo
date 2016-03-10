@@ -72,11 +72,6 @@ public class RedisPoolExecutor implements RedisExecutor {
     }
 
     @Override
-    public boolean supportPipelined() {
-        return true;
-    }
-
-    @Override
     public void startMonitor() {
         CountDownLatch monitorLatch = new CountDownLatch(1);
         monitorThread = new Thread(new Runnable() {

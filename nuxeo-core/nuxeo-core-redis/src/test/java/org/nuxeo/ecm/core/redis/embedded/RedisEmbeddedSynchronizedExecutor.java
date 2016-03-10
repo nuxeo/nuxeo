@@ -46,9 +46,4 @@ public class RedisEmbeddedSynchronizedExecutor implements RedisExecutor {
         return delegate.getPool();
     }
 
-    @Override
-    public boolean supportPipelined() {
-        return delegate.supportPipelined();
-    }
-
 }

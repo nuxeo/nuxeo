@@ -38,22 +38,11 @@ public interface RedisExecutor {
             throw new UnsupportedOperationException("No pool available");
         }
 
-        @Override
-        public boolean supportPipelined() {
-            return false;
-        }
-
     };
 
     <T> T execute(RedisCallable<T> call) throws JedisException;
 
     Pool<Jedis> getPool();
-
-    /**
-     * Is the executor support pipelined operations
-     * @since 7.4
-     */
-    boolean supportPipelined();
 
     /**
      * Start to trace Redis activity only for debug purpose.
