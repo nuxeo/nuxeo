@@ -46,7 +46,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 
+import javax.naming.NamingException;
 import javax.resource.ResourceException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -56,7 +60,6 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
@@ -74,9 +77,14 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnectionPropagator;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapperConnector;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapperTxSuspender;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCRowMapper;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 public class TestSQLBackend extends SQLBackendTestCase {
 
@@ -757,13 +765,17 @@ public class TestSQLBackend extends SQLBackendTestCase {
         public void run() {
             try {
                 session = repository.getConnection();
-                Xid xid = begin();
-                createDoc();
-                commit(xid);
-                session.close();
-            } catch (ResourceException e) {
-                throw new RuntimeException(e);
-            } catch (XAException e) {
+                try {
+                    begin();
+                    try {
+                        createDoc();
+                    } finally {
+                        commit();
+                    }
+                } finally {
+                    session.close();
+                }
+            } catch (ResourceException|XAException | IllegalStateException | RollbackException | SystemException | NamingException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -779,18 +791,16 @@ public class TestSQLBackend extends SQLBackendTestCase {
             session.updateReadAcls();
         }
 
-        protected Xid begin() throws XAException {
-            XAResource xaresource = ((SessionImpl) session).getXAResource();
-            Xid xid = new XidImpl(UUID.randomUUID().toString());
-            xaresource.start(xid, XAResource.TMNOFLAGS);
-            return xid;
+        protected void begin() throws XAException, IllegalStateException, RollbackException, SystemException, NamingException {
+            TransactionHelper.startTransaction();
+            SessionImpl xares = (SessionImpl)session;
+            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(xares);
         }
 
-        protected void commit(Xid xid) throws XAException {
-            XAResource xaresource = ((SessionImpl) session).getXAResource();
-            xaresource.end(xid, XAResource.TMSUCCESS);
-            xaresource.commit(xid, true);
+        protected void commit() throws XAException {
+            TransactionHelper.commitOrRollbackTransaction();
         }
+
     }
 
     public void XXX_TODO_testConcurrentModification() throws Exception {
@@ -853,17 +863,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(foo3.getId(), foo4.getId());
     }
 
-    protected static Xid begin(Session session) throws XAException {
-        XAResource xaresource = ((SessionImpl) session).getXAResource();
-        Xid xid = new XidImpl(UUID.randomUUID().toString());
-        xaresource.start(xid, XAResource.TMNOFLAGS);
-        return xid;
+    protected static void begin(Session session) throws XAException, IllegalStateException, RollbackException, SystemException, NamingException {
+        TransactionHelper.startTransaction();
+        SessionImpl xares = (SessionImpl)session;
+        TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(xares);
     }
 
-    protected static void commit(Session session, Xid xid) throws XAException {
-        XAResource xaresource = ((SessionImpl) session).getXAResource();
-        xaresource.end(xid, XAResource.TMSUCCESS);
-        xaresource.commit(xid, true);
+    protected static void commit(Session session) throws XAException {
+        TransactionHelper.commitOrRollbackTransaction();
     }
 
     protected static void rollback(Session session, Xid xid) throws XAException {
@@ -900,21 +907,29 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Node foo2 = session2.addChildNode(root2, "foo2", null, "TestDoc", false);
         session2.save();
 
-        Xid xid1 = begin(session1);
-        node1.setSimpleProperty("tst:title", "t1");
-        session1.save();
-
-        Xid xid2 = begin(session2);
-        // timeout trying to lock table TESTSCHEMA (h2):
-        foo2.getSimpleProperty("tst:title");
-        session2.save();
-
-        commit(session1, xid1);
-        commit(session2, xid2);
+        TransactionHelper.startTransaction();
+        try {
+            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(((SessionImpl) session1).getXAResource());
+            node1.setSimpleProperty("tst:title", "t1");
+            Transaction tx1 = TransactionHelper.suspendTransaction();
+            try {
+                try {
+                    TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(((SessionImpl) session2).getXAResource());
+                    foo2.getSimpleProperty("tst:title");
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
+            } finally {
+                TransactionHelper.resumeTransaction(tx1);
+            }
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         session1.close();
         session2.close();
     }
+
 
     @Test
     public void testDeadlockDetection() throws Exception {
@@ -944,35 +959,36 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         @Override
         public void job() throws Exception {
-            Session session = repository.getConnection();
-            Node root = session.getRootNode();
-            Node node = session.getChildNode(root, "doc", false);
-            Xid xid = null;
-            xid = begin(session);
+            TransactionHelper.startTransaction();
             try {
-                if (thread(1)) {
-                    node.setSimpleProperty("tst:title", "t1"); // TESTSCHEMA
-                    session.save();
-                }
-                if (thread(2)) {
-                    node.setSimpleProperty("ecm:lifeCycleState", "s2"); // MISC
-                    session.save();
-                }
-                if (thread(1)) {
-                    node.setSimpleProperty("ecm:lifeCycleState", "s1"); // MISC
-                } else {
-                    node.setSimpleProperty("tst:title", "t2"); // TESTSCHEMA
-                }
-                session.save();
-            } finally {
+                Session session = repository.getConnection();
                 try {
-                    rollback(session, xid);
+                    Node root = session.getRootNode();
+                    Node node = session.getChildNode(root, "doc", false);
+                    if (thread(1)) {
+                        node.setSimpleProperty("tst:title", "t1"); // TESTSCHEMA
+                        session.save();
+                    }
+                    if (thread(2)) {
+                        node.setSimpleProperty("ecm:lifeCycleState", "s2"); // MISC
+                        session.save();
+                    }
+                    if (thread(1)) {
+                        node.setSimpleProperty("ecm:lifeCycleState", "s1"); // MISC
+                    } else {
+                        node.setSimpleProperty("tst:title", "t2"); // TESTSCHEMA
+                    }
+                    session.save();
                 } finally {
                     session.close();
                 }
+            } finally {
+                TransactionHelper.setTransactionRollbackOnly();
+                TransactionHelper.commitOrRollbackTransaction();
             }
         }
     }
+
 
     public void TODOtestConcurrentUpdate() throws Exception {
         Session session1 = repository.getConnection();
@@ -1439,6 +1455,59 @@ public class TestSQLBackend extends SQLBackendTestCase {
         if (!DatabaseHelper.DATABASE.supportsXA()) {
             return;
         }
+        XAResource mockRes = new XAResource() {
+
+
+            @Override
+            public void start(Xid xid, int flags) throws XAException {
+
+            }
+
+            @Override
+            public boolean setTransactionTimeout(int seconds) throws XAException {
+                return false;
+            }
+
+            @Override
+            public void rollback(Xid xid) throws XAException {
+                ;
+            }
+
+            @Override
+            public Xid[] recover(int flag) throws XAException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public int prepare(Xid xid) throws XAException {
+                throw new XAException(XAException.XA_RBOTHER);
+            }
+
+            @Override
+            public boolean isSameRM(XAResource xares) throws XAException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public int getTransactionTimeout() throws XAException {
+                return 0;
+            }
+
+            @Override
+            public void forget(Xid xid) throws XAException {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void end(Xid xid, int flags) throws XAException {
+                throw new XAException(XAException.XA_RBOTHER);
+            }
+
+            @Override
+            public void commit(Xid xid, boolean onePhase) throws XAException {
+                throw new UnsupportedOperationException();
+            }
+        };
 
         Session session = repository.getConnection();
         XAResource xaresource = ((SessionImpl) session).getXAResource();
@@ -1451,29 +1520,43 @@ public class TestSQLBackend extends SQLBackendTestCase {
         /*
          * rollback before save (underlying XAResource saw no updates)
          */
-        Xid xid = new XidImpl("11111111111111111111111111111111");
-        xaresource.start(xid, XAResource.TMNOFLAGS);
-        nodea = session.getNodeByPath("/foo", null);
-        nodea.setSimpleProperty("tst:title", "new");
-        xaresource.end(xid, XAResource.TMSUCCESS);
-        xaresource.prepare(xid);
-        xaresource.rollback(xid);
-        nodea = session.getNodeByPath("/foo", null);
-        assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
+        TransactionHelper.startTransaction();
+        try {
+            Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
+             tx.enlistResource(mockRes);
+            tx.enlistResource(xaresource);
+            nodea = session.getNodeByPath("/foo", null);
+            nodea.setSimpleProperty("tst:title", "new");
+        } finally {
+            try {
+                TransactionHelper.commitOrRollbackTransaction();
+                throw new AssertionError("should rollback");
+            } catch (TransactionRuntimeException cause) {
+                ;
+            }
+            nodea = session.getNodeByPath("/foo", null);
+            assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
+        }
+
 
         /*
          * rollback after save (underlying XAResource does a rollback too)
          */
-        xid = new XidImpl("22222222222222222222222222222222");
-        xaresource.start(xid, XAResource.TMNOFLAGS);
-        nodea = session.getNodeByPath("/foo", null);
-        nodea.setSimpleProperty("tst:title", "new");
-        session.save();
-        xaresource.end(xid, XAResource.TMSUCCESS);
-        xaresource.prepare(xid);
-        xaresource.rollback(xid);
-        nodea = session.getNodeByPath("/foo", null);
-        assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
+        TransactionHelper.startTransaction();
+        try {
+            Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
+            tx.enlistResource(mockRes);
+            tx.enlistResource(xaresource);
+            nodea = session.getNodeByPath("/foo", null);
+            nodea.setSimpleProperty("tst:title", "new");
+            session.save();
+            TransactionHelper.setTransactionRollbackOnly();
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+            nodea = session.getNodeByPath("/foo", null);
+            assertEquals("old", nodea.getSimpleProperty("tst:title").getString());
+        }
+
     }
 
     @Test
@@ -1488,29 +1571,28 @@ public class TestSQLBackend extends SQLBackendTestCase {
         XAResource xaresource = ((SessionImpl) session).getXAResource();
 
         // first transaction
-        Xid xid = new XidImpl("11111111111111111111111111111111");
-        xaresource.start(xid, XAResource.TMNOFLAGS);
-        Node root = session.getRootNode();
-        assertNotNull(root);
-        session.addChildNode(root, "foo", null, "TestDoc", false);
-        // let end do an implicit save
-        xaresource.end(xid, XAResource.TMSUCCESS);
-        xaresource.prepare(xid);
-        xaresource.commit(xid, false);
+        TransactionHelper.startTransaction();
+        try {
+            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(xaresource);
+            Node root = session.getRootNode();
+            assertNotNull(root);
+            session.addChildNode(root, "foo", null, "TestDoc", false);
+            // let end do an implicit save
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
         // should have saved, clearing caches should be harmless
         ((SessionImpl) session).clearCaches();
 
         // second transaction
-        xid = new XidImpl("22222222222222222222222222222222");
-        xaresource.start(xid, XAResource.TMNOFLAGS);
-        Node foo = session.getNodeByPath("/foo", null);
-        assertNotNull(foo);
-        xaresource.end(xid, XAResource.TMSUCCESS);
-        int outcome = xaresource.prepare(xid);
-        if (outcome == XAResource.XA_OK) {
-            // Derby doesn't allow rollback if prepare returned XA_RDONLY
-            xaresource.rollback(xid);
+        TransactionHelper.startTransaction();
+        try {
+            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(xaresource);
+            Node foo = session.getNodeByPath("/foo", null);
+            assertNotNull(foo);
+        } finally {
+            TransactionHelper.commitOrRollbackTransaction();
         }
     }
 
@@ -3261,7 +3343,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // lock manager mapper has no invalidations queue
         VCSLockManager lockManager = (VCSLockManager) ((RepositoryImpl) repository).getLockManager();
-        assertNoInvalidationsQueue((JDBCRowMapper) lockManager.mapper);
+        assertNoInvalidationsQueue((JDBCMapper)JDBCMapperConnector.unwrap(JDBCMapperTxSuspender.unwrap(lockManager.mapper)));
 
         // cluster node handler mapper has no invalidations queue
         Field backendField = RepositoryImpl.class.getDeclaredField("backend");
@@ -3272,11 +3354,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         ClusterNodeHandler clusterNodeHandler = (ClusterNodeHandler) handlerField.get(backend);
         Field clusterNodeMapperField = ClusterNodeHandler.class.getDeclaredField("clusterNodeMapper");
         clusterNodeMapperField.setAccessible(true);
-        JDBCRowMapper mapper = (JDBCRowMapper) clusterNodeMapperField.get(clusterNodeHandler);
+        JDBCMapper mapper = (JDBCMapper) JDBCMapperConnector.unwrap(JDBCMapperTxSuspender.unwrap((Mapper)clusterNodeMapperField.get(clusterNodeHandler)));
         assertNoInvalidationsQueue(mapper);
     }
 
-    protected static void assertNoInvalidationsQueue(JDBCRowMapper mapper) throws Exception {
+    protected static void assertNoInvalidationsQueue(JDBCMapper mapper) throws Exception {
         Field queueField = JDBCRowMapper.class.getDeclaredField("queue");
         queueField.setAccessible(true);
         InvalidationsQueue queue = (InvalidationsQueue) queueField.get(mapper);
@@ -3994,7 +4076,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // clear context, the mapper cache should still be used
         ((SessionImpl) session).context.pristine.clear();
-        JDBCConnection jdbc = (JDBCConnection) ((SoftRefCachingMapper) ((SessionImpl) session).getMapper()).mapper;
+        JDBCConnection jdbc = (JDBCConnection) JDBCMapperConnector.unwrap(((SoftRefCachingMapper) ((SessionImpl) session).getMapper()).mapper);
         jdbc.countExecutes = true;
         jdbc.executeCount = 0;
 

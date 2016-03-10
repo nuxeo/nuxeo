@@ -76,4 +76,11 @@ public class JDBCMapperConnector implements InvocationHandler {
         return (Mapper) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
                 new Class<?>[] { Mapper.class }, new JDBCMapperConnector(mapper));
     }
+
+    public static Mapper unwrap(Mapper mapper) {
+        if (!Proxy.isProxyClass(mapper.getClass())) {
+            return mapper;
+        }
+        return ((JDBCMapperConnector)Proxy.getInvocationHandler(mapper)).mapper;
+    }
 }
