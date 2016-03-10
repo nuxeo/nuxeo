@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -28,10 +30,6 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
-
-import static org.nuxeo.functionaltests.Constants.FOLDER_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
 
 /**
  * Test workspace structure creation.
@@ -59,9 +57,7 @@ public class ITWorkspaceTest extends AbstractTest {
             DocumentBasePage documentBasePage = loginAsTestUser();
             DocumentBasePage wsPage = documentBasePage.createWorkspace(WORKSPACE_TITLE, "my desc");
             checkAvailableTabs();
-            DublinCoreCreationDocumentFormPage folderCreationPage = wsPage.getContentTab().getDocumentCreatePage(
-                    FOLDER_TYPE, DublinCoreCreationDocumentFormPage.class);
-            folderCreationPage.createDocument("My folder", "folder desc");
+            wsPage.getContentTab().createFolder("My folder", "folder desc");
             checkAvailableTabs();
         } finally {
             asPage(DocumentBasePage.class).deleteWorkspace(WORKSPACE_TITLE);

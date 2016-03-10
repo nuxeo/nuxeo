@@ -44,4 +44,9 @@ public class TestConstants {
     public static final String TEST_FILE_PATH = TEST_WORKSPACE_PATH + TEST_FILE_TITLE;
 
     public static final String TEST_FILE_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_FILE_PATH);
+
+    public static final String TEST_NOTE_TITLE = "note";
+
+    public static final String TEST_NOTE_PATH = TEST_WORKSPACE_PATH + TEST_NOTE_TITLE;
+
 }
