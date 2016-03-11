@@ -101,7 +101,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         builder.addSort("eventDate", SortOrder.DESC);
 
         List<LogEntry> entries = new ArrayList<>();
-        SearchResponse searchResponse = builder.setFrom(0).setSize(limit).execute().actionGet();
+        SearchResponse searchResponse = builder.setSize(limit).execute().actionGet();
         for (SearchHit hit : searchResponse.getHits()) {
             try {
                 entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
@@ -227,7 +227,6 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         // TODO refactor this to use max clause
         builder.setQuery(QueryBuilders.matchAllQuery());
         builder.addSort("id", SortOrder.DESC);
-        builder.setFrom(0);
         builder.setSize(1);
         SearchResponse searchResponse = builder.execute().actionGet();
         List<LogEntry> entries = new ArrayList<>();
