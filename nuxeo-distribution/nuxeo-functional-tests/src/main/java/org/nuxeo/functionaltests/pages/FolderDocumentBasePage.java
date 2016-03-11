@@ -18,6 +18,7 @@
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.pages.tabs.FolderEditTabSubPage;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -27,6 +28,11 @@ public class FolderDocumentBasePage extends DocumentBasePage {
 
     public FolderDocumentBasePage(WebDriver driver) {
         super(driver);
+    }
+
+    @Override
+    public FolderEditTabSubPage getEditTab() {
+        return super.getEditTab(FolderEditTabSubPage.class);
     }
 
 }

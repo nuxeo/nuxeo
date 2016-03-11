@@ -273,8 +273,15 @@ public class DocumentBasePage extends AbstractPage {
     }
 
     public EditTabSubPage getEditTab() {
+        return getEditTab(EditTabSubPage.class);
+    }
+
+    /**
+     * @since 8.2
+     */
+    public <T extends EditTabSubPage> T getEditTab(Class<T> tabClass) {
         clickOnDocumentTabLink(editTabLink);
-        return asPage(EditTabSubPage.class);
+        return asPage(tabClass);
     }
 
     public FilesTabSubPage getFilesTab() {

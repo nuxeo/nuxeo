@@ -18,7 +18,12 @@
  */
 package org.nuxeo.functionaltests.pages.workspace;
 
+import static org.nuxeo.functionaltests.Constants.SECTIONS_TITLE;
+import static org.nuxeo.functionaltests.Constants.TEMPLATES_TITLE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
+
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.tabs.SectionsContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -39,6 +44,18 @@ public class WorkspaceHomePage extends DocumentBasePage {
         first.click();
         first.findElement(By.linkText("Repository")).click();
         return asPage(WorkspaceRepositoryPage.class);
+    }
+
+    public SectionsContentTabSubPage goToDocumentSections() {
+        return getContentTab().goToDocument(SECTIONS_TITLE).asPage(SectionsContentTabSubPage.class);
+    }
+
+    public DocumentBasePage goToDocumentTemplates() {
+        return getContentTab().goToDocument(TEMPLATES_TITLE);
+    }
+
+    public DocumentBasePage goToDocumentWorkspaces() {
+        return getContentTab().goToDocument(WORKSPACES_TITLE);
     }
 
 }

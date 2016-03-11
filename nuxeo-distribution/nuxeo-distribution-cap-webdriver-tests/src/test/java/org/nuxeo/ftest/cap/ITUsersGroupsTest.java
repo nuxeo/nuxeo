@@ -18,13 +18,13 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_NOTE_TITLE;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
 import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
 import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
 import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 
 import org.junit.After;
@@ -47,6 +47,7 @@ import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPag
 import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
+import org.nuxeo.functionaltests.pages.workspace.WorkspaceHomePage;
 import org.nuxeo.functionaltests.pages.workspace.WorkspaceRepositoryPage;
 import org.openqa.selenium.By;
 
@@ -112,8 +113,10 @@ public class ITUsersGroupsTest extends AbstractTest {
             // Check member's rights on TEST_WORKSPACE_TITLE / TEST_NOTE_TITLE
             WorkspaceRepositoryPage repository = login("jdoe", "jdoe1").goToWorkspaces().goToRepository();
             Locator.waitUntilElementPresent(By.id("nxw_newDomain_form:nxw_newDomain"));
-            DocumentBasePage domainPage = repository.getContentTab().goToDocument("Domain");
-            DocumentBasePage workspacesPage = domainPage.getContentTab().goToDocument(WORKSPACES_TITLE);
+            WorkspaceHomePage domainPage = repository.getContentTab()
+                                                    .goToDocument("Domain")
+                                                    .asPage(WorkspaceHomePage.class);
+            DocumentBasePage workspacesPage = domainPage.goToDocumentWorkspaces();
             Locator.waitUntilElementPresent(By.id("nxw_TAB_WORKSPACE_EDIT_form:nxw_TAB_WORKSPACE_EDIT"));
             Locator.waitUntilElementPresent(By.id("nxw_newWorkspace_form:nxw_newWorkspace"));
             NoteDocumentBasePage notePage = workspacesPage.getContentTab()
@@ -130,6 +133,7 @@ public class ITUsersGroupsTest extends AbstractTest {
             HistoryTabSubPage historyPage = commentsPage.getHistoryTab();
             Locator.waitUntilElementPresent(By.linkText("Event Log"));
             Locator.waitUntilElementPresent(By.linkText("Archived Versions"));
+            assertNotNull(driver.findElement(By.linkText("Archived Versions")));
 
             // Check if jdoe can create an user or a group
             UserCreationFormPage userCreatePage = historyPage.getAdminCenter()

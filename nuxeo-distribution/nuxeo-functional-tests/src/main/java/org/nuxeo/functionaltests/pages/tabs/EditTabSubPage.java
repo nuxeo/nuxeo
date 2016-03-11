@@ -78,6 +78,38 @@ public class EditTabSubPage extends AbstractPage {
     }
 
     /**
+     * @since 8.2
+     */
+    public String getTitle() {
+        return titleInputText.getAttribute("value");
+    }
+
+    /**
+     * @since 8.2
+     */
+    public EditTabSubPage setTitle(String title) {
+        titleInputText.clear();
+        titleInputText.sendKeys(title);
+        return this;
+    }
+
+    /**
+     * @since 8.2
+     */
+    public String getDescription() {
+        return descriptionInputText.getText();
+    }
+
+    /**
+     * @since 8.2
+     */
+    public EditTabSubPage setDescription(String description) {
+        descriptionInputText.clear();
+        descriptionInputText.sendKeys(description);
+        return this;
+    }
+
+    /**
      * Save the modifications.
      *
      * @since 5.7.3
