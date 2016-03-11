@@ -1,39 +1,40 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * Contributors:
- *     Mariana Cedica <mcedica@nuxeo.com>
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.drive.elasticsearch;
 
 import java.util.concurrent.TimeUnit;
 
-import org.nuxeo.drive.service.AuditChangeFinderTestSuite;
+import javax.inject.Inject;
+
+import org.nuxeo.drive.service.AuditChangeFinderClusteringEnabledTestSuite;
 import org.nuxeo.drive.test.ESAuditFeature;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.runtime.test.runner.Features;
 
-import com.google.inject.Inject;
-
 /**
- * Runs the {@link AuditChangeFinderTestSuite} using the {@link ESAuditChangeFinder}.
+ * Runs the {@link AuditChangeFinderClusteringEnabledTestSuite} using the {@link ESAuditChangeFinder}.
  *
- * @since 7.3
+ * @since 8.2
  */
 @Features(ESAuditFeature.class)
-public class TestESAuditChangeFinder extends AuditChangeFinderTestSuite {
+public class TestESAuditChangeFinderClusteringEnabled extends AuditChangeFinderClusteringEnabledTestSuite {
 
     @Inject
     protected ElasticSearchAdmin esa;

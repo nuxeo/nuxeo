@@ -18,6 +18,7 @@
 package org.nuxeo.drive.elasticsearch;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -56,19 +57,19 @@ import org.nuxeo.runtime.api.Framework;
  *
  * <pre>
  * from LogEntry log where log.repositoryId = :repositoryId
- * 
+ *
  * + AND if ActiveRoots (activeRoots) NOT empty
- * 
+ *
  * from LogEntry log where log.repositoryId = :repositoryId and (
  * LIST_DOC_EVENTS_IDS_QUERY and ( ROOT_PATHS or COLECTIONS_PATHS) or
  * (log.category = 'NuxeoDrive' and log.eventId != 'rootUnregistered') )
- * 
- * 
+ *
+ *
  * if ActiveRoots EMPTY:
- * 
+ *
  * from LogEntry log where log.repositoryId = :repositoryId and ((log.category =
  * 'NuxeoDrive' and log.eventId != 'rootUnregistered'))
- * 
+ *
  * + AND (log.id > :lowerBound and log.id <= :upperBound) + order by
  * log.repositoryId asc, log.eventDate desc
  * </pre>
@@ -237,6 +238,56 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
             }
         }
         return entries.size() > 0 ? entries.get(0).getId() : -1;
+    }
+
+    /**
+     * Returns the last available log id in the audit index considering events older than the last clustering
+     * invalidation date if clustering is enabled for at least one of the given repositories. This is to make sure the
+     * {@code DocumentModel} further fetched from the session using the audit entry doc id is fresh.
+     */
+    @Override
+    public long getUpperBound(Set<String> repositoryNames) {
+        SearchRequestBuilder builder = getClient().prepareSearch(ESAuditBackend.IDX_NAME)
+                                                  .setTypes(ESAuditBackend.IDX_TYPE)
+                                                  .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+        QueryBuilder queryBuilder = QueryBuilders.matchAllQuery();
+        long clusteringDelay = getClusteringDelay(repositoryNames);
+        if (clusteringDelay > -1) {
+            long lastClusteringInvalidationDate = System.currentTimeMillis() - 2 * clusteringDelay;
+            FilterBuilder filterBuilder = FilterBuilders.rangeFilter("logDate").lt(
+                    new Date(lastClusteringInvalidationDate));
+            builder.setQuery(QueryBuilders.filteredQuery(queryBuilder, filterBuilder));
+        } else {
+            builder.setQuery(queryBuilder);
+        }
+        builder.addSort("id", SortOrder.DESC);
+        builder.setSize(1);
+        SearchResponse searchResponse = builder.execute().actionGet();
+        List<LogEntry> entries = new ArrayList<>();
+        SearchHits hits = searchResponse.getHits();
+        for (SearchHit hit : hits) {
+            try {
+                entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
+            } catch (Exception e) {
+                log.error("Error while reading Audit Entry from ES", e);
+            }
+        }
+        if (entries.isEmpty()) {
+            if (clusteringDelay > -1) {
+                // Check for existing entries without the clustering invalidation date filter to not return -1 in this
+                // case and make sure the lower bound of the next call to NuxeoDriveManager#getChangeSummary will be >=
+                // 0
+                builder.setQuery(queryBuilder);
+                searchResponse = builder.execute().actionGet();
+                if (searchResponse.getHits().iterator().hasNext()) {
+                    log.debug("Found no audit log entries matching the criterias but some exist, returning 0");
+                    return 0;
+                }
+            }
+            log.debug("Found no audit log entries, returning -1");
+            return -1;
+        }
+        return entries.get(0).getId();
     }
 
     @Override
