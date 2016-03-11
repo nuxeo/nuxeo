@@ -272,9 +272,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         AuditReader auditService = Framework.getService(AuditReader.class);
         String auditQuery = "from LogEntry log order by log.id desc";
         if (log.isDebugEnabled()) {
-            if (log.isDebugEnabled()) {
-                log.debug("Querying audit log for greatest id: " + auditQuery);
-            }
+            log.debug("Querying audit log for greatest id: " + auditQuery);
         }
         List<LogEntry> entries = (List<LogEntry>) auditService.nativeQuery(auditQuery, 1, 1);
         if (entries.isEmpty()) {
