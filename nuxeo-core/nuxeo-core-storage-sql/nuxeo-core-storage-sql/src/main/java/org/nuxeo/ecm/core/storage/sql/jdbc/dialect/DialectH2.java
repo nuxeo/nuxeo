@@ -296,16 +296,16 @@ public class DialectH2 extends Dialect {
         }
         if (t instanceof SQLException) {
             String sqlState = ((SQLException) t).getSQLState();
-            if ("23001".equals(sqlState)) {
-                // Unique index or primary key violation
+            if ("23503".equals(sqlState)) {
+                // Referential integrity violated child exists
                 return true;
             }
-            if ("23002".equals(sqlState)) {
-                // Referential integrity constraint violation
+            if ("23505".equals(sqlState)) {
+                // Duplicate key
                 return true;
             }
             if ("23506".equals(sqlState)) {
-                // Referential integrity constraint violation
+                // Referential integrity violated parent exists
                 return true;
             }
             if ("40001".equals(sqlState)) {
@@ -313,7 +313,7 @@ public class DialectH2 extends Dialect {
                 return true;
             }
             if ("HYT00".equals(sqlState)) {
-                // Timeout trying to lock table
+                // Lock timeout
                 return true;
             }
             if ("90131".equals(sqlState)) {
