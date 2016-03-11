@@ -654,10 +654,12 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
         // generate url
         URLPolicyService service = Framework.getService(URLPolicyService.class);
-        if (patternName == null || patternName.length() == 0) {
+        if (!docLoc.getPathRef().toString().contains("/")) {
+            // Use "id" pattern for placeless document
+            patternName = "id";
+        } else if (patternName == null || patternName.length() == 0) {
             patternName = service.getDefaultPatternName();
         }
-
         String url = service.getUrlFromDocumentView(patternName, docView, baseURL);
 
         // pass conversation info if needed
