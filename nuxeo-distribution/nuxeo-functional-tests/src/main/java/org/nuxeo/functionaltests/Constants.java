@@ -39,6 +39,10 @@ public class Constants {
 
     public static final String SECTIONS_TITLE = "Sections";
 
+    public static final String TEMPLATES_PATH = "/default-domain/templates/";
+
+    public static final String TEMPLATES_TITLE = "Templates";
+
     public static final String WORKSPACES_PATH = "/default-domain/workspaces/";
 
     public static final String WORKSPACES_TITLE = "Workspaces";
