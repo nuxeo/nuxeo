@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  * Contributors:
- *     Mariana Cedica <mcedica@nuxeo.com>
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.drive.elasticsearch;
@@ -23,19 +22,19 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.nuxeo.drive.service.AuditChangeFinderTestSuite;
+import org.nuxeo.drive.service.AuditChangeFinderClusteringEnabledTestSuite;
 import org.nuxeo.drive.test.ESAuditFeature;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
- * Runs the {@link AuditChangeFinderTestSuite} using the {@link ESAuditChangeFinder}.
+ * Runs the {@link AuditChangeFinderClusteringEnabledTestSuite} using the {@link ESAuditChangeFinder}.
  *
- * @since 7.3
+ * @since 8.2
  */
 @Features(ESAuditFeature.class)
-public class TestESAuditChangeFinder extends AuditChangeFinderTestSuite {
+public class TestESAuditChangeFinderClusteringEnabled extends AuditChangeFinderClusteringEnabledTestSuite {
 
     @Inject
     protected ElasticSearchAdmin esa;
@@ -48,7 +47,11 @@ public class TestESAuditChangeFinder extends AuditChangeFinderTestSuite {
         // Explicit refresh
         esa.refresh();
         // Explicit refresh for the audit index until it is handled by esa.refresh
-        esa.getClient().admin().indices().prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).get();
+        esa.getClient()
+           .admin()
+           .indices()
+           .prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE))
+           .get();
     }
 
 }

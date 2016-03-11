@@ -360,10 +360,15 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
             Map<String, SynchronizationRoots> roots, Map<String, Set<String>> collectionSyncRootMemberIds,
             long lowerBound, boolean integerBounds) {
         List<FileSystemItemChange> allChanges = new ArrayList<FileSystemItemChange>();
+        // Compute the list of all repositories to consider for the aggregate summary
+        Set<String> allRepositories = new TreeSet<String>();
+        allRepositories.addAll(roots.keySet());
+        allRepositories.addAll(lastActiveRootRefs.keySet());
+        allRepositories.addAll(collectionSyncRootMemberIds.keySet());
         long syncDate;
         long upperBound;
         if (integerBounds) {
-            upperBound = changeFinder.getUpperBound();
+            upperBound = changeFinder.getUpperBound(allRepositories);
             // Truncate sync date to 0 milliseconds
             syncDate = System.currentTimeMillis();
             syncDate = syncDate - (syncDate % 1000);
@@ -373,14 +378,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         }
         Boolean hasTooManyChanges = Boolean.FALSE;
         int limit = Integer.parseInt(Framework.getProperty(DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
-
-        // Compute the list of all repositories to consider for the aggregate
-        // summary
-        Set<String> allRepositories = new TreeSet<String>();
-        allRepositories.addAll(roots.keySet());
-        allRepositories.addAll(lastActiveRootRefs.keySet());
-        allRepositories.addAll(collectionSyncRootMemberIds.keySet());
-
         if (!allRepositories.isEmpty() && lowerBound >= 0 && upperBound > lowerBound) {
             for (String repositoryName : allRepositories) {
                 try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
