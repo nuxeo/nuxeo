@@ -96,8 +96,10 @@ public interface TrashService {
 
     /**
      * Moves documents to the trash, or directly deletes them if their lifecycle does not allow trash use.
-     *
+     * <p>
      * Do nothing if the document current state is deleted.
+     * <p>
+     * Placeless documents are deleted immediately.
      *
      * @param docs the documents to trash
      */
