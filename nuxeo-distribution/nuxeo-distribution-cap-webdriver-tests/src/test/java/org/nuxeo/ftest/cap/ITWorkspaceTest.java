@@ -113,4 +113,27 @@ public class ITWorkspaceTest extends AbstractTest {
 
     }
 
+    @Test
+    public void testEditWorkspace() throws Exception {
+        try {
+            // First create workspace as Administrator
+            login().createWorkspace(WORKSPACE_TITLE, WORKSPACE_DESCRIPTION);
+            logout();
+
+            // Edit it as Test User
+            String descriptionId = "document_header_layout_form:nxl_document_header:nxw_header_description";
+            String newDescription = String.format("Description %s modified", WORKSPACE_TITLE);
+            DocumentBasePage workspacePage = loginAsTestUser().goToWorkspaces()
+                                                              .goToDocumentWorkspaces()
+                                                              .getContentTab()
+                                                              .goToDocument(WORKSPACE_TITLE);
+            assertEquals(WORKSPACE_DESCRIPTION, driver.findElementById(descriptionId).getText());
+            workspacePage.getEditTab().setDescription(newDescription).save();
+            assertEquals(newDescription, driver.findElementById(descriptionId).getText());
+            logout();
+        } finally {
+            login().deleteWorkspace(WORKSPACE_TITLE);
+        }
+    }
+
 }
