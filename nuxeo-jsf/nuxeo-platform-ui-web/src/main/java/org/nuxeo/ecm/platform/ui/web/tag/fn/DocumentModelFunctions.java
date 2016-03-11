@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -652,7 +653,11 @@ public final class DocumentModelFunctions implements LiveEditConstants {
 
         // generate url
         URLPolicyService service = Framework.getService(URLPolicyService.class);
-        if (patternName == null || patternName.length() == 0) {
+        PathRef pathRef = docLoc.getPathRef();
+        if (pathRef != null && !pathRef.toString().contains("/")) {
+            // Use "id" pattern for placeless document
+            patternName = "id";
+        } else if (patternName == null || patternName.length() == 0) {
             patternName = service.getDefaultPatternName();
         }
 

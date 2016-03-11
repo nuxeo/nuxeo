@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.trash.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.security.Principal;
@@ -280,6 +281,17 @@ public class TestTrashService {
         trashService.trashDocuments(dd);
         trashService.trashDocuments(dd);
         assertTrue(session.exists(doc1.getRef()));
+    }
+
+    @Test
+    public void testPlacelessDocument() throws Exception {
+        DocumentModel doc4 = session.createDocumentModel(null, "doc4", "Note");
+        doc4 = session.createDocument(doc4);
+        session.save();
+        DocumentModel above = trashService.getAboveDocument(doc4, new HashSet<Path>(Arrays.asList(new Path("/"))));
+        assertNull(above);
+        trashService.trashDocuments(Collections.singletonList(doc4));
+        assertFalse(session.exists(doc4.getRef()));
     }
 
 }

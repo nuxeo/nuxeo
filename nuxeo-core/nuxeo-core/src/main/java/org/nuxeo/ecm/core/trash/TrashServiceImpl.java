@@ -202,6 +202,10 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         CoreSession session = doc.getCoreSession();
         while (underOneOf(doc.getPath(), rootPaths)) {
             doc = session.getParentDocument(doc.getRef());
+            if (doc == null) {
+                // handle placeless document
+                break;
+            }
         }
         return doc;
     }
@@ -383,8 +387,13 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
     protected void trashDocument(CoreSession session, DocumentModel doc) {
         String name = mangleName(doc);
-        session.move(doc.getRef(), doc.getParentRef(), name);
-        session.followTransition(doc, LifeCycleConstants.DELETE_TRANSITION);
+        if (doc.getParentRef() == null) {
+            // handle placeless document
+            session.removeDocument(doc.getRef());
+        } else {
+            session.move(doc.getRef(), doc.getParentRef(), name);
+            session.followTransition(doc, LifeCycleConstants.DELETE_TRANSITION);
+        }
     }
 
     protected void undeleteDocument(CoreSession session, DocumentModel doc) {

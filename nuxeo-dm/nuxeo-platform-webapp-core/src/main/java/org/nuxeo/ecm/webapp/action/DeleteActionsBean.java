@@ -259,6 +259,9 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
             // undelete is problematic because it may change undeleted
             // parent's paths... so we refetch the new context
             targetContext = documentManager.getDocument(new IdRef(targetContext.getId()));
+        } else if (targetContext == null) {
+            // handle placeless document
+            targetContext = documentManager.getRootDocument();
         }
         navigationContext.setCurrentDocument(targetContext);
 

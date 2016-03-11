@@ -2335,7 +2335,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document doc = resolveReference(docRef);
         Document parentDoc = doc.getParent();
         if (parentDoc == null) {
-            return readModel(doc);
+            // return null for placeless document
+            return null;
         }
         if (!hasPermission(parentDoc, READ)) {
             String parentPath = parentDoc.getPath();
