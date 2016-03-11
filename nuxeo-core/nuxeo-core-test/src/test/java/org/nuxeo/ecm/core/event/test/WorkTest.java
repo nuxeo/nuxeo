@@ -82,8 +82,6 @@ public class WorkTest extends TXSQLRepositoryTestCase {
     }
 
     @Test
-    @ConditionalIgnoreRule.Ignore(condition=ConditionalIgnoreRule.NXP10926H2Upgrade.class)
-    // no concurrent update detected in H2 1.4.177
     public void testWorkConcurrencyExceptionImplicitSave() throws Exception {
         doTestWorkConcurrencyException(false);
     }

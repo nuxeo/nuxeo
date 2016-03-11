@@ -1,16 +1,22 @@
-/*******************************************************************************
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+/*
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser General Public License
- * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *******************************************************************************/
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Stephane Lacoin, Julien Carsique
+ *
+ */
 package org.nuxeo.runtime.test.runner;
 
 import java.lang.annotation.ElementType;
@@ -23,35 +29,38 @@ import java.lang.reflect.Method;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.internal.AssumptionViolatedException;
+import org.apache.commons.lang.SystemUtils;
 import org.junit.rules.MethodRule;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
-public class ConditionalIgnoreRule implements MethodRule {
+public class ConditionalIgnoreRule implements MethodRule, TestRule {
+    @Inject
+    RunNotifier runNotifier;
+
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.METHOD })
     public @interface Ignore {
         Class<? extends Condition> condition();
+
+        /**
+         * Optional reason why the test is ignored, reported additionally to the condition class simple name.
+         */
+        String cause() default "";
     }
 
     public interface Condition {
         boolean shouldIgnore();
     }
 
-
-    public static final class NXP10926H2Upgrade implements Condition {
-
-        @Override
-        public boolean shouldIgnore() {
-            return true;
-        }
-
-    }
-
     public static final class IgnoreIsolated implements Condition {
-        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(getClass().getClassLoader().getClass().getName());
+        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(getClass().getClassLoader()
+                                                                                                .getClass()
+                                                                                                .getName());
 
         @Override
         public boolean shouldIgnore() {
@@ -60,61 +69,80 @@ public class ConditionalIgnoreRule implements MethodRule {
     }
 
     public static final class IgnoreLongRunning implements Condition {
-
         @Override
         public boolean shouldIgnore() {
-            return true; // TODO add an annotation suitable for
+            return true;
         }
+    }
 
+    public static final class IgnoreWindows implements Condition {
+        @Override
+        public boolean shouldIgnore() {
+            return SystemUtils.IS_OS_WINDOWS;
+        }
     }
 
     @Override
-    public Statement apply(Statement base, FrameworkMethod method,
-            Object fixtureTarget) {
+    public Statement apply(Statement base, FrameworkMethod method, Object fixtureTarget) {
         Class<?> fixtureType = fixtureTarget.getClass();
         Method fixtureMethod = method.getMethod();
+        Description description = Description.createTestDescription(fixtureType, fixtureMethod.getName(),
+                fixtureMethod.getAnnotations());
         if (fixtureType.isAnnotationPresent(Ignore.class)) {
-            check(fixtureType.getAnnotation(Ignore.class),
-                    fixtureType, fixtureMethod, fixtureTarget);
+            return shouldIgnore(base, description, fixtureType.getAnnotation(Ignore.class), fixtureType, fixtureMethod,
+                    fixtureTarget);
         }
         if (fixtureMethod.isAnnotationPresent(Ignore.class)) {
-            check(fixtureMethod.getAnnotation(Ignore.class),
-                    fixtureType, fixtureMethod, fixtureTarget);
+            return shouldIgnore(base, description, fixtureMethod.getAnnotation(Ignore.class), fixtureType,
+                    fixtureMethod, fixtureTarget);
         }
         return base;
     }
 
-    protected void check(Ignore ignore, Class<?> type) {
-        check(ignore, type, null, null);
+    @Override
+    public Statement apply(Statement base, Description description) {
+        Class<?> fixtureType = description.getTestClass();
+        if (fixtureType.isAnnotationPresent(Ignore.class)) {
+            return shouldIgnore(base, description, fixtureType.getAnnotation(Ignore.class), fixtureType);
+        }
+        return base;
     }
 
-    protected void check(Ignore ignore, Class<?> type, Method method,Object target) {
+    protected Statement shouldIgnore(Statement base, Description description, Ignore ignore, Class<?> type) {
+        return shouldIgnore(base, description, ignore, type, null, null);
+    }
+
+    protected Statement shouldIgnore(Statement base, final Description description, Ignore ignore, Class<?> type,
+            Method method, Object target) {
         Class<? extends Condition> conditionType = ignore.condition();
         if (conditionType == null) {
-            return;
+            return base;
         }
         Condition condition = newCondition(type, method, target, conditionType);
-        if(condition.shouldIgnore()) {
-            throw new AssumptionViolatedException(condition.getClass().getSimpleName());
+        if (!condition.shouldIgnore()) {
+            return base;
         }
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                runNotifier.fireTestIgnored(description);
+            }
+        };
     }
 
-
-    protected Condition newCondition(Class<?> type, Method method, Object target, Class<? extends Condition> conditionType)
-            throws Error {
+    protected Condition newCondition(Class<?> type, Method method, Object target,
+            Class<? extends Condition> conditionType) throws Error {
         Condition condition;
         try {
             condition = conditionType.newInstance();
         } catch (InstantiationException | IllegalAccessException cause) {
-            throw new Error("Cannot instantiate condition of type "
-                    + conditionType, cause);
+            throw new Error("Cannot instantiate condition of type " + conditionType, cause);
         }
         injectCondition(type, method, target, condition);
         return condition;
     }
 
-    protected void injectCondition(Class<?> type, Method method, Object target,
-            Condition condition)
+    protected void injectCondition(Class<?> type, Method method, Object target, Condition condition)
             throws SecurityException, Error {
         Error errors = new Error("Cannot inject condition parameters in " + condition.getClass());
         for (Field eachField : condition.getClass().getDeclaredFields()) {
@@ -142,21 +170,18 @@ public class ConditionalIgnoreRule implements MethodRule {
                 }
             }
             if (eachValue == null) {
-                errors.addSuppressed(new Error("Cannot inject "
-                        + eachField.getName()));
+                errors.addSuppressed(new Error("Cannot inject " + eachField.getName()));
             }
             eachField.setAccessible(true);
             try {
                 eachField.set(condition, eachValue);
             } catch (IllegalArgumentException | IllegalAccessException cause) {
-                errors.addSuppressed(new Error("Cannot inject "
-                        + eachField.getName(), cause));
+                errors.addSuppressed(new Error("Cannot inject " + eachField.getName(), cause));
             }
         }
         if (errors.getSuppressed().length > 0) {
             throw errors;
         }
     }
-
 
 }

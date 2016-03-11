@@ -77,7 +77,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnectionPropagator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCRowMapper;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 
 public class TestSQLBackend extends SQLBackendTestCase {
 
@@ -2924,7 +2923,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
-    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.NXP10926H2Upgrade.class)
     public void testLockingParallelClustered() throws Throwable {
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
             System.out.println("Skipping clustered locking test for unsupported database: "
