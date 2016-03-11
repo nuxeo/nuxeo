@@ -142,4 +142,9 @@ public class MockChangeFinder implements FileSystemChangeFinder {
                 "Using MockChangeFinder with integer bounds is not implemented, please call #getCurrentDate.");
     }
 
+    @Override
+    public long getUpperBound(Set<String> repositoryName) {
+        return getUpperBound();
+    }
+
 }

@@ -21,31 +21,19 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.junit.runner.RunWith;
-import org.nuxeo.drive.service.AbstractChangeFinderTestCase;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.drive.service.AuditChangeFinderTestSuite;
+import org.nuxeo.drive.test.ESAuditFeature;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
- * Test the {@link ESAuditChangeFinder}.
+ * Runs the {@link AuditChangeFinderTestSuite} using the {@link ESAuditChangeFinder}.
  *
  * @since 7.3
  */
-@RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class, RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
-        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
-        "org.nuxeo.elasticsearch.audit",
-        "org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml",
-        "org.nuxeo.drive.elasticsearch" })
-@LocalDeploy("org.nuxeo.drive.elasticsearch:OSGI-INF/test-nuxeodrive-elasticsearch-contrib.xml")
-public class TestESAuditChangeFinder extends AbstractChangeFinderTestCase {
+@Features(ESAuditFeature.class)
+public class TestESAuditChangeFinder extends AuditChangeFinderTestSuite {
 
     @Inject
     protected ElasticSearchAdmin esa;
@@ -59,11 +47,6 @@ public class TestESAuditChangeFinder extends AbstractChangeFinderTestCase {
         esa.refresh();
         // Explicit refresh for the audit index until it is handled by esa.refresh
         esa.getClient().admin().indices().prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE)).get();
-    }
-
-    @Override
-    protected void cleanUpAuditLog() {
-        esa.dropAndInitIndex(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
     }
 
 }

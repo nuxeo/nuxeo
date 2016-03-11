@@ -93,4 +93,12 @@ public interface FileSystemChangeFinder extends Serializable {
      */
     long getUpperBound();
 
+    /**
+     * Returns the upper bound of the range clause in the change query taking into account the clustering delay if
+     * clustering is enabled for at least one of the given repositories.
+     *
+     * @since 8.2
+     */
+    long getUpperBound(Set<String> repositoryNames);
+
 }
