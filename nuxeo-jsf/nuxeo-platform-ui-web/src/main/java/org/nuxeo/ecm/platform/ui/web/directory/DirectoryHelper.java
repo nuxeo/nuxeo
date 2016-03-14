@@ -58,8 +58,6 @@ public final class DirectoryHelper {
 
     private static DirectoryHelper instance;
 
-    private static DirectoryService service;
-
     private DirectoryHelper() {
     }
 
@@ -266,20 +264,7 @@ public final class DirectoryHelper {
     }
 
     protected DirectoryService getService() {
-        if (service == null) {
-            DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
-            if (dirService == null) {
-                try {
-                    dirService = Framework.getService(DirectoryService.class);
-                } catch (Exception e) {
-                    log.error("Can't find Directory Service", e);
-                }
-            } else {
-                return dirService; // don't cache local service pointer
-            }
-            service = dirService;
-        }
-        return service;
+        return Framework.getService(DirectoryService.class);
     }
 
 }
