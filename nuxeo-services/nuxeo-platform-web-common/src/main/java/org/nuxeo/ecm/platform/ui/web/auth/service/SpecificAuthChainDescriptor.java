@@ -33,8 +33,13 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("specificAuthenticationChain")
 public class SpecificAuthChainDescriptor {
 
+    public static final boolean DEFAULT_HANDLE_PROMPT_VALUE = true;
+
     @XNode("@name")
     protected String name;
+
+    @XNode("@handlePrompt")
+    private boolean handlePrompt = DEFAULT_HANDLE_PROMPT_VALUE;
 
     @XNodeList(value = "replacementChain/plugin", type = ArrayList.class, componentType = String.class)
     private List<String> replacementChain;
@@ -93,6 +98,16 @@ public class SpecificAuthChainDescriptor {
             }
         }
         return filteredChain;
+    }
+
+    /**
+     * Return if the auth filter has to handle prompt or return 401
+     *
+     * @return
+     * @since 8.2
+     */
+    public boolean doHandlePrompt() {
+        return handlePrompt;
     }
 
 }

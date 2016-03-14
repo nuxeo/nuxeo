@@ -268,14 +268,30 @@ public class PluggableAuthenticationService extends DefaultComponent {
             return authChain;
         }
 
-        String specificAuthChainName = getSpecificAuthChainName(request);
-        SpecificAuthChainDescriptor desc = specificAuthChains.get(specificAuthChainName);
+        SpecificAuthChainDescriptor desc = getAuthChainDescriptor(request);
 
         if (desc != null) {
             return desc.computeResultingChain(authChain);
         } else {
             return authChain;
         }
+    }
+
+    public boolean doHandlePrompt(HttpServletRequest request) {
+        if (specificAuthChains == null || specificAuthChains.isEmpty()) {
+            return true;
+        }
+
+        SpecificAuthChainDescriptor desc = getAuthChainDescriptor(request);
+
+        return desc != null ? desc.doHandlePrompt() : SpecificAuthChainDescriptor.DEFAULT_HANDLE_PROMPT_VALUE;
+
+    }
+
+    private SpecificAuthChainDescriptor getAuthChainDescriptor(HttpServletRequest request) {
+        String specificAuthChainName = getSpecificAuthChainName(request);
+        SpecificAuthChainDescriptor desc = specificAuthChains.get(specificAuthChainName);
+        return desc;
     }
 
     public String getSpecificAuthChainName(HttpServletRequest request) {
