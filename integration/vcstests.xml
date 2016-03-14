@@ -14,7 +14,8 @@
 
   <target name="vcs-tests-setup" depends="vcs-tests-teardown,_initdb">
     <nx:profile name="default">
-      <!-- NO OP -->
+      <!-- create empty file -->
+      <echo file="${vcsprops}" append="false" />
     </nx:profile>
     <nx:profile name="pgsql">
       <propertyfile file="${vcsprops}">
