@@ -41,6 +41,7 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
 
     private static final String WEB_BUNDLE_TEST = "org.nuxeo.ecm.platform.web.common.test";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -168,4 +169,26 @@ public class TestSpecificChainSetting extends NXRuntimeTestCase {
         assertFalse(chain.contains("WEBSERVICES_AUTH"));
     }
 
+    @Test
+    public void specificChainMayHandleLoginPromptBehavior() throws Exception {
+
+        // Without a specific auth chain
+        HttpServletRequest request = new DummyHttpServletRequest("/bla", null);
+        assertTrue(getAuthService().doHandlePrompt(request));
+
+        // With a non configured specific auth chain
+        request = new DummyHttpServletRequest("/test", null);
+        assertTrue(getAuthService().doHandlePrompt(request));
+
+        // With a configured specific auth chain to handle prompt
+        request = new DummyHttpServletRequest("/test-allow", null);
+        assertTrue(getAuthService().doHandlePrompt(request));
+
+        // With a configured specific auth chain to not handle prompt
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("test-header", "only-anonymous");
+        request = new DummyHttpServletRequest("/bla", headers);
+        assertFalse(getAuthService().doHandlePrompt(request));
+
+    }
 }
