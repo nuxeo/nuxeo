@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author ogrisel
  */
-public abstract class AbstractReference implements Reference {
+public abstract class AbstractReference implements Reference, Cloneable {
 
     protected DirectoryServiceImpl directoryService;
 
@@ -88,18 +88,14 @@ public abstract class AbstractReference implements Reference {
      */
     @Override
     public AbstractReference clone() {
-        AbstractReference clone = newInstance();
-        clone.sourceDirectoryName = sourceDirectoryName;
-        clone.targetDirectoryName = targetDirectoryName;
-        clone.fieldName = fieldName;
+        AbstractReference clone;
+        try {
+            clone = (AbstractReference) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+        // basic fields are already copied by super.clone()
         return clone;
     }
-
-    /**
-     * Override to instantiate sub class, used in {@link #clone()} method
-     *
-     * @since 5.6
-     */
-    protected abstract AbstractReference newInstance();
 
 }

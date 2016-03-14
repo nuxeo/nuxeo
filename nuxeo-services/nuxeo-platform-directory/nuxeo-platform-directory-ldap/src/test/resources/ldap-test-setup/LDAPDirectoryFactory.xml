@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
 
 <component name="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory">
-  <implementation
-    class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory" />
+
   <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
 
-  <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"
-    point="factoryDescriptor">
-    <factoryDescriptor
-      component="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory" />
-  </extension>
+  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"/>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory" />
+  </service>
 
   <extension-point name="servers">
     <object class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor" />

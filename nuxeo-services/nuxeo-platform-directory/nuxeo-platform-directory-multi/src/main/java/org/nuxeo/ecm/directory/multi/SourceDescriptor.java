@@ -31,7 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Florent Guillaume
  */
 @XObject("source")
-public class SourceDescriptor {
+public class SourceDescriptor implements Cloneable {
 
     @XNode("@name")
     public String name;
@@ -52,9 +52,13 @@ public class SourceDescriptor {
      */
     @Override
     public SourceDescriptor clone() {
-        SourceDescriptor clone = new SourceDescriptor();
-        clone.name = name;
-        clone.creation = creation;
+        SourceDescriptor clone;
+        try {
+            clone = (SourceDescriptor) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+        // basic fields are already copied by super.clone()
         if (subDirectories != null) {
             clone.subDirectories = new SubDirectoryDescriptor[subDirectories.length];
             for (int i = 0; i < subDirectories.length; i++) {

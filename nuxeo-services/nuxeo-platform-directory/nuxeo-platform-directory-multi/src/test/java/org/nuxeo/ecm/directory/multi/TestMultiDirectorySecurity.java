@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -42,7 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
-import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
+import org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -55,8 +54,6 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class TestMultiDirectorySecurity {
 
     DirectoryService directoryService;
-
-    MemoryDirectoryFactory memoryDirectoryFactory;
 
     MemoryDirectory memdir1;
 
@@ -73,6 +70,12 @@ public class TestMultiDirectorySecurity {
     @Inject
     ClientLoginFeature dummyLogin;
 
+    protected MemoryDirectoryDescriptor desc1;
+
+    protected MemoryDirectoryDescriptor desc2;
+
+    protected MemoryDirectoryDescriptor desc3;
+
     public static final String SUPER_USER = "superUser";
 
     public static final String READER_USER = "readerUser";
@@ -81,58 +84,75 @@ public class TestMultiDirectorySecurity {
     public void setUp() throws Exception {
         // mem dir factory
         directoryService = Framework.getLocalService(DirectoryService.class);
-        memoryDirectoryFactory = new MemoryDirectoryFactory();
-        directoryService.registerDirectory("memdirs", memoryDirectoryFactory);
 
         // create and register mem directories
         Map<String, Object> e;
 
         // dir 1
-        Set<String> schema1Set = new HashSet<String>(Arrays.asList("uid", "foo"));
-        memdir1 = new MemoryDirectory("dir1", "schema1", schema1Set, "uid", "foo");
-        memoryDirectoryFactory.registerDirectory(memdir1);
+        desc1 = new MemoryDirectoryDescriptor();
+        desc1.name = "dir1";
+        desc1.schemaName = "schema1";
+        desc1.schemaSet = new HashSet<String>(Arrays.asList("uid", "foo"));
+        desc1.idField = "uid";
+        desc1.passwordField = "foo";
+        directoryService.registerDirectoryDescriptor(desc1);
+        memdir1 = (MemoryDirectory) directoryService.getDirectory("dir1");
 
-        Session dir1 = memdir1.getSession();
-        e = new HashMap<String, Object>();
-        e.put("uid", "1");
-        e.put("foo", "foo1");
-        dir1.createEntry(e);
-        e = new HashMap<String, Object>();
-        e.put("uid", "2");
-        e.put("foo", "foo2");
-        dir1.createEntry(e);
+        try (Session dir1 = memdir1.getSession()) {
+            e = new HashMap<String, Object>();
+            e.put("uid", "1");
+            e.put("foo", "foo1");
+            dir1.createEntry(e);
+            e = new HashMap<String, Object>();
+            e.put("uid", "2");
+            e.put("foo", "foo2");
+            dir1.createEntry(e);
+        }
 
         // dir 2
-        Set<String> schema2Set = new HashSet<String>(Arrays.asList("id", "bar"));
-        memdir2 = new MemoryDirectory("dir2", "schema2", schema2Set, "id", null);
-        memoryDirectoryFactory.registerDirectory(memdir2);
+        desc2 = new MemoryDirectoryDescriptor();
+        desc2.name = "dir2";
+        desc2.schemaName = "schema2";
+        desc2.schemaSet = new HashSet<String>(Arrays.asList("id", "bar"));
+        desc2.idField = "id";
+        desc2.passwordField = null;
+        directoryService.registerDirectoryDescriptor(desc2);
+        memdir2 = (MemoryDirectory) directoryService.getDirectory("dir2");
 
-        Session dir2 = memdir2.getSession();
-        e = new HashMap<String, Object>();
-        e.put("id", "1");
-        e.put("bar", "bar1");
-        dir2.createEntry(e);
-        e = new HashMap<String, Object>();
-        e.put("id", "2");
-        e.put("bar", "bar2");
-        dir2.createEntry(e);
+        try (Session dir2 = memdir2.getSession()) {
+            e = new HashMap<String, Object>();
+            e.put("id", "1");
+            e.put("bar", "bar1");
+            dir2.createEntry(e);
+            e = new HashMap<String, Object>();
+            e.put("id", "2");
+            e.put("bar", "bar2");
+            dir2.createEntry(e);
+        }
 
         // dir 3
-        Set<String> schema3Set = new HashSet<String>(Arrays.asList("uid", "thefoo", "thebar"));
-        memdir3 = new MemoryDirectory("dir3", "schema3", schema3Set, "uid", "thefoo");
-        memoryDirectoryFactory.registerDirectory(memdir3);
+        desc3 = new MemoryDirectoryDescriptor();
+        desc3.name = "dir3";
+        desc3.schemaName = "schema3";
+        desc3.schemaSet = new HashSet<String>(Arrays.asList("uid", "thefoo", "thebar"));
+        desc3.idField = "uid";
+        desc3.passwordField = "thefoo";
+        directoryService.registerDirectoryDescriptor(desc3);
+        memdir3 = (MemoryDirectory) directoryService.getDirectory("dir3");
 
-        Session dir3 = memdir3.getSession();
-        e = new HashMap<String, Object>();
-        e.put("uid", "3");
-        e.put("thefoo", "foo3");
-        e.put("thebar", "bar3");
-        dir3.createEntry(e);
-        e = new HashMap<String, Object>();
-        e.put("uid", "4");
-        e.put("thefoo", "foo4");
-        e.put("thebar", "bar4");
-        dir3.createEntry(e);
+        try (Session dir3 = memdir3.getSession()) {
+            e = new HashMap<String, Object>();
+            e.put("uid", "3");
+            e.put("thefoo", "foo3");
+            e.put("thebar", "bar3");
+            dir3.createEntry(e);
+            e = new HashMap<String, Object>();
+            e.put("uid", "4");
+            e.put("thefoo", "foo4");
+            e.put("thebar", "bar4");
+            dir3.createEntry(e);
+        }
+
 
         // the multi directory
         multiDir = (MultiDirectory) directoryService.getDirectory("multi");
@@ -143,10 +163,13 @@ public class TestMultiDirectorySecurity {
 
     @After
     public void tearDown() throws Exception {
-        memoryDirectoryFactory.unregisterDirectory(memdir1);
-        memoryDirectoryFactory.unregisterDirectory(memdir2);
-        memoryDirectoryFactory.unregisterDirectory(memdir3);
-        directoryService.unregisterDirectory("memdirs", memoryDirectoryFactory);
+        if (dir != null) {
+            dir.close();
+        }
+        directoryService = Framework.getLocalService(DirectoryService.class);
+        directoryService.unregisterDirectoryDescriptor(desc1);
+        directoryService.unregisterDirectoryDescriptor(desc2);
+        directoryService.unregisterDirectoryDescriptor(desc3);
     }
 
     @Test

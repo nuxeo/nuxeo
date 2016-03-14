@@ -8,12 +8,6 @@
 
   <documentation>Multi-directory implementation.</documentation>
 
-  <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"
-      point="factoryDescriptor">
-    <factoryDescriptor
-        component="org.nuxeo.ecm.directory.multi.MultiDirectoryFactory"/>
-  </extension>
-
   <extension-point name="directories">
     <object
         class="org.nuxeo.ecm.directory.multi.MultiDirectoryDescriptor"/>

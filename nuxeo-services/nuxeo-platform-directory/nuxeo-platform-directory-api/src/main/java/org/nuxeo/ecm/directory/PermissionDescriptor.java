@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *  mhilaire
- *
+ *   Maxime Hilaire
+ *   Florent Guillaume
  */
-
 package org.nuxeo.ecm.directory;
 
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -30,7 +29,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 6.0
  */
 @XObject(value = "permission")
-public class PermissionDescriptor {
+public class PermissionDescriptor implements Cloneable {
 
     @XNode("@name")
     public String name;
@@ -43,10 +42,15 @@ public class PermissionDescriptor {
 
     @Override
     public PermissionDescriptor clone() {
-        PermissionDescriptor clone = new PermissionDescriptor();
-        clone.name = name;
-        clone.groups = groups;
-        clone.users = users;
+        PermissionDescriptor clone;
+        try {
+            clone = (PermissionDescriptor) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+        // basic fields are already copied by super.clone()
+        clone.groups = groups == null ? null : groups.clone();
+        clone.users = users == null ? null : users.clone();
         return clone;
     }
 }

@@ -21,66 +21,22 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.directory.Directory;
-import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.DirectoryFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.directory.DefaultDirectoryFactory;
 import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.ldap.registry.LDAPDirectoryRegistry;
 import org.nuxeo.ecm.directory.ldap.registry.LDAPServerRegistry;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.model.ComponentInstance;
 
-public class LDAPDirectoryFactory extends DefaultComponent implements DirectoryFactory {
+public class LDAPDirectoryFactory extends DefaultDirectoryFactory {
 
-    public static final String NAME = "org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory";
+    public static final String SERVERS_XP = "servers";
 
-    private static final Log log = LogFactory.getLog(LDAPDirectoryFactory.class);
-
-    protected LDAPDirectoryRegistry proxies;
-
-    protected LDAPServerRegistry servers;
-
-    @Override
-    public Directory getDirectory(String name) {
-        return proxies.getDirectory(name);
-    }
-
-    @Override
-    public List<Directory> getDirectories() {
-        List<Directory> directories = new ArrayList<Directory>();
-        directories.addAll(proxies.getDirectories());
-        return directories;
-    }
+    protected LDAPServerRegistry servers = new LDAPServerRegistry();
 
     public LDAPServerDescriptor getServer(String name) {
         return servers.getServer(name);
-    }
-
-    @Override
-    public String getName() {
-        return NAME;
-    }
-
-    @Override
-    public void activate(ComponentContext context) {
-        log.info("component activated");
-        proxies = new LDAPDirectoryRegistry();
-        servers = new LDAPServerRegistry();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        log.info("component deactivated");
-        proxies = null;
-        servers = null;
     }
 
     protected static DirectoryServiceImpl getDirectoryService() {
@@ -88,66 +44,31 @@ public class LDAPDirectoryFactory extends DefaultComponent implements DirectoryF
     }
 
     @Override
-    public void registerExtension(Extension extension) {
-        String xp = extension.getExtensionPoint();
-        if (xp.equals("directories")) {
-            registerDirectoryExtension(extension);
-        } else if (xp.equals("servers")) {
-            registerServerExtension(extension);
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (DIRECTORIES_XP.equals(extensionPoint)) {
+            super.registerContribution(contribution, extensionPoint, contributor);
+        } else if (SERVERS_XP.equals(extensionPoint)) {
+            registerServerContribution((LDAPServerDescriptor) contribution);
+        } else {
+            throw new NuxeoException("Unknown extension point: " + extensionPoint);
         }
     }
 
     @Override
-    public void unregisterExtension(Extension extension) throws DirectoryException {
-        String xp = extension.getExtensionPoint();
-        if (xp.equals("directories")) {
-            unregisterDirectoryExtension(extension);
-        } else if (xp.equals("servers")) {
-            unregisterServerExtension(extension);
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (DIRECTORIES_XP.equals(extensionPoint)) {
+            super.unregisterContribution(contribution, extensionPoint, contributor);
+        } else if (SERVERS_XP.equals(extensionPoint)) {
+            unregisterServerContribution((LDAPServerDescriptor) contribution);
         }
     }
 
-    public void registerServerExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            LDAPServerDescriptor descriptor = (LDAPServerDescriptor) contrib;
-            servers.addContribution(descriptor);
-        }
+    public void registerServerContribution(LDAPServerDescriptor descriptor) {
+        servers.addContribution(descriptor);
     }
 
-    public void unregisterServerExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            LDAPServerDescriptor descriptor = (LDAPServerDescriptor) contrib;
-            servers.removeContribution(descriptor);
-        }
-    }
-
-    public void registerDirectoryExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        DirectoryServiceImpl dirService = getDirectoryService();
-        for (Object contrib : contribs) {
-            LDAPDirectoryDescriptor descriptor = (LDAPDirectoryDescriptor) contrib;
-            proxies.addContribution(descriptor);
-            dirService.registerDirectory(descriptor.getName(), this);
-        }
-    }
-
-    public void unregisterDirectoryExtension(Extension extension) throws DirectoryException {
-        Object[] contribs = extension.getContributions();
-        DirectoryServiceImpl dirService = getDirectoryService();
-        for (Object contrib : contribs) {
-            LDAPDirectoryDescriptor descriptor = (LDAPDirectoryDescriptor) contrib;
-            proxies.removeContribution(descriptor);
-            dirService.unregisterDirectory(descriptor.getName(), this);
-        }
-    }
-
-    @Override
-    public void shutdown() throws DirectoryException {
-        for (Directory directory : proxies.getDirectories()) {
-            directory.shutdown();
-        }
+    public void unregisterServerContribution(LDAPServerDescriptor descriptor) {
+        servers.removeContribution(descriptor);
     }
 
 }

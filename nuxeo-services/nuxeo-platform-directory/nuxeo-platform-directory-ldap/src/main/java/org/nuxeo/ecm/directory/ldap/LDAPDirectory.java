@@ -93,7 +93,7 @@ public class LDAPDirectory extends AbstractDirectory {
     public LDAPDirectory(LDAPDirectoryDescriptor config) {
         super(config.name);
         this.config = config;
-        factory = (LDAPDirectoryFactory) Framework.getRuntime().getComponent(LDAPDirectoryFactory.NAME);
+        factory = Framework.getService(LDAPDirectoryFactory.class);
 
         if (config.getIdField() == null || config.getIdField().equals("")) {
             throw new DirectoryException("idField configuration is missing for directory " + config.getName());
@@ -182,7 +182,7 @@ public class LDAPDirectory extends AbstractDirectory {
         props.put(Context.PROVIDER_URL, ldapUrls);
 
         // define how referrals are handled
-        if (!getConfig().followReferrals) {
+        if (!getConfig().getFollowReferrals()) {
             props.put(Context.REFERRAL, "ignore");
         } else {
             // this is the default mode
@@ -395,7 +395,7 @@ public class LDAPDirectory extends AbstractDirectory {
      * @since 5.9.3
      */
     public String getPasswordHashAlgorithmField() {
-        return config.getPasswordHashAlgorithmField();
+        return config.passwordHashAlgorithm;
     }
 
     public void setTestServer(ContextProvider testServer) {

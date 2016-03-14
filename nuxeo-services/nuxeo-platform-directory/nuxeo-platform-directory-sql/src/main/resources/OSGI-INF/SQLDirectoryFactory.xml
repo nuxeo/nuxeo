@@ -9,11 +9,6 @@
     SQL-based implementation for NXDirectory
   </documentation>
 
-  <extension target="org.nuxeo.ecm.directory.DirectoryServiceImpl"
-    point="factoryDescriptor">
-    <factoryDescriptor component="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" />
-  </extension>
-
   <extension-point name="directories">
     <documentation>
       This extension point can be used to register new SQL-based

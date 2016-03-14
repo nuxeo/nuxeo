@@ -24,62 +24,32 @@ package org.nuxeo.ecm.directory.multi;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.directory.PermissionDescriptor;
+import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 
 /**
  * @author Florent Guillaume
  */
 @XObject(value = "directory")
-public class MultiDirectoryDescriptor implements Cloneable {
-
-    @XNode("@name")
-    public String name;
-
-    @XNode("schema")
-    protected String schemaName;
-
-    @XNode("idField")
-    protected String idField;
-
-    @XNode("passwordField")
-    protected String passwordField;
-
-    @XNode("readOnly")
-    public Boolean readOnly;
+public class MultiDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     @XNode("querySizeLimit")
     public Integer querySizeLimit;
 
-    @XNode("@remove")
-    public boolean remove = false;
-
     @XNodeList(value = "source", type = SourceDescriptor[].class, componentType = SourceDescriptor.class)
     protected SourceDescriptor[] sources;
 
-    @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
-    public PermissionDescriptor[] permissions = null;
-
-    public void merge(MultiDirectoryDescriptor other) {
-        merge(other, false);
+    @Override
+    public void merge(BaseDirectoryDescriptor other) {
+        super.merge(other);
+        merge((MultiDirectoryDescriptor) other);
     }
 
-    public void merge(MultiDirectoryDescriptor other, boolean overwrite) {
-        if (other.schemaName != null || overwrite) {
-            schemaName = other.schemaName;
-        }
-        if (other.idField != null || overwrite) {
-            idField = other.idField;
-        }
-        if (other.passwordField != null || overwrite) {
-            passwordField = other.passwordField;
-        }
-        if (other.readOnly != null || overwrite) {
-            readOnly = other.readOnly;
-        }
-        if (other.querySizeLimit != null || overwrite) {
+    protected void merge(MultiDirectoryDescriptor other) {
+        if (other.querySizeLimit != null) {
             querySizeLimit = other.querySizeLimit;
         }
-        if (other.sources != null || overwrite) {
+        if (other.sources != null) {
             if (sources == null) {
                 sources = other.sources;
             } else {
@@ -89,9 +59,6 @@ public class MultiDirectoryDescriptor implements Cloneable {
                 sources = s;
             }
         }
-        if ((other.permissions != null && other.permissions.length != 0) || overwrite) {
-            permissions = other.permissions;
-        }
     }
 
     /**
@@ -99,27 +66,20 @@ public class MultiDirectoryDescriptor implements Cloneable {
      */
     @Override
     public MultiDirectoryDescriptor clone() {
-        MultiDirectoryDescriptor clone = new MultiDirectoryDescriptor();
-        clone.name = name;
-        clone.schemaName = schemaName;
-        clone.idField = idField;
-        clone.passwordField = passwordField;
-        clone.readOnly = readOnly;
-        clone.querySizeLimit = querySizeLimit;
-        clone.remove = remove;
+        MultiDirectoryDescriptor clone = (MultiDirectoryDescriptor) super.clone();
+        // basic fields are already copied by super.clone()
         if (sources != null) {
             clone.sources = new SourceDescriptor[sources.length];
             for (int i = 0; i < sources.length; i++) {
                 clone.sources[i] = sources[i].clone();
             }
         }
-        if (permissions != null) {
-            clone.permissions = new PermissionDescriptor[permissions.length];
-            for (int i = 0; i < permissions.length; i++) {
-                clone.permissions[i] = permissions[i].clone();
-            }
-        }
         return clone;
+    }
+
+    @Override
+    public Directory newDirectory() {
+        return new MultiDirectory(this);
     }
 
 }

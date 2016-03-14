@@ -29,23 +29,28 @@ import javax.naming.Context;
 import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.ldap.LDAPDirectory;
+import org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor;
 import org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory;
 import org.nuxeo.runtime.api.Framework;
 
 public class LDAPDirectoriesProbe implements Probe {
 
-    protected LDAPDirectoryFactory factory;
-
     @Override
     public ProbeStatus run() {
-
-        factory = (LDAPDirectoryFactory) Framework.getRuntime().getComponent(LDAPDirectoryFactory.NAME);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
         boolean success = true;
         Map<String, String> infos = new HashMap<String, String>();
-        for (Directory dir : factory.getDirectories()) {
+        for (String id : directoryService.getDirectoryNames()) {
+            BaseDirectoryDescriptor descriptor = directoryService.getDirectoryDescriptor(id);
+            if (!(descriptor instanceof LDAPDirectoryDescriptor)) {
+                continue;
+            }
+            Directory dir = directoryService.getDirectory(id);
             long startTime = Calendar.getInstance().getTimeInMillis();
             String dirName = null;
             try {

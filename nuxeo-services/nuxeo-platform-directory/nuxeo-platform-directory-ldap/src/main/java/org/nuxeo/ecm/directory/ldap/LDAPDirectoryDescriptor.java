@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,8 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.directory.ldap;
 
 import java.util.ArrayList;
@@ -36,44 +34,38 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.InverseReference;
-import org.nuxeo.ecm.directory.PermissionDescriptor;
 import org.nuxeo.ecm.directory.Reference;
 
 @XObject(value = "directory")
-public class LDAPDirectoryDescriptor {
+public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     public static final Log log = LogFactory.getLog(LDAPDirectoryDescriptor.class);
 
-    public static final int defaultSearchScope = SearchControls.ONELEVEL_SCOPE;
+    public static final int DEFAULT_SEARCH_SCOPE = SearchControls.ONELEVEL_SCOPE;
 
-    public static final String defaultSearchClassesFilter = "(objectClass=*)";
+    public static final String DEFAULT_SEARCH_CLASSES_FILTER = "(objectClass=*)";
 
-    @XNode("@name")
-    public String name;
+    public static final String DEFAULT_EMPTY_REF_MARKER = "cn=emptyRef";
+
+    public static final String DEFAULT_MISSING_ID_FIELD_CASE = "unchanged";
+
+    public static final String DEFAULT_ID_CASE = "unchanged";
+
+    public static final int DEFAULT_QUERY_SIZE_LIMIT = 200;
+
+    public static final int DEFAULT_QUERY_TIME_LIMIT = 0;  // default to wait indefinitely
+
+    public static final boolean DEFAULT_FOLLOW_REFERRALS = true;
 
     @XNode("server")
     public String serverName;
 
-    @XNode("schema")
-    public String schemaName;
-
     @XNode("searchBaseDn")
     public String searchBaseDn;
-
-    @XNode("readOnly")
-    public boolean readOnly = true;
-
-    @XNode("cacheEntryName")
-    public String cacheEntryName = null;
-
-    @XNode("cacheEntryWithoutReferencesName")
-    public String cacheEntryWithoutReferencesName = null;
-
-    @XNode("negativeCaching")
-    public Boolean negativeCaching;
 
     @XNodeMap(value = "fieldMapping", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> fieldMapping = new HashMap<String, String>();
@@ -84,7 +76,7 @@ public class LDAPDirectoryDescriptor {
 
     public String searchFilter;
 
-    public int searchScope = defaultSearchScope; // default value: onelevel
+    public Integer searchScope;
 
     public String substringMatchType;
 
@@ -94,17 +86,8 @@ public class LDAPDirectoryDescriptor {
     @XNodeList(value = "creationClass", componentType = String.class, type = String[].class)
     public String[] creationClasses;
 
-    @XNode("idField")
-    public String idField;
-
     @XNode("rdnAttribute")
     public String rdnAttribute;
-
-    @XNode("passwordField")
-    public String passwordField;
-
-    @XNode("passwordHashAlgorithm")
-    public String passwordHashAlgorithm;
 
     @XNodeList(value = "references/ldapReference", type = LDAPReference[].class, componentType = LDAPReference.class)
     private LDAPReference[] ldapReferences;
@@ -115,33 +98,38 @@ public class LDAPDirectoryDescriptor {
     @XNodeList(value = "references/ldapTreeReference", type = LDAPTreeReference[].class, componentType = LDAPTreeReference.class)
     private LDAPTreeReference[] ldapTreeReferences;
 
-    @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
-    public PermissionDescriptor[] permissions = null;
-
     @XNode("emptyRefMarker")
-    public String emptyRefMarker = "cn=emptyRef";
+    public String emptyRefMarker;
 
     @XNode("missingIdFieldCase")
-    public String missingIdFieldCase = "unchanged";
+    public String missingIdFieldCase;
+
+    public String getMissingIdFieldCase() {
+        return missingIdFieldCase == null ? DEFAULT_MISSING_ID_FIELD_CASE : missingIdFieldCase;
+    }
 
     /**
      * Since 5.4.2: force id case to upper or lower, or leaver it unchanged.
      */
     @XNode("idCase")
-    public String idCase = "unchanged";
+    public String idCase = DEFAULT_ID_CASE;
 
     @XNode("querySizeLimit")
-    private int querySizeLimit = 200;
+    private Integer querySizeLimit;
 
     @XNode("queryTimeLimit")
-    private int queryTimeLimit = 0; // default to wait indefinitely
+    private Integer queryTimeLimit;
 
     // Add attribute to allow to ignore referrals resolution
     /**
      * Since 5.9.4
      */
     @XNode("followReferrals")
-    protected boolean followReferrals = true; // default to true
+    protected Boolean followReferrals;
+
+    public boolean getFollowReferrals() {
+        return followReferrals == null ? DEFAULT_FOLLOW_REFERRALS : followReferrals.booleanValue();
+    }
 
     protected EntryAdaptor entryAdaptor;
 
@@ -157,8 +145,8 @@ public class LDAPDirectoryDescriptor {
     }
 
     @XNode("entryAdaptor")
-    public void setEntryAdaptor(EntryAdaptorDescriptor adaptorDescriptor) throws InstantiationException,
-            IllegalAccessException {
+    public void setEntryAdaptor(EntryAdaptorDescriptor adaptorDescriptor)
+            throws InstantiationException, IllegalAccessException {
         entryAdaptor = adaptorDescriptor.adaptorClass.newInstance();
         for (Map.Entry<String, String> paramEntry : adaptorDescriptor.parameters.entrySet()) {
             entryAdaptor.setParameter(paramEntry.getKey(), paramEntry.getValue());
@@ -191,16 +179,8 @@ public class LDAPDirectoryDescriptor {
         return creationClasses;
     }
 
-    public String getIdField() {
-        return idField;
-    }
-
     public String getIdCase() {
         return idCase;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
     }
 
     public String getSearchBaseDn() {
@@ -212,7 +192,7 @@ public class LDAPDirectoryDescriptor {
         this.searchClasses = searchClasses;
         if (searchClasses == null) {
             // default searchClassesFilter
-            searchClassesFilter = defaultSearchClassesFilter;
+            searchClassesFilter = DEFAULT_SEARCH_CLASSES_FILTER;
             return;
         }
         List<String> searchClassFilters = new ArrayList<String>();
@@ -249,22 +229,22 @@ public class LDAPDirectoryDescriptor {
 
     @XNode("searchScope")
     public void setSearchScope(String searchScope) throws DirectoryException {
-        if (null == searchScope) {
+        if (searchScope == null) {
             // restore default search scope
-            this.searchScope = defaultSearchScope;
+            this.searchScope = null;
             return;
         }
         Integer scope = LdapScope.getIntegerScope(searchScope);
-        if (null == scope) {
+        if (scope == null) {
             // invalid scope
-            throw new DirectoryException("Invalid search scope: " + searchScope
-                    + ". Valid options: object, onelevel, subtree");
+            throw new DirectoryException(
+                    "Invalid search scope: " + searchScope + ". Valid options: object, onelevel, subtree");
         }
-        this.searchScope = scope.intValue();
+        this.searchScope = scope;
     }
 
     public int getSearchScope() {
-        return searchScope;
+        return searchScope == null ? DEFAULT_SEARCH_SCOPE : searchScope.intValue();
     }
 
     public String getSubstringMatchType() {
@@ -287,10 +267,6 @@ public class LDAPDirectoryDescriptor {
         }
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getServerName() {
         return serverName;
     }
@@ -300,14 +276,6 @@ public class LDAPDirectoryDescriptor {
             return searchClassesFilter;
         }
         return "(&" + searchClassesFilter + searchFilter + ')';
-    }
-
-    public String getPasswordField() {
-        return passwordField;
-    }
-
-    public String getPasswordHashAlgorithmField() {
-        return passwordHashAlgorithm;
     }
 
     public Map<String, String> getFieldMapping() {
@@ -333,16 +301,8 @@ public class LDAPDirectoryDescriptor {
         return refs.toArray(new Reference[] {});
     }
 
-    public boolean getReadOnly() {
-        return readOnly;
-    }
-
-    public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
-    }
-
     public String getEmptyRefMarker() {
-        return emptyRefMarker;
+        return emptyRefMarker == null ? DEFAULT_EMPTY_REF_MARKER : emptyRefMarker;
     }
 
     public void setEmptyRefMarker(String emptyRefMarker) {
@@ -350,19 +310,19 @@ public class LDAPDirectoryDescriptor {
     }
 
     public int getQuerySizeLimit() {
-        return querySizeLimit;
+        return querySizeLimit == null ? DEFAULT_QUERY_SIZE_LIMIT : querySizeLimit.intValue();
     }
 
     public void setQuerySizeLimit(int querySizeLimit) {
-        this.querySizeLimit = querySizeLimit;
+        this.querySizeLimit = Integer.valueOf(querySizeLimit);
     }
 
     public void setQueryTimeLimit(int queryTimeLimit) {
-        this.queryTimeLimit = queryTimeLimit;
+        this.queryTimeLimit = Integer.valueOf(queryTimeLimit);
     }
 
     public int getQueryTimeLimit() {
-        return queryTimeLimit;
+        return queryTimeLimit == null ? DEFAULT_QUERY_TIME_LIMIT : queryTimeLimit.intValue();
     }
 
     public EntryAdaptor getEntryAdaptor() {
@@ -383,6 +343,121 @@ public class LDAPDirectoryDescriptor {
             }
         }
         return exceptionProcessor;
+    }
+
+    @Override
+    public void merge(BaseDirectoryDescriptor other) {
+        super.merge(other);
+        merge((LDAPDirectoryDescriptor) other);
+    }
+
+    protected void merge(LDAPDirectoryDescriptor other) {
+        if (other.serverName != null) {
+            serverName = other.serverName;
+        }
+        if (other.searchBaseDn != null) {
+            searchBaseDn = other.searchBaseDn;
+        }
+        if (other.fieldMapping != null) {
+            fieldMapping.putAll(other.fieldMapping);
+        }
+        if (other.searchClasses != null && other.searchClasses.length > 0) {
+            searchClasses = other.searchClasses.clone();
+        }
+        if (other.searchClassesFilter != null) {
+            searchClassesFilter = other.searchClassesFilter;
+        }
+        if (other.searchFilter != null) {
+            searchFilter = other.searchFilter;
+        }
+        if (other.searchScope != null) {
+            searchScope = other.searchScope;
+        }
+        if (other.substringMatchType != null) {
+            substringMatchType = other.substringMatchType;
+        }
+        if (other.creationBaseDn != null) {
+            creationBaseDn = other.creationBaseDn;
+        }
+        if (other.creationClasses != null && other.creationClasses.length > 0) {
+            creationClasses = other.creationClasses.clone();
+        }
+        if (other.rdnAttribute != null) {
+            rdnAttribute = other.rdnAttribute;
+        }
+        if (other.ldapReferences != null && other.ldapReferences.length > 0) {
+            ldapReferences = other.ldapReferences;
+        }
+        if (other.inverseReferences != null && other.inverseReferences.length > 0) {
+            inverseReferences = other.inverseReferences;
+        }
+        if (other.ldapTreeReferences != null && other.ldapTreeReferences.length > 0) {
+            ldapTreeReferences = other.ldapTreeReferences;
+        }
+        if (other.emptyRefMarker != null) {
+            emptyRefMarker = other.emptyRefMarker;
+        }
+        if (other.missingIdFieldCase != null) {
+            missingIdFieldCase = other.missingIdFieldCase;
+        }
+        if (other.idCase != null) {
+            idCase = other.idCase;
+        }
+        if (other.querySizeLimit != null) {
+            querySizeLimit = other.querySizeLimit;
+        }
+        if (other.queryTimeLimit != null) {
+            queryTimeLimit = other.queryTimeLimit;
+        }
+        if (other.followReferrals != null) {
+            followReferrals = other.followReferrals;
+        }
+        if (other.entryAdaptor != null) {
+            entryAdaptor = other.entryAdaptor;
+        }
+        if (other.exceptionProcessorClass != null) {
+            exceptionProcessorClass = other.exceptionProcessorClass;
+            exceptionProcessor = other.exceptionProcessor;
+        }
+    }
+
+    @Override
+    public LDAPDirectoryDescriptor clone() {
+        LDAPDirectoryDescriptor clone = (LDAPDirectoryDescriptor) super.clone();
+        // basic fields are already copied by super.clone()
+        if (fieldMapping != null) {
+            clone.fieldMapping = new HashMap<>(fieldMapping);
+        }
+        if (searchClasses != null) {
+            clone.searchClasses = searchClasses.clone();
+        }
+        if (creationClasses != null) {
+            creationClasses = creationClasses.clone();
+        }
+        if (ldapReferences != null) {
+            clone.ldapReferences = new LDAPReference[ldapReferences.length];
+            for (int i = 0; i < ldapReferences.length; i++) {
+                clone.ldapReferences[i] = ldapReferences[i].clone();
+            }
+        }
+        if (inverseReferences != null) {
+            clone.inverseReferences = new InverseReference[inverseReferences.length];
+            for (int i = 0; i < inverseReferences.length; i++) {
+                clone.inverseReferences[i] = inverseReferences[i].clone();
+            }
+        }
+        if (ldapTreeReferences != null) {
+            clone.ldapTreeReferences = new LDAPTreeReference[ldapTreeReferences.length];
+            for (int i = 0; i < ldapTreeReferences.length; i++) {
+                clone.ldapTreeReferences[i] = ldapTreeReferences[i].clone();
+            }
+        }
+        return clone;
+    }
+
+    @Override
+    public LDAPDirectory newDirectory() {
+        return new LDAPDirectory(this);
     }
 
 }

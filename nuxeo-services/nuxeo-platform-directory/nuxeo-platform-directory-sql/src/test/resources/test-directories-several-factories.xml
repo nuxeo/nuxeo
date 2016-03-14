@@ -8,7 +8,9 @@
   <!-- register an existing directory to the new factory -->
   <extension target="org.nuxeo.ecm.directory.service.MockMemoryDirectoryFactory"
     point="directories">
-    <directory name="userDirectory" />
+    <directory name="userDirectory">
+      <schema>user</schema>
+    </directory>
   </extension>
 
   <!-- then register a different directory with SQL factory => bug shows that the

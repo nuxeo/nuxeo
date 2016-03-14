@@ -334,7 +334,7 @@ public class MultiDirectorySession extends BaseSession {
 
     @Override
     public boolean isReadOnly() {
-        return Boolean.TRUE.equals(descriptor.readOnly);
+        return descriptor.isReadOnly();
     }
 
     @Override

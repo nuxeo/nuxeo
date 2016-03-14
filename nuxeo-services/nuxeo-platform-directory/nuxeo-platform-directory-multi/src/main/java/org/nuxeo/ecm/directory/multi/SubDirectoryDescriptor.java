@@ -31,7 +31,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Florent Guillaume
  */
 @XObject("subDirectory")
-public class SubDirectoryDescriptor {
+public class SubDirectoryDescriptor implements Cloneable {
 
     @XNode("@name")
     public String name;
@@ -52,9 +52,13 @@ public class SubDirectoryDescriptor {
      */
     @Override
     public SubDirectoryDescriptor clone() {
-        SubDirectoryDescriptor clone = new SubDirectoryDescriptor();
-        clone.name = name;
-        clone.isOptional = isOptional;
+        SubDirectoryDescriptor clone;
+        try {
+            clone = (SubDirectoryDescriptor) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+        // basic fields are already copied by super.clone()
         if (fields != null) {
             clone.fields = new FieldDescriptor[fields.length];
             for (int i = 0; i < fields.length; i++) {

@@ -1165,7 +1165,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public boolean isReadOnly() {
-        return Boolean.TRUE.equals(directory.getConfig().getReadOnly());
+        return directory.getConfig().isReadOnly();
     }
 
     @Override

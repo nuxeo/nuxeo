@@ -40,6 +40,8 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
     // map of cache
     protected final Map<String, CacheDescriptor> caches = new HashMap<String, CacheDescriptor>();
 
+    protected boolean started;
+
     @Override
     public String getContributionId(CacheDescriptor contrib) {
         return contrib.name;
@@ -63,6 +65,9 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
 
         caches.put(name, descriptor);
         log.info("cache registered: " + name);
+        if (started) {
+            descriptor.start();
+        }
     }
 
     @Override
@@ -130,6 +135,7 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
         if (errors.getSuppressed().length > 0) {
             throw errors;
         }
+        started = true;
     }
 
     public void stop() {
@@ -144,6 +150,7 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
         if (errors.getSuppressed().length > 0) {
             throw errors;
         }
+        started = false;
     }
 
 }

@@ -42,9 +42,10 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.PermissionDescriptor;
 
 @XObject(value = "tableReference")
-public class TableReference extends AbstractReference {
+public class TableReference extends AbstractReference implements Cloneable {
 
     @XNode("@field")
     public void setFieldName(String fieldName) {
@@ -496,21 +497,9 @@ public class TableReference extends AbstractReference {
      * @since 5.6
      */
     @Override
-    protected AbstractReference newInstance() {
-        return new TableReference();
-    }
-
-    /**
-     * @since 5.6
-     */
-    @Override
     public TableReference clone() {
         TableReference clone = (TableReference) super.clone();
-        clone.tableName = tableName;
-        clone.sourceColumn = sourceColumn;
-        clone.targetColumn = targetColumn;
-        clone.schemaName = schemaName;
-        clone.dataFileName = dataFileName;
+        // basic fields are already copied by super.clone()
         return clone;
     }
 

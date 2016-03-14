@@ -376,18 +376,13 @@ public class LDAPTreeReference extends AbstractReference {
                 + " with targetDirectory='%s'", fieldName, sourceDirectoryName, targetDirectoryName);
     }
 
-    @Override
-    protected AbstractReference newInstance() {
-        return new LDAPTreeReference();
-    }
-
     /**
      * @since 5.6
      */
     @Override
     public LDAPTreeReference clone() {
         LDAPTreeReference clone = (LDAPTreeReference) super.clone();
-        clone.scope = scope;
+        // basic fields are already copied by super.clone()
         return clone;
     }
 

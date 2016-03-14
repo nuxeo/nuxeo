@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,11 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- * $Id$
+ *     George Lefter
+ *     Olivier Grisel
+ *     Benjamin Jalon
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.directory;
 
 import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FACET;
@@ -31,12 +32,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
-import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
-import org.nuxeo.ecm.directory.registry.DirectoryFactoryMapper;
-import org.nuxeo.ecm.directory.registry.DirectoryFactoryMapperRegistry;
-import org.nuxeo.ecm.directory.registry.DirectoryFactoryRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -47,9 +45,33 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
 
     private static final Log log = LogFactory.getLog(DirectoryServiceImpl.class);
 
-    protected DirectoryFactoryRegistry factories;
+    protected DirectoryRegistry registry = new DirectoryRegistry();
 
-    protected DirectoryFactoryMapperRegistry factoriesByDirectoryName;
+    @Override
+    public void activate(ComponentContext context) {
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) {
+        registry.shutdown();
+    }
+
+    @Override
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        DirectoryFactoryDescriptor factoryDescriptor = (DirectoryFactoryDescriptor) contribution;
+        String factoryName = factoryDescriptor.getFactoryName();
+        log.warn("No need to register factoryDescriptor anymore: " + factoryName);
+    }
+
+    @Override
+    public void registerDirectoryDescriptor(BaseDirectoryDescriptor descriptor) {
+        registry.addContribution(descriptor);
+    }
+
+    @Override
+    public void unregisterDirectoryDescriptor(BaseDirectoryDescriptor descriptor) {
+        registry.removeContribution(descriptor);
+    }
 
     @Override
     public void applicationStarted(ComponentContext context) {
@@ -107,135 +129,56 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
     }
 
     @Override
-    public Directory getDirectory(String directoryName) throws DirectoryException {
-        if (directoryName == null) {
-            return null;
-        }
-        List<String> factoryNames = factoriesByDirectoryName.getFactoriesForDirectory(directoryName);
-        if (factoryNames == null || factoryNames.isEmpty()) {
-            return null;
-        }
-        for (String factoryName : factoryNames) {
-            DirectoryFactory targetFactory = factories.getFactory(factoryName);
-            if (targetFactory != null) {
-                return targetFactory.getDirectory(directoryName);
-            }
-        }
-        return null;
+    public BaseDirectoryDescriptor getDirectoryDescriptor(String id) {
+        return registry.getDirectoryDescriptor(id);
     }
 
     @Override
-    public Directory getDirectory(String name, DocumentModel documentContext) throws DirectoryException {
-        if (name == null) {
+    public Directory getDirectory(String id) {
+        if (id == null) {
+            // TODO throw an exception
             return null;
         }
-
-        String localDirectoryName = getWaitingLocalDirectoryName(name, getDirectoryConfiguration(documentContext));
-
-        Directory directory = getDirectory(localDirectoryName);
-
-        if (directory == null && !name.equals(localDirectoryName)) {
-            log.debug(String.format("The local directory named '%s' was"
-                    + " not found. Look for the default one named: %s", localDirectoryName, name));
-            directory = getDirectory(name);
-        }
-
-        return directory;
+        return registry.getDirectory(id);
     }
 
-    private Directory getDirectoryOrFail(String name) throws DirectoryException {
+    @Override
+    public Directory getDirectory(String id, DocumentModel documentContext) {
+        if (id == null) {
+            // TODO throw an exception
+            return null;
+        }
+        String localDirectoryName = getWaitingLocalDirectoryName(id, getDirectoryConfiguration(documentContext));
+        Directory dir = getDirectory(localDirectoryName);
+        if (dir == null && !id.equals(localDirectoryName)) {
+            log.debug(String.format(
+                    "The local directory named '%s' was" + " not found. Look for the default one named: %s",
+                    localDirectoryName, id));
+            dir = getDirectory(id);
+        }
+        return dir;
+    }
+
+    protected Directory getDirectoryOrFail(String name) throws DirectoryException {
         return getDirectoryOrFail(name, null);
     }
 
-    private Directory getDirectoryOrFail(String name, DocumentModel documentContext) throws DirectoryException {
-
-        Directory dir = getDirectory(name, documentContext);
-        if (null == dir) {
-            throw new DirectoryException(String.format("no directory registered with name '%s'", name));
+    protected Directory getDirectoryOrFail(String id, DocumentModel documentContext) throws DirectoryException {
+        Directory dir = getDirectory(id, documentContext);
+        if (dir == null) {
+            throw new DirectoryException("No directory registered with name: " + id);
         }
         return dir;
     }
 
     @Override
-    public List<Directory> getDirectories() throws DirectoryException {
-        List<Directory> directoryList = new ArrayList<Directory>();
-        for (DirectoryFactory factory : factories.getFactories()) {
-            List<Directory> list = factory.getDirectories();
-            directoryList.addAll(list);
-        }
-        return directoryList;
+    public List<Directory> getDirectories() {
+        return registry.getDirectories();
     }
 
     @Override
-    public void activate(ComponentContext context) {
-        factories = new DirectoryFactoryRegistry();
-        factoriesByDirectoryName = new DirectoryFactoryMapperRegistry();
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        for (DirectoryFactory factory : factories.getFactories()) {
-            factory.shutdown();
-        }
-        factories = null;
-        factoriesByDirectoryName = null;
-    }
-
-    @Override
-    public void registerExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            DirectoryFactoryDescriptor factoryDescriptor = (DirectoryFactoryDescriptor) contrib;
-            String factoryName = factoryDescriptor.getFactoryName();
-            factories.addContribution(new DirectoryFactoryProxy(factoryName));
-            log.debug("registered factory: " + factoryName);
-        }
-    }
-
-    @Override
-    public void unregisterExtension(Extension extension) {
-        Object[] contribs = extension.getContributions();
-        for (Object contrib : contribs) {
-            DirectoryFactoryDescriptor factoryDescriptor = (DirectoryFactoryDescriptor) contrib;
-            String factoryName = factoryDescriptor.getFactoryName();
-            DirectoryFactory factoryToRemove = factories.getFactory(factoryName);
-            if (factoryToRemove == null) {
-                log.warn(String.format("Factory '%s' was not registered", factoryName));
-                return;
-            }
-            factoryToRemove.shutdown();
-            // XXX: do not cleanup mappers, lookup will ignore non-registered
-            // factories anyway
-            factories.removeContribution(factoryToRemove);
-            log.debug("unregistered factory: " + factoryName);
-        }
-    }
-
-    @Override
-    public void registerDirectory(String directoryName, DirectoryFactory factory) {
-        // compatibility code to add otherwise missing memory factory (as it's
-        // not registered via extension points)
-        if (factory instanceof MemoryDirectoryFactory) {
-            factories.addContribution(factory);
-        }
-        DirectoryFactoryMapper contrib = new DirectoryFactoryMapper(directoryName, factory.getName());
-        factoriesByDirectoryName.addContribution(contrib);
-    }
-
-    @Override
-    public void unregisterDirectory(String directoryName, DirectoryFactory factory) {
-        DirectoryFactoryMapper contrib = new DirectoryFactoryMapper(directoryName, factory.getName());
-        factoriesByDirectoryName.removeContribution(contrib);
-    }
-
-    @Override
-    public List<String> getDirectoryNames() throws DirectoryException {
-        List<Directory> directories = getDirectories();
-        List<String> directoryNames = new ArrayList<String>();
-        for (Directory directory : directories) {
-            directoryNames.add(directory.getName());
-        }
-        return directoryNames;
+    public List<String> getDirectoryNames() {
+        return registry.getDirectoryIds();
     }
 
     @Override
@@ -254,6 +197,11 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
     }
 
     @Override
+    public String getParentDirectoryName(String directoryName) throws DirectoryException {
+        return getDirectoryOrFail(directoryName).getParentDirectory();
+    }
+
+    @Override
     public Session open(String directoryName) throws DirectoryException {
         return getDirectoryOrFail(directoryName).getSession();
     }
@@ -261,11 +209,6 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
     @Override
     public Session open(String directoryName, DocumentModel documentContext) throws DirectoryException {
         return getDirectoryOrFail(directoryName, documentContext).getSession();
-    }
-
-    @Override
-    public String getParentDirectoryName(String directoryName) throws DirectoryException {
-        return getDirectoryOrFail(directoryName).getParentDirectory();
     }
 
 }

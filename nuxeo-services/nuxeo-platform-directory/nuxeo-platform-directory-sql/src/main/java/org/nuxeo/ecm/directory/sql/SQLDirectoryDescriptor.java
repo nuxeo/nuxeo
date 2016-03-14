@@ -29,13 +29,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.InverseReference;
-import org.nuxeo.ecm.directory.PermissionDescriptor;
 import org.nuxeo.ecm.directory.Reference;
 
 @XObject(value = "directory")
-public class SQLDirectoryDescriptor {
+public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     private static final Log log = LogFactory.getLog(SQLDirectoryDescriptor.class);
 
@@ -43,30 +43,16 @@ public class SQLDirectoryDescriptor {
         subinitial, subfinal, subany
     }
 
-    public static final int CACHE_TIMEOUT_DEFAULT = 0;
-
-    public static final int CACHE_MAX_SIZE_DEFAULT = 0;
-
     public static final int QUERY_SIZE_LIMIT_DEFAULT = 0;
 
     public static final boolean AUTO_INCREMENT_ID_FIELD_DEFAULT = false;
 
-    public static final boolean READ_ONY_DEFAULT = false;
+    public static final char DEFAULT_CHARACTER_SEPARATOR = ',';
 
-    protected static final char DEFAULT_CHARACTER_SEPARATOR = ',';
+    public static final String[] CREATE_TABLE_POLICIES = { "never", "on_missing_columns", "always", };
 
-    private static final String[] SCRIPT_POLICIES = { "never", "on_missing_columns", "always", };
+    public static final String CREATE_TABLE_POLICY_DEFAULT = "never";
 
-    private static final String DEFAULT_POLICY = "never";
-
-    @XNode("@name")
-    public String name;
-
-    @XNode("schema")
-    public String schemaName;
-
-    @XNode("parentDirectory")
-    public String parentDirectory;
 
     @XNode("dataSource")
     public String dataSourceName;
@@ -83,14 +69,8 @@ public class SQLDirectoryDescriptor {
     @XNode("dbPassword")
     public String dbPassword;
 
-    @XNode("table")
-    public String tableName;
-
     @XNodeList(value = "init-dependencies/dependency", type = ArrayList.class, componentType = String.class)
     public List<String> initDependencies;
-
-    @XNode("idField")
-    public String idField;
 
     @XNode("dataFile")
     public String dataFileName;
@@ -105,15 +85,6 @@ public class SQLDirectoryDescriptor {
     @XNode("autoincrementIdField")
     public Boolean autoincrementIdField;
 
-    @XNode("readOnly")
-    public Boolean readOnly;
-
-    @XNode("passwordField")
-    private String passwordField;
-
-    @XNode("passwordHashAlgorithm")
-    public String passwordHashAlgorithm;
-
     @XNode("querySizeLimit")
     private Integer querySizeLimit;
 
@@ -122,27 +93,6 @@ public class SQLDirectoryDescriptor {
 
     @XNodeList(value = "references/inverseReference", type = InverseReference[].class, componentType = InverseReference.class)
     private InverseReference[] inverseReferences;
-
-    @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
-    public PermissionDescriptor[] permissions = null;
-
-    @XNode("@remove")
-    private boolean remove = false;
-
-    @XNode("cacheTimeout")
-    public Integer cacheTimeout;
-
-    @XNode("cacheMaxSize")
-    public Integer cacheMaxSize;
-
-    @XNode("cacheEntryName")
-    public String cacheEntryName = null;
-
-    @XNode("cacheEntryWithoutReferencesName")
-    public String cacheEntryWithoutReferencesName = null;
-
-    @XNode("negativeCaching")
-    public Boolean negativeCaching;
 
     @XNodeList(value = "filters/staticFilter", type = SQLStaticFilter[].class, componentType = SQLStaticFilter.class)
     private SQLStaticFilter[] staticFilters;
@@ -159,45 +109,6 @@ public class SQLDirectoryDescriptor {
 
     public void setDataSourceName(String dataSourceName) {
         this.dataSourceName = dataSourceName;
-    }
-
-    public void setIdField(String idField) {
-        this.idField = idField;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    // XXX never used: is it supposed to help determining an entry full id
-    // using
-    // the parent directory id?
-    public String getParentDirectory() {
-        return parentDirectory;
-    }
-
-    public void setParentDirectory(String parentDirectory) {
-        this.parentDirectory = parentDirectory;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
     }
 
     public String getDbDriver() {
@@ -235,18 +146,6 @@ public class SQLDirectoryDescriptor {
         return dataFileCharacterSeparator.charAt(0);
     }
 
-    public String getPasswordField() {
-        return passwordField;
-    }
-
-    public void setPasswordField(String passwordField) {
-        this.passwordField = passwordField;
-    }
-
-    public String getIdField() {
-        return idField;
-    }
-
     public String getCreateTablePolicy() {
         return createTablePolicy;
     }
@@ -254,12 +153,12 @@ public class SQLDirectoryDescriptor {
     @XNode("createTablePolicy")
     public void setCreateTablePolicy(String createTablePolicy) throws DirectoryException {
         if (createTablePolicy == null) {
-            this.createTablePolicy = DEFAULT_POLICY;
+            this.createTablePolicy = CREATE_TABLE_POLICY_DEFAULT;
             return;
         }
         createTablePolicy = createTablePolicy.toLowerCase();
         boolean validPolicy = false;
-        for (String policy : SCRIPT_POLICIES) {
+        for (String policy : CREATE_TABLE_POLICIES) {
             if (createTablePolicy.equals(policy)) {
                 validPolicy = true;
                 break;
@@ -291,14 +190,6 @@ public class SQLDirectoryDescriptor {
 
     public Reference[] getTableReferences() {
         return tableReferences;
-    }
-
-    public Boolean getReadOnly() {
-        return readOnly == null ? Boolean.valueOf(READ_ONY_DEFAULT) : readOnly;
-    }
-
-    public void setReadOnly(Boolean readOnly) {
-        this.readOnly = readOnly;
     }
 
     public boolean isAutoincrementIdField() {
@@ -345,22 +236,6 @@ public class SQLDirectoryDescriptor {
         this.querySizeLimit = Integer.valueOf(querySizeLimit);
     }
 
-    public void setRemove(boolean delete) {
-        this.remove = delete;
-    }
-
-    public boolean getRemove() {
-        return this.remove;
-    }
-
-    public int getCacheTimeout() {
-        return cacheTimeout == null ? CACHE_TIMEOUT_DEFAULT : cacheTimeout.intValue();
-    }
-
-    public int getCacheMaxSize() {
-        return cacheMaxSize == null ? CACHE_MAX_SIZE_DEFAULT : cacheMaxSize.intValue();
-    }
-
     public SubstringMatchType getSubstringMatchType() {
         return substringMatchType == null ? SubstringMatchType.subinitial : substringMatchType;
     }
@@ -386,135 +261,71 @@ public class SQLDirectoryDescriptor {
         return computeMultiTenantId;
     }
 
-    /**
-     * Merge re-written since 5.6 to comply to hot reload needs, omitting to merge properties initialized by xmap)
-     */
-    public void merge(SQLDirectoryDescriptor other) {
-        merge(other, false);
+    @Override
+    public void merge(BaseDirectoryDescriptor other) {
+        super.merge(other);
+        merge((SQLDirectoryDescriptor) other);
     }
 
-    public void merge(SQLDirectoryDescriptor other, boolean overwite) {
-        if (other.dataSourceName != null || overwite) {
+    protected void merge(SQLDirectoryDescriptor other) {
+        if (other.dataSourceName != null) {
             dataSourceName = other.dataSourceName;
         }
-        if (other.dbDriver != null || overwite) {
+        if (other.dbDriver != null) {
             dbDriver = other.dbDriver;
         }
-        if (other.dbUrl != null || overwite) {
+        if (other.dbUrl != null) {
             dbUrl = other.dbUrl;
         }
-        if (other.dbUser != null || overwite) {
+        if (other.dbUser != null) {
             dbUser = other.dbUser;
         }
-        if (other.dbPassword != null || overwite) {
+        if (other.dbPassword != null) {
             dbPassword = other.dbPassword;
         }
-        if (other.tableName != null || overwite) {
-            tableName = other.tableName;
-        }
-        if (other.schemaName != null || overwite) {
-            schemaName = other.schemaName;
-        }
-        if (other.parentDirectory != null || overwite) {
-            parentDirectory = other.parentDirectory;
-        }
-        if ((other.initDependencies != null && other.initDependencies.size() != 0) || overwite) {
+        if (other.initDependencies != null && other.initDependencies.size() != 0) {
             initDependencies = other.initDependencies;
         }
-        if (other.idField != null || overwite) {
-            idField = other.idField;
-        }
-        if (other.dataFileName != null || overwite) {
+        if (other.dataFileName != null) {
             dataFileName = other.dataFileName;
         }
-        if (other.dataFileCharacterSeparator != null || overwite) {
+        if (other.dataFileCharacterSeparator != null) {
             dataFileCharacterSeparator = other.dataFileCharacterSeparator;
         }
-        if (other.createTablePolicy != null || overwite) {
+        if (other.createTablePolicy != null) {
             createTablePolicy = other.createTablePolicy;
         }
-        if (other.substringMatchType != null || overwite) {
+        if (other.substringMatchType != null) {
             substringMatchType = other.substringMatchType;
         }
-        if (other.autoincrementIdField != null || overwite) {
+        if (other.autoincrementIdField != null) {
             autoincrementIdField = other.autoincrementIdField;
         }
-        if (other.readOnly != null || overwite) {
-            readOnly = other.readOnly;
-        }
-        if (other.passwordField != null || overwite) {
-            passwordField = other.passwordField;
-        }
-        if (other.passwordHashAlgorithm != null || overwite) {
-            passwordHashAlgorithm = other.passwordHashAlgorithm;
-        }
-        if (other.querySizeLimit != null || overwite) {
+        if (other.querySizeLimit != null) {
             querySizeLimit = other.querySizeLimit;
         }
-
-        if ((other.inverseReferences != null && other.inverseReferences.length != 0) || overwite) {
+        if (other.inverseReferences != null && other.inverseReferences.length != 0) {
             inverseReferences = other.inverseReferences;
         }
-        if ((other.tableReferences != null && other.tableReferences.length != 0) || overwite) {
+        if (other.tableReferences != null && other.tableReferences.length != 0) {
             tableReferences = other.tableReferences;
         }
-        if ((other.permissions != null && other.permissions.length != 0) || overwite) {
-            permissions = other.permissions;
-        }
-
-        remove = other.remove;
-
-        if (other.cacheTimeout != null || overwite) {
-            cacheTimeout = other.cacheTimeout;
-        }
-        if (other.cacheMaxSize != null || overwite) {
-            cacheMaxSize = other.cacheMaxSize;
-        }
-
-        if (other.cacheEntryName != null || overwite) {
-            cacheEntryName = other.cacheEntryName;
-        }
-        if (other.cacheEntryWithoutReferencesName != null || overwite) {
-            cacheEntryWithoutReferencesName = other.cacheEntryWithoutReferencesName;
-        }
-        if (other.negativeCaching != null || overwite) {
-            negativeCaching = other.negativeCaching;
-        }
-        if ((other.staticFilters != null && other.staticFilters.length != 0) || overwite) {
+        if (other.staticFilters != null && other.staticFilters.length != 0) {
             staticFilters = other.staticFilters;
         }
-        if (other.nativeCase != null || overwite) {
+        if (other.nativeCase != null) {
             nativeCase = other.nativeCase;
         }
-
         computeMultiTenantId = other.computeMultiTenantId;
     }
 
     @Override
     public SQLDirectoryDescriptor clone() {
-        SQLDirectoryDescriptor clone = new SQLDirectoryDescriptor();
-        clone.name = name;
-        clone.schemaName = schemaName;
-        clone.parentDirectory = parentDirectory;
-        clone.dataSourceName = dataSourceName;
-        clone.dbDriver = dbDriver;
-        clone.dbUrl = dbUrl;
-        clone.dbUser = dbUser;
-        clone.dbPassword = dbPassword;
-        clone.tableName = tableName;
+        SQLDirectoryDescriptor clone = (SQLDirectoryDescriptor) super.clone();
+        // basic fields are already copied by super.clone()
         if (initDependencies != null) {
-            clone.initDependencies = new ArrayList<String>(initDependencies);
+            clone.initDependencies = new ArrayList<>(initDependencies);
         }
-        clone.idField = idField;
-        clone.dataFileName = dataFileName;
-        clone.dataFileCharacterSeparator = dataFileCharacterSeparator;
-        clone.createTablePolicy = createTablePolicy;
-        clone.substringMatchType = substringMatchType;
-        clone.autoincrementIdField = autoincrementIdField;
-        clone.readOnly = readOnly;
-        clone.passwordField = passwordField;
-        clone.passwordHashAlgorithm = passwordHashAlgorithm;
-        clone.querySizeLimit = querySizeLimit;
         if (tableReferences != null) {
             clone.tableReferences = new TableReference[tableReferences.length];
             for (int i = 0; i < tableReferences.length; i++) {
@@ -527,26 +338,18 @@ public class SQLDirectoryDescriptor {
                 clone.inverseReferences[i] = inverseReferences[i].clone();
             }
         }
-        if (permissions != null) {
-            clone.permissions = new PermissionDescriptor[permissions.length];
-            for (int i = 0; i < permissions.length; i++) {
-                clone.permissions[i] = permissions[i].clone();
-            }
-        }
-        clone.remove = remove;
-        clone.cacheTimeout = cacheTimeout;
-        clone.cacheMaxSize = cacheMaxSize;
-        clone.cacheEntryName = cacheEntryName;
-        clone.cacheEntryWithoutReferencesName = cacheEntryWithoutReferencesName;
-        clone.negativeCaching = negativeCaching;
         if (staticFilters != null) {
             clone.staticFilters = new SQLStaticFilter[staticFilters.length];
             for (int i = 0; i < staticFilters.length; i++) {
                 clone.staticFilters[i] = staticFilters[i].clone();
             }
         }
-        clone.nativeCase = nativeCase;
-        clone.computeMultiTenantId = computeMultiTenantId;
         return clone;
     }
+
+    @Override
+    public SQLDirectory newDirectory() {
+        return new SQLDirectory(this);
+    }
+
 }

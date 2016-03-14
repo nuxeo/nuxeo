@@ -140,16 +140,10 @@ public class MultiReference extends AbstractReference {
      * @since 5.6
      */
     @Override
-    protected AbstractReference newInstance() {
-        return new MultiReference(dir, fieldName);
-    }
-
-    /**
-     * @since 5.6
-     */
-    @Override
-    public AbstractReference clone() {
-        return super.clone();
+    public MultiReference clone() {
+        MultiReference clone = (MultiReference) super.clone();
+        // basic fields are already copied by super.clone()
+        return clone;
     }
 
 }

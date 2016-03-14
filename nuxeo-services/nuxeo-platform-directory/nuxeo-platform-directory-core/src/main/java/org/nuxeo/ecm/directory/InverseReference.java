@@ -165,14 +165,9 @@ public class InverseReference extends AbstractReference {
     }
 
     @Override
-    protected AbstractReference newInstance() {
-        return new InverseReference();
-    }
-
-    @Override
     public InverseReference clone() {
         InverseReference clone = (InverseReference) super.clone();
-        clone.dualReferenceName = dualReferenceName;
+        // basic fields are already copied by super.clone()
         return clone;
     }
 }

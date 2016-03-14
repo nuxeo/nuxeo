@@ -20,27 +20,6 @@
 
 package org.nuxeo.ecm.directory;
 
-import java.util.List;
-
 public interface DirectoryFactory {
-
-    String getName();
-
-    /**
-     * Returns the directory with the given name.
-     *
-     * @param name the name of the directory
-     * @return the directory with the given name
-     * @throws DirectoryException
-     */
-    Directory getDirectory(String name) throws DirectoryException;
-
-    /**
-     * @return a list with all the directories managed by this factory
-     * @throws DirectoryException
-     */
-    List<Directory> getDirectories() throws DirectoryException;
-
-    void shutdown() throws DirectoryException;
 
 }

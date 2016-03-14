@@ -28,7 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @author Florent Guillaume
  */
 @XObject("field")
-public class FieldDescriptor {
+public class FieldDescriptor implements Cloneable {
 
     @XNode("")
     public String name;
@@ -46,9 +46,13 @@ public class FieldDescriptor {
      */
     @Override
     public FieldDescriptor clone() {
-        FieldDescriptor clone = new FieldDescriptor();
-        clone.name = name;
-        clone.forField = forField;
+        FieldDescriptor clone;
+        try {
+            clone = (FieldDescriptor) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
+        // basic fields are already copied by super.clone()
         return clone;
     }
 

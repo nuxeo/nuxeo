@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +51,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
-import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
+import org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -63,9 +65,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @LocalDeploy("org.nuxeo.ecm.directory.multi.tests:directories-config.xml")
 public class TestMultiDirectory {
 
+    @Inject
     DirectoryService directoryService;
-
-    MemoryDirectoryFactory memoryDirectoryFactory;
 
     MemoryDirectory memdir1;
 
@@ -77,62 +78,81 @@ public class TestMultiDirectory {
 
     MultiDirectorySession dir;
 
+    protected MemoryDirectoryDescriptor desc1;
+
+    protected MemoryDirectoryDescriptor desc2;
+
+    protected MemoryDirectoryDescriptor desc3;
+
     @Before
     public void setUp() throws Exception {
-        // mem dir factory
-        directoryService = Framework.getLocalService(DirectoryService.class);
-        memoryDirectoryFactory = new MemoryDirectoryFactory();
-        directoryService.registerDirectory("memdirs", memoryDirectoryFactory);
-
         // create and register mem directories
         Map<String, Object> e;
 
         // dir 1
-        Set<String> schema1Set = new HashSet<String>(Arrays.asList("uid", "foo"));
-        memdir1 = new MemoryDirectory("dir1", "schema1", schema1Set, "uid", "foo");
-        memoryDirectoryFactory.registerDirectory(memdir1);
+        desc1 = new MemoryDirectoryDescriptor();
+        desc1.name = "dir1";
+        desc1.schemaName = "schema1";
+        desc1.schemaSet = new HashSet<String>(Arrays.asList("uid", "foo"));
+        desc1.idField = "uid";
+        desc1.passwordField = "foo";
+        directoryService.registerDirectoryDescriptor(desc1);
+        memdir1 = (MemoryDirectory) directoryService.getDirectory("dir1");
 
-        Session dir1 = memdir1.getSession();
-        e = new HashMap<String, Object>();
-        e.put("uid", "1");
-        e.put("foo", "foo1");
-        dir1.createEntry(e);
-        e = new HashMap<String, Object>();
-        e.put("uid", "2");
-        e.put("foo", "foo2");
-        dir1.createEntry(e);
+        try (Session dir1 = memdir1.getSession()) {
+            e = new HashMap<String, Object>();
+            e.put("uid", "1");
+            e.put("foo", "foo1");
+            dir1.createEntry(e);
+            e = new HashMap<String, Object>();
+            e.put("uid", "2");
+            e.put("foo", "foo2");
+            dir1.createEntry(e);
+        }
 
         // dir 2
-        Set<String> schema2Set = new HashSet<String>(Arrays.asList("id", "bar"));
-        memdir2 = new MemoryDirectory("dir2", "schema2", schema2Set, "id", null);
-        memoryDirectoryFactory.registerDirectory(memdir2);
+        desc2 = new MemoryDirectoryDescriptor();
+        desc2.name = "dir2";
+        desc2.schemaName = "schema2";
+        desc2.schemaSet = new HashSet<String>(Arrays.asList("id", "bar"));
+        desc2.idField = "id";
+        desc2.passwordField = null;
+        directoryService.registerDirectoryDescriptor(desc2);
+        memdir2 = (MemoryDirectory) directoryService.getDirectory("dir2");
 
-        Session dir2 = memdir2.getSession();
-        e = new HashMap<String, Object>();
-        e.put("id", "1");
-        e.put("bar", "bar1");
-        dir2.createEntry(e);
-        e = new HashMap<String, Object>();
-        e.put("id", "2");
-        e.put("bar", "bar2");
-        dir2.createEntry(e);
+        try (Session dir2 = memdir2.getSession()) {
+            e = new HashMap<String, Object>();
+            e.put("id", "1");
+            e.put("bar", "bar1");
+            dir2.createEntry(e);
+            e = new HashMap<String, Object>();
+            e.put("id", "2");
+            e.put("bar", "bar2");
+            dir2.createEntry(e);
+        }
 
         // dir 3
-        Set<String> schema3Set = new HashSet<String>(Arrays.asList("uid", "thefoo", "thebar"));
-        memdir3 = new MemoryDirectory("dir3", "schema3", schema3Set, "uid", "thefoo");
-        memoryDirectoryFactory.registerDirectory(memdir3);
+        desc3 = new MemoryDirectoryDescriptor();
+        desc3.name = "dir3";
+        desc3.schemaName = "schema3";
+        desc3.schemaSet = new HashSet<String>(Arrays.asList("uid", "thefoo", "thebar"));
+        desc3.idField = "uid";
+        desc3.passwordField = "thefoo";
+        directoryService.registerDirectoryDescriptor(desc3);
+        memdir3 = (MemoryDirectory) directoryService.getDirectory("dir3");
 
-        Session dir3 = memdir3.getSession();
-        e = new HashMap<String, Object>();
-        e.put("uid", "3");
-        e.put("thefoo", "foo3");
-        e.put("thebar", "bar3");
-        dir3.createEntry(e);
-        e = new HashMap<String, Object>();
-        e.put("uid", "4");
-        e.put("thefoo", "foo4");
-        e.put("thebar", "bar4");
-        dir3.createEntry(e);
+        try (Session dir3 = memdir3.getSession()) {
+            e = new HashMap<String, Object>();
+            e.put("uid", "3");
+            e.put("thefoo", "foo3");
+            e.put("thebar", "bar3");
+            dir3.createEntry(e);
+            e = new HashMap<String, Object>();
+            e.put("uid", "4");
+            e.put("thefoo", "foo4");
+            e.put("thebar", "bar4");
+            dir3.createEntry(e);
+        }
 
         // the multi directory
         multiDir = (MultiDirectory) directoryService.getDirectory("multi");
@@ -141,10 +161,12 @@ public class TestMultiDirectory {
 
     @After
     public void tearDown() throws Exception {
-        memoryDirectoryFactory.unregisterDirectory(memdir1);
-        memoryDirectoryFactory.unregisterDirectory(memdir2);
-        memoryDirectoryFactory.unregisterDirectory(memdir3);
-        directoryService.unregisterDirectory("memdirs", memoryDirectoryFactory);
+        if (dir != null) {
+            dir.close();
+        }
+        directoryService.unregisterDirectoryDescriptor(desc1);
+        directoryService.unregisterDirectoryDescriptor(desc2);
+        directoryService.unregisterDirectoryDescriptor(desc3);
     }
 
     @Test
@@ -188,199 +210,206 @@ public class TestMultiDirectory {
 
     @Test
     public void testCreate() throws Exception {
-        Session dir1 = memdir1.getSession();
-        Session dir2 = memdir2.getSession();
-        Session dir3 = memdir3.getSession();
+        try (Session dir1 = memdir1.getSession();
+                Session dir2 = memdir2.getSession();
+                Session dir3 = memdir3.getSession()) {
 
-        // multi-subdir create
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("uid", "5");
-        map.put("thefoo", "foo5");
-        map.put("thebar", "bar5");
-        DocumentModel entry = dir.createEntry(map);
-        assertEquals("5", entry.getProperty("schema3", "uid"));
-        assertEquals("foo5", entry.getProperty("schema3", "thefoo"));
-        assertEquals("bar5", entry.getProperty("schema3", "thebar"));
-        boolean exceptionThrwon = false;
-        try {
-            assertNull(entry.getProperty("schema3", "xyz"));
-        } catch (PropertyNotFoundException ce) {
-            exceptionThrwon = true;
-        }
-        assertTrue(exceptionThrwon);
+            // multi-subdir create
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("uid", "5");
+            map.put("thefoo", "foo5");
+            map.put("thebar", "bar5");
+            DocumentModel entry = dir.createEntry(map);
+            assertEquals("5", entry.getProperty("schema3", "uid"));
+            assertEquals("foo5", entry.getProperty("schema3", "thefoo"));
+            assertEquals("bar5", entry.getProperty("schema3", "thebar"));
+            boolean exceptionThrwon = false;
+            try {
+                assertNull(entry.getProperty("schema3", "xyz"));
+            } catch (PropertyNotFoundException ce) {
+                exceptionThrwon = true;
+            }
+            assertTrue(exceptionThrwon);
 
-        // check underlying directories
-        assertNotNull(dir1.getEntry("5"));
-        assertEquals("foo5", dir1.getEntry("5").getProperty("schema1", "foo"));
-        assertNotNull(dir2.getEntry("5"));
-        assertEquals("bar5", dir2.getEntry("5").getProperty("schema2", "bar"));
-        assertNull(dir3.getEntry("5"));
+            // check underlying directories
+            assertNotNull(dir1.getEntry("5"));
+            assertEquals("foo5", dir1.getEntry("5").getProperty("schema1", "foo"));
+            assertNotNull(dir2.getEntry("5"));
+            assertEquals("bar5", dir2.getEntry("5").getProperty("schema2", "bar"));
+            assertNull(dir3.getEntry("5"));
 
-        // create another with colliding id
-        map = new HashMap<String, Object>();
-        map.put("uid", "5");
-        try {
-            entry = dir.createEntry(map);
-            fail("Should raise an error, entry already exists");
-        } catch (DirectoryException e) {
+            // create another with colliding id
+            map = new HashMap<String, Object>();
+            map.put("uid", "5");
+            try {
+                entry = dir.createEntry(map);
+                fail("Should raise an error, entry already exists");
+            } catch (DirectoryException e) {
+            }
         }
     }
 
     @Test
     public void testAuthenticate() throws Exception {
         // sub dirs
-        Session dir1 = memdir1.getSession();
-        Session dir3 = memdir3.getSession();
-        assertTrue(dir1.authenticate("1", "foo1"));
-        assertFalse(dir1.authenticate("1", "haha"));
-        assertFalse(dir1.authenticate("3", "foo3"));
-        assertFalse(dir3.authenticate("1", "foo1"));
-        assertTrue(dir3.authenticate("3", "foo3"));
-        assertFalse(dir3.authenticate("3", "haha"));
-        // multi dir
-        assertTrue(dir.authenticate("1", "foo1"));
-        assertFalse(dir.authenticate("1", "haha"));
-        assertTrue(dir.authenticate("3", "foo3"));
-        assertFalse(dir.authenticate("3", "haha"));
+        try (Session dir1 = memdir1.getSession(); //
+                Session dir3 = memdir3.getSession()) {
+
+            assertTrue(dir1.authenticate("1", "foo1"));
+            assertFalse(dir1.authenticate("1", "haha"));
+            assertFalse(dir1.authenticate("3", "foo3"));
+            assertFalse(dir3.authenticate("1", "foo1"));
+            assertTrue(dir3.authenticate("3", "foo3"));
+            assertFalse(dir3.authenticate("3", "haha"));
+            // multi dir
+            assertTrue(dir.authenticate("1", "foo1"));
+            assertFalse(dir.authenticate("1", "haha"));
+            assertTrue(dir.authenticate("3", "foo3"));
+            assertFalse(dir.authenticate("3", "haha"));
+        }
     }
 
     @Test
     public void testUpdateEntry() throws Exception {
-        Session dir1 = memdir1.getSession();
-        Session dir2 = memdir2.getSession();
-        Session dir3 = memdir3.getSession();
+        try (Session dir1 = memdir1.getSession();
+                Session dir2 = memdir2.getSession();
+                Session dir3 = memdir3.getSession()) {
 
-        // multi-subdirs update
-        DocumentModel e = dir.getEntry("1");
-        assertEquals("foo1", e.getProperty("schema3", "thefoo"));
-        assertEquals("bar1", e.getProperty("schema3", "thebar"));
-        e.setProperty("schema3", "thefoo", "fffooo1");
-        e.setProperty("schema3", "thebar", "babar1");
-        dir.updateEntry(e);
-        e = dir.getEntry("1");
-        assertEquals("fffooo1", e.getProperty("schema3", "thefoo"));
-        assertEquals("babar1", e.getProperty("schema3", "thebar"));
+            // multi-subdirs update
+            DocumentModel e = dir.getEntry("1");
+            assertEquals("foo1", e.getProperty("schema3", "thefoo"));
+            assertEquals("bar1", e.getProperty("schema3", "thebar"));
+            e.setProperty("schema3", "thefoo", "fffooo1");
+            e.setProperty("schema3", "thebar", "babar1");
+            dir.updateEntry(e);
+            e = dir.getEntry("1");
+            assertEquals("fffooo1", e.getProperty("schema3", "thefoo"));
+            assertEquals("babar1", e.getProperty("schema3", "thebar"));
 
-        // check underlying directories
-        assertEquals("fffooo1", dir1.getEntry("1").getProperty("schema1", "foo"));
-        assertEquals("babar1", dir2.getEntry("1").getProperty("schema2", "bar"));
-        assertNull(dir3.getEntry("1"));
+            // check underlying directories
+            assertEquals("fffooo1", dir1.getEntry("1").getProperty("schema1", "foo"));
+            assertEquals("babar1", dir2.getEntry("1").getProperty("schema2", "bar"));
+            assertNull(dir3.getEntry("1"));
 
-        // single subdir update
-        e = dir.getEntry("3");
-        assertEquals("foo3", e.getProperty("schema3", "thefoo"));
-        assertEquals("bar3", e.getProperty("schema3", "thebar"));
-        e.setProperty("schema3", "thefoo", "fffooo3");
-        e.setProperty("schema3", "thebar", "babar3");
-        dir.updateEntry(e);
-        e = dir.getEntry("3");
-        assertEquals("fffooo3", e.getProperty("schema3", "thefoo"));
-        assertEquals("babar3", e.getProperty("schema3", "thebar"));
+            // single subdir update
+            e = dir.getEntry("3");
+            assertEquals("foo3", e.getProperty("schema3", "thefoo"));
+            assertEquals("bar3", e.getProperty("schema3", "thebar"));
+            e.setProperty("schema3", "thefoo", "fffooo3");
+            e.setProperty("schema3", "thebar", "babar3");
+            dir.updateEntry(e);
+            e = dir.getEntry("3");
+            assertEquals("fffooo3", e.getProperty("schema3", "thefoo"));
+            assertEquals("babar3", e.getProperty("schema3", "thebar"));
 
-        // check underlying directories
-        assertNull(dir1.getEntry("3"));
-        assertNull(dir2.getEntry("3"));
-        assertNotNull(dir3.getEntry("3"));
-        assertEquals("fffooo3", dir3.getEntry("3").getProperty("schema3", "thefoo"));
-        assertEquals("babar3", dir3.getEntry("3").getProperty("schema3", "thebar"));
+            // check underlying directories
+            assertNull(dir1.getEntry("3"));
+            assertNull(dir2.getEntry("3"));
+            assertNotNull(dir3.getEntry("3"));
+            assertEquals("fffooo3", dir3.getEntry("3").getProperty("schema3", "thefoo"));
+            assertEquals("babar3", dir3.getEntry("3").getProperty("schema3", "thebar"));
+        }
     }
 
     @Test
     public void testUpdateReadonlyMultidir() throws Exception {
         MultiDirectory readonlyMultidir = (MultiDirectory) directoryService.getDirectory("readonlymulti");
-        MultiDirectorySession readonlyDir = (MultiDirectorySession) readonlyMultidir.getSession();
-        Session dir1 = memdir1.getSession();
-        Session dir2 = memdir2.getSession();
-        Session dir3 = memdir3.getSession();
+        try (MultiDirectorySession readonlyDir = (MultiDirectorySession) readonlyMultidir.getSession();
+                Session dir1 = memdir1.getSession();
+                Session dir2 = memdir2.getSession();
+                Session dir3 = memdir3.getSession()) {
 
-        // multi-subdirs update
-        DocumentModel e = readonlyDir.getEntry("1");
-        assertEquals("foo1", e.getProperty("schema3", "thefoo"));
-        assertEquals("bar1", e.getProperty("schema3", "thebar"));
-        e.setProperty("schema3", "thefoo", "fffooo1");
-        e.setProperty("schema3", "thebar", "babar1");
+            // multi-subdirs update
+            DocumentModel e = readonlyDir.getEntry("1");
+            assertEquals("foo1", e.getProperty("schema3", "thefoo"));
+            assertEquals("bar1", e.getProperty("schema3", "thebar"));
+            e.setProperty("schema3", "thefoo", "fffooo1");
+            e.setProperty("schema3", "thebar", "babar1");
 
-        readonlyDir.updateEntry(e);
-        e = readonlyDir.getEntry("1");
-        // the multidirectory entry was not updated
-        assertEquals("foo1", e.getProperty("schema3", "thefoo"));
-        assertEquals("bar1", e.getProperty("schema3", "thebar"));
+            readonlyDir.updateEntry(e);
+            e = readonlyDir.getEntry("1");
+            // the multidirectory entry was not updated
+            assertEquals("foo1", e.getProperty("schema3", "thefoo"));
+            assertEquals("bar1", e.getProperty("schema3", "thebar"));
 
-        // neither the underlying directories
-        assertEquals("foo1", dir1.getEntry("1").getProperty("schema1", "foo"));
-        assertEquals("bar1", dir2.getEntry("1").getProperty("schema2", "bar"));
-        assertNull(dir3.getEntry("1"));
+            // neither the underlying directories
+            assertEquals("foo1", dir1.getEntry("1").getProperty("schema1", "foo"));
+            assertEquals("bar1", dir2.getEntry("1").getProperty("schema2", "bar"));
+            assertNull(dir3.getEntry("1"));
+        }
     }
 
     @Test
     public void testUpdatePartialReadOnlyMultidir() throws Exception {
-        Session dir1 = memdir1.getSession();
-        Session dir2 = memdir2.getSession();
-        Session dir3 = memdir3.getSession();
+        try (Session dir1 = memdir1.getSession();
+                Session dir2 = memdir2.getSession();
+                Session dir3 = memdir3.getSession()) {
 
-        memdir2.setReadOnly(true);
-        memdir3.setReadOnly(true);
+            memdir2.setReadOnly(true);
+            memdir3.setReadOnly(true);
 
-        // multi-subdirs update
-        DocumentModel e = dir.getEntry("1");
-        assertEquals("foo1", e.getProperty("schema3", "thefoo"));
-        assertEquals("bar1", e.getProperty("schema3", "thebar"));
-        e.setProperty("schema3", "thefoo", "fffooo1");
-        e.setProperty("schema3", "thebar", "babar1");
-        dir.updateEntry(e);
-        e = dir.getEntry("1");
-        assertEquals("fffooo1", e.getProperty("schema3", "thefoo"));
-        assertEquals("bar1", e.getProperty("schema3", "thebar"));
+            // multi-subdirs update
+            DocumentModel e = dir.getEntry("1");
+            assertEquals("foo1", e.getProperty("schema3", "thefoo"));
+            assertEquals("bar1", e.getProperty("schema3", "thebar"));
+            e.setProperty("schema3", "thefoo", "fffooo1");
+            e.setProperty("schema3", "thebar", "babar1");
+            dir.updateEntry(e);
+            e = dir.getEntry("1");
+            assertEquals("fffooo1", e.getProperty("schema3", "thefoo"));
+            assertEquals("bar1", e.getProperty("schema3", "thebar"));
 
-        // check underlying directories
-        // update not done on readonly dir2
-        assertEquals("fffooo1", dir1.getEntry("1").getProperty("schema1", "foo"));
-        assertEquals("bar1", dir2.getEntry("1").getProperty("schema2", "bar"));
-        assertNull(dir3.getEntry("1"));
+            // check underlying directories
+            // update not done on readonly dir2
+            assertEquals("fffooo1", dir1.getEntry("1").getProperty("schema1", "foo"));
+            assertEquals("bar1", dir2.getEntry("1").getProperty("schema2", "bar"));
+            assertNull(dir3.getEntry("1"));
 
-        // single subdir update
-        e = dir.getEntry("3");
-        assertEquals("foo3", e.getProperty("schema3", "thefoo"));
-        assertEquals("bar3", e.getProperty("schema3", "thebar"));
-        e.setProperty("schema3", "thefoo", "fffooo3");
-        e.setProperty("schema3", "thebar", "babar3");
-        dir.updateEntry(e);
+            // single subdir update
+            e = dir.getEntry("3");
+            assertEquals("foo3", e.getProperty("schema3", "thefoo"));
+            assertEquals("bar3", e.getProperty("schema3", "thebar"));
+            e.setProperty("schema3", "thefoo", "fffooo3");
+            e.setProperty("schema3", "thebar", "babar3");
+            dir.updateEntry(e);
 
-        e = dir.getEntry("3");
-        assertEquals("foo3", e.getProperty("schema3", "thefoo"));
-        assertEquals("bar3", e.getProperty("schema3", "thebar"));
+            e = dir.getEntry("3");
+            assertEquals("foo3", e.getProperty("schema3", "thefoo"));
+            assertEquals("bar3", e.getProperty("schema3", "thebar"));
 
-        // check underlying directories
-        // check update is not effective on readonly subdir
-        assertNull(dir1.getEntry("3"));
-        assertNull(dir2.getEntry("3"));
-        assertNotNull(dir3.getEntry("3"));
-        assertEquals("foo3", dir3.getEntry("3").getProperty("schema3", "thefoo"));
-        assertEquals("bar3", dir3.getEntry("3").getProperty("schema3", "thebar"));
+            // check underlying directories
+            // check update is not effective on readonly subdir
+            assertNull(dir1.getEntry("3"));
+            assertNull(dir2.getEntry("3"));
+            assertNotNull(dir3.getEntry("3"));
+            assertEquals("foo3", dir3.getEntry("3").getProperty("schema3", "thefoo"));
+            assertEquals("bar3", dir3.getEntry("3").getProperty("schema3", "thebar"));
+        }
     }
 
     @Test
     public void testDeleteEntry() throws Exception {
-        Session dir1 = memdir1.getSession();
-        Session dir2 = memdir2.getSession();
-        Session dir3 = memdir3.getSession();
-        dir.deleteEntry("no-such-entry");
-        assertEquals(4, dir.getEntries().size());
-        assertEquals(2, dir1.getEntries().size());
-        assertEquals(2, dir2.getEntries().size());
-        assertEquals(2, dir3.getEntries().size());
-        dir.deleteEntry("1");
-        assertNull(dir.getEntry("1"));
-        assertEquals(3, dir.getEntries().size());
-        assertEquals(1, dir1.getEntries().size());
-        assertEquals(1, dir2.getEntries().size());
-        assertEquals(2, dir3.getEntries().size());
-        dir.deleteEntry("3");
-        assertNull(dir.getEntry("3"));
-        assertEquals(2, dir.getEntries().size());
-        assertEquals(1, dir1.getEntries().size());
-        assertEquals(1, dir2.getEntries().size());
-        assertEquals(1, dir3.getEntries().size());
+        try (Session dir1 = memdir1.getSession();
+                Session dir2 = memdir2.getSession();
+                Session dir3 = memdir3.getSession()) {
+            dir.deleteEntry("no-such-entry");
+            assertEquals(4, dir.getEntries().size());
+            assertEquals(2, dir1.getEntries().size());
+            assertEquals(2, dir2.getEntries().size());
+            assertEquals(2, dir3.getEntries().size());
+            dir.deleteEntry("1");
+            assertNull(dir.getEntry("1"));
+            assertEquals(3, dir.getEntries().size());
+            assertEquals(1, dir1.getEntries().size());
+            assertEquals(1, dir2.getEntries().size());
+            assertEquals(2, dir3.getEntries().size());
+            dir.deleteEntry("3");
+            assertNull(dir.getEntry("3"));
+            assertEquals(2, dir.getEntries().size());
+            assertEquals(1, dir1.getEntries().size());
+            assertEquals(1, dir2.getEntries().size());
+            assertEquals(1, dir3.getEntries().size());
+        }
     }
 
     @Test
@@ -575,13 +604,13 @@ public class TestMultiDirectory {
     @Test
     public void testReadOnlyEntryFromMultidirectory() throws Exception {
         MultiDirectory readonlyMultidir = (MultiDirectory) directoryService.getDirectory("readonlymulti");
-        MultiDirectorySession readonlyDir = (MultiDirectorySession) readonlyMultidir.getSession();
-
-        // all should be readonly
-        assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("1")));
-        assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("2")));
-        assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("3")));
-        assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("4")));
+        try (MultiDirectorySession readonlyDir = (MultiDirectorySession) readonlyMultidir.getSession()) {
+            // all should be readonly
+            assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("1")));
+            assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("2")));
+            assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("3")));
+            assertTrue(BaseSession.isReadOnlyEntry(readonlyDir.getEntry("4")));
+        }
     }
 
     @Test

@@ -56,7 +56,9 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -198,9 +200,8 @@ public abstract class LDAPDirectoryTestCase {
     }
 
     public static LDAPDirectory getLDAPDirectory(String name) throws DirectoryException {
-        LDAPDirectoryFactory factory = (LDAPDirectoryFactory) Framework.getRuntime().getComponent(
-                LDAPDirectoryFactory.NAME);
-        return (LDAPDirectory) factory.getDirectory(name);
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        return (LDAPDirectory) directoryService.getDirectory(name);
     }
 
     /**

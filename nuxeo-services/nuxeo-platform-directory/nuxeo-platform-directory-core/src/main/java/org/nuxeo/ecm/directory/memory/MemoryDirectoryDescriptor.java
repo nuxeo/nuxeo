@@ -16,18 +16,29 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.directory.service;
+package org.nuxeo.ecm.directory.memory;
 
-import org.nuxeo.common.xmap.annotation.XNode;
+import java.util.Set;
+
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 
 /**
  * @since 5.6
  */
 @XObject("directory")
-public class MockMemoryDirectoryDescriptor {
+public class MemoryDirectoryDescriptor extends BaseDirectoryDescriptor {
 
-    @XNode("@name")
-    public String name;
+    public Set<String> schemaSet;
+
+    @Override
+    public Directory newDirectory() {
+        if (schemaSet == null) {
+            return new MemoryDirectory(name, schemaName, idField, passwordField);
+        } else {
+            return new MemoryDirectory(name, schemaName, schemaSet, idField, passwordField);
+        }
+    }
 
 }

@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.DirectoryFactory;
 import org.nuxeo.ecm.directory.Session;
@@ -37,9 +38,50 @@ public interface DirectoryService {
 
     ComponentName NAME = new ComponentName("org.nuxeo.ecm.directory.DirectoryServiceImpl");
 
+    /**
+     * Gets the directory ids.
+     */
     List<String> getDirectoryNames();
 
-    String getDirectorySchema(String directoryName) throws DirectoryException;
+    /**
+     * Gets all the directories.
+     */
+    List<Directory> getDirectories();
+
+    /**
+     * Returns the directory for the specified id and document context.
+     * <p>
+     * The context is given by the document. The document service will try to find the directory local configuration of
+     * the document that will specify the suffix. The directory service will fetch the id + suffix found. If no local
+     * configuration is found the service will return the directory with the given id.
+     * <p>
+     * If the id is {@code null}, returns {@code null}.
+     *
+     * @param id the directory id
+     * @param documentContext the document context
+     * @return the directory, or {@code null} if not found
+     */
+    Directory getDirectory(String id, DocumentModel documentContext);
+
+    /**
+     * Return the directory with the given id.
+     * <p>
+     * If the id is {@code null}, returns {@code null}.
+     *
+     * @param id the directory id
+     * @return the directory, or {@code null} if not found
+     */
+    Directory getDirectory(String id);
+
+    /**
+     * Gets the effective directory descriptor for the given directory.
+     *
+     * @param id the directory id
+     * @return the effective directory descriptor, or {@code null} if not registered
+     *
+     * @since 8.2
+     */
+    BaseDirectoryDescriptor getDirectoryDescriptor(String id);
 
     /**
      * Opens a session on specified directory.
@@ -68,54 +110,49 @@ public interface DirectoryService {
     Session open(String directoryName, DocumentModel documentContext) throws DirectoryException;
 
     /**
-     * Return the directory for the specified context. The context is given by the document. The document service will
-     * try to find the directory local configuration of the document that will specify the suffix. The directory service
-     * will fetch the directoryName + suffix found. If no local configuration is found the service will return the
-     * directoryName directory.
-     * <p>
-     * If the directoryName is null, return null.
+     * Gets the schema for a directory.
      *
-     * @param directoryName
-     * @param documentContext
-     * @return the directory, if the factory of the directory or the directory itself is not found return null
-     * @throws DirectoryException
+     * @param id the directory id
+     * @return the schema for the directory
+     * @throws DirectoryException if the directory does not exist
      */
-    Directory getDirectory(String directoryName, DocumentModel documentContext) throws DirectoryException;
+    String getDirectorySchema(String id) throws DirectoryException;
 
     /**
-     * Return the directory with the name directoryName.
-     * <p>
-     * If the directoryName is null, return null.
+     * Gets the id field for a directory.
      *
-     * @param directoryName
-     * @return the directory, if the factory of the directory or the directory itself is not found return null
-     * @throws DirectoryException
+     * @param id the directory id
+     * @return the id field for the directory
+     * @throws DirectoryException if the directory does not exist
      */
-    Directory getDirectory(String directoryName) throws DirectoryException;
+    String getDirectoryIdField(String id) throws DirectoryException;
 
     /**
-     * Return all the directories registered into the service.
-     * <p>
+     * Gets the password field for a directory.
      *
-     * @throws DirectoryException
+     * @param id the directory id
+     * @return the password field for the directory
+     * @throws DirectoryException if the directory does not exist
      */
-    List<Directory> getDirectories() throws DirectoryException;
-
-    void registerDirectory(String directoryName, DirectoryFactory factory);
-
-    void unregisterDirectory(String directoryName, DirectoryFactory factory);
-
-    String getDirectoryIdField(String directoryName) throws DirectoryException;
-
     String getDirectoryPasswordField(String directoryName) throws DirectoryException;
 
     /**
-     * Returns the name of the parent directory of specified directory, if applicable.
+     * Gets the parent directory id a directory.
      *
-     * @param directoryName
-     * @return the name, or null
-     * @throws DirectoryException
+     * @param id the directory id
+     * @return the parent directory id, which may be {@code null}
+     * @throws DirectoryException if the directory does not exist
      */
-    String getParentDirectoryName(String directoryName) throws DirectoryException;
+    String getParentDirectoryName(String id) throws DirectoryException;
+
+    /**
+     * INTERNAL registers a directory descriptor.
+     */
+    void registerDirectoryDescriptor(BaseDirectoryDescriptor descriptor);
+
+    /**
+     * INTERNAL unregisters a directory descriptor.
+     */
+    void unregisterDirectoryDescriptor(BaseDirectoryDescriptor descriptor);
 
 }

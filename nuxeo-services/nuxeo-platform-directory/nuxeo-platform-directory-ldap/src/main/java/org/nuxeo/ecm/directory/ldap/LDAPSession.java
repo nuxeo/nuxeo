@@ -129,7 +129,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         substringMatchType = directory.getConfig().getSubstringMatchType();
         rdnAttribute = directory.getConfig().getRdnAttribute();
         rdnField = directory.getFieldMapper().getDirectoryField(rdnAttribute);
-        passwordHashAlgorithm = directory.getConfig().getPasswordHashAlgorithmField();
+        passwordHashAlgorithm = directory.getConfig().passwordHashAlgorithm;
         permissions = directory.getConfig().permissions;
     }
 
@@ -933,7 +933,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         String fieldId = directory.getFieldMapper().getDirectoryField(idAttribute);
         Object obj = fieldMap.get(fieldId);
         if (obj == null) {
-            fieldMap.put(fieldId, changeEntryIdCase(entryId, directory.getConfig().missingIdFieldCase));
+            fieldMap.put(fieldId, changeEntryIdCase(entryId, directory.getConfig().getMissingIdFieldCase()));
         } else if (obj instanceof String) {
             fieldMap.put(fieldId, changeEntryIdCase((String) obj, idCase));
         }
@@ -1021,7 +1021,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @Override
     public boolean isReadOnly() {
-        return directory.getConfig().getReadOnly();
+        return directory.getConfig().isReadOnly();
     }
 
     public boolean rdnMatchesIdField() {

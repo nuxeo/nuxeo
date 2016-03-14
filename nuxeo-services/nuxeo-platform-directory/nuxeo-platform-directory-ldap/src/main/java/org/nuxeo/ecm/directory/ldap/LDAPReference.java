@@ -1216,21 +1216,9 @@ public class LDAPReference extends AbstractReference {
      * @since 5.6
      */
     @Override
-    protected AbstractReference newInstance() {
-        return new LDAPReference();
-    }
-
-    /**
-     * @since 5.6
-     */
-    @Override
     public LDAPReference clone() {
         LDAPReference clone = (LDAPReference) super.clone();
-        clone.forceDnConsistencyCheck = forceDnConsistencyCheck;
-        clone.staticAttributeIdIsDn = staticAttributeIdIsDn;
-        clone.staticAttributeId = staticAttributeId;
-        clone.dynamicAttributeId = dynamicAttributeId;
-        clone.fieldName = fieldName;
+        // basic fields are already copied by super.clone()
         return clone;
     }
 
