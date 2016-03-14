@@ -27,6 +27,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORM_SUBMITTED_MARKER;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGINCONTEXT_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_STATUS_CODE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.PAGE_AFTER_SWITCH;
@@ -95,6 +96,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.service.OpenUrlDescriptor;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginConfiguration;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -500,11 +502,15 @@ public class NuxeoAuthenticationFilter implements Filter {
                     propagatedAuthCb = service.propagateUserIdentificationInformation(cachableUserIdent);
 
                     String requestedPage = getRequestedPage(httpRequest);
-                    if (requestedPage.equals(LOGOUT_PAGE)) {
+                    if (LOGOUT_PAGE.equals(requestedPage)) {
                         boolean redirected = handleLogout(request, response, cachableUserIdent);
                         cachableUserIdent = null;
                         principal = null;
                         if (redirected && httpRequest.getParameter(FORM_SUBMITTED_MARKER) == null) {
+                            return;
+                        }
+                    } else if (LOGIN_PAGE.equals(requestedPage)) {
+                        if (handleLogin(httpRequest, httpResponse)) {
                             return;
                         }
                     } else {
@@ -962,6 +968,11 @@ public class NuxeoAuthenticationFilter implements Filter {
             return true;
         }
 
+        return handleLogin(httpRequest, httpResponse);
+
+    }
+
+    private boolean handleLogin(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String baseURL = service.getBaseURL(httpRequest);
 
         // go through plugins to get UserIndentity
@@ -982,7 +993,16 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     private void buildUnauthorizedResponse(HttpServletRequest req, HttpServletResponse resp) {
-        resp.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
+
+        try {
+            StringBuilder sb = new StringBuilder(VirtualHostHelper.getBaseURL(req)).append(LOGIN_PAGE);
+            String loginUrl = sb.toString();
+            resp.addHeader("Location", loginUrl);
+            resp.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
+            resp.getWriter().write("Please login at : " + loginUrl);
+        } catch (IOException e) {
+            log.error("Unable to write login page on unauthorized response", e);
+        }
     }
 
     protected UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
