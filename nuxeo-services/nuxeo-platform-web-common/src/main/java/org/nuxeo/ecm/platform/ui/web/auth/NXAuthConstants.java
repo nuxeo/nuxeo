@@ -39,6 +39,8 @@ public final class NXAuthConstants {
 
     public static final String LOGOUT_PAGE = "logout";
 
+    public static final String LOGIN_PAGE = "login";
+
     public static final String SWITCH_USER_PAGE = "swuser";
 
     public static final String PAGE_AFTER_SWITCH = "pageAfterSwitch";
