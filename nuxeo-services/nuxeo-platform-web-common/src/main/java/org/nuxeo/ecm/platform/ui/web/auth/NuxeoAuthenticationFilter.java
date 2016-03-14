@@ -983,7 +983,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             String loginUrl = sb.toString();
             resp.addHeader("Location", loginUrl);
             resp.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
-            resp.getWriter().write("Please login at : " + loginUrl);
+            resp.getWriter().write("Please log in at: " + loginUrl);
         } catch (IOException e) {
             log.error("Unable to write login page on unauthorized response", e);
         }
