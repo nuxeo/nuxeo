@@ -437,6 +437,10 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
      * Checks if the doc should be ignored because it is "invisible" (deleted, hidden in navigation).
      */
     public boolean isFilteredOut(DocumentModel doc) {
+        // don't filter out relations even though they may be HiddenInNavigation
+        if (NuxeoTypeHelper.getBaseTypeId(doc).equals(BaseTypeId.CMIS_RELATIONSHIP)) {
+            return false;
+        }
         return !documentFilter.accept(doc);
     }
 

@@ -16,6 +16,11 @@
       <facet name="Folderish" />
     </doctype>
 
+    <!-- Extends Relation but marked HiddenInNavigation -->
+    <doctype name="HiddenRelation" extends="Relation">
+      <facet name="HiddenInNavigation" />
+    </doctype>
+
   </extension>
 
 </component>
