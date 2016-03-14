@@ -32,6 +32,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,10 +42,10 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.memory.MemoryDirectory;
-import org.nuxeo.ecm.directory.memory.MemoryDirectoryFactory;
+import org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor;
 import org.nuxeo.ecm.platform.suggestbox.service.suggesters.I18nHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -68,6 +69,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class SuggestionServiceTest {
 
     @Inject
+    DirectoryService directoryService;
+
+    @Inject
     protected CoreFeature coreFeature;
 
     @Inject
@@ -75,24 +79,34 @@ public class SuggestionServiceTest {
 
     protected SuggestionService suggestionService;
 
-    protected MemoryDirectory userdir;
+    protected Directory userdir;
 
-    protected MemoryDirectory groupDir;
+    protected Directory groupDir;
+
+    protected MemoryDirectoryDescriptor userDesc;
+
+    protected MemoryDirectoryDescriptor groupDesc;
 
     @Before
     public void setUp() throws Exception {
-        // some in memory directories for the users and groups
-        DirectoryService dService = Framework.getLocalService(DirectoryService.class);
-        MemoryDirectoryFactory memoryDirectoryFactory = new MemoryDirectoryFactory();
-        dService.registerDirectory("memdirs", memoryDirectoryFactory);
-
         Set<String> userSet = new HashSet<String>(Arrays.asList("username", "password", "firstName", "lastName"));
-        userdir = new MemoryDirectory("userDirectory", "user", userSet, "username", "password");
-        memoryDirectoryFactory.registerDirectory(userdir);
+        userDesc = new MemoryDirectoryDescriptor();
+        userDesc.name = "userDirectory";
+        userDesc.schemaName = "user";
+        userDesc.schemaSet = userSet;
+        userDesc.idField = "username";
+        userDesc.passwordField = "password";
+        directoryService.registerDirectoryDescriptor(userDesc);
+        userdir = directoryService.getDirectory("userDirectory");
 
         Set<String> groupSet = new HashSet<String>(Arrays.asList("groupname", "grouplabel", "members"));
-        groupDir = new MemoryDirectory("groupDirectory", "group", groupSet, "groupname", null);
-        memoryDirectoryFactory.registerDirectory(groupDir);
+        groupDesc = new MemoryDirectoryDescriptor();
+        groupDesc.name = "groupDirectory";
+        groupDesc.schemaName = "group";
+        groupDesc.schemaSet = groupSet;
+        groupDesc.idField = "groupname";
+        directoryService.registerDirectoryDescriptor(groupDesc);
+        groupDir = directoryService.getDirectory("groupDirectory");
 
         // create some documents to be looked up
         makeSomeDocuments();
@@ -102,6 +116,12 @@ public class SuggestionServiceTest {
 
         suggestionService = Framework.getService(SuggestionService.class);
         assertNotNull(suggestionService);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        directoryService.unregisterDirectoryDescriptor(userDesc);
+        directoryService.unregisterDirectoryDescriptor(groupDesc);
     }
 
     protected void makeSomeUsersAndGroups() {
