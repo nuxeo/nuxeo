@@ -67,6 +67,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -939,6 +940,12 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     protected boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
+        // A specific auth chain may prevent the filter to relay to a login prompt.
+        if (!service.doHandlePrompt(httpRequest)) {
+            buildUnauthorizedResponse(httpRequest, httpResponse);
+            return true;
+        }
+
         String baseURL = service.getBaseURL(httpRequest);
 
         // go through plugins to get UserIndentity
@@ -956,6 +963,10 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         log.warn("No auth plugin can be found to do the Login Prompt");
         return false;
+    }
+
+    private void buildUnauthorizedResponse(HttpServletRequest req, HttpServletResponse resp) {
+        resp.setStatus(Response.Status.UNAUTHORIZED.getStatusCode());
     }
 
     protected UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
