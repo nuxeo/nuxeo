@@ -378,6 +378,38 @@ public class CmisSuiteSession {
         assertEquals(id2, rel.getTargetId().getId());
     }
 
+    // HiddenRelation, like the standard DefaultRelation, is marked HiddenInNavigation
+    @Test
+    public void testCreateHiddenRelation() throws Exception {
+        if (!(isAtomPub || isBrowser)) {
+            // createRelationship admin user only empowered for AtomPub &
+            // Browser tests
+            return;
+        }
+
+        String id1 = session.getObjectByPath("/testfolder1/testfile1").getId();
+        String id2 = session.getObjectByPath("/testfolder1/testfile2").getId();
+
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        properties.put(PropertyIds.OBJECT_TYPE_ID, "HiddenRelation");
+        properties.put(PropertyIds.NAME, "rel");
+        properties.put(PropertyIds.SOURCE_ID, id1);
+        properties.put(PropertyIds.TARGET_ID, id2);
+        ObjectId relid = session.createRelationship(properties);
+
+        ItemIterable<Relationship> rels = session.getRelationships(session.createObjectId(id1), false,
+                RelationshipDirection.SOURCE, null, session.createOperationContext());
+        assertEquals(1, rels.getTotalNumItems());
+        for (Relationship r : rels) {
+            assertEquals(relid.getId(), r.getId());
+        }
+
+        Relationship rel = (Relationship) session.getObject(relid);
+        assertNotNull(rel);
+        assertEquals(id1, rel.getSourceId().getId());
+        assertEquals(id2, rel.getTargetId().getId());
+    }
+
     @Test
     public void testUpdate() throws Exception {
         Document doc;
