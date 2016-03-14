@@ -221,6 +221,10 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
                 XPathAndField parentField = resolveField(context, listRef, listVe);
                 if (parentField != null) {
                     field = getField(parentField.field, prop);
+                    if (field == null || field.getName() == null) {
+                        // it should not happen but still, just in case
+                        return null;
+                    }
                     if (parentField.xpath == null) {
                         xpath = field.getName().getLocalName();
                     } else {
