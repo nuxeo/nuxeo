@@ -60,8 +60,6 @@ public final class DirectoryHelper {
 
     private static DirectoryHelper instance;
 
-    private static DirectoryService service;
-
     private DirectoryHelper() {
     }
 
@@ -244,10 +242,7 @@ public final class DirectoryHelper {
     }
 
     protected DirectoryService getService() {
-        if (service == null) {
-            service = Framework.getService(DirectoryService.class);
-        }
-        return service;
+        return Framework.getService(DirectoryService.class);
     }
 
 }
