@@ -133,7 +133,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(FeaturesRunner.class)
 @Features(CmisFeature.class)
 @Deploy({ "org.nuxeo.ecm.webengine.core" })
-@LocalDeploy({ "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml" })
+@LocalDeploy({ //
+        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml", //
+        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/throw-exception-listener.xml", //
+})
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class CmisSuiteSession {
 
@@ -1318,6 +1321,39 @@ public class CmisSuiteSession {
 
         session = sf.createSession(params);
         return session;
+    }
+
+    @Test
+    public void testRollbackOnException() throws Exception {
+        Folder root = session.getRootFolder();
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
+        properties.put(PropertyIds.NAME, ThrowExceptionListener.CRASHME_NAME); // listener on this throws exception
+        try {
+            root.createDocument(properties, null, null, null, null, null, NuxeoSession.DEFAULT_CONTEXT);
+            fail("creation should fail");
+        } catch (CmisRuntimeException e) {
+            // ok
+        }
+
+        // for local binding, rollback here
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+
+        try {
+            session.getObjectByPath("/" + ThrowExceptionListener.CRASHME_NAME);
+            fail("doc should not have been created");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+        try {
+            session.getObjectByPath("/" + ThrowExceptionListener.AFTERCRASH_NAME);
+            fail("second doc should not have been created");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
     }
 
 }
