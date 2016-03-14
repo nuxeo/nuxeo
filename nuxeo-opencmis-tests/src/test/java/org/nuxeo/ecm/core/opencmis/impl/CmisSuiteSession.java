@@ -98,6 +98,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -110,6 +111,9 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(CmisFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
+@LocalDeploy({ //
+        "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/throw-exception-listener.xml", //
+})
 public class CmisSuiteSession {
 
     public static final String BASE_RESOURCE = "jetty-test";
@@ -1140,6 +1144,39 @@ public class CmisSuiteSession {
                     throw e;
                 }
             }
+        }
+    }
+
+    @Test
+    public void testRollbackOnException() throws Exception {
+        Folder root = session.getRootFolder();
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
+        properties.put(PropertyIds.NAME, ThrowExceptionListener.CRASHME_NAME); // listener on this throws exception
+        try {
+            root.createDocument(properties, null, null, null, null, null, NuxeoSession.DEFAULT_CONTEXT);
+            fail("creation should fail");
+        } catch (CmisRuntimeException e) {
+            // ok
+        }
+
+        // for local binding, rollback here
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+
+        try {
+            session.getObjectByPath("/" + ThrowExceptionListener.CRASHME_NAME);
+            fail("doc should not have been created");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
+        }
+        try {
+            session.getObjectByPath("/" + ThrowExceptionListener.AFTERCRASH_NAME);
+            fail("second doc should not have been created");
+        } catch (CmisObjectNotFoundException e) {
+            // ok
         }
     }
 

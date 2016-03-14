@@ -16,6 +16,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.server.support.wrapper.ConformanceCmisServiceWrapper;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,13 +34,19 @@ public class NuxeoCmisServiceWrapper extends ConformanceCmisServiceWrapper {
     /**
      * Converts the given exception into a CMIS exception.
      */
+    @Override
     protected CmisBaseException createCmisException(Exception e) {
+        // make sure that the transaction is marked rollback-only, as higher layers in the
+        // CMIS services stack will swallow it and turn it into a high-level HTTP error
+        TransactionHelper.setTransactionRollbackOnly();
+
+        // map exception into CmisBaseException
         if (e == null) {
             return new CmisRuntimeException("Unknown exception!");
         } else if (e instanceof CmisBaseException) {
             return (CmisBaseException) e;
         } else if (e instanceof RecoverableClientException) {
-            throw new CmisRuntimeException("error", e);
+            return new CmisRuntimeException("error", e);
         } else {
             // should not happen if the connector works correctly
             // it's alarming enough to log the exception
