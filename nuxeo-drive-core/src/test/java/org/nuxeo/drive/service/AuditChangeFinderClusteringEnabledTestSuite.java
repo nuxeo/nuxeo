@@ -70,13 +70,14 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
             changes = getChanges();
             assertTrue(changes.isEmpty());
 
-            // Wait for (2 * clustering delay + 1 second) then check changes, expecting 3:
+            // Wait for (2 * clustering delay + 1 second) then check changes, expecting at least 2:
             // - documentCreated for file1
             // - rootRegistered for folder1
-            // - documentCreated for folder1
+            // The documentCreated event for folder1 might have already been "swallowed" by the first call to
+            // #getChanges() if the test initialization takes too much time, sometimes happens with an Oracle database
             Thread.sleep(3000);
             changes = getChanges();
-            assertEquals(3, changes.size());
+            assertTrue(changes.size() >= 2);
             Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
             expectedChanges.add(new SimpleFileSystemItemChange(file1.getId(), "documentCreated", "test",
                     "defaultFileSystemItemFactory#test#" + file1.getId(), "file1"));
@@ -84,7 +85,7 @@ public class AuditChangeFinderClusteringEnabledTestSuite extends AbstractChangeF
                     "defaultSyncRootFolderItemFactory#test#" + folder1.getId(), "folder1"));
             expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "documentCreated", "test",
                     "defaultSyncRootFolderItemFactory#test#" + folder1.getId(), "folder1"));
-            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+            assertTrue(CollectionUtils.isSubCollection(toSimpleFileSystemItemChanges(changes), expectedChanges));
 
             log.trace("Update existing document and create a new one");
             file1.setPropertyValue("dc:description", "Upated description");
