@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,12 @@ import org.nuxeo.ecm.platform.audit.api.DocumentHistoryReader;
 import org.nuxeo.ecm.platform.audit.api.document.DocumentHistoryReaderImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
+import org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -80,17 +84,38 @@ public class NXAuditEventsService extends DefaultComponent {
 
     protected AuditBackend backend;
 
+    protected AuditBackendDescriptor backendConfig = new AuditBackendDescriptor();
+
+    protected final AuditBulker bulker = new AuditBulker(this);
+
+    protected AuditBulkerDescriptor bulkerConfig = new AuditBulkerDescriptor();
+
     @Override
-    public void applicationStarted(ComponentContext context) {
-        if (backend != null) {
-            backend.onApplicationStarted();
-        }
+    public int getApplicationStartedOrder() {
+        return backendConfig.getApplicationStartedOrder();
     }
 
     @Override
-    public void deactivate(ComponentContext context) {
-        backend.deactivate();
-        super.deactivate(context);
+    public void applicationStarted(ComponentContext context) {
+        backend = backendConfig.newInstance(this);
+        backend.onApplicationStarted();
+        bulker.startup();
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (event.id != RuntimeServiceEvent.RUNTIME_STOPPED) {
+                    return;
+                }
+                Framework.removeListener(this);
+                try {
+                    backend.onShutdown();
+                } finally {
+                    bulker.shutdown();
+                    backend = null;
+                }
+            }
+        });
     }
 
     protected void doRegisterAdapter(AdapterDescriptor desc) {
@@ -98,14 +123,6 @@ public class NXAuditEventsService extends DefaultComponent {
             log.debug("Registered adapter : " + desc.getName());
         }
         documentAdapters.add(desc);
-    }
-
-    protected void doRegisterBackend(AuditBackendDescriptor desc) {
-        if (backend != null) {
-            backend.deactivate();
-        }
-        backend = desc.newInstance();
-        backend.activate(this);
     }
 
     protected void doRegisterEvent(EventDescriptor desc) {
@@ -212,8 +229,10 @@ public class NXAuditEventsService extends DefaultComponent {
             doRegisterExtendedInfo((ExtendedInfoDescriptor) contribution);
         } else if (extensionPoint.equals(ADAPTER_POINT)) {
             doRegisterAdapter((AdapterDescriptor) contribution);
-        } else if (extensionPoint.equals(BACKEND_EXT_POINT)) {
-            doRegisterBackend((AuditBackendDescriptor) contribution);
+        } else if (contribution instanceof AuditBackendDescriptor) {
+            backendConfig = (AuditBackendDescriptor)contribution;
+        }  else if (contribution instanceof AuditBulkerDescriptor) {
+            bulkerConfig = (AuditBulkerDescriptor)contribution;
         }
     }
 

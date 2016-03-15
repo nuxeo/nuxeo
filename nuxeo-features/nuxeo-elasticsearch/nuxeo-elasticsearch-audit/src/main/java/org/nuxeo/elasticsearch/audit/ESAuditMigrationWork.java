@@ -30,8 +30,8 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
-import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -63,18 +63,18 @@ public class ESAuditMigrationWork extends AbstractWork {
 
         NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(
                 NXAuditEventsService.NAME);
+        AuditBackendDescriptor config = new AuditBackendDescriptor();
+        AuditBackend sourceBackend = config.newInstance(auditService);
+        sourceBackend.onApplicationStarted();
 
-        final AuditBackend sourceBackend = new DefaultAuditBackend();
-        sourceBackend.activate(auditService);
-
+        try {
         @SuppressWarnings("unchecked")
         List<Long> res = (List<Long>) sourceBackend.nativeQuery("select count(*) from LogEntry", 1, 20);
-        final long nbEntriesToMigrate = res.get(0);
+        long nbEntriesToMigrate = res.get(0);
 
-        final AuditLogger destBackend = auditService.getBackend();
+        AuditLogger destBackend = auditService.getBackend();
 
         TransactionHelper.commitOrRollbackTransaction();
-        try {
             long t0 = System.currentTimeMillis();
             long nbEntriesMigrated = 0;
             int pageIdx = 1;
@@ -110,8 +110,7 @@ public class ESAuditMigrationWork extends AbstractWork {
             entry.setEventDate(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());
             destBackend.addLogEntries(Collections.singletonList(entry));
         } finally {
-            TransactionHelper.startTransaction();
-            sourceBackend.deactivate();
+            sourceBackend.onShutdown();
         }
     }
 

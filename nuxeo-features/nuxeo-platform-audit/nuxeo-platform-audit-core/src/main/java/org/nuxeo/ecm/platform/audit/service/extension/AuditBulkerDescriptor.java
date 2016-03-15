@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010, 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,24 @@
  * limitations under the License.
  *
  * Contributors:
- *     Thierry Delprat
+ *     Nuxeo - initial API and implementation
  */
-package org.nuxeo.ecm.platform.audit.service;
+package org.nuxeo.ecm.platform.audit.service.extension;
 
-import org.nuxeo.ecm.platform.audit.api.Logs;
+import java.io.Serializable;
 
-/**
- * Audit Backend SPI
- *
- * @author tiry
- */
-public interface AuditBackend extends Logs {
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
-    int getApplicationStartedOrder();
+@XObject("bulk")
+public class AuditBulkerDescriptor implements Serializable {
 
-    void onApplicationStarted();
+    private static final long serialVersionUID = 1L;
 
-    void onShutdown();
+    @XNode("timeout")
+    public int timeout = 10;
+
+    @XNode("size")
+    public int size = 1000;
 
 }

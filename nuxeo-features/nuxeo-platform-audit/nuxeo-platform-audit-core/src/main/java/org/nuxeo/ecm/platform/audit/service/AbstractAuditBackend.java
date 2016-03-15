@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,12 +61,10 @@ import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
+import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
-import org.nuxeo.runtime.RuntimeServiceEvent;
-import org.nuxeo.runtime.RuntimeServiceListener;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Abstract class to share code between {@link AuditBackend} implementations
@@ -79,39 +77,13 @@ public abstract class AbstractAuditBackend implements AuditBackend {
 
     public static final String FORCE_AUDIT_FACET = "ForceAudit";
 
-    protected NXAuditEventsService component;
+    protected final NXAuditEventsService component;
 
-    final AuditBulker bulk = new AuditBulker(this);
+    protected final AuditBackendDescriptor config;
 
-    @Override
-    public void activate(NXAuditEventsService component) {
-        this.component = component;
-    }
-
-    @Override
-    public void deactivate() {
-        ;
-    }
-
-    @Override
-    public void onApplicationStarted() {
-        Framework.addListener(new RuntimeServiceListener() {
-
-            @Override
-            public void handleEvent(RuntimeServiceEvent event) {
-                if (RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP != event.id) {
-                    return;
-                }
-                Framework.removeListener(this);
-                bulk.shutdown();
-            }
-        });
-        bulk.startup();
-    }
-
-    @Override
-    public boolean await(long time, TimeUnit unit) throws InterruptedException {
-        return bulk.await(time, unit);
+    protected AbstractAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
+       this.component = component;
+       this.config = config;
     }
 
     protected final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(new ExpressionFactoryImpl());
@@ -415,7 +387,12 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         if (entry == null) {
             return;
         }
-        bulk.offer(entry);
+        component.bulker.offer(entry);
+    }
+
+    @Override
+    public boolean await(long time, TimeUnit unit) throws InterruptedException {
+        return component.bulker.await(time, unit);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.persistence.EntityManager;
 
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
@@ -32,7 +33,9 @@ import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
+import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -40,9 +43,33 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @author tiry
  */
-public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBackend {
+public class DefaultAuditBackend extends AbstractAuditBackend {
 
     protected PersistenceProvider persistenceProvider;
+
+    public DefaultAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
+        super(component, config);
+        activatePersistenceProvider();
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        return ((DefaultComponent)Framework.getRuntime().getComponent("org.nuxeo.ecm.core.persistence.PersistenceComponent")).getApplicationStartedOrder()+1;
+    }
+
+    @Override
+    public void onApplicationStarted() {
+        activatePersistenceProvider();
+    }
+
+    @Override
+    public void onShutdown() {
+        try {
+            persistenceProvider.closePersistenceUnit();
+        } finally {
+            persistenceProvider = null;
+        }
+    }
 
     // public for testing purpose !
     public PersistenceProvider getOrCreatePersistenceProvider() {
@@ -63,19 +90,6 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
         } finally {
             thread.setContextClassLoader(last);
         }
-    }
-
-    protected void deactivatePersistenceProvider() {
-        if (persistenceProvider != null) {
-            persistenceProvider.closePersistenceUnit();
-            persistenceProvider = null;
-        }
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
-        deactivatePersistenceProvider();
     }
 
     @Override

@@ -19,6 +19,7 @@
 package org.nuxeo.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
@@ -28,6 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -37,7 +39,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
@@ -52,13 +53,14 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core",
+@Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core",
         "org.nuxeo.elasticsearch.seqgen",
         "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryElasticSearchFeature.class })
+@Features(RepositoryElasticSearchFeature.class )
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
@@ -91,8 +93,10 @@ public class TestESHistoryProvider {
 
     protected @Inject CoreSession session;
 
-    protected void waitForAsyncCompletion() {
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+    protected void waitForAsyncCompletion() throws InterruptedException {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        assertTrue(Framework.getLocalService(AuditLogger.class).await(10, TimeUnit.SECONDS));
     }
 
     protected void createTestEntries() throws Exception {
@@ -121,7 +125,6 @@ public class TestESHistoryProvider {
             doc.setPropertyValue("dc:description", "Update " + i);
             doc.getContextData().put("comment", "Update " + i);
             doc = session.saveDocument(doc);
-            session.save();
             waitForAsyncCompletion();
         }
 

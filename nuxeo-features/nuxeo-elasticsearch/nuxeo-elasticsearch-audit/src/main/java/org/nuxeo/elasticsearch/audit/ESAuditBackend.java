@@ -75,6 +75,8 @@ import org.nuxeo.ecm.platform.audit.api.query.DateRangeParser;
 import org.nuxeo.ecm.platform.audit.service.AbstractAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
+import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
+import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
@@ -82,6 +84,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * Implementation of the {@link AuditBackend} interface using Elasticsearch persistence
@@ -100,20 +103,35 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     public static final int MIGRATION_DEFAULT_BACTH_SIZE = 1000;
 
-    protected Client esClient = null;
+    public ESAuditBackend(NXAuditEventsService component, AuditBackendDescriptor config) {
+        super(component, config);
+    }
+
+    protected Client esClient;
 
     protected static final Log log = LogFactory.getLog(ESAuditBackend.class);
 
-    protected BaseLogEntryProvider provider = null;
+    protected BaseLogEntryProvider provider = new BaseLogEntryProvider() {
+
+        @Override
+        public int removeEntries(String eventId, String pathPattern) {
+            throw new UnsupportedOperationException("Not implemented yet!");
+        }
+
+        @Override
+        public void addLogEntry(LogEntry logEntry) {
+            List<LogEntry> entries = new ArrayList<>();
+            entries.add(logEntry);
+            addLogEntries(entries);
+        }
+    };
 
     protected Client getClient() {
-        if (esClient == null) {
-            log.info("Activate Elasticsearch backend for Audit");
-            ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-            esClient = esa.getClient();
-            ensureUIDSequencer(esClient);
-        }
-        return esClient;
+        log.info("Activate Elasticsearch backend for Audit");
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+        Client client = esa.getClient();
+        ensureUIDSequencer(client);
+        return client;
     }
 
     protected boolean isMigrationDone() {
@@ -122,9 +140,41 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return !entries.isEmpty();
     }
 
+
     @Override
-    public void deactivate() {
-        super.deactivate();
+    public int getApplicationStartedOrder() {
+        return ((DefaultComponent)Framework.getRuntime().getComponent("org.nuxeo.elasticsearch.ElasticSearchComponent")).getApplicationStartedOrder()+1;
+    }
+
+    @Override
+    public void onApplicationStarted() {
+        esClient = getClient();
+        if (Boolean.parseBoolean(Framework.getProperty(MIGRATION_FLAG_PROP))) {
+            if (!isMigrationDone()) {
+                log.info(String.format(
+                        "Property %s is true and migration is not done yet, processing audit migration from SQL to Elasticsearch index",
+                        MIGRATION_FLAG_PROP));
+                // Drop audit index first in case of a previous bad migration
+                ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+                esa.dropAndInitIndex(getESIndexName());
+                int batchSize = MIGRATION_DEFAULT_BACTH_SIZE;
+                String batchSizeProp = Framework.getProperty(MIGRATION_BATCH_SIZE_PROP);
+                if (batchSizeProp != null) {
+                    batchSize = Integer.parseInt(batchSizeProp);
+                }
+                migrate(batchSize);
+            } else {
+                log.warn(String.format(
+                        "Property %s is true but migration is already done, please set this property to false",
+                        MIGRATION_FLAG_PROP));
+            }
+        } else {
+            log.debug(String.format("Property %s is false, not processing any migration", MIGRATION_FLAG_PROP));
+        }
+    }
+
+    @Override
+    public void onShutdown() {
         if (esClient != null) {
             try {
                 esClient.close();
@@ -136,7 +186,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-        SearchRequestBuilder builder = getSearchRequestBuilder();
+        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
         TermFilterBuilder docFilter = FilterBuilders.termFilter("docUUID", uuid);
         FilterBuilder filter;
         if (MapUtils.isEmpty(filterMap)) {
@@ -171,14 +221,14 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return entries;
     }
 
-    protected SearchRequestBuilder getSearchRequestBuilder() {
-        return getClient().prepareSearch(getESIndexName()).setTypes(ElasticSearchConstants.ENTRY_TYPE).setSearchType(
+    protected SearchRequestBuilder getSearchRequestBuilder(Client esClient) {
+        return esClient.prepareSearch(getESIndexName()).setTypes(ElasticSearchConstants.ENTRY_TYPE).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH);
     }
 
     @Override
     public LogEntry getLogEntryByID(long id) {
-        GetResponse ret = getClient().prepareGet(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
+        GetResponse ret = esClient.prepareGet(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
                 String.valueOf(id)).get();
         if (!ret.isExists()) {
             return null;
@@ -194,7 +244,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (params != null && params.size() > 0) {
             query = expandQueryVariables(query, params);
         }
-        SearchRequestBuilder builder = getSearchRequestBuilder();
+        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
         builder.setQuery(query);
         return builder;
     }
@@ -246,7 +296,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] categories, String path, int pageNb,
             int pageSize) {
-        SearchRequestBuilder builder = getSearchRequestBuilder();
+        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
         BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
         if (eventIds != null && eventIds.length > 0) {
             if (eventIds.length == 1) {
@@ -309,7 +359,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             return;
         }
 
-        BulkRequestBuilder bulkRequest = getClient().prepareBulk();
+        BulkRequestBuilder bulkRequest = esClient.prepareBulk();
         JsonFactory factory = new JsonFactory();
 
         UIDGeneratorService uidGeneratorService = Framework.getService(UIDGeneratorService.class);
@@ -326,7 +376,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 XContentBuilder builder = jsonBuilder();
                 JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
                 AuditEntryJSONWriter.asJSON(jsonGen, entry);
-                bulkRequest.add(getClient().prepareIndex(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
+                bulkRequest.add(esClient.prepareIndex(getESIndexName(), ElasticSearchConstants.ENTRY_TYPE,
                         String.valueOf(entry.getId())).setSource(builder));
             }
 
@@ -347,35 +397,14 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public Long getEventsCount(String eventId) {
-        CountResponse res = getClient().prepareCount(getESIndexName()).setTypes(ElasticSearchConstants.ENTRY_TYPE).setQuery(
+        CountResponse res = esClient.prepareCount(getESIndexName()).setTypes(ElasticSearchConstants.ENTRY_TYPE).setQuery(
                 QueryBuilders.constantScoreQuery(FilterBuilders.termFilter("eventId", eventId))).get();
         return res.getCount();
     }
 
-    protected BaseLogEntryProvider getProvider() {
-
-        if (provider == null) {
-            provider = new BaseLogEntryProvider() {
-
-                @Override
-                public int removeEntries(String eventId, String pathPattern) {
-                    throw new UnsupportedOperationException("Not implemented yet!");
-                }
-
-                @Override
-                public void addLogEntry(LogEntry logEntry) {
-                    List<LogEntry> entries = new ArrayList<>();
-                    entries.add(logEntry);
-                    addLogEntries(entries);
-                }
-            };
-        }
-        return provider;
-    }
-
     @Override
     public long syncLogCreationEntries(final String repoId, final String path, final Boolean recurs) {
-        return syncLogCreationEntries(getProvider(), repoId, path, recurs);
+        return syncLogCreationEntries(provider, repoId, path, recurs);
     }
 
     protected FilterBuilder buildFilter(PredicateDefinition[] predicates, DocumentModel searchDocumentModel) {
@@ -455,7 +484,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     public SearchRequestBuilder buildSearchQuery(String fixedPart, PredicateDefinition[] predicates,
             DocumentModel searchDocumentModel) {
-        SearchRequestBuilder builder = getSearchRequestBuilder();
+        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
         QueryBuilder queryBuilder = QueryBuilders.wrapperQuery(fixedPart);
         FilterBuilder filterBuilder = buildFilter(predicates, searchDocumentModel);
         builder.setQuery(QueryBuilders.filteredQuery(queryBuilder, filterBuilder));
@@ -512,32 +541,6 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
     }
 
-    @Override
-    public void onApplicationStarted() {
-        super.onApplicationStarted();
-        if (Boolean.parseBoolean(Framework.getProperty(MIGRATION_FLAG_PROP))) {
-            if (!isMigrationDone()) {
-                log.info(String.format(
-                        "Property %s is true and migration is not done yet, processing audit migration from SQL to Elasticsearch index",
-                        MIGRATION_FLAG_PROP));
-                // Drop audit index first in case of a previous bad migration
-                ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-                esa.dropAndInitIndex(getESIndexName());
-                int batchSize = MIGRATION_DEFAULT_BACTH_SIZE;
-                String batchSizeProp = Framework.getProperty(MIGRATION_BATCH_SIZE_PROP);
-                if (batchSizeProp != null) {
-                    batchSize = Integer.parseInt(batchSizeProp);
-                }
-                migrate(batchSize);
-            } else {
-                log.warn(String.format(
-                        "Property %s is true but migration is already done, please set this property to false",
-                        MIGRATION_FLAG_PROP));
-            }
-        } else {
-            log.debug(String.format("Property %s is false, not processing any migration", MIGRATION_FLAG_PROP));
-        }
-    }
 
     /**
      * Ensures the audit sequence returns an UID greater or equal than the maximum log entry id.
@@ -549,7 +552,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
 
         // Get max log entry id
-        SearchRequestBuilder builder = getSearchRequestBuilder();
+        SearchRequestBuilder builder = getSearchRequestBuilder(esClient);
         builder.setQuery(QueryBuilders.matchAllQuery()).addAggregation(AggregationBuilders.max("maxAgg").field("id"));
         SearchResponse searchResponse = builder.execute().actionGet();
         Max agg = searchResponse.getAggregations().get("maxAgg");
@@ -577,4 +580,5 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         return esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE);
     }
+
 }

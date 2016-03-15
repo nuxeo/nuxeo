@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
@@ -56,7 +58,7 @@ public class TestTransactedAudit {
     }
 
     @Test
-    public void canLogMultipleLifecycleTransitionsInSameTx() {
+    public void canLogMultipleLifecycleTransitionsInSameTx() throws InterruptedException {
         // generate events
         DocumentModel doc = repo.createDocumentModel("/", "a-file", "File");
         doc = repo.createDocument(doc);
@@ -66,7 +68,8 @@ public class TestTransactedAudit {
         doc.followTransition(LifeCycleConstants.UNDELETE_TRANSITION);
         String undeletedLifeCycle = doc.getCurrentLifeCycleState();
         TransactionHelper.commitOrRollbackTransaction();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+        assertThat(Framework.getLocalService(AuditLogger.class).await(10, TimeUnit.SECONDS), is(true));
 
         // test audit trail
         AuditReader reader = Framework.getLocalService(AuditReader.class);
@@ -99,8 +102,6 @@ public class TestTransactedAudit {
         assertThat(seenDocDeleted, is(true));
         assertThat(seenDocCreated, is(true));
 
-        // needed for session cleanup
-        TransactionHelper.startTransaction();
     }
 
     @Test
@@ -117,6 +118,8 @@ public class TestTransactedAudit {
         // commit the transaction an let the audit service log the events in the
         // log
         TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        assertThat(Framework.getLocalService(AuditLogger.class).await(10, TimeUnit.SECONDS), is(true));
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
         // test audit trail
@@ -139,7 +142,5 @@ public class TestTransactedAudit {
         assertNotNull(logDate);
         assertTrue(logDate.after(eventDate));
 
-        // needed for session cleanup
-        TransactionHelper.startTransaction();
     }
 }

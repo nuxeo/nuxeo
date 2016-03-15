@@ -6,7 +6,9 @@
   
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
 	     point="backend">
-    <backend class="org.nuxeo.elasticsearch.audit.ESAuditBackend"/>
+    <backend class="org.nuxeo.elasticsearch.audit.ESAuditBackend">
+      <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+    </backend>
   </extension>
   
 </component>
