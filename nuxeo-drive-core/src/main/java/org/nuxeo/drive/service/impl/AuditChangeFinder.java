@@ -333,6 +333,10 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         SQLRepositoryService repositoryService = Framework.getService(SQLRepositoryService.class);
         for (String repositoryName : repositoryNames) {
             RepositoryDescriptor repositoryDescriptor = repositoryService.getRepositoryDescriptor(repositoryName);
+            if (repositoryDescriptor == null) {
+                // Not a VCS repository`
+                continue;
+            }
             if (repositoryDescriptor.getClusteringEnabled()) {
                 clusteringDelay = Math.max(clusteringDelay, repositoryDescriptor.getClusteringDelay());
             }
