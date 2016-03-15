@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepositoryService" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService</require>
+
+  <documentation>
+    Manages MarkLogic repositories.
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepositoryService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepositoryService" />
+  </service>
+
+  <extension-point name="repository">
+    <documentation>
+      Extension points to register MarkLogic repositories.
+
+      Example:
+      <code>
+        <repository name="default" label="MarkLogic Repository" isDefault="true">
+          <host>localhost</host>
+          <port>8003</port>
+          <fulltext disabled="false" />
+        </repository>
+      </code>
+
+      Or with authentication:
+      <code>
+        <repository name="default" label="MarkLogic Repository" isDefault="true">
+          <host>localhost</host>
+          <port>8003</port>
+          <user>user</user>
+          <password>password</password>
+          <fulltext disabled="false" />
+        </repository>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.ecm.core.storage.marklogic.MarkLogicRepositoryDescriptor" />
+  </extension-point>
+
+</component>
