@@ -58,6 +58,9 @@ AutomationWrapper.prototype.execute = function(successCB, failureCB, voidOp){
       url: targetUrl,
       timeout: this.opts.execTimeout,
       error: function(xhr, status, e) {
+        if(xhr.status==401) {
+          window.location.reload();
+        }
         if (failureCB) {
             failureCB(xhr,status,"No Data");
           } else {
