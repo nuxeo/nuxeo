@@ -180,7 +180,7 @@ public class TestMapperService {
         IterableQueryResult result = session.queryAndFetch("select content/name from File", "NXQL", (Object[]) null);
 
         for (Iterator<Map<String, Serializable>> rows = result.iterator(); rows.hasNext();) {
-            String filename = (String) rows.next().values().iterator().next();
+            String filename = (String) rows.next().get("content/name");
             Assert.assertTrue(filename.endsWith(".pdf") || filename.endsWith(".zip") || filename.endsWith(".pdf2"));
         }
         docs = session.query("select * from Document where ecm:primaryType in ('File')");
