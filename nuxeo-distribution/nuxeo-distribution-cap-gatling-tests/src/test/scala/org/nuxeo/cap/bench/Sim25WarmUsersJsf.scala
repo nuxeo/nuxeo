@@ -21,7 +21,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
 
-object ScnNavigationJsf {
+object ScnWarmupUsersJsf {
 
   def get = (documents: Iterator[Map[String, String]]) => {
     scenario("WarmUsersJsf").exec(
@@ -39,7 +39,7 @@ class Sim25WarmUsersJsf extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val documents = Feeders.createRandomDocFeeder()
-  val scn = ScnNavigationJsf.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
+  val scn = ScnWarmupUsersJsf.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
 }

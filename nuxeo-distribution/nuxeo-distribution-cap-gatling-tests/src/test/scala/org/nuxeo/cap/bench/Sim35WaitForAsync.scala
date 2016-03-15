@@ -36,7 +36,7 @@ class Sim35WaitForAsync extends Simulation {
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
-  val scn = ScnWaitForAsync.get()
+  val scn = ScnWaitForAsync2.get()
   setUp(scn.inject(atOnceUsers(1)))
     .protocols(httpProtocol)
 }
