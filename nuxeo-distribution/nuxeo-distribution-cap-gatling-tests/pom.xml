@@ -194,6 +194,15 @@
                 </configuration>
               </execution>
               <execution>
+                <id>warmup-jsf</id>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim25WarmusersJsf</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
                 <id>navigation-jsf</id>
                 <goals>
                   <goal>execute</goal>
@@ -218,6 +227,15 @@
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim50CRUD</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
+                <id>waitForAsync3</id>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim55WaitForAsync</simulationClass>
                 </configuration>
               </execution>
               <execution>

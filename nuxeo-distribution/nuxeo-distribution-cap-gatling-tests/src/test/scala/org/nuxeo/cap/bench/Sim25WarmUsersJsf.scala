@@ -20,39 +20,26 @@ package org.nuxeo.cap.bench
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
-import scala.concurrent.duration.Duration
 
-object ScnCRUD {
+object ScnNavigationJsf {
 
-  def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
-    scenario("DeleteCreateUpdateReadDocuments").exec(
-      during(duration, "counterName") {
-        feed(documents)
-          .feed(Feeders.usersCircular)
-          .exec(NuxeoRest.deleteDocument())
-          .pause(pause)
-          .exec(NuxeoRest.createDocument())
-          .pause(pause)
-          .exec(NuxeoRest.updateDocument())
-          .pause(pause)
-          .exec(NuxeoRest.getDocument())
-          .pause(pause)
-      }
+  def get = (documents: Iterator[Map[String, String]]) => {
+    scenario("WarmUsersJsf").exec(
+        feed(Feeders.users)
+          .exec(NuxeoJsf.loginAndGoToGatlingWorkspace()).exec(NuxeoJsf.logout())
     )
   }
 
 }
 
-
-class Sim50CRUD extends Simulation {
+class Sim25WarmUsersJsf extends Simulation {
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val documents = Feeders.createRandomDocFeeder()
-  val scn = ScnCRUD.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
+  val scn = ScnNavigationJsf.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
-    .assertions(global.successfulRequests.percent.greaterThan(70))
 }
