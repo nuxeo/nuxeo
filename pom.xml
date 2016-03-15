@@ -71,46 +71,6 @@
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>default</id>
-    </profile>
-    <profile>
-      <id>pgsql</id>
-    </profile>
-    <profile>
-      <id>mssql</id>
-    </profile>
-    <profile>
-      <id>oracle10g</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc14</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>oracle11g</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc6</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>oracle12c</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.oracle</groupId>
-          <artifactId>ojdbc7</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>mysql</id>
-    </profile>
-
   </profiles>
 
   <repositories>
