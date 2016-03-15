@@ -109,7 +109,7 @@ public abstract class TestCmisBindingBase {
      * Will return true if "ANY listprop NOT IN ('foo')" returns documents where listprop is empty.
      */
     protected boolean emptyListNegativeMatch() {
-        return false;
+        return coreFeature.getStorageConfiguration().isDBSMongoDB();
     }
 
     protected boolean supportsNXQLQueryTransformers() {
