@@ -526,9 +526,7 @@ public class TestDefaultPageProviders {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals(1, docs.get(0).size());
         assertEquals("Document number0", docs.get(0).get("dc:title"));
-        assertEquals(1, docs.get(1).size());
         assertEquals("Document number1", docs.get(1).get("dc:title"));
 
         // check query
@@ -553,9 +551,7 @@ public class TestDefaultPageProviders {
 
         assertNotNull(docs);
         assertEquals(2, docs.size());
-        assertEquals(1, docs.get(0).size());
         assertEquals("Document number2", docs.get(0).get("dc:title"));
-        assertEquals(1, docs.get(1).size());
         assertEquals("Document number3", docs.get(1).get("dc:title"));
     }
 
