@@ -110,6 +110,7 @@
     <repository name="default" label="MongoDB Repository">
       <server>${nuxeo.mongodb.server}</server>
       <dbname>${nuxeo.mongodb.dbname}</dbname>
+      <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" searchDisabled="${nuxeo.vcs.fulltext.search.disabled}" />
     </repository>
   </extension>
 </#if>
