@@ -51,7 +51,7 @@ public class TestDescriptorOverride {
     @Test
     public void testOverride() throws Exception {
         SQLDirectory sqlDir = (SQLDirectory) directoryService.getDirectory("userDirectory");
-        SQLDirectoryDescriptor config = sqlDir.getConfig();
+        SQLDirectoryDescriptor config = sqlDir.getDescriptor();
 
         assertEquals("always", config.getCreateTablePolicy());
         assertEquals(100, config.getQuerySizeLimit());
@@ -65,7 +65,7 @@ public class TestDescriptorOverride {
         harness.deployContrib("org.nuxeo.ecm.directory.sql.tests", "test-sql-directories-override-bundle.xml");
         try {
             sqlDir = (SQLDirectory) directoryService.getDirectory("userDirectory");
-            config = sqlDir.getConfig();
+            config = sqlDir.getDescriptor();
 
             // override
             assertEquals("never", config.getCreateTablePolicy());

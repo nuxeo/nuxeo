@@ -52,12 +52,12 @@ public class TestCacheFallbackOnSQLDirectory extends TestSQLDirectory {
 
         DirectoryCache cache = getSQLDirectory().getCache();
         assertNotNull(cache.getEntryCache());
-        assertEquals("cache-" + getSQLDirectory().name,
+        assertEquals("cache-" + getSQLDirectory().getName(),
                 cache.getEntryCache().getName());
         assertEquals(InMemoryCacheImpl.class,
                 ((CacheAttributesChecker) cache.getEntryCache()).getCache().getClass());
         assertNotNull(cache.getEntryCacheWithoutReferences());
-        assertEquals("cacheWithoutReference-" + getSQLDirectory().name,
+        assertEquals("cacheWithoutReference-" + getSQLDirectory().getName(),
                 cache.getEntryCacheWithoutReferences().getName());
 
         MetricRegistry metrics = SharedMetricRegistries.getOrCreate(

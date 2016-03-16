@@ -37,40 +37,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MultiDirectory extends AbstractDirectory {
 
-    private final MultiDirectoryDescriptor descriptor;
-
     public MultiDirectory(MultiDirectoryDescriptor descriptor) {
-        super(descriptor.name);
-        this.descriptor = descriptor;
-    }
-
-    protected MultiDirectoryDescriptor getDescriptor() {
-        return descriptor;
+        super(descriptor);
     }
 
     @Override
-    public String getName() {
-        return descriptor.name;
-    }
-
-    @Override
-    public String getSchema() {
-        return descriptor.schemaName;
-    }
-
-    @Override
-    public String getParentDirectory() {
-        return null; // no parent directories are specified for multi
-    }
-
-    @Override
-    public String getIdField() {
-        return descriptor.idField;
-    }
-
-    @Override
-    public String getPasswordField() {
-        return descriptor.passwordField;
+    public MultiDirectoryDescriptor getDescriptor() {
+        return (MultiDirectoryDescriptor) descriptor;
     }
 
     @Override
@@ -91,7 +64,7 @@ public class MultiDirectory extends AbstractDirectory {
         DirectoryService dirService = Framework.getService(DirectoryService.class);
         getCache().invalidateAll();
         // and also invalidates the cache from the source directories
-        for (SourceDescriptor src : descriptor.sources) {
+        for (SourceDescriptor src : getDescriptor().sources) {
             for (SubDirectoryDescriptor sub : src.subDirectories) {
                 Directory dir = dirService.getDirectory(sub.name);
                 if (dir != null) {

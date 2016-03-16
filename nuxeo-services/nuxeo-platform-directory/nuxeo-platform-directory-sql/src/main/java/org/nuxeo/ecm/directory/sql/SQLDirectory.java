@@ -109,8 +109,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     public static final String TENANT_ID_FIELD = "tenantId";
 
-    private final SQLDirectoryDescriptor config;
-
     private final boolean nativeCase;
 
     private DataSource dataSource;
@@ -125,37 +123,41 @@ public class SQLDirectory extends AbstractDirectory {
 
     private volatile Dialect dialect;
 
-    public SQLDirectory(SQLDirectoryDescriptor config) {
-        super(config.name);
-        this.config = config;
-        nativeCase = Boolean.TRUE.equals(config.nativeCase);
+    public SQLDirectory(SQLDirectoryDescriptor descriptor) {
+        super(descriptor);
+        nativeCase = Boolean.TRUE.equals(descriptor.nativeCase);
 
         // register the references to other directories
-        addReferences(config.getInverseReferences());
-        addReferences(config.getTableReferences());
+        addReferences(descriptor.getInverseReferences());
+        addReferences(descriptor.getTableReferences());
 
         // cache parameterization
-        cache.setEntryCacheName(config.cacheEntryName);
-        cache.setEntryCacheWithoutReferencesName(config.cacheEntryWithoutReferencesName);
-        cache.setNegativeCaching(config.negativeCaching);
+        cache.setEntryCacheName(descriptor.cacheEntryName);
+        cache.setEntryCacheWithoutReferencesName(descriptor.cacheEntryWithoutReferencesName);
+        cache.setNegativeCaching(descriptor.negativeCaching);
 
         // Cache fallback
         CacheService cacheService = Framework.getLocalService(CacheService.class);
         if (cacheService != null) {
-            if (config.cacheEntryName == null && config.getCacheMaxSize() != 0) {
-                cache.setEntryCacheName("cache-" + name);
-                cacheService.registerCache("cache-" + name,
-                        config.getCacheMaxSize(),
-                        config.getCacheTimeout() / 60);
+            if (descriptor.cacheEntryName == null && descriptor.getCacheMaxSize() != 0) {
+                cache.setEntryCacheName("cache-" + getName());
+                cacheService.registerCache("cache-" + getName(),
+                        descriptor.getCacheMaxSize(),
+                        descriptor.getCacheTimeout() / 60);
             }
-            if (config.cacheEntryWithoutReferencesName == null && config.getCacheMaxSize() != 0) {
+            if (descriptor.cacheEntryWithoutReferencesName == null && descriptor.getCacheMaxSize() != 0) {
                 cache.setEntryCacheWithoutReferencesName(
-                        "cacheWithoutReference-" + name);
-                cacheService.registerCache("cacheWithoutReference-" + name,
-                        config.getCacheMaxSize(),
-                        config.getCacheTimeout() / 60);
+                        "cacheWithoutReference-" + getName());
+                cacheService.registerCache("cacheWithoutReference-" + getName(),
+                        descriptor.getCacheMaxSize(),
+                        descriptor.getCacheTimeout() / 60);
             }
         }
+    }
+
+    @Override
+    public SQLDirectoryDescriptor getDescriptor() {
+        return (SQLDirectoryDescriptor) descriptor;
     }
 
     /**
@@ -164,26 +166,28 @@ public class SQLDirectory extends AbstractDirectory {
      * @since 6.0
      */
     protected void initConnection() {
+        SQLDirectoryDescriptor descriptor = getDescriptor();
+
         Connection sqlConnection = getConnection();
         try {
             dialect = Dialect.createDialect(sqlConnection, null);
 
-            if (config.initDependencies != null) {
+            if (descriptor.initDependencies != null) {
                 // initialize dependent directories first
                 final RuntimeService runtime = Framework.getRuntime();
                 DirectoryServiceImpl directoryService = (DirectoryServiceImpl) runtime.getComponent(DirectoryService.NAME);
-                for (String dependency : config.initDependencies) {
+                for (String dependency : descriptor.initDependencies) {
                     log.debug("initializing dependencies first: " + dependency);
                     Directory dir = directoryService.getDirectory(dependency);
                     dir.getName();
                 }
             }
             // setup table and fields maps
-            table = SQLHelper.addTable(config.tableName, dialect, useNativeCase());
+            table = SQLHelper.addTable(descriptor.tableName, dialect, useNativeCase());
             SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-            schema = schemaManager.getSchema(config.schemaName);
+            schema = schemaManager.getSchema(getSchema());
             if (schema == null) {
-                throw new DirectoryException("schema not found: " + config.schemaName);
+                throw new DirectoryException("schema not found: " + getSchema());
             }
             schemaFieldMap = new LinkedHashMap<>();
             storedFieldNames = new LinkedList<>();
@@ -198,14 +202,14 @@ public class SQLDirectory extends AbstractDirectory {
                     // reference
                     storedFieldNames.add(fieldName);
 
-                    boolean isId = fieldName.equals(config.getIdField());
+                    boolean isId = fieldName.equals(getIdField());
                     ColumnType type = ColumnType.fromField(f);
-                    if (isId && config.isAutoincrementIdField()) {
+                    if (isId && descriptor.isAutoincrementIdField()) {
                         type = ColumnType.AUTOINC;
                     }
                     Column column = SQLHelper.addColumn(table, fieldName, type, useNativeCase());
                     if (isId) {
-                        if (config.isAutoincrementIdField()) {
+                        if (descriptor.isAutoincrementIdField()) {
                             column.setIdentity(true);
                         }
                         column.setPrimary(true);
@@ -220,8 +224,8 @@ public class SQLDirectory extends AbstractDirectory {
                         getSchema()));
             }
 
-            SQLHelper helper = new SQLHelper(sqlConnection, table, config.dataFileName,
-                    config.getDataFileCharacterSeparator(), config.createTablePolicy);
+            SQLHelper helper = new SQLHelper(sqlConnection, table, descriptor.dataFileName,
+                    descriptor.getDataFileCharacterSeparator(), descriptor.createTablePolicy);
             helper.setupTable();
 
         } finally {
@@ -233,24 +237,21 @@ public class SQLDirectory extends AbstractDirectory {
         }
     }
 
-    public SQLDirectoryDescriptor getConfig() {
-        // utility method to simplify testing
-        return config;
-    }
-
     /** DO NOT USE, use getConnection() instead. */
     protected DataSource getDataSource() throws DirectoryException {
         if (dataSource != null) {
             return dataSource;
         }
+        SQLDirectoryDescriptor descriptor = getDescriptor();
         try {
-            if (!StringUtils.isEmpty(config.dataSourceName)) {
-                dataSource = DataSourceHelper.getDataSource(config.dataSourceName);
+            if (!StringUtils.isEmpty(descriptor.dataSourceName)) {
+                dataSource = DataSourceHelper.getDataSource(descriptor.dataSourceName);
                 // InitialContext context = new InitialContext();
                 // dataSource = (DataSource)
                 // context.lookup(config.dataSourceName);
             } else {
-                dataSource = new SimpleDataSource(config.dbUrl, config.dbDriver, config.dbUser, config.dbPassword);
+                dataSource = new SimpleDataSource(descriptor.dbUrl, descriptor.dbDriver, descriptor.dbUser,
+                        descriptor.dbPassword);
             }
             log.trace("found datasource: " + dataSource);
             return dataSource;
@@ -261,12 +262,13 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     public Connection getConnection() throws DirectoryException {
+        SQLDirectoryDescriptor descriptor = getDescriptor();
         try {
-            if (!StringUtils.isEmpty(config.dataSourceName)) {
+            if (!StringUtils.isEmpty(descriptor.dataSourceName)) {
                 // try single-datasource non-XA mode
-                Connection connection = ConnectionHelper.getConnection(config.dataSourceName);
+                Connection connection = ConnectionHelper.getConnection(descriptor.dataSourceName);
                 if (connection != null) {
-                    if (ConnectionHelper.useSingleConnection(config.dataSourceName)) {
+                    if (ConnectionHelper.useSingleConnection(descriptor.dataSourceName)) {
                         connection.setAutoCommit(TransactionHelper.isNoTransaction());
                     }
                     return connection;
@@ -291,34 +293,9 @@ public class SQLDirectory extends AbstractDirectory {
     }
 
     @Override
-    public String getName() {
-        return config.getName();
-    }
-
-    @Override
-    public String getSchema() {
-        return config.getSchemaName();
-    }
-
-    @Override
-    public String getParentDirectory() {
-        return config.getParentDirectory();
-    }
-
-    @Override
-    public String getIdField() {
-        return config.getIdField();
-    }
-
-    @Override
-    public String getPasswordField() {
-        return config.getPasswordField();
-    }
-
-    @Override
     public Session getSession() throws DirectoryException {
         checkConnection();
-        SQLSession session = new SQLSession(this, config);
+        SQLSession session = new SQLSession(this, getDescriptor());
         addSession(session);
         return session;
     }
@@ -377,7 +354,7 @@ public class SQLDirectory extends AbstractDirectory {
 
     @Override
     public String toString() {
-        return "SQLDirectory [name=" + config.name + "]";
+        return "SQLDirectory [name=" + descriptor.name + "]";
     }
 
 }

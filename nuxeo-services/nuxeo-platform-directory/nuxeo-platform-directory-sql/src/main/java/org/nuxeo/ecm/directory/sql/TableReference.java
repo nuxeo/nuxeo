@@ -86,7 +86,7 @@ public class TableReference extends AbstractReference implements Cloneable {
 
     private void initialize(SQLSession sqlSession) throws DirectoryException {
         SQLDirectory directory = getSQLSourceDirectory();
-        String createTablePolicy = directory.getConfig().createTablePolicy;
+        String createTablePolicy = directory.getDescriptor().createTablePolicy;
         Table table = getTable();
         SQLHelper helper = new SQLHelper(sqlSession.sqlConnection, table, dataFileName, createTablePolicy);
         helper.setupTable();

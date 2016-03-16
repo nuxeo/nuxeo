@@ -560,12 +560,12 @@ public class SQLDirectoryTestSuite {
 
             // by setting a password field that does not belong to the
             // user SCHEMA, we disable that feature
-            SQLDirectoryDescriptor config = getSQLDirectory().getConfig();
+            SQLDirectoryDescriptor config = getSQLDirectory().getDescriptor();
             try {
-                config.setPasswordField("SomeStrangePassordField");
+                config.passwordField = "SomeStrangePassordField";
                 assertFalse(session.isAuthenticating());
             } finally {
-                config.setPasswordField("password");
+                config.passwordField = "password";
             }
 
         }

@@ -75,8 +75,6 @@ public class LDAPDirectory extends AbstractDirectory {
     // special field key to be able to read the DN of an LDAP entry
     public static final String DN_SPECIAL_ATTRIBUTE_KEY = "dn";
 
-    protected final LDAPDirectoryDescriptor config;
-
     protected Properties contextProperties;
 
     protected SearchControls searchControls;
@@ -90,21 +88,17 @@ public class LDAPDirectory extends AbstractDirectory {
     // the following attribute is only used for testing purpose
     protected ContextProvider testServer;
 
-    public LDAPDirectory(LDAPDirectoryDescriptor config) {
-        super(config.name);
-        this.config = config;
+    public LDAPDirectory(LDAPDirectoryDescriptor descriptor) {
+        super(descriptor);
+        if (StringUtils.isEmpty(descriptor.getSearchBaseDn())) {
+            throw new DirectoryException("searchBaseDn configuration is missing for directory " + getName());
+        }
         factory = Framework.getService(LDAPDirectoryFactory.class);
+    }
 
-        if (config.getIdField() == null || config.getIdField().equals("")) {
-            throw new DirectoryException("idField configuration is missing for directory " + config.getName());
-        }
-        if (config.getSchemaName() == null || config.getSchemaName().equals("")) {
-            throw new DirectoryException("schema configuration is missing for directory " + config.getName());
-        }
-        if (config.getSearchBaseDn() == null || config.getSearchBaseDn().equals("")) {
-            throw new DirectoryException("searchBaseDn configuration is missing for directory " + config.getName());
-        }
-
+    @Override
+    public LDAPDirectoryDescriptor getDescriptor() {
+        return (LDAPDirectoryDescriptor) descriptor;
     }
 
     @Override
@@ -122,11 +116,12 @@ public class LDAPDirectory extends AbstractDirectory {
      * @since 6.0
      */
     protected void initLDAPConfig() {
+        LDAPDirectoryDescriptor descriptor = getDescriptor();
         // computing attributes that will be useful for all sessions
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-        Schema schema = schemaManager.getSchema(config.getSchemaName());
+        Schema schema = schemaManager.getSchema(getSchema());
         if (schema == null) {
-            throw new DirectoryException(config.getSchemaName() + " is not a registered schema");
+            throw new DirectoryException(getSchema() + " is not a registered schema");
         }
         schemaFieldMap = new LinkedHashMap<String, Field>();
         for (Field f : schema.getFields()) {
@@ -134,13 +129,13 @@ public class LDAPDirectory extends AbstractDirectory {
         }
 
         // init field mapper before search fields
-        fieldMapper = new DirectoryFieldMapper(config.fieldMapping);
+        fieldMapper = new DirectoryFieldMapper(descriptor.fieldMapping);
         contextProperties = computeContextProperties();
-        baseFilter = config.getAggregatedSearchFilter();
+        baseFilter = descriptor.getAggregatedSearchFilter();
 
         // register the references
-        addReferences(config.getInverseReferences());
-        addReferences(config.getLdapReferences());
+        addReferences(descriptor.getInverseReferences());
+        addReferences(descriptor.getLdapReferences());
 
         // register the search controls after having registered the references
         // since the list of attributes to fetch my depend on registered
@@ -148,11 +143,11 @@ public class LDAPDirectory extends AbstractDirectory {
         searchControls = computeSearchControls();
 
         // cache parameterization
-        cache.setEntryCacheName(config.cacheEntryName);
-        cache.setEntryCacheWithoutReferencesName(config.cacheEntryWithoutReferencesName);
-        cache.setNegativeCaching(config.negativeCaching);
+        cache.setEntryCacheName(descriptor.cacheEntryName);
+        cache.setEntryCacheWithoutReferencesName(descriptor.cacheEntryWithoutReferencesName);
+        cache.setNegativeCaching(descriptor.negativeCaching);
 
-        log.debug(String.format("initialized LDAP directory %s with fields [%s] and references [%s]", config.getName(),
+        log.debug(String.format("initialized LDAP directory %s with fields [%s] and references [%s]", getName(),
                 StringUtils.join(schemaFieldMap.keySet().toArray(), ", "),
                 StringUtils.join(references.keySet().toArray(), ", ")));
     }
@@ -161,13 +156,14 @@ public class LDAPDirectory extends AbstractDirectory {
      * @return connection parameters to use for all LDAP queries
      */
     protected Properties computeContextProperties() throws DirectoryException {
+        LDAPDirectoryDescriptor descriptor = getDescriptor();
         // Initialization of LDAP connection parameters from parameters
         // registered in the LDAP "server" extension point
         Properties props = new Properties();
         LDAPServerDescriptor serverConfig = getServer();
 
         if (null == serverConfig) {
-            throw new DirectoryException("LDAP server configuration not found: " + config.getServerName());
+            throw new DirectoryException("LDAP server configuration not found: " + descriptor.getServerName());
         }
 
         props.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -176,13 +172,13 @@ public class LDAPDirectory extends AbstractDirectory {
          * Get initial connection URLs, dynamic URLs may cause the list to be updated when creating the session
          */
         String ldapUrls = serverConfig.getLdapUrls();
-        if (serverConfig.getLdapUrls() == null || config.getSchemaName().equals("")) {
-            throw new DirectoryException("Server LDAP URL configuration is missing for directory " + config.getName());
+        if (ldapUrls == null) {
+            throw new DirectoryException("Server LDAP URL configuration is missing for directory " + getName());
         }
         props.put(Context.PROVIDER_URL, ldapUrls);
 
         // define how referrals are handled
-        if (!getConfig().getFollowReferrals()) {
+        if (!getDescriptor().getFollowReferrals()) {
             props.put(Context.REFERRAL, "ignore");
         } else {
             // this is the default mode
@@ -236,9 +232,10 @@ public class LDAPDirectory extends AbstractDirectory {
      * @throws DirectoryException
      */
     protected SearchControls computeSearchControls() throws DirectoryException {
+        LDAPDirectoryDescriptor descriptor = getDescriptor();
         SearchControls scts = new SearchControls();
         // respect the scope of the configuration
-        scts.setSearchScope(config.getSearchScope());
+        scts.setSearchScope(descriptor.getSearchScope());
 
         // only fetch attributes that are defined in the schema or needed to
         // compute LDAPReferences
@@ -265,15 +262,15 @@ public class LDAPDirectory extends AbstractDirectory {
             }
         }
 
-        if (config.getPasswordField() != null) {
+        if (getPasswordField() != null) {
             // never try to fetch the password
-            attrs.remove(config.getPasswordField());
+            attrs.remove(getPasswordField());
         }
 
         scts.setReturningAttributes(attrs.toArray(new String[attrs.size()]));
 
-        scts.setCountLimit(config.getQuerySizeLimit());
-        scts.setTimeLimit(config.getQueryTimeLimit());
+        scts.setCountLimit(descriptor.getQuerySizeLimit());
+        scts.setTimeLimit(descriptor.getQueryTimeLimit());
 
         return scts;
     }
@@ -288,9 +285,11 @@ public class LDAPDirectory extends AbstractDirectory {
             return searchControls;
         } else {
             // build a new ftcs instance with no attribute filtering
+            LDAPDirectoryDescriptor descriptor = getDescriptor();
             SearchControls scts = new SearchControls();
-            scts.setSearchScope(config.getSearchScope());
-            scts.setReturningAttributes(new String[] { config.rdnAttribute, config.fieldMapping.get(config.idField) });
+            scts.setSearchScope(descriptor.getSearchScope());
+            scts.setReturningAttributes(
+                    new String[] { descriptor.rdnAttribute, descriptor.fieldMapping.get(getIdField()) });
             return scts;
         }
     }
@@ -300,9 +299,9 @@ public class LDAPDirectory extends AbstractDirectory {
             /*
              * Dynamic server list requires re-computation on each access
              */
-            String serverName = config.getServerName();
-            if (serverName == null || serverName.equals("")) {
-                throw new DirectoryException("server configuration is missing for directory " + config.getName());
+            String serverName = getDescriptor().getServerName();
+            if (StringUtils.isEmpty(serverName)) {
+                throw new DirectoryException("server configuration is missing for directory " + getName());
             }
             LDAPServerDescriptor serverConfig = getServer();
             if (serverConfig.isDynamicServerList()) {
@@ -315,37 +314,12 @@ public class LDAPDirectory extends AbstractDirectory {
         }
     }
 
-    @Override
-    public String getName() {
-        return config.getName();
-    }
-
-    @Override
-    public String getSchema() {
-        return config.getSchemaName();
-    }
-
-    @Override
-    public String getParentDirectory() {
-        return null; // no parent directories are specified for LDAP
-    }
-
-    @Override
-    public String getIdField() {
-        return config.getIdField();
-    }
-
-    @Override
-    public String getPasswordField() {
-        return config.getPasswordField();
-    }
-
     /**
      * @since 5.7
      * @return ldap server descriptor bound to this directory
      */
     public LDAPServerDescriptor getServer() {
-        return factory.getServer(config.getServerName());
+        return factory.getServer(getDescriptor().getServerName());
     }
 
     @Override
@@ -380,22 +354,8 @@ public class LDAPDirectory extends AbstractDirectory {
         }
     }
 
-    public LDAPDirectoryDescriptor getConfig() {
-        return config;
-    }
-
     public Map<String, Field> getSchemaFieldMap() {
         return schemaFieldMap;
-    }
-
-    /**
-     * Get the value of the field passwordHashAlgorithm
-     *
-     * @return The value
-     * @since 5.9.3
-     */
-    public String getPasswordHashAlgorithmField() {
-        return config.passwordHashAlgorithm;
     }
 
     public void setTestServer(ContextProvider testServer) {

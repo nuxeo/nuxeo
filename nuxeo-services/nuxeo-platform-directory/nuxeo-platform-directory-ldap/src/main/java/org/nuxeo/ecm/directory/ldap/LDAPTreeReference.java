@@ -129,7 +129,7 @@ public class LDAPTreeReference extends AbstractReference {
 
     protected LDAPDirectoryDescriptor getTargetDirectoryDescriptor() throws DirectoryException {
         if (targetDirectoryDescriptor == null) {
-            targetDirectoryDescriptor = getTargetLDAPDirectory().getConfig();
+            targetDirectoryDescriptor = getTargetLDAPDirectory().getDescriptor();
         }
         return targetDirectoryDescriptor;
     }

@@ -41,7 +41,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
     public String name;
 
     @XNode("@remove")
-    public boolean remove = false;
+    public boolean remove;
 
     @XNode("parentDirectory")
     public String parentDirectory;
@@ -65,7 +65,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
     public String passwordHashAlgorithm;
 
     @XNodeList(value = "permissions/permission", type = PermissionDescriptor[].class, componentType = PermissionDescriptor.class)
-    public PermissionDescriptor[] permissions = null;
+    public PermissionDescriptor[] permissions;
 
     @XNode("cacheTimeout")
     public Integer cacheTimeout;
@@ -74,61 +74,13 @@ public class BaseDirectoryDescriptor implements Cloneable {
     public Integer cacheMaxSize;
 
     @XNode("cacheEntryName")
-    public String cacheEntryName = null;
+    public String cacheEntryName;
 
     @XNode("cacheEntryWithoutReferencesName")
-    public String cacheEntryWithoutReferencesName = null;
+    public String cacheEntryWithoutReferencesName;
 
     @XNode("negativeCaching")
     public Boolean negativeCaching;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setIdField(String idField) {
-        this.idField = idField;
-    }
-
-    public String getSchemaName() {
-        return schemaName;
-    }
-
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
-    public String getParentDirectory() {
-        return parentDirectory;
-    }
-
-    public void setParentDirectory(String parentDirectory) {
-        this.parentDirectory = parentDirectory;
-    }
-
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
-    public String getPasswordField() {
-        return passwordField;
-    }
-
-    public void setPasswordField(String passwordField) {
-        this.passwordField = passwordField;
-    }
-
-    public String getIdField() {
-        return idField;
-    }
 
     public boolean isReadOnly() {
         return readOnly == null ? READ_ONLY_DEFAULT : readOnly.booleanValue();
@@ -136,14 +88,6 @@ public class BaseDirectoryDescriptor implements Cloneable {
 
     public void setReadOnly(boolean readOnly) {
         this.readOnly = Boolean.valueOf(readOnly);
-    }
-
-    public void setRemove(boolean delete) {
-        this.remove = delete;
-    }
-
-    public boolean getRemove() {
-        return this.remove;
     }
 
     public int getCacheTimeout() {

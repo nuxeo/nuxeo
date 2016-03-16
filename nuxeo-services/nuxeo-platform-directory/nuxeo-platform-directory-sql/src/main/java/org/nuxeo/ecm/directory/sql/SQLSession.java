@@ -62,7 +62,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.directory.BaseSession;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
@@ -103,8 +102,6 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     private final boolean computeMultiTenantId;
 
-    final SQLDirectory directory;
-
     protected SQLStaticFilter[] staticFilters;
 
     String sid;
@@ -116,11 +113,11 @@ public class SQLSession extends BaseSession implements EntrySource {
     protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
     public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config) throws DirectoryException {
-        this.directory = directory;
-        schemaName = config.getSchemaName();
+        super(directory);
+        schemaName = config.schemaName;
         table = directory.getTable();
-        idField = config.getIdField();
-        passwordField = config.getPasswordField();
+        idField = config.idField;
+        passwordField = config.passwordField;
         passwordHashAlgorithm = config.passwordHashAlgorithm;
         schemaFieldMap = directory.getSchemaFieldMap();
         storedFieldNames = directory.getStoredFieldNames();
@@ -134,8 +131,9 @@ public class SQLSession extends BaseSession implements EntrySource {
         acquireConnection();
     }
 
-    public Directory getDirectory() {
-        return directory;
+    @Override
+    public SQLDirectory getDirectory() {
+        return (SQLDirectory) directory;
     }
 
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
@@ -159,7 +157,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     private void acquireConnection() throws DirectoryException {
         try {
             if (sqlConnection == null || sqlConnection.isClosed()) {
-                sqlConnection = directory.getConnection();
+                sqlConnection = getDirectory().getConnection();
             }
         } catch (SQLException e) {
             throw new DirectoryException("Cannot connect to SQL directory '" + directory.getName() + "': "
@@ -325,7 +323,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 reference.addLinks(sourceId, targetIds);
             }
         }
-        directory.invalidateCaches();
+        getDirectory().invalidateCaches();
         return entry;
     }
 
@@ -353,7 +351,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
         for (int i = 0; i < staticFilters.length; i++) {
             SQLStaticFilter filter = staticFilters[i];
-            whereClause += filter.getDirectoryColumn(table, directory.useNativeCase()).getQuotedName();
+            whereClause += filter.getDirectoryColumn(table, getDirectory().useNativeCase()).getQuotedName();
             whereClause += " " + filter.getOperator() + " ";
             whereClause += "? ";
 
@@ -367,7 +365,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     protected void addFilterValues(PreparedStatement ps, int startIdx) throws DirectoryException {
         for (int i = 0; i < staticFilters.length; i++) {
             SQLStaticFilter filter = staticFilters[i];
-            setFieldValue(ps, startIdx + i, filter.getDirectoryColumn(table, directory.useNativeCase()),
+            setFieldValue(ps, startIdx + i, filter.getDirectoryColumn(table, getDirectory().useNativeCase()),
                     filter.getValue());
         }
     }
@@ -521,7 +519,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             if (!dataModel.isDirty(fieldName)) {
                 continue;
             }
-            if (directory.isReference(fieldName)) {
+            if (getDirectory().isReference(fieldName)) {
                 referenceFieldList.add(fieldName);
             } else {
                 storedColumnList.add(table.getColumn(fieldName));
@@ -599,7 +597,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 }
             }
         }
-        directory.invalidateCaches();
+        getDirectory().invalidateCaches();
     }
 
     @Override
@@ -661,7 +659,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 throw new DirectoryException(sqle);
             }
         }
-        directory.invalidateCaches();
+        getDirectory().invalidateCaches();
     }
 
     protected boolean canDeleteMultiTenantEntry(String entryId) throws DirectoryException {
@@ -752,7 +750,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 throw new DirectoryException(sqle);
             }
         }
-        directory.invalidateCaches();
+        getDirectory().invalidateCaches();
     }
 
     @Override
@@ -792,7 +790,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             List<Column> orderedColumns = new LinkedList<>();
             for (String columnName : filterMap.keySet()) {
 
-                if (directory.isReference(columnName)) {
+                if (getDirectory().isReference(columnName)) {
                     log.warn(columnName + " is a reference and will be ignored" + " as a query criterion");
                     continue;
                 }
@@ -852,7 +850,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 separator = " AND ";
             }
 
-            int queryLimitSize = directory.getConfig().getQuerySizeLimit();
+            int queryLimitSize = getDirectory().getDescriptor().getQuerySizeLimit();
             boolean trucatedResults = false;
             if (queryLimitSize != 0 && (limit <= 0 || limit > queryLimitSize)) {
                 PreparedStatement ps = null;
@@ -1099,7 +1097,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         } catch (SQLException e) {
             throw new DirectoryException("close failed", e);
         } finally {
-            directory.removeSession(this);
+            getDirectory().removeSession(this);
         }
     }
 
@@ -1151,21 +1149,6 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public boolean isAuthenticating() {
         return schemaFieldMap.containsKey(getPasswordField());
-    }
-
-    @Override
-    public String getIdField() {
-        return directory.getConfig().getIdField();
-    }
-
-    @Override
-    public String getPasswordField() {
-        return directory.getConfig().getPasswordField();
-    }
-
-    @Override
-    public boolean isReadOnly() {
-        return directory.getConfig().isReadOnly();
     }
 
     @Override

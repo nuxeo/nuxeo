@@ -215,7 +215,7 @@ public class LDAPReference extends AbstractReference {
 
     protected LDAPDirectoryDescriptor getTargetDirectoryDescriptor() throws DirectoryException {
         if (targetDirectoryDescriptor == null) {
-            targetDirectoryDescriptor = getTargetLDAPDirectory().getConfig();
+            targetDirectoryDescriptor = getTargetLDAPDirectory().getDescriptor();
         }
         return targetDirectoryDescriptor;
     }
@@ -258,7 +258,7 @@ public class LDAPReference extends AbstractReference {
 
                 String sourceDn = ldapEntry.getNameInNamespace();
                 Attribute storedAttr = ldapEntry.getAttributes().get(attributeId);
-                String emptyRefMarker = sourceDirectory.getConfig().getEmptyRefMarker();
+                String emptyRefMarker = sourceDirectory.getDescriptor().getEmptyRefMarker();
                 Attribute attrToAdd = new BasicAttribute(attributeId);
                 for (String targetId : targetIds) {
                     if (staticAttributeIdIsDn) {
@@ -342,7 +342,7 @@ public class LDAPReference extends AbstractReference {
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectory sourceDirectory = (LDAPDirectory) getSourceDirectory();
 
-        String emptyRefMarker = sourceDirectory.getConfig().getEmptyRefMarker();
+        String emptyRefMarker = sourceDirectory.getDescriptor().getEmptyRefMarker();
         try (LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
                 LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession()) {
             if (!sourceSession.isReadOnly()) {
@@ -478,7 +478,7 @@ public class LDAPReference extends AbstractReference {
                 filterArgs[0] = targetId;
             }
 
-            String searchBaseDn = sourceDirectory.getConfig().getSearchBaseDn();
+            String searchBaseDn = sourceDirectory.getDescriptor().getSearchBaseDn();
             SearchControls sctls = sourceDirectory.getSearchControls();
             try (LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession()) {
                 if (log.isDebugEnabled()) {
@@ -514,7 +514,7 @@ public class LDAPReference extends AbstractReference {
 
             LDAPDirectory sourceDirectory = getSourceLDAPDirectory();
             LDAPDirectory targetDirectory = getTargetLDAPDirectory();
-            String searchBaseDn = sourceDirectory.getConfig().getSearchBaseDn();
+            String searchBaseDn = sourceDirectory.getDescriptor().getSearchBaseDn();
 
             try (LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
                     LDAPSession targetSession = (LDAPSession) targetDirectory.getSession()) {
@@ -667,7 +667,7 @@ public class LDAPReference extends AbstractReference {
 
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectoryDescriptor targetDirconfig = getTargetDirectoryDescriptor();
-        String emptyRefMarker = targetDirectory.getConfig().getEmptyRefMarker();
+        String emptyRefMarker = targetDirectory.getDescriptor().getEmptyRefMarker();
         try (LDAPSession targetSession = (LDAPSession) targetDirectory.getSession()) {
             String baseDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
 
@@ -991,7 +991,7 @@ public class LDAPReference extends AbstractReference {
             Attribute attrToRemove = new BasicAttribute(attributeId);
 
             NamingEnumeration<?> oldAttrs = oldAttr.getAll();
-            String targetBaseDn = pseudoNormalizeDn(targetDirectory.getConfig().getSearchBaseDn());
+            String targetBaseDn = pseudoNormalizeDn(targetDirectory.getDescriptor().getSearchBaseDn());
             try {
                 while (oldAttrs.hasMore()) {
                     String targetKeyAttr = oldAttrs.next().toString();
@@ -1020,7 +1020,7 @@ public class LDAPReference extends AbstractReference {
             try {
                 if (attrToRemove.size() == oldAttr.size()) {
                     // use the empty ref marker to avoid empty attr
-                    String emptyRefMarker = sourceDirectory.getConfig().getEmptyRefMarker();
+                    String emptyRefMarker = sourceDirectory.getDescriptor().getEmptyRefMarker();
                     Attributes emptyAttribute = new BasicAttributes(attributeId, emptyRefMarker);
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(
@@ -1080,7 +1080,7 @@ public class LDAPReference extends AbstractReference {
                 if (staticAttributeIdIsDn) {
                     SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId);
                     if (targetLdapEntry == null) {
-                        String rdnAttribute = targetDirectory.getConfig().getRdnAttribute();
+                        String rdnAttribute = targetDirectory.getDescriptor().getRdnAttribute();
                         if (!rdnAttribute.equals(targetSession.idAttribute)) {
                             log.warn(String.format(
                                     "cannot remove links to missing entry %s in directory %s for reference %s",
@@ -1091,7 +1091,7 @@ public class LDAPReference extends AbstractReference {
                         // re-forge it if possible (might not work if scope is
                         // subtree)
                         targetAttributeValue = String.format("%s=%s,%s", rdnAttribute, targetId,
-                                targetDirectory.getConfig().getSearchBaseDn());
+                                targetDirectory.getDescriptor().getSearchBaseDn());
                     } else {
                         targetAttributeValue = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
                     }
@@ -1108,7 +1108,7 @@ public class LDAPReference extends AbstractReference {
                 }
 
                 SearchControls scts = new SearchControls();
-                scts.setSearchScope(sourceDirectory.getConfig().getSearchScope());
+                scts.setSearchScope(sourceDirectory.getDescriptor().getSearchScope());
                 scts.setReturningAttributes(new String[] { attributeId });
 
                 // find all source entries that point to the target key and
@@ -1121,7 +1121,7 @@ public class LDAPReference extends AbstractReference {
                 }
                 NamingEnumeration<SearchResult> results = sourceSession.dirContext.search(sourceSession.searchBaseDn,
                         searchFilter, scts);
-                String emptyRefMarker = sourceDirectory.getConfig().getEmptyRefMarker();
+                String emptyRefMarker = sourceDirectory.getDescriptor().getEmptyRefMarker();
                 Attributes emptyAttribute = new BasicAttributes(attributeId, emptyRefMarker);
 
                 try {

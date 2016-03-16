@@ -51,14 +51,14 @@ public class DirectoryRegistry {
     protected Map<String, Directory> directories = new HashMap<>();
 
     public synchronized void addContribution(BaseDirectoryDescriptor contrib) {
-        String id = contrib.getName();
+        String id = contrib.name;
         log.info("Registered directory: " + id);
         allDescriptors.computeIfAbsent(id, k -> new ArrayList<>()).add(contrib);
         recomputeDescriptors(id);
     }
 
     public synchronized void removeContribution(BaseDirectoryDescriptor contrib) {
-        String id = contrib.getName();
+        String id = contrib.name;
         log.info("Unregistered directory: " + id);
         allDescriptors.getOrDefault(id, Collections.emptyList()).remove(contrib);
         recomputeDescriptors(id);
@@ -74,7 +74,7 @@ public class DirectoryRegistry {
         List<BaseDirectoryDescriptor> list = allDescriptors.getOrDefault(id, Collections.emptyList());
         BaseDirectoryDescriptor contrib = null;
         for (BaseDirectoryDescriptor next : list) {
-            if (next.getRemove()) {
+            if (next.remove) {
                 contrib = null;
             } else {
                 if (contrib == null) {

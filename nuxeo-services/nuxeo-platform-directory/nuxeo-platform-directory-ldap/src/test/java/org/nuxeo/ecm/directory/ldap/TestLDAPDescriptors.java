@@ -36,7 +36,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestLDAPDescriptors extends NXRuntimeTestCase {
 
-    protected LDAPDirectoryDescriptor directory;
+    protected LDAPDirectoryDescriptor descriptor;
 
     protected LDAPServerDescriptor server1;
 
@@ -55,7 +55,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
         xmap.register(LDAPDirectoryDescriptor.class);
 
         URL directoryUrl = getResource("directory.xml");
-        directory = (LDAPDirectoryDescriptor) xmap.load(directoryUrl);
+        descriptor = (LDAPDirectoryDescriptor) xmap.load(directoryUrl);
 
         URL server1Url = getResource("server1.xml");
         server1 = (LDAPServerDescriptor) xmap.load(server1Url);
@@ -66,17 +66,17 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
 
     @Test
     public void testGetRdnAttribute() {
-        assertEquals("uid", directory.getRdnAttribute());
+        assertEquals("uid", descriptor.getRdnAttribute());
     }
 
     @Test
     public void testGetCreationBaseDn() {
-        assertEquals("ou=people,dc=example,dc=com", directory.getCreationBaseDn());
+        assertEquals("ou=people,dc=example,dc=com", descriptor.getCreationBaseDn());
     }
 
     @Test
     public void testGetCreationClasses() {
-        String[] configuredClasses = directory.getCreationClasses();
+        String[] configuredClasses = descriptor.getCreationClasses();
         assertEquals(4, configuredClasses.length);
         assertEquals("top", configuredClasses[0]);
         assertEquals("person", configuredClasses[1]);
@@ -86,79 +86,79 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
 
     @Test
     public void testGetIdField() {
-        assertEquals("uid", directory.getIdField());
+        assertEquals("uid", descriptor.idField);
     }
 
     @Test
     public void testGetPasswordFieldName() {
-        assertEquals("userPassword", directory.getPasswordField());
+        assertEquals("userPassword", descriptor.passwordField);
     }
 
     @Test
     public void testGetSchemaName() {
-        assertEquals("user", directory.getSchemaName());
+        assertEquals("user", descriptor.schemaName);
     }
 
     @Test
     public void testGetSearchBaseDn() {
-        assertEquals("ou=people,dc=example,dc=com", directory.getSearchBaseDn());
+        assertEquals("ou=people,dc=example,dc=com", descriptor.getSearchBaseDn());
     }
 
     @Test
     public void testGetSearchClasses() {
         // test data from the directory.xml resource
-        String[] configuredClasses = directory.getSearchClasses();
+        String[] configuredClasses = descriptor.getSearchClasses();
         assertEquals(1, configuredClasses.length);
         assertEquals("person", configuredClasses[0]);
     }
 
     @Test
     public void testGetSearchFilter() {
-        assertEquals("(&(sn=Aa*)(cn=Aa*))", directory.getSearchFilter());
+        assertEquals("(&(sn=Aa*)(cn=Aa*))", descriptor.getSearchFilter());
     }
 
     @Test
     public void testGetAggregatedSearchFilter() {
         // test aggregation based on data from the directory.xml
         // resource
-        assertEquals("(&(objectClass=person)(&(sn=Aa*)(cn=Aa*)))", directory.getAggregatedSearchFilter());
+        assertEquals("(&(objectClass=person)(&(sn=Aa*)(cn=Aa*)))", descriptor.getAggregatedSearchFilter());
 
         // empty filter
-        directory.setSearchClasses(null);
-        directory.searchFilter = null;
-        assertEquals("(objectClass=*)", directory.getAggregatedSearchFilter());
+        descriptor.setSearchClasses(null);
+        descriptor.searchFilter = null;
+        assertEquals("(objectClass=*)", descriptor.getAggregatedSearchFilter());
 
         // several search classes and no search filter
         String[] twoClasses = { "person", "organizationalUnit" };
-        directory.setSearchClasses(twoClasses);
-        directory.searchFilter = null;
-        assertEquals("(|(objectClass=person)(objectClass=organizationalUnit))", directory.getAggregatedSearchFilter());
+        descriptor.setSearchClasses(twoClasses);
+        descriptor.searchFilter = null;
+        assertEquals("(|(objectClass=person)(objectClass=organizationalUnit))", descriptor.getAggregatedSearchFilter());
 
         // several search classes and a search filter
-        directory.setSearchClasses(twoClasses);
-        directory.searchFilter = "(&(sn=Aa*)(cn=Aa*))";
+        descriptor.setSearchClasses(twoClasses);
+        descriptor.searchFilter = "(&(sn=Aa*)(cn=Aa*))";
         assertEquals("(&(|(objectClass=person)(objectClass=organizationalUnit))" + "(&(sn=Aa*)(cn=Aa*)))",
-                directory.getAggregatedSearchFilter());
+                descriptor.getAggregatedSearchFilter());
     }
 
     @Test
     public void testGetSearchScope() throws DirectoryException {
         // testing the value provided in the directory.xml resource
-        assertEquals(SearchControls.ONELEVEL_SCOPE, directory.getSearchScope());
+        assertEquals(SearchControls.ONELEVEL_SCOPE, descriptor.getSearchScope());
 
         // testing funky but valid values
-        directory.setSearchScope("SUbTrEe");
-        assertEquals(SearchControls.SUBTREE_SCOPE, directory.getSearchScope());
-        directory.setSearchScope("OBJECT");
-        assertEquals(SearchControls.OBJECT_SCOPE, directory.getSearchScope());
+        descriptor.setSearchScope("SUbTrEe");
+        assertEquals(SearchControls.SUBTREE_SCOPE, descriptor.getSearchScope());
+        descriptor.setSearchScope("OBJECT");
+        assertEquals(SearchControls.OBJECT_SCOPE, descriptor.getSearchScope());
 
         // default value
-        directory.setSearchScope(null);
-        assertEquals(SearchControls.ONELEVEL_SCOPE, directory.getSearchScope());
+        descriptor.setSearchScope(null);
+        assertEquals(SearchControls.ONELEVEL_SCOPE, descriptor.getSearchScope());
 
         // testing bad scope
         try {
-            directory.setSearchScope("this is a bad bad scope");
+            descriptor.setSearchScope("this is a bad bad scope");
             fail("Should have raised an DirectoryException");
         } catch (DirectoryException e) {
         }
@@ -166,19 +166,19 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
 
     @Test
     public void testGetName() {
-        assertEquals("directoryName", directory.getName());
+        assertEquals("directoryName", descriptor.name);
         assertEquals("server1Name", server1.getName());
         assertEquals("server2Name", server2.getName());
     }
 
     @Test
     public void testGetServerName() {
-        assertEquals("default", directory.getServerName());
+        assertEquals("default", descriptor.getServerName());
     }
 
     @Test
     public void testMapper() {
-        Map<String, String> fieldMapping = directory.getFieldMapping();
+        Map<String, String> fieldMapping = descriptor.getFieldMapping();
         assertNotNull(fieldMapping);
         assertTrue(fieldMapping.containsKey("firstName"));
         assertTrue(fieldMapping.containsKey("lastName"));
@@ -223,7 +223,7 @@ public class TestLDAPDescriptors extends NXRuntimeTestCase {
 
     @Test
     public void testGetEmptyRefMarker() {
-        assertEquals("cn=emptyRef", directory.getEmptyRefMarker());
+        assertEquals("cn=emptyRef", descriptor.getEmptyRefMarker());
     }
 
 }

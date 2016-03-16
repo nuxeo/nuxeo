@@ -68,8 +68,13 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.schema");
         deployContrib("org.nuxeo.ecm.directory.core.tests", "test-schema.xml");
 
-        Set<String> schemaSet = new HashSet<String>(Arrays.asList("i", "pw", "a", "int", "b"));
-        memDir = new MemoryDirectory("mydir", SCHEMA_NAME, schemaSet, "i", "pw");
+        MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
+        descr.name = "mydir";
+        descr.schemaName = SCHEMA_NAME;
+        descr.idField = "i";
+        descr.passwordField = "pw";
+        descr.schemaSet = new HashSet<>(Arrays.asList("i", "pw", "a", "int", "b"));
+        memDir = new MemoryDirectory(descr);
         dir = (MemoryDirectorySession) memDir.getSession();
         Map<String, Object> e1 = new HashMap<String, Object>();
         e1.put("i", "1");
@@ -83,7 +88,12 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
 
     @Test
     public void testSchemaIntrospection() throws Exception {
-        MemoryDirectory md = new MemoryDirectory("adir", SCHEMA_NAME, "i", "pw");
+        MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
+        descr.name = "adir";
+        descr.schemaName = SCHEMA_NAME;
+        descr.idField = "i";
+        descr.passwordField = "pw";
+        MemoryDirectory md = new MemoryDirectory(descr);
         assertEquals(new HashSet<String>(Arrays.asList("i", "pw", "a", "int", "b", "x")), md.schemaSet);
     }
 

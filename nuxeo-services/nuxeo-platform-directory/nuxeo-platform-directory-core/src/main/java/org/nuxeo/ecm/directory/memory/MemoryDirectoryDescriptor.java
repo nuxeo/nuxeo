@@ -34,11 +34,7 @@ public class MemoryDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     @Override
     public Directory newDirectory() {
-        if (schemaSet == null) {
-            return new MemoryDirectory(name, schemaName, idField, passwordField);
-        } else {
-            return new MemoryDirectory(name, schemaName, schemaSet, idField, passwordField);
-        }
+        return new MemoryDirectory(this);
     }
 
 }

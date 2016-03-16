@@ -61,11 +61,40 @@ public abstract class BaseSession implements Session {
 
     private final static Log log = LogFactory.getLog(BaseSession.class);
 
+    protected final Directory directory;
+
     protected PermissionDescriptor[] permissions = null;
+
+    protected BaseSession(Directory directory) {
+        this.directory = directory;
+    }
+
+    /** To be implemented with a more specific return type. */
+    public abstract Directory getDirectory();
+
+    @Override
+    public String getIdField() {
+        return directory.getIdField();
+    }
+
+    @Override
+    public String getPasswordField() {
+        return directory.getPasswordField();
+    }
+
+    @Override
+    public boolean isAuthenticating() {
+        return directory.getPasswordField() != null;
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return directory.isReadOnly();
+    }
 
     /**
      * Check the current user rights for the given permission against the permission descriptor
-     * 
+     *
      * @return true if the user
      * @since 6.0
      */
@@ -81,7 +110,7 @@ public abstract class BaseSession implements Session {
         }
         String username = currentUser.getName();
         List<String> userGroups = currentUser.getAllGroups();
-        
+
         if (username.equalsIgnoreCase(LoginComponent.SYSTEM_USERNAME)) {
             return true;
         }

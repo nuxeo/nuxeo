@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -37,7 +38,7 @@ import com.codahale.metrics.SharedMetricRegistries;
 
 public abstract class AbstractDirectory implements Directory {
 
-    public final String name;
+    public final BaseDirectoryDescriptor descriptor;
 
     protected DirectoryFieldMapper fieldMapper;
 
@@ -53,12 +54,60 @@ public abstract class AbstractDirectory implements Directory {
 
     protected final Counter sessionMaxCount;
 
-    protected AbstractDirectory(String name) {
-        this.name = name;
-        cache = new DirectoryCache(name);
-        sessionCount = registry.counter(MetricRegistry.name("nuxeo", "directories", name, "sessions", "active"));
+    protected AbstractDirectory(BaseDirectoryDescriptor descriptor) {
+        this.descriptor = descriptor;
+        if (doSanityChecks()) {
+            if (StringUtils.isEmpty(descriptor.idField)) {
+                throw new DirectoryException("idField configuration is missing for directory: " + getName());
+            }
+            if (StringUtils.isEmpty(descriptor.schemaName)) {
+                throw new DirectoryException("schema configuration is missing for directory " + getName());
+            }
+        }
+        cache = new DirectoryCache(getName());
+        sessionCount = registry.counter(MetricRegistry.name("nuxeo", "directories", getName(), "sessions", "active"));
+        sessionMaxCount = registry.counter(MetricRegistry.name("nuxeo", "directories", getName(), "sessions", "max"));
+    }
 
-        sessionMaxCount = registry.counter(MetricRegistry.name("nuxeo", "directories", name, "sessions", "max"));
+    protected boolean doSanityChecks() {
+        return true;
+    }
+
+    /** To be implemented with a more specific return type. */
+    public abstract BaseDirectoryDescriptor getDescriptor();
+
+    @Override
+    public String getName() {
+        return descriptor.name;
+    }
+
+    @Override
+    public String getSchema() {
+        return descriptor.schemaName;
+    }
+
+    @Override
+    public String getParentDirectory() {
+        return descriptor.parentDirectory;
+    }
+
+    @Override
+    public String getIdField() {
+        return descriptor.idField;
+    }
+
+    @Override
+    public String getPasswordField() {
+        return descriptor.passwordField;
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return descriptor.isReadOnly();
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        descriptor.setReadOnly(readOnly);
     }
 
     /**

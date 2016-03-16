@@ -74,6 +74,13 @@ public interface Directory {
     String getPasswordField() throws DirectoryException;
 
     /**
+     * Checks if this directory is read-only.
+     *
+     * @since 8.2
+     */
+    boolean isReadOnly();
+
+    /**
      * Shuts down the directory.
      *
      * @throws DirectoryException

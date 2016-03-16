@@ -63,29 +63,24 @@ public class MultiDirectorySession extends BaseSession {
 
     private final DirectoryService directoryService;
 
-    private final SchemaManager schemaManager;
-
-    private final MultiDirectory directory;
-
-    private final MultiDirectoryDescriptor descriptor;
-
     private final String schemaName;
 
     private final String schemaIdField;
 
-    private final String schemaPasswordField;
-
     private List<SourceInfo> sourceInfos;
 
     public MultiDirectorySession(MultiDirectory directory) {
+        super(directory);
         directoryService = Framework.getService(DirectoryService.class);
-        schemaManager = Framework.getLocalService(SchemaManager.class);
-        this.directory = directory;
-        descriptor = directory.getDescriptor();
+        MultiDirectoryDescriptor descriptor = directory.getDescriptor();
         schemaName = descriptor.schemaName;
         schemaIdField = descriptor.idField;
-        schemaPasswordField = descriptor.passwordField;
         permissions = descriptor.permissions;
+    }
+
+    @Override
+    public MultiDirectory getDirectory() {
+        return (MultiDirectory) directory;
     }
 
     protected class SubDirectoryInfo {
@@ -177,10 +172,10 @@ public class MultiDirectorySession extends BaseSession {
      * Recomputes all the info needed for efficient access.
      */
     private void recomputeSourceInfos() throws DirectoryException {
-
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         final Schema schema = schemaManager.getSchema(schemaName);
         if (schema == null) {
-            throw new DirectoryException(String.format("Directory '%s' has unknown schema '%s'", directory.getName(),
+            throw new DirectoryException(String.format("Directory '%s' has unknown schema '%s'", getName(),
                     schemaName));
         }
         final Set<String> sourceFields = new HashSet<String>();
@@ -189,15 +184,15 @@ public class MultiDirectorySession extends BaseSession {
         }
         if (!sourceFields.contains(schemaIdField)) {
             throw new DirectoryException(String.format("Directory '%s' schema '%s' has no id field '%s'",
-                    directory.getName(), schemaName, schemaIdField));
+                    getName(), schemaName, schemaIdField));
         }
 
         List<SourceInfo> newSourceInfos = new ArrayList<SourceInfo>(2);
-        for (SourceDescriptor source : descriptor.sources) {
+        for (SourceDescriptor source : getDirectory().getDescriptor().sources) {
             int ndirs = source.subDirectories.length;
             if (ndirs == 0) {
                 throw new DirectoryException(String.format("Directory '%s' source '%s' has no subdirectories",
-                        directory.getName(), source.name));
+                        getName(), source.name));
             }
 
             final List<SubDirectoryInfo> subDirectoryInfos = new ArrayList<SubDirectoryInfo>(ndirs);
@@ -218,7 +213,7 @@ public class MultiDirectorySession extends BaseSession {
                 final Schema dirSchema = schemaManager.getSchema(dirSchemaName);
                 if (dirSchema == null) {
                     throw new DirectoryException(String.format("Directory '%s' source '%s' subdirectory '%s' "
-                            + "has unknown schema '%s'", directory.getName(), source.name, dirName, dirSchemaName));
+                            + "has unknown schema '%s'", getName(), source.name, dirName, dirSchemaName));
                 }
                 // record default field mappings if same name and record default
                 // values
@@ -241,12 +236,12 @@ public class MultiDirectorySession extends BaseSession {
                     final String fieldName = field.name;
                     if (!sourceFields.contains(sourceFieldName)) {
                         throw new DirectoryException(String.format("Directory '%s' source '%s' subdirectory '%s' "
-                                + "has mapping for unknown field '%s'", directory.getName(), source.name, dirName,
+                                + "has mapping for unknown field '%s'", getName(), source.name, dirName,
                                 sourceFieldName));
                     }
                     if (!dirSchemaFields.contains(fieldName)) {
                         throw new DirectoryException(String.format("Directory '%s' source '%s' subdirectory '%s' "
-                                + "has mapping of unknown field' '%s'", directory.getName(), source.name, dirName,
+                                + "has mapping of unknown field' '%s'", getName(), source.name, dirName,
                                 fieldName));
                     }
                     fromSource.put(sourceFieldName, fieldName);
@@ -259,7 +254,7 @@ public class MultiDirectorySession extends BaseSession {
                 if (dirIsAuth) {
                     if (authDirectoryInfo != null) {
                         throw new DirectoryException(String.format("Directory '%s' source '%s' has two subdirectories "
-                                + "with a password field, '%s' and '%s'", directory.getName(), source.name,
+                                + "with a password field, '%s' and '%s'", getName(), source.name,
                                 authDirectoryInfo.dirName, dirName));
                     }
                     authDirectoryInfo = subDirectoryInfo;
@@ -270,12 +265,12 @@ public class MultiDirectorySession extends BaseSession {
             }
             if (isAuthenticating() && authDirectoryInfo == null) {
                 throw new DirectoryException(String.format("Directory '%s' source '%s' has no subdirectory "
-                        + "with a password field", directory.getName(), source.name));
+                        + "with a password field", getName(), source.name));
             }
             if (!hasRequiredDir) {
                 throw new DirectoryException(String.format(
                         "Directory '%s' source '%s' only has optional subdirectories: "
-                                + "no directory can be used has a reference.", directory.getName(), source.name));
+                                + "no directory can be used has a reference.", getName(), source.name));
             }
             newSourceInfos.add(new SourceInfo(source, subDirectoryInfos, authDirectoryInfo));
         }
@@ -313,28 +308,12 @@ public class MultiDirectorySession extends BaseSession {
                 }
             }
         } finally {
-            directory.removeSession(this);
+            getDirectory().removeSession(this);
         }
     }
 
-    @Override
-    public String getIdField() {
-        return schemaIdField;
-    }
-
-    @Override
-    public String getPasswordField() {
-        return schemaPasswordField;
-    }
-
-    @Override
-    public boolean isAuthenticating() {
-        return schemaPasswordField != null;
-    }
-
-    @Override
-    public boolean isReadOnly() {
-        return descriptor.isReadOnly();
+    public String getName() {
+        return directory.getName();
     }
 
     @Override
@@ -547,7 +526,7 @@ public class MultiDirectorySession extends BaseSession {
             return getEntry(id);
         }
         throw new DirectoryException(String.format("Directory '%s' has no source allowing creation",
-                directory.getName()));
+                getName()));
     }
 
     @Override
@@ -573,7 +552,7 @@ public class MultiDirectorySession extends BaseSession {
                     if (docModel == null) {
                         log.warn(String.format(
                                 "MultiDirectory '%s' : The entry id '%s' could not be deleted on subdirectory '%s' because it does not exist",
-                                descriptor.name, id, dirInfo.dirName));
+                                getName(), id, dirInfo.dirName));
                     } else {
                         dirInfo.getSession().deleteEntry(id);
                     }
@@ -787,7 +766,7 @@ public class MultiDirectorySession extends BaseSession {
             }
         }
         if (orderBy != null && !orderBy.isEmpty()) {
-            directory.orderEntries(results, orderBy);
+            getDirectory().orderEntries(results, orderBy);
         }
         return results;
     }

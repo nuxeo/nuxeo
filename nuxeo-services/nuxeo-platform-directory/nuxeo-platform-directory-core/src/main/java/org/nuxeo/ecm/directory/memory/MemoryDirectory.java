@@ -21,7 +21,6 @@
 
 package org.nuxeo.ecm.directory.memory;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -39,73 +38,31 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class MemoryDirectory extends AbstractDirectory {
 
-    public final String schemaName;
-
     public final Set<String> schemaSet;
-
-    public final String idField;
-
-    public final String passwordField;
 
     public Map<String, Object> map;
 
     public MemoryDirectorySession session;
 
-    protected boolean isReadOnly = false;
-
-    public MemoryDirectory(String name, String schema, String idField, String passwordField) throws DirectoryException {
-        this(name, schema, new HashSet<String>(), idField, passwordField);
-
-        SchemaManager sm = getSchemaManager();
-        Schema sch = sm.getSchema(schema);
-        if (sch == null) {
-            throw new DirectoryException("Unknown schema :" + schema);
+    public MemoryDirectory(MemoryDirectoryDescriptor descriptor) {
+        super(descriptor);
+        Set<String> schemaSet = descriptor.schemaSet;
+        if (schemaSet == null) {
+            Schema schema = Framework.getService(SchemaManager.class).getSchema(getSchema());
+            if (schema == null) {
+                throw new DirectoryException("Unknown schema :" + getSchema());
+            }
+            schemaSet = new HashSet<>();
+            for (Field field : schema.getFields()) {
+                schemaSet.add(field.getName().getLocalName());
+            }
         }
-        Collection<Field> fields = sch.getFields();
-        for (Field f : fields) {
-            schemaSet.add(f.getName().getLocalName());
-        }
-    }
-
-    public SchemaManager getSchemaManager() throws DirectoryException {
-        SchemaManager sm = Framework.getService(SchemaManager.class);
-        if (sm == null) {
-            throw new DirectoryException("Unable to look up type service");
-        }
-        return sm;
-    }
-
-    public MemoryDirectory(String name, String schemaName, Set<String> schemaSet, String idField, String passwordField) {
-        super(name);
-        this.schemaName = schemaName;
         this.schemaSet = schemaSet;
-        this.idField = idField;
-        this.passwordField = passwordField;
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getSchema() {
-        return schemaName;
-    }
-
-    @Override
-    public String getParentDirectory() {
-        return null;
-    }
-
-    @Override
-    public String getIdField() {
-        return idField;
-    }
-
-    @Override
-    public String getPasswordField() {
-        return passwordField;
+    public MemoryDirectoryDescriptor getDescriptor() {
+        return (MemoryDirectoryDescriptor) descriptor;
     }
 
     @Override
@@ -121,14 +78,6 @@ public class MemoryDirectory extends AbstractDirectory {
     public void shutdown() {
         super.shutdown();
         session = null;
-    }
-
-    public boolean isReadOnly() {
-        return isReadOnly;
-    }
-
-    public void setReadOnly(boolean isReadOnly) {
-        this.isReadOnly = isReadOnly;
     }
 
 }

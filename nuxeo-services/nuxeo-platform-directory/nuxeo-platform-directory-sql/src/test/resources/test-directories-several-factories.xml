@@ -10,6 +10,7 @@
     point="directories">
     <directory name="userDirectory">
       <schema>user</schema>
+      <idField>username</idField>
     </directory>
   </extension>
 
