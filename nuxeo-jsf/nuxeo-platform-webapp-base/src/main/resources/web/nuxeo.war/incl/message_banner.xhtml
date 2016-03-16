@@ -13,7 +13,7 @@
         <h:outputScript target="#{pageJsTarget}">
           jQuery(document).ready(function() {
             jQuery.ambiance({
-              title: "#{messages['feedback.correctErrors']}",
+              title: nuxeo.utils.escapeHTML("#{messages['feedback.correctErrors']}"),
               type: "error",
               className: "errorFeedback",
               timeout: 0
@@ -28,7 +28,7 @@
               var disabled = #{configurationService.isBooleanPropertyTrue('nuxeo.jsf.ajax.disableErrorFeedback')};
               if (!disabled){
                 jQuery.ambiance({
-                  title: "#{messages['feedback.ajax.emptyResponse']}",
+                  title: nuxeo.utils.escapeHTML("#{messages['feedback.ajax.emptyResponse']}"),
                   type: "error",
                   className: "warningFeedback",
                   timeout: 1
@@ -36,7 +36,7 @@
               }
             } else {
               jQuery.ambiance({
-                title: data.description,
+                title: nuxeo.utils.escapeHTML(data.description),
                 type: "error",
                 className: "errorFeedback",
                 timeout: 0
