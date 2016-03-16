@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -44,8 +43,7 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.audit.pageprovider.LatestCreatedGroupsPageProvider;
-import org.nuxeo.elasticsearch.audit.pageprovider.LatestCreatedUsersPageProvider;
+import org.nuxeo.elasticsearch.audit.pageprovider.LatestCreatedUsersOrGroupsPageProvider;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -59,14 +57,14 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @since 8.2
  */
 @Deploy({ "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core",
-    "org.nuxeo.elasticsearch.seqgen",
-    "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
-    "org.nuxeo.elasticsearch.audit" })
+        "org.nuxeo.elasticsearch.seqgen",
+        "org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml",
+        "org.nuxeo.elasticsearch.audit" })
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class, PlatformFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
-    "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
-    "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
+        "org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml",
+        "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
 public class TestUserGroupAudit {
 
     @Inject
@@ -93,16 +91,16 @@ public class TestUserGroupAudit {
 
         String userName = "testUser";
 
-        entries = reader.queryLogs(new String[] { UserManagerImpl.USERCREATED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.USERCREATED_EVENT_ID }, null);
         assertEquals(0, entries.size());
         DocumentModel newUser = userManager.getBareUserModel();
         newUser.setProperty("user", "username", userName);
         newUser = userManager.createUser(newUser);
         LogEntryGen.flushAndSync();
-        entries = reader.queryLogs(new String[] { UserManagerImpl.USERCREATED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.USERCREATED_EVENT_ID }, null);
         assertEquals(1, entries.size());
 
-        entries = reader.queryLogs(new String[] { UserManagerImpl.USERMODIFIED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.USERMODIFIED_EVENT_ID }, null);
         assertEquals(0, entries.size());
         List<String> staticGroups = new ArrayList<String>();
         staticGroups.add("StaticGroup");
@@ -110,14 +108,14 @@ public class TestUserGroupAudit {
         newUser.setProperty("user", "groups", staticGroups);
         userManager.updateUser(newUser);
         LogEntryGen.flushAndSync();
-        entries = reader.queryLogs(new String[] { UserManagerImpl.USERMODIFIED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.USERMODIFIED_EVENT_ID }, null);
         assertEquals(1, entries.size());
 
-        entries = reader.queryLogs(new String[] { UserManagerImpl.USERDELETED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.USERDELETED_EVENT_ID }, null);
         assertEquals(0, entries.size());
         userManager.deleteUser(newUser);
         LogEntryGen.flushAndSync();
-        entries = reader.queryLogs(new String[] { UserManagerImpl.USERDELETED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.USERDELETED_EVENT_ID }, null);
         assertEquals(1, entries.size());
     }
 
@@ -128,67 +126,48 @@ public class TestUserGroupAudit {
 
         String groupName = "testGroup";
 
-        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPCREATED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPCREATED_EVENT_ID }, null);
         assertEquals(0, entries.size());
         DocumentModel groupModel = userManager.getBareGroupModel();
         groupModel.setProperty("group", "groupname", groupName);
         groupModel = userManager.createGroup(groupModel);
         LogEntryGen.flushAndSync();
-        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPCREATED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPCREATED_EVENT_ID }, null);
         assertEquals(1, entries.size());
 
-        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPMODIFIED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPMODIFIED_EVENT_ID }, null);
         assertEquals(0, entries.size());
         userManager.updateGroup(groupModel);
         LogEntryGen.flushAndSync();
-        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPMODIFIED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPMODIFIED_EVENT_ID }, null);
         assertEquals(1, entries.size());
 
-        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPDELETED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPDELETED_EVENT_ID }, null);
         assertEquals(0, entries.size());
         userManager.deleteGroup(groupModel);
         LogEntryGen.flushAndSync();
-        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPDELETED_EVENT_ID}, null);
+        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPDELETED_EVENT_ID }, null);
         assertEquals(1, entries.size());
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testRetrieveLatestCreatedUsers() throws Exception {
+    public void testRetrieveLatestCreatedUsersOrGroups() throws Exception {
 
         String userName = "testUser";
-
-        final long LIMIT = 10L;
-        for (int i = 0; i < LIMIT; i++) {
-            DocumentModel newUser = userManager.getBareUserModel();
-            newUser.setProperty("user", "username", userName + i);
-            newUser = userManager.createUser(newUser);
-        }
-
-        LogEntryGen.flushAndSync();
-
-        Map<String, Serializable> props = new HashMap<String, Serializable>();
-        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-
-        PageProvider<?> pp = pps.getPageProvider( LatestCreatedUsersPageProvider.LATEST_CREATED_USERS_PROVIDER, null, LIMIT, 0L, props,
-                session.getRootDocument().getId());
-
-        List<NuxeoPrincipal> latestCreatedUsers = (List<NuxeoPrincipal>) pp.getCurrentPage();
-
-        assertEquals(LIMIT, latestCreatedUsers.size());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testRetrieveLatestCreatedGroups() throws Exception {
-
         String groupName = "testGroup";
 
         final long LIMIT = 10L;
         for (int i = 0; i < LIMIT; i++) {
-            DocumentModel groupModel = userManager.getBareGroupModel();
-            groupModel.setProperty("group", "groupname", groupName + i);
-            groupModel = userManager.createGroup(groupModel);
+            if (i % 2 == 0) {
+                DocumentModel newUser = userManager.getBareUserModel();
+                newUser.setProperty("user", "username", userName + i);
+                newUser = userManager.createUser(newUser);
+            } else {
+                DocumentModel groupModel = userManager.getBareGroupModel();
+                groupModel.setProperty("group", "groupname", groupName + i);
+                groupModel = userManager.createGroup(groupModel);
+            }
         }
 
         LogEntryGen.flushAndSync();
@@ -196,13 +175,13 @@ public class TestUserGroupAudit {
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
 
-        PageProvider<?> pp = pps.getPageProvider( LatestCreatedGroupsPageProvider.LATEST_CREATED_GROUPS_PROVIDER, null, LIMIT, 0L, props,
+        PageProvider<?> pp = pps.getPageProvider(
+                LatestCreatedUsersOrGroupsPageProvider.LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, LIMIT, 0L, props,
                 session.getRootDocument().getId());
 
-        List<NuxeoGroup> latestCreatedGroups = (List<NuxeoGroup>) pp.getCurrentPage();
+        List<DocumentModel> latestCreatedUsers = (List<DocumentModel>) pp.getCurrentPage();
 
-        assertEquals(LIMIT, latestCreatedGroups.size());
+        assertEquals(LIMIT, latestCreatedUsers.size());
     }
-
 
 }
