@@ -178,6 +178,11 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     public BlobHolder convert(String converterName, BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
 
+        // set parameters if null to avoid NPE in converters
+        if (parameters == null) {
+            parameters = new HashMap<String, Serializable>();
+        }
+
         // exist if not registered
         ConverterCheckResult check = isConverterAvailable(converterName);
         if (!check.isAvailable()) {
