@@ -50,6 +50,9 @@ import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.ecm.core.event.jms.AsyncProcessorConfig;
+import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
+import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundlePipeDispatcher;
+import org.nuxeo.ecm.core.event.pipe.local.LocalEventBundlePipe;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -99,14 +102,22 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     protected boolean bulkModeEnabled = false;
 
+    protected EventBundlePipeDispatcher pipeDispatcher;
+
     public EventServiceImpl() {
         listenerDescriptors = new EventListenerList();
         postCommitExec = new PostCommitEventExecutor();
         asyncExec = new AsyncEventExecutor();
+        pipeDispatcher = new  EventBundlePipeDispatcher();
     }
 
     public void init() {
         asyncExec.init();
+
+        // XXX simulate contribs
+        List<EventPipeDescriptor> pipeDescriptors = new ArrayList<EventPipeDescriptor>();
+        pipeDescriptors.add(new EventPipeDescriptor("local", LocalEventBundlePipe.class));
+        pipeDispatcher.init(pipeDescriptors);
     }
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
@@ -307,11 +318,14 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             return;
         }
 
+
         // fire async listeners
         if (AsyncProcessorConfig.forceJMSUsage() && !comesFromJMS) {
             log.debug("Skipping async exec, this will be triggered via JMS");
         } else {
-            asyncExec.run(postCommitAsync, event);
+            //asyncExec.run(postCommitAsync, event);
+            // rather than sending to the WorkManager: send to the Pipe
+            pipeDispatcher.sendEventBundle(event);
         }
     }
 
