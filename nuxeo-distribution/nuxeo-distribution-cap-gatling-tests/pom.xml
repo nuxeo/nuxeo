@@ -199,7 +199,7 @@
                   <goal>execute</goal>
                 </goals>
                 <configuration>
-                  <simulationClass>org.nuxeo.cap.bench.Sim25WarmusersJsf</simulationClass>
+                  <simulationClass>org.nuxeo.cap.bench.Sim25WarmUsersJsf</simulationClass>
                 </configuration>
               </execution>
               <execution>
