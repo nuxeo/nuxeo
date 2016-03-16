@@ -21,6 +21,19 @@ nuxeo.utils = (function(m) {
 
   var eventListeners = [];
 
+  var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;'
+  };
+
+  m.escapeHTML = function escapeHTML(string) {
+    return String(string).replace(/[&<>"'\/]/g, function fromEntityMap(s) { return entityMap[s]; });
+  };
+
   m.addOnEvent = function addOnEvent(callback) {
     if (typeof callback === 'function') {
         eventListeners[eventListeners.length] = callback;
