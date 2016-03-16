@@ -1,25 +1,5 @@
 var nuxeo = nuxeo || {};
 
-nuxeo.utils = (function(m) {
-
-    var entityMap = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;',
-        '/': '&#x2F;'
-    };
-
-    m.escapeHTML = function escapeHTML(string) {
-        return String(string).replace(/[&<>"'\/]/g, function fromEntityMap(s) { return entityMap[s]; });
-    };
-
-    return m
-
-}(nuxeo.utils || {}));
-
-
 function createNewTag(term, data) {
     return {
         id : term,
