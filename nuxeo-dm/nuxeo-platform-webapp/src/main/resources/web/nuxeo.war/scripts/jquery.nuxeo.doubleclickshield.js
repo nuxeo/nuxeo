@@ -13,7 +13,7 @@
           // Previously submitted - don't submit again
           e.preventDefault();
           jQuery.ambiance({
-            title : nuxeo.doubleClickShield.message,
+            title : nuxeo.utils.escapeHTML(nuxeo.doubleClickShield.message),
             className : "infoFeedback",
             timeout : 1.5
           });
