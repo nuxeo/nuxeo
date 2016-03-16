@@ -38,7 +38,7 @@
       }
     }
     markup += escapeHTML(entry.displayLabel);
-    markup += "&nbsp;<span class='detail'>" + entry.id + "</span>";
+    markup += "&nbsp;<span class='detail'>" + escapeHTML(entry.id) + "</span>";
     markup += warnMessage(entry);
     return markup;
   }
