@@ -20,22 +20,32 @@
 package org.nuxeo.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
-
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.audit.pageprovider.LatestCreatedGroupsPageProvider;
+import org.nuxeo.elasticsearch.audit.pageprovider.LatestCreatedUsersPageProvider;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -65,6 +75,12 @@ public class TestUserGroupAudit {
     @Inject
     protected UserManager userManager;
 
+    @Inject
+    protected PageProviderService pps;
+
+    @Inject
+    protected CoreSession session;
+
     @Before
     public void setupIndex() throws Exception {
         esa.initIndexes(true);
@@ -77,6 +93,8 @@ public class TestUserGroupAudit {
 
         String userName = "testUser";
 
+        entries = reader.queryLogs(new String[] { UserManagerImpl.USERCREATED_EVENT_ID}, null);
+        assertEquals(0, entries.size());
         DocumentModel newUser = userManager.getBareUserModel();
         newUser.setProperty("user", "username", userName);
         newUser = userManager.createUser(newUser);
@@ -84,6 +102,8 @@ public class TestUserGroupAudit {
         entries = reader.queryLogs(new String[] { UserManagerImpl.USERCREATED_EVENT_ID}, null);
         assertEquals(1, entries.size());
 
+        entries = reader.queryLogs(new String[] { UserManagerImpl.USERMODIFIED_EVENT_ID}, null);
+        assertEquals(0, entries.size());
         List<String> staticGroups = new ArrayList<String>();
         staticGroups.add("StaticGroup");
         newUser = userManager.getUserModel(userName);
@@ -93,6 +113,8 @@ public class TestUserGroupAudit {
         entries = reader.queryLogs(new String[] { UserManagerImpl.USERMODIFIED_EVENT_ID}, null);
         assertEquals(1, entries.size());
 
+        entries = reader.queryLogs(new String[] { UserManagerImpl.USERDELETED_EVENT_ID}, null);
+        assertEquals(0, entries.size());
         userManager.deleteUser(newUser);
         LogEntryGen.flushAndSync();
         entries = reader.queryLogs(new String[] { UserManagerImpl.USERDELETED_EVENT_ID}, null);
@@ -106,6 +128,8 @@ public class TestUserGroupAudit {
 
         String groupName = "testGroup";
 
+        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPCREATED_EVENT_ID}, null);
+        assertEquals(0, entries.size());
         DocumentModel groupModel = userManager.getBareGroupModel();
         groupModel.setProperty("group", "groupname", groupName);
         groupModel = userManager.createGroup(groupModel);
@@ -113,15 +137,72 @@ public class TestUserGroupAudit {
         entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPCREATED_EVENT_ID}, null);
         assertEquals(1, entries.size());
 
+        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPMODIFIED_EVENT_ID}, null);
+        assertEquals(0, entries.size());
         userManager.updateGroup(groupModel);
         LogEntryGen.flushAndSync();
         entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPMODIFIED_EVENT_ID}, null);
         assertEquals(1, entries.size());
 
+        entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPDELETED_EVENT_ID}, null);
+        assertEquals(0, entries.size());
         userManager.deleteGroup(groupModel);
         LogEntryGen.flushAndSync();
         entries = reader.queryLogs(new String[] { UserManagerImpl.GROUPDELETED_EVENT_ID}, null);
         assertEquals(1, entries.size());
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRetrieveLatestCreatedUsers() throws Exception {
+
+        String userName = "testUser";
+
+        final long LIMIT = 10L;
+        for (int i = 0; i < LIMIT; i++) {
+            DocumentModel newUser = userManager.getBareUserModel();
+            newUser.setProperty("user", "username", userName + i);
+            newUser = userManager.createUser(newUser);
+        }
+
+        LogEntryGen.flushAndSync();
+
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+
+        PageProvider<?> pp = pps.getPageProvider( LatestCreatedUsersPageProvider.LATEST_CREATED_USERS_PROVIDER, null, LIMIT, 0L, props,
+                session.getRootDocument().getId());
+
+        List<NuxeoPrincipal> latestCreatedUsers = (List<NuxeoPrincipal>) pp.getCurrentPage();
+
+        assertEquals(LIMIT, latestCreatedUsers.size());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRetrieveLatestCreatedGroups() throws Exception {
+
+        String groupName = "testGroup";
+
+        final long LIMIT = 10L;
+        for (int i = 0; i < LIMIT; i++) {
+            DocumentModel groupModel = userManager.getBareGroupModel();
+            groupModel.setProperty("group", "groupname", groupName + i);
+            groupModel = userManager.createGroup(groupModel);
+        }
+
+        LogEntryGen.flushAndSync();
+
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+
+        PageProvider<?> pp = pps.getPageProvider( LatestCreatedGroupsPageProvider.LATEST_CREATED_GROUPS_PROVIDER, null, LIMIT, 0L, props,
+                session.getRootDocument().getId());
+
+        List<NuxeoGroup> latestCreatedGroups = (List<NuxeoGroup>) pp.getCurrentPage();
+
+        assertEquals(LIMIT, latestCreatedGroups.size());
+    }
+
 
 }

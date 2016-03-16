@@ -87,6 +87,66 @@
         <maxPageSize>1000</maxPageSize>
       </genericPageProvider>
 
+  <genericPageProvider name="LATEST_AUDITED_CREATED_USERS_PROVIDER"
+    class="org.nuxeo.elasticsearch.audit.pageprovider.ESDocumentHistoryPageProvider">
+     <pattern>
+    {   "filtered" : {
+          "filter" : {
+            "bool" : {
+              "must" : [ {
+                    "term" : {
+                      "category" :  "userGroup"
+                    }
+                  },
+                  {
+                "term" : {
+                  "eventId" :  "user_created"
+                }
+              }]
+            }
+          }
+        }
+    }
+    </pattern>
+    <sort column="eventDate" ascending="false" />
+    <pageSize>5</pageSize>
+    <maxPageSize>100</maxPageSize>
+  </genericPageProvider>
+
+  <genericPageProvider name="LATEST_CREATED_USERS_PROVIDER"
+    class="org.nuxeo.elasticsearch.audit.pageprovider.LatestCreatedUsersPageProvider">
+  </genericPageProvider>
+
+  <genericPageProvider name="LATEST_AUDITED_CREATED_GROUPS_PROVIDER"
+    class="org.nuxeo.elasticsearch.audit.pageprovider.ESDocumentHistoryPageProvider">
+     <pattern>
+    {   "filtered" : {
+          "filter" : {
+            "bool" : {
+              "must" : [ {
+                    "term" : {
+                      "category" :  "userGroup"
+                    }
+                  },
+                  {
+                "term" : {
+                  "eventId" :  "group_created"
+                }
+              }]
+            }
+          }
+        }
+    }
+    </pattern>
+    <sort column="eventDate" ascending="false" />
+    <pageSize>5</pageSize>
+    <maxPageSize>100</maxPageSize>
+  </genericPageProvider>
+
+  <genericPageProvider name="LATEST_CREATED_GROUPS_PROVIDER"
+    class="org.nuxeo.elasticsearch.audit.pageprovider.LatestCreatedGroupsPageProvider">
+  </genericPageProvider>
+
   </extension>
 
 </component>

@@ -60,7 +60,6 @@ public class GroupMemberPageProvider extends AbstractPageProvider<NuxeoPrincipal
                 currentPagePrincipal.add(userManager.getPrincipal(username));
 
             }
-            getPageSize();
             setResultsCount(usernames.size());
         }
         return currentPagePrincipal;
