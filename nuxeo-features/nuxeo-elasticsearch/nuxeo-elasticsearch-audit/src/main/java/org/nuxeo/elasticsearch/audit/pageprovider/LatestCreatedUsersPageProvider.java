@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 8.1
+ * @since 8.2
  */
 public class LatestCreatedUsersPageProvider extends AbstractPageProvider<NuxeoPrincipal> {
 
