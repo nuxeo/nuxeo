@@ -211,6 +211,12 @@ public class FakeUserManagerImpl implements UserManager {
         }
     }
 
+    @Override
+    public void updatePassword(String username, String oldPassword, String
+            newPassword) {
+        throw new UnsupportedOperationException();
+    }
+
     public List<String> getGroupsInGroup(String parentId) {
         throw new UnsupportedOperationException();
     }

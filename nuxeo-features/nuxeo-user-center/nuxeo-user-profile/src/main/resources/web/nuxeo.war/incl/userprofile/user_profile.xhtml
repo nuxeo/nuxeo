@@ -26,7 +26,7 @@
                  </li>
                  <li>
                    <a4j:commandLink  id="changePasswordButton"
-                      action="#{userProfileActions.setMode('editPassword')}"
+                      action="#{userProfileActions.setMode('editProfilePassword')}"
                       immediate="#{action.immediate}"
                       rendered="#{userProfileActions.mode == 'view' and userProfileActions.canEdit}"
                       render="profilePanel">
@@ -79,8 +79,8 @@
         </table>
       </h:form>
 
-      <h:form id="editUserPassword" rendered="#{userProfileActions.mode == 'editPassword'}">
-        <nxl:layout name="user" mode="#{userProfileActions.canEdit ? 'editPassword' : 'hidden'}" value="#{userProfileActions.currentUserModel}" />
+      <h:form id="editUserPassword" rendered="#{userProfileActions.mode == 'editProfilePassword'}">
+        <nxl:layout name="profile_password" mode="#{userProfileActions.canEdit ? 'editProfilePassword' : 'hidden'}" value="#{userProfileActions.currentUserModel}" />
         <table class="dataInput">
           <tbody>
             <tr>
@@ -89,7 +89,7 @@
               <td class="fieldColumn">
                 <h:commandButton id="saveUserPasswordButton"
                   value="#{messages['command.save']}"
-                  action="#{userManagementActions.changePassword}"
+                  action="#{userManagementActions.updateProfilePassword}"
                   styleClass="button"
                   rendered="#{userProfileActions.canEdit}"
                   render="profilePanel"/>

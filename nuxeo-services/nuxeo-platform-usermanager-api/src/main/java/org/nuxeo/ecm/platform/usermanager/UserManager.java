@@ -54,6 +54,16 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     boolean validatePassword(String password);
 
     /**
+     * Update a new password according to the given old password to the given user.
+     *
+     * @since 8.2
+     * @param username The username.
+     * @param oldPassword The old password of the given user.
+     * @param newPassword The new password to set for this given user.
+     */
+    void updatePassword(String username, String oldPassword, String newPassword);
+
+    /**
      * Retrieves the principal with the given username or null if it does not exist.
      * <p>
      * Can build principals for anonymous and virtual users as well as for users defined in the users directory.

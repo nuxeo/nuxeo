@@ -47,6 +47,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.directory.BaseSession;
@@ -94,6 +95,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     protected boolean createAnotherUser = false;
 
     protected String defaultRepositoryName = null;
+
+    protected String oldPassword;
 
     @Override
     protected String computeListingMode() {
@@ -288,6 +291,25 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
         String message = resourcesAccessor.getMessages().get("label.userManager.password.changed");
         facesMessages.add(FacesMessage.SEVERITY_INFO, message);
+        fireSeamEvent(USERS_LISTING_CHANGED);
+
+        return null;
+    }
+
+    public String updateProfilePassword() {
+        try {
+            UpdateProfilePasswordUnrestricted runner = new UpdateProfilePasswordUnrestricted(
+                    getDefaultRepositoryName(), currentUser.getName(), oldPassword,
+                    (String) selectedUser.getPropertyValue("user:password"));
+            runner.runUnrestricted();
+        } catch (NuxeoException reason) {
+            String message = resourcesAccessor.getMessages().get("label.userManager.old.password.error");
+            facesMessages.add(FacesMessage.SEVERITY_ERROR, message);
+            return null;
+        }
+        String message = resourcesAccessor.getMessages().get("label.userManager.password.changed");
+        facesMessages.add(FacesMessage.SEVERITY_INFO, message);
+        detailsMode = DETAILS_VIEW_MODE;
         fireSeamEvent(USERS_LISTING_CHANGED);
 
         return null;
@@ -544,4 +566,11 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         this.createAnotherUser = createAnotherUser;
     }
 
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
 }
