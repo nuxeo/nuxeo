@@ -75,6 +75,11 @@ public class SectionContentTabSubPage extends DocumentBasePage {
         return asPage(DocumentBasePage.class);
     }
 
+    public SectionContentTabSubPage unpublishDocument(String documentTitle) {
+        getContentView().checkByTitle(documentTitle).getSelectionActionByTitle("Unpublish").click();
+        return asPage(SectionContentTabSubPage.class);
+    }
+
     protected ContentViewElement getElement() {
         return AbstractTest.getWebFragment(By.id("cv_section_content_0_panel"), ContentViewElement.class);
     }

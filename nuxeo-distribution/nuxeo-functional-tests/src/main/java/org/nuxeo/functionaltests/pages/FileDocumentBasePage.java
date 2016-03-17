@@ -18,7 +18,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import org.nuxeo.functionaltests.pages.tabs.FilePublishTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.FileSummaryTabSubPage;
 import org.openqa.selenium.WebDriver;
 
@@ -34,11 +33,6 @@ public class FileDocumentBasePage extends DocumentBasePage {
     public FileSummaryTabSubPage getFileSummaryTab() {
         clickOnDocumentTabLink(summaryTabLink);
         return asPage(FileSummaryTabSubPage.class);
-    }
-
-    public FilePublishTabSubPage getFilePublishTab() {
-        clickOnDocumentTabLink(publishTabLink);
-        return asPage(FilePublishTabSubPage.class);
     }
 
 }

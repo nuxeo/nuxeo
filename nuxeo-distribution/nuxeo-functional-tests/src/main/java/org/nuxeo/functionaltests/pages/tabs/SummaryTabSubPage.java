@@ -67,6 +67,9 @@ public class SummaryTabSubPage extends AbstractPage {
     @FindBy(xpath = "//form[@id='nxl_grid_summary_layout:nxw_summary_current_document_states_form']")
     public WebElement lifeCycleState;
 
+    @FindBy(xpath = "//div[@class='publication_block']")
+    public WebElement publicationBlock;
+
     public SummaryTabSubPage(WebDriver driver) {
         super(driver);
     }
@@ -172,5 +175,46 @@ public class SummaryTabSubPage extends AbstractPage {
     public int getCollectionCount() {
         return driver.findElement(By.id(COLLECTIONS_FORM_ID)).findElements(
                 By.xpath("div/span[@id='nxl_grid_summary_layout:nxw_summary_current_document_collections_form:collections']/span[@class='tag tagLink']")).size();
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean isPublished() {
+        try {
+            publicationBlock.findElement(By.xpath(".//*[contains(text(),'This document is published.')]"));
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean isAwaitingPublication() {
+        try {
+            publicationBlock.findElement(By.xpath("//*[contains(text(),'This document is waiting for a publication approval.')]"));
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public SummaryTabSubPage approvePublication() {
+        publicationBlock.findElement(By.xpath(".//input[@value='Approve']")).click();
+        return asPage(SummaryTabSubPage.class);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public void rejectPublication(String comment) {
+        WebElement text = publicationBlock.findElement(By.xpath(".//*[contains(@name, 'rejectPublishingComment')]"));
+        text.sendKeys(comment);
+        publicationBlock.findElement(By.xpath(".//input[@value='Reject']")).click();
     }
 }

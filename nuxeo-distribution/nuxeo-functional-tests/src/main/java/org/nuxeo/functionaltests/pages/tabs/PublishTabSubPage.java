@@ -20,6 +20,7 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import java.util.List;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -29,7 +30,7 @@ import org.openqa.selenium.support.FindBy;
 /**
  * @since 8.3
  */
-public class FilePublishTabSubPage extends AbstractPage {
+public class PublishTabSubPage extends AbstractPage {
 
     @FindBy(xpath = "//select[@id='publishTreeForm:publishSelectTreeName']")
     public WebElement selectTree;
@@ -37,18 +38,25 @@ public class FilePublishTabSubPage extends AbstractPage {
     @FindBy(xpath = "//select[contains(@id, 'publishTreeForm:j')]")
     public WebElement selectRendition;
 
-    public FilePublishTabSubPage(WebDriver driver) {
+    @FindBy(xpath = "//div[@id='publishTreeForm:publishingInfoList']/table/tbody/tr")
+    List<WebElement> publishingInfos;
+
+    public PublishTabSubPage(WebDriver driver) {
         super(driver);
     }
 
-    public FilePublishTabSubPage publish(String sectionTree, String rendtion, String sectionName) {
+    public PublishTabSubPage publish(String sectionTree, String rendtion, String sectionName) {
         selectItemInDropDownMenu(selectTree, sectionTree);
         selectItemInDropDownMenu(selectRendition, rendtion);
 
         int index = findTreeNodeIndex(sectionName);
         publishIemInPublishTreeForm(index);
 
-        return asPage(FilePublishTabSubPage.class);
+        return asPage(PublishTabSubPage.class);
+    }
+
+    public List<WebElement> getPublishingInfos() {
+        return publishingInfos;
     }
 
     private int findTreeNodeIndex(String itemName) {
@@ -80,7 +88,10 @@ public class FilePublishTabSubPage extends AbstractPage {
     }
 
     private void publishIemInPublishTreeForm(int index) {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
         findElementWaitUntilEnabledAndClick(By.xpath("//div[@id='publishTreeForm:sectionTree'] //a[contains(@id, 'publishRecursiveAdaptor."
                 + index + ":publishCommandLink')]"));
+        arm.end();
     }
 }
