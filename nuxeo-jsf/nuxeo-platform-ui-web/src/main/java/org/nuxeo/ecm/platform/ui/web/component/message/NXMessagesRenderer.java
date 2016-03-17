@@ -141,10 +141,10 @@ public class NXMessagesRenderer extends MessagesRenderer implements ComponentSys
                     + "    timeout: \"%d\"" + "  })\n" + "});\n";
             String formattedScriptContent;
             if (showDetail) {
-                formattedScriptContent = String.format(StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(scriptContent)), StringEscapeUtils.escapeJavaScript(detail),
+                formattedScriptContent = String.format(scriptContent, StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(detail)),
                         StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(summary)), errorType, severityStyleClass, timeout);
             } else {
-                formattedScriptContent = String.format(StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(scriptContent)), "",
+                formattedScriptContent = String.format(scriptContent, "",
                         StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(summary)),
                         errorType, severityStyleClass, timeout);
             }
