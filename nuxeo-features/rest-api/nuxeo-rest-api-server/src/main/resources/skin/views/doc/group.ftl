@@ -43,7 +43,22 @@
       "nickname":"getGroupMembers",
       "type":"userList",
       <@params names = ["groupname"]/>,
-      "summary":"Get the members of a group",
+      "summary":"Get the user members of a group",
+      "notes": "",
+      <#include "views/doc/errorresponses.ftl"/>
+    }
+  ]
+},
+{
+  "path": "/group/{groupName}/@groups",
+  "description": "Group members group adapter",
+  "operations" : [
+    {
+      "method":"GET",
+      "nickname":"getGroupMembersGroup",
+      "type":"groupList",
+      <@params names = ["groupname"]/>,
+      "summary":"Get the group members of a group",
       "notes": "",
       <#include "views/doc/errorresponses.ftl"/>
     }
