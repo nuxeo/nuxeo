@@ -62,19 +62,13 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
                     DocumentModel doc;
                     if (UserManagerImpl.GROUPCREATED_EVENT_ID.equals(e.getEventId())) {
                         doc = um.getGroupModel(id);
-                        if (doc == null) {
-                            //probably group does not exist anymore, let's mock it
-                            doc = um.getBareGroupModel();
-                            doc.setProperty("group", "groupname", id);
-                        }
                     } else if (UserManagerImpl.USERCREATED_EVENT_ID.equals(e.getEventId())) {
                         doc = um.getUserModel(id);
-                        if (doc == null) {
-                            //probably user does not exist anymore, let's mock it
-                            doc = um.getBareGroupModel();
-                            doc.setProperty("user", "username", id);
-                        }
                     } else {
+                      break;
+                    }
+                    if (doc == null) {
+                      //probably user/group does not exist anymore
                       break;
                     }
                     result.add(doc);
