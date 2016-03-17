@@ -148,7 +148,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
             }
         }
 
-        if (!relaxSyncRootConstraint) {
+        if (!relaxSyncRootConstraint && doc.isFolder()) {
             // Check not a synchronization root registered for the current user
             NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
             Principal principal = doc.getCoreSession().getPrincipal();
