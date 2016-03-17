@@ -2,14 +2,12 @@
 
 <!--
   NXP-7000: for case for ldap directories that are case-insensitive
-  
+
   override default configuration, adding the idFieldCase attribute
 -->
 
 <component name="org.nuxeo.ecm.directory.ldap.storage.override.upperId">
 
-  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
-  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
   <require>org.nuxeo.ecm.directory.ldap.storage</require>
 
   <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"

@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -49,8 +50,8 @@ import com.google.inject.Provider;
  */
 @Features({ SQLDirectoryFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/LDAPDirectoryFactory.xml",
-        "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml",
+@Deploy("org.nuxeo.ecm.directory.ldap")
+@LocalDeploy({ "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml",
         "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml" })
 public class InternalLDAPDirectoryFeature extends SimpleFeature {
 

@@ -72,12 +72,12 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.sql", //
+@Deploy({ "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.directory.sql", //
+        "org.nuxeo.ecm.directory.ldap", //
         "org.nuxeo.ecm.directory.ldap.tests", //
 })
 @LocalDeploy({ "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryTypes.xml",
-        "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/DirectoryService.xml",
-        "org.nuxeo.ecm.directory.ldap.tests:ldap-test-setup/LDAPDirectoryFactory.xml",
         "org.nuxeo.ecm.directory.ldap.tests:TestSQLDirectories.xml", })
 public abstract class LDAPDirectoryTestCase {
 

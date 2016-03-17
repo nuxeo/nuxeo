@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 
 <component name="org.nuxeo.ecm.directory.ldap.storage.groups">
-  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
-  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPServerDescriptor" />
-  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
 
   <!-- the groups LDAP directory for users is required to make this bundle work -->
   <require>org.nuxeo.ecm.directory.ldap.storage.users</require>

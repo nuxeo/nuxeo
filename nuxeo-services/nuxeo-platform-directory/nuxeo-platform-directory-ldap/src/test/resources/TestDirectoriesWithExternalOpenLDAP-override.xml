@@ -2,14 +2,12 @@
 
 <!--
   NXP-2461: Manage LDAP directories with missing entries for identifier field
-  
+
   override default configuration, changing the userDirectory id field
 -->
 
 <component name="org.nuxeo.ecm.directory.ldap.storage.override">
 
-  <implementation class="org.nuxeo.ecm.directory.ldap.LDAPDirectoryDescriptor" />
-  <require>org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory</require>
   <require>org.nuxeo.ecm.directory.ldap.storage</require>
 
   <extension target="org.nuxeo.ecm.directory.ldap.LDAPDirectoryFactory"
@@ -28,7 +26,7 @@
       <searchScope>onelevel</searchScope>
 
       <readOnly>false</readOnly>
-      
+
       <creationBaseDn>ou=people,dc=example,dc=com</creationBaseDn>
       <creationClass>top</creationClass>
       <creationClass>person</creationClass>
