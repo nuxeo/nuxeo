@@ -57,6 +57,7 @@ import org.nuxeo.functionaltests.pages.tabs.ForumTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
+import org.nuxeo.functionaltests.pages.tabs.PublishTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SectionsContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
@@ -341,6 +342,14 @@ public class DocumentBasePage extends AbstractPage {
     public TopicTabSubPage getTopicTab() {
         clickOnDocumentTabLink(topicTabLink);
         return asPage(TopicTabSubPage.class);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public PublishTabSubPage getPublishTab() {
+        clickOnDocumentTabLink(publishTabLink);
+        return asPage(PublishTabSubPage.class);
     }
 
     /**

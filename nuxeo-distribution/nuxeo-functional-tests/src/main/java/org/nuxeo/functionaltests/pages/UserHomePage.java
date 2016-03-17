@@ -18,7 +18,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import org.nuxeo.functionaltests.fragment.GadgetsContainerFragment;
 import org.nuxeo.functionaltests.pages.profile.ProfilePage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
@@ -26,41 +25,41 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+import java.util.NoSuchElementException;
+
 /**
  * @since 5.7
  */
 public class UserHomePage extends AbstractPage {
 
-    // not required: when navigating to home, we could be on another tab than
-    // dashboard
-    @FindBy(id = GadgetsContainerFragment.GADGETS_CONTAINER_ID)
-    public WebElement gadgetsContainer;
-
-    protected GadgetsContainerFragment gadgetsFragment;
+    @FindBy(id = "nxw_dashboard_user_tasks")
+    WebElement userTasks;
 
     public UserHomePage(WebDriver driver) {
         super(driver);
     }
 
-    protected GadgetsContainerFragment getGadgetsFragment() {
-        if (gadgetsFragment == null) {
-            gadgetsFragment = getWebFragment(gadgetsContainer, GadgetsContainerFragment.class);
+    /**
+     * @since 8.3
+     */
+    public boolean taskExistsOnUserTasks(String taskName) {
+        try {
+            return getTask(taskName).isDisplayed();
+        } catch (NoSuchElementException e) {
+            return false;
         }
-        return gadgetsFragment;
-    }
-
-    public boolean isTaskGadgetLoaded() {
-        return getGadgetsFragment().isGadgetLoaded("My Tasks");
     }
 
     public SummaryTabSubPage redirectToTask(String taskTitle) {
-        WebDriver driver = getGadgetsFragment().switchToFrame("My Tasks");
-        driver.findElement(By.linkText(taskTitle)).click();
-        return new SummaryTabSubPage(driver);
+        userTasks.findElement(By.linkText(taskTitle)).click();
+        return asPage(SummaryTabSubPage.class);
     }
 
-    public boolean isTaskGadgetEmpty() {
-        return getGadgetsFragment().isTaskGadgetEmpty("My Tasks");
+    /**
+     * @since 8.3
+     */
+    public boolean isUserTasksEmpty() {
+        return userTasks.getText().contains("Your dashboard is empty");
     }
 
     /**
@@ -83,6 +82,11 @@ public class UserHomePage extends AbstractPage {
 
     protected void goToTab(String id) {
         clickOnTabIfNotSelected("nxw_homeTabs_panel", id);
+    }
+
+    protected WebElement getTask(String taskName) {
+        String xpath = String.format(".//table[@class='dataOutput']/tbody/tr[td//text()[contains(.,'%s')]]", taskName);
+        return userTasks.findElement(By.xpath(xpath));
     }
 
 }
