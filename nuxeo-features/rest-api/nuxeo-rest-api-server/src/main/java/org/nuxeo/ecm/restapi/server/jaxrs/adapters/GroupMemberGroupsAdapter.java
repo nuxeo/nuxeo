@@ -19,25 +19,34 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.restapi.server.jaxrs.adapters.PaginableAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.usermanager.GroupObject;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.runtime.api.Framework;
 
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
 /**
  * @since 8.2
  */
-@WebAdapter(name = GroupMemberUsersAdapter.NAME, type = "GroupService")
+@WebAdapter(name = GroupMemberGroupsAdapter.NAME, type = "GroupMemberGroups")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
-public class GroupMemberUsersAdapter extends PaginableAdapter<NuxeoPrincipal> {
+public class GroupMemberGroupsAdapter extends PaginableAdapter<NuxeoGroup> {
 
-    public static final String NAME = "members";
-    public static final String PAGE_PROVIDER_NAME = "nuxeo_group_member_users_listing";
+    public static final String NAME = "groups";
+    public static final String PAGE_PROVIDER_NAME = "nuxeo_group_member_groups_listing";
+
+    protected String query;
+
+    @Override
+    protected void initialize(Object... args) {
+        super.initialize(args);
+        query = ctx.getRequest().getParameter("q");
+    }
 
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {
@@ -47,7 +56,7 @@ public class GroupMemberUsersAdapter extends PaginableAdapter<NuxeoPrincipal> {
 
     @Override
     protected Object[] getParams() {
-        return new Object[] { ((GroupObject) getTarget()).doGetArtifact() };
+        return new Object[] { ((GroupObject) getTarget()).doGetArtifact(), query };
     }
 
 }
