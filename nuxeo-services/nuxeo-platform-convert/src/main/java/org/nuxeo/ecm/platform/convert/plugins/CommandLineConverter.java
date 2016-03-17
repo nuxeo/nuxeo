@@ -100,12 +100,15 @@ public class CommandLineConverter extends CommandLineBasedConverter {
             String targetFileName = (String) parameters.get(TARGET_FILE_NAME_KEY);
             Path targetFilePath;
             if (targetFileName == null) {
-                targetFilePath = tmpDirPath != null ? Files.createTempFile(tmpDirPath, null, null)
-                        : Framework.createTempFilePath(null, null);
+                targetFilePath = Files.createTempFile(outDirPath, null, null);
             } else {
                 targetFilePath = Paths.get(outDirPath.toString(), targetFileName);
             }
             cmdStringParams.put(TARGET_FILE_PATH_KEY, targetFilePath.toString());
+            if (targetFileName == null) {
+                // do not keep a temporary file, just created to get a path
+                Files.delete(targetFilePath);
+            }
 
             // pass all converter parameters to the command line
             for (Map.Entry<String, Serializable> entry : parameters.entrySet()) {
