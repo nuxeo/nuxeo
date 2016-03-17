@@ -41,6 +41,12 @@ public class AutomationTraceToggleOperation {
     @Param(name = "enableTrace", required = false)
     protected Boolean enableTrace = null;
 
+    /**
+     * @since 8.2
+     */
+    @Param(name = "readOnly", required = false)
+    protected Boolean readOnly = false;
+
     @Context
     protected OperationContext ctx;
 
@@ -52,7 +58,7 @@ public class AutomationTraceToggleOperation {
     @OperationMethod
     public boolean run() {
         TracerFactory tracerFactory = Framework.getLocalService(TracerFactory.class);
-        if (canManageTraces()) {
+        if (canManageTraces() && !readOnly) {
             if (enableTrace == null) {
                 tracerFactory.toggleRecording();
             } else {
