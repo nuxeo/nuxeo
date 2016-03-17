@@ -65,7 +65,6 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  *             <-- additional property provided by extend() method
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.2
@@ -90,11 +89,13 @@ public class NuxeoGroupJsonWriter extends ExtensibleEntityJsonWriter<NuxeoGroup>
             }
             jg.writeEndArray();
         }
-        jg.writeArrayFieldStart("memberGroups");
-        for (String user : group.getMemberGroups()) {
-            jg.writeString(user);
+        if (ctx.getFetched(ENTITY_TYPE).contains("memberGroups")) {
+            jg.writeArrayFieldStart("memberGroups");
+            for (String user : group.getMemberGroups()) {
+                jg.writeString(user);
+            }
+            jg.writeEndArray();
         }
-        jg.writeEndArray();
     }
 
 }
