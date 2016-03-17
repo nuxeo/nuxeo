@@ -24,6 +24,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -43,39 +45,54 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
 
     public final static String LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER = "LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER";
 
+    protected List<DocumentModel> currentPage;
+
     @Override
     public List<DocumentModel> getCurrentPage() {
-
-        List<DocumentModel> result = new ArrayList<DocumentModel>();
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        UserManager um = Framework.getService(UserManager.class);
-        CoreSession coreSession = (CoreSession) getProperties().get(ESAuditPageProvider.CORE_SESSION_PROPERTY);
-        PageProvider<?> pp = pps.getPageProvider(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER, null, getPageSize(),
-                getCurrentPageIndex(), getProperties(),
-                coreSession != null ? coreSession.getRootDocument().getId() : new Object[] { null });
-        @SuppressWarnings("unchecked")
-        List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
-        if (entries != null) {
-            for (LogEntry e : entries) {
-                String id = (String) e.getExtendedInfos().get("id").getSerializableValue();
-                if (StringUtils.isNotBlank(id)) {
-                    DocumentModel doc;
-                    if (UserManagerImpl.GROUPCREATED_EVENT_ID.equals(e.getEventId())) {
-                        doc = um.getGroupModel(id);
-                    } else if (UserManagerImpl.USERCREATED_EVENT_ID.equals(e.getEventId())) {
-                        doc = um.getUserModel(id);
-                    } else {
-                      break;
+        if (currentPage == null) {
+            currentPage = new ArrayList<DocumentModel>();
+            PageProviderService pps = Framework.getService(PageProviderService.class);
+            CoreSession coreSession = (CoreSession) getProperties().get(ESAuditPageProvider.CORE_SESSION_PROPERTY);
+            PageProvider<?> pp = pps.getPageProvider(LATEST_AUDITED_CREATED_USERS_OR_GROUPS_PROVIDER, null,
+                    getPageSize(), getCurrentPageIndex(), getProperties(),
+                    coreSession != null ? coreSession.getRootDocument().getId() : new Object[] { null });
+            @SuppressWarnings("unchecked")
+            List<LogEntry> entries = (List<LogEntry>) pp.getCurrentPage();
+            if (entries != null) {
+                UserManager um = Framework.getService(UserManager.class);
+                DirectoryService directoryService = Framework.getService(DirectoryService.class);
+                String schema = directoryService.getDirectorySchema(um.getUserDirectoryName());
+                try (Session userDir = directoryService.open(um.getUserDirectoryName(), null)) {
+                    for (LogEntry e : entries) {
+                        String id = (String) e.getExtendedInfos().get("id").getSerializableValue();
+                        if (StringUtils.isNotBlank(id)) {
+                            DocumentModel doc;
+                            if (UserManagerImpl.GROUPCREATED_EVENT_ID.equals(e.getEventId())) {
+                                doc = um.getGroupModel(id);
+                            } else if (UserManagerImpl.USERCREATED_EVENT_ID.equals(e.getEventId())) {
+                                doc = um.getUserModel(id);
+                                doc.setProperty(schema, userDir.getPasswordField(), null);
+                            } else {
+                                break;
+                            }
+                            if (doc == null) {
+                                // probably user/group does not exist anymore
+                                break;
+                            }
+                            currentPage.add(doc);
+                        }
                     }
-                    if (doc == null) {
-                      //probably user/group does not exist anymore
-                      break;
-                    }
-                    result.add(doc);
                 }
             }
         }
-        return result;
+
+        return currentPage;
+    }
+
+    @Override
+    protected void pageChanged() {
+        currentPage = null;
+        super.pageChanged();
     }
 
 }
