@@ -86,7 +86,7 @@ public class ITUsersTest extends AbstractTest {
         //Change the user password
         String newPassword = "newpwd";
         ProfilePage profilePage = login(username, TEST_PASSWORD).getUserHome().goToProfile();
-        profilePage.getChangePasswordUserTab().changePassword(newPassword);
+        profilePage.getChangePasswordUserTab().changePassword(TEST_PASSWORD, newPassword);
         logout();
 
         login(username, newPassword).getUserHome().goToProfile();

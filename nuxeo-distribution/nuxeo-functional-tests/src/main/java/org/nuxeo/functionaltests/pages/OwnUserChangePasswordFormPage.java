@@ -31,12 +31,16 @@ import org.openqa.selenium.support.FindBy;
 public class OwnUserChangePasswordFormPage extends AbstractPage {
 
     @Required
-    @FindBy(id = "editUserPassword:nxl_user_2:nxw_passwordMatcher_firstPassword")
+    @FindBy(id = "editUserPassword:nxl_profile_password:nxw_profilePasswordMatcher_firstPassword")
     WebElement firstPasswordInput;
 
     @Required
-    @FindBy(id = "editUserPassword:nxl_user_2:nxw_passwordMatcher_secondPassword")
+    @FindBy(id = "editUserPassword:nxl_profile_password:nxw_profilePasswordMatcher_secondPassword")
     WebElement secondPasswordInput;
+
+    @Required
+    @FindBy(id = "editUserPassword:nxl_profile_password:nxw_profilePasswordMatcher_oldPassword")
+    WebElement oldPasswordInput;
 
     @Required
     @FindBy(xpath = "//input[@value=\"Save\"]")
@@ -46,11 +50,13 @@ public class OwnUserChangePasswordFormPage extends AbstractPage {
         super(driver);
     }
 
-    public OwnUserChangePasswordFormPage changePassword(String password) {
+    public OwnUserChangePasswordFormPage changePassword(String oldPassword, String password) {
         firstPasswordInput.clear();
         firstPasswordInput.sendKeys(password);
         secondPasswordInput.clear();
         secondPasswordInput.sendKeys(password);
+        oldPasswordInput.clear();
+        oldPasswordInput.sendKeys(oldPassword);
         saveButton.click();
         return asPage(OwnUserChangePasswordFormPage.class);
     }
