@@ -17,9 +17,10 @@
     <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
     <f:ajax execute="@this"
       render=":#{widgetPanelComponent.clientId}"
-      listener="#{selectionActions.setStaticValue}" />
+      listener="#{selectionActions.setStaticValue}"
+      status="#{widget.id}_#{idPrefix}toggleAction_ajax_status" />
   </h:commandLink>
-  <a4j:status>
+  <a4j:status name="#{widget.id}_#{idPrefix}toggleAction_ajax_status">
     <f:facet name="start">
       <h:graphicImage value="/img/standart_waiter.gif" />
     </f:facet>
