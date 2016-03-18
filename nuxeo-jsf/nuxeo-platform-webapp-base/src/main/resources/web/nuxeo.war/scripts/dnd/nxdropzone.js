@@ -145,9 +145,9 @@ DropZoneUIHandler.prototype.fetchOptions = function () {
   // Fetch the import options
   var getOptions;
   if (this.ctx.conversationId) {
-    getOptions = jQuery().automation('Chain.SeamActions.GET');
+    getOptions = jQuery().automation('Chain.SeamActions.GET', {repository : this.ctx.repository});
   } else {
-    getOptions = jQuery().automation('Actions.GET');
+    getOptions = jQuery().automation('Actions.GET', {repository : this.ctx.repository});
   }
   getOptions.addParameter("category", context);
   getOptions.setContext(this.ctx);
@@ -427,7 +427,8 @@ DropZoneUIHandler.prototype.executeBatch = function (operationId, params) {
   jQuery("#dndContinueButtonWait").css("display", "block");
   continueButton.css("display", "block");
 
-  var batchExec = jQuery().automation(operationId, this.opts);
+  var batchExecOpts = jQuery.extend({}, this.opts, {repository : this.ctx.repository});
+  var batchExec = jQuery().automation(operationId, batchExecOpts);
   log(this.ctx);
   batchExec.setContext(this.ctx);
   batchExec.setContext(params);
