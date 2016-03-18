@@ -25,11 +25,15 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import com.google.common.base.Objects;
+
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Inline properties file content. This class exists to have a real type for parameters accepting properties content.
@@ -40,6 +44,24 @@ import org.nuxeo.runtime.api.Framework;
 public class Properties extends HashMap<String, String> {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Spaces may be legitimate part of the value, there is no reason to trim them. But before NXP-19050, the behavior
+     * was to trim the values. We have put in place a contribution, which is overridden before Nuxeo 8 series, for
+     * backward compatibility. See NXP-19170.
+     *
+     * @since 8.2
+     */
+    public static final String IS_PROPERTY_VALUE_TRIMMED_KEY = "nuxeo.automation.properties.value.trim";
+
+    /**
+     * Default value is <code>false</code>.
+     *
+     * @since 8.2
+     */
+    protected static boolean isPropertyValueTrimmed() {
+        return Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(IS_PROPERTY_VALUE_TRIMMED_KEY);
+    }
 
     public static final String PROPERTIES_MULTILINE_ESCAPE = "nuxeo" + ".automation.properties.multiline.escape";
 
@@ -102,6 +124,8 @@ public class Properties extends HashMap<String, String> {
     }
 
     public static void loadProperties(Reader reader, Map<String, String> map) throws IOException {
+
+        boolean isPropertyValueToBeTrimmed = isPropertyValueTrimmed();
         BufferedReader in = new BufferedReader(reader);
         String line = in.readLine();
         String prevLine = null;
@@ -109,8 +133,8 @@ public class Properties extends HashMap<String, String> {
         while (line != null) {
             if (prevLine == null) {
                 // we start a new property
-                if (line.startsWith("#") || line.length() == 0) {
-                    // skip comments or an empty line
+                if (line.startsWith("#") || StringUtils.isBlank(line)) {
+                    // skip comments, empty or blank line
                     line = in.readLine();
                     continue;
                 }
@@ -125,21 +149,30 @@ public class Properties extends HashMap<String, String> {
                 line = prevLine + line;
             }
             prevLine = null;
-            setPropertyLine(map, line);
+            setPropertyLine(map, line, isPropertyValueToBeTrimmed);
             line = in.readLine();
         }
         if (prevLine != null) {
-            setPropertyLine(map, prevLine);
+            setPropertyLine(map, prevLine, isPropertyValueToBeTrimmed);
         }
     }
 
-    protected static void setPropertyLine(Map<String, String> map, String line) throws IOException {
+    /**
+     * @param isPropertyValueToBeTrimmed The caller may store the value, to prevent from fetching it every time.
+     */
+    private static void setPropertyLine(Map<String, String> map, String line, boolean isPropertyValueToBeTrimmed)
+            throws IOException {
         int i = line.indexOf('=');
         if (i == -1) {
-            throw new IOException("Invalid property line: " + line);
+            throw new IOException("Invalid property line (cannot find a '=') in: '" + line + "'");
         }
-        // we trim() the key, but not the value: spaces and new lines are legitimate part of the value
-        map.put(line.substring(0, i).trim(), line.substring(i + 1));
+        // we trim() the key, but not the value (by default, but you may override this for backward compatibility with
+        // former code. See: NXP-19170): spaces and new lines are legitimate part of the value
+        String value = line.substring(i + 1);
+        if (isPropertyValueToBeTrimmed) {
+            value = value.trim();
+        }
+        map.put(line.substring(0, i).trim(), value);
     }
 
 }
