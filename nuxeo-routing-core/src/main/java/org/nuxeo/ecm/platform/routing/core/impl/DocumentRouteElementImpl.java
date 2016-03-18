@@ -61,7 +61,10 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
         List<String> docIds = getDocumentRoute(session).getAttachedDocuments();
         List<DocumentRef> refs = new ArrayList<DocumentRef>();
         for (String id : docIds) {
-            refs.add(new IdRef(id));
+            IdRef idRef = new IdRef(id);
+            if (session.exists(idRef)) {
+                refs.add(new IdRef(id));
+            }
         }
         return session.getDocuments(refs.toArray(new DocumentRef[] {}));
     }
