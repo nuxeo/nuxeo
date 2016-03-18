@@ -25,11 +25,11 @@
     </genericPageProvider>
 
     <genericPageProvider name="nuxeo_group_member_users_listing"
-      class="org.nuxeo.web.usergroupmanagement.providers.GroupMemberUsersPageProvider">
+      class="org.nuxeo.ecm.platform.usermanager.providers.GroupMemberUsersPageProvider">
       <pageSize>20</pageSize>
     </genericPageProvider>
     <genericPageProvider name="nuxeo_group_member_groups_listing"
-      class="org.nuxeo.web.usergroupmanagement.providers.GroupMemberGroupsPageProvider">
+      class="org.nuxeo.ecm.platform.usermanager.providers.GroupMemberGroupsPageProvider">
       <pageSize>20</pageSize>
     </genericPageProvider>
 

@@ -50,6 +50,7 @@ public class BaseUserTest extends BaseTest {
     protected String getGroupAsJson(NuxeoGroup group) throws IOException {
         RenderingContext ctx = CtxBuilder.get();
         ctx.addParameterValues("fetch.group", "memberUsers");
+        ctx.addParameterValues("fetch.group", "memberGroups");
         return MarshallerHelper.objectToJson(group, ctx);
     }
 

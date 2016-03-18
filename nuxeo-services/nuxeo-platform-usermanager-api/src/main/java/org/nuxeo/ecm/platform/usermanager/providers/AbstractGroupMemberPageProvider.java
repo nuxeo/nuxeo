@@ -54,7 +54,10 @@ public abstract class AbstractGroupMemberPageProvider<T> extends AbstractPagePro
         if (currentPage == null) {
             currentPage = new ArrayList<T>();
             NuxeoGroup group = (NuxeoGroup) getParameters()[0];
-            String query = (String) getParameters()[1];
+            String query = null;
+            if (getParameters().length > 1) {
+                query = (String) getParameters()[1];
+            }
             List<String> members = getMembers(group);
 
             // remove entries not starting with our query
