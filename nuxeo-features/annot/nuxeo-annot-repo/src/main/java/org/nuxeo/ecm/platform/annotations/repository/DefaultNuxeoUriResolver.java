@@ -56,16 +56,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
 
     public URI getSearchURI(URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
-        URI translatedUri = null;
-        try (CoreSession session = CoreInstance.openCoreSession(null)) {
-            DocumentRef idRef = view.getDocumentLocation().getIdRef();
-            if (idRef == null) {
-                DocumentModel docModel = session.getDocument(view.getDocumentLocation().getDocRef());
-                idRef = docModel.getRef();
-            }
-            translatedUri = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
-        }
-        return translatedUri;
+        return getGraphURIFromDocumentView(view);
     }
 
     public URI translateFromGraphURI(URI uri, String baseUrl) {
@@ -92,16 +83,19 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         if (view == null) {// not a nuxeo uri
             return uri;
         }
-        URI result;
-        try (CoreSession session = CoreInstance.openCoreSession(null)) {
-            DocumentRef idRef = view.getDocumentLocation().getIdRef();
+        return getGraphURIFromDocumentView(view);
+    }
+
+    protected URI getGraphURIFromDocumentView(DocumentView view) {
+        DocumentLocation docLoc = view.getDocumentLocation();
+        try (CoreSession session = CoreInstance.openCoreSession(docLoc.getServerName())) {
+            DocumentRef idRef = docLoc.getIdRef();
             if (idRef == null) {
-                DocumentModel docModel = session.getDocument(view.getDocumentLocation().getDocRef());
+                DocumentModel docModel = session.getDocument(docLoc.getDocRef());
                 idRef = docModel.getRef();
             }
-            result = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
+            return translator.getUriFromDocumentView(docLoc.getServerName(), idRef);
         }
-        return result;
     }
 
     public String getBaseUrl(URI uri) {
