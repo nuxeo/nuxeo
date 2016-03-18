@@ -92,6 +92,7 @@
         styleClass="button" immediate="true"
         actionListener="#{chainSelectActions.add}"
         render="#{widget.id}_status #{widget.id}_message"
+        status="#{widget.id}_ajax_status"
         id="#{widget.id}_add" />
       <br />
       <nxdir:chainSelectStatus display="value"
@@ -102,6 +103,7 @@
           <a4j:commandButton
             actionListener="#{chainSelectActions.delete}"
             execute="@this" render="#{widget.id}_status"
+            status="#{widget.id}_ajax_status"
             image="/icons/toggle_minus.png"
             id="#{widget.id}_delete" />
         </f:facet>
@@ -110,6 +112,12 @@
   </a4j:region>
   <h:message styleClass="errorMessage" for="#{widget.id}_editselect"
     id="#{widget.id}_message" />
+
+  <a4j:status name="#{widget.id}_ajax_status">
+    <f:facet name="start">
+      <h:graphicImage value="/img/standart_waiter.gif" />
+    </f:facet>
+  </a4j:status>
 
 </c:if>
 </f:subview>
