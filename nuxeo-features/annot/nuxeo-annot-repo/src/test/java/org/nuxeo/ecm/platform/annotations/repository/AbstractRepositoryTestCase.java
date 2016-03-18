@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  *
  * Contributors:
  *     Alexandre Russel
- *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.annotations.repository;
 
 import static org.junit.Assert.assertEquals;
@@ -39,6 +36,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
@@ -57,6 +55,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(AnnotationFeature.class)
 public abstract class AbstractRepositoryTestCase {
+
     protected final AnnotationManager manager = new AnnotationManager();
 
     protected URI uri;
@@ -88,47 +87,65 @@ public abstract class AbstractRepositoryTestCase {
     }
 
     protected void setUpRepository() throws Exception {
-        // create structure
-        assertNotNull(session);
-        DocumentModel root = session.getRootDocument();
-        assertNotNull(root);
-        DocumentModel model = session.createDocumentModel(root.getPathAsString(), "1", "File");
-        DocumentModel sectionModel = session.createDocumentModel(root.getPathAsString(), "2", "Section");
-        assertNotNull(sectionModel);
-        DocumentModel section = session.createDocument(sectionModel);
-        assertNotNull(section);
-        DocumentModel section1Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
-        DocumentModel section1 = session.createDocument(section1Model);
-        assertNotNull(section1);
-        DocumentModel section2Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
-        DocumentModel section2 = session.createDocument(section2Model);
-        assertNotNull(section2);
-        DocumentModel section3Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
-        DocumentModel section3 = session.createDocument(section3Model);
-        assertNotNull(section3);
-        DocumentModel doc = session.createDocument(model);
-        assertNotNull(doc);
-        doc.setPropertyValue("dc:description", null); // dirty it
-        session.saveDocument(doc);
-        // create proxies
-        session.publishDocument(doc, section1);
-        doc.setPropertyValue("dc:description", ""); // dirty it
-        session.saveDocument(doc);
-        session.publishDocument(doc, section2);
-        doc.setPropertyValue("dc:description", null); // dirty it
-        session.saveDocument(doc);
-        session.publishDocument(doc, section3);
-        session.save();
-        List<DocumentModel> l = session.getVersions(doc.getRef());
-        assertFalse(doc.isVersion());
-        assertEquals(3, l.size());
-        List<DocumentModel> proxies = session.getProxies(doc.getRef(), null);
-        assertNotNull(proxies);
-        assertEquals(3, proxies.size());
+        uri = setUpRepository(session);
+    }
+
+    /**
+     * Set up repository with the input core session and return the URI of created document.
+     *
+     * @param session the session to initialize
+     * @return the URI of created document
+     */
+    protected URI setUpRepository(CoreSession session) throws Exception {
+        PathRef rootRef = new PathRef("/");
+        String file1Name = "1";
+        DocumentModel doc;
+        if (session.hasChild(rootRef, file1Name)) {
+            doc = session.getChild(rootRef, file1Name);
+        } else {
+            // create structure
+            assertNotNull(session);
+            DocumentModel root = session.getRootDocument();
+            assertNotNull(root);
+            DocumentModel model = session.createDocumentModel(root.getPathAsString(), file1Name, "File");
+            DocumentModel sectionModel = session.createDocumentModel(root.getPathAsString(), "2", "Section");
+            assertNotNull(sectionModel);
+            DocumentModel section = session.createDocument(sectionModel);
+            assertNotNull(section);
+            DocumentModel section1Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
+            DocumentModel section1 = session.createDocument(section1Model);
+            assertNotNull(section1);
+            DocumentModel section2Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
+            DocumentModel section2 = session.createDocument(section2Model);
+            assertNotNull(section2);
+            DocumentModel section3Model = session.createDocumentModel(section.getPathAsString(), "3", "Folder");
+            DocumentModel section3 = session.createDocument(section3Model);
+            assertNotNull(section3);
+            doc = session.createDocument(model);
+            assertNotNull(doc);
+            doc.setPropertyValue("dc:description", null); // dirty it
+            session.saveDocument(doc);
+            // create proxies
+            session.publishDocument(doc, section1);
+            doc.setPropertyValue("dc:description", ""); // dirty it
+            session.saveDocument(doc);
+            session.publishDocument(doc, section2);
+            doc.setPropertyValue("dc:description", null); // dirty it
+            session.saveDocument(doc);
+            session.publishDocument(doc, section3);
+            session.save();
+            List<DocumentModel> l = session.getVersions(doc.getRef());
+            assertFalse(doc.isVersion());
+            assertEquals(3, l.size());
+            List<DocumentModel> proxies = session.getProxies(doc.getRef(), null);
+            assertNotNull(proxies);
+            assertEquals(3, proxies.size());
+        }
         String url = viewCodecManager.getUrlFromDocumentView(new DocumentViewImpl(doc), true, "http://localhost/nuxeo/");
         assertNotNull(url);
-        uri = new URI(url.toString());
+        URI uri = new URI(url);
         nextTransaction();
+        return uri;
     }
 
     protected Annotation getAnnotation(String url, int x) throws IOException {
