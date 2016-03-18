@@ -17,7 +17,8 @@
     <a4j:commandLink immediate="true"
       actionListener="#{editableListBean.performAction}"
       id="#{widget.id}_delete" render="#{widget.id}_panel"
-      bypassUpdates="true">
+      bypassUpdates="true"
+      status="#{widget.id}_status">
       <h:graphicImage value="/icons/delete.png" />
       <f:param name="for" value="#{forComponentId}" />
       <f:param name="index" value="#{model.rowIndex}" />
@@ -29,7 +30,8 @@
     <a4j:commandLink immediate="true"
       actionListener="#{editableListBean.performAction}"
       id="#{widget.id}_move_down" render="#{widget.id}_panel"
-      bypassUpdates="true" rendered="#{model.rowIndex != model.rowCount - 1}">
+      bypassUpdates="true" rendered="#{model.rowIndex != model.rowCount - 1}"
+      status="#{widget.id}_status">
       <h:graphicImage value="/icons/go_down.png"
         styleClass="moveDownBtn" />
       <f:param name="for" value="#{forComponentId}" />
@@ -42,7 +44,8 @@
     <a4j:commandLink immediate="true"
       actionListener="#{editableListBean.performAction}"
       id="#{widget.id}_move_up" render="#{widget.id}_panel"
-      bypassUpdates="true" rendered="#{model.rowIndex != 0}">
+      bypassUpdates="true" rendered="#{model.rowIndex != 0}"
+      status="#{widget.id}_status">
       <h:graphicImage value="/icons/go_up.png"
         styleClass="moveUpBtn" />
       <f:param name="for" value="#{forComponentId}" />
