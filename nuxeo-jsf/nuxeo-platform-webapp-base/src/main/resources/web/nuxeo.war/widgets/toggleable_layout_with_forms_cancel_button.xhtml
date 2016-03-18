@@ -19,7 +19,8 @@
         <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
         <f:ajax execute="@this"
           render=":#{widgetPanelComponent.clientId}"
-          listener="#{selectionActions.setStaticValue}" />
+          listener="#{selectionActions.setStaticValue}"
+          status="#{widget.id}_#{idPrefix}cancelToggleAction_ajax_status" />
       </h:commandButton>
     </c:when>
 
@@ -34,7 +35,8 @@
         <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
         <f:ajax execute="@this"
           render=":#{widgetPanelComponent.clientId}"
-          listener="#{selectionActions.setStaticValue}" />
+          listener="#{selectionActions.setStaticValue}"
+          status="#{widget.id}_#{idPrefix}cancelToggleAction_ajax_status" />
       </h:commandLink>
     </c:when>
 
@@ -47,7 +49,8 @@
         <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
         <f:ajax execute="@this"
           render=":#{widgetPanelComponent.clientId}"
-          listener="#{selectionActions.setStaticValue}" />
+          listener="#{selectionActions.setStaticValue}"
+          status="#{widget.id}_#{idPrefix}cancelToggleAction_ajax_status" />
       </h:commandLink>
     </c:when>
 
@@ -64,10 +67,17 @@
         <f:attribute name="targetComponentId" value="#{modeValueHolderId}" />
         <f:ajax execute="@this"
           render=":#{widgetPanelComponent.clientId}"
-          listener="#{selectionActions.setStaticValue}" />
+          listener="#{selectionActions.setStaticValue}"
+          status="#{widget.id}_#{idPrefix}cancelToggleAction_ajax_status" />
       </h:commandLink>
     </c:otherwise>
 
   </c:choose>
+
+  <a4j:status name="#{widget.id}_#{idPrefix}cancelToggleAction_ajax_status">
+    <f:facet name="start">
+      <h:graphicImage value="/img/standart_waiter.gif" />
+    </f:facet>
+  </a4j:status>
 
 </c:if>
