@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,13 @@
  * Contributors:
  *     Alexandre Russel
  *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.annotations.repository;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -46,8 +42,6 @@ public class DefaultNuxeoUriResolver implements UriResolver {
 
     private static final String NUXEO = VirtualHostHelper.getContextPathProperty() + "/";
 
-    private static final Log log = LogFactory.getLog(DefaultNuxeoUriResolver.class);
-
     private final URNDocumentViewTranslator translator = new URNDocumentViewTranslator();
 
     private DocumentViewCodecManager viewCodecManager;
@@ -58,16 +52,14 @@ public class DefaultNuxeoUriResolver implements UriResolver {
 
     public URI getSearchURI(URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
-        URI translatedUri = null;
         try (CoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentRef idRef = view.getDocumentLocation().getIdRef();
             if (idRef == null) {
                 DocumentModel docModel = session.getDocument(view.getDocumentLocation().getDocRef());
                 idRef = docModel.getRef();
             }
-            translatedUri = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
+            return translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
         }
-        return translatedUri;
     }
 
     public URI translateFromGraphURI(URI uri, String baseUrl) {
@@ -77,7 +69,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
             return uri;
         }
         String url = viewCodecManager.getUrlFromDocumentView(view, true, baseUrl);
-        URI u = null;
+        URI u;
         try {
             u = new URI(url);
         } catch (URISyntaxException e) {
@@ -94,16 +86,14 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         if (view == null) {// not a nuxeo uri
             return uri;
         }
-        URI result;
         try (CoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentRef idRef = view.getDocumentLocation().getIdRef();
             if (idRef == null) {
                 DocumentModel docModel = session.getDocument(view.getDocumentLocation().getDocRef());
                 idRef = docModel.getRef();
             }
-            result = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
+            return translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
         }
-        return result;
     }
 
     public String getBaseUrl(URI uri) {
@@ -117,7 +107,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
     }
 
     public DocumentRef getDocumentRef(URI uri) {
-        DocumentView view = null;
+        DocumentView view;
         if (translator.isNuxeoUrn(uri)) {
             view = translator.getDocumentViewFromUri(uri);
         } else {
