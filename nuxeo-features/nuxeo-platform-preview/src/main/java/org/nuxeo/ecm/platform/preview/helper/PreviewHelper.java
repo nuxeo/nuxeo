@@ -15,7 +15,6 @@
 
 package org.nuxeo.ecm.platform.preview.helper;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -114,8 +113,8 @@ public class PreviewHelper {
      */
     public static String getViewerURL(DocumentModel doc, String xpath, Blob blob, String baseURL) {
         baseURL = baseURL.endsWith("/") ? baseURL.substring(0, baseURL.length() - 1) : baseURL;
-        String fileURL = String.format("%s/api/v1/id/%s/@blob/%s", baseURL, doc.getId(),
-            isBlobHolder(doc, xpath) ? DownloadService.BLOBHOLDER_0 : xpath);
+        String fileURL = String.format("%s/api/v1/repo/%s/id/%s/@blob/%s", baseURL, doc.getRepositoryName(),
+                doc.getId(), isBlobHolder(doc, xpath) ? DownloadService.BLOBHOLDER_0 : xpath);
         StringBuilder sb = new StringBuilder();
         sb.append("viewer/web/viewer.html?file=");
         sb.append(fileURL);
