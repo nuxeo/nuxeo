@@ -44,7 +44,10 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
@@ -492,6 +495,33 @@ public class TestMemoryDirectory extends NXRuntimeTestCase {
         orderBy.put("a", "asc");
         entries = dir.query(filter, fulltext, orderBy);
         assertEquals(Arrays.asList("1", "2"), entryIds(entries));
+    }
+
+    @Test
+    public void testServiceUnregistration() throws Exception {
+        MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
+        descr.name = "mydir";
+        descr.schemaName = SCHEMA_NAME;
+        descr.idField = "i";
+        descr.passwordField = "pw";
+        descr.schemaSet = new HashSet<>(Arrays.asList("i"));
+
+        deployBundle("org.nuxeo.ecm.directory");
+        DirectoryService service = Framework.getService(DirectoryService.class);
+        service.registerDirectoryDescriptor(descr);
+
+        Directory dir = service.getDirectory("mydir");
+        assertNotNull(dir);
+        List<Directory> dirs = service.getDirectories();
+        assertEquals(1, dirs.size());
+        assertNotNull(dirs.get(0));
+        assertEquals(dir, dirs.get(0));
+
+        service.unregisterDirectoryDescriptor(descr);
+        dir = service.getDirectory("mydir");
+        assertNull(dir);
+        dirs = service.getDirectories();
+        assertEquals(0, dirs.size());
     }
 
 }

@@ -90,7 +90,11 @@ public class DirectoryRegistry {
                 }
             }
         }
-        descriptors.put(id, contrib);
+        if (contrib == null) {
+            descriptors.remove(id);
+        } else {
+            descriptors.put(id, contrib);
+        }
     }
 
     /**
