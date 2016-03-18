@@ -49,18 +49,18 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Operation to trigger a Hot reload. You must be an administrator to trigger it.
+ * Operation to trigger a Hot reload of the Studio Snapshot package. You must be an administrator to trigger it.
  *
  * @since 8.2
  */
-@Operation(id = HotReload.ID, category = Constants.CAT_SERVICES, label = "Hot Reload", description = "Updates Studio snapshot project.")
-public class HotReload {
+@Operation(id = HotReloadStudioSnapshot.ID, category = Constants.CAT_SERVICES, label = "Hot Reload Studio Snapshot Package", description = "Updates Studio project with latest snapshot.")
+public class HotReloadStudioSnapshot {
 
-    public static final String ID = "Service.HotReload";
+    public static final String ID = "Service.HotReloadStudioSnapshot";
 
     protected static boolean updateInProgress = false;
 
-    private static final Log log = LogFactory.getLog(HotReload.class);
+    private static final Log log = LogFactory.getLog(HotReloadStudioSnapshot.class);
 
     @Context
     protected CoreSession session;
