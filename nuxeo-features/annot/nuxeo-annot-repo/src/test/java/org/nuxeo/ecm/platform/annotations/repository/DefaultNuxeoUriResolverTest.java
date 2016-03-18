@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +33,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
@@ -65,10 +67,41 @@ public class DefaultNuxeoUriResolverTest extends AbstractRepositoryTestCase {
     }
 
     @Test
-    public void testGetDocumentRef() {
+    public void testGetDocumentRefWithURI() {
+        testGetDocumentRef(uri);
+    }
+
+    @Test
+    public void testGetDocumentRefWithURN() {
+        testGetDocumentRef(toURN(uri));
+    }
+
+    @Test
+    public void testGetDocumentRefWithURIAndSecondRepo() {
+        testGetDocumentRef(uriSecondRepo);
+    }
+
+    @Test
+    public void testGetDocumentRefWithURNAndSecondRepo() {
+        testGetDocumentRef(toURN(uriSecondRepo));
+    }
+
+    private void testGetDocumentRef(URI uri) {
         assertNotNull(uri);
         DocumentRef ref = resolver.getDocumentRef(uri);
         assertNotNull(ref);
+        if (ref instanceof IdRef) {
+            String uriString = uri.toString();
+            char separator;
+            if (uriString.startsWith("urn:")) {
+                separator = ':';
+            } else {
+                separator = '/';
+            }
+            assertEquals(uriString.substring(uriString.lastIndexOf(separator) + 1), ref.reference());
+        } else if (ref instanceof PathRef) {
+            assertEquals("/1", ref.reference());
+        }
     }
 
     @Test
@@ -109,7 +142,19 @@ public class DefaultNuxeoUriResolverTest extends AbstractRepositoryTestCase {
 
     private void assertGraphURI(URI uri, URI graphUri) {
         assertNotNull(graphUri);
-        assertEquals(toStringURN(uri), graphUri.toString());
+        String[] uriSegments = uri.toString().split("/");
+        int nbSegments = uriSegments.length;
+        String ws = uriSegments[nbSegments - 2];
+        String docId = uriSegments[nbSegments - 1];
+        assertEquals(String.format("urn:nuxeo:%s:%s", ws, docId), graphUri.toString());
+    }
+
+    private URI toURN(URI uri) {
+        try {
+            return new URI(toStringURN(uri));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String toStringURN(URI uri) {

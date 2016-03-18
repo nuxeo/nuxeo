@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.annotations.repository;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -105,30 +106,21 @@ public class DefaultNuxeoUriResolver implements UriResolver {
     }
 
     public DocumentRef getDocumentRef(URI uri) {
-        DocumentView view;
-        if (translator.isNuxeoUrn(uri)) {
-            view = translator.getDocumentViewFromUri(uri);
-        } else {
-            view = viewCodecManager.getDocumentViewFromUrl(uri.toString(), true, getBaseUrl(uri));
-            if (view == null) {
-                return null;
-            }
-        }
-        DocumentLocation location = view.getDocumentLocation();
-        return location.getDocRef();
+        return retrieveDocumentLocation(uri).map(DocumentLocation::getDocRef).orElse(null);
     }
 
     public DocumentLocation getDocumentLocation(URI uri) {
-        DocumentView view;
+        return retrieveDocumentLocation(uri).orElse(null);
+    }
+
+    private Optional<DocumentLocation> retrieveDocumentLocation(URI uri) {
+        Optional<DocumentView> view;
         if (translator.isNuxeoUrn(uri)) {
-            view = translator.getDocumentViewFromUri(uri);
+            view = Optional.of(translator.getDocumentViewFromUri(uri));
         } else {
-            view = viewCodecManager.getDocumentViewFromUrl(uri.toString(), true, getBaseUrl(uri));
-            if (view == null) {
-                return null;
-            }
+            view = Optional.ofNullable(viewCodecManager.getDocumentViewFromUrl(uri.toString(), true, getBaseUrl(uri)));
         }
-        return view.getDocumentLocation();
+        return view.map(DocumentView::getDocumentLocation);
     }
 
     public URI getUri(DocumentView view, String baseUrl) throws URISyntaxException {
