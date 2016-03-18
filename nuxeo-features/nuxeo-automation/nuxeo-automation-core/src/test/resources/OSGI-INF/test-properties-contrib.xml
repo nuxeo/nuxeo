@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.test.ecm.core.automation.core.properties" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.automation.core.properties</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <documentation>
+      This is the test contribution for automation properties.
+
+      @since 8.2
+    </documentation>
+
+    <!-- Note that for backward compatibility this the opposite than on master. See NXP-19170. -->
+    <property name="nuxeo.automation.properties.value.trim">false</property>
+
+  </extension>
+
+</component>

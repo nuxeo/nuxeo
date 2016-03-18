@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.automation.core.properties" version="1.0.0">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <documentation>
+      This contribution is the default contribution for automation properties.
+
+      Here are more details about some of them:
+      <ul>
+        <li>
+          <strong>nuxeo.automation.properties.value.trim</strong>: properties are expected to be of the form "key=value". You may wish to trim the potential spaces around value (e.g.: "key = value", will result in "value" and not " value").
+        </li>
+      </ul>
+
+      @since 8.2
+    </documentation>
+
+    <!-- Note that for backward compatibility this the opposite than on master. See NXP-19170. -->
+    <property name="nuxeo.automation.properties.value.trim">true</property>
+
+  </extension>
+
+</component>
