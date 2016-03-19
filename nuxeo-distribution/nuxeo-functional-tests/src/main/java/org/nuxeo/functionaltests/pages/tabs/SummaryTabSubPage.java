@@ -181,24 +181,15 @@ public class SummaryTabSubPage extends AbstractPage {
      * @since 8.3
      */
     public boolean isPublished() {
-        try {
-            publicationBlock.findElement(By.xpath(".//*[contains(text(),'This document is published.')]"));
-            return true;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
+        return publicationBlock.getText().contains("This document is published.");
     }
 
     /**
      * @since 8.3
      */
     public boolean isAwaitingPublication() {
-        try {
-            publicationBlock.findElement(By.xpath("//*[contains(text(),'This document is waiting for a publication approval.')]"));
-            return true;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
+        return publicationBlock.getText().contains("This document is waiting for a publication approval.");
+
     }
 
     /**
