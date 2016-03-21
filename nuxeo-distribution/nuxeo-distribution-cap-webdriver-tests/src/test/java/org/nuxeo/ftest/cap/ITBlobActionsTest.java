@@ -54,7 +54,7 @@ public class ITBlobActionsTest extends AbstractTest {
 
     public final static String DOCUMENT_DESC = "Document Test Description";
 
-    public static final String PREVIEW_FILE_REGEX = "http://.*/api/v1/id/.*/@blob/blobholder:0";
+    public static final String PREVIEW_FILE_REGEX = "http://.*/api/v1/repo/.*/id/.*/@blob/blobholder:0";
 
     @Test
     public void testBlobPreviewAction() throws Exception {
