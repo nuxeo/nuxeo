@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:ecm="http://www.nuxeo.org/ecm/schemas/ecm/" xmlns:ml="http://www.nuxeo.org/ecm/schemas/ml/">
+  <ecm:id xsi:type="xs:string">ID</ecm:id>
+  <nbValues xsi:type="xs:long">2</nbValues>
+  <values>
+    <ml:item xsi:type="xs:long">3</ml:item>
+    <ml:item xsi:type="xs:long">4</ml:item>
+  </values>
+</document>

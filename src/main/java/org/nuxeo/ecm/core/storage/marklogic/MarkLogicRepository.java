@@ -25,7 +25,11 @@ import java.util.Set;
 
 import javax.resource.spi.ConnectionManager;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -34,6 +38,10 @@ import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 
+import com.marklogic.client.DatabaseClient;
+import com.marklogic.client.DatabaseClientFactory;
+import com.marklogic.client.DatabaseClientFactory.Authentication;
+
 /**
  * MarkLogic implementation of a {@link Repository}.
  *
@@ -41,8 +49,37 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
  */
 public class MarkLogicRepository extends DBSRepositoryBase {
 
+    private static final Log log = LogFactory.getLog(MarkLogicRepository.class);
+
+    public static final String DB_DEFAULT = "nuxeo";
+
+    protected DatabaseClient markLogicClient;
+
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor.getFulltextDescriptor());
+        markLogicClient = newMarkLogicClient(descriptor);
+    }
+
+    @Override
+    public void shutdown() {
+        super.shutdown();
+        markLogicClient.release();
+    }
+
+    // used also by unit tests
+    public static DatabaseClient newMarkLogicClient(MarkLogicRepositoryDescriptor descriptor) {
+        String host = descriptor.host;
+        Integer port = descriptor.port;
+        if (StringUtils.isBlank(host) || port == null) {
+            throw new NuxeoException("Missing <host> or <port> in MarkLogic repository descriptor");
+        }
+        String dbname = StringUtils.defaultIfBlank(descriptor.dbname, DB_DEFAULT);
+        String user = descriptor.user;
+        String password = descriptor.password;
+        if (StringUtils.isNotBlank(user) && StringUtils.isNotBlank(password)) {
+            return DatabaseClientFactory.newClient(host, port, dbname, user, password, Authentication.DIGEST);
+        }
+        return DatabaseClientFactory.newClient(host, port, dbname);
     }
 
     @Override
