@@ -64,10 +64,6 @@
           queries on this directory should return; if there are more
           results than this, an exception will be raised.
         </li>
-        <li>
-          init-dependencies - a list of directories that should be
-          initialized before this one
-        </li>
       </ul>
       The references tag is used to define relations between
       directories. (TODO: describe the references types.)

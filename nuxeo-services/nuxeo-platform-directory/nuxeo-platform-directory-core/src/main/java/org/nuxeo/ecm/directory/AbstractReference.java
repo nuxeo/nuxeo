@@ -31,8 +31,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractReference implements Reference, Cloneable {
 
-    protected DirectoryServiceImpl directoryService;
-
     protected String sourceDirectoryName;
 
     protected Directory sourceDirectory;
@@ -51,7 +49,7 @@ public abstract class AbstractReference implements Reference, Cloneable {
     @Override
     public Directory getSourceDirectory() throws DirectoryException {
         if (sourceDirectory == null) {
-            sourceDirectory = getDirectoryService().getDirectory(sourceDirectoryName);
+            sourceDirectory = Framework.getService(DirectoryService.class).getDirectory(sourceDirectoryName);
         }
         return sourceDirectory;
     }
@@ -65,7 +63,7 @@ public abstract class AbstractReference implements Reference, Cloneable {
     @Override
     public Directory getTargetDirectory() throws DirectoryException {
         if (targetDirectory == null) {
-            targetDirectory = getDirectoryService().getDirectory(targetDirectoryName);
+            targetDirectory = Framework.getService(DirectoryService.class).getDirectory(targetDirectoryName);
         }
         return targetDirectory;
     }
@@ -74,13 +72,6 @@ public abstract class AbstractReference implements Reference, Cloneable {
     public void setTargetDirectoryName(String targetDirectoryName) {
         targetDirectory = null;
         this.targetDirectoryName = targetDirectoryName;
-    }
-
-    protected DirectoryServiceImpl getDirectoryService() {
-        if (directoryService == null) {
-            directoryService = (DirectoryServiceImpl) Framework.getRuntime().getComponent(DirectoryService.NAME);
-        }
-        return directoryService;
     }
 
     /**

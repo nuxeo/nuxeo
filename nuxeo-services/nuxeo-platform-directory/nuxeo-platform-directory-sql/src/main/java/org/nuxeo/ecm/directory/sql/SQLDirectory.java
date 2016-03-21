@@ -44,12 +44,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.directory.AbstractDirectory;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
@@ -171,17 +167,6 @@ public class SQLDirectory extends AbstractDirectory {
         Connection sqlConnection = getConnection();
         try {
             dialect = Dialect.createDialect(sqlConnection, null);
-
-            if (descriptor.initDependencies != null) {
-                // initialize dependent directories first
-                final RuntimeService runtime = Framework.getRuntime();
-                DirectoryServiceImpl directoryService = (DirectoryServiceImpl) runtime.getComponent(DirectoryService.NAME);
-                for (String dependency : descriptor.initDependencies) {
-                    log.debug("initializing dependencies first: " + dependency);
-                    Directory dir = directoryService.getDirectory(dependency);
-                    dir.getName();
-                }
-            }
             // setup table and fields maps
             table = SQLHelper.addTable(descriptor.tableName, dialect, useNativeCase());
             SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);

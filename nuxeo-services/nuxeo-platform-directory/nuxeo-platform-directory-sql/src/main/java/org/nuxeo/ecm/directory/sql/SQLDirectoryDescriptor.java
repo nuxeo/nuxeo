@@ -69,9 +69,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     @XNode("dbPassword")
     public String dbPassword;
 
-    @XNodeList(value = "init-dependencies/dependency", type = ArrayList.class, componentType = String.class)
-    public List<String> initDependencies;
-
     @XNode("dataFile")
     public String dataFileName;
 
@@ -283,9 +280,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
         if (other.dbPassword != null) {
             dbPassword = other.dbPassword;
         }
-        if (other.initDependencies != null && other.initDependencies.size() != 0) {
-            initDependencies = other.initDependencies;
-        }
         if (other.dataFileName != null) {
             dataFileName = other.dataFileName;
         }
@@ -323,9 +317,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     public SQLDirectoryDescriptor clone() {
         SQLDirectoryDescriptor clone = (SQLDirectoryDescriptor) super.clone();
         // basic fields are already copied by super.clone()
-        if (initDependencies != null) {
-            clone.initDependencies = new ArrayList<>(initDependencies);
-        }
         if (tableReferences != null) {
             clone.tableReferences = new TableReference[tableReferences.length];
             for (int i = 0; i < tableReferences.length; i++) {

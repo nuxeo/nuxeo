@@ -29,10 +29,6 @@
           <dataFile>setup-hsqldb.csv</dataFile>
           <dataFileCharacterSeparator>,</dataFileCharacterSeparator>
           <querySizeLimit>1000</querySizeLimit>
-          <init-dependencies>
-            <dependency>dir1</dependency>
-            <dependency>dir2</dependency>
-          </init-dependencies>
           <references>
             <tableReference field="groups" directory="groupDirectory"
               table="user2group" sourceColumn="userId" targetColumn="groupId"
@@ -122,11 +118,6 @@
           this directory should return; if there are more
           results than this, an
           exception will be raised.
-        </li>
-        <li>
-          init-dependencies - a list of directories that should be
-          initialized
-          before this one
         </li>
         <li>
           nativeCase - false if table and column names should be used exactly

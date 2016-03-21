@@ -27,16 +27,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.DirectoryException;
-import org.nuxeo.ecm.directory.DirectoryFactory;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.runtime.model.ComponentName;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
 public interface DirectoryService {
-
-    ComponentName NAME = new ComponentName("org.nuxeo.ecm.directory.DirectoryServiceImpl");
 
     /**
      * Gets the directory ids.
