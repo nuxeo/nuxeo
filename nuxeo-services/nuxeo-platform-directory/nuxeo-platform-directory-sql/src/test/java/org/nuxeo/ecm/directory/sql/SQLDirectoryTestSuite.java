@@ -51,11 +51,10 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-@Ignore
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @LocalDeploy({ "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-bundle.xml" })
-public class SQLDirectoryTestSuite {
+public abstract class SQLDirectoryTestSuite {
 
     protected static final String USER_DIR = "userDirectory";
 

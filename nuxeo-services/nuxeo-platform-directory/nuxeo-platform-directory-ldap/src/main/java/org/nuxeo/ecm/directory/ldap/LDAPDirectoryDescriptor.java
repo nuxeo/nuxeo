@@ -78,8 +78,6 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     public Integer searchScope;
 
-    public String substringMatchType;
-
     @XNode("creationBaseDn")
     public String creationBaseDn;
 
@@ -247,26 +245,6 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
         return searchScope == null ? DEFAULT_SEARCH_SCOPE : searchScope.intValue();
     }
 
-    public String getSubstringMatchType() {
-        return substringMatchType;
-    }
-
-    @XNode("substringMatchType")
-    public void setSubstringMatchType(String substringMatchType) {
-        if (substringMatchType == null) {
-            // default behaviour
-            this.substringMatchType = LDAPSubstringMatchType.SUBINITIAL;
-        } else if (LDAPSubstringMatchType.SUBINITIAL.equals(substringMatchType)
-                || LDAPSubstringMatchType.SUBFINAL.equals(substringMatchType)
-                || LDAPSubstringMatchType.SUBANY.equals(substringMatchType)) {
-            this.substringMatchType = substringMatchType;
-        } else {
-            log.error("Invalid substring match type: " + substringMatchType
-                    + ". Valid options: subinitial, subfinal, subany");
-            this.substringMatchType = LDAPSubstringMatchType.SUBINITIAL;
-        }
-    }
-
     public String getServerName() {
         return serverName;
     }
@@ -348,7 +326,9 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
     @Override
     public void merge(BaseDirectoryDescriptor other) {
         super.merge(other);
-        merge((LDAPDirectoryDescriptor) other);
+        if (other instanceof LDAPDirectoryDescriptor) {
+            merge((LDAPDirectoryDescriptor) other);
+        }
     }
 
     protected void merge(LDAPDirectoryDescriptor other) {
@@ -372,9 +352,6 @@ public class LDAPDirectoryDescriptor extends BaseDirectoryDescriptor {
         }
         if (other.searchScope != null) {
             searchScope = other.searchScope;
-        }
-        if (other.substringMatchType != null) {
-            substringMatchType = other.substringMatchType;
         }
         if (other.creationBaseDn != null) {
             creationBaseDn = other.creationBaseDn;

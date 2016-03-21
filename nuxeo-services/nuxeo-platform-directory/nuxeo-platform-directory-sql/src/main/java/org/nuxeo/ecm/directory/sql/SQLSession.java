@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.utils.SIDGenerator;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
@@ -88,7 +89,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     final Table table;
 
-    private final SQLDirectoryDescriptor.SubstringMatchType substringMatchType;
+    private final SubstringMatchType substringMatchType;
 
     String dataSourceName;
 

@@ -21,9 +21,6 @@
 
 package org.nuxeo.ecm.directory.sql;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
@@ -38,10 +35,6 @@ import org.nuxeo.ecm.directory.Reference;
 public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
 
     private static final Log log = LogFactory.getLog(SQLDirectoryDescriptor.class);
-
-    public enum SubstringMatchType {
-        subinitial, subfinal, subany
-    }
 
     public static final int QUERY_SIZE_LIMIT_DEFAULT = 0;
 
@@ -76,8 +69,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     public String dataFileCharacterSeparator = ",";
 
     public String createTablePolicy;
-
-    public SubstringMatchType substringMatchType;
 
     @XNode("autoincrementIdField")
     public Boolean autoincrementIdField;
@@ -168,19 +159,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
         this.createTablePolicy = createTablePolicy;
     }
 
-    @XNode("substringMatchType")
-    public void setSubstringMatchType(String substringMatchType) {
-        if (substringMatchType != null) {
-            try {
-                this.substringMatchType = Enum.valueOf(SubstringMatchType.class, substringMatchType);
-            } catch (IllegalArgumentException iae) {
-                log.error("Invalid substring match type: " + substringMatchType
-                        + ". Valid options: subinitial, subfinal, subany");
-                this.substringMatchType = SubstringMatchType.subinitial;
-            }
-        }
-    }
-
     public Reference[] getInverseReferences() {
         return inverseReferences;
     }
@@ -233,14 +211,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
         this.querySizeLimit = Integer.valueOf(querySizeLimit);
     }
 
-    public SubstringMatchType getSubstringMatchType() {
-        return substringMatchType == null ? SubstringMatchType.subinitial : substringMatchType;
-    }
-
-    public void setSubstringMatchType(SubstringMatchType substringMatchType) {
-        this.substringMatchType = substringMatchType;
-    }
-
     public SQLStaticFilter[] getStaticFilters() {
         if (staticFilters == null) {
             return new SQLStaticFilter[0];
@@ -261,7 +231,9 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
     @Override
     public void merge(BaseDirectoryDescriptor other) {
         super.merge(other);
-        merge((SQLDirectoryDescriptor) other);
+        if (other instanceof SQLDirectoryDescriptor) {
+            merge((SQLDirectoryDescriptor) other);
+        }
     }
 
     protected void merge(SQLDirectoryDescriptor other) {
@@ -288,9 +260,6 @@ public class SQLDirectoryDescriptor extends BaseDirectoryDescriptor {
         }
         if (other.createTablePolicy != null) {
             createTablePolicy = other.createTablePolicy;
-        }
-        if (other.substringMatchType != null) {
-            substringMatchType = other.substringMatchType;
         }
         if (other.autoincrementIdField != null) {
             autoincrementIdField = other.autoincrementIdField;

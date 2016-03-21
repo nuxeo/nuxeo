@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.sql.storage.fromtemplate">
+
+  <!-- define the template first -->
+
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+
+    <directory name="template-default" template="true">
+      <dataSource>java:/nxsqldirectory</dataSource>
+      <autoincrementIdField>false</autoincrementIdField>
+      <createTablePolicy>always</createTablePolicy>
+      <querySizeLimit>100</querySizeLimit>
+    </directory>
+
+  </extension>
+
+  <!-- then define the actual directories -->
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="userDirectory" extends="template-default">
+      <schema>user</schema>
+      <table>users</table>
+      <idField>username</idField>
+      <passwordField>password</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+      <substringMatchType>subany</substringMatchType>
+      <!-- <dataFile>test-users.csv</dataFile> -->
+    </directory>
+
+    <directory name="groupDirectory" extends="template-default">
+      <schema>group</schema>
+      <table>groups</table>
+      <idField>groupname</idField>
+      <!-- <dataFile>test-groups.csv</dataFile> -->
+    </directory>
+
+  </extension>
+
+</component>

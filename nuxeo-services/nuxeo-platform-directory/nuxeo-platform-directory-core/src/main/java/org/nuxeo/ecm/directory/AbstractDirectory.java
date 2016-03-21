@@ -56,7 +56,7 @@ public abstract class AbstractDirectory implements Directory {
 
     protected AbstractDirectory(BaseDirectoryDescriptor descriptor) {
         this.descriptor = descriptor;
-        if (doSanityChecks()) {
+        if (!descriptor.template && doSanityChecks()) {
             if (StringUtils.isEmpty(descriptor.idField)) {
                 throw new DirectoryException("idField configuration is missing for directory: " + getName());
             }

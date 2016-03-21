@@ -39,7 +39,7 @@ import com.codahale.metrics.SharedMetricRegistries;
 @RunWith(FeaturesRunner.class)
 @Features(SQLDirectoryFeature.class)
 @Deploy("org.nuxeo.ecm.core.cache")
-public class TestNoCachedSQLDirectory extends TestSQLDirectory {
+public class TestNoCachedSQLDirectory extends SQLDirectoryTestSuite {
 
     @Test
     public void testGetWithNoCache() throws DirectoryException, Exception {

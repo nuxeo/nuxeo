@@ -75,6 +75,7 @@ import org.nuxeo.ecm.directory.EntryAdaptor;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.PasswordHelper;
 import org.nuxeo.ecm.directory.Reference;
+import org.nuxeo.ecm.directory.BaseDirectoryDescriptor.SubstringMatchType;
 
 /**
  * This class represents a session against an LDAPDirectory.
@@ -105,7 +106,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     protected final Map<String, Field> schemaFieldMap;
 
-    protected String substringMatchType;
+    protected SubstringMatchType substringMatchType;
 
     protected final String rdnAttribute;
 
@@ -134,10 +135,6 @@ public class LDAPSession extends BaseSession implements EntrySource {
     @Override
     public LDAPDirectory getDirectory() {
         return (LDAPDirectory) directory;
-    }
-
-    public void setSubStringMatchType(String type) {
-        substringMatchType = type;
     }
 
     public DirContext getContext() {
@@ -548,13 +545,16 @@ public class LDAPSession extends BaseSession implements EntrySource {
                 } else {
                     currentFilter.append(backendFieldName + "=");
                     if (fulltext.contains(fieldName)) {
-                        if (LDAPSubstringMatchType.SUBFINAL.equals(substringMatchType)) {
-                            currentFilter.append("*{" + index + "}");
-                        } else if (LDAPSubstringMatchType.SUBANY.equals(substringMatchType)) {
-                            currentFilter.append("*{" + index + "}*");
-                        } else {
-                            // default behavior: subinitial
+                        switch (substringMatchType) {
+                        case subinitial:
                             currentFilter.append("{" + index + "}*");
+                            break;
+                        case subfinal:
+                            currentFilter.append("*{" + index + "}");
+                            break;
+                        case subany:
+                            currentFilter.append("*{" + index + "}*");
+                            break;
                         }
                     } else {
                         currentFilter.append("{" + index + "}");

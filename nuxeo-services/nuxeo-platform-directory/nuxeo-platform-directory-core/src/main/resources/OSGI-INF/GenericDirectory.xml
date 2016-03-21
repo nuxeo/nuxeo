@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.GenericDirectory">
+
+  <require>org.nuxeo.ecm.directory.DirectoryServiceImpl</require>
+
+  <implementation class="org.nuxeo.ecm.directory.GenericDirectoryComponent" />
+
+  <documentation>
+    Registration of generic directories.
+  </documentation>
+
+  <extension-point name="directories">
+
+    <documentation>
+      Registration of generic directories. Generic directories are usable only as extensions to
+      other directories which have been defined as templates.
+
+      First, register a template directory:
+      <code>
+        <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
+          <directory name="template-dir" template="true">
+            <dataSource>java:/nxsqldirectory</dataSource>
+            <createTablePolicy>always</createTablePolicy>
+            <querySizeLimit>100</querySizeLimit>
+          </directory>
+        </extension>
+      </code>
+      Then use a generic directory to provide specific customizations:
+      <code>
+        <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+          <directory name="my-directory" extends="template-dir">
+            <schema>myschema</schema>
+            <table>mytable</table>
+            <idField>id</idField>
+            <passwordField>password</passwordField>
+            <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
+            <substringMatchType>subany</substringMatchType>
+            <cacheTimeout>3600</cacheTimeout>
+            <cacheMaxSize>1000</cacheMaxSize>
+            <!-- <dataFile>my-directory.csv</dataFile> -->
+          </directory>
+        </extension>
+      </code>
+    </documentation>
+
+    <object class="org.nuxeo.ecm.directory.BaseDirectoryDescriptor" />
+
+  </extension-point>
+
+</component>

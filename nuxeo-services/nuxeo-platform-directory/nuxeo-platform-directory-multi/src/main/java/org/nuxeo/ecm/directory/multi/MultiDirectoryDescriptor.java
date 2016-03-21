@@ -42,7 +42,9 @@ public class MultiDirectoryDescriptor extends BaseDirectoryDescriptor {
     @Override
     public void merge(BaseDirectoryDescriptor other) {
         super.merge(other);
-        merge((MultiDirectoryDescriptor) other);
+        if (other instanceof MultiDirectoryDescriptor) {
+            merge((MultiDirectoryDescriptor) other);
+        }
     }
 
     protected void merge(MultiDirectoryDescriptor other) {

@@ -19,6 +19,9 @@
  */
 package org.nuxeo.ecm.directory;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -31,17 +34,43 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject(value = "directory")
 public class BaseDirectoryDescriptor implements Cloneable {
 
+    private static final Log log = LogFactory.getLog(BaseDirectoryDescriptor.class);
+
+    /**
+     * How directory semi-"fulltext" searches are matched with a query string.
+     * <p>
+     * Used for SQL and LDAP directories.
+     *
+     * @since 8.2
+     */
+    public enum SubstringMatchType {
+        /** Matches initial substring. */
+        subinitial,
+        /** Matches final substring. */
+        subfinal,
+        /** Matches any substring. */
+        subany;
+    }
+
     public static final int CACHE_TIMEOUT_DEFAULT = 0;
 
     public static final int CACHE_MAX_SIZE_DEFAULT = 0;
 
     public static final boolean READ_ONLY_DEFAULT = false;
 
+    public static final SubstringMatchType SUBSTRING_MATCH_TYPE_DEFAULT = SubstringMatchType.subinitial;
+
     @XNode("@name")
     public String name;
 
     @XNode("@remove")
     public boolean remove;
+
+    @XNode("@template")
+    public boolean template;
+
+    @XNode("@extends")
+    public String extendz;
 
     @XNode("parentDirectory")
     public String parentDirectory;
@@ -82,6 +111,9 @@ public class BaseDirectoryDescriptor implements Cloneable {
     @XNode("negativeCaching")
     public Boolean negativeCaching;
 
+    @XNode("substringMatchType")
+    public String substringMatchType;
+
     public boolean isReadOnly() {
         return readOnly == null ? READ_ONLY_DEFAULT : readOnly.booleanValue();
     }
@@ -96,6 +128,18 @@ public class BaseDirectoryDescriptor implements Cloneable {
 
     public int getCacheMaxSize() {
         return cacheMaxSize == null ? CACHE_MAX_SIZE_DEFAULT : cacheMaxSize.intValue();
+    }
+
+    public SubstringMatchType getSubstringMatchType() {
+        if (StringUtils.isBlank(substringMatchType)) {
+            return SUBSTRING_MATCH_TYPE_DEFAULT;
+        }
+        try {
+            return SubstringMatchType.valueOf(substringMatchType);
+        } catch (IllegalArgumentException  e) {
+            log.error("Unknown value for <substringMatchType>: " + substringMatchType);
+            return SUBSTRING_MATCH_TYPE_DEFAULT;
+        }
     }
 
     /**
@@ -125,7 +169,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
     }
 
     public void merge(BaseDirectoryDescriptor other) {
-        remove = other.remove;
+        template = template || other.template;
 
         if (other.parentDirectory != null) {
             parentDirectory = other.parentDirectory;
@@ -166,13 +210,16 @@ public class BaseDirectoryDescriptor implements Cloneable {
         if (other.negativeCaching != null) {
             negativeCaching = other.negativeCaching;
         }
+        if (other.substringMatchType != null) {
+            substringMatchType = other.substringMatchType;
+        }
     }
 
     /**
      * Creates a new {@link Directory} instance from this {@link DirectoryDescriptor).
      */
     public Directory newDirectory() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Cannot be instantiated as Directory: " + getClass().getName());
     }
 
 }

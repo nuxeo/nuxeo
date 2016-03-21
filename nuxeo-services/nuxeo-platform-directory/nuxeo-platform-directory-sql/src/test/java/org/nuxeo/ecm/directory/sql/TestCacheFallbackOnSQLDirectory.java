@@ -44,7 +44,7 @@ import com.codahale.metrics.SharedMetricRegistries;
 @Features(SQLDirectoryFeature.class)
 @Deploy("org.nuxeo.ecm.core.cache")
 @LocalDeploy("org.nuxeo.ecm.directory.sql.tests:sql-directory-default-user-contrib.xml")
-public class TestCacheFallbackOnSQLDirectory extends TestSQLDirectory {
+public class TestCacheFallbackOnSQLDirectory extends SQLDirectoryTestSuite {
 
     @Test
     public void testGetFromCache() throws DirectoryException, Exception {
