@@ -1,0 +1,5 @@
+username, password, firstName, lastName, company, email
+"Administrator","Administrator",__NULL__,"","blabla","Administrator@example.com"
+"user_1","user_1","u1","u1","__NULL__","e@m"
+"user_2","user_2","u2","u2","__NULL__","e3@m"
+"user_3","user_3","u3","u3","__NULL__","e3@m"

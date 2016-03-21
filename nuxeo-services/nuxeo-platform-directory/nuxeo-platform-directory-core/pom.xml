@@ -36,6 +36,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-types-contrib</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.jmock</groupId>
       <artifactId>jmock-junit4</artifactId>
       <scope>test</scope>
