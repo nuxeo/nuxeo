@@ -382,6 +382,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         List<String> mailProperties = new ArrayList<>();
         mailProperties.add(String.format("mail.smtp.host = %s", "badHostName"));
         mailProperties.add(String.format("mail.smtp.port = %s", "2525"));
+        mailProperties.add(String.format("mail.smtp.connectiontimeout = %s", "1000"));
+        mailProperties.add(String.format("mail.smtp.timeout = %s", "1000"));
         FileUtils.writeLines(file, mailProperties);
 
         Document rootDoc = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
