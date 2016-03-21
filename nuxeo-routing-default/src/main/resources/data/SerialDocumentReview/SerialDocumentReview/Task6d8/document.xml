@@ -65,24 +65,6 @@
         <chain><![CDATA[terminateWorkflow]]></chain>
         <condition><![CDATA[NodeVariables["button"] == "validate" && WorkflowVariables["index"] == WorkflowVariables["participants"].length]]></condition>
         <name><![CDATA[sdr_finishTask6d8]]></name>
-        <path>
-          <pathpoint>
-            <y><![CDATA[0.0]]></y>
-            <x><![CDATA[0.0]]></x>
-          </pathpoint>
-          <pathpoint>
-            <y><![CDATA[201.0]]></y>
-            <x><![CDATA[0.0]]></x>
-          </pathpoint>
-          <pathpoint>
-            <y><![CDATA[201.0]]></y>
-            <x><![CDATA[180.0]]></x>
-          </pathpoint>
-          <pathpoint>
-            <y><![CDATA[280.0]]></y>
-            <x><![CDATA[180.0]]></x>
-          </pathpoint>
-        </path>
         <targetId><![CDATA[Task5c1]]></targetId>
         <label><![CDATA[sdr_finish]]></label>
       </transition>
@@ -96,19 +78,19 @@
             <x><![CDATA[0.0]]></x>
           </pathpoint>
           <pathpoint>
-            <y><![CDATA[180.0]]></y>
+            <y><![CDATA[125.0]]></y>
             <x><![CDATA[0.0]]></x>
           </pathpoint>
           <pathpoint>
-            <y><![CDATA[180.0]]></y>
-            <x><![CDATA[-203.0]]></x>
+            <y><![CDATA[125.0]]></y>
+            <x><![CDATA[-151.0]]></x>
           </pathpoint>
           <pathpoint>
-            <y><![CDATA[-40.0]]></y>
-            <x><![CDATA[-203.0]]></x>
+            <y><![CDATA[-76.0]]></y>
+            <x><![CDATA[-151.0]]></x>
           </pathpoint>
           <pathpoint>
-            <y><![CDATA[-40.0]]></y>
+            <y><![CDATA[-76.0]]></y>
             <x><![CDATA[20.0]]></x>
           </pathpoint>
           <pathpoint>
@@ -129,24 +111,24 @@
             <x><![CDATA[0.0]]></x>
           </pathpoint>
           <pathpoint>
-            <y><![CDATA[148.0]]></y>
+            <y><![CDATA[123.0]]></y>
             <x><![CDATA[0.0]]></x>
           </pathpoint>
           <pathpoint>
-            <y><![CDATA[148.0]]></y>
-            <x><![CDATA[237.0]]></x>
+            <y><![CDATA[123.0]]></y>
+            <x><![CDATA[190.0]]></x>
           </pathpoint>
           <pathpoint>
             <y><![CDATA[-30.0]]></y>
-            <x><![CDATA[237.0]]></x>
+            <x><![CDATA[190.0]]></x>
           </pathpoint>
           <pathpoint>
             <y><![CDATA[-30.0]]></y>
-            <x><![CDATA[360.0]]></x>
+            <x><![CDATA[380.0]]></x>
           </pathpoint>
           <pathpoint>
             <y><![CDATA[0.0]]></y>
-            <x><![CDATA[360.0]]></x>
+            <x><![CDATA[380.0]]></x>
           </pathpoint>
         </path>
         <targetId><![CDATA[Task542]]></targetId>
@@ -159,27 +141,27 @@
         <path>
           <pathpoint>
             <y><![CDATA[80.0]]></y>
+            <x><![CDATA[20.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[164.0]]></y>
+            <x><![CDATA[20.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[164.0]]></y>
+            <x><![CDATA[-125.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[-30.0]]></y>
+            <x><![CDATA[-125.0]]></x>
+          </pathpoint>
+          <pathpoint>
+            <y><![CDATA[-30.0]]></y>
             <x><![CDATA[0.0]]></x>
-          </pathpoint>
-          <pathpoint>
-            <y><![CDATA[148.0]]></y>
-            <x><![CDATA[0.0]]></x>
-          </pathpoint>
-          <pathpoint>
-            <y><![CDATA[148.0]]></y>
-            <x><![CDATA[-93.0]]></x>
-          </pathpoint>
-          <pathpoint>
-            <y><![CDATA[-19.0]]></y>
-            <x><![CDATA[-93.0]]></x>
-          </pathpoint>
-          <pathpoint>
-            <y><![CDATA[-19.0]]></y>
-            <x><![CDATA[40.0]]></x>
           </pathpoint>
           <pathpoint>
             <y><![CDATA[0.0]]></y>
-            <x><![CDATA[40.0]]></x>
+            <x><![CDATA[0.0]]></x>
           </pathpoint>
         </path>
         <targetId><![CDATA[Task6d8]]></targetId>

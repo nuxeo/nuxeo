@@ -75,14 +75,14 @@
         <path>
           <pathpoint>
             <y><![CDATA[0.0]]></y>
-            <x><![CDATA[160.0]]></x>
+            <x><![CDATA[180.0]]></x>
           </pathpoint>
           <pathpoint>
-            <y><![CDATA[20.0]]></y>
-            <x><![CDATA[160.0]]></x>
+            <y><![CDATA[24.0]]></y>
+            <x><![CDATA[180.0]]></x>
           </pathpoint>
           <pathpoint>
-            <y><![CDATA[20.0]]></y>
+            <y><![CDATA[24.0]]></y>
             <x><![CDATA[0.0]]></x>
           </pathpoint>
           <pathpoint>
