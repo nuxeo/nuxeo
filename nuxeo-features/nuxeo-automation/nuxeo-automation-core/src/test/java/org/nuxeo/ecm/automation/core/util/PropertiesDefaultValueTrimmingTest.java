@@ -29,7 +29,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
- * Default, value, without contribution. See {@link PropertiesValueTrimmingDefaultContributionTest}
+ * Default value, without contribution. See {@link PropertiesValueTrimmingDefaultContributionTest}
  *
  * @since 8.2
  */
@@ -40,7 +40,7 @@ public class PropertiesDefaultValueTrimmingTest extends PropertiesTestAbstract {
     @Test
     public void defaultValueTrimming() throws IOException {
         Boolean isTrimmed = Properties.isPropertyValueTrimmed();
-        assertThat(Properties.isPropertyValueTrimmed()).isFalse();
+        assertThat(isTrimmed).isFalse();
         loadProperties(isTrimmed);
     }
 

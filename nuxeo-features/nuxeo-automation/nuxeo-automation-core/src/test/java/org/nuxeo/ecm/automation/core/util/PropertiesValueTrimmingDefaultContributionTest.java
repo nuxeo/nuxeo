@@ -42,7 +42,7 @@ public class PropertiesValueTrimmingDefaultContributionTest extends PropertiesTe
     @Test
     public void loadProperties() throws IOException {
         Boolean isTrimmed = Properties.isPropertyValueTrimmed();
-        assertThat(Properties.isPropertyValueTrimmed()).isFalse();
+        assertThat(isTrimmed).isFalse();
         loadProperties(isTrimmed);
     }
 
