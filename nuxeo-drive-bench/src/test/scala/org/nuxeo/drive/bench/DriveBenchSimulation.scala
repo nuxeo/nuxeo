@@ -7,32 +7,24 @@ import io.gatling.http.Predef._
 
 class DriveBenchSimulation extends Simulation {
 
-  val url = System.getProperty("url", "http://localhost:8080/nuxeo")
-  val nbUsers = Integer.getInteger("users", 100)
-  val nbWriter = Integer.getInteger("writers", 10)
-  val myRamp = java.lang.Long.getLong("ramp", 10L)
-  val myDuration = java.lang.Long.getLong("duration", 60L)
-  val pollInterval = Integer.getInteger("pollInterval", 30)
-  val feederInterval = Integer.getInteger("feederInterval", 10)
-
   val httpProtocol = http
-    .baseURL(url)
+    .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .acceptEncodingHeader("identity")
     .connection("keep-alive")
     .disableCaching // disabling Etag cache since If-None-Modified on GetChangeSummary fails
 
-  val poll = scenario("Poll").during(myDuration) {
-    exec(PollChanges.run(pollInterval))
+  val poll = scenario("Poll").during(Parameters.getSimulationDuration(60)) {
+    exec(PollChanges.run(Parameters.getPollInterval(30)))
   }
 
-  val serverFeeder = scenario("Server Feeder").during(myDuration) {
-    exec(ServerFeeder.run(feederInterval))
+  val serverFeeder = scenario("Server Feeder").during(Parameters.getSimulationDuration(60)) {
+    exec(ServerFeeder.run(Parameters.getFeederInterval(10)))
   }
 
   setUp(
-    poll.inject(rampUsers(nbUsers).over(myRamp)),
-    serverFeeder.inject(rampUsers(nbWriter).over(myRamp)).exponentialPauses
+    poll.inject(rampUsers(Parameters.getConcurrentUsers(100)).over(Parameters.getRampDuration(10))),
+    serverFeeder.inject(rampUsers(Parameters.getConcurrentWriters(10)).over(Parameters.getRampDuration(10))).exponentialPauses
   ).protocols(httpProtocol)
 }

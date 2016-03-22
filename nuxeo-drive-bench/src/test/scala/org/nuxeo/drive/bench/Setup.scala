@@ -28,10 +28,9 @@ object Setup {
 }
 
 class SetupSimulation extends Simulation {
-  val url = System.getProperty("url", "http://localhost:8080/nuxeo")
 
   val httpProtocol = http
-    .baseURL(url)
+    .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
