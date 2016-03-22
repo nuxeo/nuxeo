@@ -54,7 +54,7 @@ final class MarkLogicStateSerializer {
         // Add namespaces
         root.addNamespace("xs", "http://www.w3.org/2001/XMLSchema");
         root.addNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        namespaces.forEach(namespace -> root.addNamespace(namespace, String.format(NAMESPACE_URI_FORMAT, namespace)));
+        addNamespace(root, namespaces);
         // Create document
         Document document = DocumentHelper.createDocument();
         document.setRootElement(root);
@@ -70,7 +70,7 @@ final class MarkLogicStateSerializer {
         return element;
     }
 
-    private static Optional<Element> serialize(String key, Object value, Set<String> namespaces) {
+    public static Optional<Element> serialize(String key, Object value, Set<String> namespaces) {
         Optional<Element> result;
         if (value == null) {
             result = Optional.empty();
@@ -104,6 +104,14 @@ final class MarkLogicStateSerializer {
             serialize(MarkLogicHelper.ARRAY_ITEM_KEY, object, namespaces).ifPresent(array::add);
         }
         return array;
+    }
+
+    public static void addNamespace(Element element, Iterable<String> namespaces) {
+        namespaces.forEach(namespace -> addNamespace(element, namespace));
+    }
+
+    public static void addNamespace(Element element, String namespace) {
+        element.addNamespace(namespace, String.format(NAMESPACE_URI_FORMAT, namespace));
     }
 
     private static Optional<String> getPrefix(String key) {

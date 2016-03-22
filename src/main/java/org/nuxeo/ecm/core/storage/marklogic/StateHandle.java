@@ -24,19 +24,21 @@ import com.google.common.base.Charsets;
 import com.marklogic.client.io.BaseHandle;
 import com.marklogic.client.io.Format;
 import com.marklogic.client.io.marker.ContentHandle;
+import com.marklogic.client.io.marker.XMLReadHandle;
+import com.marklogic.client.io.marker.XMLWriteHandle;
 
 /**
  * Handler to represent {@link State} content in MarkLogic for reading and writing.
  *
  * @since 8.3
  */
-class StateHandle extends BaseHandle<byte[], String> implements ContentHandle<State> {
+class StateHandle extends BaseHandle<byte[], String> implements ContentHandle<State>, XMLReadHandle, XMLWriteHandle {
 
     private State state;
 
     public StateHandle() {
         super();
-        super.setFormat(Format.JSON);
+        super.setFormat(Format.XML);
         setResendable(true);
     }
 

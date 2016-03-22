@@ -18,10 +18,17 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.resource.spi.ConnectionManager;
 
@@ -41,6 +48,9 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClientFactory.Authentication;
+import com.marklogic.client.document.DocumentPage;
+import com.marklogic.client.io.marker.StructureWriteHandle;
+import com.marklogic.client.query.QueryDefinition;
 
 /**
  * MarkLogic implementation of a {@link Repository}.
@@ -51,6 +61,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     private static final Log log = LogFactory.getLog(MarkLogicRepository.class);
 
+    private static final Function<String, String> ID_FORMATTER = id -> String.format("/%s.xml", id);
+
     public static final String DB_DEFAULT = "nuxeo";
 
     protected DatabaseClient markLogicClient;
@@ -58,6 +70,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     public MarkLogicRepository(ConnectionManager cm, MarkLogicRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor.getFulltextDescriptor());
         markLogicClient = newMarkLogicClient(descriptor);
+        initRepository();
     }
 
     @Override
@@ -82,9 +95,13 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         return DatabaseClientFactory.newClient(host, port, dbname);
     }
 
+    protected void initRepository() {
+        initRoot();
+    }
+
     @Override
     protected void initBlobsPaths() {
-        throw new IllegalStateException("Not implemented yet");
+        // throw new IllegalStateException("Not implemented yet");
     }
 
     @Override
@@ -94,17 +111,31 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public State readState(String id) {
-        throw new IllegalStateException("Not implemented yet");
+        if (log.isTraceEnabled()) {
+            log.trace("MarkLogic: READ " + id);
+        }
+        return markLogicClient.newXMLDocumentManager().read(ID_FORMATTER.apply(id), new StateHandle()).get();
     }
 
     @Override
     public List<State> readStates(List<String> ids) {
-        throw new IllegalStateException("Not implemented yet");
+        if (log.isTraceEnabled()) {
+            log.trace("MarkLogic: READ " + ids);
+        }
+        String[] markLogicIds = ids.stream().map(ID_FORMATTER).toArray(String[]::new);
+        DocumentPage page = markLogicClient.newXMLDocumentManager().read(markLogicIds);
+        return StreamSupport.stream(page.spliterator(), false)
+                            .map(document -> document.getContent(new StateHandle()).get())
+                            .collect(Collectors.toList());
     }
 
     @Override
     public void createState(State state) {
-        throw new IllegalStateException("Not implemented yet");
+        String id = state.get(KEY_ID).toString();
+        if (log.isTraceEnabled()) {
+            log.trace("MarkLogic: CREATE " + id + ": " + state);
+        }
+        markLogicClient.newXMLDocumentManager().write(ID_FORMATTER.apply(id), new StateHandle(state));
     }
 
     @Override
@@ -114,17 +145,30 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public void deleteStates(Set<String> ids) {
-        throw new IllegalStateException("Not implemented yet");
+        if (log.isTraceEnabled()) {
+            log.trace("MarkLogic: DELETE " + ids);
+        }
+        String[] markLogicIds = ids.stream().map(ID_FORMATTER).toArray(String[]::new);
+        markLogicClient.newXMLDocumentManager().delete(markLogicIds);
     }
 
     @Override
     public State readChildState(String parentId, String name, Set<String> ignored) {
-        throw new IllegalStateException("Not implemented yet");
+        StructureWriteHandle query = getChildQuery(parentId, name, ignored);
+        return findOne(query);
     }
 
     @Override
     public boolean hasChild(String parentId, String name, Set<String> ignored) {
-        throw new IllegalStateException("Not implemented yet");
+        StructureWriteHandle query = getChildQuery(parentId, name, ignored);
+        return exist(query);
+    }
+
+    private StructureWriteHandle getChildQuery(String parentId, String name, Set<String> ignored) {
+        return new MarkLogicQueryByExampleBuilder().eq(KEY_PARENT_ID, parentId)
+                                                   .eq(KEY_NAME, name)
+                                                   .notIn(KEY_ID, ignored)
+                                                   .build();
     }
 
     @Override
@@ -182,6 +226,28 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public void markReferencedBinaries() {
         throw new IllegalStateException("Not implemented yet");
+    }
+
+    private boolean exist(StructureWriteHandle query) {
+        if (log.isTraceEnabled()) {
+            logQuery(query);
+        }
+        return markLogicClient.newQueryManager().findOne(init(query)) != null;
+    }
+
+    private State findOne(StructureWriteHandle query) {
+        if (log.isTraceEnabled()) {
+            logQuery(query);
+        }
+        return markLogicClient.newXMLDocumentManager().search(init(query), 0).nextContent(new StateHandle()).get();
+    }
+
+    private QueryDefinition init(StructureWriteHandle query) {
+        return markLogicClient.newQueryManager().newRawQueryByExampleDefinition(query);
+    }
+
+    private void logQuery(StructureWriteHandle query) {
+        log.trace("MarkLogic: QUERY " + query);
     }
 
 }
