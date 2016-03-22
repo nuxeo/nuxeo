@@ -6,28 +6,6 @@ import io.gatling.http.Predef._
 
 import scala.util.Random
 
-object Headers {
-
-  val base = Map(
-    "X-Application-Name" -> "Nuxeo Drive",
-    "X-Client-Version" -> "2.0.0625"
-  )
-
-  val default = base.++(
-    Map(
-      "X-Application-Name" -> "Nuxeo Drive",
-      "X-Client-Version" -> "2.0.0625",
-      "X-Nxdocumentproperties" -> "*",
-      "X-Nxproperties" -> "*"
-    ))
-
-  val withEnricher = default.++(
-    Map(
-      "X-NXenrichers.document" -> "files",
-      "depth" -> "max"))
-
-}
-
 object Redis {
   val pool = new RedisClientPool("localhost", 6379)
   val key = "nxdrive-token"
@@ -251,7 +229,7 @@ object Actions {
     exec(
       http("Get drive token")
         .get("/authentication/token")
-        .headers(Headers.default).header("X-Devince-Id", "${deviceId}")
+        .headers(Headers.default).header("X-Device-Id", "${deviceId}")
         .header("X-user-Id", "${user}")
         .basicAuth("${user}", "${password}")
         .queryParamSeq(Seq(

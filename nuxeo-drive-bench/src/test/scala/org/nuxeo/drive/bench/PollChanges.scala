@@ -11,7 +11,7 @@ object PollChanges {
         .exec(
           http("Hello automation")
             .get(Constants.AUTOMATION_PATH + "/")
-            .headers(Headers.default).header("X-Devince-Id", "${deviceId}")
+            .headers(Headers.default).header("X-Device-Id", "${deviceId}")
             .header("X-user-Id", "${user}")
             .header("X-Authentication-Token", "${token}")
             .check(status.in(200))
@@ -20,7 +20,7 @@ object PollChanges {
         .exec(
           http("Get client update info")
             .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetClientUpdateInfo")
-            .headers(Headers.default).header("X-Devince-Id", "${deviceId}")
+            .headers(Headers.default).header("X-Device-Id", "${deviceId}")
             .header("X-user-Id", "${user}")
             .header("X-Authentication-Token", "${token}")
             .header("Content-Type", "application/json+nxrequest")
@@ -30,7 +30,7 @@ object PollChanges {
         .exec(
           http("Get top level folders")
             .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetTopLevelFolder")
-            .headers(Headers.default).header("X-Devince-Id", "${deviceId}")
+            .headers(Headers.default).header("X-Device-Id", "${deviceId}")
             .header("X-user-Id", "${user}")
             .header("X-Authentication-Token", "${token}")
             .header("Content-Type", "application/json+nxrequest")
@@ -40,7 +40,7 @@ object PollChanges {
         .exec(
           http("Get file system item toplevel")
             .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetFileSystemItem")
-            .headers(Headers.default).header("X-Devince-Id", "${deviceId}")
+            .headers(Headers.default).header("X-Device-Id", "${deviceId}")
             .header("X-user-Id", "${user}")
             .header("X-Authentication-Token", "${token}")
             .header("Content-Type", "application/json+nxrequest")
@@ -50,7 +50,7 @@ object PollChanges {
         .exec(
           http("Get change summary")
             .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetChangeSummary")
-            .headers(Headers.default).header("X-Devince-Id", "${deviceId}")
+            .headers(Headers.default).header("X-Device-Id", "${deviceId}")
             .header("X-user-Id", "${user}")
             .header("X-Authentication-Token", "${token}")
             .header("Content-Type", "application/json+nxrequest")
@@ -62,7 +62,7 @@ object PollChanges {
         exec(
           http("Get change summary")
             .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetChangeSummary")
-            .headers(Headers.default).header("X-Devince-Id", "${deviceId}")
+            .headers(Headers.default).header("X-Device-Id", "${deviceId}")
             .header("X-user-Id", "${user}")
             .header("X-Authentication-Token", "${token}")
             .header("Content-Type", "application/json+nxrequest")
