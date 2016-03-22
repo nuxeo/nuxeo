@@ -6,14 +6,6 @@ import io.gatling.http.Predef._
 
 import scala.util.Random
 
-object Const {
-  val workspaceName = "Bench_Drive"
-  val workspacePath = "/Bench_Drive"
-  val commonFolder = "Common"
-  val userFolder = "Folder_${user}"
-  val groupName = "gatling"
-}
-
 object Headers {
 
   val base = Map(
@@ -60,14 +52,14 @@ object Actions {
     exitBlockOnFail {
       exec(
         http("Check if document exists")
-          .head("/api/v1/path/default-domain/workspaces" + parent + "/" + name)
+          .head(Constants.API_PATH + parent + "/" + name)
           .headers(Headers.base)
           .header("Content-Type", "application/json")
           .basicAuth("${user}", "${password}")
           .check(status.in(404)))
         .exec(
           http("Create " + docType)
-            .post("/api/v1/path/default-domain/workspaces" + parent)
+            .post(Constants.API_PATH + parent)
             .headers(Headers.base)
             .header("Content-Type", "application/json")
             .basicAuth("${user}", "${password}")
@@ -82,14 +74,14 @@ object Actions {
     exitBlockOnFail {
       exec(
         http("Check if document exists")
-          .head("/api/v1/path/default-domain/workspaces" + parent + "/" + name)
+          .head(Constants.API_PATH + parent + "/" + name)
           .headers(Headers.base)
           .header("Content-Type", "application/json")
           .basicAuth("${adminId}", "${adminPassword}")
           .check(status.in(404)))
         .exec(
           http("Create " + docType + " as admin")
-            .post("/api/v1/path/default-domain/workspaces" + parent)
+            .post(Constants.API_PATH + parent)
             .headers(Headers.base)
             .header("Content-Type", "application/json")
             .basicAuth("${adminId}", "${adminPassword}")
@@ -117,7 +109,7 @@ object Actions {
         .body(StringBody("You know content file"))
     ).exec(
         http("Create server File")
-          .post("/api/v1/path/default-domain/workspaces" + parent)
+          .post(Constants.API_PATH + parent)
           .headers(Headers.base)
           .header("Content-Type", "application/json")
           .basicAuth("${user}", "${password}")
@@ -146,7 +138,7 @@ object Actions {
         .body(StringBody("You know content file " + Random.alphanumeric.take(2)))
     ).exec(
         http("Update server File")
-          .put("/api/v1/path/default-domain/workspaces" + parent + "/" + name)
+          .put(Constants.API_PATH + parent + "/" + name)
           .headers(Headers.base)
           .header("Content-Type", "application/json")
           .basicAuth("${user}", "${password}")
@@ -158,7 +150,7 @@ object Actions {
 
   val deleteFileDocument = (path: String) => {
     http("Delete server File")
-      .delete("/api/v1/path/default-domain/workspaces" + path)
+      .delete(Constants.API_PATH + path)
       .headers(Headers.base)
       .header("Content-Type", "application/json")
       .basicAuth("${user}", "${password}")
@@ -167,7 +159,7 @@ object Actions {
 
   val deleteFileDocumentAsAdmin = (path: String) => {
     http("Delete server File")
-      .delete("/api/v1/path/default-domain/workspaces" + path)
+      .delete(Constants.API_PATH + path)
       .headers(Headers.base)
       .header("Content-Type", "application/json")
       .basicAuth("${adminId}", "${adminPassword}")
@@ -237,7 +229,7 @@ object Actions {
 
   val synchronyzeFolder = (path: String) => {
     http("Synchronyze a folder")
-      .post("/api/v1/path/default-domain/workspaces" + path + "/@op/NuxeoDrive.SetSynchronization")
+      .post(Constants.API_PATH + path + "/@op/NuxeoDrive.SetSynchronization")
       .headers(Headers.base)
       .header("Content-Type", "application/json+nxrequest")
       .basicAuth("${user}", "${password}")
@@ -247,7 +239,7 @@ object Actions {
 
   val unSynchronyzeFolder = (path: String) => {
     http("Synchronyze a folder")
-      .post("/api/v1/path/default-domain/workspaces" + path + "/@op/NuxeoDrive.SetSynchronization")
+      .post(Constants.API_PATH + path + "/@op/NuxeoDrive.SetSynchronization")
       .headers(Headers.base)
       .header("Content-Type", "application/json+nxrequest")
       .basicAuth("${user}", "${password}")
@@ -277,7 +269,7 @@ object Actions {
 
   val grantReadWritePermission = (path: String, principal: String) => {
     http("Grant write permission")
-      .post("/api/v1/path/default-domain/workspaces" + path + "/@op/Document.SetACE")
+      .post(Constants.API_PATH + path + "/@op/Document.SetACE")
       .basicAuth("${adminId}", "${adminPassword}")
       .headers(Headers.base)
       .header("Content-Type", "application/json")
@@ -316,6 +308,7 @@ object Feeders {
   val usersQueue = csv("users.csv").queue
   val users = csv("users.csv").circular
   val admins = csv("admins.csv").circular
+
 }
 
 

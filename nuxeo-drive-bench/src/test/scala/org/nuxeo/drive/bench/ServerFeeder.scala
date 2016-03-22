@@ -10,23 +10,23 @@ object ServerFeeder {
     group("Server Feeder") {
       feed(Feeders.users)
         .exec(
-          Actions.createFileDocument(Const.workspacePath + "/" + Const.commonFolder, filename)
+          Actions.createFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_FOLDER_NAME, filename)
         ).pause(halfSleep)
         .exec(
-          Actions.createFileDocument(Const.workspacePath + "/" + Const.userFolder, filename)
+          Actions.createFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_USER_FOLDER_NAME, filename)
         ).pause(halfSleep)
         .repeat(2, "count") {
         exec(
-          Actions.updateFileDocument(Const.workspacePath + "/" + Const.commonFolder, filename)
+          Actions.updateFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_FOLDER_NAME, filename)
         ).pause(halfSleep)
           .exec(
-            Actions.updateFileDocument(Const.workspacePath + "/" + Const.userFolder, filename)
+            Actions.updateFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_USER_FOLDER_NAME, filename)
           ).pause(halfSleep)
       }.exec(
-          Actions.deleteFileDocument(Const.workspacePath + "/" + Const.commonFolder + "/" + filename)
+          Actions.deleteFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_FOLDER_NAME + "/" + filename)
         ).pause(halfSleep)
         .exec(
-          Actions.deleteFileDocument(Const.workspacePath + "/" + Const.userFolder + "/" + filename)
+          Actions.deleteFileDocument(Constants.GAT_WS_PATH + "/" + Constants.GAT_USER_FOLDER_NAME + "/" + filename)
         )
     }
   }

@@ -10,11 +10,11 @@ object Cleanup {
 
   val run = (userCount: Integer) => {
     feed(Feeders.admins)
-      .exec(Actions.deleteFileDocumentAsAdmin(Const.workspacePath))
+      .exec(Actions.deleteFileDocumentAsAdmin(Constants.GAT_WS_PATH))
       .repeat(userCount.intValue(), "count") {
       feed(Feeders.usersQueue)
         .exec(Actions.deleteUser())
-    }.exec(Actions.deleteGroup(Const.groupName))
+    }.exec(Actions.deleteGroup(Constants.GAT_GROUP_NAME))
   }
 }
 
