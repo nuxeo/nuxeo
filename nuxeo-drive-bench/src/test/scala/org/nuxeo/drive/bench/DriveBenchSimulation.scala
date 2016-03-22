@@ -27,4 +27,5 @@ class DriveBenchSimulation extends Simulation {
     poll.inject(rampUsers(Parameters.getConcurrentUsers(100)).over(Parameters.getRampDuration(10))),
     serverFeeder.inject(rampUsers(Parameters.getConcurrentWriters(10)).over(Parameters.getRampDuration(10))).exponentialPauses
   ).protocols(httpProtocol)
+    .assertions(global.successfulRequests.percent.greaterThan(80))
 }
