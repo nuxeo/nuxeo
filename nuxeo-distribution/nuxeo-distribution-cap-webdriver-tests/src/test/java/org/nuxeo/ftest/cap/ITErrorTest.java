@@ -63,7 +63,7 @@ public class ITErrorTest extends AbstractTest {
             client.getPage(
                     NUXEO_URL + "/nxstartup.faces?user_name=" + TEST_USERNAME + "&user_password=" + TEST_PASSWORD);
             HtmlPage page = client.getPage(NUXEO_URL + "/nxpath/default/default-domain@view_documents");
-            assertEquals(HttpServletResponse.SC_FORBIDDEN, page.getWebResponse().getStatusCode()); // 403
+            assertEquals(page.getWebResponse().getContentAsString(), HttpServletResponse.SC_FORBIDDEN, page.getWebResponse().getStatusCode()); // 403
             assertEquals("Security Error", page.getTitleText());
             HtmlElement h1 = page.getElementsByTagName("h1").get(0);
             assertEquals("You don't have the necessary permission to do the requested action.", h1.getTextContent());
