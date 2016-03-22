@@ -8,7 +8,7 @@ import scala.io.Source
 
 object Cleanup {
 
-  val run = (userCount: Integer) => {
+  def run = (userCount: Integer) => {
     feed(Feeders.admins)
       .exec(Actions.deleteFileDocumentAsAdmin(Constants.GAT_WS_PATH))
       .repeat(userCount.intValue(), "count") {

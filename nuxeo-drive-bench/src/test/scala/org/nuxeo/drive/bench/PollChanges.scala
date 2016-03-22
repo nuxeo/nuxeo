@@ -5,7 +5,7 @@ import io.gatling.http.Predef._
 
 object PollChanges {
 
-  val run = (thinkTime: Integer) => {
+  def run = (thinkTime: Integer) => {
     group("Poll") {
       feed(Feeders.token)
         .exec(

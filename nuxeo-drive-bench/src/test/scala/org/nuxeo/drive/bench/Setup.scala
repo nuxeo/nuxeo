@@ -8,7 +8,7 @@ import scala.io.Source
 
 object Setup {
 
-  val run = (userCount: Integer) => {
+  def run = (userCount: Integer) => {
 
     feed(Feeders.admins)
       .exec(Actions.createGroupIfNotExists(Constants.GAT_GROUP_NAME)).exitHereIfFailed

@@ -26,7 +26,7 @@ object Actions {
     false
   }
 
-  val createDocumentIfNotExists = (parent: String, name: String, docType: String) => {
+  def createDocumentIfNotExists = (parent: String, name: String, docType: String) => {
     exitBlockOnFail {
       exec(
         http("Check if document exists")
@@ -48,7 +48,7 @@ object Actions {
     }
   }
 
-  val createDocumentIfNotExistsAsAdmin = (parent: String, name: String, docType: String) => {
+  def createDocumentIfNotExistsAsAdmin = (parent: String, name: String, docType: String) => {
     exitBlockOnFail {
       exec(
         http("Check if document exists")
@@ -70,7 +70,7 @@ object Actions {
     }
   }
 
-  val createFileDocument = (parent: String, name: String) => {
+  def createFileDocument = (parent: String, name: String) => {
     val filename = name + ".txt"
     exec(
       http("Initialize upload batch")
@@ -99,7 +99,7 @@ object Actions {
           .check(status.in(201)))
   }
 
-  val updateFileDocument = (parent: String, name: String) => {
+  def updateFileDocument = (parent: String, name: String) => {
     val filename = name + "txt"
     exec(
       http("Initialize upload batch")
@@ -126,7 +126,7 @@ object Actions {
           .check(status.in(200)))
   }
 
-  val deleteFileDocument = (path: String) => {
+  def deleteFileDocument = (path: String) => {
     http("Delete server File")
       .delete(Constants.API_PATH + path)
       .headers(Headers.base)
@@ -135,7 +135,7 @@ object Actions {
       .check(status.in(204))
   }
 
-  val deleteFileDocumentAsAdmin = (path: String) => {
+  def deleteFileDocumentAsAdmin = (path: String) => {
     http("Delete server File")
       .delete(Constants.API_PATH + path)
       .headers(Headers.base)
@@ -144,7 +144,7 @@ object Actions {
       .check(status.in(204))
   }
 
-  val createUserIfNotExists = (groupName: String) => {
+  def createUserIfNotExists = (groupName: String) => {
     exitBlockOnFail {
       exec(
         http("Check if user exists")
@@ -166,7 +166,7 @@ object Actions {
     }
   }
 
-  val deleteUser = () => {
+  def deleteUser = () => {
     http("Delete user")
       .delete("/api/v1/user/${user}")
       .headers(Headers.base)
@@ -175,7 +175,7 @@ object Actions {
       .check(status.in(204))
   }
 
-  val createGroupIfNotExists = (groupName: String) => {
+  def createGroupIfNotExists = (groupName: String) => {
     exitBlockOnFail {
       exec(
         http("Check if group exists")
@@ -196,7 +196,7 @@ object Actions {
     }
   }
 
-  val deleteGroup = (groupName: String) => {
+  def deleteGroup = (groupName: String) => {
     http("Delete user")
       .delete("/api/v1/group/" + groupName)
       .headers(Headers.base)
@@ -205,7 +205,7 @@ object Actions {
       .check(status.in(204))
   }
 
-  val synchronyzeFolder = (path: String) => {
+  def synchronyzeFolder = (path: String) => {
     http("Synchronyze a folder")
       .post(Constants.API_PATH + path + "/@op/NuxeoDrive.SetSynchronization")
       .headers(Headers.base)
@@ -215,7 +215,7 @@ object Actions {
       .check(status.in(200))
   }
 
-  val unSynchronyzeFolder = (path: String) => {
+  def unSynchronyzeFolder = (path: String) => {
     http("Synchronyze a folder")
       .post(Constants.API_PATH + path + "/@op/NuxeoDrive.SetSynchronization")
       .headers(Headers.base)
@@ -225,7 +225,7 @@ object Actions {
       .check(status.in(200))
   }
 
-  val getDriveToken = () => {
+  def getDriveToken = () => {
     exec(
       http("Get drive token")
         .get("/authentication/token")
@@ -245,7 +245,7 @@ object Actions {
     }
   }
 
-  val grantReadWritePermission = (path: String, principal: String) => {
+  def grantReadWritePermission = (path: String, principal: String) => {
     http("Grant write permission")
       .post(Constants.API_PATH + path + "/@op/Document.SetACE")
       .basicAuth("${adminId}", "${adminPassword}")

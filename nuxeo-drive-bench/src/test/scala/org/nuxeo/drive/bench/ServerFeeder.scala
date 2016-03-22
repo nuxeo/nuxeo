@@ -4,7 +4,7 @@ import io.gatling.core.Predef._
 
 object ServerFeeder {
 
-  val run = (thinkTime: Integer) => {
+  def run = (thinkTime: Integer) => {
     val filename = "file_${user}"
     val halfSleep = (thinkTime.floatValue() / 2).ceil.toInt
     group("Server Feeder") {
