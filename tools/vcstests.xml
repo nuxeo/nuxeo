@@ -71,6 +71,13 @@
         nuxeo.test.vcs.password=${nuxeo.db.pass}
       </echo>
     </nx:profile>
+    <nx:profile name="mongodb">
+      <echo file="${vcsprops}" append="false">
+        nuxeo.test.core=mongodb
+        nuxeo.test.mongodb.server=${nuxeo.mongodb.server}
+        nuxeo.test.mongodb.dbname=${nuxeo.mongodb.dbname}
+      </echo>
+    </nx:profile>
   </target>
 
   <target name="vcs-tests-teardown">
