@@ -27,6 +27,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -52,9 +54,8 @@ final class MarkLogicStateSerializer {
         // Serialize root
         Element root = serialize(MarkLogicHelper.DOCUMENT_ROOT, state, namespaces);
         // Add namespaces
-        root.addNamespace("xs", "http://www.w3.org/2001/XMLSchema");
-        root.addNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        addNamespace(root, namespaces);
+        addDefaultNamespaces(root);
+        addNamespaces(root, namespaces);
         // Create document
         Document document = DocumentHelper.createDocument();
         document.setRootElement(root);
@@ -64,13 +65,13 @@ final class MarkLogicStateSerializer {
     private static Element serialize(String key, State state, Set<String> namespaces) {
         Element element = DocumentHelper.createElement(key);
         for (Entry<String, Serializable> entry : state.entrySet()) {
-            getPrefix(entry.getKey()).ifPresent(namespaces::add);
             serialize(entry.getKey(), entry.getValue(), namespaces).ifPresent(element::add);
         }
         return element;
     }
 
     public static Optional<Element> serialize(String key, Object value, Set<String> namespaces) {
+        getPrefix(key).ifPresent(namespaces::add);
         Optional<Element> result;
         if (value == null) {
             result = Optional.empty();
@@ -106,7 +107,12 @@ final class MarkLogicStateSerializer {
         return array;
     }
 
-    public static void addNamespace(Element element, Iterable<String> namespaces) {
+    public static void addDefaultNamespaces(Element root) {
+        root.addNamespace("xs", XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        root.addNamespace("xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+    }
+
+    public static void addNamespaces(Element element, Iterable<String> namespaces) {
         namespaces.forEach(namespace -> addNamespace(element, namespace));
     }
 

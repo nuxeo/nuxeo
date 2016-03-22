@@ -56,10 +56,13 @@ public class MarkLogicQueryByExampleBuilder {
     public MarkLogicQueryByExampleBuilder() {
         documentToQuery = DocumentHelper.createElement(MarkLogicHelper.DOCUMENT_ROOT);
         Element query = DocumentHelper.createElement(QUERY);
+        query.add(documentToQuery);
         Element qbe = DocumentHelper.createElement(QBE);
         qbe.add(query);
-        qbe.addNamespace("q", "http://marklogic.com/appservices/querybyexample");
         document = DocumentHelper.createDocument(qbe);
+
+        qbe.addNamespace("q", "http://marklogic.com/appservices/querybyexample");
+        MarkLogicStateSerializer.addDefaultNamespaces(qbe);
         namespaces = new HashSet<>();
     }
 
@@ -89,8 +92,7 @@ public class MarkLogicQueryByExampleBuilder {
     }
 
     public StructureWriteHandle build() {
-        MarkLogicStateSerializer.addNamespace(document.getRootElement(), namespaces);
+        MarkLogicStateSerializer.addNamespaces(document.getRootElement(), namespaces);
         return new DOM4JHandle(document);
     }
-
 }
