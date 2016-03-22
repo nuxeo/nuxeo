@@ -12,3 +12,4 @@ bin
 *.iml
 nuxeo-drive-bench/src/test/resources/bodies
 nuxeo-drive-bench/src/test/scala/org/nuxeo/drive/bench/RecordedSimulation*
+.cache
