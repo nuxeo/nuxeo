@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,14 +27,12 @@ import java.util.Map;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
-import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
-import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +46,6 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.MapValueExpression;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
-import org.nuxeo.ecm.platform.ui.web.util.FaceletDebugTracer;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
@@ -90,6 +86,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         if (templateAttr == null) {
             templateAttr = helper.createAttribute(TEMPLATE_PROPERTY_NAME, template);
         }
+
         TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(templateAttr);
         String widgetTagConfigId = widget.getTagConfigId();
         FaceletHandler nextHandler = leaf;
@@ -112,45 +109,8 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         DecorateHandler includeHandler = new DecorateHandler(config);
         FaceletHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns,
                 includeHandler);
+
         return handler;
-    }
-
-    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
-        long start = FaceletDebugTracer.start();
-
-        try {
-            String template = getTemplateValue(widget);
-            if (template == null) {
-                log.error("Missing template property for widget " + widget.getName() + " in layout "
-                        + widget.getLayoutName());
-                return;
-            }
-            FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
-            TagAttribute templateAttr = getTemplateAttribute(helper);
-            if (templateAttr == null) {
-                templateAttr = helper.createAttribute(TEMPLATE_PROPERTY_NAME, template);
-            }
-            TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(templateAttr);
-            String widgetTagConfigId = widget.getTagConfigId();
-            TagConfig config = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, nextHandler);
-
-            Map<String, ValueExpression> variables = getVariablesForRendering(ctx, helper, widget, widgetTagConfigId,
-                    template);
-
-            List<String> blockedPatterns = new ArrayList<String>();
-            blockedPatterns.add(RenderVariables.widgetVariables.field.name() + "*");
-            blockedPatterns.add(RenderVariables.widgetVariables.fieldOrValue.name());
-            blockedPatterns.add(RenderVariables.widgetVariables.widgetProperty.name() + "_*");
-            blockedPatterns.add(RenderVariables.widgetVariables.widgetProperties.name());
-            blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
-
-            DecorateHandler includeHandler = new DecorateHandler(config);
-            FaceletHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns,
-                    includeHandler);
-            handler.apply(ctx, parent);
-        } finally {
-            FaceletDebugTracer.trace(start, tagConfig.getTag(), widget.getId(), -1);
-        }
     }
 
     /**
