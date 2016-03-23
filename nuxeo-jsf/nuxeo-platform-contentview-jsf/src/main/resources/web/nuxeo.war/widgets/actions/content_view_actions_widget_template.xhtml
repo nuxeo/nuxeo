@@ -10,7 +10,11 @@
 <nxu:set var="widgetProperty_actions"
   value="#{contentViewActions.getActionsList(widgetProperty_category, actionContextDocument, contentView, showPageSizeSelector, showRefreshCommand, showCSVExport, showPDFExport, showSyndicationLinks, showSlideshow, showEditColumns, showEditRows, showSpreadsheet)}"
   cache="true">
+<nxu:set var="widgetProperty_trackCurrentAction"
+  value="true"
+  cache="true">
   <ui:include src="/widgets/actions/actions_widget_template.xhtml" />
+</nxu:set>
 </nxu:set>
 </nxu:set>
 
