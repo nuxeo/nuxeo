@@ -296,6 +296,9 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         return null;
     }
 
+    /**
+     * @since 8.2
+     */
     public String updateProfilePassword() {
         try {
             UpdateProfilePasswordUnrestricted runner = new UpdateProfilePasswordUnrestricted(
