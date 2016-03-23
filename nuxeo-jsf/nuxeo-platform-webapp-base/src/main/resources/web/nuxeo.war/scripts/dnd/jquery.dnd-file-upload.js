@@ -210,7 +210,7 @@ if (!log) {
         reader.onload = function (e) {
           fileCB(fileOb, opts);
         };
-        reader.readAsBinaryString(fileOb);
+        reader.readAsText(fileOb);
       } catch (err) {
         folderCB(fileOb, opts, transferItem);
       }
@@ -279,7 +279,7 @@ if (!log) {
   function applyOverlay(zone, opts) {
     log("apply Overlay on zone " + zone.attr("id"));
     zone.addClass("dropzoneTarget");
-    if (jQuery.browser.mozilla && jQuery.browser.version.startsWith("1.")) {
+    if (jQuery.browser.mozilla && jQuery.browser.version.indexOf("1.") === 0) {
       // overlay does break drop event catching in FF 3.6 !!!
       zone.bind("dragleave", function (event) {
         removeOverlay(event, null, zone, opts);
