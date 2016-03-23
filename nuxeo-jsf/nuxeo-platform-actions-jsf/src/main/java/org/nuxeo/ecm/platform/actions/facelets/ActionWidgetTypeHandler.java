@@ -19,8 +19,6 @@
 
 package org.nuxeo.ecm.platform.actions.facelets;
 
-import javax.faces.view.facelets.TagConfig;
-
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler;
 import org.nuxeo.runtime.api.Framework;
@@ -33,11 +31,9 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
  */
 public class ActionWidgetTypeHandler extends TemplateWidgetTypeHandler {
 
-    public static final String COMPAT_TEMPLATE_PROPERTY_NAME = "compat_template";
+    private static final long serialVersionUID = 1L;
 
-    public ActionWidgetTypeHandler(TagConfig config) {
-        super(config);
-    }
+    public static final String COMPAT_TEMPLATE_PROPERTY_NAME = "compat_template";
 
     @Override
     protected String getTemplateValue(Widget widget) {
