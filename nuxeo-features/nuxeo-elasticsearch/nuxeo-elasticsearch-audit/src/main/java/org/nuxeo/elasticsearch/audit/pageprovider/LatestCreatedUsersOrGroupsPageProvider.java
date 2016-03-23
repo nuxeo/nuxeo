@@ -71,6 +71,9 @@ public class LatestCreatedUsersOrGroupsPageProvider extends AbstractPageProvider
                                 doc = um.getGroupModel(id);
                             } else if (UserManagerImpl.USERCREATED_EVENT_ID.equals(e.getEventId())) {
                                 doc = um.getUserModel(id);
+                                if (doc == null) {
+                                    break;
+                                }
                                 doc.setProperty(schema, userDir.getPasswordField(), null);
                             } else {
                                 break;
