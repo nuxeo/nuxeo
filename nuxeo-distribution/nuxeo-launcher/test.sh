@@ -15,6 +15,15 @@
 ## Contributors:
 ##     Julien Carsique
 ##
+
+## To Execute from IDE add those VM Options:
+##
+## org.nuxeo.launcher.NuxeoLauncher
+##   -Dlauncher.java.opts="-server -Xms512m -Xmx1024m -Dfile.encoding=UTF-8 -Dmail.mime.decodeparameters=true -Djava.util.Arrays.useLegacyMergeSort=true -Xdebug -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true"
+##   -Dnuxeo.home="/path/to/nuxeo"
+##   -Dnuxeo.conf="/path/to/nuxeo/bin/nuxeo.conf"
+##   -Dnuxeo.log.dir="/path/to/nuxeo/log"
+
 MAX_FD_LIMIT_HELP_URL="http://doc.nuxeo.com/display/KB/java.net.SocketException+Too+many+open+files"
 
 NUXEO_HOME=${NUXEO_HOME:-$(cd $(dirname $0); cd ../nuxeo-distribution-tomcat/target/nuxeo-cap-8.3-SNAPSHOT-tomcat; pwd -P)}

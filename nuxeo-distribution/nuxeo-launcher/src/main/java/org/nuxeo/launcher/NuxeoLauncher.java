@@ -75,20 +75,21 @@ import org.artofsolving.jodconverter.process.WindowsProcessManager;
 import org.artofsolving.jodconverter.util.PlatformUtils;
 import org.json.JSONException;
 import org.json.XML;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
+import org.nuxeo.connect.connector.NuxeoClientInstanceType;
+import org.nuxeo.connect.data.ConnectProject;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
+import org.nuxeo.connect.registration.RegistrationException;
 import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.ConnectBroker;
+import org.nuxeo.launcher.connect.ConnectRegistrationBroker;
+import org.nuxeo.launcher.connect.LauncherRegisterPromptHelper;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 import org.nuxeo.launcher.info.CommandInfo;
@@ -102,6 +103,9 @@ import org.nuxeo.launcher.info.PackageInfo;
 import org.nuxeo.launcher.monitoring.StatusServletClient;
 import org.nuxeo.log4j.Log4JHelper;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * @author jcarsique
@@ -334,7 +338,8 @@ public abstract class NuxeoLauncher {
 
     private static final String[] COMMANDS_NO_GUI = { "configure", "mp-init", "mp-purge", "mp-add", "mp-install",
             "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall",
-            "mp-update", "status", "showconf", "mp-show", "mp-set", "config", "encrypt", "decrypt", OPTION_HELP };
+            "mp-update", "status", "showconf", "mp-show", "mp-set", "config", "encrypt", "decrypt", OPTION_HELP,
+            "register", "register-trial" };
 
     private static final String[] COMMANDS_NO_RUNNING_SERVER = { "pack", "mp-init", "mp-purge", "mp-add", "mp-install",
             "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update", "mp-set" };
@@ -482,13 +487,15 @@ public abstract class NuxeoLauncher {
             + "        mp-hotfix\t\tInstall all the available hotfixes for the current platform (requires a registered instance).\n"
             + "        mp-upgrade\t\tGet all the available upgrades for the Nuxeo Packages currently installed (requires a registered instance).\n"
             + "        mp-show\t\t\tShow Nuxeo Package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
+            + "        register\t\tRegister your instance with an existing Connect account. You must provide a valid username, password, instance type and project ID.\n"
+            + "        register-trial\t\tRegister your instance with a new trial Connect account. You must provide a valid email, a password and a company name as parameters.\n"
             + "\nThe following commands are always executed in console/headless mode (no GUI): "
             + "\"configure\", \"mp-init\", \"mp-purge\", \"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", "
             + "\"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", \"mp-reset\", \"mp-list\", \"mp-listall\", \"mp-update\", "
             + "\"status\", \"showconf\", \"mp-show\", \"mp-set\", \"config\", \"encrypt\", \"decrypt\", \"help\".\n"
             + "\nThe following commands cannot be executed on a running server: \"pack\", \"mp-init\", \"mp-purge\", "
             + "\"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", \"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", "
-            + "\"mp-reset\".\n"
+            + "\"mp-reset\", \"register\", \"register-trial\".\n"
             + "\nCommand parameters may need to be prefixed with '--' to separate them from option arguments when confusion arises.";
 
     private static final String OPTION_HELP_USAGE = "        nuxeoctl <command> [options] [--] [command parameters]\n\n";
@@ -506,15 +513,17 @@ public abstract class NuxeoLauncher {
             + "                Get value for the given key(s).\n\n"
             + "        nuxeoctl config [--get-regexp] <regexp>.. [-d [<categories>]|-q]\n"
             + "                Get value for the keys matching the given regular expression(s).\n\n"
-            + "        nuxeoctl [help|status|showconf] [-d [<categories>]|-q]\n\n"
-            + "        nuxeoctl [configure] [-d [<categories>]|-q|-hdw]\n\n"
-            + "        nuxeoctl [wizard] [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>]\n\n"
-            + "        nuxeoctl [stop] [-d [<categories>]|-q|--gui <true|false|yes|no>]\n\n"
-            + "        nuxeoctl [start|restart|console|startbg|restartbg] [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>|--strict|-hdw]\n\n"
-            + "        nuxeoctl [mp-show] [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
-            + "        nuxeoctl [mp-list|mp-listall|mp-init|mp-update] [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
-            + "        nuxeoctl [mp-reset|mp-purge|mp-hotfix|mp-upgrade] [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
-            + "        nuxeoctl [mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request] [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
+            + "        nuxeoctl help|status|showconf [-d [<categories>]|-q]\n\n"
+            + "        nuxeoctl configure [-d [<categories>]|-q|-hdw]\n\n"
+            + "        nuxeoctl wizard [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>]\n\n"
+            + "        nuxeoctl stop [-d [<categories>]|-q|--gui <true|false|yes|no>]\n\n"
+            + "        nuxeoctl start|restart|console|startbg|restartbg [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>|--strict|-hdw]\n\n"
+            + "        nuxeoctl mp-show [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
+            + "        nuxeoctl mp-list|mp-listall|mp-init|mp-update [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
+            + "        nuxeoctl mp-reset|mp-purge|mp-hotfix|mp-upgrade [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
+            + "        nuxeoctl mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
+            + "        nuxeoctl register\n\n"
+            + "        nuxeoctl register-trial\n\n"
             + "        nuxeoctl pack <target> [-d [<categories>]|-q]\n\n" + "OPTIONS";
 
     private static final String OPTION_HELP_FOOTER = "\nSee online documentation \"ADMINDOC/nuxeoctl and Control Panel Usage\": https://doc.nuxeo.com/x/FwNc";
@@ -583,6 +592,8 @@ public abstract class NuxeoLauncher {
     private boolean jsonOutput = false;
 
     private ConnectBroker connectBroker = null;
+
+    private ConnectRegistrationBroker connectRegistrationBroker = null;
 
     CommandLine cmdLine;
 
@@ -1245,6 +1256,10 @@ public abstract class NuxeoLauncher {
             launcher.decrypt();
         } else if (launcher.commandIs("config")) {
             launcher.config();
+        } else if (launcher.commandIs("register")) {
+            commandSucceeded = launcher.registerRemoteInstance();
+        } else if (launcher.commandIs("register-trial")) {
+            commandSucceeded = launcher.registerTrial();
         } else {
             log.error("Unknown command " + launcher.command);
             printLongHelp();
@@ -1260,6 +1275,96 @@ public abstract class NuxeoLauncher {
         if (!commandSucceeded) {
             System.exit(launcher.errorValue);
         }
+    }
+
+    protected boolean registerRemoteInstance() throws IOException, ConfigurationException, PackageException {
+        String username;
+        String password;
+        String project;
+        String description = "";
+        NuxeoClientInstanceType type;
+        if (System.console() != null) {
+            username = LauncherRegisterPromptHelper.promptUsername();
+            password = LauncherRegisterPromptHelper.promptPassword();
+            List<ConnectProject> projs = getConnectRegistrationBroker().getAvailableProjects(username, password);
+            project = LauncherRegisterPromptHelper.promptProjectId(projs);
+            type = LauncherRegisterPromptHelper.promptInstanceType();
+            description = LauncherRegisterPromptHelper.promptDescription();
+        } else {
+            String[] input = new String(IOUtils.toByteArray(System.in)).split("\n");
+            if (input.length < 4) {
+                throw new IOException("Wrong number of arguments.");
+            }
+            username = input[0];
+            password = input[1];
+            project = input[2];
+            type = NuxeoClientInstanceType.fromString(input[3]);
+            if (input.length > 3) {
+                description = StringUtils.join(Arrays.copyOfRange(input, 4, input.length), "\n");
+            }
+        }
+
+        if (type == null) {
+            type = NuxeoClientInstanceType.DEV;
+        }
+
+        getConnectRegistrationBroker().registerRemote(username, password, project, type, description);
+        log.info("Your server is correctly registered to: " + username);
+        return true;
+    }
+
+    protected boolean registerTrial() throws IOException, ConfigurationException, PackageException {
+        getConnectBroker(); // Initialize NuxeoConnectClient Oo
+        CommandInfo commandInfo = cset.newCommandInfo("register-trial");
+
+        Map<String, String> registration = new HashMap<>();
+        if (System.console() != null) {
+            registration.put("email", LauncherRegisterPromptHelper.promptMail());
+            registration.put("company", LauncherRegisterPromptHelper.promptCompany());
+
+            String pwd = LauncherRegisterPromptHelper.promptPassword(true);
+            registration.put("password", pwd);
+            registration.put("password_verif", pwd);
+
+            registration.put("connectreg:projectName", LauncherRegisterPromptHelper.promptProjectName());
+            registration.put("description", LauncherRegisterPromptHelper.promptDescription());
+        } else {
+            String[] input = new String(IOUtils.toByteArray(System.in)).split("\n");
+            if (input.length < 3) {
+                throw new IOException("Wrong number of arguments.");
+            }
+            registration.put("email", input[0]);
+            registration.put("company", input[1]);
+
+            registration.put("password", input[2]);
+            registration.put("password_verif", input[2]);
+
+            String projectName = "project1";
+            if (input.length >= 3) {
+                projectName = input[3];
+                registration.put("description", StringUtils.join(Arrays.copyOfRange(input, 4, input.length), "\n"));
+            }
+            registration.put("connectreg:projectName", projectName);
+        }
+
+        if (!LauncherRegisterPromptHelper.promptAcceptTerms()) {
+            log.error("You must accept the Nuxeo Trial Terms and Condition to register your instance.");
+            commandInfo.exitCode = EXIT_CODE_INVALID;
+            return false;
+        }
+        registration.put("termsAndConditions", "true");
+
+        try {
+            getConnectRegistrationBroker().registerTrial(registration);
+        } catch (RegistrationException e) {
+            commandInfo.newMessage(e);
+            e.getErrors().forEach(err -> commandInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, err.getMessage()));
+            commandInfo.exitCode = EXIT_CODE_NOT_CONFIGURED;
+            return false;
+        }
+
+        log.info("Please ensure you have validated your registration with the confirmation mail before starting the server.");
+        return true;
     }
 
     /**
@@ -2296,6 +2401,14 @@ public abstract class NuxeoLauncher {
             cset = connectBroker.getCommandSet();
         }
         return connectBroker;
+    }
+
+    protected ConnectRegistrationBroker getConnectRegistrationBroker() throws IOException, PackageException {
+        if (connectRegistrationBroker == null) {
+            getConnectBroker(); // Ensure ConnectBroker is instantiated too.
+            connectRegistrationBroker = new ConnectRegistrationBroker();
+        }
+        return connectRegistrationBroker;
     }
 
     /**
