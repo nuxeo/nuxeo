@@ -69,8 +69,6 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
  */
 public class ActionTagHandler extends MetaTagHandler {
 
-    private static final Log log = LogFactory.getLog(ActionTagHandler.class);
-
     protected final TagConfig config;
 
     protected final TagAttribute action;
@@ -273,8 +271,8 @@ public class ActionTagHandler extends MetaTagHandler {
                     return;
                 }
                 // set unique id on widget before exposing it to the context
-                FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
-                WidgetTagHandler.generateWidgetId(ctx, helper, widgetInstance, false);
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+                WidgetTagHandler.generateWidgetId(helper, widgetInstance, false);
 
                 // expose widget variables
                 WidgetTagHandler.exposeWidgetVariables(ctx, vm, widgetInstance, null, false);
