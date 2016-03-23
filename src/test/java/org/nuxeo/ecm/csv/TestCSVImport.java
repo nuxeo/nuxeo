@@ -421,9 +421,6 @@ public class TestCSVImport {
         assertEquals(2, contributors.size());
         assertTrue(contributors.contains("leela"));
         assertTrue(contributors.contains("Administrator"));
-        Calendar creationDate = (Calendar) doc.getPropertyValue("dc:created");
-        assertEquals("12/12/2012", new SimpleDateFormat(options.getDateFormat()).format(creationDate.getTime()));
-
         assertTrue(session.exists(new PathRef("/myfile2")));
         doc = session.getDocument(new PathRef("/myfile2"));
         assertEquals("leela", doc.getPropertyValue("dc:creator"));
@@ -433,8 +430,6 @@ public class TestCSVImport {
         assertTrue(contributors.contains("contributor2"));
         assertTrue(contributors.contains("leela"));
         assertTrue(contributors.contains("Administrator"));
-        creationDate = (Calendar) doc.getPropertyValue("dc:created");
-        assertEquals("12/12/2012", new SimpleDateFormat(options.getDateFormat()).format(creationDate.getTime()));
     }
 
     public CoreSession openSessionAs(String username) {
