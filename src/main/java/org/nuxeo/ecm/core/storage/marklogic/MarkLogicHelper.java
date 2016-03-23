@@ -41,6 +41,12 @@ final class MarkLogicHelper {
 
     public static final String ATTRIBUTE_XSI_TYPE = "xsi:" + ATTRIBUTE_TYPE;
 
+    private static final String NAMESPACE_URI_FORMAT = "http://www.nuxeo.org/ecm/schemas/%s/";
+
+    public static String getNamespaceUri(String namespace) {
+        return String.format(MarkLogicHelper.NAMESPACE_URI_FORMAT, namespace);
+    }
+
     public static String serializeCalendar(Calendar cal) {
         return DateTime.now().withMillis(cal.getTimeInMillis()).toString(DATE_TIME_FORMATTER);
     }

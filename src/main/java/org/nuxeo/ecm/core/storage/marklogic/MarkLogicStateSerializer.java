@@ -42,8 +42,6 @@ import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
  */
 final class MarkLogicStateSerializer {
 
-    private static final String NAMESPACE_URI_FORMAT = "http://www.nuxeo.org/ecm/schemas/%s/";
-
     private MarkLogicStateSerializer() {
         // nothing
     }
@@ -117,7 +115,7 @@ final class MarkLogicStateSerializer {
     }
 
     public static void addNamespace(Element element, String namespace) {
-        element.addNamespace(namespace, String.format(NAMESPACE_URI_FORMAT, namespace));
+        element.addNamespace(namespace, MarkLogicHelper.getNamespaceUri(namespace));
     }
 
     private static Optional<String> getPrefix(String key) {

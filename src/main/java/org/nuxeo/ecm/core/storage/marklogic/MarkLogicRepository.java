@@ -52,8 +52,10 @@ import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClientFactory.Authentication;
+import com.marklogic.client.document.DocumentMetadataPatchBuilder.PatchHandle;
 import com.marklogic.client.document.DocumentPage;
 import com.marklogic.client.document.DocumentRecord;
+import com.marklogic.client.document.XMLDocumentManager;
 import com.marklogic.client.io.marker.StructureWriteHandle;
 import com.marklogic.client.query.QueryDefinition;
 
@@ -145,7 +147,12 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public void updateState(String id, StateDiff diff) {
-        throw new IllegalStateException("Not implemented yet");
+        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
+        PatchHandle patch = new MarkLogicUpdateBuilder(docManager::newPatchBuilder).apply(diff);
+        if (log.isTraceEnabled()) {
+            log.trace("MarkLogic: UPDATE " + id + ": " + patch.toString());
+        }
+        docManager.patch(ID_FORMATTER.apply(id), patch);
     }
 
     @Override
