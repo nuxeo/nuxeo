@@ -19,9 +19,14 @@
     </xs:list>
   </xs:simpleType>
 
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999" />
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:element name="title" type="xs:string"/>
-  <xs:element name="description" type="xs:string"/>
+  <xs:element name="description" type="nxs:clob"/>
   <xs:element name="subjects" type="nxs:subjectList"/>
   <xs:element name="rights" type="xs:string"/>
   <xs:element name="source" type="xs:string"/>
@@ -56,7 +61,7 @@
       <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="nature" />
     </xs:simpleType>
   </xs:element>
-  
+
   <!-- @Since 5.5 -->
   <xs:element name="publisher" type="xs:string"/>
 

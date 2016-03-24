@@ -41,6 +41,8 @@ import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.search.api.client.querymodel.Escaper;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -596,7 +598,12 @@ public class NXQLQueryBuilder {
             if (field == null) {
                 throw new NuxeoException("failed to obtain field: " + schema + ":" + name);
             }
-            return field.getType().getName();
+            Type type = field.getType();
+            if (type instanceof SimpleTypeImpl) {
+                // type with constraint
+                type = type.getSuperType();
+            }
+            return type.getName();
         } catch (PropertyException e) {
             e.addInfo("failed to get field type for " + (xpath != null ? xpath : (schema + ":" + name)));
             throw e;
