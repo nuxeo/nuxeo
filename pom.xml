@@ -192,6 +192,7 @@
     <ch.qos.logback.version>1.0.11</ch.qos.logback.version>
     <gatling.version>2.1.7</gatling.version>
     <scala.version>2.11.7</scala.version>
+    <scala-logging.version>3.1.0</scala-logging.version>
     <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
 
     <!-- Tests properties -->
@@ -4665,6 +4666,11 @@
         <groupId>org.scala-lang</groupId>
         <artifactId>scala-library</artifactId>
         <version>${scala.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.typesafe.scala-logging</groupId>
+        <artifactId>scala-logging_2.11</artifactId>
+        <version>${scala-logging.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
