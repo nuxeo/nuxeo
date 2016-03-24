@@ -30,7 +30,7 @@
       <h:commandButton value="#{messages['command.save']}"
         action="#{searchUIActions.saveSearch()}"
         styleClass="button">
-        <a4j:ajax execute="@form" oncomplete="jQuery.fancybox.close"
+        <a4j:ajax execute="@form" oncomplete="jQuery.fancybox.close()"
           render="searchPanelLeft" />
       </h:commandButton>
       <h:commandButton value="#{messages['command.cancel']}"
