@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.marklogic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +45,7 @@ public class TestMarkLogicStateDeserializer extends AbstractTest {
         State state = MarkLogicStateDeserializer.deserialize(xml);
         assertNotNull(state);
         State expectedState = new State();
-        expectedState.put("ecm:id", "ID");
+        expectedState.put(KEY_ID, "ID");
         assertEquals(expectedState, state);
     }
 
@@ -65,7 +66,7 @@ public class TestMarkLogicStateDeserializer extends AbstractTest {
         State state = MarkLogicStateDeserializer.deserialize(xml);
         assertNotNull(state);
         State expectedState = new State();
-        expectedState.put("ecm:id", "ID");
+        expectedState.put(KEY_ID, "ID");
         State subState = new State();
         subState.put("nbValues", 2L);
         subState.put("valuesPresent", false);

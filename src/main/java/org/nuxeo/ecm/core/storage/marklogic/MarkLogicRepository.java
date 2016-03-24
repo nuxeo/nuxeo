@@ -185,18 +185,23 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        throw new IllegalStateException("Not implemented yet");
+        return queryKeyValue(key, value, ignored, this::findAll);
     }
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        throw new IllegalStateException("Not implemented yet");
+        MarkLogicQueryByExampleBuilder builder = new MarkLogicQueryByExampleBuilder();
+        builder.eq(key1, value1);
+        builder.eq(key2, value2);
+        builder.notIn(KEY_ID, ignored);
+        return findAll(builder.build());
     }
 
     @Override
     public void queryKeyValueArray(String key, Object value, Set<String> ids, Map<String, String> proxyTargets,
             Map<String, Object[]> targetProxies) {
         // TODO retrieve only some field
+        // https://docs.marklogic.com/guide/search-dev/qbe#id_54044
         StructureWriteHandle query = new MarkLogicQueryByExampleBuilder().eq(key, value).build();
         if (log.isTraceEnabled()) {
             logQuery(query);
@@ -222,7 +227,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
-        throw new IllegalStateException("Not implemented yet");
+        return queryKeyValue(key, value, ignored, this::exist);
     }
 
     @Override
@@ -261,6 +266,14 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         throw new IllegalStateException("Not implemented yet");
     }
 
+    private <T> T queryKeyValue(String key, Object value, Set<String> ignored,
+            Function<StructureWriteHandle, T> executor) {
+        MarkLogicQueryByExampleBuilder builder = new MarkLogicQueryByExampleBuilder();
+        builder.eq(key, value);
+        builder.notIn(KEY_ID, ignored);
+        return executor.apply(builder.build());
+    }
+
     private boolean exist(StructureWriteHandle query) {
         if (log.isTraceEnabled()) {
             logQuery(query);
@@ -277,6 +290,17 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 return page.nextContent(new StateHandle()).get();
             }
             return null;
+        }
+    }
+
+    private List<State> findAll(StructureWriteHandle query) {
+        if (log.isTraceEnabled()) {
+            logQuery(query);
+        }
+        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(init(query), 0)) {
+            return StreamSupport.stream(page.spliterator(), false)
+                                .map(record -> record.getContent(new StateHandle()).get())
+                                .collect(Collectors.toList());
         }
     }
 
