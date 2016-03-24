@@ -22,8 +22,8 @@
     <exec executable="${cmd.npm}" failonerror="true">
       <arg value="install" />
     </exec>
-    <bower-fetch artifact="polymerelements:iron-elements:1.0.4" />
-    <bower-fetch artifact="polymerelements:paper-elements:1.0.5" />
+    <bower-fetch artifact="polymerelements:iron-elements:1.0.9" />
+    <bower-fetch artifact="polymerelements:paper-elements:1.0.7" />
     <exec executable="${cmd.bower}" failonerror="true">
       <arg value="install" />
     </exec>

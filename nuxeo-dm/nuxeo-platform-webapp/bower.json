@@ -4,10 +4,10 @@
   "dependencies": {
     "nuxeo": "0.9.0",
     "polymer": "Polymer/polymer#^1.1.4",
-    "iron-elements": "PolymerElements/iron-elements#^1.0.4",
-    "paper-elements": "PolymerElements/paper-elements#^1.0.5",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.9",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.7",
     "nuxeo-elements": "nuxeo/nuxeo-elements#0.2.6",
-    "nuxeo-document-permissions": "nuxeo/nuxeo-document-permissions#0.2.4",
+    "nuxeo-document-permissions": "nuxeo/nuxeo-document-permissions#0.2.5",
     "nuxeo-ui-elements": "nuxeo/nuxeo-ui-elements#0.1.0",
     "moment": "2.10.6",
     "marked-element": "PolymerElements/marked-element#~1.1.3"
