@@ -87,6 +87,11 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
     public DocumentModel getFavorites(final DocumentModel context, final CoreSession session) {
         final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, context);
+        if (userWorkspace == null) {
+            // no user workspace => no favorites (transient user for instance)
+            return null;
+        }
+
         final DocumentRef lookupRef = new PathRef(userWorkspace.getPath().toString(),
                 FavoritesConstants.DEFAULT_FAVORITES_NAME);
         if (session.exists(lookupRef)) {
