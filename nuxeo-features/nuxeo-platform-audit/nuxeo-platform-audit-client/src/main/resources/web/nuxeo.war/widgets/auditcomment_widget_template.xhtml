@@ -3,13 +3,14 @@
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
 <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{messages[field_0.comment]}</c:if>
 <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
 
   <h:outputText value="#{messages[field_0.comment]}" />
-  <c:if test="#{not empty field_0.linkedDoc}">
+  <ui:fragment rendered="#{not empty field_0.linkedDoc}">
     <h:outputText value="   "/>
     <nxu:graphicImage value="/icons/broken_file.png"
       rendered="#{field_0.linkedDoc.brokenDocument}"
@@ -23,13 +24,13 @@
         alt="#{field_0.linkedDoc.document.type}">
       </nxu:graphicImage>
     </nxd:restDocumentLink>
-  </c:if>
+  </ui:fragment>
 
 </c:if>
 <c:if test="#{widget.mode == 'pdf'}">
 <nxp:html>
   <h:outputText value="#{messages[field_0.comment]}" />
-  <c:if test="#{not empty field_0.linkedDoc}">
+  <ui:fragment rendered="#{not empty field_0.linkedDoc}">
     <h:outputText value="   "/>
     <nxu:graphicImage value="/icons/broken_file.png"
       rendered="#{field_0.linkedDoc.brokenDocument}"
@@ -42,7 +43,7 @@
         alt="#{field_0.linkedDoc.document.type}">
       </nxu:graphicImage>
     </nxd:restDocumentLink>
-  </c:if>
+  </ui:fragment>
 </nxp:html>
 </c:if>
 </f:subview>
