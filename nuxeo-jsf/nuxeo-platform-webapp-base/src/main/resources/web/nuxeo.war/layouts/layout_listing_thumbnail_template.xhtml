@@ -52,7 +52,7 @@
   <ui:remove>for slideshow</ui:remove>
   <nxu:set var="blobInfo"
     value="#{blobHolderGenerator.getBlobHolder(value.data).blob.filename}"
-    cache="true">
+    cache="false">
     <h:outputLink value="#{contextPath}/api/v1/id/#{value.data.id}"
       class="image-popup visibilityH"
       rendered="#{not empty blobInfo and value.data.hasFacet('Picture')}" />
