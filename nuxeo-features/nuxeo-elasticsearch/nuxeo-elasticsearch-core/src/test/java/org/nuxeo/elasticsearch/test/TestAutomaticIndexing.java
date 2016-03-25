@@ -31,16 +31,26 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -56,6 +66,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -699,4 +711,35 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(4, ret.totalSize());
     }
 
+    @Test
+    public void shouldIndexComplexCase() throws Exception {
+        startTransaction();
+
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        ACP acp = new ACPImpl();
+        ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+        acl.add(new ACE("bob", SecurityConstants.READ, true));
+        acp.addACL(acl);
+        folder.setACP(acp, true);
+
+        DocumentModel doc = session.createDocumentModel("/folder", "file", "File");
+        doc.setPropertyValue("dc:title", "File");
+        // upload file blob
+        File fieldAsJsonFile = FileUtils.getResourceFileFromContext("blob.json");
+        try {
+            Blob fb = Blobs.createBlob(fieldAsJsonFile, "image/jpeg");
+            DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+        doc = session.createDocument(doc);
+        // session.saveDocument(doc);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(3);
+        startTransaction();
+
+    }
 }
