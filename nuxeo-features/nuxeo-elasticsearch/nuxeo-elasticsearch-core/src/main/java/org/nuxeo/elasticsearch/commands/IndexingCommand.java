@@ -74,6 +74,8 @@ public class IndexingCommand implements Serializable {
 
     protected List<String> schemas;
 
+    protected long order;
+
     protected transient String sessionId;
 
     protected IndexingCommand() {
@@ -224,6 +226,7 @@ public class IndexingCommand implements Serializable {
         jsonGen.writeStringField("repo", getRepositoryName());
         jsonGen.writeBooleanField("recurse", recurse);
         jsonGen.writeBooleanField("sync", sync);
+        jsonGen.writeNumberField("order", getOrder());
         jsonGen.writeEndObject();
     }
 
@@ -329,4 +332,13 @@ public class IndexingCommand implements Serializable {
         }
     }
 
+    // @since 8.2
+    public long getOrder() {
+        return order;
+    }
+
+    // @since 8.2
+    public void setOrder(long order) {
+        this.order = order;
+    }
 }
