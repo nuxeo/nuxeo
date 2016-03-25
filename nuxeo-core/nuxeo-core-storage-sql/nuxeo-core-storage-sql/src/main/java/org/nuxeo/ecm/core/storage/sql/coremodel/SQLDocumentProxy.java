@@ -283,7 +283,7 @@ public class SQLDocumentProxy implements SQLDocument {
 
     @Override
     public Document getBaseVersion() throws DocumentException {
-        return null;
+        return target.getBaseVersion();
     }
 
     @Override

@@ -464,7 +464,9 @@ public class DBSDocument implements Document {
 
     @Override
     public Document getBaseVersion() throws DocumentException {
-        if (isProxy() || isVersion()) {
+        if (isProxy()) {
+            return getTargetDocument().getBaseVersion();
+        } else if (isVersion()) {
             return null;
         } else {
             if (isCheckedOut()) {
