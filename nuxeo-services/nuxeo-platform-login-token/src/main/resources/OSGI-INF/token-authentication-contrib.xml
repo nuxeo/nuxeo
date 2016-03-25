@@ -43,7 +43,7 @@
       use token authentication just after basic one.
     </documentation>
 
-    <specificAuthenticationChain name="Automation" handlePrompt="false">
+    <specificAuthenticationChain name="Automation">
 
       <urlPatterns>
         <url>(.*)/automation.*</url>
