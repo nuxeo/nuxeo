@@ -284,15 +284,21 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     @Override
     public void doCheckOut(Document doc) {
+        Document base = doc.getBaseVersion();
         doc.checkOut();
-        // set version number to that of the last version
-        try {
+        // set version number to that of the latest version
+        if (base.isLatestVersion()) {
+            // nothing to do, already at proper version
+        } else {
+            // this doc was restored from a non-latest version, find the latest one
             Document last = doc.getLastVersion();
             if (last != null) {
-                setVersion(doc, getMajor(last), getMinor(last));
+                try {
+                    setVersion(doc, getMajor(last), getMinor(last));
+                } catch (PropertyNotFoundException e) {
+                    // ignore
+                }
             }
-        } catch (PropertyNotFoundException e) {
-            // ignore
         }
     }
 
