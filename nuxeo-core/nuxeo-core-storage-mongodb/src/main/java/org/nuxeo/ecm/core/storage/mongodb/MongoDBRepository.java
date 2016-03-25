@@ -36,7 +36,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PREFIX;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
@@ -51,7 +50,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +80,7 @@ import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
-import org.nuxeo.ecm.core.storage.dbs.DBSSession;
+import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
@@ -826,7 +824,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 if (manualProjection) {
                     projections.addAll(evaluator.matches(state));
                 } else {
-                    projections.add(flatten(state));
+                    projections.add(DBSStateFlattener.flatten(state));
                 }
             }
             if (countUpTo == -1) {
@@ -863,56 +861,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (principals != null) {
             DBObject inPrincipals = new BasicDBObject(QueryOperators.IN, new ArrayList<String>(principals));
             query.put(DBSDocument.KEY_READ_ACL, inPrincipals);
-        }
-    }
-
-    /**
-     * Flatten and convert from internal names to NXQL.
-     */
-    protected Map<String, Serializable> flatten(State state) {
-        Map<String, Serializable> map = new HashMap<>();
-        flatten(map, state, null);
-        return map;
-    }
-
-    protected void flatten(Map<String, Serializable> map, State state, String prefix) {
-        for (Entry<String, Serializable> en : state.entrySet()) {
-            String key = en.getKey();
-            Serializable value = en.getValue();
-            String name;
-            if (key.startsWith(KEY_PREFIX)) {
-                name = DBSSession.convToNXQL(key);
-                if (name == null) {
-                    // present in state but not returned to caller
-                    continue;
-                }
-            } else {
-                name = key;
-            }
-            name = prefix == null ? name : prefix + name;
-            if (value instanceof State) {
-                flatten(map, (State) value, name + '/');
-            } else if (value instanceof List) {
-                String nameSlash = name + '/';
-                int i = 0;
-                for (Object v : (List<?>) value) {
-                    if (v instanceof State) {
-                        flatten(map, (State) v, nameSlash + i + '/');
-                    } else {
-                        map.put(nameSlash + i, (Serializable) v);
-                    }
-                    i++;
-                }
-            } else if (value instanceof Object[]) {
-                String nameSlash = name + '/';
-                int i = 0;
-                for (Object v : (Object[]) value) {
-                    map.put(nameSlash + i, (Serializable) v);
-                    i++;
-                }
-            } else {
-                map.put(name, value);
-            }
         }
     }
 
