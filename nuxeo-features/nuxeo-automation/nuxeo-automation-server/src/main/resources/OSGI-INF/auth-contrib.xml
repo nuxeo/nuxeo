@@ -23,7 +23,7 @@ Setup a Basic Auth plugin for /automation paths that will always send 401 on aut
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
       point="specificChains">
 
-    <specificAuthenticationChain name="Automation" handlePrompt="false">
+    <specificAuthenticationChain name="Automation">
         <urlPatterns>
             <url>(.*)/automation.*</url>
         </urlPatterns>
