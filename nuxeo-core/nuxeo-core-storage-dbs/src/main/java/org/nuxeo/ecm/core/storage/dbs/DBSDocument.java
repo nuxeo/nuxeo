@@ -537,7 +537,9 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public Document getBaseVersion() {
-        if (isProxy() || isVersion()) {
+        if (isProxy()) {
+            return getTargetDocument().getBaseVersion();
+        } else if (isVersion()) {
             return null;
         } else {
             if (isCheckedOut()) {

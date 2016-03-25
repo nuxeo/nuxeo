@@ -96,15 +96,21 @@ public class CompatVersioningService extends StandardVersioningService {
 
     @Override
     public void doCheckOut(Document doc) {
+        Document base = doc.getBaseVersion();
         doc.checkOut();
         // set version number to that of the last version + inc minor
-        try {
-            Document last = doc.getLastVersion();
-            if (last != null) {
+        Document last;
+        if (base.isLatestVersion()) {
+            last = base;
+        } else {
+            last = doc.getLastVersion();
+        }
+        if (last != null) {
+            try {
                 setVersion(doc, getMajor(last), getMinor(last) + 1);
+            } catch (PropertyNotFoundException e) {
+                // ignore
             }
-        } catch (PropertyNotFoundException e) {
-            // ignore
         }
     }
 
