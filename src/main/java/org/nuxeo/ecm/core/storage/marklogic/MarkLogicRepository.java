@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -115,7 +116,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public String generateNewId() {
-        throw new IllegalStateException("Not implemented yet");
+        return UUID.randomUUID().toString();
     }
 
     @Override
