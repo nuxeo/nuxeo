@@ -17,10 +17,6 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <encoding>UTF-8</encoding>
-    <!-- URL of the last archived artifacts of the nuxeo-drive marketplace package on Jenkins -->
-    <nuxeo.drive.mp.url>
-      http://qa.nuxeo.org/jenkins/job/addons_nuxeo-drive-master-marketplace/lastSuccessfulBuild/artifact/marketplace/target/
-    </nuxeo.drive.mp.url>
   </properties>
 
   <dependencies>
@@ -114,7 +110,6 @@
             </goals>
             <configuration>
               <targets>
-                <target>fetch-nuxeo-drive-mp</target>
                 <target>prepare-environment</target>
                 <target>start</target>
               </targets>

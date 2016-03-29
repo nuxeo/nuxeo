@@ -12,20 +12,9 @@
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
-  <!-- Configure nuxeo-drive marketplace package installation -->
-  <property name="nuxeo.drive.mp.filename" value="nuxeo-drive.zip" />
-  <property name="mp.install" value="${out.dir}/${nuxeo.drive.mp.filename}" />
+  <!-- Install nuxeo-drive and nuxeo-platform-importer packages -->
+  <property name="mp.install" value="nuxeo-drive,nuxeo-platform-importer" />
 
-  <target name="fetch-nuxeo-drive-mp">
-    <exec executable="python" failonerror="true">
-      <arg value="../tools/integration_tests_setup.py" />
-      <arg value="--base-folder=../nuxeo-drive-client" />
-      <arg value="--work-folder=${out.dir}" />
-      <arg value="fetch-mp" />
-      <arg value="--url=${nuxeo.drive.mp.url}" />
-      <arg value="--marketplace-filename=${nuxeo.drive.mp.filename}" />
-    </exec>
-  </target>
 
   <target name="tune-nuxeo">
     <antcall target="set-conf">
