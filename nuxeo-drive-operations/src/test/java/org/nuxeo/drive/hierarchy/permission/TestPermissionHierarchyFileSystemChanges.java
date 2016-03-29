@@ -62,6 +62,7 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
@@ -163,9 +164,6 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     @After
     public void tearDown() {
-        // needed for session cleanup
-        TransactionHelper.startTransaction();
-
         // Close core sessions
         if (session1 != null) {
             session1.close();
@@ -206,12 +204,11 @@ public class TestPermissionHierarchyFileSystemChanges {
     @Test
     public void testRegisteredSyncRootChildChange() throws InterruptedException {
 
-        TransactionHelper.commitOrRollbackTransaction();
+        commitAndWaitForAsyncCompletion();
         DocumentModel folderA;
         DocumentModel folderC;
 
         // Create the tree structure
-        TransactionHelper.startTransaction();
         try {
             createFolderTree(session1, userWorkspace1.getPathAsString(), 5);
             folderA = session1.getChild(userWorkspace1.getRef(), "Folder A");
@@ -225,7 +222,6 @@ public class TestPermissionHierarchyFileSystemChanges {
 
         lastEventLogId = nuxeoDriveManager.getChangeFinder().getUpperBound();
         // Register FolderA as a synchronization root for user2
-        TransactionHelper.startTransaction();
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), folderA, session2);
             assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2)
@@ -235,7 +231,6 @@ public class TestPermissionHierarchyFileSystemChanges {
         }
 
         // Check file system item change
-        TransactionHelper.startTransaction();
         try {
             List<FileSystemItemChange> changes = getChanges(principal2);
             assertEquals(1, changes.size());
@@ -244,10 +239,9 @@ public class TestPermissionHierarchyFileSystemChanges {
             assertEquals("Folder A", change.getFileSystemItemName());
             assertNotNull(change.getFileSystemItem());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             resetPermissions(session1, folderA.getRef(), "user2");
         } finally {
@@ -255,7 +249,6 @@ public class TestPermissionHierarchyFileSystemChanges {
         }
 
         // Check file system item change
-        TransactionHelper.startTransaction();
         try {
             List<FileSystemItemChange> changes = getChanges(principal2);
             assertEquals(1, changes.size());
@@ -264,11 +257,10 @@ public class TestPermissionHierarchyFileSystemChanges {
             assertNull(change.getFileSystemItemName());
             assertNull(change.getFileSystemItem());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
 
         // Register Folder C as a synchronization root for user2
-        TransactionHelper.startTransaction();
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), folderC, session2);
             assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
@@ -280,7 +272,6 @@ public class TestPermissionHierarchyFileSystemChanges {
         }
 
         // Check file system item change
-        TransactionHelper.startTransaction();
         try {
             assertEquals(1, session2.getChildren(folderC.getRef()).size());
             List<FileSystemItemChange> changes = getChanges(principal2);
@@ -290,7 +281,7 @@ public class TestPermissionHierarchyFileSystemChanges {
             assertEquals("Folder C", change.getFileSystemItemName());
             assertNotNull(change.getFileSystemItem());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
     }
 
@@ -303,13 +294,12 @@ public class TestPermissionHierarchyFileSystemChanges {
     @Test
     public void testAdaptableUnregisteredSyncRootChange() throws InterruptedException {
 
-        TransactionHelper.commitOrRollbackTransaction();
+        commitAndWaitForAsyncCompletion();
 
         lastEventLogId = nuxeoDriveManager.getChangeFinder().getUpperBound();
 
         // Register user1's personal workspace as a synchronization root for
         // user1
-        TransactionHelper.startTransaction();
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session1.getPrincipal(), userWorkspace1, session1);
             assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session1).contains(
@@ -319,7 +309,6 @@ public class TestPermissionHierarchyFileSystemChanges {
         }
 
         // Check file system item change
-        TransactionHelper.startTransaction();
         try {
             List<FileSystemItemChange> changes = getChanges(principal1);
             assertEquals(1, changes.size());
@@ -328,22 +317,19 @@ public class TestPermissionHierarchyFileSystemChanges {
             assertEquals("My Docs", change.getFileSystemItemName());
             assertNotNull(change.getFileSystemItem());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
 
         // Unregister user1's personal workspace as a synchronization root for
         // user1
-        TransactionHelper.startTransaction();
         try {
             nuxeoDriveManager.unregisterSynchronizationRoot(session1.getPrincipal(), userWorkspace1, session1);
-            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session1).contains(
-                    new IdRef(userWorkspace1.getId())));
+            assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session1).contains(new IdRef(userWorkspace1.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
 
         // Check file system item change
-        TransactionHelper.startTransaction();
         try {
             List<FileSystemItemChange> changes = getChanges(principal1);
             assertEquals(1, changes.size());
@@ -352,7 +338,7 @@ public class TestPermissionHierarchyFileSystemChanges {
             assertNull(change.getFileSystemItemName());
             assertNull(change.getFileSystemItem());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
     }
 
@@ -384,14 +370,12 @@ public class TestPermissionHierarchyFileSystemChanges {
     @Test
     @LocalDeploy("org.nuxeo.drive.operations.test:OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml")
     public void testRootlessItems() throws Exception {
-
-        TransactionHelper.commitOrRollbackTransaction();
+        commitAndWaitForAsyncCompletion();
 
         DocumentModel user1Folder1;
         DocumentModel user1Folder2;
         DocumentModel user1File2;
 
-        TransactionHelper.startTransaction();
         try {
             // Populate user1's personal workspace
             user1Folder1 = createFolder(session1, userWorkspace1.getPathAsString(), "user1Folder1", "Folder");
@@ -402,14 +386,11 @@ public class TestPermissionHierarchyFileSystemChanges {
         } finally {
             commitAndWaitForAsyncCompletion();
         }
-        // Wait for creation events to be logged in the audit
-        eventService.waitForAsyncCompletion();
 
         lastEventLogId = nuxeoDriveManager.getChangeFinder().getUpperBound();
 
         // Check sync root with Everything permission: user1Folder1 => adaptable
         // so appears in the file system changes
-        TransactionHelper.startTransaction();
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), user1Folder1, session2);
             assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
@@ -417,7 +398,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         } finally {
             commitAndWaitForAsyncCompletion();
         }
-        TransactionHelper.startTransaction();
+
         try {
             List<FileSystemItemChange> changes = getChanges(principal2);
             assertEquals(1, changes.size());
@@ -426,12 +407,11 @@ public class TestPermissionHierarchyFileSystemChanges {
             assertEquals("user1Folder1", change.getFileSystemItemName());
             assertNotNull(change.getFileSystemItem());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
 
         // Check sync root with ReadWrite permission only: user1Folder2 => not
         // adaptable so doesn't appear in the file system changes
-        TransactionHelper.startTransaction();
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), user1Folder2, session2);
             assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
@@ -439,18 +419,17 @@ public class TestPermissionHierarchyFileSystemChanges {
         } finally {
             commitAndWaitForAsyncCompletion();
         }
-        TransactionHelper.startTransaction();
+
         try {
             List<FileSystemItemChange> changes = getChanges(principal2);
             assertTrue(changes.isEmpty());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
 
         // Check file creation in a sync root with ReadWrite permission only:
         // user1File1 => non adaptable parent user1Folder2 so doesn't appear in
         // the file system changes
-        TransactionHelper.startTransaction();
         try {
             createFile(session1, user1Folder2.getPathAsString(), "user1File1", "File", "user1File1.txt", CONTENT_PREFIX
                     + "user1File1");
@@ -459,29 +438,24 @@ public class TestPermissionHierarchyFileSystemChanges {
             commitAndWaitForAsyncCompletion();
         }
 
-        TransactionHelper.startTransaction();
         try {
             List<FileSystemItemChange> changes = getChanges(principal2);
             assertTrue(changes.isEmpty());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
 
         // Check file creation in a sync root without Read permission:
         // user1File2 => non accessible parent user1Folder2 so doesn't appear in
         // the file system changes
-        TransactionHelper.startTransaction();
         try {
             resetPermissions(session1, user1Folder2.getRef(), "user2");
             user1File2 = createFile(session1, user1Folder2.getPathAsString(), "user1File2", "File", "user1File2.txt",
                     CONTENT_PREFIX + "user1File2");
             setPermission(session1, user1File2, "user2", SecurityConstants.READ, true);
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
-        // Wait for creation events to be logged in the audit
-        eventService.waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
         try {
             // Security updates
             List<FileSystemItemChange> changes = getChanges(principal2);
@@ -501,7 +475,7 @@ public class TestPermissionHierarchyFileSystemChanges {
             // Not adaptable as a FileSystemItem since no Read permission
             assertNull(change.getFileSystemItem());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
     }
 
@@ -559,9 +533,11 @@ public class TestPermissionHierarchyFileSystemChanges {
         session.save();
     }
 
+    @Inject
+    TransactionalFeature txFeature;
+
     protected void commitAndWaitForAsyncCompletion() {
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
+        txFeature.nextTransaction();
     }
 
     protected List<FileSystemItemChange> getChanges(Principal principal) throws InterruptedException {

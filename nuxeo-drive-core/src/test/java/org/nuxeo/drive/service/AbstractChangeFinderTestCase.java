@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -177,8 +178,10 @@ public class AbstractChangeFinderTestCase {
 
     }
 
+    @Inject TransactionalFeature txFeature;
+
     protected void waitForAsyncCompletion() throws Exception {
-        workManager.awaitCompletion(20, TimeUnit.SECONDS);
+        txFeature.nextTransaction(20, TimeUnit.SECONDS);
     }
 
     protected void setPermissions(DocumentModel doc, ACE... aces) throws Exception {
