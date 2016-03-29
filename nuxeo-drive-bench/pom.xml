@@ -111,6 +111,7 @@
             <configuration>
               <targets>
                 <target>prepare-environment</target>
+                <target>tune-nuxeo</target>
                 <target>start</target>
               </targets>
             </configuration>

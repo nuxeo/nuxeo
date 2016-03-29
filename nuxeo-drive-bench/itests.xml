@@ -27,32 +27,4 @@
     </antcall>
   </target>
 
-  <!-- TODO: patch to remove clid on mp-install until NXBT-902 is fixed -->
-  <target name="start-unix" if="osfamily-unix">
-    <antcall target="tune-nuxeo" />
-    <if>
-      <available file="${nuxeo.data}/installAfterRestart.log" />
-      <then>
-        <echo level="info" message="Execute pending actions before start" />
-        <exec executable="${nuxeo.home}/bin/nuxeoctl" spawn="false" failonerror="true">
-          <arg value="mp-install" />
-          <env key="LAUNCHER_DEBUG" value="${launcher.debug}" />
-        </exec>
-      </then>
-    </if>
-    <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl" />
-    <exec executable="${nuxeo.home}/bin/nuxeoctl" spawn="false" failonerror="false" resultproperty="retcode">
-      <arg value="start" />
-      <arg value="--force" />
-      <arg value="${nuxeoctl.option.clid}" />
-      <env key="LAUNCHER_DEBUG" value="${launcher.debug}" />
-    </exec>
-    <condition property="startup.failed" value="${retcode}">
-      <not>
-        <equals arg1="${retcode}" arg2="0" />
-      </not>
-    </condition>
-    <antcall target="stop-iffailed" />
-  </target>
-
 </project>
