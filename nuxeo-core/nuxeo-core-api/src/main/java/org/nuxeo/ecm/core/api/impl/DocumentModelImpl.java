@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.Transaction;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ArrayMap;
@@ -1640,12 +1642,19 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @since 7.10
      */
     private Object writeReplace() throws ObjectStreamException {
-        if (TransactionHelper.isNoTransaction()) { // protect from no transaction
-            TransactionHelper.startTransaction();
+        if (!TransactionHelper.isTransactionActive()) { // protect from no transaction
+            Transaction tx = TransactionHelper.suspendTransaction();
             try {
-                return writeReplace();
+                TransactionHelper.startTransaction();
+                try {
+                    return writeReplace();
+                } finally {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
             } finally {
-                TransactionHelper.commitOrRollbackTransaction();
+                if (tx != null) {
+                    TransactionHelper.resumeTransaction(tx);
+                }
             }
         }
         if (isDirty()) {
