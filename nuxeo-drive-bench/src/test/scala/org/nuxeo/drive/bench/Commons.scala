@@ -156,7 +156,7 @@ object Actions {
         .exec(
           http("Create user")
             .post("/api/v1/user")
-            .headers(Headers.default)
+            .headers(Headers.nxProperties)
             .header("Content-Type", "application/json")
             .basicAuth("${adminId}", "${adminPassword}")
             .body(StringBody(
@@ -187,7 +187,7 @@ object Actions {
         .exec(
           http("Create group")
             .post("/api/v1/group")
-            .headers(Headers.default)
+            .headers(Headers.nxProperties)
             .header("Content-Type", "application/json")
             .basicAuth("${adminId}", "${adminPassword}")
             .body(StringBody(
@@ -229,7 +229,9 @@ object Actions {
     exec(
       http("Get drive token")
         .get("/authentication/token")
-        .headers(Headers.default).header("X-Device-Id", "${deviceId}")
+        .headers(Headers.base)
+        .headers(Headers.drive)
+        .header("X-Device-Id", "${deviceId}")
         .header("X-user-Id", "${user}")
         .basicAuth("${user}", "${password}")
         .queryParamSeq(Seq(
@@ -254,6 +256,91 @@ object Actions {
       .basicAuth("${adminId}", "${adminPassword}")
       .body(StringBody( """{"params":{"permission": "ReadWrite", "user": """" + principal + """"}}""".stripMargin))
       .check(status.in(200))
+  }
+
+  def fetchAutomationAPI = () => {
+    http("Hello Automation")
+      .get(Constants.AUTOMATION_PATH + "/")
+      .headers(Headers.base)
+      .headers(Headers.drive)
+      .header("X-Device-Id", "${deviceId}")
+      .header("X-user-Id", "${user}")
+      .header("X-Authentication-Token", "${token}")
+      .check(status.in(200))
+      .check(regex("NuxeoDrive.GetClientUpdateInfo").exists)
+      .check(regex("NuxeoDrive.GetTopLevelFolder").exists)
+      .check(regex("NuxeoDrive.GetFileSystemItem").exists)
+      .check(regex("NuxeoDrive.GetChangeSummary").exists)
+  }
+
+  def getClientUpdateInfo = () => {
+    http("Get client update info")
+      .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetClientUpdateInfo")
+      .headers(Headers.nxProperties)
+      .headers(Headers.drive)
+      .header("X-Device-Id", "${deviceId}")
+      .header("X-user-Id", "${user}")
+      .header("X-Authentication-Token", "${token}")
+      .header("Content-Type", "application/json+nxrequest")
+      .body(StringBody( """{"params":{}}"""))
+      .check(status.in(200)).check(regex("serverVersion").exists)
+  }
+
+  def getTopLevelFolder = () => {
+    http("Get top level folder")
+      .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetTopLevelFolder")
+      .headers(Headers.nxProperties)
+      .headers(Headers.drive)
+      .header("X-Device-Id", "${deviceId}")
+      .header("X-user-Id", "${user}")
+      .header("X-Authentication-Token", "${token}")
+      .header("Content-Type", "application/json+nxrequest")
+      .body(StringBody( """{"params":{}}"""))
+      .check(status.in(200)).check(regex("canCreateChild").exists)
+  }
+
+  def getFileSystemItem = (id: String) => {
+    http("Get file system item")
+      .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetFileSystemItem")
+      .headers(Headers.nxProperties)
+      .headers(Headers.drive)
+      .header("X-Device-Id", "${deviceId}")
+      .header("X-user-Id", "${user}")
+      .header("X-Authentication-Token", "${token}")
+      .header("Content-Type", "application/json+nxrequest")
+      .body(StringBody( """{"params": {"id": """" + id + """"}}"""))
+      .check(status.in(200))
+  }
+
+  def getChangeSummary = (lowerBound: Option[String], lastSyncActiveRootDefinitions: Option[String]) => {
+    val params = new StringBuilder
+    params += '{'
+    var isLowerBound = false
+    if (!lowerBound.isEmpty) {
+      isLowerBound = true
+      params ++= """"lowerBound": """
+      params ++= lowerBound.get
+    }
+    if (!lastSyncActiveRootDefinitions.isEmpty) {
+      if (isLowerBound) {
+        params ++= ", "
+      }
+      params ++= """"lastSyncActiveRootDefinitions": """"
+      params ++= lastSyncActiveRootDefinitions.get
+      params += '"'
+    }
+    params += '}'
+    http("Get change summary")
+      .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetChangeSummary")
+      .headers(Headers.nxProperties)
+      .headers(Headers.drive)
+      .header("X-Device-Id", "${deviceId}")
+      .header("X-user-Id", "${user}")
+      .header("X-Authentication-Token", "${token}")
+      .header("Content-Type", "application/json+nxrequest")
+      .body(StringBody(
+      """{"params": """ + params.toString + "}".stripMargin)
+      ).check(status.in(200))
   }
 }
 

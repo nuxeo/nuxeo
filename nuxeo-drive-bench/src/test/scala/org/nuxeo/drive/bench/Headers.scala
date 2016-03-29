@@ -22,22 +22,24 @@ package org.nuxeo.drive.bench
 object Headers {
 
   val base = Map(
-    "User-Agent" -> "Gatling",
-    "X-Application-Name" -> "Nuxeo Drive",
-    "X-Client-Version" -> "2.0.0625"
+    "User-Agent" -> "Gatling"
   )
 
-  val default = base.++(
+  val nxProperties = base.++(
     Map(
-      "X-Application-Name" -> "Nuxeo Drive",
-      "X-Client-Version" -> "2.0.0625",
       "X-Nxdocumentproperties" -> "*",
       "X-Nxproperties" -> "*"
     ))
 
-  val withEnricher = default.++(
+  val withEnricher = nxProperties.++(
     Map(
       "X-NXenrichers.document" -> "files",
-      "depth" -> "max"))
+      "depth" -> "max"
+    ))
+
+  val drive = Map(
+    "X-Application-Name" -> "Nuxeo Drive",
+    "X-Client-Version" -> "2.0.0625"
+  )
 
 }
