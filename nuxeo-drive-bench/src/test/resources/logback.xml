@@ -12,7 +12,10 @@
   <!-- Uncomment for logging ALL HTTP request and responses -->
   <!-- 	<logger name="io.gatling.http" level="TRACE" /> -->
   <!-- Uncomment for logging ONLY FAILED HTTP request and responses -->
-  <!-- 	<logger name="io.gatling.http" level="DEBUG" /> -->
+  <!-- <logger name="io.gatling.http" level="DEBUG" /> -->
+
+  <!-- Uncomment for having org.nuxeo.drive.bench DEBUG logs -->
+  <!-- <logger name="org.nuxeo.drive.bench" level="DEBUG" /> -->
 
   <root level="WARN">
     <appender-ref ref="CONSOLE" />

@@ -29,3 +29,20 @@ class DriveBenchSimulation extends Simulation {
   ).protocols(httpProtocol)
     .assertions(global.successfulRequests.percent.greaterThan(80))
 }
+
+class RecursiveRemoteScanSimulation extends Simulation {
+
+  val httpProtocol = http
+    .baseURL(Parameters.getBaseUrl())
+    .disableWarmUp
+    .acceptEncodingHeader("gzip, deflate")
+    .acceptEncodingHeader("identity")
+    .connection("keep-alive")
+    .disableCaching // disabling Etag cache since If-None-Modified on GetChildren fails
+
+  val remoteScan = RecursiveRemoteScan.run()
+
+  setUp(remoteScan.inject(rampUsers(Parameters.getConcurrentUsers(1, prefix = "remoteScan.")).over(Parameters.getRampDuration(10))))
+    .protocols(httpProtocol)
+    .assertions(global.successfulRequests.percent.is(100))
+}

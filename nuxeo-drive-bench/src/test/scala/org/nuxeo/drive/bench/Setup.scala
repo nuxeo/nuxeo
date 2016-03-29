@@ -27,6 +27,29 @@ object Setup {
   }
 }
 
+object SetupRemoteScan {
+
+  def run = (nbThreads: Integer, nbNodes: Integer, userCount: Integer) => {
+    scenario("SetupRemoteScan")
+      .feed(Feeders.admins)
+      .exec(Actions.createGroupIfNotExists(Constants.GAT_GROUP_NAME)).exitHereIfFailed
+      .exec(Actions.createDocumentIfNotExistsAsAdmin(Constants.ROOT_WORKSPACE_PATH, Constants.GAT_WS_NAME, "Workspace")).exitHereIfFailed
+      .exec(Actions.grantReadWritePermission(Constants.GAT_WS_PATH, Constants.GAT_GROUP_NAME)).exitHereIfFailed
+      .exec(NuxeoImporter.massImport(nbThreads, nbNodes))
+      .exec(NuxeoImporter.waitForAsyncJobs())
+      .repeat(userCount.intValue(), "count") {
+      feed(Feeders.usersQueue)
+        .feed(Feeders.deviceId)
+        .exec(Actions.createUserIfNotExists(Constants.GAT_GROUP_NAME))
+        .exec(Actions.synchronyzeFolder(Constants.GAT_WS_PATH))
+        // Let's imitate Drive server binding
+        .exec(Actions.getDriveToken())
+        .exec(Actions.fetchAutomationAPI())
+        .exec(Actions.getClientUpdateInfo())
+    }
+  }
+}
+
 class SetupSimulation extends Simulation {
 
   val httpProtocol = http
@@ -37,6 +60,21 @@ class SetupSimulation extends Simulation {
 
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
   val scn = scenario("Setup").exec(Setup.run(userCount))
+
+  Feeders.clearTokens()
+  setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
+    .assertions(global.successfulRequests.percent.is(100))
+}
+
+class SetupRemoteScanSimulation extends Simulation {
+
+  val httpProtocol = http
+    .baseURL(Parameters.getBaseUrl())
+    .disableWarmUp
+    .acceptEncodingHeader("gzip, deflate")
+    .connection("keep-alive")
+
+  val scn = SetupRemoteScan.run(Parameters.getNbThreads(12), Parameters.getNbNodes(100000), Parameters.getConcurrentUsers(1, prefix = "remoteScan."))
 
   Feeders.clearTokens()
   setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)

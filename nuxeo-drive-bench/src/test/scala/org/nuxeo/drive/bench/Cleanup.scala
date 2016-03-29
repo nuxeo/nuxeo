@@ -33,3 +33,17 @@ class CleanupSimulation extends Simulation {
   setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
     .assertions(global.successfulRequests.percent.is(100))
 }
+
+class CleanupRemoteScanSimulation extends Simulation {
+
+  val httpProtocol = http
+    .baseURL(Parameters.getBaseUrl())
+    .disableWarmUp
+    .acceptEncodingHeader("gzip, deflate")
+    .connection("keep-alive")
+
+  val scn = scenario("CleanupRemoteScan").exec(Cleanup.run(Parameters.getConcurrentUsers(1, prefix = "remoteScan.")))
+
+  Feeders.clearTokens()
+  setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
+}

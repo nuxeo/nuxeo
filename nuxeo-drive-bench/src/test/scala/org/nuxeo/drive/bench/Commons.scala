@@ -271,6 +271,7 @@ object Actions {
       .check(regex("NuxeoDrive.GetTopLevelFolder").exists)
       .check(regex("NuxeoDrive.GetFileSystemItem").exists)
       .check(regex("NuxeoDrive.GetChangeSummary").exists)
+      .check(regex("NuxeoDrive.GetChildren").exists)
   }
 
   def getClientUpdateInfo = () => {
@@ -341,6 +342,19 @@ object Actions {
       .body(StringBody(
       """{"params": """ + params.toString + "}".stripMargin)
       ).check(status.in(200))
+  }
+
+  def getChildren = (id: String) => {
+    http("Get children")
+      .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetChildren")
+      .headers(Headers.nxProperties)
+      .headers(Headers.drive)
+      .header("X-Device-Id", "${deviceId}")
+      .header("X-user-Id", "${user}")
+      .header("X-Authentication-Token", "${token}")
+      .header("Content-Type", "application/json+nxrequest")
+      .body(StringBody( """{"params": {"id": """" + id + """"}}"""))
+      .check(status.in(200))
   }
 }
 

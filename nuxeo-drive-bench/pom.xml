@@ -49,6 +49,10 @@
       <artifactId>scala-library</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.typesafe.scala-logging</groupId>
+      <artifactId>scala-logging_2.11</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-tomcat</artifactId>
       <classifier>nuxeo-cap</classifier>
@@ -81,42 +85,6 @@
           <resultsFolder>target/gatling/results</resultsFolder>
           <simulationsFolder>src/test/scala</simulationsFolder>
         </configuration>
-        <executions>
-          <execution>
-            <id>setup</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <simulationClass>org.nuxeo.drive.bench.SetupSimulation</simulationClass>
-            </configuration>
-          </execution>
-          <execution>
-            <id>bench</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <simulationClass>org.nuxeo.drive.bench.DriveBenchSimulation</simulationClass>
-              <jvmArgs>
-                <jvmArg>-Xms1g</jvmArg>
-                <jvmArg>-Xmx2g</jvmArg>
-              </jvmArgs>
-            </configuration>
-          </execution>
-          <execution>
-            <id>cleanup</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <simulationClass>org.nuxeo.drive.bench.CleanupSimulation</simulationClass>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -177,6 +145,106 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+    </profile>
+    <profile>
+      <id>bench</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>setup</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.drive.bench.SetupSimulation</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
+                <id>bench</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.drive.bench.DriveBenchSimulation</simulationClass>
+                  <jvmArgs>
+                    <jvmArg>-Xms1g</jvmArg>
+                    <jvmArg>-Xmx2g</jvmArg>
+                  </jvmArgs>
+                </configuration>
+              </execution>
+              <execution>
+                <id>cleanup</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.drive.bench.CleanupSimulation</simulationClass>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>bench-remote-scan</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>setup-remote-scan</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.drive.bench.SetupRemoteScanSimulation</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
+                <id>bench-remote-scan</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.drive.bench.RecursiveRemoteScanSimulation</simulationClass>
+                  <jvmArgs>
+                    <jvmArg>-Xms1g</jvmArg>
+                    <jvmArg>-Xmx2g</jvmArg>
+                  </jvmArgs>
+                </configuration>
+              </execution>
+              <execution>
+                <id>cleanup-remote-scan</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.drive.bench.CleanupRemoteScanSimulation</simulationClass>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>
