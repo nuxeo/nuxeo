@@ -1,9 +1,6 @@
-<project name="integration-tests"
-         xmlns:nx="urn:nuxeo-build"
-         xmlns:artifact="urn:nuxeo-artifact">
+<project name="drive-gatling-tests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
   <property name="out.dir" value="${maven.project.build.directory}" />
@@ -15,15 +12,27 @@
   <!-- Install nuxeo-drive and nuxeo-platform-importer packages -->
   <property name="mp.install" value="nuxeo-drive,nuxeo-platform-importer" />
 
+  <property name="nuxeo.db.max-pool-size" value="52" />
+  <property name="nuxeo.vcs.max-pool-size" value="50" />
+  <property name="JAVA_OPTS" value="$JAVA_OPTS -Xms3g -Xmx3g -XX:SoftRefLRUPolicyMSPerMB=5" />
 
   <target name="tune-nuxeo">
+    <echo level="info">Tune pool sizes</echo>
+    <echo level="info">nuxeo.db.max-pool-size=${nuxeo.db.max-pool-size}</echo>
     <antcall target="set-conf">
       <param name="name" value="nuxeo.db.max-pool-size" />
-      <param name="value" value="52" />
+      <param name="value" value="${nuxeo.db.max-pool-size}" />
     </antcall>
+    <echo level="info">nuxeo.vcs.max-pool-size=${nuxeo.vcs.max-pool-size}</echo>
     <antcall target="set-conf">
       <param name="name" value="nuxeo.vcs.max-pool-size" />
-      <param name="value" value="50" />
+      <param name="value" value="${nuxeo.vcs.max-pool-size}" />
+    </antcall>
+    <echo level="info">Tune JAVA_OPTS</echo>
+    <echo level="info">JAVA_OPTS=${JAVA_OPTS}</echo>
+    <antcall target="set-conf">
+      <param name="name" value="JAVA_OPTS" />
+      <param name="value" value="${JAVA_OPTS}" />
     </antcall>
   </target>
 
