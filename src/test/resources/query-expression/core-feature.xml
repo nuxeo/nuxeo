@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<q:qbe xmlns:q="http://marklogic.com/appservices/querybyexample" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecm="http://www.nuxeo.org/ecm/schemas/ecm/">
+  <q:query>
+    <document>
+      <q:or>
+        <ecm:primaryType xsi:type="xs:string">OrderedFolder</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">HiddenFile</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">DocWithAge</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">TemplateRoot</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">TestDocument2</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">TestDocumentWithDefaultPrefetch</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">SectionRoot</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">Document</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">Folder</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">WorkspaceRoot</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">HiddenFolder</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">Section</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">TestDocument</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">Relation</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">FolderWithSearch</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">MyDocType</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">Book</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">Note</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">ComplexDoc</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">Domain</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">File</ecm:primaryType>
+        <ecm:primaryType xsi:type="xs:string">Workspace</ecm:primaryType>
+      </q:or>
+    </document>
+  </q:query>
+</q:qbe>

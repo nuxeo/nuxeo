@@ -40,7 +40,7 @@ import com.marklogic.client.util.EditableNamespaceContext;
 /**
  * Builder to convert a {@link StateDiff} into a {@link PatchHandle}.
  *
- * @since 8.2
+ * @since 8.3
  */
 class MarkLogicUpdateBuilder implements Function<StateDiff, PatchHandle> {
 

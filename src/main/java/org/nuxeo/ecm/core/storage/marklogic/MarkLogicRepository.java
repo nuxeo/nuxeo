@@ -27,6 +27,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
+import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
@@ -233,7 +235,56 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
-        throw new IllegalStateException("Not implemented yet");
+        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator.getExpression(),
+                evaluator.getSelectClause(), orderByClause, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
+        // TODO add select
+        StructureWriteHandle query = builder.buildQuery();
+        // Don't do manual projection if there are no projection wildcards, as this brings no new
+        // information and is costly. The only difference is several identical rows instead of one.
+        boolean manualProjection = !distinctDocuments && builder.hasProjectionWildcard();
+        if (manualProjection) {
+            // we'll do post-treatment to re-evaluate the query to get proper wildcard projections
+            // so we need the full state from the database
+            evaluator.parse();
+        }
+        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(init(query), 0)) {
+            List<Map<String, Serializable>> projections = new ArrayList<>((int) page.size());
+            for (DocumentRecord record : page) {
+                State state = record.getContent(new StateHandle()).get();
+                if (manualProjection) {
+                    projections.addAll(evaluator.matches(state));
+                } else {
+                    projections.add(DBSStateFlattener.flatten(state));
+                }
+            }
+            long totalSize;
+            if (countUpTo == -1) {
+                // count full size
+                if (limit == 0) {
+                    totalSize = projections.size();
+                } else {
+                    totalSize = page.getTotalSize();
+                }
+            } else if (countUpTo == 0) {
+                // no count
+                totalSize = -1; // not counted
+            } else {
+                // count only if less than countUpTo
+                if (limit == 0) {
+                    totalSize = projections.size();
+                } else {
+                    totalSize = page.getTotalSize();
+                }
+                if (totalSize > countUpTo) {
+                    totalSize = -2; // truncated
+                }
+            }
+
+            if (log.isTraceEnabled() && projections.size() != 0) {
+                log.trace("MarkLogic:    -> " + projections.size());
+            }
+            return new PartialList<>(projections, totalSize);
+        }
     }
 
     @Override
