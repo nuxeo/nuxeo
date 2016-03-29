@@ -41,7 +41,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -63,7 +62,6 @@ import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
-import org.nuxeo.functionaltests.pages.HomePage;
 import org.nuxeo.functionaltests.pages.LoginPage;
 import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.CollectionCreationFormPage;
@@ -71,8 +69,6 @@ import org.nuxeo.functionaltests.pages.forms.DublinCoreCreationDocumentFormPage;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.NoteCreationFormPage;
 import org.nuxeo.functionaltests.pages.forms.WorkspaceFormPage;
-import org.nuxeo.functionaltests.pages.search.DefaultSearchSubPage;
-import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.runtime.api.Framework;
 
@@ -387,24 +383,10 @@ public abstract class AbstractTest {
     }
 
     /**
-     * @throws UserNotConnectedException
      * @since 7.1
      */
     @After
-    public void checkJavascriptError() throws UserNotConnectedException {
-
-        // Debug NXP-19157,
-        // Try to find out the culprit test that does not cleanup
-        ///To be reverted
-        DocumentBasePage documentBasePage = login();
-        HomePage home = documentBasePage.goToHomePage().goToSavedSearches();
-        assertEquals(1, driver.findElements(By.className("emptyResult")).size());
-        SearchPage searchPage = home.goToSearchPage();
-        DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
-        Map<String, Integer> coverageAgg = searchLayoutSubPage.getAvailableCoverageAggregate();
-        assertEquals(0, coverageAgg.size());
-
-        logout();
+    public void checkJavascriptError() {
         if (driver != null) {
             new JavaScriptErrorCollector(driver).checkForErrors();
         }
