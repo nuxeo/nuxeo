@@ -810,8 +810,9 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         }
     }
 
-    protected static boolean isLiveDocumentMajorVersion(DocumentModel doc) {
-        return !doc.isCheckedOut() && doc.getVersionLabel().endsWith(".0");
+    protected static boolean isVersionOrProxyToVersion(DocumentModel doc) {
+        return doc.isVersion()
+                || (doc.isProxy() && doc.getCoreSession().getSourceDocument(new IdRef(doc.getSourceId())).isVersion());
     }
 
     /**
@@ -826,11 +827,11 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public Boolean getFirstValue() {
-            if (doc.isVersion() || doc.isProxy()) {
+            if (isVersionOrProxyToVersion(doc)) {
                 return Boolean.valueOf(doc.isMajorVersion());
             }
             // checked in doc considered latest version
-            return Boolean.valueOf(isLiveDocumentMajorVersion(doc));
+            return Boolean.valueOf(!doc.isCheckedOut() && doc.getVersionLabel().endsWith(".0"));
         }
     }
 
@@ -846,7 +847,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public Boolean getFirstValue() {
-            if (doc.isVersion() || doc.isProxy()) {
+            if (isVersionOrProxyToVersion(doc)) {
                 return Boolean.valueOf(doc.isLatestVersion());
             }
             // checked in doc considered latest version
@@ -867,11 +868,11 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public Boolean getFirstValue() {
-            if (doc.isVersion() || doc.isProxy()) {
+            if (isVersionOrProxyToVersion(doc)) {
                 return Boolean.valueOf(doc.isLatestMajorVersion());
             }
             // checked in doc considered latest version
-            return Boolean.valueOf(isLiveDocumentMajorVersion(doc));
+            return Boolean.valueOf(!doc.isCheckedOut() && doc.getVersionLabel().endsWith(".0"));
         }
     }
 
@@ -949,7 +950,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public String getFirstValue() {
-            if (doc.isVersion() || doc.isProxy()) {
+            if (isVersionOrProxyToVersion(doc)) {
                 return doc.getVersionLabel();
             }
             return doc.isCheckedOut() ? null : doc.getVersionLabel();
@@ -967,7 +968,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public String getFirstValue() {
-            if (doc.isVersion() || doc.isProxy()) {
+            if (isVersionOrProxyToVersion(doc)) {
                 return doc.getCheckinComment();
             }
             if (doc.isCheckedOut()) {
