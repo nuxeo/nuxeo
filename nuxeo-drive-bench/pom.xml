@@ -143,6 +143,9 @@
       </activation>
     </profile>
     <profile>
+      <id>monitor</id>
+    </profile>
+    <profile>
       <id>bench</id>
       <activation>
         <activeByDefault>true</activeByDefault>
