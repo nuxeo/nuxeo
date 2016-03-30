@@ -138,18 +138,12 @@
   <profiles>
     <profile>
       <id>tomcat</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
     </profile>
     <profile>
       <id>monitor</id>
     </profile>
     <profile>
-      <id>bench</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
+      <id>polling</id>
       <build>
         <plugins>
           <plugin>
@@ -157,7 +151,7 @@
             <artifactId>gatling-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>setup</id>
+                <id>setup-polling</id>
                 <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
@@ -167,7 +161,7 @@
                 </configuration>
               </execution>
               <execution>
-                <id>bench</id>
+                <id>bench-polling</id>
                 <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
@@ -181,7 +175,7 @@
                 </configuration>
               </execution>
               <execution>
-                <id>cleanup</id>
+                <id>cleanup-polling</id>
                 <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
@@ -196,10 +190,7 @@
       </build>
     </profile>
     <profile>
-      <id>bench-remote-scan</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
+      <id>remote-scan</id>
       <build>
         <plugins>
           <plugin>
