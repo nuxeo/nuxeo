@@ -56,12 +56,25 @@ import org.dom4j.Node;
 import org.dom4j.QName;
 import org.dom4j.Text;
 import org.dom4j.util.NodeComparator;
+import org.junit.BeforeClass;
+import org.mockito.Answers;
+import org.mockito.Mockito;
 import org.nuxeo.ecm.core.storage.State;
+
+import com.marklogic.client.DatabaseClient;
+import com.marklogic.client.impl.DatabaseClientImpl;
 
 public abstract class AbstractTest {
 
     @SuppressWarnings("unchecked")
     private static final Comparator<Node> NODE_COMPARATOR = new NodeComparator();
+
+    protected static DatabaseClient CLIENT;
+
+    @BeforeClass
+    public static void beforeClass() {
+        CLIENT = Mockito.mock(DatabaseClientImpl.class, Answers.CALLS_REAL_METHODS.get());
+    }
 
     protected State createStateForBijunction() {
         State state = new State();

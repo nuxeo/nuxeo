@@ -32,6 +32,7 @@ import javax.xml.XMLConstants;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 
@@ -85,6 +86,8 @@ final class MarkLogicStateSerializer {
             String nodeValue;
             if (value instanceof Calendar) {
                 nodeValue = MarkLogicHelper.serializeCalendar((Calendar) value);
+            } else if (value instanceof DateTime) {
+                nodeValue = ((DateTime) value).toString(MarkLogicHelper.DATE_TIME_FORMATTER);
             } else {
                 nodeValue = value.toString();
             }

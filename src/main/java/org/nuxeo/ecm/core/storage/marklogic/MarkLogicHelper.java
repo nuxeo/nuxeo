@@ -96,7 +96,7 @@ final class MarkLogicHelper {
                 return BOOLEAN;
             } else if (Long.class.isAssignableFrom(clazz)) {
                 return LONG;
-            } else if (Calendar.class.isAssignableFrom(clazz)) {
+            } else if (Calendar.class.isAssignableFrom(clazz) || DateTime.class.isAssignableFrom(clazz)) {
                 return CALENDAR;
             }
             return STRING;
