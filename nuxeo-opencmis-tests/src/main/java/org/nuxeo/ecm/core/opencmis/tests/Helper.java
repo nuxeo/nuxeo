@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -98,10 +99,14 @@ public class Helper {
         return cal;
     }
 
+    public static Map<String, String> makeNuxeoRepository(CoreSession session) {
+        return makeNuxeoRepository(session, false);
+    }
+
     /**
      * Creates data in the repository using the Nuxeo API. This is then used as a starting point by unit tests.
      */
-    public static Map<String, String> makeNuxeoRepository(CoreSession session) {
+    public static Map<String, String> makeNuxeoRepository(CoreSession session, boolean addProxy) {
         // remove default-domain
         DocumentRef defaultDomain = new PathRef("/default-domain");
         if (session.exists(defaultDomain)) {
@@ -200,6 +205,21 @@ public class Helper {
         file5.followTransition(DELETE_TRANSITION);
         file5 = saveDocument(session, file5);
         info.put("file5id", file5.getId());
+
+        DocumentModel file6 = new DocumentModelImpl("/testfolder2/testfolder3", "testfile6", "Note");
+        file6.setPropertyValue("dc:title", "title6");
+        file6 = createDocument(session, file6);
+
+        if (addProxy) {
+            sleepForAuditGranularity();
+            file6.putContextData("disableDublinCoreListener", Boolean.TRUE);
+            DocumentRef file6verref = file6.checkIn(VersioningOption.MINOR, null);
+
+            sleepForAuditGranularity();
+            DocumentModel proxy = session.createProxy(file6verref, folder2.getRef());
+            info.put("file6verid", proxy.getSourceId());
+            info.put("proxyid", proxy.getId());
+        }
 
         session.save();
         if (TransactionHelper.isTransactionActive()) {

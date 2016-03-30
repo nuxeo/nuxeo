@@ -151,6 +151,7 @@ import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.security.SecurityService;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -941,8 +942,9 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         DocumentModel doc = coreSession.getRootDocument();
         for (String name : new Path(path).segments()) {
             String query = String.format("SELECT * FROM Document WHERE " + NXQL.ECM_PARENTID + " = %s AND "
-                    + NuxeoTypeHelper.NX_DC_TITLE + " = %s AND " + NXQL.ECM_ISPROXY + " = 0",
-                    escapeStringForNXQL(doc.getId()), escapeStringForNXQL(name));
+                    + NuxeoTypeHelper.NX_DC_TITLE + " = %s", escapeStringForNXQL(doc.getId()),
+                    escapeStringForNXQL(name));
+            query = addProxyClause(query);
             DocumentModelList docs = coreSession.query(query);
             if (docs.isEmpty()) {
                 throw new CmisObjectNotFoundException(path);
@@ -1401,6 +1403,13 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         return String.valueOf(logEntry.getEventDate().getTime());
     }
 
+    protected String addProxyClause(String query) {
+        if (!repository.supportsProxies()) {
+            query += " AND " + NXQL.ECM_ISPROXY + " = 0";
+        }
+        return query;
+    }
+
     @Override
     public ObjectList query(String repositoryId, String statement, Boolean searchAllVersions,
             Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
@@ -1489,12 +1498,16 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     public IterableQueryResult queryAndFetch(String query, boolean searchAllVersions,
             Map<String, PropertyDefinition<?>> typeInfo) {
         if (repository.supportsJoins()) {
+            if (repository.supportsProxies()) {
+                throw new CmisRuntimeException(
+                        "Server configuration error: cannot supports joins and proxies at the same time");
+            }
             // straight to CoreSession as CMISQL, relies on proper QueryMaker
             return coreSession.queryAndFetch(query, CMISQLQueryMaker.TYPE, this, typeInfo,
                     Boolean.valueOf(searchAllVersions));
         } else {
             // convert to NXQL for evaluation
-            CMISQLtoNXQL converter = new CMISQLtoNXQL();
+            CMISQLtoNXQL converter = new CMISQLtoNXQL(repository.supportsProxies());
             String nxql;
             try {
                 nxql = converter.getNXQL(query, this, typeInfo, searchAllVersions);
@@ -1598,18 +1611,18 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             return null;
         }
 
-        String query = String.format("SELECT * FROM %s WHERE " // Folder/Document
-                + "%s = '%s' AND " // ecm:parentId = 'folderId'
-                + "%s <> '%s' AND " // ecm:mixinType <> 'HiddenInNavigation'
-                + "%s <> '%s' AND " // ecm:currentLifeCycleState <> 'deleted'
-                + "%s = 0", // ecm:isProxy = 0
+        String query = String.format(
+                "SELECT * FROM %s WHERE " // Folder/Document
+                        + "%s = '%s' AND " // ecm:parentId = 'folderId'
+                        + "%s <> '%s' AND " // ecm:mixinType <> 'HiddenInNavigation'
+                        + "%s <> '%s'", // ecm:currentLifeCycleState <> 'deleted'
                 folderOnly ? "Folder" : "Document", //
                 NXQL.ECM_PARENTID, folderId, //
                 NXQL.ECM_MIXINTYPE, FacetNames.HIDDEN_IN_NAVIGATION, //
-                NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE, //
-                NXQL.ECM_ISPROXY);
+                NXQL.ECM_LIFECYCLESTATE, LifeCycleConstants.DELETED_STATE);
+        query = addProxyClause(query);
         if (!StringUtils.isBlank(orderBy)) {
-            CMISQLtoNXQL converter = new CMISQLtoNXQL();
+            CMISQLtoNXQL converter = new CMISQLtoNXQL(repository.supportsProxies());
             query += " ORDER BY " + converter.convertOrderBy(orderBy, getTypeManager());
         }
 
@@ -1813,9 +1826,6 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         VersioningOption option = Boolean.TRUE.equals(major) ? VersioningOption.MAJOR : VersioningOption.MINOR;
 
         DocumentModel doc = getDocumentModel(objectId);
-        if (doc.isVersion() || doc.isProxy()) {
-            throw new CmisInvalidArgumentException("Cannot check in non-PWC: " + doc);
-        }
 
         NuxeoObjectData object = new NuxeoObjectData(this, doc);
         updateProperties(object, null, properties, false);
@@ -1829,7 +1839,12 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         // comment for save event
         doc.putContextData("comment", checkinComment);
         coreSession.saveDocument(doc);
-        DocumentRef ver = doc.checkIn(option, checkinComment);
+        DocumentRef ver;
+        try {
+            ver = doc.checkIn(option, checkinComment);
+        } catch (VersionNotModifiableException e) {
+            throw new CmisInvalidArgumentException("Cannot check in non-PWC: " + doc);
+        }
         doc.removeLock();
         save();
         objectIdHolder.setValue(getIdFromDocumentRef(ver));
@@ -1852,9 +1867,6 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     public String checkOut(String objectId) {
         DocumentModel doc = getDocumentModel(objectId);
         try {
-            if (doc.isProxy()) {
-                throw new CmisInvalidArgumentException("Cannot check out non-version: " + objectId);
-            }
             // find pwc
             DocumentModel pwc;
             if (doc.isVersion()) {
@@ -1877,6 +1889,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             pwc.checkOut();
             save();
             return pwc.getId();
+        } catch (VersionNotModifiableException e) {
+            throw new CmisInvalidArgumentException("Cannot check out non-version: " + objectId);
         } catch (NuxeoException e) { // TODO use a core LockException
             String message = e.getMessage();
             if (message != null && message.startsWith("Document already locked")) {
@@ -1893,7 +1907,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
 
     public void cancelCheckOut(String objectId) {
         DocumentModel doc = getDocumentModel(objectId);
-        if (doc.isVersion() || doc.isProxy() || !doc.isCheckedOut()) {
+        if (!doc.isCheckedOut()) {
             throw new CmisInvalidArgumentException("Cannot cancel check out of non-PWC: " + doc);
         }
         DocumentRef docRef = doc.getRef();

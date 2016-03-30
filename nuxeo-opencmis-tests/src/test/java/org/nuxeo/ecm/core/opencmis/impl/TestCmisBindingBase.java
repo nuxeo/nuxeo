@@ -91,6 +91,10 @@ public abstract class TestCmisBindingBase {
 
     protected String file5id;
 
+    protected String file6verid;
+
+    protected String proxyid;
+
     @Inject
     protected CoreFeature coreFeature;
 
@@ -98,7 +102,15 @@ public abstract class TestCmisBindingBase {
         assumeTrue("joins not supported", supportsJoins());
     }
 
+    protected void assumeSupportsProxies() {
+        assumeTrue("proxies not supported", supportsProxies());
+    }
+
     protected boolean supportsJoins() {
+        return false;
+    }
+
+    protected boolean supportsProxies() {
         return false;
     }
 
@@ -148,6 +160,7 @@ public abstract class TestCmisBindingBase {
     protected void initBinding(String repositoryId, String username) {
         NuxeoRepository repository = Framework.getService(NuxeoRepositories.class).getRepository(repositoryId);
         repository.setSupportsJoins(supportsJoins());
+        repository.setSupportsProxies(supportsProxies());
         repository.setUseElasticsearch(useElasticsearch());
 
         NuxeoCmisServiceFactoryManager manager = Framework.getService(NuxeoCmisServiceFactoryManager.class);
@@ -169,9 +182,11 @@ public abstract class TestCmisBindingBase {
     }
 
     protected void setUpData(CoreSession coreSession) throws Exception {
-        Map<String, String> info = Helper.makeNuxeoRepository(coreSession);
+        Map<String, String> info = Helper.makeNuxeoRepository(coreSession, true); // add a proxy
         sleepForFulltext();
         file5id = info.get("file5id");
+        file6verid = info.get("file6verid");
+        proxyid = info.get("proxyid");
     }
 
     protected void waitForAsyncCompletion() {

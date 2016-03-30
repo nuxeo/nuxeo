@@ -944,7 +944,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
                 + /* */"testfile3_Title], " //
                 + "testfolder2_Title[" //
                 + /* */"testfolder3_Title, " //
-                + /* */"testfolder4_Title]", //
+                + /* */"testfolder4_Title" //
+                + /* */(supportsProxies() ? ", title6" : "") //
+                + "]", //
                 flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(3), null, null, null, null,
@@ -954,8 +956,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
                 + /* */"testfile2_Title, " //
                 + /* */"testfile3_Title], " //
                 + "testfolder2_Title[" //
-                + /* */"testfolder3_Title[testfile4_Title], " //
-                + /* */"testfolder4_Title]", //
+                + /* */"testfolder3_Title[testfile4_Title, title6], " //
+                + /* */"testfolder4_Title" //
+                + /* */(supportsProxies() ? ", title6" : "") //
+                + "]", //
                 flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(4), null, null, null, null,
@@ -965,8 +969,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
                 + /* */"testfile2_Title, " //
                 + /* */"testfile3_Title], " //
                 + "testfolder2_Title[" //
-                + /* */"testfolder3_Title[testfile4_Title], " //
-                + /* */"testfolder4_Title]", //
+                + /* */"testfolder3_Title[testfile4_Title, title6], " //
+                + /* */"testfolder4_Title" //
+                + /* */(supportsProxies() ? ", title6" : "") //
+                + "]", //
                 flat(tree));
 
         tree = navService.getDescendants(repositoryId, rootFolderId, BigInteger.valueOf(-1), null, null, null, null,
@@ -974,8 +980,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals("testfolder1_Title[testfile1_Title, " + /* */"testfile2_Title, " //
                 + /* */"testfile3_Title], " //
                 + "testfolder2_Title[" //
-                + /* */"testfolder3_Title[testfile4_Title], " //
-                + /* */"testfolder4_Title]", //
+                + /* */"testfolder3_Title[testfile4_Title, title6], " //
+                + /* */"testfolder4_Title" //
+                + /* */(supportsProxies() ? ", title6" : "") //
+                + "]", //
                 flat(tree));
 
         ObjectData ob = getObjectByPath("/testfolder2");
@@ -983,19 +991,25 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         tree = navService.getDescendants(repositoryId, folder2Id, BigInteger.valueOf(1), null, null, null, null, null,
                 null);
-        assertEquals("testfolder3_Title, testfolder4_Title", flat(tree));
+        assertEquals("testfolder3_Title, testfolder4_Title" + (supportsProxies() ? ", title6" : ""), flat(tree));
 
         tree = navService.getDescendants(repositoryId, folder2Id, BigInteger.valueOf(2), null, null, null, null, null,
                 null);
-        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title", flat(tree));
+        assertEquals(
+                "testfolder3_Title[testfile4_Title, title6], testfolder4_Title" + (supportsProxies() ? ", title6" : ""),
+                flat(tree));
 
         tree = navService.getDescendants(repositoryId, folder2Id, BigInteger.valueOf(3), null, null, null, null, null,
                 null);
-        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title", flat(tree));
+        assertEquals(
+                "testfolder3_Title[testfile4_Title, title6], testfolder4_Title" + (supportsProxies() ? ", title6" : ""),
+                flat(tree));
 
         tree = navService.getDescendants(repositoryId, folder2Id, BigInteger.valueOf(-1), null, null, null, null, null,
                 null);
-        assertEquals("testfolder3_Title[testfile4_Title], testfolder4_Title", flat(tree));
+        assertEquals(
+                "testfolder3_Title[testfile4_Title, title6], testfolder4_Title" + (supportsProxies() ? ", title6" : ""),
+                flat(tree));
     }
 
     @Test
@@ -1276,7 +1290,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // STAR
         statement = "SELECT * FROM cmis:document";
         res = query(statement);
-        assertEquals(4, res.getNumItems().intValue());
+        assertEquals(supportsProxies() ? 7 : 6, res.getNumItems().intValue()); // 5 docs, 1 version, 1 proxy
         statement = "SELECT * FROM cmis:folder";
         res = query(statement);
         assertEquals(returnsRootInFolderQueries() ? 5 : 4, res.getNumItems().intValue());
@@ -1845,12 +1859,12 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         statement = "SELECT cmis:objectId FROM cmis:document" + " WHERE dc:subjects IS NULL";
         res = query(statement);
-        assertEquals(3, res.getNumItems().intValue());
+        assertEquals(supportsProxies() ? 6 : 5, res.getNumItems().intValue()); // 4 docs, 1 version, 1 proxy
 
         // with qualifier
         statement = "SELECT A.cmis:objectId FROM cmis:document A" + " WHERE A.dc:subjects IS NULL";
         res = query(statement);
-        assertEquals(3, res.getNumItems().intValue());
+        assertEquals(supportsProxies() ? 6 : 5, res.getNumItems().intValue()); // 4 docs, 1 version, 1 proxy
     }
 
     @Test
@@ -1956,7 +1970,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
                 + " JOIN cmis:folder B ON A.nuxeo:parentId = B.cmis:objectId"
                 + " WHERE 'Versionable' = ANY A.nuxeo:secondaryObjectTypeIds";
         res = query(statement);
-        assertEquals(4, res.getNumItems().intValue());
+        assertEquals(5, res.getNumItems().intValue()); // 5 docs
     }
 
     @Test
@@ -2345,7 +2359,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
                 + " LEFT JOIN File B ON A.cmis:objectId = B.cmis:objectId" //
                 + " WHERE B.dc:subjects IS NULL";
         ObjectList res = query(statement);
-        assertEquals(3, res.getNumItems().intValue());
+        assertEquals(5, res.getNumItems().intValue()); // 4 docs, 1 version
     }
 
     @Test
@@ -2441,7 +2455,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
                 + "   AND (A.cmis:objectTypeId NOT IN ('File')" //
                 + "     OR B.cmis:name NOT IN ('testfile3_Title', 'testfile4_Title'))";
         ObjectList res = query(statement);
-        assertEquals(3, res.getNumItems().intValue());
+        assertEquals(5, res.getNumItems().intValue()); // 4 docs, 1 version
     }
 
     @Test
@@ -2551,7 +2565,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         ObjectList list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null,
                 null);
-        assertEquals(4, list.getNumItems().intValue());
+        // TODO XXX proxy shouldn't be considered checked out
+        assertEquals(supportsProxies() ? 5 : 4, list.getNumItems().intValue()); // 4 docs, 1 proxy
 
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         String id = ob.getId();
@@ -2561,7 +2576,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
         waitForIndexing();
 
         list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null, null);
-        assertEquals(3, list.getNumItems().intValue());
+        // TODO XXX proxy shouldn't be considered checked out
+        assertEquals(supportsProxies() ? 4 : 3, list.getNumItems().intValue()); // 3 docs, 1 proxy
 
         verService.checkOut(repositoryId, idHolder, null, null);
 
@@ -2569,7 +2585,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
 
         // re-checkout (ecm:isCheckedIn now false instead of null earlier)
         list = navService.getCheckedOutDocs(repositoryId, null, null, null, null, null, null, null, null, null);
-        assertEquals(4, list.getNumItems().intValue());
+        // TODO XXX proxy shouldn't be considered checked out
+        assertEquals(supportsProxies() ? 5 : 4, list.getNumItems().intValue()); // 4 docs, 1 proxy
 
         // with folder and filter and order
         ObjectData f1 = getObjectByPath("/testfolder1");
@@ -2946,6 +2963,50 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
+    public void testProxyVersionProperties() throws Exception {
+        assumeSupportsProxies();
+
+        // check proxy to a version
+
+        ObjectData ob = getObjectByPath("/testfolder2/testfile6");
+        checkValue("dc:title", "title6", ob);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, "0.1", ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob); // ...
+
+        // create live proxy
+
+        Helper.sleepForAuditGranularity();
+        DocumentModel proxy = coreSession.createProxy(new PathRef("/testfolder1/testfile1"),
+                new PathRef("/testfolder2"));
+        coreSession.save();
+        nextTransaction();
+        waitForIndexing();
+
+        // check live proxy
+
+        ob = getObjectByPath("/testfolder2/testfile1");
+        checkValue("dc:title", "testfile1_Title", ob);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
+    }
+
+    @Test
     public void testGetContentChanges() throws Exception {
         doTestGetContentChanges(false);
     }
@@ -2977,7 +3038,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
             assertEquals(clt1, changeLogTokenHolder.getValue());
         }
 
-        int n = 10; // last n events
+        int n = 13; // last n events
         assertTrue(allObjects.size() >= n);
         objects = allObjects.subList(allObjects.size() - n, allObjects.size());
         checkChange(objects.get(0), "/testfolder1", //
@@ -2992,6 +3053,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
         checkChange(objects.get(7), "/testfolder2/testfolder3/testfile4", ChangeType.CREATED, "File");
         checkChange(objects.get(8), file5id, ChangeType.CREATED, "File");
         checkChange(objects.get(9), file5id, ChangeType.UPDATED, "File");
+        checkChange(objects.get(10), "/testfolder2/testfolder3/testfile6", ChangeType.CREATED, "Note");
+        checkChange(objects.get(11), file6verid, ChangeType.CREATED, "Note");
+        checkChange(objects.get(12), proxyid, ChangeType.CREATED, "Note");
 
         // remove a doc
 
@@ -3039,7 +3103,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         List<ObjectData> allObjects = readAllContentChanges(changeLogTokenHolder);
         assertEquals(clt1, changeLogTokenHolder.getValue());
 
-        int n = 11; // last n events
+        int n = 14; // last n events
         assertTrue(allObjects.size() >= n);
         List<ObjectData> objects = allObjects.subList(allObjects.size() - n, allObjects.size());
         checkChange(objects.get(0), "/testfolder1", //
@@ -3054,7 +3118,10 @@ public class TestCmisBinding extends TestCmisBindingBase {
         checkChange(objects.get(7), "/testfolder2/testfolder3/testfile4", ChangeType.CREATED, "File");
         checkChange(objects.get(8), file5id, ChangeType.CREATED, "File");
         checkChange(objects.get(9), file5id, ChangeType.UPDATED, "File");
-        checkChange(objects.get(10), doc.getId(), ChangeType.CREATED, "File");
+        checkChange(objects.get(10), "/testfolder2/testfolder3/testfile6", ChangeType.CREATED, "Note");
+        checkChange(objects.get(11), file6verid, ChangeType.CREATED, "Note");
+        checkChange(objects.get(12), proxyid, ChangeType.CREATED, "Note");
+        checkChange(objects.get(13), doc.getId(), ChangeType.CREATED, "File");
     }
 
     protected List<ObjectData> readAllContentChanges(Holder<String> changeLogTokenHolder) {
@@ -3397,6 +3464,25 @@ public class TestCmisBinding extends TestCmisBindingBase {
             harness.undeployContrib("org.nuxeo.ecm.core.opencmis.tests.tests",
                     "OSGI-INF/recoverable-exc-listener-contrib.xml");
         }
+    }
+
+    @Test
+    public void testQueryProxy() throws Exception {
+
+        waitForIndexing();
+
+        // getChildren
+
+        DocumentModel folder = coreSession.getDocument(new PathRef("/testfolder2"));
+        ObjectInFolderList children = navService.getChildren(repositoryId, folder.getId(), null, null, null, null, null, null, null, null,
+                null);
+        assertEquals(supportsProxies() ? 3 : 2, children.getNumItems().intValue()); // 2 folders, 1 proxy
+
+        // query
+
+        String query = "SELECT cmis:objectId FROM Note WHERE cmis:name = 'title6'";
+        ObjectList res = query(query);
+        assertEquals(supportsProxies() ? 3 : 2, res.getNumItems().intValue()); // 1 live doc, 1 version, 1 proxy
     }
 
 }

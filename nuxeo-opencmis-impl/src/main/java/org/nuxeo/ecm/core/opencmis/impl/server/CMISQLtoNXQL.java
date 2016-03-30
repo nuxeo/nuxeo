@@ -117,6 +117,8 @@ public class CMISQLtoNXQL {
     protected static final Set<String> NULL_IS_FALSE_COLUMNS = new HashSet<String>(Arrays.asList(NXQL.ECM_ISVERSION,
             NXQL.ECM_ISLATESTVERSION, NXQL.ECM_ISLATESTMAJORVERSION, NXQL.ECM_ISCHECKEDIN));
 
+    protected final boolean supportsProxies;
+
     protected Map<String, PropertyDefinition<?>> typeInfo;
 
     protected CoreSession coreSession;
@@ -136,6 +138,10 @@ public class CMISQLtoNXQL {
 
     /** The non-real-columns we'll return as well. */
     protected Map<String, ColumnReference> virtualColumns = new LinkedHashMap<String, ColumnReference>();
+
+    public CMISQLtoNXQL(boolean supportsProxies) {
+        this.supportsProxies = supportsProxies;
+    }
 
     /**
      * Gets the NXQL from a CMISQL query.
@@ -255,7 +261,9 @@ public class CMISQLtoNXQL {
 
         // no proxies
 
-        whereClauses.add(String.format("%s = 0", NXQL.ECM_ISPROXY));
+        if (!supportsProxies) {
+            whereClauses.add(NXQL.ECM_ISPROXY + " = 0");
+        }
 
         // WHERE clause
 
