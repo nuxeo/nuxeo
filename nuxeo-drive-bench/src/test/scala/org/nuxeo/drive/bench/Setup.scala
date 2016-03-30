@@ -73,6 +73,7 @@ class SetupRemoteScanSimulation extends Simulation {
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
+    .disableCaching // disabling Etag cache since If-None-Modified on GetClientUpdateInfo fails
 
   val scn = SetupRemoteScan.run(Parameters.getNbThreads(12), Parameters.getNbNodes(100000), Parameters.getConcurrentUsers(1, prefix = "remoteScan."))
 
