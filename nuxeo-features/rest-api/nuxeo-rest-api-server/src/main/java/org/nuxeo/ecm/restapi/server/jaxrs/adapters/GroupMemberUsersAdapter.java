@@ -32,12 +32,20 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 8.2
  */
-@WebAdapter(name = GroupMemberUsersAdapter.NAME, type = "GroupService")
+@WebAdapter(name = GroupMemberUsersAdapter.NAME, type = "GroupMemberUsers")
 @Produces({ "application/json+nxentity", MediaType.APPLICATION_JSON })
 public class GroupMemberUsersAdapter extends PaginableAdapter<NuxeoPrincipal> {
 
-    public static final String NAME = "members";
+    public static final String NAME = "users";
     public static final String PAGE_PROVIDER_NAME = "nuxeo_group_member_users_listing";
+
+    protected String query;
+
+    @Override
+    protected void initialize(Object... args) {
+        super.initialize(args);
+        query = ctx.getRequest().getParameter("q");
+    }
 
     @Override
     protected PageProviderDefinition getPageProviderDefinition() {
@@ -47,7 +55,7 @@ public class GroupMemberUsersAdapter extends PaginableAdapter<NuxeoPrincipal> {
 
     @Override
     protected Object[] getParams() {
-        return new Object[] { ((GroupObject) getTarget()).doGetArtifact() };
+        return new Object[] { ((GroupObject) getTarget()).doGetArtifact(), query };
     }
 
 }

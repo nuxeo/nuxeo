@@ -367,7 +367,7 @@ public class UserGroupTest extends BaseUserTest {
                 new String[] { "dummy" }};
 
         for (int i = 0; i < expectedResults.length; i++) {
-            JsonNode node = getResponseAsJson(RequestType.GET, "/group/group1/@members", getQueryParamsForPage(i));
+            JsonNode node = getResponseAsJson(RequestType.GET, "/group/group1/@users", getQueryParamsForPage(i));
             assertPaging(i, 3, 2, 4, expectedResults[i].length, node);
         }
 

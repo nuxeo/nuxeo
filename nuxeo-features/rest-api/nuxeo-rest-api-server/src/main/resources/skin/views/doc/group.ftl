@@ -35,7 +35,7 @@
   ]
 },
 {
-  "path": "/group/{groupName}/@members",
+  "path": "/group/{groupName}/@users",
   "description": "Group members adapter",
   "operations" : [
     {
