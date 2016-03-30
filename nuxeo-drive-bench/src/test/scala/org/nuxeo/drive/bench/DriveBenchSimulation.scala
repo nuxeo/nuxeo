@@ -42,7 +42,7 @@ class RecursiveRemoteScanSimulation extends Simulation {
 
   val remoteScan = RecursiveRemoteScan.run()
 
-  setUp(remoteScan.inject(rampUsers(Parameters.getConcurrentUsers(1, prefix = "remoteScan.")).over(Parameters.getRampDuration(10))))
+  setUp(remoteScan.inject(rampUsers(Parameters.getConcurrentUsers(10, prefix = "remoteScan.")).over(Parameters.getRampDuration(10))))
     .protocols(httpProtocol)
     .assertions(global.successfulRequests.percent.is(100))
 }

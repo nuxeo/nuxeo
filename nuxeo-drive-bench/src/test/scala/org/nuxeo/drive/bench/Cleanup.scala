@@ -42,7 +42,7 @@ class CleanupRemoteScanSimulation extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
 
-  val scn = scenario("CleanupRemoteScan").exec(Cleanup.run(Parameters.getConcurrentUsers(1, prefix = "remoteScan.")))
+  val scn = scenario("CleanupRemoteScan").exec(Cleanup.run(Parameters.getConcurrentUsers(10, prefix = "remoteScan.")))
 
   Feeders.clearTokens()
   setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)

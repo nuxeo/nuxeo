@@ -75,7 +75,7 @@ class SetupRemoteScanSimulation extends Simulation {
     .connection("keep-alive")
     .disableCaching // disabling Etag cache since If-None-Modified on GetClientUpdateInfo fails
 
-  val scn = SetupRemoteScan.run(Parameters.getNbThreads(12), Parameters.getNbNodes(100000), Parameters.getConcurrentUsers(1, prefix = "remoteScan."))
+  val scn = SetupRemoteScan.run(Parameters.getNbThreads(12), Parameters.getNbNodes(100000), Parameters.getConcurrentUsers(10, prefix = "remoteScan."))
 
   Feeders.clearTokens()
   setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
