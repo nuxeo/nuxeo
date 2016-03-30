@@ -42,7 +42,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class ITDnDImportTest extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITDnDImportTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
     private final static String CVDZ_ID = "CVDZ";
 

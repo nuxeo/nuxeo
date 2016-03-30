@@ -56,7 +56,7 @@ public class ITVocabularyTest extends AbstractTest {
 
     public final static String TEST_FILE_NAME = "test1";
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITVocabularyTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
     /**
      * Edit a document and add a directory entry. Remove the entry from the vocabulary in Admin Center. Check that we

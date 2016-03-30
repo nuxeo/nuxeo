@@ -45,9 +45,9 @@ import org.openqa.selenium.WebElement;
  */
 public class ITCopyPasteTest extends AbstractTest {
 
-    private final static String WORKSPACE1_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE1_TITLE = ITCopyPasteTest.class.getSimpleName() + "_WorkspaceTitle1_" + new Date().getTime();
 
-    private final static String WORKSPACE2_TITLE = "WorkspaceTitle_" + new Date().getTime() + "a";
+    private final static String WORKSPACE2_TITLE = ITCopyPasteTest.class.getSimpleName() + "_WorkspaceTitle2_" + new Date().getTime();
 
     private final String FILE1_NAME = "testFile1";
 

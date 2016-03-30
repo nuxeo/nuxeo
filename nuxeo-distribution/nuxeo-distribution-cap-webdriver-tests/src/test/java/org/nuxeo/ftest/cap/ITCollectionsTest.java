@@ -53,7 +53,7 @@ import org.openqa.selenium.WebElement;
 
 public class ITCollectionsTest extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITCollectionsTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
     public final static String TEST_FILE_NAME = "test1";
 

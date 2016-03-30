@@ -44,7 +44,7 @@ import org.openqa.selenium.WebElement;
  */
 public class ITDocumentRelationTest extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITDocumentRelationTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
     private final String FILE_NAME1 = "File1";
 

@@ -42,7 +42,7 @@ public class ITTaggingTest extends AbstractTest {
 
     public final static String TEST_FILE_NAME = "test1";
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITTaggingTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
     public final static String SELECT2_TAG_ELT_ID = "s2id_nxl_grid_summary_layout:nxw_summary_current_document_tagging_form:nxw_summary_current_document_tagging_select2";
 

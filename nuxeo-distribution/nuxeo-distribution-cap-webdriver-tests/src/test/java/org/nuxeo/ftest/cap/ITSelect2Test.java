@@ -45,7 +45,7 @@ import org.openqa.selenium.WebElement;
  */
 public class ITSelect2Test extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITSelect2Test.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
     public final static String[] SUBJECTS = { "Comics", "Religion", "Education" };
 
@@ -117,7 +117,7 @@ public class ITSelect2Test extends AbstractTest {
                                                               .goToDocument(WORKSPACE_TITLE);
 
         // Create test File
-        FileDocumentBasePage filePage = createFile(workspacePage, "Test file", "Test File description", false, null,
+        FileDocumentBasePage filePage = createFile(workspacePage, "Test file for ITSelect2Test#testSelect2Edit", "Test File description", false, null,
                 null, null);
         EditTabSubPage editTabSubPage = filePage.getEditTab();
 

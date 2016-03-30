@@ -108,7 +108,7 @@ public class ITSafeEditTest extends AbstractTest {
 
     private static final Log log = LogFactory.getLog(AbstractTest.class);
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITSafeEditTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
     private final static String NEW_WORKSPACE_TITLE = "newWorkspaceName";
 
@@ -375,7 +375,7 @@ public class ITSafeEditTest extends AbstractTest {
                                                               .goToDocument(WORKSPACE_TITLE);
 
         // Create test File
-        FileDocumentBasePage filePage = createFile(documentBasePage, "Test file", "Test File description", false, null,
+        FileDocumentBasePage filePage = createFile(documentBasePage, "Test file for ITSafeEditTest#testSafeEditOnSelect2", "Test File description", false, null,
                 null, null);
         EditTabSubPage editTabSubPage = filePage.getEditTab();
 

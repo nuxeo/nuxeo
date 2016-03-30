@@ -69,7 +69,7 @@ public class ITRichfileUploadTest extends AbstractTest {
 
     public final static String TEST_FILE_NAME = "test1";
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITRichfileUploadTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
     @After
     public void tearDown() throws UserNotConnectedException {

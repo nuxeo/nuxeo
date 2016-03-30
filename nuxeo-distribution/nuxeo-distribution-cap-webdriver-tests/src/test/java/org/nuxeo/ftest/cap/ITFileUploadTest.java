@@ -49,7 +49,7 @@ public class ITFileUploadTest extends AbstractTest {
         DocumentBasePage defaultDomainPage = login();
 
         // Init repository with a test Workspace
-        String wsTitle = "WorkspaceTitle_" + new Date().getTime();
+        String wsTitle = ITFileUploadTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
         DocumentBasePage testWorkspacePage = createWorkspace(defaultDomainPage, wsTitle, "");
 
         // Create a File with an uploaded blob
@@ -100,7 +100,7 @@ public class ITFileUploadTest extends AbstractTest {
         DocumentBasePage defaultDomainPage = login();
 
         // Init repository with a test Workspace
-        String wsTitle = "WorkspaceTitle_" + new Date().getTime();
+        String wsTitle = ITSearchTabTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
         DocumentBasePage testWorkspacePage = createWorkspace(defaultDomainPage, wsTitle, "");
 
         // Create a File with an uploaded blob

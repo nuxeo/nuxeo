@@ -47,7 +47,7 @@ public class ITSelectAndFilterTest extends AbstractTest {
 
     protected final String RESET_FILTER_XPATH = "cv_document_content_0_resetFilterForm:resetFilter";
 
-    private final static String WORKSPACE_TITLE = "WorkspaceTitle_" + new Date().getTime();
+    private final static String WORKSPACE_TITLE = ITSelectAndFilterTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
 
     /**
      * This tests create 2 documents in a workspace, select one of them, filter the other one, clear the filter and make
