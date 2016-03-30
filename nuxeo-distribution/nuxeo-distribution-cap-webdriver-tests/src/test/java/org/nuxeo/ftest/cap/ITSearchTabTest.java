@@ -70,6 +70,10 @@ public class ITSearchTabTest extends AbstractTest {
 
     public final static String FULL_PATH_COVERAGE = "Europe/France";
 
+    protected static final String SELECT_ALL_SAVED_SEARCHES_BUTTON_ID = "all_saved_searches:all_saved_searches_repeat:0:nxl_document_listing_table_1:listing_ajax_selection_box_with_current_document_header";
+
+    protected static final String PERMANENT_DELETE_SAVED_SEARCHES_BUTTON_ID = "all_saved_searches_buttons:nxw_savedSearchesCurrentSelectionDelete_form:nxw_savedSearchesCurrentSelectionDelete";
+
     @Before
     public void setup() throws UserNotConnectedException, IOException {
         DocumentBasePage documentBasePage;
@@ -203,6 +207,16 @@ public class ITSearchTabTest extends AbstractTest {
         // check that search was saved in home
         sp.goToHomePage().goToSavedSearches();
         assertEquals(1, driver.findElements(By.linkText(ssTitle)).size());
+
+        // delete saved searches
+        documentBasePage.goToHomePage().goToSavedSearches();
+        arm = new AjaxRequestManager(driver);
+        arm.begin();
+        Locator.findElementWaitUntilEnabledAndClick(By.id(SELECT_ALL_SAVED_SEARCHES_BUTTON_ID));
+        arm.end();
+
+        Locator.findElementWaitUntilEnabledAndClick(By.id(PERMANENT_DELETE_SAVED_SEARCHES_BUTTON_ID));
+        driver.switchTo().alert().accept();
 
         logout();
         tearDown();
