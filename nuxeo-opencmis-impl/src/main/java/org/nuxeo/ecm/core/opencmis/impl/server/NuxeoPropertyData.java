@@ -811,8 +811,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     }
 
     protected static boolean isVersionOrProxyToVersion(DocumentModel doc) {
-        return doc.isVersion()
-                || (doc.isProxy() && doc.getCoreSession().getSourceDocument(new IdRef(doc.getSourceId())).isVersion());
+        return doc.isVersion() || (doc.isProxy() && doc.getCoreSession().getSourceDocument(doc.getRef()).isVersion());
     }
 
     /**

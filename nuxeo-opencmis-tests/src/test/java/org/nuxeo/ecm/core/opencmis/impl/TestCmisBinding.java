@@ -2956,6 +2956,50 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
+    public void testProxyVersionProperties() throws Exception {
+        assumeSupportsProxies();
+
+        // check proxy to a version
+
+        ObjectData ob = getObjectByPath("/testfolder2/testfile6");
+        checkValue("dc:title", "title6", ob);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.TRUE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, "0.1", ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, null, ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob); // ...
+
+        // create live proxy
+
+        Helper.sleepForAuditGranularity();
+        DocumentModel proxy = coreSession.createProxy(new PathRef("/testfolder1/testfile1"),
+                new PathRef("/testfolder2"));
+        coreSession.save();
+        nextTransaction();
+        waitForIndexing();
+
+        // check live proxy
+
+        ob = getObjectByPath("/testfolder2/testfile1");
+        checkValue("dc:title", "testfile1_Title", ob);
+        checkValue(PropertyIds.IS_LATEST_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.IS_LATEST_MAJOR_VERSION, Boolean.FALSE, ob);
+        checkValue(PropertyIds.VERSION_LABEL, null, ob);
+        checkValue(PropertyIds.VERSION_SERIES_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.IS_VERSION_SERIES_CHECKED_OUT, Boolean.TRUE, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_ID, NOT_NULL, ob);
+        checkValue(PropertyIds.VERSION_SERIES_CHECKED_OUT_BY, USERNAME, ob);
+        checkValue(PropertyIds.CHECKIN_COMMENT, null, ob);
+        checkValue(NuxeoTypeHelper.NX_ISVERSION, Boolean.FALSE, ob);
+    }
+
+    @Test
     public void testGetContentChanges() throws Exception {
         doTestGetContentChanges(false);
     }
@@ -3416,7 +3460,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
-    public void testProxy() throws Exception {
+    public void testQueryProxy() throws Exception {
 
         waitForIndexing();
 
