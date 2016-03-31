@@ -125,8 +125,8 @@
     <!-- nuxeo-distribution-tools is still used as a dependency -->
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
-    <ant.assembly.version>2.0.5-SNAPSHOT</ant.assembly.version>
-    <nuxeo.ftest.version>1.7.23-SNAPSHOT</nuxeo.ftest.version>
+    <ant.assembly.version>2.0.5</ant.assembly.version>
+    <nuxeo.ftest.version>1.7.23</nuxeo.ftest.version>
 
     <jsf.version>2.2.6</jsf.version>
     <nxjsf.version>2.2.6-NX01</nxjsf.version>
@@ -5202,7 +5202,7 @@
                 <banLatest>true</banLatest>
                 <banRelease>true</banRelease>
                 <banSnapshots>true</banSnapshots>
-                <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin</unCheckedPluginList>
+                <!-- <unCheckedPluginList>org.nuxeo.build:ant-assembly-maven-plugin</unCheckedPluginList> -->
               </requirePluginVersions>
               <bannedPlugins>
                 <excludes>
@@ -5669,7 +5669,7 @@
                   <requireReleaseDeps>
                     <!-- Exclusions are tolerated for nightly "date-based" releases only -->
                     <excludes>
-                      <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
+                      <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
                       <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
                     </excludes>
