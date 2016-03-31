@@ -251,7 +251,7 @@
               </ui:define>
 
               <ui:define name="error_message">
-                <c:if test="#{provider.hasError()}">
+                <c:if test="#{provider.hasError() and nxDevModeSet}">
                   #{messages[provider.errorMessage]}
                 </c:if>
               </ui:define>
