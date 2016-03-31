@@ -257,8 +257,7 @@ class Repository(object):
     def get_mp_config(self, marketplace_conf):
         """Return the Marketplace packages configuration."""
         mp_config = ConfigParser.SafeConfigParser(
-            defaults={'other_versions': None, 'prepared': 'False',
-                      'performed': 'False'})
+            defaults={'other_versions': None, 'prepared': 'False', 'performed': 'False', 'branched': 'False'})
         if marketplace_conf is None:
             no_remote = True
         else:

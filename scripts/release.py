@@ -486,6 +486,8 @@ given the path parameter.
     # pylint: disable=R0915
     def prepare(self, dodeploy=False, doperform=False, dryrun=False, upgrade_only=False):
         """ Prepare the release: build, change versions, tag and package source and distributions.
+        If the release branch has been previously created with the 'branch' command, the next snapshot (option '-n')
+        must be set to 'done'.
 
         'dodeploy': staging mode with 'nightly' Maven profile activated
         'doperform': onestep process = prepare+perform without staging
@@ -497,15 +499,21 @@ given the path parameter.
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch, with_optionals=True)
 
-        log("[INFO] Check release-ability...")
-        self.check()
+        if self.next_snapshot != 'done':
+            log("[INFO] Check release-ability...")
+            self.check()
 
         if not upgrade_only:
             log("\n[INFO] Releasing branch {0}, create maintenance branch {1},"
                 " update versions, commit and tag as release-{2}..."
                 .format(self.branch, self.maintenance_branch, self.tag))
             msg_commit = "Release %s, update %s to %s" % (self.branch, self.snapshot, self.tag)
-            self.repo.git_recurse("checkout -b %s" % self.maintenance_branch, with_optionals=True)
+            if self.next_snapshot != 'done':
+                self.repo.git_recurse("checkout -b %s" % self.maintenance_branch, with_optionals=True)
+            else:
+                self.repo.git_recurse("checkout -f %s" % self.maintenance_branch, with_optionals=True)
+                log("[INFO] Check release-ability...")
+                self.check()
             self.update_versions(self.snapshot, self.tag)
             for other_version in self.other_versions:
                 if len(other_version) > 0:
@@ -522,25 +530,26 @@ given the path parameter.
                 msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
                 self.update_versions(self.tag, self.maintenance_version)
                 self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
-
         log("\n[INFO] Released branch %s (update version and commit)..." % self.branch)
+
         self.repo.git_recurse("checkout -f %s" % self.branch, with_optionals=True)
 
-        if not upgrade_only:
-            msg_commit = "Post release %s" % self.tag
+        if self.next_snapshot != 'done':
             # Update released branches with next versions
-            post_release_change = self.update_versions(self.snapshot, self.next_snapshot)
+            if not upgrade_only:
+                msg_commit = "Post release %s" % self.tag
+                post_release_change = self.update_versions(self.snapshot, self.next_snapshot)
+                if post_release_change:
+                    msg_commit += "\nUpdate %s to %s" % (self.snapshot, self.next_snapshot)
+            else:
+                msg_commit = ''
+                post_release_change = False
+            for other_version in self.other_versions:
+                if (len(other_version) == 3 and self.update_versions(other_version[0], other_version[2])):
+                    post_release_change = True
+                    msg_commit += "\nUpdate %s to %s" % (other_version[0], other_version[2])
             if post_release_change:
-                msg_commit += "\nUpdate %s to %s" % (self.snapshot, self.next_snapshot)
-        else:
-            msg_commit = ''
-            post_release_change = False
-        for other_version in self.other_versions:
-            if (len(other_version) == 3 and self.update_versions(other_version[0], other_version[2])):
-                post_release_change = True
-                msg_commit += "\nUpdate %s to %s" % (other_version[0], other_version[2])
-        if post_release_change:
-            self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
+                self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
 
         if not upgrade_only and self.maintenance_version == "auto":
             log("\n[INFO] Delete maintenance branch %s..." % self.maintenance_branch)
@@ -566,6 +575,56 @@ given the path parameter.
             if not dryrun:
                 self.package_all()
             # TODO NXP-8571 package sources
+        os.chdir(cwd)
+
+    def release_branch(self, dryrun=False, upgrade_only=False):
+        """ Create the release branch, also change versions on the source branch.
+        The release will then have to be "prepared" and "performed" from that branch using the '--next=done' option.
+        If kept, it will become the maintenance branch after release.
+
+        'dryrun': dry run mode (no Maven deployment, nor Git push)
+        'upgrade_only': only upgrade other versions (used to keep Marketplace Packages aligned even if not released)"""
+        if dryrun:
+            log("[INFO] #### DRY RUN MODE ####")
+        cwd = os.getcwd()
+        os.chdir(self.repo.basedir)
+        self.repo.clone(self.branch, with_optionals=True)
+
+        log("[INFO] Check release-ability...")
+        self.check()
+
+        if not upgrade_only:
+            log("\n[INFO] Creating release branch {0} from branch {1}..."
+                .format(self.maintenance_branch, self.branch))
+            self.repo.git_recurse("checkout -b %s" % self.maintenance_branch, with_optionals=True)
+
+        self.repo.git_recurse("checkout -f %s" % self.branch, with_optionals=True)
+        # Update source branch with next versions
+        if not upgrade_only:
+            msg_commit = "Post release %s" % self.tag
+            post_release_change = self.update_versions(self.snapshot, self.next_snapshot)
+            if post_release_change:
+                msg_commit += "\nUpdate %s to %s" % (self.snapshot, self.next_snapshot)
+        else:
+            msg_commit = ''
+            post_release_change = False
+        for other_version in self.other_versions:
+            if (len(other_version) == 3 and self.update_versions(other_version[0], other_version[2])):
+                post_release_change = True
+                msg_commit += "\nUpdate %s to %s" % (other_version[0], other_version[2])
+        if post_release_change:
+            self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
+        if not upgrade_only:
+            self.repo.mvn("clean validate", skip_tests=True, skip_ITs=True, dryrun=dryrun)
+        if dryrun:
+            dry_option = "-n"
+        else:
+            dry_option = ""
+        self.repo.git_recurse("push %s %s %s" % (dry_option, self.repo.alias, self.branch), with_optionals=True)
+        if not upgrade_only:
+            self.repo.git_recurse("push %s %s %s" % (dry_option, self.repo.alias, self.maintenance_branch),
+                                  with_optionals=True)
+        log("[INFO] Set next snapshot option ('-n') to 'done' on next calls to 'prepare' or 'perform' commands.")
         os.chdir(cwd)
 
     def maintenance(self):
@@ -609,6 +668,8 @@ given the path parameter.
 
     def perform(self, skip_tests=True, skip_ITs=True, dryrun=False, upgrade_only=False):
         """ Perform the release: push source, deploy artifacts and upload packages.
+        If the release branch has been previously created with the 'branch' command, the next snapshot (option '-n')
+        must be set to 'done'.
 
         'skip_tests': whether to run tests during Maven deployment
         'skip_ITs': whether to run Integration Tests during Maven deployment
@@ -652,6 +713,8 @@ def main():
             raise ExitException(1, "That script must be ran from root of a Git"
                                 + " repository")
         usage = ("""usage: %prog <command> [options]
+       %prog branch [-r alias] [-f] [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [--dryrun] \
+[--arv versions_replacements] [--mc msg_commit]
        %prog prepare [-r alias] [-f] [-d] [--skipTests] [--skipITs] \
 [-p profiles] [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] \
 [--dryrun] [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
@@ -665,6 +728,9 @@ def main():
 [-b branch] [-t tag] [-n next_snapshot] [-m maintenance] [--dryrun] \
 [--arv versions_replacements] [--mc msg_commit] [--mt msg_tag]
 \nCommands:
+  branch: Create the release branch so that the branch to release is freed for ongoing development. Following \
+'prepare' or 'perform' commmands must use option '--next=done'. If kept, that branch will become the maintenance \
+branch after release.
   prepare: Prepare the release (build, change versions, tag and package \
 source and distributions). The release parameters are stored in a \
 release-*.log file.
@@ -833,6 +899,8 @@ Default tag message:\n
             release.log_summary("command" in locals() and command != "perform")
         if "command" not in locals():
             raise ExitException(1, "Missing command. See usage with '-h'.")
+        elif command == "branch":
+            release.release_branch(dryrun=options.dryrun)
         elif command == "prepare":
             release.prepare(dodeploy=options.deploy, dryrun=options.dryrun)
         elif command == "maintenance":

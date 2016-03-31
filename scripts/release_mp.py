@@ -69,18 +69,23 @@ class ReleaseMP(object):
         os.chdir(cwd)
 
     # pylint: disable=E1103
+
+    def get_packages_list(self):
+        """Return the list of packages to work on."""
+        marketplaces = self.mp_config.sections()
+        if self.restart_from:
+            idx = marketplaces.index(self.restart_from)
+            marketplaces = marketplaces[idx:]
+        return marketplaces
+
     def prepare(self, dryrun=False):
         """ Prepare the release."""
         cwd = os.getcwd()
         if not os.path.isdir(self.repo.mp_dir):
             self.clone()
         os.chdir(self.repo.mp_dir)
-        marketplaces = self.mp_config.sections()
         marketplaces_skipped = []
-        if self.restart_from:
-            idx = marketplaces.index(self.restart_from)
-            marketplaces = marketplaces[idx:]
-        for marketplace in marketplaces:
+        for marketplace in self.get_packages_list():
             log("")
             if self.mp_config.has_option(marketplace, "skip"):
                 log("[%s]" % marketplace)
@@ -145,17 +150,73 @@ class ReleaseMP(object):
                             self.repo.save_mp_config(self.mp_config)
         os.chdir(cwd)
 
+    def release_branch(self, dryrun=False):
+        """ Create the release branch."""
+        cwd = os.getcwd()
+        if not os.path.isdir(self.repo.mp_dir):
+            self.clone()
+        os.chdir(self.repo.mp_dir)
+        marketplaces_skipped = []
+        for marketplace in self.get_packages_list():
+            log("")
+            if self.mp_config.has_option(marketplace, "skip"):
+                log("[%s]" % marketplace)
+                log("[WARN] Skipped '%s' (%s)" % (marketplace,
+                                    self.mp_config.get(marketplace, "skip")))
+                marketplaces_skipped.append(marketplace)
+                upgrade_only = True
+            else:
+                upgrade_only = False
+            if self.mp_config.getboolean(marketplace, "branched"):
+                log("[%s]" % marketplace)
+                log("Skipped '%s' (%s)" % (marketplace, "Already branched"))
+                continue
+            try:
+                mp_dir = os.path.join(self.repo.mp_dir, marketplace)
+                if not os.path.isdir(mp_dir):
+                    os.chdir(self.repo.mp_dir)
+                    self.repo.git_pull(marketplace,
+                                    self.mp_config.get(marketplace, "branch"))
+                else:
+                    log("[%s]" % marketplace)
+                os.chdir(mp_dir)
+                mp_repo = Repository(os.getcwd(), self.alias)
+                if upgrade_only:
+                    log("Upgrade skipped %s..." % marketplace)
+                else:
+                    log("Prepare release of %s..." % marketplace)
+                mp_release = Release(mp_repo,
+                                     self.mp_config.get(marketplace, "branch"),
+                                     self.mp_config.get(marketplace, "tag"),
+                                     self.mp_config.get(marketplace, "next_snapshot"),
+                                     self.mp_config.get(marketplace, "maintenance_version"),
+                                     is_final=True,
+                                     skipTests=self.mp_config.getboolean(marketplace, "skipTests"),
+                                     skipITs=self.mp_config.getboolean(marketplace, "skipITs"),
+                                     other_versions=self.mp_config.get(marketplace, "other_versions", None))
+                mp_release.log_summary()
+                mp_release.release_branch(dryrun=dryrun, upgrade_only=upgrade_only)
+                self.mp_config.set(marketplace, "next_snapshot", "done")
+                branched = True
+            except Exception, e:
+                stack = traceback.format_exc()
+                if hasattr(e, 'message') and e.message is not None:
+                    stack = e.message + "\n" + stack
+                log("[ERROR] %s" % stack)
+                branched = False
+                stack = stack.replace("%", "%%")
+                self.mp_config.set(marketplace, "skip", "Failed! %s" % stack)
+            self.mp_config.set(marketplace, "branched", str(branched))
+            self.repo.save_mp_config(self.mp_config)
+        os.chdir(cwd)
+
     # pylint: disable=R0914,C0103
     def perform(self, dryrun=False):
         """ Perform the release: push source, deploy artifacts and upload
         packages."""
         cwd = os.getcwd()
-        marketplaces = self.mp_config.sections()
         marketplaces_skipped = []
-        if self.restart_from:
-            idx = marketplaces.index(self.restart_from)
-            marketplaces = marketplaces[idx:]
-        for marketplace in marketplaces:
+        for marketplace in self.get_packages_list():
             log("")
             if self.mp_config.has_option(marketplace, "skip"):
                 log("[WARN] Skipped '%s' (%s)" % (marketplace,
@@ -241,6 +302,7 @@ def main():
     try:
         usage = ("""usage: %prog <command> [options]
        %prog clone [-r alias] [-m URL]
+       %prog branch [-r alias] [-m URL] [--rf package] [--dryrun]
        %prog prepare [-r alias] [-m URL] [--rf package] [--dryrun]
        %prog perform [-r alias] [-m URL] [--rf package] [--dryrun]""")
         description = """Release Nuxeo Marketplace packages.\n
@@ -295,6 +357,8 @@ mode. Default: '%default'""")
             raise ExitException(1, "Missing command. See usage with '-h'.")
         elif command == "clone":
             full_release.clone()
+        elif command == "branch":
+            full_release.release_branch(dryrun=options.dryrun)
         elif command == "prepare":
             full_release.prepare(dryrun=options.dryrun)
         elif command == "perform":
