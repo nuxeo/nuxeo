@@ -21,7 +21,7 @@
 
   <xs:simpleType name="clob">
     <xs:restriction base="xs:string">
-      <xs:maxLength value="999999999" />
+      <xs:maxLength value="2000" />
     </xs:restriction>
   </xs:simpleType>
 
