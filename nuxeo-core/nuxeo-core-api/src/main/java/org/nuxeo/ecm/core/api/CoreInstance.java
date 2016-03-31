@@ -47,6 +47,7 @@ public class CoreInstance {
     private static final CoreInstance INSTANCE = new CoreInstance();
 
     public static class RegistrationInfo extends Throwable {
+
         private static final long serialVersionUID = 1L;
 
         public final CoreSession session;
@@ -303,8 +304,12 @@ public class CoreInstance {
     }
 
     public void cleanupThisThread() {
+        cleanup(true);
+    }
+
+    public void cleanup(boolean onthread) {
         NuxeoException errors = new NuxeoException("disconnecting from storage for you");
-        for (RegistrationInfo each : CoreInstance.getInstance().getRegistrationInfosLive(true)) {
+        for (RegistrationInfo each : CoreInstance.getInstance().getRegistrationInfosLive(false)) {
             each.session.destroy();
             errors.addSuppressed(each);
         }

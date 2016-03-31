@@ -23,11 +23,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreInstance.RegistrationInfo;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -91,8 +93,6 @@ public class CoreFeature extends SimpleFeature {
     protected RepositoryInit repositoryInit;
 
     protected Granularity granularity;
-
-    protected int initialOpenSessions;
 
     // this value gets injected
     protected CoreSession session;
@@ -161,15 +161,6 @@ public class CoreFeature extends SimpleFeature {
         // wait for async tasks that may have been triggered by
         // RuntimeFeature (typically repo initialization)
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        final CoreInstance core = CoreInstance.getInstance();
-        initialOpenSessions = core.getNumberOfSessions();
-        if (initialOpenSessions != 0) {
-            log.error(String.format("There are already %s open session(s) before running tests.",
-                    Integer.valueOf(initialOpenSessions)));
-            for (CoreInstance.RegistrationInfo info : core.getRegistrationInfos()) {
-                log.warn("Leaking session", info);
-            }
-        }
         if (granularity != Granularity.METHOD) {
             // we need a transaction to properly initialize the session
             // but it hasn't been started yet by TransactionalFeature
@@ -189,14 +180,16 @@ public class CoreFeature extends SimpleFeature {
             releaseCoreSession();
         }
 
-        final CoreInstance core = CoreInstance.getInstance();
-        int finalOpenSessions = core.getNumberOfSessions();
-        int leakedOpenSessions = finalOpenSessions - initialOpenSessions;
-        if (leakedOpenSessions > 0) {
-            log.error(String.format("There are %s open session(s) at tear down; it seems "
-                    + "the test leaked %s session(s).", Integer.valueOf(finalOpenSessions),
-                    Integer.valueOf(leakedOpenSessions)));
+        Collection<RegistrationInfo> leakedInfos = CoreInstance.getInstance().getRegistrationInfos();
+        if (leakedInfos.size() == 0) {
+            return;
         }
+        AssertionError leakedErrors = new AssertionError(String.format("leaked %d sessions", leakedInfos.size()));
+        for (RegistrationInfo info:leakedInfos) {
+            info.session.close();
+            leakedErrors.addSuppressed(info);
+        }
+        throw leakedErrors;
     }
 
     @Override
@@ -270,7 +263,6 @@ public class CoreFeature extends SimpleFeature {
         }
         releaseCoreSession();
         cleaned = true;
-        CoreInstance.getInstance().cleanupThisThread();
     }
 
     protected void initializeSession(FeaturesRunner runner) {

@@ -414,19 +414,21 @@ public class TestScriptRunnerInfrastructure {
 
     @Test
     public void canHandleLoginAsCtx() throws OperationException {
-        session = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe");
-        OperationContext ctx = new OperationContext(session);
-        automationService.run(ctx, "my-chain-with-loginasctx", null);
-        assertEquals("Administrator" + System.lineSeparator(), outContent.toString());
+        try (CoreSession session = CoreInstance.openCoreSession(this.session.getRepositoryName(), "jdoe")) {
+            OperationContext ctx = new OperationContext(session);
+            automationService.run(ctx, "my-chain-with-loginasctx", null);
+            assertEquals("Administrator" + System.lineSeparator(), outContent.toString());
+        }
     }
 
     @Test
     public void canHandleLoginAsOp() throws OperationException {
-        session = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe");
-        OperationContext ctx = new OperationContext(session);
-        String principal = (String) automationService.run(ctx, "my-chain-with-loginasop", null);
-        assertEquals("Administrator" + System.lineSeparator(), outContent.toString());
-        assertEquals("Administrator", principal);
+        try (CoreSession session = CoreInstance.openCoreSession(this.session.getRepositoryName(), "jdoe")) {
+            OperationContext ctx = new OperationContext(session);
+            String principal = (String) automationService.run(ctx, "my-chain-with-loginasop", null);
+            assertEquals("Administrator" + System.lineSeparator(), outContent.toString());
+            assertEquals("Administrator", principal);
+        }
     }
 
     @Test
