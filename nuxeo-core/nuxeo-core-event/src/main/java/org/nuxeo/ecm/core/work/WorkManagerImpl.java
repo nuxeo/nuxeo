@@ -126,7 +126,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
 
     }
 
-    protected WorkCompletionSynchronizer completionSynchronizer = new WorkCompletionSynchronizer();
+    protected WorkCompletionSynchronizer completionSynchronizer;
 
     @Override
     public void activate(ComponentContext context) {
@@ -323,6 +323,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             if (started) {
                 return;
             }
+            completionSynchronizer = new WorkCompletionSynchronizer();
             started = true;
             queuing.init();
             for (String id : workQueueDescriptors.getQueueIds()) {
@@ -389,6 +390,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         } finally {
             shutdownInProgress = false;
             started = false;
+            completionSynchronizer = null;
             executors.clear();
         }
     }
