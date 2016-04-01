@@ -10,11 +10,11 @@
 </script>
   
 <div class="info">
-    Welcome! You account is now created.
+    ${Context.getMessage('label.registerForm.welcome')}
     <#if isShibbo>
-        You are going to be redirected to access the platform through Shibboleth.
+        ${Context.getMessage('label.registerForm.shibbo.redirect')}
         <#else>
-        You are going to be redirected to access the platform.
+        ${Context.getMessage('label.registerForm.redirect')}
     </#if>
 </div>
 
