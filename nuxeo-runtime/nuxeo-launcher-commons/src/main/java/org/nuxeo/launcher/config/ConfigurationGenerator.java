@@ -20,15 +20,7 @@
 
 package org.nuxeo.launcher.config;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -36,6 +28,9 @@ import java.net.ServerSocket;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.UnknownHostException;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -59,6 +54,8 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -333,6 +330,8 @@ public class ConfigurationGenerator {
     private Environment env;
 
     private Properties storedConfig;
+
+    private String actualConfigurationDigest;
 
     /**
      * @since 5.7
@@ -1004,14 +1003,20 @@ public class ConfigurationGenerator {
     }
 
     private void writeConfiguration() throws ConfigurationException {
-        StringBuffer newContent = readConfiguration();
-        FileWriter writer = null;
+        Writer writer = null;
         try {
-            writer = new FileWriter(nuxeoConf, false);
+            final MessageDigest newContentDigest = DigestUtils.getMd5Digest();
+            StringWriter newContent = new StringWriter() {
+                @Override
+                public void write(String str) {
+                    newContentDigest.update(str.getBytes());
+                    super.write(str);
+                }
+            };
             // Copy back file content
-            writer.append(newContent.toString());
+            newContent.append(readConfiguration());
             // Write changed parameters
-            writer.write(BOUNDARY_BEGIN + System.getProperty("line.separator"));
+            newContent.write(BOUNDARY_BEGIN + System.getProperty("line.separator"));
             for (Object o : new TreeSet<>(userConfig.keySet())) {
                 String key = (String) o;
                 // Ignore parameters already stored in newContent
@@ -1022,11 +1027,17 @@ public class ConfigurationGenerator {
                 String oldValue = storedConfig.getProperty(key, "");
                 String newValue = userConfig.getRawProperty(key, "");
                 if (!newValue.equals(oldValue)) {
-                    writer.write("#" + key + "=" + oldValue + System.getProperty("line.separator"));
-                    writer.write(key + "=" + newValue + System.getProperty("line.separator"));
+                    newContent.write("#" + key + "=" + oldValue + System.getProperty("line.separator"));
+                    newContent.write(key + "=" + newValue + System.getProperty("line.separator"));
                 }
             }
-            writer.write(BOUNDARY_END + System.getProperty("line.separator"));
+            newContent.write(BOUNDARY_END + System.getProperty("line.separator"));
+
+            // Write file only if content has changed
+            if(!Hex.encodeHexString(newContentDigest.digest()).equals(actualConfigurationDigest)) {
+                writer = new FileWriter(nuxeoConf, false);
+                writer.append(newContent.getBuffer());
+            }
         } catch (IOException e) {
             throw new ConfigurationException("Error writing in " + nuxeoConf, e);
         } finally {
@@ -1052,8 +1063,10 @@ public class ConfigurationGenerator {
         try {
             reader = new BufferedReader(new FileReader(nuxeoConf));
             String line;
+            MessageDigest digest = DigestUtils.getMd5Digest();
             boolean onConfiguratorContent = false;
             while ((line = reader.readLine()) != null) {
+                digest.update(line.getBytes());
                 if (!onConfiguratorContent) {
                     if (!line.startsWith(BOUNDARY_BEGIN)) {
                         if (line.startsWith(PARAM_FORCE_GENERATION)) {
@@ -1141,6 +1154,7 @@ public class ConfigurationGenerator {
                 }
             }
             reader.close();
+            actualConfigurationDigest = Hex.encodeHexString(digest.digest());
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         } finally {
