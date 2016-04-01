@@ -25,6 +25,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -117,6 +119,13 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
         // not use the same mapping as the default's one.
         fieldMap.put(userIdField, getUserID(httpRequest));
         return fieldMap;
+    }
+
+    @Override
+    public BiMap<String, String> getUserMetadata() {
+        BiMap<String, String> biMap = HashBiMap.create();
+        biMap.putAll(config.getFieldMapping());
+        return biMap;
     }
 
     protected String readHeader(HttpServletRequest request, String key) {
