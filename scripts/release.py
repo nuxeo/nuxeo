@@ -614,8 +614,6 @@ given the path parameter.
                 msg_commit += "\nUpdate %s to %s" % (other_version[0], other_version[2])
         if post_release_change:
             self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
-        if not upgrade_only:
-            self.repo.mvn("clean validate", skip_tests=True, skip_ITs=True, dryrun=dryrun)
         if dryrun:
             dry_option = "-n"
         else:
