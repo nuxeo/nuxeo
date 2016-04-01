@@ -495,25 +495,23 @@ given the path parameter.
         'upgrade_only': only upgrade other versions (used to keep Marketplace Packages aligned even if not released)"""
         if dryrun:
             log("[INFO] #### DRY RUN MODE ####")
+        self.check_branch_to_release()
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch, with_optionals=True)
-
-        if self.next_snapshot != 'done':
-            log("[INFO] Check release-ability...")
-            self.check()
+        log("[INFO] Check release-ability...")
+        self.check()
 
         if not upgrade_only:
-            log("\n[INFO] Releasing branch {0}, create maintenance branch {1},"
-                " update versions, commit and tag as release-{2}..."
-                .format(self.branch, self.maintenance_branch, self.tag))
-            msg_commit = "Release %s, update %s to %s" % (self.branch, self.snapshot, self.tag)
             if self.next_snapshot != 'done':
+                log("\n[INFO] Releasing branch {0}, create maintenance branch {1},"
+                    " update versions, commit and tag as release-{2}..."
+                    .format(self.branch, self.maintenance_branch, self.tag))
                 self.repo.git_recurse("checkout -b %s" % self.maintenance_branch, with_optionals=True)
             else:
-                self.repo.git_recurse("checkout -f %s" % self.maintenance_branch, with_optionals=True)
-                log("[INFO] Check release-ability...")
-                self.check()
+                log("\n[INFO] Releasing branch {0}, update versions, commit and tag as release-{2}..."
+                    .format(self.branch, self.tag))
+            msg_commit = "Release %s, update %s to %s" % (self.branch, self.snapshot, self.tag)
             self.update_versions(self.snapshot, self.tag)
             for other_version in self.other_versions:
                 if len(other_version) > 0:
@@ -532,9 +530,8 @@ given the path parameter.
                 self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
         log("\n[INFO] Released branch %s (update version and commit)..." % self.branch)
 
-        self.repo.git_recurse("checkout -f %s" % self.branch, with_optionals=True)
-
         if self.next_snapshot != 'done':
+            self.repo.git_recurse("checkout -f %s" % self.branch, with_optionals=True)
             # Update released branches with next versions
             if not upgrade_only:
                 msg_commit = "Post release %s" % self.tag
@@ -551,15 +548,17 @@ given the path parameter.
             if post_release_change:
                 self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
 
-        if not upgrade_only and self.maintenance_version == "auto":
-            log("\n[INFO] Delete maintenance branch %s..." % self.maintenance_branch)
-            self.repo.git_recurse("branch -D %s" % self.maintenance_branch, with_optionals=True)
-
         if upgrade_only and doperform:
             self.perform(skip_tests=self.skipTests, skip_ITs=self.skipITs, dryrun=dryrun, upgrade_only=True)
         if not upgrade_only:
             log("\n[INFO] Build and package release-%s..." % self.tag)
             self.repo.git_recurse("checkout release-%s" % self.tag)
+
+            if self.maintenance_version == "auto":
+                log("\n[INFO] Delete maintenance branch %s..." % self.maintenance_branch)
+                if not dryrun:
+                    self.repo.git_recurse("branch -D %s" % self.maintenance_branch, with_optionals=True)
+
             if dodeploy:
                 log("\n[INFO] Staging mode: deploy artifacts...")
                 commands = "clean deploy"
@@ -675,6 +674,7 @@ given the path parameter.
         'upgrade_only': only upgrade other versions (used to keep Marketplace Packages aligned even if not released)"""
         if dryrun:
             log("[INFO] #### DRY RUN MODE ####")
+        self.check_branch_to_release()
         cwd = os.getcwd()
         os.chdir(self.repo.basedir)
         self.repo.clone(self.branch, with_optionals=True)
@@ -682,7 +682,8 @@ given the path parameter.
             dry_option = "-n"
         else:
             dry_option = ""
-        self.repo.git_recurse("push %s %s %s" % (dry_option, self.repo.alias, self.branch), with_optionals=True)
+        if self.next_snapshot != 'done':
+            self.repo.git_recurse("push %s %s %s" % (dry_option, self.repo.alias, self.branch), with_optionals=True)
         if not upgrade_only:
             if self.maintenance_version != "auto":
                 self.repo.git_recurse("push %s %s %s" % (dry_option, self.repo.alias, self.maintenance_branch),
@@ -692,6 +693,11 @@ given the path parameter.
             self.repo.mvn("clean deploy", skip_tests=skip_tests, skip_ITs=skip_ITs,
                           profiles="release,-qa" + self.profiles, dryrun=dryrun)
         os.chdir(cwd)
+
+    def check_branch_to_release(self):
+        if self.next_snapshot == 'done' and self.branch != self.maintenance_branch:
+            raise ExitException(1, "When releasing from an already created release branch (command 'branch'), the"
+                                "branch to release (option '-b') must equal to the release version (option '-t')")
 
     def check(self):
         """ Check the release is feasible"""
