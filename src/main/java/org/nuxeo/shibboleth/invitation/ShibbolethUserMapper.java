@@ -25,6 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+import com.google.common.collect.BiMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -35,6 +38,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.platform.shibboleth.service
+        .ShibbolethAuthenticationService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
@@ -74,10 +79,20 @@ public class ShibbolethUserMapper implements UserMapper {
     public NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject, boolean createIfNeeded, boolean update,
             Map<String, Serializable> params) {
 
-        String email = (String) ((Map) userObject).get("email");
-        ShibbolethUserInfo userInfo = new ShibbolethUserInfo((String) ((Map) userObject).get("username"),
-                (String) ((Map) userObject).get("password"), (String) ((Map) userObject).get("firstName"),
-                (String) ((Map) userObject).get("lastName"), (String) ((Map) userObject).get("company"), email);
+        // Fetching keys from the shibboleth configuration in nuxeo
+        ShibbolethAuthenticationService shiboService = Framework.getService(ShibbolethAuthenticationService.class);
+        BiMap<String, String> metadata = shiboService.getUserMetadata();
+        String usernameKey = MoreObjects.firstNonNull(metadata.get("username"), "username");
+        String lastNameKey = MoreObjects.firstNonNull(metadata.get("lastName"), "lastName");
+        String firstNameKey = MoreObjects.firstNonNull(metadata.get("firstName"), "firstName");
+        String emailKey = MoreObjects.firstNonNull(metadata.get("email"), "email");
+        String companyKey = MoreObjects.firstNonNull(metadata.get("company"), "company");
+        String passwordKey = MoreObjects.firstNonNull(metadata.get("password"), "password");
+
+        String email = (String) ((Map) userObject).get(emailKey);
+        ShibbolethUserInfo userInfo = new ShibbolethUserInfo((String) ((Map) userObject).get(usernameKey),
+                (String) ((Map) userObject).get(passwordKey), (String) ((Map) userObject).get(firstNameKey),
+                (String) ((Map) userObject).get(lastNameKey), (String) ((Map) userObject).get(companyKey), email);
 
         // Check if email has been provided and if invitation has been assigned to a user with email as username
         DocumentModel userDoc = null;
