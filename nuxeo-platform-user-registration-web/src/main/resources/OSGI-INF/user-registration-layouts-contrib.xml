@@ -454,6 +454,7 @@
       <properties widgetMode="any">
         <property name="userSuggestionSearchType">GROUP_TYPE</property>
         <property name="hideAdminGroups">true</property>
+        <property name="hidePowerUsersGroup">true</property>
       </properties>
     </widget>
 
