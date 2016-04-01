@@ -9,7 +9,7 @@
 <div class="info">
 <p>
 <#if exceptionMsg??>
-  Your invitation cannot be validated : "${exceptionMsg}".
+${Context.getMessage('label.registerForm.cannot.validated')}: "${exceptionMsg}".
 </#if>
 <#if error??>
   An error occured during your invitation processs.
