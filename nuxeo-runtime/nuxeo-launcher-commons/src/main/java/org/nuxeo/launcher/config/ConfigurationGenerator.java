@@ -1011,7 +1011,7 @@ public class ConfigurationGenerator {
             // Copy back file content
             writer.append(newContent.toString());
             // Write changed parameters
-            writer.write(BOUNDARY_BEGIN + " " + new Date().toString() + System.getProperty("line.separator"));
+            writer.write(BOUNDARY_BEGIN + System.getProperty("line.separator"));
             for (Object o : new TreeSet<>(userConfig.keySet())) {
                 String key = (String) o;
                 // Ignore parameters already stored in newContent
