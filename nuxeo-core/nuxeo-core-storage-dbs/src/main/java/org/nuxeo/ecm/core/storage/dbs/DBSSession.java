@@ -85,6 +85,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -108,6 +110,7 @@ import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
+import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
@@ -1392,17 +1395,20 @@ public class DBSSession implements Session {
     }
 
     protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo) {
-        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, true, countUpTo);
+        Mutable<String> idKeyHolder = new MutableObject<String>();
+        PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, false, countUpTo,
+                idKeyHolder);
+        String idKey = idKeyHolder.getValue();
         List<String> ids = new ArrayList<String>(pl.list.size());
         for (Map<String, Serializable> map : pl.list) {
-            String id = (String) map.get(NXQL.ECM_UUID);
+            String id = (String) map.get(idKey);
             ids.add(id);
         }
         return new PartialList<String>(ids, pl.totalSize);
     }
 
     protected PartialList<Map<String, Serializable>> doQueryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, boolean distinctDocuments, int countUpTo) {
+            QueryFilter queryFilter, boolean distinctDocuments, int countUpTo, Mutable<String> idKeyHolder) {
         if ("NXTAG".equals(queryType)) {
             // for now don't try to implement tags
             // and return an empty list
@@ -1411,27 +1417,32 @@ public class DBSSession implements Session {
         if (!NXQL.NXQL.equals(queryType)) {
             throw new NuxeoException("No QueryMaker accepts query type: " + queryType);
         }
+
         // transform the query according to the transformers defined by the
         // security policies
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
+        for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
+            sqlQuery = transformer.transform(queryFilter.getPrincipal(), sqlQuery);
+        }
+
         SelectClause selectClause = sqlQuery.select;
         if (selectClause.isEmpty()) {
             // turned into SELECT ecm:uuid
             selectClause.add(new Reference(NXQL.ECM_UUID));
         }
-        if (selectClause.isDistinct()) {
-            if (selectClause.getSelectList().size() == 1
-                    && (selectClause.get(0).equals(new Reference(NXQL.ECM_UUID)))) {
-                // ok, SELECT ecm:uuid
-            } else {
-                throw new QueryParseException("SELECT DISTINCT not supported on DBS");
-            }
+        boolean selectStar = selectClause.getSelectList().size() == 1
+                && (selectClause.get(0).equals(new Reference(NXQL.ECM_UUID)));
+        if (selectStar) {
             distinctDocuments = true;
-        }
-        for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
-            sqlQuery = transformer.transform(queryFilter.getPrincipal(), sqlQuery);
+        } else if (selectClause.isDistinct()) {
+            throw new QueryParseException("SELECT DISTINCT not supported on DBS");
         }
         OrderByClause orderByClause = sqlQuery.orderBy;
+        if (idKeyHolder != null) {
+            Operand operand = selectClause.get(0);
+            String idKey = operand instanceof Reference ? ((Reference) operand).name : NXQL.ECM_UUID;
+            idKeyHolder.setValue(idKey);
+        }
 
         QueryOptimizer optimizer = new QueryOptimizer();
         MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
@@ -1602,7 +1613,7 @@ public class DBSSession implements Session {
     public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
             boolean distinctDocuments, Object[] params) {
         PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, distinctDocuments,
-                -1);
+                -1, null);
         return new DBSQueryResult(pl);
     }
 

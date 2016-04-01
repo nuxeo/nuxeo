@@ -291,10 +291,13 @@ public class NXQLQueryMaker implements QueryMaker {
         }
 
         // SELECT * -> SELECT ecm:uuid
-        boolean selectStar = sqlQuery.select.isEmpty();
-        if (selectStar) {
-            sqlQuery.select.add(new Reference(NXQL.ECM_UUID));
+        SelectClause selectClause = sqlQuery.select;
+        if (selectClause.isEmpty()) {
+            // turned into SELECT ecm:uuid
+            selectClause.add(new Reference(NXQL.ECM_UUID));
         }
+        boolean selectStar = selectClause.getSelectList().size() == 1
+                && (selectClause.get(0).equals(new Reference(NXQL.ECM_UUID)));
 
         /*
          * Analyze query to find all relevant types and keys for the criteria, and fulltext matches.
@@ -308,7 +311,7 @@ public class NXQLQueryMaker implements QueryMaker {
             return null;
         }
 
-        boolean distinct = sqlQuery.select.isDistinct();
+        boolean distinct = selectClause.isDistinct();
         if (selectStar && queryAnalyzer.hasWildcardIndex) {
             distinct = true;
         }
@@ -323,7 +326,7 @@ public class NXQLQueryMaker implements QueryMaker {
         }
         // if ORDER BY ecm:fulltextScore, make sure we SELECT on it too
         if (queryAnalyzer.orderByScore && !queryAnalyzer.selectScore) {
-            sqlQuery.select.add(new Reference(NXQL.ECM_FULLTEXT_SCORE));
+            selectClause.add(new Reference(NXQL.ECM_FULLTEXT_SCORE));
             reAnalyze = true;
         }
         if (reAnalyze) {
@@ -388,7 +391,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 }
             }
             for (String name : onlyOrderByColumnNames) {
-                sqlQuery.select.add(new Reference(name));
+                selectClause.add(new Reference(name));
             }
         }
 
@@ -449,7 +452,7 @@ public class NXQLQueryMaker implements QueryMaker {
             // init builder
 
             WhereBuilder whereBuilder = newWhereBuilder(docKind == DocKind.PROXY);
-            sqlQuery.select.accept(whereBuilder);
+            selectClause.accept(whereBuilder);
             whatColumns = whereBuilder.whatColumns;
             whatKeys = whereBuilder.whatKeys;
 

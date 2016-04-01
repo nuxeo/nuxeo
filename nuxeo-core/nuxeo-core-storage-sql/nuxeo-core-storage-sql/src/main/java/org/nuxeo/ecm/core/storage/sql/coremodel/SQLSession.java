@@ -499,8 +499,10 @@ public class SQLSession implements Session {
         for (int index = 0; index < ids.size(); ++index) {
             Node eachNode = nodes.get(index);
             if (eachNode == null) {
-                Serializable eachId = ids.get(index);
-                log.warn("Cannot fetch document by id " + eachId, new Throwable("debug stack trace"));
+                if (log.isTraceEnabled()) {
+                    Serializable id = ids.get(index);
+                    log.trace("Cannot fetch document with id: " + id, new Throwable("debug stack trace"));
+                }
                 continue;
             }
             Document doc;

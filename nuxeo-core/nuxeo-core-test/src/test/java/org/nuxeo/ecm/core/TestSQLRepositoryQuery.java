@@ -3158,4 +3158,37 @@ public class TestSQLRepositoryQuery {
         assertEquals(1, dml.size());
     }
 
+    @Test
+    public void testQueryIdNotFromUuid() throws Exception {
+        DocumentModel doc1 = new DocumentModelImpl("/", "doc1", "File");
+        doc1 = session.createDocument(doc1);
+
+        DocumentModel doc2 = new DocumentModelImpl("/", "doc2", "File");
+        doc2 = session.createDocument(doc2);
+
+        DocumentModel doc3 = new DocumentModelImpl("/", "doc3", "File");
+        doc3.setPropertyValue("dc:source", doc1.getId());
+        doc3.setPropertyValue("dc:subjects",
+                new String[] { "not-a-valid-id", doc1.getId(), doc1.getId(), doc2.getId() });
+        doc3 = session.createDocument(doc3);
+        session.save();
+
+        DocumentModelList dml;
+        DocumentModel doc;
+
+        dml = session.query("SELECT dc:source FROM File WHERE ecm:name = 'doc3'");
+        assertEquals(1, dml.size());
+        doc = dml.get(0);
+        assertEquals(doc1.getId(), doc.getId());
+
+        dml = session.query("SELECT dc:subjects/* FROM File WHERE ecm:name = 'doc3'");
+        assertEquals(3, dml.size());
+        // order is not fixed for VCS
+        List<String> expectedList = new ArrayList<>(Arrays.asList(doc1.getId(), doc1.getId(), doc2.getId()));
+        List<String> list = new ArrayList<>(Arrays.asList(dml.get(0).getId(), dml.get(1).getId(), dml.get(2).getId()));
+        Collections.sort(expectedList);
+        Collections.sort(list);
+        assertEquals(expectedList, list);
+    }
+
 }

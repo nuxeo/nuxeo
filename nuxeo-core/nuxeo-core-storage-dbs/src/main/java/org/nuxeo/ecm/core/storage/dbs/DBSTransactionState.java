@@ -201,11 +201,13 @@ public class DBSTransactionState {
         List<DBSDocumentState> docStates = new ArrayList<DBSDocumentState>(ids.size());
         for (String id : ids) {
             DBSDocumentState docState = transientStates.get(id);
-            if (docState != null) {
-                docStates.add(docState);
-            } else {
-                log.warn("Cannot fetch document with id: " + id, new Throwable("debug stack trace"));
+            if (docState == null) {
+                if (log.isTraceEnabled()) {
+                    log.trace("Cannot fetch document with id: " + id, new Throwable("debug stack trace"));
+                }
+                continue;
             }
+            docStates.add(docState);
         }
         return docStates;
     }
