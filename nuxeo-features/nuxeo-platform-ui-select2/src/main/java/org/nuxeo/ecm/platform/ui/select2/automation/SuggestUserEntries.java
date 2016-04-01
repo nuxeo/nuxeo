@@ -64,6 +64,8 @@ public class SuggestUserEntries {
 
     public static final String ID = "UserGroup.Suggestion";
 
+    public static final String POWERUSERS = "powerusers";
+
     @Context
     protected OperationContext ctx;
 
@@ -84,6 +86,12 @@ public class SuggestUserEntries {
      */
     @Param(name = "hideAdminGroups", required = false, description = "If set, remove all administrator groups from the suggestions")
     protected boolean hideAdminGroups;
+
+    /**
+     * @since 8.3
+     */
+    @Param(name = "hidePowerGroup", required = false, description = "If set, remove power users group from the suggestions")
+    protected boolean hidePowerGroup;
 
     @Param(name = "userSuggestionMaxSearchResults", required = false)
     protected Integer userSuggestionMaxSearchResults;
@@ -189,6 +197,11 @@ public class SuggestUserEntries {
                             if (adminGroupName.equals(group.getId())) {
                                 break groupLoop;
                             }
+                        }
+                    }
+                    if (hidePowerGroup) {
+                        if (POWERUSERS.equals(group.getId())) {
+                            break groupLoop;
                         }
                     }
                     JSONObject obj = new JSONObject();
