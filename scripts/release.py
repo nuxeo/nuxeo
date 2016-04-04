@@ -176,7 +176,7 @@ given the path parameter.
         self.set_tag(tag)
         self.set_next_snapshot(next_snapshot)
         self.maintenance_branch = self.tag
-        if self.branch == self.maintenance_branch:
+        if self.next_snapshot != 'done' and self.branch == self.maintenance_branch:
             self.maintenance_branch += ".0"
         # Detect if working on Nuxeo main sources
         tree = etree_parse(os.path.join(self.repo.basedir, "pom.xml"))
@@ -695,9 +695,12 @@ given the path parameter.
         os.chdir(cwd)
 
     def check_branch_to_release(self):
-        if self.next_snapshot == 'done' and self.branch != self.maintenance_branch:
+        """ Check the parameters: if the branch to release has been previously created (the next snapshot is then set to
+        'done'), then the current branch is expected to equal to the current version minus '-SNAPSHOT'."""
+        if self.next_snapshot == 'done' and self.branch != self.snapshot.partition("-SNAPSHOT")[0]:
             raise ExitException(1, "When releasing from an already created release branch (command 'branch'), the"
-                                "branch to release (option '-b') must equal to the release version (option '-t')")
+                                " branch to release (option '-b') must equal to the current version minus '-SNAPSHOT':"
+                                " %s != %s" % (self.branch, self.snapshot.partition("-SNAPSHOT")[0]))
 
     def check(self):
         """ Check the release is feasible"""
