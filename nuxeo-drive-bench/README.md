@@ -109,12 +109,12 @@ Default options: see below.
     mvn -nsu gatling:execute -Dgatling.simulationClass
     ...
     Choose a simulation number:
-         [0] org.nuxeo.drive.bench.CleanupRemoteScanSimulation
-         [1] org.nuxeo.drive.bench.CleanupSimulation
-         [2] org.nuxeo.drive.bench.DriveBenchSimulation
-         [3] org.nuxeo.drive.bench.RecursiveRemoteScanSimulation
-         [4] org.nuxeo.drive.bench.SetupRemoteScanSimulation
-         [5] org.nuxeo.drive.bench.SetupSimulation
+         [0] org.nuxeo.drive.bench.Sim00SetupPolling
+         [1] org.nuxeo.drive.bench.Sim10BenchPolling
+         [2] org.nuxeo.drive.bench.Sim20CleanupPolling
+         [3] org.nuxeo.drive.bench.Sim30SetupRemoteScan
+         [4] org.nuxeo.drive.bench.Sim40BenchRecursiveRemoteScan
+         [5] org.nuxeo.drive.bench.Sim50CleanupRemoteScan
 
 Common options with default values:
 
