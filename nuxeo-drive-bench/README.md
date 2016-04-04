@@ -95,7 +95,7 @@ Sets up a Nuxeo instance with the required packages and configuration, runs all 
 
     mvn -nsu verify -Ppolling,remote-scan
 
-You can use a single profile for running a specific group of simulations: `polling` or `remote-scan`.
+You can use a single profile for running a specific group of simulations: `polling`, `remote-scan` or `cleanup-remote-scan`.
 
 You can add the following profiles:
 
