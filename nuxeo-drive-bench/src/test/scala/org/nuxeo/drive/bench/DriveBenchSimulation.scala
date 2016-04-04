@@ -5,7 +5,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
 
-class DriveBenchSimulation extends Simulation {
+class Sim10BenchPolling extends Simulation {
 
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
@@ -30,7 +30,7 @@ class DriveBenchSimulation extends Simulation {
     .assertions(global.successfulRequests.percent.greaterThan(80))
 }
 
-class RecursiveRemoteScanSimulation extends Simulation {
+class Sim40BenchRecursiveRemoteScan extends Simulation {
 
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())

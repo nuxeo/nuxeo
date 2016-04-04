@@ -151,7 +151,7 @@ Note that you may need to edit the administrator account if it is not the defaul
 
 You can also bypass the interactive mode and execute a given simulation:
 
-    mvn -nsu gatling:execute -Dgatling.simulationClass=org.nuxeo.drive.bench.SetupSimulation
+    mvn -nsu gatling:execute -Dgatling.simulationClass=org.nuxeo.drive.bench.Sim00SetupPolling
 
 ## Resources
 

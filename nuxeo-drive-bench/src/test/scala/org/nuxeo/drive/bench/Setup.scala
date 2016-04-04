@@ -50,7 +50,7 @@ object SetupRemoteScan {
   }
 }
 
-class SetupSimulation extends Simulation {
+class Sim00SetupPolling extends Simulation {
 
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
@@ -66,7 +66,7 @@ class SetupSimulation extends Simulation {
     .assertions(global.successfulRequests.percent.is(100))
 }
 
-class SetupRemoteScanSimulation extends Simulation {
+class Sim30SetupRemoteScan extends Simulation {
 
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())

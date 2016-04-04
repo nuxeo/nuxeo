@@ -156,7 +156,7 @@
                   <goal>execute</goal>
                 </goals>
                 <configuration>
-                  <simulationClass>org.nuxeo.drive.bench.SetupSimulation</simulationClass>
+                  <simulationClass>org.nuxeo.drive.bench.Sim00SetupPolling</simulationClass>
                 </configuration>
               </execution>
               <execution>
@@ -165,7 +165,7 @@
                   <goal>execute</goal>
                 </goals>
                 <configuration>
-                  <simulationClass>org.nuxeo.drive.bench.DriveBenchSimulation</simulationClass>
+                  <simulationClass>org.nuxeo.drive.bench.Sim10BenchPolling</simulationClass>
                   <jvmArgs>
                     <jvmArg>-Xms1g</jvmArg>
                     <jvmArg>-Xmx2g</jvmArg>
@@ -178,7 +178,7 @@
                   <goal>execute</goal>
                 </goals>
                 <configuration>
-                  <simulationClass>org.nuxeo.drive.bench.CleanupSimulation</simulationClass>
+                  <simulationClass>org.nuxeo.drive.bench.Sim20CleanupPolling</simulationClass>
                 </configuration>
               </execution>
             </executions>
@@ -200,16 +200,16 @@
                   <goal>execute</goal>
                 </goals>
                 <configuration>
-                  <simulationClass>org.nuxeo.drive.bench.SetupRemoteScanSimulation</simulationClass>
+                  <simulationClass>org.nuxeo.drive.bench.Sim30SetupRemoteScan</simulationClass>
                 </configuration>
               </execution>
               <execution>
-                <id>bench-remote-scan</id>
+                <id>bench-recursive-remote-scan</id>
                 <goals>
                   <goal>execute</goal>
                 </goals>
                 <configuration>
-                  <simulationClass>org.nuxeo.drive.bench.RecursiveRemoteScanSimulation</simulationClass>
+                  <simulationClass>org.nuxeo.drive.bench.Sim40BenchRecursiveRemoteScan</simulationClass>
                   <jvmArgs>
                     <jvmArg>-Xms1g</jvmArg>
                     <jvmArg>-Xmx2g</jvmArg>
@@ -222,7 +222,7 @@
                   <goal>execute</goal>
                 </goals>
                 <configuration>
-                  <simulationClass>org.nuxeo.drive.bench.CleanupRemoteScanSimulation</simulationClass>
+                  <simulationClass>org.nuxeo.drive.bench.Sim50CleanupRemoteScan</simulationClass>
                 </configuration>
               </execution>
             </executions>

@@ -18,7 +18,7 @@ object Cleanup {
   }
 }
 
-class CleanupSimulation extends Simulation {
+class Sim20CleanupPolling extends Simulation {
 
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
@@ -34,7 +34,7 @@ class CleanupSimulation extends Simulation {
     .assertions(global.successfulRequests.percent.is(100))
 }
 
-class CleanupRemoteScanSimulation extends Simulation {
+class Sim50CleanupRemoteScan extends Simulation {
 
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
