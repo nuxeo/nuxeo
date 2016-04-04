@@ -153,6 +153,11 @@ public class TestBinaryMetadataService {
         assertEquals("Writer", pdfDoc.getPropertyValue("dc:coverage"));
         assertEquals("Mirko Nasato", pdfDoc.getPropertyValue("dc:creator"));
 
+        // Test metadata with lists
+        String[] keywords = (String[]) pdfDoc.getPropertyValue("dc:subjects");
+        assertEquals("tag1", keywords[0]);
+        assertEquals("tag2", keywords[1]);
+
         // Test if description has been overriden by higher order contribution
         assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:description"));
     }
