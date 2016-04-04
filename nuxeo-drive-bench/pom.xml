@@ -152,7 +152,6 @@
             <executions>
               <execution>
                 <id>setup-polling</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
@@ -162,7 +161,6 @@
               </execution>
               <execution>
                 <id>bench-polling</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
@@ -176,7 +174,6 @@
               </execution>
               <execution>
                 <id>cleanup-polling</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
@@ -199,7 +196,6 @@
             <executions>
               <execution>
                 <id>setup-remote-scan</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
@@ -209,7 +205,6 @@
               </execution>
               <execution>
                 <id>bench-remote-scan</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
@@ -223,7 +218,6 @@
               </execution>
               <execution>
                 <id>cleanup-remote-scan</id>
-                <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
                 </goals>
