@@ -10,7 +10,7 @@ object RecursiveRemoteScan {
   val logger = Logger(LoggerFactory.getLogger(getClass))
   
   /**
-   * Let's simultate Nuxeo Drive remote scan.
+   * Let's simultate Nuxeo Drive recursive remote scan.
    */
   def run = () => {
     scenario("RecursiveRemoteScan")

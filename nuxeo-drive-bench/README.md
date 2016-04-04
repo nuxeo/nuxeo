@@ -1,110 +1,168 @@
-# Nuxeo Drive bench
+# Nuxeo Drive Gatling Bench
 
-# Requirement
+## Requirements
 
-- A running Nuxeo server instance with Nuxeo Drive marketplace package installed
-- A redis server running on `localhost:6379`
+- A running Nuxeo server instance with the `nuxeo-platform-importer` and `nuxep-drive` packages installed
+- A Redis server running on `localhost:6379`
 - Setup an existing administrator account in the file: `src/test/resources/data/admins.csv`
-- Setup a list of users that will be created as members and used in the bench: `src/test/resources/data/users.csv`
-  default file contains 500 users.
+- Setup a list of users that will be created as members and used in the bench: `src/test/resources/data/users.csv`.
+  Default file contains 500 users.
 - Increase vcs and db pool size to 60 in `nuxeo.conf`: `nuxeo.*.max-pool-size`
 
-# Simulations
+## Simulations
 
-## Setup Simulation
+### Polling Setup Simulation
 
-This simulation initialize the environnement and need to be run first, it is idempotent.
+This simulation initializes the environment for the Polling scenario and needs to be run first, it is idempotent.
 
-- create a bench workspace
-- create a common folder
-- create a gatling user group
-- create all users in this group
-- create a folder for each user in the bench workspace
-- synchronize the common and user folder for each user
-- save user information (user, token, deviceId) into redis
+- Create a bench workspace
+- Create a common folder
+- Create a Gatling user group
+- Create all users in this group
+- Create a folder for each user in the bench workspace
+- Synchronize the common and user folder for each user
+- Save user information (user, token, deviceId) into Redis
 
+### Polling Simulation
 
-## DriveBench Simulation
+This simulation runs a mix of different scenarios.
 
-This simulation run a mix of different scenarios:
+#### Polling scenario
 
+Simulates the Nuxeo Drive polling behavior:
 
-### Polling scenario
-
-Simulate the nuxeo drive poll behavor:
-
-- peek a random drive client from redis
-- loop: poll for update every 30s
+- Peek a random Nuxeo Drive client from Redis
+- Loop: poll for update every 30s
   - TODO: if there is some changes download
 
+#### Server Feeder Scenario
 
-### Server feeder scenario
+Simulates document creation on the server side:
 
-Simulate document creation on the server side:
+- Peek a random Nuxeo user
+- Create a file in the common folder
+- Create a file in the user folder
+- Loop 2 times
+   - Update both file contents
+- Delete both files
 
-- peek a random Nuxeo user
-- create a file in the common folder
-- create a file in the user folder
-- loop 2 times
-   - update both file content
-- delete both file
+#### TODO: Client Feeder Scenario
 
+Simulates document creation on the Nuxeo Drive side:
 
-### TODO Client feeder scenario
+- Using a random Nuxeo Drive client from Redis
+- Upload a new document in its folder
 
-Simulate document creation on the Nuxeo Drive side
+### Polling Cleanup Simulation
 
-- using a random drive client from redis
-- upload a new document in its folder
+This simulation removes all documents, users and group from the Nuxeo instance, also deletes the data in Redis.
 
-## Cleanup simulation
+### Remote Scan Setup Simulation
 
-This simulation remove all documents, users and group from the Nuxeo instance, also delete the data in redis.
+This simulation initializes the environment for the Remote Scan scenario and needs to be run first, it is idempotent.
 
-# Launching
+- Create a Gatling user group
+- Create a bench workspace
+- Grant ReadWrite permission to the Gatling group on the bench workspace
+- Mass import of random documents in the bench workspace
+- Wait for asynchronous jobs
+- Create users in the Gatling group
+- Synchronize the bench workspace for each user
+- Save user information (user, token, deviceId) into Redis
+- Fetch Automation API
+- Get client update info
 
-## Run all simulations
+### Recursive Remote Scan Simulation
 
-    mvn integration-test
+Simulates the Nuxeo Drive recursive remote scan behavior:
 
-This will run simulations: Setup, DriveBench and Cleanup
+- Peek a random Nuxeo Drive client from Redis
+- Fetch Automation API
+- Get top level folder
+- Get file system item
+- Get initial change summary
+- Get children recursively
 
-Default options: see below
+### Remote Scan Cleanup Simulation
 
-## Run Setup simulation 
+This simulation removes all documents, users and group from the Nuxeo instance, also deletes the data in Redis.
 
-    mvn gatling:execute -Dgatling.simulationClass=org.nuxeo.drive.bench.SetupSimulation
+## Launching Simulations
 
-Default options:
+### All in One
 
-    # Target URL
+Sets up a Nuxeo instance with the required packages and configuration, runs all the simulations and stops the Nuxeo instance.
+
+    mvn -nsu verify -Ppolling,remote-scan
+
+You can use a single profile for running a specific group of simulations: `polling` or `remote-scan`.
+
+You can add the following profiles:
+
+- `pgsql`: use a PostgreSQL database as a backend for Nuxeo
+- `monitor`: record metrics to Graphite, see this [sample](http://kraken.nuxeo.com/dashboard/#kraken-drive-remote-scan) for instance
+
+Default options: see below.
+
+### Running a Single Simulation on an Running Nuxeo Instance
+
+    mvn -nsu gatling:execute -Dgatling.simulationClass
+    ...
+    Choose a simulation number:
+         [0] org.nuxeo.drive.bench.CleanupRemoteScanSimulation
+         [1] org.nuxeo.drive.bench.CleanupSimulation
+         [2] org.nuxeo.drive.bench.DriveBenchSimulation
+         [3] org.nuxeo.drive.bench.RecursiveRemoteScanSimulation
+         [4] org.nuxeo.drive.bench.SetupRemoteScanSimulation
+         [5] org.nuxeo.drive.bench.SetupSimulation
+
+Common options with default values:
+
+    # Nuxeo target URL
     -Durl=http://localhost:8080/nuxeo
+    # Time in seconds to reach the target number of concurrent Nuxeo Drive clients / writers
+    -Dramp=10
 
-## Run DriveBench simulation
+Options for the Polling simulations:
 
-    mvn gatling:execute -Dgatling.simulationClass=org.nuxeo.drive.bench.DriveBenchSimulation
-
-Default options:
-
-    # Target URL
-    -Durl=http://localhost:8080/nuxeo
-    # Duration of the bench
-    -Dduration=60
-    # Concurrent drive clients
+    # Number of concurrent Nuxeo Drive clients
     -Dusers=100
-    # Concurrent writer using Nuxeo
+    # Number of concurrent writers using Nuxeo
     -Dwriters=10
-    # Sleep time during drive poll
+    # Sleep time in seconds during Nuxeo Drive polling
     -DpollInterval=30
-    # Sleep time between document creation
+    # Sleep time in seconds between document creations
     -DfeederInterval=10
+    # Duration in seconds of the simulation
+    -Dduration=60
 
-## Run Cleanup simulation
+Options for the Remote Scan simulations:
 
-    mvn gatling:execute -Dgatling.simulationClass=org.nuxeo.drive.bench.CleanupSimulation
+    # Number of nodes to create during mass import at setup
+    -DnbNodes=100000
+    # Number of threads to use during mass import at setup
+    -DnbThreads=12
+    # Number of concurrent Nuxeo Drive clients
+    -DremoteScan.users=10
 
-Default options:
+Note that you may need to edit the administrator account if it is not the default one:
 
-    # Target URL
-    -Durl=http://localhost:8080/nuxeo
+    src/test/resources/data/admins.csv
 
+You can also bypass the interactive mode and execute a given simulation:
+
+    mvn -nsu gatling:execute -Dgatling.simulationClass=org.nuxeo.drive.bench.SetupSimulation
+
+## Resources
+
+### Reporting issues
+
+[https://jira.nuxeo.com/browse/NXDRIVE-367](https://jira.nuxeo.com/browse/NXDRIVE-367)
+
+[https://jira.nuxeo.com/browse/NXP-19209](https://jira.nuxeo.com/browse/NXP-19209)
+
+[https://jira.nuxeo.com/secure/CreateIssue!default.jspa?project=NXP](https://jira.nuxeo.com/secure/CreateIssue!default.jspa?project=NXP)
+
+## Licensing
+
+[Apache License, Version 2.0 (the "License")](http://www.apache.org/licenses/LICENSE-2.0)
