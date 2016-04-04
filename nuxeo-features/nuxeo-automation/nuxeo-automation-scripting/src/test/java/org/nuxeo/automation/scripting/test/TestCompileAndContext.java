@@ -66,7 +66,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.automation" + ".scripting:OSGI-INF/automation-scripting-service.xml" })
+@LocalDeploy({ "org.nuxeo.ecm.automation.scripting:OSGI-INF/automation-scripting-service.xml" })
 public class TestCompileAndContext {
 
     @Inject
