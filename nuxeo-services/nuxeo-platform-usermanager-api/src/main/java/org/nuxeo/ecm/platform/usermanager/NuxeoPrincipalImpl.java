@@ -115,21 +115,21 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         this.isAdministrator = isAdministrator;
     }
 
-    protected NuxeoPrincipalImpl(NuxeoPrincipalImpl other)  {
-       config = other.config;
+    protected NuxeoPrincipalImpl(NuxeoPrincipalImpl other) {
+        config = other.config;
         try {
             model = other.model.clone();
         } catch (CloneNotSupportedException cause) {
             throw new NuxeoException("Cannot clone principal " + this);
         }
-       dataModel = model.getDataModel(config.schemaName);
-       roles.addAll(other.roles);
-       allGroups = new ArrayList<>(other.allGroups);
-       virtualGroups = new ArrayList<>(other.virtualGroups);
-       isAdministrator = other.isAdministrator;
-       isAnonymous = other.isAnonymous;
-       origUserName = other.origUserName;
-       principalId = other.principalId;
+        dataModel = model.getDataModel(config.schemaName);
+        roles.addAll(other.roles);
+        allGroups = new ArrayList<>(other.allGroups);
+        virtualGroups = new ArrayList<>(other.virtualGroups);
+        isAdministrator = other.isAdministrator;
+        isAnonymous = other.isAnonymous;
+        origUserName = other.origUserName;
+        principalId = other.principalId;
     }
 
     public void setConfig(UserConfig config) {
@@ -293,7 +293,10 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
      */
     public void setModel(DocumentModel model, boolean updateAllGroups) {
         this.model = model;
-        dataModel = model.getDataModels().values().iterator().next();
+        dataModel = model.getDataModels()
+                .values()
+                .iterator()
+                .next();
         if (updateAllGroups) {
             updateAllGroups();
         }
@@ -452,32 +455,45 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return name != null && name.startsWith(TRANSIENT_USER_PREFIX);
     }
 
-    static class DataTransferObject implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        final String username;
-
-        final String originatingUser;
-
-        DataTransferObject(NuxeoPrincipal principal) {
-            username = principal.getName();
-            originatingUser = principal.getOriginatingUser();
-        }
-
-        private Object readResolve() throws ObjectStreamException {
-            NuxeoPrincipal principal = Framework.getService(UserManager.class)
-                    .getPrincipal(username);
-            principal.setOriginatingUser(originatingUser);
-            return principal;
-        }
-
+    protected NuxeoPrincipal cloneTransferable() {
+        return new TransferableClone(this);
     }
 
-    private Object writeReplace() throws ObjectStreamException {
-        if (true) {
+    /**
+     * Provides another implementation which marshall the user id instead of
+     * transferring the whole content and resolve it when unmarshalled.
+     *
+     */
+    static protected class TransferableClone extends NuxeoPrincipalImpl {
+
+        protected TransferableClone(NuxeoPrincipalImpl other) {
+            super(other);
+        }
+
+        static class DataTransferObject implements Serializable {
+
+            private static final long serialVersionUID = 1L;
+
+            final String username;
+
+            final String originatingUser;
+
+            DataTransferObject(NuxeoPrincipal principal) {
+                username = principal.getName();
+                originatingUser = principal.getOriginatingUser();
+            }
+
+            private Object readResolve() throws ObjectStreamException {
+                NuxeoPrincipal principal = Framework.getService(UserManager.class)
+                        .getPrincipal(username);
+                principal.setOriginatingUser(originatingUser);
+                return principal;
+            }
+
+        }
+
+        private Object writeReplace() throws ObjectStreamException {
             return new DataTransferObject(this);
         }
-        return this;
     }
 }

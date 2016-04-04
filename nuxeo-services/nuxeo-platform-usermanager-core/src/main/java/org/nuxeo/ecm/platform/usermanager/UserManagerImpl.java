@@ -569,7 +569,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         if (principal == null) {
             return null;
         }
-        return new NuxeoPrincipalImpl(principal); // should not return cached principal
+        return principal.cloneTransferable(); // should not return cached principal
     }
 
     @Override
