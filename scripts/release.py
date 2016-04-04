@@ -553,12 +553,6 @@ given the path parameter.
         if not upgrade_only:
             log("\n[INFO] Build and package release-%s..." % self.tag)
             self.repo.git_recurse("checkout release-%s" % self.tag)
-
-            if self.maintenance_version == "auto":
-                log("\n[INFO] Delete maintenance branch %s..." % self.maintenance_branch)
-                if not dryrun:
-                    self.repo.git_recurse("branch -D %s" % self.maintenance_branch, with_optionals=True)
-
             if dodeploy:
                 log("\n[INFO] Staging mode: deploy artifacts...")
                 commands = "clean deploy"
@@ -683,12 +677,18 @@ given the path parameter.
         else:
             dry_option = ""
         if self.next_snapshot != 'done':
-            self.repo.git_recurse("push %s %s %s" % (dry_option, self.repo.alias, self.branch), with_optionals=True)
+            self.repo.git_recurse("push --porcelain %s %s %s" % (dry_option, self.repo.alias, self.branch),
+                                  with_optionals=True)
         if not upgrade_only:
             if self.maintenance_version != "auto":
-                self.repo.git_recurse("push %s %s %s" % (dry_option, self.repo.alias, self.maintenance_branch),
-                                      with_optionals=True)
-            self.repo.git_recurse("push %s %s release-%s" % (dry_option, self.repo.alias, self.tag))
+                self.repo.git_recurse("push --porcelain %s %s %s" % (dry_option, self.repo.alias,
+                                                                     self.maintenance_branch), with_optionals=True)
+            elif self.next_snapshot == 'done':
+                log("\n[INFO] Delete remote maintenance branch %s..." % self.maintenance_branch)
+                if not dryrun:
+                    self.repo.git_recurse("push --porcelain %s %s :%s" % (dry_option, self.repo.alias,
+                                                                          self.maintenance_branch), with_optionals=True)
+            self.repo.git_recurse("push --porcelain %s %s release-%s" % (dry_option, self.repo.alias, self.tag))
             self.repo.git_recurse("checkout release-%s" % self.tag)
             self.repo.mvn("clean deploy", skip_tests=skip_tests, skip_ITs=skip_ITs,
                           profiles="release,-qa" + self.profiles, dryrun=dryrun)
