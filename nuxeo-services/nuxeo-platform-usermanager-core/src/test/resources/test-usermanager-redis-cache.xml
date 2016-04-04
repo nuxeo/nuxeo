@@ -1,0 +1,17 @@
+<component name="test:usermanager:redis-cache">
+  <require>org.nuxeo.ecm.platform.usermanager.test</require>
+  <extension target="org.nuxeo.ecm.core.cache.CacheService"
+    point="caches">
+
+    <cache name="users" class="org.nuxeo.ecm.core.redis.contribs.RedisCache">
+      <ttl>1</ttl><!-- minutes -->
+    </cache>
+  </extension>
+  
+ <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+      point="userManager">
+    <userManager>
+      <userCacheName>users</userCacheName>
+    </userManager>
+  </extension>
+</component>

@@ -1114,13 +1114,13 @@ public class TestUserManager extends UserManagerTestCase {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (DebuggingObjectOutputStream oos = new DebuggingObjectOutputStream(bos)) {
             oos.writeObject(original);
-            assertEquals(NuxeoPrincipalImpl.DataTransferObject.class, oos.stack.get(0).getClass());
+            assertEquals(NuxeoPrincipalImpl.TransferableClone.DataTransferObject.class, oos.stack.get(0).getClass());
             assertEquals("Administrator", oos.stack.get(1));
         }
         try (DebuggingObjectInputStream ois = new DebuggingObjectInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
             assertEquals(original, ois.readObject());
             assertEquals("Administrator", ois.stack.get(0));
-            assertEquals(NuxeoPrincipalImpl.class, ois.stack.get(1).getClass());
+            assertEquals(NuxeoPrincipalImpl.TransferableClone.class, ois.stack.get(1).getClass());
         }
     }
 
