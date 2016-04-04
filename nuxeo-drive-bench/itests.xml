@@ -14,7 +14,7 @@
 
   <property name="nuxeo.db.max-pool-size" value="52" />
   <property name="nuxeo.vcs.max-pool-size" value="50" />
-  <property name="JAVA_OPTS" value="$JAVA_OPTS -Xms3g -Xmx3g -XX:SoftRefLRUPolicyMSPerMB=5" />
+  <property name="JAVA_OPTS" value="$JAVA_OPTS -Xms3g -Xmx3g -XX:SoftRefLRUPolicyMSPerMB=5 -Dcom.sun.management.jmxremote.autodiscovery=true -Dcom.sun.management.jdp.name=Nuxeo -XX:+UnlockCommercialFeatures -XX:+FlightRecorder" />
 
   <target name="tune-nuxeo">
     <echo level="info">Tune pool sizes</echo>
