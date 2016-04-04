@@ -509,7 +509,7 @@ given the path parameter.
                     .format(self.branch, self.maintenance_branch, self.tag))
                 self.repo.git_recurse("checkout -b %s" % self.maintenance_branch, with_optionals=True)
             else:
-                log("\n[INFO] Releasing branch {0}, update versions, commit and tag as release-{2}..."
+                log("\n[INFO] Releasing branch {0}, update versions, commit and tag as release-{1}..."
                     .format(self.branch, self.tag))
             msg_commit = "Release %s, update %s to %s" % (self.branch, self.snapshot, self.tag)
             self.update_versions(self.snapshot, self.tag)
