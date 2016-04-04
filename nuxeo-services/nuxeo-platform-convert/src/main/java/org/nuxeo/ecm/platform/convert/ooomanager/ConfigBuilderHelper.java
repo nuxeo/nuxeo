@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,12 @@ public class ConfigBuilderHelper {
 
     private static final String JPIPE_LIB_PATH_PROPERTY_KEY = "jod.jpipe.lib.path";
 
-    private static final String[] UNIX_JPIPE_PATHS = { "/usr/lib/ure/lib" };
+    private static final String[] UNIX_JPIPE_PATHS = { "/usr/lib/ure/lib", "/usr/lib/libreoffice/program" };
 
-    private static final String[] MAC_JPIPE_PATHS = { "/Applications/OpenOffice.org.app/Contents/basis-link/ure-link/lib" };
+    private static final String[] MAC_JPIPE_PATHS = {
+            "/Applications/OpenOffice.org.app/Contents/basis-link/ure-link/lib",
+            "/Applications/LibreOffice.app/Contents/Frameworks"
+    };
 
     private ConfigBuilderHelper() {
     }
