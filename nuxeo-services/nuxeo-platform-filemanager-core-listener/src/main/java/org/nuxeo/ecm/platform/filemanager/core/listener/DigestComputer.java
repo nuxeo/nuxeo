@@ -22,11 +22,11 @@
 package org.nuxeo.ecm.platform.filemanager.core.listener;
 
 import java.io.IOException;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
@@ -99,12 +99,7 @@ public class DigestComputer implements EventListener {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-
-        DigestInputStream dis = new DigestInputStream(blob.getStream(), md);
-        while (dis.available() > 0) {
-            dis.read();
-        }
-        byte[] b = md.digest();
+        byte[] b = DigestUtils.updateDigest(md, blob.getStream()).digest();
         return Base64.encodeBytes(b);
     }
 
