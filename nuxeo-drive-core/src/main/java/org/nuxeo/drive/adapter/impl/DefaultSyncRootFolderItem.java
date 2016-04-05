@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Antoine Taillefer
  */
-public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem implements FolderItem {
+public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem {
 
     private static final long serialVersionUID = 1L;
 

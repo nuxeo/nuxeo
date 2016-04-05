@@ -302,16 +302,6 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         return Framework.getLocalService(TrashService.class);
     }
 
-    /*---------- Needed for JSON deserialization ----------*/
-    @Override
-    protected void setId(String id) {
-        super.setId(id);
-        String[] idFragments = parseFileSystemId(id);
-        this.factoryName = idFragments[0];
-        this.repositoryName = idFragments[1];
-        this.docId = idFragments[2];
-    }
-
     protected String[] parseFileSystemId(String id) {
 
         // Parse id, expecting pattern:
@@ -324,6 +314,16 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
                             id));
         }
         return idFragments;
+    }
+
+    /*---------- Needed for JSON deserialization ----------*/
+    @Override
+    protected void setId(String id) {
+        super.setId(id);
+        String[] idFragments = parseFileSystemId(id);
+        this.factoryName = idFragments[0];
+        this.repositoryName = idFragments[1];
+        this.docId = idFragments[2];
     }
 
 }

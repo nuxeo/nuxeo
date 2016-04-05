@@ -38,9 +38,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractFileSystemItem implements FileSystemItem {
 
-    public static final String FILE_SYSTEM_ITEM_ID_SEPARATOR = "#";
-
     private static final long serialVersionUID = 1L;
+
+    public static final String FILE_SYSTEM_ITEM_ID_SEPARATOR = "#";
 
     /** {@link FileSystemItem} attributes */
     protected String id;

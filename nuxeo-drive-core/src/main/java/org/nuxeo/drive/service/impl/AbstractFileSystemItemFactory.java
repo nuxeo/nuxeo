@@ -181,8 +181,9 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            FileSystemItem parentItem = Framework.getService(FileSystemItemAdapterService.class).getFileSystemItemFactoryForId(
-                    parentId).getFileSystemItemById(parentId, principal);
+            FileSystemItem parentItem = Framework.getService(FileSystemItemAdapterService.class)
+                                                 .getFileSystemItemFactoryForId(parentId)
+                                                 .getFileSystemItemById(parentId, principal);
             if (!(parentItem instanceof FolderItem)) {
                 throw new NuxeoException(String.format("FileSystemItem with id %s should be a FolderItem", parentId));
             }

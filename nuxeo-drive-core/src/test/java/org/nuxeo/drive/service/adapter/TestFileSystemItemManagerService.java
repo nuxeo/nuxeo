@@ -173,7 +173,7 @@ public class TestFileSystemItemManagerService {
     public void testReadOperations() throws Exception {
 
         // ------------------------------------------------------
-        // Check #getTopLevelChildren
+        // Check #getTopLevelFolder
         // ------------------------------------------------------
         List<FileSystemItem> topLevelChildren = fileSystemItemManagerService.getTopLevelFolder(principal).getChildren();
         assertNotNull(topLevelChildren);
@@ -431,7 +431,8 @@ public class TestFileSystemItemManagerService {
         // Parent folder children check
         assertEquals(
                 6,
-                fileSystemItemManagerService.getChildren(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal).size());
+                fileSystemItemManagerService.getChildren(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal)
+                                            .size());
 
         // ------------------------------------------------------
         // Check #createFile
