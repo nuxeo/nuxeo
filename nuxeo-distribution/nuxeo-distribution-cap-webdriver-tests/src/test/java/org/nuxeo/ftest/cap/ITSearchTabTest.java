@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
@@ -132,7 +131,6 @@ public class ITSearchTabTest extends AbstractTest {
     }
 
     @Test
-    @Ignore("NXP-19157")
     public void testSearch() throws UserNotConnectedException, IOException {
         DocumentBasePage documentBasePage = loginAsTestUser();
 
