@@ -148,6 +148,14 @@ public class TestDefaultTopLevelFolderItemFactory {
         List<FileSystemItem> children = topLevelFolderItem.getChildren();
         assertNotNull(children);
         assertEquals(2, children.size());
+        assertFalse(topLevelFolderItem.getCanGetDescendants());
+        try {
+            topLevelFolderItem.getDescendants(10, null);
+            fail("Should not be able to get descendants of the default top level folder item.");
+        } catch (UnsupportedOperationException e) {
+            assertEquals("Cannot get descendants of a virtual folder item, please call getChildren() instead.",
+                    e.getMessage());
+        }
         assertFalse(topLevelFolderItem.getCanCreateChild());
 
         for (FileSystemItem child : children) {

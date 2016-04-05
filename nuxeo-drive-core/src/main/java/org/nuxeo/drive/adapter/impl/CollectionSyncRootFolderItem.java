@@ -84,6 +84,17 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem impl
     }
 
     @Override
+    public boolean getCanGetDescendants() {
+        return false;
+    }
+
+    @Override
+    public List<FileSystemItem> getDescendants(int max, String lowerId) {
+        throw new UnsupportedOperationException(
+                "Cannot get descendants of a collection sync root folder item, please call getChildren() instead.");
+    }
+
+    @Override
     public FolderItem createFolder(String name) {
         throw new UnsupportedOperationException("Cannot create a folder in a collection synchronization root.");
     }

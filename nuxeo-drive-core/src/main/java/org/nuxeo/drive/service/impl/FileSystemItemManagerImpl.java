@@ -178,6 +178,21 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
+    public List<FileSystemItem> getDescendants(String id, Principal principal, int max, String lowerId) {
+        FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
+        if (fileSystemItem == null) {
+            throw new NuxeoException(String.format(
+                    "Cannot get the descendants of file system item with id %s because it doesn't exist.", id));
+        }
+        if (!(fileSystemItem instanceof FolderItem)) {
+            throw new NuxeoException(String.format(
+                    "Cannot get the descendants of file system item with id %s because it is not a folder.", id));
+        }
+        FolderItem folderItem = (FolderItem) fileSystemItem;
+        return folderItem.getDescendants(max, lowerId);
+    }
+
+    @Override
     public boolean canMove(String srcId, String destId, Principal principal) {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
         if (srcFsItem == null) {

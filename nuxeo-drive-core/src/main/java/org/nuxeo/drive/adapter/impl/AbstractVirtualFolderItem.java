@@ -39,6 +39,8 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
 
     protected boolean canCreateChild;
 
+    protected boolean canGetDescendants;
+
     public AbstractVirtualFolderItem(String factoryName, Principal principal, String parentId, String parentPath,
             String folderName) {
         super(factoryName, principal, false);
@@ -54,6 +56,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
         canRename = false;
         canDelete = false;
         canCreateChild = false;
+        canGetDescendants = false;
         path = "/" + getId();
         if (parentPath != null) {
             path = parentPath + path;
@@ -91,6 +94,17 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
 
     /*--------------------- FolderItem -----------------*/
     @Override
+    public boolean getCanGetDescendants() {
+        return canGetDescendants;
+    }
+
+    @Override
+    public List<FileSystemItem> getDescendants(int max, String lowerId) {
+        throw new UnsupportedOperationException(
+                "Cannot get descendants of a virtual folder item, please call getChildren() instead.");
+    }
+
+    @Override
     public boolean getCanCreateChild() {
         return canCreateChild;
     }
@@ -108,6 +122,10 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
     /*---------- Needed for JSON deserialization ----------*/
     protected void setCanCreateChild(boolean canCreateChild) {
         this.canCreateChild = canCreateChild;
+    }
+
+    protected void setCanGetDescendants(boolean canGetDescendants) {
+        this.canGetDescendants = canGetDescendants;
     }
 
 }

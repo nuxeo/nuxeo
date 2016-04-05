@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * <ul>
  * <li>Read</li>
  * <li>Read children</li>
+ * <li>Read descendants</li>
  * <li>Create</li>
  * <li>Update</li>
  * <li>Delete</li>
@@ -99,6 +100,16 @@ public interface FileSystemItemManager {
      * @see FolderItem#getChildren()
      */
     List<FileSystemItem> getChildren(String id, Principal principal);
+
+    /**
+     * Gets at most {@code max} descendants of the {@link FolderItem} with the given {@code id} for the given
+     * {@code principal}, starting with the {@link FileSystemItem} with the given {@code lowerId} (not included) in a
+     * list of descendants ordered by id.
+     *
+     * @see FolderItem#getDescendants(int, String)
+     * @since 8.3
+     */
+    List<FileSystemItem> getDescendants(String id, Principal principal, int max, String lowerId);
 
     /**
      * Return true if the {@link FileSystemItem} with the given source id can be moved to the {@link FileSystemItem}

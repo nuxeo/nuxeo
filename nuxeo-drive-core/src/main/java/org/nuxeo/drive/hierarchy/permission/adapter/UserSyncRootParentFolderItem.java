@@ -139,6 +139,21 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
         }
     }
 
+    @Override
+    public boolean getCanGetDescendants() {
+        return isUserWorkspaceSyncRoot;
+    }
+
+    @Override
+    public List<FileSystemItem> getDescendants(int max, String lowerId) {
+        if (getCanGetDescendants()) {
+            return super.getDescendants(max, lowerId);
+        } else {
+            throw new UnsupportedOperationException(
+                    "Cannot get descendants of the user sync root parent folder item, please call getChildren() instead.");
+        }
+    }
+
     private boolean isUserWorkspaceSyncRoot(DocumentModel doc) {
         NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
         return nuxeoDriveManager.isSynchronizationRoot(principal, doc);

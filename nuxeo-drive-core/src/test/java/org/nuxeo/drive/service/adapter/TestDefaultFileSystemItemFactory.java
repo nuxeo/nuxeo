@@ -300,9 +300,14 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(fsItem.isFolder());
         assertEquals("Administrator", fsItem.getCreator());
         assertEquals("Administrator", fsItem.getLastContributor());
-        List<FileSystemItem> children = ((FolderItem) fsItem).getChildren();
+        FolderItem folderItem = (FolderItem) fsItem;
+        List<FileSystemItem> children = folderItem.getChildren();
         assertNotNull(children);
         assertEquals(0, children.size());
+        assertTrue(folderItem.getCanGetDescendants());
+        List<FileSystemItem> descendants = folderItem.getDescendants(10, null);
+        assertNotNull(descendants);
+        assertEquals(0, descendants.size());
 
         // FolderishFile => adaptable as a FolderItem since the default
         // FileSystemItem factory gives precedence to the Folderish facet
@@ -435,7 +440,10 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals(syncRootItemId, fsItem.getParentId());
         assertEquals("Jack's folder", fsItem.getName());
         assertTrue(fsItem.isFolder());
-        assertTrue(((FolderItem) fsItem).getChildren().isEmpty());
+        FolderItem folderItem = (FolderItem) fsItem;
+        assertTrue(folderItem.getChildren().isEmpty());
+        assertTrue(folderItem.getCanGetDescendants());
+        assertTrue(folderItem.getDescendants(10, null).isEmpty());
         // Not adaptable as a FileSystemItem
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
                 + notAFileSystemItem.getId(), principal);
@@ -710,9 +718,9 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Note child.txt", childBlob.getFilename());
         assertEquals("This is the Note child.", childBlob.getString());
 
-        // ------------------------------------------------------
-        // FolderItem#getChildren
-        // ------------------------------------------------------
+        // ------------------------------------------------------------------------------------------
+        // FolderItem#getChildren, FolderItem#getCanGetDescendants and FolderItem#getDescendants
+        // ------------------------------------------------------------------------------------------
         // Create another child adaptable as a FileSystemItem => should be
         // retrieved
         DocumentModel adaptableChild = session.createDocumentModel("/syncRoot/aFolder", "adaptableChild", "File");
@@ -726,6 +734,7 @@ public class TestDefaultFileSystemItemFactory {
                 "NotSynchronizable"));
         session.save();
 
+        // Check getChildren
         List<FileSystemItem> folderChildren = folderItem.getChildren();
         assertEquals(4, folderChildren.size());
         // Don't check children order against MySQL database because of the
@@ -733,6 +742,30 @@ public class TestDefaultFileSystemItemFactory {
         boolean ordered = coreFeature.getStorageConfiguration().hasSubSecondResolution();
         checkChildren(folderChildren, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
                 adaptableChild.getId(), ordered);
+
+        // Check getDescendants
+        assertTrue(folderItem.getCanGetDescendants());
+        // Get all descendants in one breath
+        List<FileSystemItem> folderDescendants = folderItem.getDescendants(10, null);
+        assertEquals(4, folderDescendants.size());
+        // Order is not determined
+        checkChildren(folderDescendants, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
+                adaptableChild.getId(), false);
+        // Get all descendants in several steps
+        folderDescendants.clear();
+        List<FileSystemItem> descendantsBatch;
+        int max = 2;
+        String lowerId = null;
+        while (!(descendantsBatch = folderItem.getDescendants(max, lowerId)).isEmpty()) {
+            int descendantsBatchSize = descendantsBatch.size();
+            assertTrue(descendantsBatchSize > 0);
+            lowerId = descendantsBatch.get(descendantsBatchSize - 1).getId();
+            folderDescendants.addAll(descendantsBatch);
+        }
+        assertEquals(4, folderDescendants.size());
+        // Order is not determined
+        checkChildren(folderDescendants, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
+                adaptableChild.getId(), false);
     }
 
     @Test
@@ -972,9 +1005,14 @@ public class TestDefaultFileSystemItemFactory {
                     assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folderId, fsItem.getParentId());
                     assertEquals("Sub-folder", fsItem.getName());
                     assertTrue(fsItem.isFolder());
-                    List<FileSystemItem> childFolderChildren = ((FolderItem) fsItem).getChildren();
+                    FolderItem folderItem = (FolderItem) fsItem;
+                    List<FileSystemItem> childFolderChildren = folderItem.getChildren();
                     assertNotNull(childFolderChildren);
                     assertEquals(0, childFolderChildren.size());
+                    assertTrue(folderItem.getCanGetDescendants());
+                    List<FileSystemItem> childFolderDescendants = folderItem.getDescendants(10, null);
+                    assertNotNull(childFolderDescendants);
+                    assertEquals(0, childFolderDescendants.size());
                     isSubFolderFound = true;
                     childrenCount++;
                 }

@@ -39,6 +39,23 @@ public interface FolderItem extends FileSystemItem {
     @JsonIgnore
     List<FileSystemItem> getChildren();
 
+    /**
+     * Returns {@code true} if the {@link #getDescendants(int, String)} API can be used.
+     *
+     * @since 8.3
+     */
+    boolean getCanGetDescendants();
+
+    /**
+     * Gets at most {@code max} descendants starting with the {@link FileSystemItem} with the given {@code lowerId} (not
+     * included) in a list of descendants ordered by id.
+     *
+     * @throws UnsupportedOperationException if {@link #getCanGetDescendants()} returns {@code false}.
+     * @since 8.3
+     */
+    @JsonIgnore
+    List<FileSystemItem> getDescendants(int max, String lowerId);
+
     boolean getCanCreateChild();
 
     FileItem createFile(Blob blob);

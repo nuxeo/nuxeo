@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
@@ -34,6 +37,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -49,11 +53,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemItem implements FolderItem {
 
+    private static final Log log = LogFactory.getLog(DocumentBackedFolderItem.class);
+
     private static final long serialVersionUID = 1L;
 
     private static final String FOLDER_ITEM_CHILDREN_PAGE_PROVIDER = "FOLDER_ITEM_CHILDREN";
 
     protected boolean canCreateChild;
+
+    protected boolean canGetDescendants;
 
     public DocumentBackedFolderItem(String factoryName, DocumentModel doc) {
         this(factoryName, doc, false);
@@ -139,6 +147,48 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     @Override
+    public boolean getCanGetDescendants() {
+        return canGetDescendants;
+    }
+
+    @Override
+    public List<FileSystemItem> getDescendants(int max, String lowerId) {
+        try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+
+            // TODO: limit batch size sent by the client
+
+            // Fetch documents
+            StringBuilder sb = new StringBuilder(String.format("SELECT * FROM Document WHERE ecm:ancestorId = '%s'",
+                    docId));
+            sb.append(" AND ecm:currentLifeCycleState != 'deleted'");
+            sb.append(" AND ecm:mixinType != 'HiddenInNavigation'");
+            // Don't need to add ecm:isCheckedInVersion = 0 because versions are already excluded by the
+            // ecm:ancestorId clause since they have no path
+            if (!StringUtils.isEmpty(lowerId)) {
+                String lowerDocId = parseFileSystemId(lowerId)[2];
+                sb.append(String.format(" AND ecm:uuid > '%s'", lowerDocId));
+            }
+            sb.append(" ORDER BY ecm:uuid");
+            String query = sb.toString();
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Getting %d descendants of %s using query: %s", max, docPath, query));
+            }
+            DocumentModelList dmDescendants = session.query(query, max);
+
+            // Adapt documents as FileSystemItems
+            List<FileSystemItem> descendants = new ArrayList<>();
+            for (DocumentModel dmDescendant : dmDescendants) {
+                // TODO: optimize FileSystemItem path computation
+                FileSystemItem descendant = getFileSystemItemAdapterService().getFileSystemItem(dmDescendant);
+                if (descendant != null) {
+                    descendants.add(descendant);
+                }
+            }
+            return descendants;
+        }
+    }
+
+    @Override
     public boolean getCanCreateChild() {
         return canCreateChild;
     }
@@ -191,6 +241,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         this.folder = true;
         this.canCreateChild = !doc.hasFacet(FacetNames.PUBLISH_SPACE)
                 && doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN);
+        this.canGetDescendants = true;
     }
 
     protected FileManager getFileManager() {
@@ -200,6 +251,10 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     /*---------- Needed for JSON deserialization ----------*/
     protected void setCanCreateChild(boolean canCreateChild) {
         this.canCreateChild = canCreateChild;
+    }
+
+    protected void setCanGetDescendants(boolean canGetDescendants) {
+        this.canGetDescendants = canGetDescendants;
     }
 
 }

@@ -314,6 +314,45 @@ public class TestFileSystemItemManagerService {
         assertTrue(children.isEmpty());
 
         // ------------------------------------------------------
+        // Check #getDescendants
+        // ------------------------------------------------------
+        // Need to flush VCS cache for the session used in DocumentBackedFolderItem#getgetDescendants to be aware of
+        // changes in the current session
+        session.save();
+        FolderItem folderItem = (FolderItem) fileSystemItemManagerService.getFileSystemItemById(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
+        assertTrue(folderItem.getCanGetDescendants());
+
+        // Get all descendants in one breath
+        List<FileSystemItem> folderDescendants = fileSystemItemManagerService.getDescendants(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal, 10, null);
+        assertNotNull(folderDescendants);
+        assertEquals(4, folderDescendants.size());
+        // Order is not determined
+        checkChildren(folderDescendants, folder.getId(), file.getId(), note.getId(), folderishFile.getId(),
+                subFolder.getId(), false);
+
+        // Get all descendants in several steps
+        folderDescendants.clear();
+        List<FileSystemItem> descendantsBatch;
+        int max = 2;
+        String lowerId = null;
+        while (!(descendantsBatch = folderItem.getDescendants(max, lowerId)).isEmpty()) {
+            int descendantsBatchSize = descendantsBatch.size();
+            assertTrue(descendantsBatchSize > 0);
+            lowerId = descendantsBatch.get(descendantsBatchSize - 1).getId();
+            folderDescendants.addAll(descendantsBatch);
+        }
+        assertEquals(4, folderDescendants.size());
+        // Order is not determined
+        checkChildren(folderDescendants, folder.getId(), file.getId(), note.getId(), folderishFile.getId(),
+                subFolder.getId(), false);
+
+        folderDescendants = fileSystemItemManagerService.getDescendants(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(), principal, 10, null);
+        assertTrue(folderDescendants.isEmpty());
+
+        // ------------------------------------------------------
         // Check #canMove
         // ------------------------------------------------------
         // Not allowed to move a file system item to a non FolderItem

@@ -133,6 +133,17 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
         return children;
     }
 
+    @Override
+    public boolean getCanGetDescendants() {
+        return false;
+    }
+
+    @Override
+    public List<FileSystemItem> getDescendants(int max, String lowerId) {
+        throw new UnsupportedOperationException(
+                "Cannot get descendants of the user workspace top level folder item, please call getChildren() instead.");
+    }
+
     protected NuxeoDriveManager getNuxeoDriveManager() {
         return Framework.getLocalService(NuxeoDriveManager.class);
     }
