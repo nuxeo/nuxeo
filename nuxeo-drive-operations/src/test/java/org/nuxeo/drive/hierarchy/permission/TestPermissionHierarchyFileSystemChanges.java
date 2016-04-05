@@ -188,10 +188,9 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     /**
-     * This is a utility function to create a tree
-     * Like /Folder A/Folder B/Folder C (depth=3)
-     * /Folder A/Folder B/Folder C/Folder D (depth=4)
-     * 
+     * This is a utility function to create a tree Like /Folder A/Folder B/Folder C (depth=3) /Folder A/Folder B/Folder
+     * C/Folder D (depth=4)
+     *
      * @param session to use
      * @param path to start creating the tree
      * @param depth in number of folder
@@ -203,19 +202,14 @@ public class TestPermissionHierarchyFileSystemChanges {
             path += "/Folder " + letter++;
         }
     }
-    /**
-     * When an unregistered synchronization root can still be adapted as a FileSystemItem, for example in the case of
-     * the "My Docs" virtual folder in the permission based hierarchy implementation, checks that the related
-     * {@link FileSystemItemChange} computed by the {@link AuditChangeFinder} contains a non null {@code fileSystemItem}
-     * attribute, that is to be used by the client.
-     */
+
     @Test
     public void testRegisteredSyncRootChildChange() throws InterruptedException {
 
         TransactionHelper.commitOrRollbackTransaction();
         DocumentModel folderA;
         DocumentModel folderC;
-        
+
         // Create the tree structure
         TransactionHelper.startTransaction();
         try {
@@ -234,8 +228,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         TransactionHelper.startTransaction();
         try {
             nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), folderA, session2);
-            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
-                    new IdRef(folderA.getId())));
+            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2)
+                                        .contains(new IdRef(folderA.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
@@ -253,7 +247,6 @@ public class TestPermissionHierarchyFileSystemChanges {
             TransactionHelper.commitOrRollbackTransaction();
         }
 
-        // Check file system item change
         TransactionHelper.startTransaction();
         try {
             resetPermissions(session1, folderA.getRef(), "user2");
@@ -280,12 +273,12 @@ public class TestPermissionHierarchyFileSystemChanges {
             nuxeoDriveManager.registerSynchronizationRoot(session2.getPrincipal(), folderC, session2);
             assertFalse(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
                     new IdRef(folderA.getId())));
-            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2).contains(
-                    new IdRef(folderC.getId())));
+            assertTrue(nuxeoDriveManager.getSynchronizationRootReferences(session2)
+                                        .contains(new IdRef(folderC.getId())));
         } finally {
             commitAndWaitForAsyncCompletion();
         }
-        
+
         // Check file system item change
         TransactionHelper.startTransaction();
         try {
@@ -379,7 +372,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * <pre>
      * Server side hierarchy for the test
      * ==================================
-     * 
+     *
      * /user1 (user workspace)
      *   |-- user1Folder1       (registered as a synchronization root with Everything permission for user2)
      *   |-- user1Folder2       (registered as a synchronization root with ReadWrite permission only for user2)
