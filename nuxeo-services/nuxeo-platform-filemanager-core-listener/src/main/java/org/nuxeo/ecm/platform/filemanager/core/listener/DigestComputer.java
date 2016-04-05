@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -101,11 +101,10 @@ public class DigestComputer implements EventListener {
         }
 
         DigestInputStream dis = new DigestInputStream(blob.getStream(), md);
-        while (dis.available() > 0) {
-            dis.read();
-        }
+        byte[] buff = new byte[2048];
+        while (dis.read(buff) != -1) { }
         byte[] b = md.digest();
-        return Base64.encodeBytes(b);
+        return Base64.encodeBase64String(b);
     }
 
     public void handleEvent(Event event) {
