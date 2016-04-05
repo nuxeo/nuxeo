@@ -493,6 +493,9 @@ given the path parameter.
         'doperform': onestep process = prepare+perform without staging
         'dryrun': dry run mode (no Maven deployment, nor Git push)
         'upgrade_only': only upgrade other versions (used to keep Marketplace Packages aligned even if not released)"""
+        if upgrade_only and self.next_snapshot == 'done':
+            log("[INFO] NO OP")
+            return
         if dryrun:
             log("[INFO] #### DRY RUN MODE ####")
         self.check_branch_to_release()
@@ -528,7 +531,8 @@ given the path parameter.
                 msg_commit = "Update %s to %s" % (self.tag, self.maintenance_version)
                 self.update_versions(self.tag, self.maintenance_version)
                 self.repo.git_recurse("commit -m'%s' -a" % (self.get_commit_message(msg_commit)), with_optionals=True)
-        log("\n[INFO] Released branch %s (update version and commit)..." % self.branch)
+
+            log("\n[INFO] Released branch %s (update version and commit)..." % self.branch)
 
         if self.next_snapshot != 'done':
             self.repo.git_recurse("checkout -f %s" % self.branch, with_optionals=True)
@@ -550,6 +554,7 @@ given the path parameter.
 
         if upgrade_only and doperform:
             self.perform(skip_tests=self.skipTests, skip_ITs=self.skipITs, dryrun=dryrun, upgrade_only=True)
+
         if not upgrade_only:
             log("\n[INFO] Build and package release-%s..." % self.tag)
             self.repo.git_recurse("checkout release-%s" % self.tag)
@@ -666,6 +671,9 @@ given the path parameter.
         'skip_ITs': whether to run Integration Tests during Maven deployment
         'dryrun': dry run mode (no Maven deployment, nor Git push)
         'upgrade_only': only upgrade other versions (used to keep Marketplace Packages aligned even if not released)"""
+        if upgrade_only and self.next_snapshot == 'done':
+            log("[INFO] NO OP")
+            return
         if dryrun:
             log("[INFO] #### DRY RUN MODE ####")
         self.check_branch_to_release()
