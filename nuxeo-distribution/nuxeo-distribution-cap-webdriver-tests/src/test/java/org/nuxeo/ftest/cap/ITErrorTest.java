@@ -20,8 +20,14 @@ package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersGroupsBasePage;
@@ -59,8 +65,8 @@ public class ITErrorTest extends AbstractTest {
             WebClient client = new WebClient();
             client.setJavaScriptEnabled(false);
             client.setThrowExceptionOnFailingStatusCode(false);
-            client.getPage(NUXEO_URL + "/logout");
-            client.getPage(
+            getAllPage(client, NUXEO_URL + "/logout");
+            getAllPage(client,
                     NUXEO_URL + "/nxstartup.faces?user_name=" + TEST_USERNAME + "&user_password=" + TEST_PASSWORD);
             HtmlPage page = client.getPage(NUXEO_URL + "/nxpath/default/default-domain@view_documents");
             assertEquals(page.getWebResponse().getContentAsString(), HttpServletResponse.SC_FORBIDDEN, page.getWebResponse().getStatusCode()); // 403
@@ -93,6 +99,15 @@ public class ITErrorTest extends AbstractTest {
         usersTab = usersTab.searchUser(TEST_USERNAME);
         usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
         logout();
+    }
+
+    /** Fully reads the stream of a page. */
+    protected void getAllPage(WebClient client, String url) throws IOException {
+        HtmlPage page = client.getPage(url);
+        try (InputStream in = page.getWebResponse().getContentAsStream(); //
+                OutputStream out = new NullOutputStream()) {
+            IOUtils.copy(in, out);
+        }
     }
 
 }
