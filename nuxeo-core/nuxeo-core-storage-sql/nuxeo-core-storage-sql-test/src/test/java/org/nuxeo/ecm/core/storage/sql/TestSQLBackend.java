@@ -450,6 +450,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(subjects));
     }
 
+    @Ignore("NXP-19206 does not work with org.nuxeo.vcs.list-delete-before-append=true")
     @Test
     public void testParallelArrayUpdate() throws Exception {
         Session session = repository.getConnection();

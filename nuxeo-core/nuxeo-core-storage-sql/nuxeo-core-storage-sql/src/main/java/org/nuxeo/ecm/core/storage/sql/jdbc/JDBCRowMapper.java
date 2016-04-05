@@ -73,6 +73,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     public static final int DEBUG_MAX_TREE = 50;
 
+    // defaults to true in 7.10 and earlier
     /** Property to determine whether collection appends delete all then re-insert, or are optimized for append. */
     public static final String COLLECTION_DELETE_BEFORE_APPEND_PROP = "org.nuxeo.vcs.list-delete-before-append";
 
@@ -96,7 +97,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         this.clusterInvalidator = clusterInvalidator;
         this.invalidationsPropagator = invalidationsPropagator;
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        collectionDeleteBeforeAppend = configurationService.isBooleanPropertyTrue(COLLECTION_DELETE_BEFORE_APPEND_PROP);
+        // defaults to true in 7.10 and earlier
+        collectionDeleteBeforeAppend = !configurationService.isBooleanPropertyFalse(COLLECTION_DELETE_BEFORE_APPEND_PROP);
         aclCollectionIO = new ACLCollectionIO(collectionDeleteBeforeAppend);
         scalarCollectionIO = new ScalarCollectionIO(collectionDeleteBeforeAppend);
     }
