@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.Row;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
 /**
@@ -27,7 +27,12 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
  */
 public class ScalarCollectionIO implements CollectionIO {
 
-    public static final CollectionIO INSTANCE = new ScalarCollectionIO();
+    /** Whether we always insert all the rows in the row update or just the values starting from pos. */
+    protected final boolean insertAll;
+
+    public ScalarCollectionIO(boolean insertAll) {
+        this.insertAll = insertAll;
+    }
 
     @Override
     public Serializable getCurrentFromResultSet(ResultSet rs, List<Column> columns, Model model,
@@ -58,16 +63,22 @@ public class ScalarCollectionIO implements CollectionIO {
     }
 
     @Override
-    public void executeInserts(PreparedStatement ps, List<Row> rows, List<Column> columns,
+    public void executeInserts(PreparedStatement ps, List<RowUpdate> rowus, List<Column> columns,
             boolean supportsBatchUpdates, String sql, JDBCConnection connection) throws SQLException {
         List<Serializable> debugValues = connection.logger.isLogEnabled() ? new ArrayList<Serializable>() : null;
-        String loggedSql = supportsBatchUpdates && rows.size() > 1 ? sql + " -- BATCHED" : sql;
+        String loggedSql = supportsBatchUpdates && rowus.size() > 1 ? sql + " -- BATCHED" : sql;
         int batch = 0;
-        for (Row row : rows) {
+        for (RowUpdate rowu : rowus) {
             batch++;
-            Serializable id = row.id;
-            Serializable[] array = row.values;
-            for (int i = 0; i < array.length; i++) {
+            int start;
+            if (rowu.pos == -1 || insertAll) {
+                start = 0;
+            } else {
+                start = rowu.pos;
+            }
+            Serializable id = rowu.row.id;
+            Serializable[] array = rowu.row.values;
+            for (int i = start; i < array.length; i++) {
                 int n = 0;
                 for (Column column : columns) {
                     n++;

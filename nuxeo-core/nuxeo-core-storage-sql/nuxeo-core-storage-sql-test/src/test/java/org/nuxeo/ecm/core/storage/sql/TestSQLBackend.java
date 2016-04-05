@@ -90,6 +90,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     private static final Log log = LogFactory.getLog(TestSQLBackend.class);
 
+    private static final int ITERATIONS = 5;
+
+    private static final int THREADS = 5;
+
     protected boolean pathOptimizationsEnabled;
 
     @Override
@@ -407,6 +411,127 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    public void testArrayUpdate() throws Exception {
+        Session session = repository.getConnection();
+        Node node = session.addChildNode(session.getRootNode(), "doc", null, "TestDoc", false);
+        node.setCollectionProperty("tst:subjects", new String[] { "a" });
+        session.save();
+
+        // add elements to the end of the array
+        node.setCollectionProperty("tst:subjects", new String[] { "a", "b", "c", "c" });
+        session.save();
+
+        // reopen
+        session.close();
+        session = repository.getConnection();
+        node = session.getChildNode(session.getRootNode(), "doc", false);
+
+        // check
+        String[] subjects = node.getCollectionProperty("tst:subjects").getStrings();
+        assertEquals(Arrays.asList("a", "b", "c", "c"), Arrays.asList(subjects));
+
+        // remove elements from the end of the array
+        node.setCollectionProperty("tst:subjects", new String[] { "a", "b", "c" });
+        session.save();
+
+        // reopen
+        session.close();
+        session = repository.getConnection();
+        node = session.getChildNode(session.getRootNode(), "doc", false);
+
+        // check
+        subjects = node.getCollectionProperty("tst:subjects").getStrings();
+        assertEquals(Arrays.asList("a", "b", "c"), Arrays.asList(subjects));
+    }
+
+    @Test
+    public void testParallelArrayUpdate() throws Exception {
+        Session session = repository.getConnection();
+        Node node = session.addChildNode(session.getRootNode(), "doc", null, "TestDoc", false);
+        node.setCollectionProperty("tst:subjects", new String[] { "a" });
+        session.save();
+        session.close();
+
+        for (int i = 0; i < ITERATIONS; i++) {
+            parallelArrayUpdaterJob();
+        }
+
+        session = repository.getConnection();
+        node = session.getChildNode(session.getRootNode(), "doc", false);
+        String[] subjects = node.getCollectionProperty("tst:subjects").getStrings();
+        assertEquals(Arrays.toString(subjects), 1 + THREADS * ITERATIONS, subjects.length);
+        session.close();
+    }
+
+    protected void parallelArrayUpdaterJob() throws Exception {
+        List<Thread> threads = new ArrayList<>(THREADS);
+        for (int n = 0; n < THREADS; n++) {
+            threads.add(new ArrayUpdaterJob(repository));
+        }
+        try {
+            for (Thread t : threads) {
+                t.start();
+            }
+        } finally {
+            for (Thread t : threads) {
+                t.join();
+            }
+        }
+        threads.clear();
+    }
+
+    protected static class ArrayUpdaterJob extends Thread {
+
+        protected final Repository repository;
+
+        protected Session session;
+
+        protected ArrayUpdaterJob(Repository repository) {
+            this.repository = repository;
+        }
+
+        @Override
+        public void run() {
+            try {
+                session = repository.getConnection();
+                try {
+                    begin();
+                    try {
+                        updateArray();
+                    } finally {
+                        commit();
+                    }
+                } finally {
+                    session.close();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        protected void updateArray() throws StorageException {
+            Node node = session.getChildNode(session.getRootNode(), "doc", false);
+            // read
+            String[] subjects = node.getCollectionProperty("tst:subjects").getStrings();
+            // append
+            List<String> l = new ArrayList<>(Arrays.asList(subjects));
+            l.add("x");
+            String[] newSubjects = l.toArray(new String[0]);
+            node.setCollectionProperty("tst:subjects", newSubjects);
+            session.save();
+        }
+
+        protected void begin() throws Exception {
+            TransactionHelper.startTransaction();
+            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource((SessionImpl) session);
+        }
+
+        protected void commit() {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
+    }
+
+    @Test
     public void testSmallText() throws Exception {
         deployContrib("org.nuxeo.ecm.core.storage.sql.test.tests", "OSGI-INF/test-restriction-contrib.xml");
         Session session = repository.getConnection();
@@ -708,10 +833,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         session.close();
     }
-
-    private static final int ITERATIONS = 5;
-
-    private static final int THREADS = 5;
 
     @Test
     public void testUpdateReadAclsDeadlock() throws Exception {
