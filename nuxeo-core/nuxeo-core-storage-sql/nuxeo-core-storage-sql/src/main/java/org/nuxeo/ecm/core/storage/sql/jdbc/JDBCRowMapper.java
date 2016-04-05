@@ -40,6 +40,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
@@ -67,6 +68,8 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * A {@link JDBCRowMapper} maps {@link Row}s to and from a JDBC database.
@@ -77,6 +80,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     public static final int DEBUG_MAX_TREE = 50;
 
+    /** Property to determine whether collection appends delete all then re-insert, or are optimized for append. */
+    public static final String COLLECTION_DELETE_BEFORE_APPEND_PROP = "org.nuxeo.vcs.list-delete-before-append";
+
     /**
      * Cluster invalidator, or {@code null} if this mapper does not participate in invalidation propagation (cluster
      * invalidator, lock manager).
@@ -85,11 +91,21 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     private final InvalidationsPropagator invalidationsPropagator;
 
+    private final boolean collectionDeleteBeforeAppend;
+
+    private final CollectionIO aclCollectionIO;
+
+    private final CollectionIO scalarCollectionIO;
+
     public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource, ClusterInvalidator clusterInvalidator,
             InvalidationsPropagator invalidationsPropagator, boolean noSharing) {
         super(model, sqlInfo, xadatasource, noSharing);
         this.clusterInvalidator = clusterInvalidator;
         this.invalidationsPropagator = invalidationsPropagator;
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        collectionDeleteBeforeAppend = configurationService.isBooleanPropertyTrue(COLLECTION_DELETE_BEFORE_APPEND_PROP);
+        aclCollectionIO = new ACLCollectionIO(collectionDeleteBeforeAppend);
+        scalarCollectionIO = new ScalarCollectionIO(collectionDeleteBeforeAppend);
     }
 
     @Override
@@ -135,7 +151,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     protected CollectionIO getCollectionIO(String tableName) {
-        return tableName.equals(model.ACL_TABLE_NAME) ? ACLCollectionIO.INSTANCE : ScalarCollectionIO.INSTANCE;
+        return tableName.equals(model.ACL_TABLE_NAME) ? aclCollectionIO : scalarCollectionIO;
     }
 
     @Override
@@ -461,7 +477,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             String tableName = en.getKey();
             List<Row> rows = en.getValue();
             if (model.isCollectionFragment(tableName)) {
-                insertCollectionRows(tableName, rows);
+                List<RowUpdate> rowus = rows.stream().map(RowUpdate::new).collect(Collectors.toList());
+                insertCollectionRows(tableName, rowus);
             } else {
                 insertSimpleRows(tableName, rows);
             }
@@ -568,8 +585,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Updates multiple collection rows, all for the same table.
      */
-    protected void insertCollectionRows(String tableName, List<Row> rows) {
-        if (rows.isEmpty()) {
+    protected void insertCollectionRows(String tableName, List<RowUpdate> rowus) {
+        if (rowus.isEmpty()) {
             return;
         }
         String sql = sqlInfo.getInsertSql(tableName);
@@ -578,7 +595,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                io.executeInserts(ps, rows, columns, supportsBatchUpdates, sql, this);
+                io.executeInserts(ps, rowus, columns, supportsBatchUpdates, sql, this);
             } finally {
                 closeStatement(ps);
             }
@@ -675,14 +692,14 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     protected void updateCollectionRows(String tableName, List<RowUpdate> rowus) {
-        Set<Serializable> ids = new HashSet<Serializable>(rowus.size());
-        List<Row> rows = new ArrayList<Row>(rowus.size());
+        Set<Serializable> deleteIds = new HashSet<>();
         for (RowUpdate rowu : rowus) {
-            ids.add(rowu.row.id);
-            rows.add(rowu.row);
+            if (rowu.pos == -1 || collectionDeleteBeforeAppend) {
+                deleteIds.add(rowu.row.id);
+            }
         }
-        deleteRows(tableName, ids);
-        insertCollectionRows(tableName, rows);
+        deleteRows(tableName, deleteIds);
+        insertCollectionRows(tableName, rowus);
     }
 
     /**

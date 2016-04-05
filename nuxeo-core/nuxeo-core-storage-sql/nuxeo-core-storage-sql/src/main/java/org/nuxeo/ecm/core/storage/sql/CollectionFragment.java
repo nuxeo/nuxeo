@@ -22,6 +22,8 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
+
 /**
  * A type of fragment corresponding to several rows with the same id.
  */
@@ -75,6 +77,42 @@ public class CollectionFragment extends Fragment {
      */
     public boolean isDirty() {
         return !Arrays.equals(row.values, oldvalues);
+    }
+
+    @Override
+    public RowUpdate getRowUpdate() {
+        if (Arrays.equals(row.values, oldvalues)) {
+            return null;
+        }
+        // check if we have a list append
+        if (oldvalues == null) {
+            // row.values != null otherwise we would have returned already
+            return new RowUpdate(row, 0);
+        } else if (row.values != null && isPrefix(oldvalues, row.values)) {
+            return new RowUpdate(row, oldvalues.length);
+        } else {
+            // full update, row.values may be null
+            return new RowUpdate(row);
+        }
+    }
+
+    /**
+     * Checks if the left array is a strict prefix of the right one.
+     *
+     * @since 8.3
+     */
+    public static boolean isPrefix(Serializable[] left, Serializable[] right) {
+        if (left.length >= right.length) {
+            return false;
+        }
+        for (int i = 0; i < left.length; i++) {
+            Serializable o1 = left[i];
+            Serializable o2 = right[i];
+            if (!(o1 == null ? o2 == null : o1.equals(o2))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

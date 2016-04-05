@@ -24,6 +24,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 import org.nuxeo.ecm.core.api.model.Delta;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 
 /**
  * A rich value corresponding to one row or a collection of rows in a table.
@@ -196,6 +197,14 @@ public abstract class Fragment implements Serializable {
         // clone to clear the dirty state
         oldvalues = values.clone();
     }
+
+    /**
+     * Returns the row update to do in the database to write this value.
+     *
+     * @return a row update, or {@code null} if the value is unchanged since last clear
+     * @since 8.3
+     */
+    public abstract RowUpdate getRowUpdate();
 
     /**
      * Refetches this fragment from the database. Needed when an invalidation has been received and the fragment is
