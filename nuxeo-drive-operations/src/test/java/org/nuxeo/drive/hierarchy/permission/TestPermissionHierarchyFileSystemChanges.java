@@ -251,7 +251,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         try {
             resetPermissions(session1, folderA.getRef(), "user2");
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
 
         // Check file system item change
