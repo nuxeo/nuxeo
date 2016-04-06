@@ -171,9 +171,6 @@ public abstract class UnrestrictedSessionRunner {
             }
         } finally {
             isUnrestricted = false;
-            if (Framework.isTestModeSet() && sessionIsAlreadyUnrestricted) {
-                session.save();
-            }
         }
     }
 
