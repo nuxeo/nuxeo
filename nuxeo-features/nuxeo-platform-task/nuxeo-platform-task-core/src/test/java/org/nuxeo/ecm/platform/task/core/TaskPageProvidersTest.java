@@ -112,6 +112,7 @@ public class TaskPageProvidersTest {
         taskService.createTaskForProcess(session, administrator, Collections.emptyList(), null, "Test Task Name 3",
                 "Task1a34", "a6dd157e-143d-4e03-a3cf-d33482c8de36", null, actors, false, "test directive",
                 "test comment", calendar.getTime(), null, null, null);
+        session.save();
     }
 
     @Test

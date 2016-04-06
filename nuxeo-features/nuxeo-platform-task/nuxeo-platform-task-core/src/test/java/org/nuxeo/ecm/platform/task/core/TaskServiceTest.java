@@ -127,8 +127,9 @@ public class TaskServiceTest {
         // create one task for all actors
         taskService.createTask(session, user3, document, "Test Task Name", "test type", "test process id", actors,
                 false, "test directive", "test comment", calendar.getTime(), null, null);
-
+        session.save();
         List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
+
         assertNotNull(tasks);
         assertEquals(1, tasks.size());
 
@@ -241,7 +242,7 @@ public class TaskServiceTest {
         // create one task per actor
         taskService.createTask(session, user3, document, "Test Task Name", actors, true, "test directive",
                 "test comment", calendar.getTime(), null, null);
-
+        session.save();
         List<Task> tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session);
         assertNotNull(tasks);
         assertEquals(2, tasks.size());
@@ -408,7 +409,7 @@ public class TaskServiceTest {
         // create task
         taskService.createTask(session, administrator, document, "Task assigned to user1", actors, false, null, null,
                 null, null, null);
-
+        session.save();
         // get user1 tasks
         List<Task> tasks = taskService.getTaskInstances(document, user1, session);
         assertNotNull(tasks);
@@ -433,7 +434,7 @@ public class TaskServiceTest {
         // create task
         taskService.createTask(session, administrator, document, "Task assigned to user2", actors, false, null, null,
                 null, null, null);
-
+        session.save();
         // get user2 tasks
         tasks = taskService.getTaskInstances(document, user2, session);
         assertNotNull(tasks);
@@ -466,7 +467,7 @@ public class TaskServiceTest {
         // create task
         taskService.createTask(session, administrator, document, "Task assigned to user3 and user4", actors, true,
                 null, null, null, null, null);
-
+        session.save();
         // get user3 tasks
         tasks = taskService.getTaskInstances(document, user3, session);
         assertNotNull(tasks);
@@ -510,7 +511,7 @@ public class TaskServiceTest {
         // create task
         taskService.createTask(session, administrator, document, "Task assigned to members", actors, false, null, null,
                 null, null, null);
-
+        session.save();
         // get user1 tasks
         tasks = taskService.getTaskInstances(document, user1, session);
         assertNotNull(tasks);
@@ -563,7 +564,7 @@ public class TaskServiceTest {
         // create task
         taskService.createTask(session, administrator, document,
                 "Task assigned to prefixed ans unprefixed users and groups", actors, true, null, null, null, null, null);
-
+        session.save();
         // get user1 tasks: should have 2 since in members group
         List<Task> tasks = taskService.getTaskInstances(document, user1, session);
         assertNotNull(tasks);
@@ -606,7 +607,7 @@ public class TaskServiceTest {
 
         taskService.createTask(session, administrator, document, "Task assigned to user1",
                 Arrays.asList(user1.getName()), false, null, null, null, null, null);
-
+        session.save();
         // check as admin
         List<Task> tasks = taskService.getTaskInstances(document, user1, session);
         assertNotNull(tasks);
