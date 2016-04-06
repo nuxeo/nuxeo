@@ -56,6 +56,7 @@ public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase 
         for (DocumentModel doc : listDocuments) {
             favoritesManager.addToFavorites(doc, session);
         }
+        session.save();
     }
 
     @Test
@@ -66,6 +67,7 @@ public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase 
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(listDocuments.get(0));
         PaginableDocumentModelListImpl documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+
         // Check the result of the operation
         assertNotNull(documentsList);
         assertEquals(listDocuments.size(), documentsList.size());
@@ -75,6 +77,7 @@ public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase 
         listDocuments.remove(0);
         chain = new OperationChain("test-chain-2");
         chain.add(GetDocumentsFromFavoritesOperation.ID);
+        session.save();
 
         ctx = new OperationContext(session);
         ctx.setInput(listDocuments.get(0));
@@ -89,6 +92,7 @@ public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase 
         }
         chain = new OperationChain("test-chain-3");
         chain.add(GetDocumentsFromFavoritesOperation.ID);
+        session.save();
 
         ctx = new OperationContext(session);
         ctx.setInput(listDocuments.get(0));

@@ -59,6 +59,7 @@ public class GetDocumentsFromCollectionTest extends CollectionOperationsTestCase
         listDocuments = createTestFiles(session, 5);
         // Add them in the collection
         collectionManager.addToCollection(collection, listDocuments, session);
+        session.save();
     }
 
     @Test
@@ -75,6 +76,7 @@ public class GetDocumentsFromCollectionTest extends CollectionOperationsTestCase
 
         // Remove a document from the collection and check the result of the operation
         collectionManager.removeFromCollection(collection, listDocuments.get(0), session);
+        session.save();
         listDocuments.remove(0);
         chain = new OperationChain("test-chain-2");
         chain.add(GetDocumentsFromCollectionOperation.ID);
@@ -88,12 +90,14 @@ public class GetDocumentsFromCollectionTest extends CollectionOperationsTestCase
 
         // Remove all documents from the collection and check the result of the operation
         collectionManager.removeAllFromCollection(collection, listDocuments, session);
+        session.save();
         chain = new OperationChain("test-chain-3");
         chain.add(GetDocumentsFromCollectionOperation.ID);
 
         ctx = new OperationContext(session);
         ctx.setInput(collection);
         documentsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
+
         // Check the result of the operation
         assertNotNull(documentsList);
         assertEquals(0, documentsList.size());
