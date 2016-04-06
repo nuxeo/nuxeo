@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -33,9 +34,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -53,6 +56,7 @@ import org.nuxeo.drive.hierarchy.permission.adapter.PermissionTopLevelFolderItem
 import org.nuxeo.drive.hierarchy.permission.adapter.SharedSyncRootParentFolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.UserSyncRootParentFolderItem;
 import org.nuxeo.drive.operations.NuxeoDriveGetChildren;
+import org.nuxeo.drive.operations.NuxeoDriveGetDescendants;
 import org.nuxeo.drive.operations.NuxeoDriveGetFileSystemItem;
 import org.nuxeo.drive.operations.NuxeoDriveGetTopLevelFolder;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
@@ -325,6 +329,19 @@ public class TestPermissionHierarchy {
         // ---------------------------------------------
         // Check top level folder children
         // ---------------------------------------------
+        // Check descendants
+        assertFalse(topLevelFolder.getCanGetDescendants());
+        try {
+            clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+                          .set("id", topLevelFolder.getId())
+                          .set("max", 10)
+                          .execute();
+            fail("Getting descendants of the permission top level folder item should be unsupported.");
+        } catch (Exception e) {
+            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+        }
+
+        // Get children
         Blob topLevelChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
                 topLevelFolder.getId()).execute();
 
@@ -364,6 +381,21 @@ public class TestPermissionHierarchy {
         // --------------------------------------------
         // Check user synchronization roots
         // --------------------------------------------
+        // Check descendants
+        assertTrue(userSyncRootParent.getCanGetDescendants());
+        assertTrue(CollectionUtils.isEqualCollection(
+                Arrays.asList(user1File2, user1Folder1, user1File1, user1Folder2, user1Folder3, user1File3,
+                        user1Folder4)
+                      .stream()
+                      .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
+                      .collect(Collectors.toList()),
+                mapper.readValue(
+                        ((Blob) clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+                                              .set("id", userSyncRootParent.getId())
+                                              .set("max", 10)
+                                              .execute()).getStream(), JsonNode.class).findValuesAsText("id")));
+
+        // Get children
         Blob userSyncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
                 userSyncRootParent.getId()).execute();
 
@@ -430,6 +462,19 @@ public class TestPermissionHierarchy {
         // ---------------------------------------------
         // Check shared synchronization roots
         // ---------------------------------------------
+        // Check descendants
+        assertFalse(topLevelFolder.getCanGetDescendants());
+        try {
+            clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+                          .set("id", sharedSyncRootParent.getId())
+                          .set("max", 10)
+                          .execute();
+            fail("Getting descendants of the shared sync root parent folder item should be unsupported.");
+        } catch (Exception e) {
+            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+        }
+
+        // Get children
         Blob sharedSyncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
                 sharedSyncRootParent.getId()).execute();
 
@@ -529,6 +574,19 @@ public class TestPermissionHierarchy {
         // --------------------------------------------
         // Check user synchronization roots
         // --------------------------------------------
+        // Check descendants
+        assertFalse(topLevelFolder.getCanGetDescendants());
+        try {
+            clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+                          .set("id", userSyncRootParent.getId())
+                          .set("max", 10)
+                          .execute();
+            fail("Getting descendants of the user sync root parent folder item not registered as a sync root should be unsupported.");
+        } catch (Exception e) {
+            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+        }
+
+        // Get children
         userSyncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
                 userSyncRootParent.getId()).execute();
 

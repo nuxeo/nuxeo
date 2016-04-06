@@ -27,13 +27,17 @@ import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.junit.Before;
@@ -196,6 +200,7 @@ public class TestFileSystemItemOperations {
         Blob topLevelFolderJSON = (Blob) clientSession.newRequest(NuxeoDriveGetTopLevelFolder.ID).execute();
         assertNotNull(topLevelFolderJSON);
 
+        // Check children
         FolderItem topLevelFolder = mapper.readValue(topLevelFolderJSON.getStream(),
                 new TypeReference<DefaultTopLevelFolderItem>() {
                 });
@@ -229,6 +234,18 @@ public class TestFileSystemItemOperations {
         assertTrue(child.getCanRename());
         assertTrue(child.getCanDelete());
         assertTrue(child.getCanCreateChild());
+
+        // Check descendants
+        assertFalse(topLevelFolder.getCanGetDescendants());
+        try {
+            clientSession.newRequest(NuxeoDriveGetDescendants.ID)
+                         .set("id", topLevelFolder.getId())
+                         .set("max", 10)
+                         .execute();
+            fail("Getting descendants of the default top level folder item should be unsupported.");
+        } catch (Exception e) {
+            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+        }
     }
 
     @Test
@@ -355,6 +372,60 @@ public class TestFileSystemItemOperations {
         // milliseconds limitation
         boolean ordered = coreFeature.getStorageConfiguration().hasSubSecondResolution();
         checkChildren(children, subFolder1.getId(), file3.getId(), file4.getId(), ordered);
+    }
+
+    @Test
+    public void testGetDescendants() throws Exception {
+
+        // Get descendants of sync root 1
+        // Get all descendants in one breath
+        Blob descendantsJSON = (Blob) clientSession.newRequest(NuxeoDriveGetDescendants.ID)
+                                                   .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
+                                                   .set("max", 10)
+                                                   .execute();
+        assertNotNull(descendantsJSON);
+        JsonNode descendants = mapper.readValue(descendantsJSON.getStream(), JsonNode.class);
+        assertNotNull(descendants);
+        assertEquals(4, descendants.size());
+        List<String> expectedIds = Arrays.asList(file1, subFolder1, file3, file4)
+                                         .stream()
+                                         .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
+                                         .collect(Collectors.toList());
+        List<String> descendantIds = descendants.findValuesAsText("id");
+        // Note that order is not determined
+        assertTrue(CollectionUtils.isEqualCollection(expectedIds, descendantIds));
+
+        // Get all descendants in several steps
+        descendantIds.clear();
+        List<String> descendantIdsBatch;
+        int max = 2;
+        String lowerId = null;
+        while (!(descendantIdsBatch = mapper.readValue(
+                ((Blob) clientSession.newRequest(NuxeoDriveGetDescendants.ID)
+                                     .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
+                                     .set("max", max)
+                                     .set("lowerId", lowerId)
+                                     .execute()).getStream(), JsonNode.class).findValuesAsText("id")).isEmpty()) {
+            int descendantIdsBatchSize = descendantIdsBatch.size();
+            assertTrue(descendantIdsBatchSize > 0);
+            lowerId = descendantIdsBatch.get(descendantIdsBatchSize - 1);
+            descendantIds.addAll(descendantIdsBatch);
+        }
+        assertEquals(4, descendantIds.size());
+        // Note that order is not determined
+        assertTrue(CollectionUtils.isEqualCollection(expectedIds, descendantIds));
+
+        // Check descendants of sub-folder of sync root 1
+        assertTrue(CollectionUtils.isEqualCollection(
+                Arrays.asList(file3, file4)
+                      .stream()
+                      .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
+                      .collect(Collectors.toList()),
+                mapper.readValue(
+                        ((Blob) clientSession.newRequest(NuxeoDriveGetDescendants.ID)
+                                             .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
+                                             .set("max", 10)
+                                             .execute()).getStream(), JsonNode.class).findValuesAsText("id")));
     }
 
     @Test

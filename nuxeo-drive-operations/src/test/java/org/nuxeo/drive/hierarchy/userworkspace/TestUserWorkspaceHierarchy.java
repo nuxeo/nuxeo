@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -51,6 +52,7 @@ import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceSyncRootParentFolderItem;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceTopLevelFolderItem;
 import org.nuxeo.drive.operations.NuxeoDriveGetChildren;
+import org.nuxeo.drive.operations.NuxeoDriveGetDescendants;
 import org.nuxeo.drive.operations.NuxeoDriveGetTopLevelFolder;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
@@ -284,6 +286,19 @@ public class TestUserWorkspaceHierarchy {
         assertFalse(topLevelFolder.getCanDelete());
         assertTrue(topLevelFolder.getCanCreateChild());
 
+        // Check descendants
+        assertFalse(topLevelFolder.getCanGetDescendants());
+        try {
+            clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+                          .set("id", topLevelFolder.getId())
+                          .set("max", 10)
+                          .execute();
+            fail("Getting descendants of the user workspace top level folder item should be unsupported.");
+        } catch (Exception e) {
+            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+        }
+
+        // Get children
         Blob topLevelChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
                 topLevelFolder.getId()).execute();
 
@@ -310,6 +325,19 @@ public class TestUserWorkspaceHierarchy {
         assertFalse(syncRootParent.getCanDelete());
         assertFalse(syncRootParent.getCanCreateChild());
 
+        // Check descendants
+        assertFalse(syncRootParent.getCanGetDescendants());
+        try {
+            clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+                          .set("id", syncRootParent.getId())
+                          .set("max", 10)
+                          .execute();
+            fail("Getting descendants of a virtual folder item should be unsupported.");
+        } catch (Exception e) {
+            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+        }
+
+        // Get children
         Blob syncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
                 syncRootParent.getId()).execute();
 
