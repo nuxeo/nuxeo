@@ -1479,10 +1479,12 @@ public class TestDocumentsSizeUpdater {
                 try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
                     DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
                     assertNotNull(uw);
+                    userSession.save();
                 }
                 try (CoreSession userSession = coreFeature.openCoreSession("titi")) {
                     DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
                     assertNotNull(uw);
+                    userSession.save();
                 }
                 quotaStatsService.activateQuotaOnUserWorkspaces(300L, session);
                 quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(300L, session.getRootDocument(), session);
