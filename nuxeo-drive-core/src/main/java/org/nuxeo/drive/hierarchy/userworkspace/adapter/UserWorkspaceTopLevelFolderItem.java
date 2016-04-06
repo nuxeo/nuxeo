@@ -72,6 +72,7 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
         name = folderName;
         canRename = false;
         canDelete = false;
+        canGetDescendants = false;
         this.userWorkspace = userWorkspace;
         this.syncRootParentFactoryName = syncRootParentFactoryName;
     }
@@ -131,11 +132,6 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
         }
 
         return children;
-    }
-
-    @Override
-    public boolean getCanGetDescendants() {
-        return false;
     }
 
     @Override

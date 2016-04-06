@@ -55,6 +55,7 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
     public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint);
+        canGetDescendants = false;
     }
 
     protected CollectionSyncRootFolderItem() {
@@ -81,11 +82,6 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
             }
             return children;
         }
-    }
-
-    @Override
-    public boolean getCanGetDescendants() {
-        return false;
     }
 
     @Override

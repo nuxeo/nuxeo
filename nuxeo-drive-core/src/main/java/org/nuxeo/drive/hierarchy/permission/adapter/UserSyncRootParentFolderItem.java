@@ -64,6 +64,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
         canDelete = false;
         isUserWorkspaceSyncRoot = isUserWorkspaceSyncRoot(doc);
         canCreateChild = isUserWorkspaceSyncRoot;
+        canGetDescendants = isUserWorkspaceSyncRoot;
     }
 
     protected UserSyncRootParentFolderItem() {
@@ -137,11 +138,6 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
             Collections.sort(children);
             return children;
         }
-    }
-
-    @Override
-    public boolean getCanGetDescendants() {
-        return isUserWorkspaceSyncRoot;
     }
 
     @Override
