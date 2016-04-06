@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -766,6 +767,14 @@ public class TestDefaultFileSystemItemFactory {
         // Order is not determined
         checkChildren(folderDescendants, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
                 adaptableChild.getId(), false);
+
+        // Check batch size limit
+        try {
+            folderItem.getDescendants(10000, null);
+            fail("Should not be able to get more descendants than the maximum batch size allowed.");
+        } catch (NuxeoException e) {
+            log.trace(e);
+        }
     }
 
     @Test

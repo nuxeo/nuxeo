@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FolderItem}.
@@ -58,6 +59,10 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     private static final long serialVersionUID = 1L;
 
     private static final String FOLDER_ITEM_CHILDREN_PAGE_PROVIDER = "FOLDER_ITEM_CHILDREN";
+
+    protected static final String MAX_DESCENDANTS_BATCH_SIZE_PROPERTY = "org.nuxeo.drive.maxDescendantsBatchSize";
+
+    protected static final String MAX_DESCENDANTS_BATCH_SIZE_DEFAULT = "1000";
 
     protected boolean canCreateChild;
 
@@ -155,7 +160,16 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     public List<FileSystemItem> getDescendants(int max, String lowerId) {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
 
-            // TODO: limit batch size sent by the client
+            // Limit batch size sent by the client
+            int maxDescendantsBatchSize = Integer.parseInt(Framework.getService(ConfigurationService.class)
+                                                                    .getProperty(MAX_DESCENDANTS_BATCH_SIZE_PROPERTY,
+                                                                            MAX_DESCENDANTS_BATCH_SIZE_DEFAULT));
+            if (max > maxDescendantsBatchSize) {
+                throw new NuxeoException(
+                        String.format(
+                                "Maximum number of descendants %d is greater than the maximum batch size allowed %d. If you need to increase this limit you can set the %s configuration property but this is not recommended for performance reasons.",
+                                max, maxDescendantsBatchSize, MAX_DESCENDANTS_BATCH_SIZE_PROPERTY));
+            }
 
             // Fetch documents
             StringBuilder sb = new StringBuilder(String.format("SELECT * FROM Document WHERE ecm:ancestorId = '%s'",
