@@ -329,6 +329,8 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         if (TransactionHelper.isTransactionMarkedRollback()) {
             throw new AssertionError("The calling transaction is marked rollback");
         }
+        // we need to commit or rollback transaction because suspending it leads to a lock/errors when acquiring a new
+        // connection during the datasource reload
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         try {
