@@ -1,6 +1,7 @@
 package org.nuxeo.drive.bench
 
 import com.redis.RedisClientPool
+
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
@@ -211,7 +212,7 @@ object Actions {
       .headers(Headers.base)
       .header("Content-Type", "application/json+nxrequest")
       .basicAuth("${user}", "${password}")
-      .body(StringBody( """{"params":{"enable": "true"}}""".stripMargin))
+      .body(StringBody("""{"params":{"enable": "true"}}""".stripMargin))
       .check(status.in(200))
   }
 
@@ -221,7 +222,7 @@ object Actions {
       .headers(Headers.base)
       .header("Content-Type", "application/json+nxrequest")
       .basicAuth("${user}", "${password}")
-      .body(StringBody( """{"params":{"enable": "false"}}""".stripMargin))
+      .body(StringBody("""{"params":{"enable": "false"}}""".stripMargin))
       .check(status.in(200))
   }
 
@@ -254,7 +255,7 @@ object Actions {
       .headers(Headers.base)
       .header("Content-Type", "application/json")
       .basicAuth("${adminId}", "${adminPassword}")
-      .body(StringBody( """{"params":{"permission": "ReadWrite", "user": """" + principal + """"}}""".stripMargin))
+      .body(StringBody("""{"params":{"permission": "ReadWrite", "user": """" + principal + """"}}""".stripMargin))
       .check(status.in(200))
   }
 
@@ -283,7 +284,7 @@ object Actions {
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
       .header("Content-Type", "application/json+nxrequest")
-      .body(StringBody( """{"params":{}}"""))
+      .body(StringBody("""{"params":{}}"""))
       .check(status.in(200)).check(regex("serverVersion").exists)
   }
 
@@ -296,7 +297,7 @@ object Actions {
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
       .header("Content-Type", "application/json+nxrequest")
-      .body(StringBody( """{"params":{}}"""))
+      .body(StringBody("""{"params":{}}"""))
       .check(status.in(200)).check(regex("canCreateChild").exists)
   }
 
@@ -309,7 +310,7 @@ object Actions {
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
       .header("Content-Type", "application/json+nxrequest")
-      .body(StringBody( """{"params": {"id": """" + id + """"}}"""))
+      .body(StringBody("""{"params": {"id": """" + id + """"}}""".stripMargin))
       .check(status.in(200))
   }
 
@@ -339,9 +340,8 @@ object Actions {
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
       .header("Content-Type", "application/json+nxrequest")
-      .body(StringBody(
-      """{"params": """ + params.toString + "}".stripMargin)
-      ).check(status.in(200))
+      .body(StringBody("""{"params": """ + params.toString + "}".stripMargin))
+      .check(status.in(200))
   }
 
   def getChildren = (id: String) => {
@@ -353,7 +353,9 @@ object Actions {
       .header("X-user-Id", "${user}")
       .header("X-Authentication-Token", "${token}")
       .header("Content-Type", "application/json+nxrequest")
-      .body(StringBody( """{"params": {"id": """" + id + """"}}"""))
+      .body(StringBody("""{"params": {"id": """" + id + """"}}""".stripMargin))
+      .check(status.in(200))
+  }
 
   def getDescendants = (id: String, max: String, lowerId: String) => {
     val params = new StringBuilder
@@ -378,6 +380,7 @@ object Actions {
       .body(StringBody("""{"params": """ + params.toString + "}".stripMargin))
       .check(status.in(200))
   }
+
 }
 
 object Feeders {
