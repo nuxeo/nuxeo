@@ -329,7 +329,7 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         if (TransactionHelper.isTransactionMarkedRollback()) {
             throw new AssertionError("The calling transaction is marked rollback");
         }
-        Transaction tx = TransactionHelper.suspendTransaction();
+        TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         try {
             try {
@@ -337,18 +337,11 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             } catch (RuntimeException cause) {
                 TransactionHelper.setTransactionRollbackOnly();
                 throw cause;
+            } finally {
+                TransactionHelper.commitOrRollbackTransaction();
             }
         } finally {
-            boolean wasRollbacked = TransactionHelper.isTransactionMarkedRollback();
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.resumeTransaction(tx);
-            if (TransactionHelper.isTransactionActive()) {
-                if (wasRollbacked) {
-                    TransactionHelper.setTransactionRollbackOnly();
-                }
-                TransactionHelper.commitOrRollbackTransaction(); // should flush
-                TransactionHelper.startTransaction();
-            }
+            TransactionHelper.startTransaction();
         }
     }
 
