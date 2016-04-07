@@ -19,6 +19,12 @@
       <filter-id>hasVisibleRenditions</filter-id>
     </action>
 
+    <action id="StoredRenditions" link="/incl/search_renditions.xhtml" label="admcommand.searchrenditions"
+      type="admin_rest_document_link" order="50">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"

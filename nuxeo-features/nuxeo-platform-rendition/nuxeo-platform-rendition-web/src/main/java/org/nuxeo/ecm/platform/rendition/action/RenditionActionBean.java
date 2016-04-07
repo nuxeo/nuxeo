@@ -32,7 +32,10 @@ import org.jboss.seam.annotations.Factory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.platform.rendition.Constants;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
@@ -55,6 +58,9 @@ public class RenditionActionBean implements Serializable {
 
     @In(create = true)
     protected transient NavigationContext navigationContext;
+
+    @In(create = true, required = false)
+    protected transient CoreSession documentManager;
 
     @Factory(value = "currentDocumentRenditions", scope = ScopeType.EVENT)
     public List<Rendition> getCurrentDocumentRenditions() throws Exception {
@@ -116,5 +122,17 @@ public class RenditionActionBean implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
         return String.format(RENDITION_REST_URL_FORMAT, BaseURL.getBaseURL(request), doc.getId(), renditionName);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public DocumentModel getRenditionSourceDocumentModel(DocumentModel doc) {
+        String id = (String) doc.getPropertyValue(Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY);
+        if (id == null) {
+            id = (String) doc.getPropertyValue(Constants.RENDITION_SOURCE_ID_PROPERTY);
+        }
+        doc = documentManager.getDocument(new IdRef(id));
+        return doc;
     }
 }

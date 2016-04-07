@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.rendition.search.contentviews.contrib">
+
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.listing</require>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService"
+    point="contentViews">
+
+    <contentView name="stored_rendition_search">
+
+      <title>label.search.results</title>
+      <translateTitle>true</translateTitle>
+
+      <emptySentence>label.content.empty.search</emptySentence>
+      <translateEmptySentence>true</translateEmptySentence>
+
+      <coreQueryPageProvider>
+        <property name="coreSession">#{documentManager}</property>
+        <whereClause docType="StoredRenditionSearch">
+
+          <predicate parameter="ecm:fulltext_all" operator="FULLTEXT">
+            <field schema="stored_rendition_search" name="ecm_fulltext" />
+          </predicate>
+
+          <predicate parameter="dc:title" operator="FULLTEXT">
+            <field schema="stored_rendition_search" name="dc_title" />
+          </predicate>
+
+          <predicate parameter="dc:created" operator="BETWEEN">
+            <field schema="stored_rendition_search" name="dc_created_min" />
+            <field schema="stored_rendition_search" name="dc_created_max" />
+          </predicate>
+
+          <predicate parameter="rend:sourceModificationDate" operator="BETWEEN">
+            <field schema="stored_rendition_search" name="rend_sourceModification_min" />
+            <field schema="stored_rendition_search" name="rend_sourceModification_max" />
+          </predicate>
+
+          <predicate parameter="rend:renditionName" operator="IN">
+            <field schema="stored_rendition_search" name="rend_renditionName" />
+          </predicate>
+
+          <predicate parameter="rend:renditionVariant" operator="FULLTEXT">
+            <field schema="stored_rendition_search" name="rend_renditionVariant" />
+          </predicate>
+
+          <fixedPart>
+            ecm:mixinType = 'Rendition' AND
+            ecm:isProxy = 0 AND
+            ecm:isCheckedInVersion = 0 AND
+            SORTED_COLUMN IS NOT NULL
+          </fixedPart>
+        </whereClause>
+        <sort column="dc:title" ascending="true" />
+        <pageSize>20</pageSize>
+      </coreQueryPageProvider>
+
+      <searchLayout name="stored_rendition_search" filterDisplayType="quick" />
+
+      <showFilterForm>true</showFilterForm>
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+
+      <resultLayouts>
+        <layout name="renditions_listing" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
+      </resultLayouts>
+
+      <selectionList>CURRENT_SELECTION</selectionList>
+      <actions category="CURRENT_SELECTION_LIST" />
+
+      <resultColumns>
+        #{searchDocument.cvd.selectedLayoutColumns}
+      </resultColumns>
+      <resultLayout>
+        #{searchDocument.cvd.resultLayoutName}
+      </resultLayout>
+      <flags>
+        <flag>SEARCH</flag>
+      </flags>
+
+    </contentView>
+
+  </extension>
+
+</component>

@@ -1,0 +1,49 @@
+<c:if test="true"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxp="http://nuxeo.org/nxweb/pdf">
+  <nxu:set var="typeLabel" value="#{nxd:typeLabel(field)}">
+    <nxu:set var="label" value="#{empty field_2 ? messages[typeLabel] : messages[field_2]}">
+      <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{nxd:titleOrId(field_0)}</c:if>
+      <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+
+        <div class="popupTarget" docRef="#{field_1}">
+
+          <nxd:restDocumentLink document="#{renditionAction.getRenditionSourceDocumentModel(field_0)}"
+            tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}" tabs="#{widgetProperty_tabs}"
+            target="#{widgetProperty_target}"
+            view="#{nxu:test(empty tabWidgetView, widgetProperty_view, tabWidgetView)}"
+            pattern="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}">
+            <span id="title_#{field_1}" title="#{label}" class="documentTitle">
+              <c:if test="#{widgetProperty_localize}">
+                #{messages[nxd:titleOrId(field_0)]}
+              </c:if>
+              <c:if test="#{!widgetProperty_localize}">
+                #{nxd:titleOrId(field_0)}
+              </c:if>
+            </span>
+          </nxd:restDocumentLink>
+
+          <c:if test="#{!widgetProperty_hideExternalLink}">
+            <nxd:restDocumentLink document="#{renditionAction.getRenditionSourceDocumentModel(field_0)}"
+              newConversation="true" target="_blank" tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}"
+              tabs="#{widgetProperty_tabs}"
+              view="#{nxu:test(empty tabWidgetView, widgetProperty_view, tabWidgetView)}"
+              pattern="#{nxu:test(empty tabWidgetPattern, widgetProperty_pattern, tabWidgetPattern)}">
+              <nxu:graphicImage value="/icons/external.gif" style="vertical-align:middle"
+                alt="#{messages['permalink.newTab']}" title="#{messages['permalink.newTab']}"/>
+            </nxd:restDocumentLink>
+          </c:if>
+
+        </div>
+
+      </c:if>
+    </nxu:set>
+  </nxu:set>
+</c:if>

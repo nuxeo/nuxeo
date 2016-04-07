@@ -6,5 +6,10 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/url-codec-contrib.xml,
  OSGI-INF/layouts-summary-contrib.xml,
+ OSGI-INF/operations-contrib.xml,
+ OSGI-INF/search-core-types-contrib.xml,
+ OSGI-INF/search-layouts-contrib.xml,
+ OSGI-INF/search-contentviews-contrib.xml,
+ OSGI-INF/theme-contrib.xml,
  OSGI-INF/actions-contrib.xml
 

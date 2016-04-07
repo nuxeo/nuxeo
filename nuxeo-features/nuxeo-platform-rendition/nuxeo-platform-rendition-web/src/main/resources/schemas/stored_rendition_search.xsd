@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/storedrenditionsearch/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/storedrenditionsearch/">
+
+  <xs:include schemaLocation="base.xsd" />
+
+  <xs:element name="ecm_fulltext" type="xs:string" />
+  <xs:element name="dc_title" type="xs:string" />
+  <xs:element name="dc_created_min" type="xs:date" />
+  <xs:element name="dc_created_max" type="xs:date" />
+  <xs:element name="rend_sourceModificationDate_min" type="xs:date" />
+  <xs:element name="rend_sourceModificationDate_max" type="xs:date" />
+  <xs:element name="rend_renditionName" type="nxs:stringList" />
+  <xs:element name="rend_renditionVariant" type="xs:string" />
+
+</xs:schema>
