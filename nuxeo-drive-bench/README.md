@@ -83,6 +83,18 @@ Simulates the Nuxeo Drive recursive remote scan behavior:
 - Get initial change summary
 - Get children recursively
 
+### Batched Remote Scan Simulation
+
+Simulates the Nuxeo Drive batched remote scan behavior:
+
+- Peek a random Nuxeo Drive client from Redis
+- Fetch Automation API
+- Get top level folder
+- Get file system item
+- Get initial change summary
+- Get top level folder children: the synchronization roots
+- For each synchronization root get descendants by batch
+
 ### Remote Scan Cleanup Simulation
 
 This simulation removes all documents, users and group from the Nuxeo instance, also deletes the data in Redis.
@@ -114,7 +126,8 @@ Default options: see below.
          [2] org.nuxeo.drive.bench.Sim20CleanupPolling
          [3] org.nuxeo.drive.bench.Sim30SetupRemoteScan
          [4] org.nuxeo.drive.bench.Sim40BenchRecursiveRemoteScan
-         [5] org.nuxeo.drive.bench.Sim50CleanupRemoteScan
+         [5] org.nuxeo.drive.bench.Sim45BenchBatchedRemoteScan
+         [6] org.nuxeo.drive.bench.Sim50CleanupRemoteScan
 
 Common options with default values:
 
@@ -144,6 +157,8 @@ Options for the Remote Scan simulations:
     -DnbThreads=12
     # Number of concurrent Nuxeo Drive clients
     -DremoteScan.users=10
+    # Batch size for the batched remote scan
+    -DbatchSize=100
 
 Note that you may need to edit the administrator account if it is not the default one:
 

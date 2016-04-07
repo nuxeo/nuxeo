@@ -354,6 +354,28 @@ object Actions {
       .header("X-Authentication-Token", "${token}")
       .header("Content-Type", "application/json+nxrequest")
       .body(StringBody( """{"params": {"id": """" + id + """"}}"""))
+
+  def getDescendants = (id: String, max: String, lowerId: String) => {
+    val params = new StringBuilder
+    params ++= """{"id": """"
+    params ++= id
+    params ++= """", "max": """
+    params ++= max
+    if (!lowerId.isEmpty) {
+      params ++= """, "lowerId": """"
+      params ++= lowerId.get
+      params += '"'
+    }
+    params += '}'
+    http("Get descendants")
+      .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetDescendants")
+      .headers(Headers.nxProperties)
+      .headers(Headers.drive)
+      .header("X-Device-Id", "${deviceId}")
+      .header("X-user-Id", "${user}")
+      .header("X-Authentication-Token", "${token}")
+      .header("Content-Type", "application/json+nxrequest")
+      .body(StringBody("""{"params": """ + params.toString + "}".stripMargin))
       .check(status.in(200))
   }
 }

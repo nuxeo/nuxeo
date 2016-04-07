@@ -62,4 +62,8 @@ object Parameters {
     Integer.getInteger("nbNodes", default)
   }
 
+  def getDescendantsBatchSize(default: Integer = 100): Integer = {
+    Integer.getInteger("batchSize", default)
+  }
+
 }

@@ -216,6 +216,19 @@
                   </jvmArgs>
                 </configuration>
               </execution>
+              <execution>
+                <id>bench-batched-remote-scan</id>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.drive.bench.Sim45BenchBatchedRemoteScan</simulationClass>
+                  <jvmArgs>
+                    <jvmArg>-Xms1g</jvmArg>
+                    <jvmArg>-Xmx2g</jvmArg>
+                  </jvmArgs>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
         </plugins>

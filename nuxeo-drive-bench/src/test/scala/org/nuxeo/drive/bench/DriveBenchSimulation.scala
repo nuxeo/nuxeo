@@ -46,3 +46,20 @@ class Sim40BenchRecursiveRemoteScan extends Simulation {
     .protocols(httpProtocol)
     .assertions(global.successfulRequests.percent.is(100))
 }
+
+class Sim45BenchBatchedRemoteScan extends Simulation {
+
+  val httpProtocol = http
+    .baseURL(Parameters.getBaseUrl())
+    .disableWarmUp
+    .acceptEncodingHeader("gzip, deflate")
+    .acceptEncodingHeader("identity")
+    .connection("keep-alive")
+    .disableCaching // disabling Etag cache since If-None-Modified on GetChildren and GetDescendants fails
+
+  val remoteScan = BatchedRemoteScan.run(Parameters.getDescendantsBatchSize(100))
+
+  setUp(remoteScan.inject(rampUsers(Parameters.getConcurrentUsers(10, prefix = "remoteScan.")).over(Parameters.getRampDuration(10))))
+    .protocols(httpProtocol)
+    .assertions(global.successfulRequests.percent.is(100))
+}
