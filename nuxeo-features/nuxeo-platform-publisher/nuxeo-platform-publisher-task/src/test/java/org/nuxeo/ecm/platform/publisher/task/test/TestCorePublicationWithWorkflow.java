@@ -214,6 +214,7 @@ public abstract class TestCorePublicationWithWorkflow {
             PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
             assertTrue(publishedDocument.isPending());
             assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+            sessionUser1.save();
         }
 
         // myuser3 can't see the document waiting for validation
@@ -240,6 +241,7 @@ public abstract class TestCorePublicationWithWorkflow {
         try (CoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
             PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
             assertEquals(1, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+            sessionUser3.save();
         }
     }
 
@@ -354,6 +356,7 @@ public abstract class TestCorePublicationWithWorkflow {
             PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
             assertTrue(publishedDocument.isPending());
             assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+            sessionUser1.save();
         }
 
         // my user3 ask for publication
@@ -367,6 +370,7 @@ public abstract class TestCorePublicationWithWorkflow {
             assertTrue(treeUser3.canPublishTo(targetNode));
             PublishedDocument publishedDocument = treeUser3.publish(doc2Publish, targetNode);
             assertTrue(publishedDocument.isPending());
+            sessionUser3.save();
         }
 
         // my user1 can still see the document
@@ -389,6 +393,7 @@ public abstract class TestCorePublicationWithWorkflow {
             assertTrue(publishedDocument.isPending());
             treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
             assertFalse(publishedDocument.isPending());
+            sessionUser2.save();
         }
     }
 
@@ -405,6 +410,7 @@ public abstract class TestCorePublicationWithWorkflow {
             PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
             assertTrue(publishedDocument.isPending());
             assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+            sessionUser1.save();
         }
 
         // my user3 ask for publication
@@ -417,6 +423,7 @@ public abstract class TestCorePublicationWithWorkflow {
             assertTrue(treeUser3.canPublishTo(targetNode));
             PublishedDocument publishedDocument = treeUser3.publish(doc2Publish, targetNode);
             assertTrue(publishedDocument.isPending());
+            sessionUser3.save();
         }
 
         // my user1 can still see the document
@@ -447,6 +454,7 @@ public abstract class TestCorePublicationWithWorkflow {
             assertTrue(publishedDocument.isPending());
             treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
             assertFalse(publishedDocument.isPending());
+            sessionUser2.save();
         }
 
         // my user4 see the document
