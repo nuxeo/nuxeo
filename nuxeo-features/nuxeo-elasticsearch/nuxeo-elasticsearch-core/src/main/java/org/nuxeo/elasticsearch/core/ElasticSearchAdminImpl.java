@@ -450,6 +450,14 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     @Override
+    public boolean useExternalVersion() {
+        if (isEmbedded()) {
+            return localConfig.useExternalVersion();
+        }
+        return remoteConfig.useExternalVersion();
+    }
+
+    @Override
     public boolean isIndexingInProgress() {
         // impl of scheduling is left to the ESService
         throw new UnsupportedOperationException("Not implemented");

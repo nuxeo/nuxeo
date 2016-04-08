@@ -20,12 +20,11 @@
 
 package org.nuxeo.elasticsearch.api;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-
+import com.google.common.util.concurrent.ListenableFuture;
 import org.elasticsearch.client.Client;
 
-import com.google.common.util.concurrent.ListenableFuture;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Administration interface for Elasticsearch service
@@ -192,5 +191,13 @@ public interface ElasticSearchAdmin {
      * @since 7.2
      */
     boolean isEmbedded();
+
+    /**
+     * When true use an external version for Elasticsearch document, this enable an optimistic concurrency control
+     * ensuring that an older version of a document never overwrites a newer version.
+     *
+     * @since 7.2
+     */
+    boolean useExternalVersion();
 
 }

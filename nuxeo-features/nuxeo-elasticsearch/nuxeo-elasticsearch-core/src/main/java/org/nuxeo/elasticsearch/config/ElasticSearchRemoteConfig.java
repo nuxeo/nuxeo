@@ -53,6 +53,9 @@ public class ElasticSearchRemoteConfig implements Serializable {
     @XNode("@clientTransportNodesSamplerInterval")
     protected String clientTransportNodesSamplerInterval = "5s";
 
+    @XNode("@useExternalVersion")
+    protected boolean externalVersion = true;
+
     public String getClusterName() {
         return clusterName;
     }
@@ -90,6 +93,10 @@ public class ElasticSearchRemoteConfig implements Serializable {
 
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+    public boolean useExternalVersion() {
+        return externalVersion;
     }
 
     @Override

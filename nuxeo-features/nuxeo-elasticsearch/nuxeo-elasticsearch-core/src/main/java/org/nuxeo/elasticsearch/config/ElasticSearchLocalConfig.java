@@ -55,6 +55,9 @@ public class ElasticSearchLocalConfig implements Serializable {
     @XNode("@networkHost")
     protected String networkHost = "127.0.0.1";
 
+    @XNode("@useExternalVersion")
+    protected boolean externalVersion = true;
+
     public String getClusterName() {
         return clusterName;
     }
@@ -126,6 +129,10 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     public void setNodeName(String nodeName) {
         this.nodeName = nodeName;
+    }
+
+    public boolean useExternalVersion() {
+        return externalVersion;
     }
 
     @Override
