@@ -282,6 +282,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
+    public boolean useExternalVersion() {
+        return esa.useExternalVersion();
+    }
+
+    @Override
     public boolean isIndexingInProgress() {
         return (runIndexingWorkerCount.get() > 0) || (getPendingWorkerCount() > 0) || (getRunningWorkerCount() > 0);
     }

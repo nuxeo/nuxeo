@@ -50,7 +50,10 @@ public class ElasticSearchLocalConfig implements Serializable {
     @XNode("@httpEnabled")
     protected boolean httpEnabled = false;
 
-    public String getDataPath() {
+    @XNode("@useExternalVersion")
+    protected boolean externalVersion = true;
+
+   public String getDataPath() {
         if (dataPath == null) {
             File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch");
             dataPath = dir.getPath();
@@ -107,6 +110,10 @@ public class ElasticSearchLocalConfig implements Serializable {
 
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+    public boolean useExternalVersion() {
+        return externalVersion;
     }
 
     @Override

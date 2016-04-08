@@ -77,6 +77,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
 
     private final Timer bulkIndexTimer;
 
+    private final boolean useExternalVersion;
+
     private JsonESDocumentWriter jsonESDocumentWriter;
 
     public ElasticSearchIndexingImpl(ElasticSearchAdminImpl esa) {
@@ -86,6 +88,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         deleteTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "delete"));
         bulkIndexTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "bulkIndex"));
         this.jsonESDocumentWriter = new JsonESDocumentWriter();// default writer
+        this.useExternalVersion = esa.useExternalVersion();
     }
 
     /**
@@ -181,7 +184,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     protected void logBulkFailure(BulkResponse response) {
         boolean isError = false;
         StringBuilder sb = new StringBuilder();
-        sb.append("Skip indexing of some documents in bulk because more recent version has been already indexed");
+        sb.append("Ignore indexing of some docs more recent versions has already been indexed");
         for (BulkItemResponse item : response.getItems()) {
             if (item.isFailed()) {
                 if (item.getFailure().getStatus() == RestStatus.CONFLICT) {
@@ -194,7 +197,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         if (isError) {
             log.error(response.buildFailureMessage());
         } else {
-            log.warn(sb);
+            log.info(sb);
         }
     }
 
@@ -262,7 +265,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         try {
             request.execute().actionGet();
         } catch (VersionConflictEngineException e) {
-            log.warn("Skip indexing of doc " + cmd.getTargetDocumentId() + " a more recent version has been indexed: " + e.getMessage());
+            log.info("Ignore indexing of doc " + cmd.getTargetDocumentId() +
+                    " a more recent version has already been indexed: " + e.getMessage());
         }
     }
 
@@ -349,7 +353,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             jsonESDocumentWriter.writeESDocument(jsonGen, doc, cmd.getSchemas(), null);
             IndexRequestBuilder ret = esa.getClient().prepareIndex(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
                     cmd.getTargetDocumentId()).setSource(builder);
-            if (cmd.getOrder() > 0) {
+            if (useExternalVersion && cmd.getOrder() > 0) {
                 ret.setVersionType(VersionType.EXTERNAL).setVersion(cmd.getOrder());
             }
             return ret;
