@@ -1802,6 +1802,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             List<String> newActors = new ArrayList<String>();
             newActors.add("myuser2");
             routing.reassignTask(sessionUser1, task1.getId(), newActors, "Reassigned");
+            sessionUser1.save();
 
             // check that user1 doesn't have Write permission any more on
             // documents following the workflow
@@ -1894,6 +1895,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
             List<String> newActors = new ArrayList<String>();
             newActors.add("myuser2");
             routing.delegateTask(sessionUser1, task1.getId(), newActors, "Delegated");
+            sessionUser1.save();
 
             // check that user1 still have Write permission on documents
             // following the workflow
