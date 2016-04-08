@@ -36,6 +36,8 @@ import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
+import org.nuxeo.runtime.api.Framework;
 
 public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
 
@@ -121,6 +123,10 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
             if (idxOfColon > 0 && idxOfColon < userCredentials.length() - 1) {
                 String username = userCredentials.substring(0, idxOfColon);
                 String password = userCredentials.substring(idxOfColon + 1);
+                // forcing session cookie re-generation at login
+                PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
+                        PluggableAuthenticationService.NAME);
+                service.invalidateSession(httpRequest);
                 return new UserIdentificationInfo(username, password);
             } else {
                 return null;
