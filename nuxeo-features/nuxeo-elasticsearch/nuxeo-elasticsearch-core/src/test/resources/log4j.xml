@@ -41,6 +41,10 @@
   <category name="org.nuxeo.elasticsearch.work.BucketIndexingWorker" additivity="false">
     <appender-ref ref="FILE"/>
   </category>
+  <category name="org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl" additivity="false">
+    <priority value="INFO" />
+    <appender-ref ref="FILE"/>
+  </category>
 
 
   <root>
