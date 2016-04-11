@@ -54,7 +54,7 @@ public class ElasticSearchLocalConfig implements Serializable {
     protected String networkHost = "127.0.0.1";
 
     @XNode("@useExternalVersion")
-    protected boolean externalVersion = true;
+    protected boolean externalVersion = false;
 
     public String getClusterName() {
         return clusterName;
