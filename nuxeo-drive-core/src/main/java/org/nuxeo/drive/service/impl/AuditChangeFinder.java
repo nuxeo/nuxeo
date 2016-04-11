@@ -189,7 +189,6 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                                 docRef));
                     }
                     String fsId = fsIdInfo.getValue(String.class);
-                    String fsName = entry.getExtendedInfos().get("fileSystemItemName").getValue(String.class);
                     String eventId;
                     if (NuxeoDriveEvents.MOVED_EVENT.equals(entry.getEventId())) {
                         // Move to a non synchronization root
@@ -199,7 +198,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                         eventId = entry.getEventId();
                     }
                     change = new FileSystemItemChangeImpl(eventId, entry.getEventDate().getTime(),
-                            entry.getRepositoryId(), entry.getDocUUID(), fsId, fsName);
+                            entry.getRepositoryId(), entry.getDocUUID(), fsId, null);
                 }
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Adding FileSystemItemChange entry for document %s to the change summary.",
