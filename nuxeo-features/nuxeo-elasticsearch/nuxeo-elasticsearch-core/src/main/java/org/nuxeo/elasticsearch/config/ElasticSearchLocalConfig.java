@@ -51,7 +51,7 @@ public class ElasticSearchLocalConfig implements Serializable {
     protected boolean httpEnabled = false;
 
     @XNode("@useExternalVersion")
-    protected boolean externalVersion = true;
+    protected boolean externalVersion = false;
 
    public String getDataPath() {
         if (dataPath == null) {
