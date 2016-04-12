@@ -96,6 +96,11 @@ public class MemoryWorkQueuing implements WorkQueuing {
         return queue;
     }
 
+    @Override
+    public void shutdownWorkQueue(String queueId) {
+        allQueued.remove(queueId);
+    }
+
     public BlockingQueue<Runnable> getWorkQueue(String queueId) {
         if (!allQueued.containsKey(queueId)) {
             throw new IllegalStateException(queueId + " was not configured yet");
@@ -390,20 +395,6 @@ public class MemoryWorkQueuing implements WorkQueuing {
             }
         }
         return null;
-    }
-
-    @Override
-    public int setSuspending(String queueId) {
-        // for in-memory queuing, there's no suspend
-        // drain scheduled queue and mark work canceled
-        List<Runnable> scheduled = new ArrayList<>();
-        getWorkQueue(queueId).drainTo(scheduled);
-        for (Runnable r : scheduled) {
-            Work work = WorkHolder.getWork(r);
-            work.setWorkInstanceState(State.CANCELED);
-        }
-        getScheduled(queueId).clear();
-        return scheduled.size();
     }
 
     @Override
