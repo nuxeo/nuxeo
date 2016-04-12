@@ -13,10 +13,13 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 
 /**
  * A type of fragment corresponding to a single row in a table and its associated in-memory information (state, dirty
@@ -102,6 +105,15 @@ public final class SimpleFragment extends Fragment {
      */
     public String getString(String key) {
         return (String) get(key);
+    }
+
+    @Override
+    public RowUpdate getRowUpdate() {
+        Collection<String> keys = getDirtyKeys();
+        if (keys.isEmpty()) {
+            return null;
+        }
+        return new RowUpdate(row, keys);
     }
 
     /**

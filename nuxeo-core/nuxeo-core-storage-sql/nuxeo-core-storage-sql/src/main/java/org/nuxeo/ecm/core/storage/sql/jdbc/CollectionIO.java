@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.Model;
-import org.nuxeo.ecm.core.storage.sql.Row;
+import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 
 /**
@@ -37,7 +37,7 @@ public interface CollectionIO {
      * Sets the values of a fragment to a SQL prepared statement, and executes the statement for each value. Uses
      * batching if possible.
      */
-    void executeInserts(PreparedStatement ps, List<Row> rows, List<Column> columns, boolean supportsBatchUpdates,
+    void executeInserts(PreparedStatement ps, List<RowUpdate> rowus, List<Column> columns, boolean supportsBatchUpdates,
             String sql, JDBCConnection connection) throws SQLException;
 
 }

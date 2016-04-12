@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
+import org.nuxeo.elasticsearch.Timestamp;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -85,8 +86,10 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
 
     private List<IndexingCommand> getIndexingCommands(CoreSession session, List<String> ids) {
         List<IndexingCommand> ret = new ArrayList<>(ids.size());
+        long now = Timestamp.currentTimeMicros();
         for (DocumentModel doc : fetchDocuments(session, ids)) {
             IndexingCommand cmd = new IndexingCommand(doc, Type.INSERT, false, false);
+            cmd.setOrder(now);
             ret.add(cmd);
         }
         return ret;

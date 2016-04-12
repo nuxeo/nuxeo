@@ -609,6 +609,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
                     work.setWorkInstanceSuspending();
                 }
             }
+            queuing.shutdownWorkQueue(queueId);
             shutdownNow();
         }
 

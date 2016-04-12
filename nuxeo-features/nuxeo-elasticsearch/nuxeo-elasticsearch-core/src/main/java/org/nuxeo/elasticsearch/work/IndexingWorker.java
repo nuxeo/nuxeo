@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.work;
 
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.elasticsearch.Timestamp;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
@@ -63,6 +64,10 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
     @Override
     protected void doIndexingWork(ElasticSearchIndexing esi, List<IndexingCommand> cmds) {
+        long now = Timestamp.currentTimeMicros();
+        for (IndexingCommand cmd : cmds) {
+            cmd.setOrder(now);
+        }
         esi.indexNonRecursive(cmds);
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         for (IndexingCommand cmd : cmds) {
