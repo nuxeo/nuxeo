@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * A {@link JDBCRowMapper} maps {@link Row}s to and from a JDBC database.
@@ -69,6 +70,10 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     public static final int DEBUG_MAX_TREE = 50;
 
+    // defaults to true in 7.10 and earlier
+    /** Property to determine whether collection appends delete all then re-insert, or are optimized for append. */
+    public static final String COLLECTION_DELETE_BEFORE_APPEND_PROP = "org.nuxeo.vcs.list-delete-before-append";
+
     /**
      * Cluster node handler, or {@code null} if this {@link Mapper} is not the cluster node mapper.
      */
@@ -78,6 +83,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * Queue of invalidations received for this cluster node.
      */
     private final InvalidationsQueue queue;
+
+    private final boolean collectionDeleteBeforeAppend;
+
+    private final CollectionIO aclCollectionIO;
+
+    private final CollectionIO scalarCollectionIO;
 
     public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource,
             ClusterNodeHandler clusterNodeHandler, JDBCConnectionPropagator connectionPropagator, boolean noSharing)
@@ -90,6 +101,10 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } else {
             queue = null;
         }
+        // defaults to true in 7.10 and earlier
+        collectionDeleteBeforeAppend = !Framework.isBooleanPropertyFalse(COLLECTION_DELETE_BEFORE_APPEND_PROP);
+        aclCollectionIO = new ACLCollectionIO(collectionDeleteBeforeAppend);
+        scalarCollectionIO = new ScalarCollectionIO(collectionDeleteBeforeAppend);
     }
 
     @Override
@@ -146,7 +161,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     protected CollectionIO getCollectionIO(String tableName) {
-        return tableName.equals(model.ACL_TABLE_NAME) ? ACLCollectionIO.INSTANCE : ScalarCollectionIO.INSTANCE;
+        return tableName.equals(model.ACL_TABLE_NAME) ? aclCollectionIO : scalarCollectionIO;
     }
 
     @Override
@@ -479,7 +494,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             String tableName = en.getKey();
             List<Row> rows = en.getValue();
             if (model.isCollectionFragment(tableName)) {
-                insertCollectionRows(tableName, rows);
+                List<RowUpdate> rowus = new ArrayList<>(rows.size());
+                for (Row row : rows) {
+                    rowus.add(new RowUpdate(row));
+                }
+                insertCollectionRows(tableName, rowus);
             } else {
                 insertSimpleRows(tableName, rows);
             }
@@ -587,8 +606,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Updates multiple collection rows, all for the same table.
      */
-    protected void insertCollectionRows(String tableName, List<Row> rows) throws StorageException {
-        if (rows.isEmpty()) {
+    protected void insertCollectionRows(String tableName, List<RowUpdate> rowus) throws StorageException {
+        if (rowus.isEmpty()) {
             return;
         }
         String sql = sqlInfo.getInsertSql(tableName);
@@ -597,7 +616,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             try {
-                io.executeInserts(ps, rows, columns, supportsBatchUpdates, sql, this);
+                io.executeInserts(ps, rowus, columns, supportsBatchUpdates, sql, this);
             } finally {
                 closeStatement(ps);
             }
@@ -696,14 +715,14 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     protected void updateCollectionRows(String tableName, List<RowUpdate> rowus) throws StorageException {
-        Set<Serializable> ids = new HashSet<Serializable>(rowus.size());
-        List<Row> rows = new ArrayList<Row>(rowus.size());
+        Set<Serializable> deleteIds = new HashSet<>();
         for (RowUpdate rowu : rowus) {
-            ids.add(rowu.row.id);
-            rows.add(rowu.row);
+            if (rowu.pos == -1 || collectionDeleteBeforeAppend) {
+                deleteIds.add(rowu.row.id);
+            }
         }
-        deleteRows(tableName, ids);
-        insertCollectionRows(tableName, rows);
+        deleteRows(tableName, deleteIds);
+        insertCollectionRows(tableName, rowus);
     }
 
     /**

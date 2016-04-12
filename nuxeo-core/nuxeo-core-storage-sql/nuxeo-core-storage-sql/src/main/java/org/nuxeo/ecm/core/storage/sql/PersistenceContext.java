@@ -283,17 +283,10 @@ public class PersistenceContext {
                 pristine.put(rowId, fragment);
                 break;
             case MODIFIED:
-                if (fragment.row.isCollection()) {
-                    if (((CollectionFragment) fragment).isDirty()) {
-                        batch.updates.add(new RowUpdate(fragment.row, null));
-                        fragmentsToClearDirty.add(fragment);
-                    }
-                } else {
-                    Collection<String> keys = ((SimpleFragment) fragment).getDirtyKeys();
-                    if (!keys.isEmpty()) {
-                        batch.updates.add(new RowUpdate(fragment.row, keys));
-                        fragmentsToClearDirty.add(fragment);
-                    }
+                RowUpdate rowu = fragment.getRowUpdate();
+                if (rowu != null) {
+                    batch.updates.add(rowu);
+                    fragmentsToClearDirty.add(fragment);
                 }
                 fragment.setPristine();
                 // modified map cleared at end of loop

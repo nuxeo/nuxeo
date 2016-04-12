@@ -69,11 +69,30 @@ public interface RowMapper {
 
         public final Row row;
 
+        // used for simple fragments
         public final Collection<String> keys;
 
+        // used for collection fragment right push, the pos at which to start to insert
+        // if -1 then a full update must be done
+        public final int pos;
+
+        /** Constructor for simple fragment update. */
         public RowUpdate(Row row, Collection<String> keys) {
             this.row = row;
             this.keys = keys;
+            pos = -1;
+        }
+
+        /** Constructor for collection fragment full update. */
+        public RowUpdate(Row row) {
+            this(row, -1);
+        }
+
+        /** Constructor for collection fragment right push update. */
+        public RowUpdate(Row row, int pos) {
+            this.row = row;
+            keys = null;
+            this.pos = pos;
         }
 
         @Override
