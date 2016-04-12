@@ -349,10 +349,19 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             logQuery(query);
         }
-        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(init(query), 0)) {
-            return StreamSupport.stream(page.spliterator(), false)
-                                .map(record -> record.getContent(new StateHandle()).get())
-                                .collect(Collectors.toList());
+        return findAll(init(query), 1);
+    }
+
+    private List<State> findAll(QueryDefinition query, long start) {
+        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(query, start)) {
+            List<State> states = new ArrayList<>((int) (page.getTotalSize() - start + 1));
+            for (DocumentRecord record: page) {
+                states.add(record.getContent(new StateHandle()).get());
+            }
+            if (page.hasNextPage()) {
+                states.addAll(findAll(query, start + page.getPageSize()));
+            }
+            return states;
         }
     }
 
