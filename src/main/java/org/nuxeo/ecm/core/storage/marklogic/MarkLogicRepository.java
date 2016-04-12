@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClientFactory.Authentication;
+import com.marklogic.client.ResourceNotFoundException;
 import com.marklogic.client.document.DocumentMetadataPatchBuilder.PatchHandle;
 import com.marklogic.client.document.DocumentPage;
 import com.marklogic.client.document.DocumentRecord;
@@ -124,7 +125,11 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             log.trace("MarkLogic: READ " + id);
         }
-        return markLogicClient.newXMLDocumentManager().read(ID_FORMATTER.apply(id), new StateHandle()).get();
+        try {
+            return markLogicClient.newXMLDocumentManager().read(ID_FORMATTER.apply(id), new StateHandle()).get();
+        } catch (ResourceNotFoundException e) {
+            return null;
+        }
     }
 
     @Override
@@ -355,7 +360,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     private List<State> findAll(QueryDefinition query, long start) {
         try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(query, start)) {
             List<State> states = new ArrayList<>((int) (page.getTotalSize() - start + 1));
-            for (DocumentRecord record: page) {
+            for (DocumentRecord record : page) {
                 states.add(record.getContent(new StateHandle()).get());
             }
             if (page.hasNextPage()) {
