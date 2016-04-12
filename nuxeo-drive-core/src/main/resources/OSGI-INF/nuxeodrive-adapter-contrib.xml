@@ -56,4 +56,9 @@
 
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService"
+    point="configuration">
+    <property name="org.nuxeo.drive.permissionCheckOptimized">false</property>
+  </extension>
+
 </component>

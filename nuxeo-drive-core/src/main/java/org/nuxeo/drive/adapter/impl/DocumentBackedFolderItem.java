@@ -39,6 +39,7 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FolderItem}.
@@ -187,8 +188,18 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     protected void initialize(DocumentModel doc) {
         this.name = docTitle;
         this.folder = true;
-        this.canCreateChild = !doc.hasFacet(FacetNames.PUBLISH_SPACE)
-                && doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN);
+        this.canCreateChild = !doc.hasFacet(FacetNames.PUBLISH_SPACE);
+        if (canCreateChild) {
+            if (Framework.getService(ConfigurationService.class).isBooleanPropertyTrue(
+                    PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
+                // In optimized mode consider that canCreateChild <=> canRename because canRename <=> WriteProperties
+                // and by default WriteProperties <=> Write <=> AddChildren
+                this.canCreateChild = canRename;
+            } else {
+                // In non optimized mode check AddChildren
+                this.canCreateChild = doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN);
+            }
+        }
     }
 
     protected FileManager getFileManager() {

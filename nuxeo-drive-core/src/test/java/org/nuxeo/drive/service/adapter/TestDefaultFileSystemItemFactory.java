@@ -373,6 +373,84 @@ public class TestDefaultFileSystemItemFactory {
     }
 
     @Test
+    @LocalDeploy({ "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permissions-contrib.xml",
+            "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permission-check-optimized-contrib.xml" })
+    public void testPermissionCheckOptimized() {
+        setPermission(syncRootFolder, "joe", SecurityConstants.READ, true);
+        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+            log.trace("Register the sync root for Joe's account");
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
+            folder = joeSession.getDocument(folder.getRef());
+
+            log.trace("Check canDelete/canCreateChild flags on folder for user joe with Read granted on parent folder");
+            FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+            assertFalse(folderItem.getCanDelete());
+            assertFalse(folderItem.getCanCreateChild());
+
+            log.trace("Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
+            setPermission(folder, "joe", SecurityConstants.WRITE, true);
+            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+            // True here as optimized => no explicit check of AddChildren on folder nor RemoveChildren on parent folder
+            assertTrue(folderItem.getCanDelete());
+            assertTrue(folderItem.getCanCreateChild());
+
+            log.trace("Check canDelete flag on folder for user joe with Write (thus RemoveChildren) granted on parent folder");
+            setPermission(syncRootFolder, "joe", SecurityConstants.WRITE, true);
+            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+            // Still true with RemoveChildren on the parent folder
+            assertTrue(folderItem.getCanDelete());
+
+            log.trace("Check canCreateChild flag on folder for user joe with AddChildren granted on folder");
+            setPermission(folder, "joe", SecurityConstants.ADD_CHILDREN, true);
+            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+            // Still true with AddChildren on the folder
+            assertTrue(folderItem.getCanCreateChild());
+        }
+        resetPermissions(folder, "joe");
+        resetPermissions(syncRootFolder, "joe");
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permissions-contrib.xml")
+    public void testPermissionCheckNotOptimized() {
+        setPermission(syncRootFolder, "joe", SecurityConstants.READ, true);
+        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
+            log.trace("Register the sync root for Joe's account");
+            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
+            folder = joeSession.getDocument(folder.getRef());
+
+            log.trace("Check canDelete/canCreateChild flags on folder for user joe with Read granted on parent folder");
+            FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+            assertFalse(folderItem.getCanDelete());
+            assertFalse(folderItem.getCanCreateChild());
+
+            log.trace("Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
+            setPermission(folder, "joe", SecurityConstants.WRITE, true);
+            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+            // False here as not optimized => explicit check of RemoveChildren on parent folder and AddChildren on
+            // folder
+            assertFalse(folderItem.getCanDelete());
+            assertFalse(folderItem.getCanCreateChild());
+
+            log.trace("Check canDelete flag on folder for user joe with Write (thus RemoveChildren) granted on parent folder");
+            setPermission(syncRootFolder, "joe", SecurityConstants.WRITE, true);
+            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+            // True here thanks to RemoveChildren on the parent folder
+            assertTrue(folderItem.getCanDelete());
+            // Still false here because of missing AddChildren on folder
+            assertFalse(folderItem.getCanCreateChild());
+
+            log.trace("Check canCreateChild flag on folder for user joe with AddChildren granted on folder");
+            setPermission(folder, "joe", SecurityConstants.ADD_CHILDREN, true);
+            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+            // True here thanks to AddChildren on folder
+            assertTrue(folderItem.getCanCreateChild());
+        }
+        resetPermissions(folder, "joe");
+        resetPermissions(syncRootFolder, "joe");
+    }
+
+    @Test
     public void testExists() throws Exception {
 
         // Bad id

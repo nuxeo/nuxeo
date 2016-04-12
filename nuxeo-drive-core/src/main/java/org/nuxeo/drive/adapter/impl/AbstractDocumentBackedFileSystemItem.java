@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FileSystemItem}.
@@ -53,6 +54,8 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(AbstractDocumentBackedFileSystemItem.class);
+
+    protected static final String PERMISSION_CHECK_OPTIMIZED_PROPERTY = "org.nuxeo.drive.permissionCheckOptimized";
 
     /** Backing {@link DocumentModel} attributes */
     protected String repositoryName;
@@ -171,8 +174,13 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
                 && docSession.hasPermission(doc.getRef(), SecurityConstants.WRITE_PROPERTIES);
         DocumentRef parentRef = doc.getParentRef();
         canDelete = !doc.hasFacet(FacetNames.PUBLISH_SPACE) && !doc.isProxy()
-                && docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE)
-                && (parentRef == null || docSession.hasPermission(parentRef, SecurityConstants.REMOVE_CHILDREN));
+                && docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE);
+        if (canDelete
+                && Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(
+                        PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
+            // In non optimized mode check RemoveChildren on the parent
+            canDelete = parentRef == null || docSession.hasPermission(parentRef, SecurityConstants.REMOVE_CHILDREN);
+        }
         lockInfo = doc.getLockInfo();
 
         String parentPath;
