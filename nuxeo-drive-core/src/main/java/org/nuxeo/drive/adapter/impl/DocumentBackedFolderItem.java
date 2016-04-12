@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FolderItem}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemItem implements FolderItem {
@@ -176,7 +176,14 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     protected void initialize(DocumentModel doc) throws ClientException {
         this.name = docTitle;
         this.folder = true;
-        this.canCreateChild = doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN);
+        if (Framework.isBooleanPropertyTrue(PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
+            // In optimized mode consider that canCreateChild <=> canRename because canRename <=> WriteProperties
+            // and by default WriteProperties <=> Write <=> AddChildren
+            this.canCreateChild = canRename;
+        } else {
+            // In non optimized mode check AddChildren
+            this.canCreateChild = doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN);
+        }
     }
 
     protected FileManager getFileManager() {

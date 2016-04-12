@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FileSystemItem}.
- * 
+ *
  * @author Antoine Taillefer
  * @see DocumentBackedFileItem
  * @see DocumentBackedFolderItem
@@ -53,6 +53,8 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(AbstractDocumentBackedFileSystemItem.class);
+
+    protected static final String PERMISSION_CHECK_OPTIMIZED_PROPERTY = "org.nuxeo.drive.permissionCheckOptimized";
 
     /** Backing {@link DocumentModel} attributes */
     protected String repositoryName;
@@ -169,8 +171,12 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         CoreSession docSession = doc.getCoreSession();
         canRename = docSession.hasPermission(doc.getRef(), SecurityConstants.WRITE_PROPERTIES);
         DocumentRef parentRef = doc.getParentRef();
-        canDelete = docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE)
-                && (parentRef == null || docSession.hasPermission(parentRef, SecurityConstants.REMOVE_CHILDREN));
+        canDelete = docSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE);
+        if (canDelete
+                && !Framework.isBooleanPropertyTrue(PERMISSION_CHECK_OPTIMIZED_PROPERTY)) {
+            // In non optimized mode check RemoveChildren on the parent
+            canDelete = parentRef == null || docSession.hasPermission(parentRef, SecurityConstants.REMOVE_CHILDREN);
+        }
         lockInfo = doc.getLockInfo();
 
         String parentPath;
