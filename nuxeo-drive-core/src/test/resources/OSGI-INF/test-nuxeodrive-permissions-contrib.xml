@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.permissions.test">
+
+  <require>org.nuxeo.ecm.core.security.defaultPermissions</require>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService" point="permissions">
+
+    <permission name="Write">
+      <remove>AddChildren</remove>
+    </permission>
+
+  </extension>
+
+</component>
