@@ -188,8 +188,8 @@ public class TestPermissionHierarchyFileSystemChanges {
     /**
      * When an unregistered synchronization root can still be adapted as a FileSystemItem, for example in the case of
      * the "My Docs" virtual folder in the permission based hierarchy implementation, checks that the related
-     * {@link FileSystemItemChange} computed by the {@link AuditChangeFinder} contains a non null {@code fileSystemItem}
-     * attribute, that is to be used by the client.
+     * {@link FileSystemItemChange} computed by the {@link AuditChangeFinder} contains a null {@code fileSystemItem}
+     * attribute, see https://jira.nuxeo.com/browse/NXP-16478.
      */
     @Test
     public void testAdaptableUnregisteredSyncRootChange() throws InterruptedException {
@@ -240,7 +240,7 @@ public class TestPermissionHierarchyFileSystemChanges {
             assertEquals(1, changes.size());
             FileSystemItemChange change = changes.get(0);
             assertEquals("test#" + userWorkspace1.getId(), change.getFileSystemItemId());
-            assertEquals("My Docs", change.getFileSystemItemName());
+            assertNull(change.getFileSystemItemName());
             assertNull(change.getFileSystemItem());
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
@@ -263,7 +263,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * <pre>
      * Server side hierarchy for the test
      * ==================================
-     * 
+     *
      * /user1 (user workspace)
      *   |-- user1Folder1       (registered as a synchronization root with Everything permission for user2)
      *   |-- user1Folder2       (registered as a synchronization root with ReadWrite permission only for user2)
@@ -381,14 +381,14 @@ public class TestPermissionHierarchyFileSystemChanges {
             FileSystemItemChange change = changes.get(0);
             assertEquals("securityUpdated", change.getEventId());
             assertEquals("test#" + user1File2.getId(), change.getFileSystemItemId());
-            assertEquals("user1File2.txt", change.getFileSystemItemName());
+            assertNull(change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since parent is not
             assertNull(change.getFileSystemItem());
 
             change = changes.get(1);
             assertEquals("securityUpdated", change.getEventId());
             assertEquals("test#" + user1Folder2.getId(), change.getFileSystemItemId());
-            assertEquals("user1Folder2", change.getFileSystemItemName());
+            assertNull(change.getFileSystemItemName());
             // Not adaptable as a FileSystemItem since no Read permission
             assertNull(change.getFileSystemItem());
         } finally {
