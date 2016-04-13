@@ -35,16 +35,19 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
 
     protected boolean blockNotifications = true;
 
-    protected boolean bulkMode = false;
+    // @since 8.3
+    protected boolean blockIndexing = false;
 
-    protected EventServiceAdmin eventAdmin = null;
+    protected boolean bulkMode = false;
 
     protected static final String NOTIF_LISTENER = "notificationListener";
 
     protected static final String MIME_LISTENER = "mimetypeIconUpdater";
 
+    protected static final String INDEXING_LISTENER = "elasticSearchInlineListener";
+
     public EventServiceConfiguratorFilter(Boolean blockSyncPostCommitProcessing, Boolean blockAsyncProcessing,
-            Boolean blockMimeTypeDetection, Boolean bulkMode) {
+                                          Boolean blockMimeTypeDetection, Boolean blockIndexing, Boolean bulkMode) {
         if (blockAsyncProcessing != null) {
             this.blockAsyncProcessing = blockAsyncProcessing;
         }
@@ -54,48 +57,45 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
         if (blockMimeTypeDetection != null) {
             this.blockMimeTypeDetection = blockMimeTypeDetection;
         }
+        if (blockIndexing != null) {
+            this.blockIndexing = blockIndexing;
+        }
         if (bulkMode != null) {
             this.bulkMode = bulkMode;
         }
     }
 
     public void handleBeforeImport() {
-        eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
-
-        if (eventAdmin != null) {
-            if (true == bulkMode) {
-                eventAdmin.setBulkModeEnabled(true);
-            }
-            if (true == blockMimeTypeDetection) {
-                eventAdmin.setListenerEnabledFlag(MIME_LISTENER, false);
-            }
-            if (true == blockNotifications) {
-                eventAdmin.setListenerEnabledFlag(NOTIF_LISTENER, false);
-            }
-            if (true == blockAsyncProcessing) {
-                eventAdmin.setBlockAsyncHandlers(true);
-            } else {
-                eventAdmin.setBlockAsyncHandlers(false);
-            }
-            if (true == blockSyncPostCommitProcessing) {
-                eventAdmin.setBlockSyncPostCommitHandlers(true);
-            } else {
-                eventAdmin.setBlockSyncPostCommitHandlers(false);
-            }
-        } else {
-            log.warn("EventServiceAdmin service was not found ... Possible that the import process will not proceed ok");
+        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        if (eventAdmin == null) {
+            log.error("EventServiceAdmin service was not found ... Possible that the import process will not proceed ok");
+            return;
+        }
+        eventAdmin.setBulkModeEnabled(bulkMode);
+        eventAdmin.setBlockAsyncHandlers(blockAsyncProcessing);
+        eventAdmin.setBlockSyncPostCommitHandlers(blockSyncPostCommitProcessing);
+        if (blockMimeTypeDetection) {
+            eventAdmin.setListenerEnabledFlag(MIME_LISTENER, false);
+        }
+        if (blockNotifications) {
+            eventAdmin.setListenerEnabledFlag(NOTIF_LISTENER, false);
+        }
+        if (blockIndexing) {
+            eventAdmin.setListenerEnabledFlag(INDEXING_LISTENER, false);
         }
     }
 
     public void handleAfterImport(Exception e) {
+        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
         if (eventAdmin != null) {
+            log.info("Restoring default event listeners and bulk mode");
             eventAdmin.setBulkModeEnabled(false);
             eventAdmin.setBlockAsyncHandlers(false);
             eventAdmin.setBlockSyncPostCommitHandlers(false);
             eventAdmin.setListenerEnabledFlag(NOTIF_LISTENER, true);
             eventAdmin.setListenerEnabledFlag(MIME_LISTENER, true);
+            eventAdmin.setListenerEnabledFlag(INDEXING_LISTENER, true);
         }
-        eventAdmin = null;
     }
 
     public boolean getBlockNotifications() {
@@ -108,7 +108,7 @@ public class EventServiceConfiguratorFilter implements ImporterFilter {
 
     public String toString() {
         return String.format(
-                "blockSyncPostCommitProcessing set %b, blockAsyncProcessing set %b, blockMimeTypeDetection set %b and blockNotifications set %b",
-                blockSyncPostCommitProcessing, blockAsyncProcessing, blockMimeTypeDetection, blockNotifications);
+                "blockSyncPostCommitProcessing set %b, blockAsyncProcessing set %b, blockMimeTypeDetection set %b, blockNotifications set %b, blockIndexing set %b, bulkMode set %b",
+                blockSyncPostCommitProcessing, blockAsyncProcessing, blockMimeTypeDetection, blockNotifications, blockIndexing, bulkMode);
     }
 }

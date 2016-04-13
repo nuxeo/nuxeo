@@ -49,7 +49,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     private ImporterLogger importerLogger;
 
     private int transactionTimeout = 0;
-    
+
     private String repositoryName;
 
     @Override
@@ -89,7 +89,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
                 batchSize).nbThreads(noImportingThreads).repository(repositoryName).build();
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
         runner.setTransactionTimeout(transactionTimeout);
-        ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, true);
+        ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, false, true);
         runner.addFilter(filter);
         runner.setFactory(getDocumentModelFactory());
         return executor.run(runner, interactive);
@@ -205,9 +205,9 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     public Class<? extends ImporterDocumentModelFactory> getDocModelFactoryClass() {
         return docModelFactoryClass;
     }
-    
+
     /**
-     *@since 7.1 
+     *@since 7.1
      * @param repositoryName
      */
     @Override

@@ -55,7 +55,8 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
             @QueryParam("interactive") Boolean interactive, @QueryParam("nbNodes") Integer nbNodes,
             @QueryParam("fileSizeKB") Integer fileSizeKB, @QueryParam("onlyText") Boolean onlyText,
             @QueryParam("blockSyncPostCommitProcessing") Boolean blockSyncPostCommitProcessing,
-            @QueryParam("blockAsyncProcessing") Boolean blockAsyncProcessing, @QueryParam("bulkMode") Boolean bulkMode,
+            @QueryParam("blockAsyncProcessing") Boolean blockAsyncProcessing,
+            @QueryParam("blockIndexing") Boolean blockIndexing, @QueryParam("bulkMode") Boolean bulkMode,
             @QueryParam("transactionTimeout") Integer transactionTimeout) {
 
         if (onlyText == null) {
@@ -75,7 +76,7 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(blockSyncPostCommitProcessing, blockAsyncProcessing,
-                !onlyText, bulkMode);
+                !onlyText, blockIndexing, bulkMode);
         runner.addFilter(filter);
         if (transactionTimeout != null) {
             Framework.getService(DefaultImporterService.class).setTransactionTimeout(transactionTimeout);
