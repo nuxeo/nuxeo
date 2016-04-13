@@ -90,8 +90,8 @@ public class SuggestUserEntries {
     /**
      * @since 8.3
      */
-    @Param(name = "hidePowerGroup", required = false, description = "If set, remove power users group from the suggestions")
-    protected boolean hidePowerGroup;
+    @Param(name = "hidePowerUsersGroup", required = false, description = "If set, remove power users group from the suggestions")
+    protected boolean hidePowerUsersGroup;
 
     @Param(name = "userSuggestionMaxSearchResults", required = false)
     protected Integer userSuggestionMaxSearchResults;
@@ -199,7 +199,7 @@ public class SuggestUserEntries {
                             }
                         }
                     }
-                    if (hidePowerGroup) {
+                    if (hidePowerUsersGroup) {
                         if (POWERUSERS.equals(group.getId())) {
                             break groupLoop;
                         }
