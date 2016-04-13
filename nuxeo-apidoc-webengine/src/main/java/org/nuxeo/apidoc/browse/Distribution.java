@@ -441,4 +441,7 @@ public class Distribution extends ModuleRoot {
         return SecurityHelper.canEditDocumentation(principal);
     }
 
+    public boolean showCurrentDistribution() {
+        return !Framework.isBooleanPropertyTrue("org.nuxeo.explorer.hide.current.distribution");
+    }
 }
