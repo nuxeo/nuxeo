@@ -38,7 +38,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.drive.NuxeoDriveConstants;
@@ -411,8 +410,9 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     protected FileSystemItem getFileSystemItem(DocumentModel doc) {
         // Force parentItem to null to avoid computing ancestors
+        // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
         FileSystemItem fileSystemItem = Framework.getLocalService(FileSystemItemAdapterService.class)
-                                                 .getFileSystemItem(doc, null);
+                                                 .getFileSystemItem(doc, null, false, false, false);
         if (fileSystemItem == null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Document %s (%s) is not adaptable as a FileSystemItem.",

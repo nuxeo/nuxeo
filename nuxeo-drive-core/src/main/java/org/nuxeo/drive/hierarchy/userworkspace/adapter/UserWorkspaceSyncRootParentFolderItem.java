@@ -85,7 +85,9 @@ public class UserWorkspaceSyncRootParentFolderItem extends AbstractVirtualFolder
                     // Don't include user workspace (ie.top level folder) if
                     // registered as a synchronization root to avoid recursion
                     if (!UserWorkspaceHelper.isUserWorkspace(doc)) {
-                        FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this);
+                        // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+                        FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this, false,
+                                false, false);
                         if (child == null) {
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format(
