@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.work.api;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.work.MemoryWorkQueuing;
 import org.nuxeo.ecm.core.work.WorkQueuing;
 
 /**
@@ -28,17 +29,9 @@ import org.nuxeo.ecm.core.work.WorkQueuing;
  * @since 5.8
  */
 @XObject("queuing")
-public class WorkQueuingImplDescriptor {
+public class WorkQueuingDescriptor {
 
     @XNode("@class")
-    public Class<?> klass;
-
-    @SuppressWarnings("unchecked")
-    public Class<? extends WorkQueuing> getWorkQueuingClass() {
-        if (!(WorkQueuing.class.isAssignableFrom(klass))) {
-            throw new RuntimeException("Invalid class: " + klass.getName());
-        }
-        return (Class<? extends WorkQueuing>) klass;
-    }
+    public Class<? extends WorkQueuing> klass = MemoryWorkQueuing.class;
 
 }

@@ -26,11 +26,13 @@
     <appender-ref ref="FILE" />
   </category>
   
+<!-- 
   <category name="org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedConnection">
     <priority value="TRACE" />
     <appender-ref ref="FILE" />
   </category>
-  
+-->
+
 <!--
   <category name="org.nuxeo.runtime">
     <priority value="INFO" />

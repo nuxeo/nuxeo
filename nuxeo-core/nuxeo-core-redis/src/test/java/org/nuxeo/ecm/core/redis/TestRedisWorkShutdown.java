@@ -1,5 +1,7 @@
 package org.nuxeo.ecm.core.redis;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +25,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -43,8 +46,10 @@ public class TestRedisWorkShutdown {
 
         private static final long serialVersionUID = 1L;
 
+
         MyWork(String id) {
             super(id);
+            setProgress(new Progress(0,2));
         }
 
         @Override
@@ -52,16 +57,28 @@ public class TestRedisWorkShutdown {
             return "waiting work";
         }
 
+        Progress nextProgress() {
+            Progress progress = getProgress();
+            progress = new Progress(progress.getCurrent()+1, progress.getTotal());
+            setProgress(progress);
+            return progress;
+        }
         @Override
         public void work() {
-            try {
-                log.debug(id + " waiting for shutdown");
-                canShutdown.countDown();
-                canProceed.await(1, TimeUnit.MINUTES);
-                Assert.assertThat(isSuspending(), Matchers.is(true));
-            } catch (InterruptedException cause) {
-                Thread.currentThread()
-                        .interrupt();
+            Progress progress = nextProgress();
+            if (progress.getCurrent() < progress.getTotal()) {
+                try {
+                    log.debug(id + " waiting for shutdown");
+                    canShutdown.countDown();
+                    canProceed.await(1, TimeUnit.MINUTES);
+                    Assert.assertTrue(isSuspending());
+                    suspended();
+                } catch (InterruptedException cause) {
+                    Thread.currentThread()
+                            .interrupt();
+                }
+            } else {
+                ;
             }
         }
 
@@ -80,16 +97,28 @@ public class TestRedisWorkShutdown {
 
     @Test
     public void worksArePersisted() throws InterruptedException {
+        assertMetrics(0, 0, 0, 0);
         try {
+            // given two running works
             works.schedule(new MyWork("first"));
             works.schedule(new MyWork("second"));
             canShutdown.await(10, TimeUnit.SECONDS);
+            assertMetrics(0, 2, 0, 0);
+            // when I shutdown
             works.shutdown(0, TimeUnit.SECONDS);
         } finally {
+            // then works are suspending
             canProceed.countDown();
         }
+        // then works are re-scheduled
         List<Work> scheduled = new ScheduledRetriever().listScheduled();
         Assert.assertThat(scheduled.size(), Matchers.is(2));
+        canProceed = new CountDownLatch(1);
+        // when I reboot
+        works.init();
+        Assert.assertTrue(works.awaitCompletion(10, TimeUnit.SECONDS));
+        // works are completed
+        assertMetrics(0, 0, 2, 2);
     }
 
     class ScheduledRetriever {

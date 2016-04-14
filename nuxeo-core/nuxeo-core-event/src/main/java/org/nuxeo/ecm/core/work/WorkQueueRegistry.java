@@ -34,9 +34,9 @@ import org.nuxeo.runtime.model.ContributionFragmentRegistry;
  *
  * @since 5.6
  */
-public class WorkQueueDescriptorRegistry extends ContributionFragmentRegistry<WorkQueueDescriptor> {
+public class WorkQueueRegistry extends ContributionFragmentRegistry<WorkQueueDescriptor> {
 
-    private static final Log log = LogFactory.getLog(WorkQueueDescriptorRegistry.class);
+    private static final Log log = LogFactory.getLog(WorkQueueRegistry.class);
 
     protected Map<String, WorkQueueDescriptor> registry = new HashMap<String, WorkQueueDescriptor>();
 

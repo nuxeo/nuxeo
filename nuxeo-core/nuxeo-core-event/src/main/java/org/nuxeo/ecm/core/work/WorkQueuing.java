@@ -45,11 +45,6 @@ import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 public interface WorkQueuing {
 
     /**
-     * Initializes queuing datastore
-     */
-    void init();
-
-    /**
      * Starts up this {@link WorkQueuing} and attempts to resume work previously suspended and saved at shutdown time.
      * @return
      */

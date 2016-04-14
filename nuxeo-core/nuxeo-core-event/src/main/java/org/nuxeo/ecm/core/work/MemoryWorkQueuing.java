@@ -46,11 +46,6 @@ public class MemoryWorkQueuing implements WorkQueuing {
     }
 
     @Override
-    public void init() {
-
-    }
-
-    @Override
     public MemoryBlockingQueue init(WorkQueueDescriptor config) {
         int capacity = config.getCapacity();
         if (capacity <= 0) {

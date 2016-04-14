@@ -155,11 +155,10 @@ public class RedisWorkQueuing implements WorkQueuing {
 
     public RedisWorkQueuing(Listener listener) {
         this.listener = listener;
-
+        loadConfig();
     }
 
-    @Override
-    public void init() {
+    void loadConfig() {
         RedisAdmin admin = Framework.getService(RedisAdmin.class);
         redisNamespace = admin.namespace("work");
         try {

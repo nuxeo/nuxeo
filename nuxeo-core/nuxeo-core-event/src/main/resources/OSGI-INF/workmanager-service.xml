@@ -52,7 +52,7 @@
       The class must be a subclass of org.nuxeo.ecm.core.work.WorkQueuing.
     </documentation>
 
-    <object class="org.nuxeo.ecm.core.work.api.WorkQueuingImplDescriptor" />
+    <object class="org.nuxeo.ecm.core.work.api.WorkQueuingDescriptor" />
   </extension-point>
 
 </component>
