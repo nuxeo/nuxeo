@@ -175,11 +175,6 @@ public class RedisWorkQueuing implements WorkQueuing {
     }
 
     @Override
-    public void shutdownWorkQueue(String queueId) {
-        allQueued.remove(queueId);
-    }
-
-    @Override
     public boolean workSchedule(String queueId, Work work) {
         return getWorkQueue(queueId).offer(new WorkHolder(work));
     }
@@ -366,6 +361,18 @@ public class RedisWorkQueuing implements WorkQueuing {
     @Override
     public State getWorkState(String workId) {
         return getWorkStateInfo(workId);
+    }
+
+    @Override
+    public int setSuspending(String queueId) {
+        try {
+            int n = suspendScheduledWork(queueId);
+            log.info("Suspending " + n + " work instances from queue: " + queueId);
+            allQueued.remove(queueId);
+            return n;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

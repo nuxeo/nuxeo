@@ -58,14 +58,6 @@ public interface WorkQueuing {
     BlockingQueue<Runnable> initWorkQueue(String queueId);
 
     /**
-     * Shuts down a queue.
-     *
-     * @param queueId
-     * @since 8.3
-     */
-    void shutdownWorkQueue(String queueId);
-
-    /**
      * Submit a work to the {@link ThreadPoolExecutor} and put it in the scheduled set.
      *
      * @param queueId the queue id
@@ -168,6 +160,13 @@ public interface WorkQueuing {
      * @since 5.8
      */
     int count(String queueId, State state);
+
+    /**
+     * Notifies this queuing that all work should be suspending.
+     *
+     * @return the number of scheduled instances removed from queue
+     */
+    int setSuspending(String queueId);
 
     /**
      * Finds which queues have completed work.
