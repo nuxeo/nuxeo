@@ -329,8 +329,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(
                                 "Adapted document '%s' (path: %s) to item with path %s with factory %s",
-                                doc.getTitle(), doc.getPathAsString(), fileSystemItem.getPath(),
-                                factory.getFactory().getName()));
+                                doc.getTitle(), doc.getPathAsString(), fileSystemItem.getPath(), factory.getFactory()
+                                                                                                        .getName()));
                     }
                     return fileSystemItem;
                 }

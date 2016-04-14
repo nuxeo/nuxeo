@@ -126,8 +126,8 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
         Principal principal = doc.getCoreSession().getPrincipal();
         String docCreator = (String) doc.getPropertyValue("dc:creator");
         if (principal.getName().equals(docCreator)) {
-            FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(userSyncRootParentFactoryName).getVirtualFolderItem(
-                    principal);
+            FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(userSyncRootParentFactoryName)
+                                                             .getVirtualFolderItem(principal);
             if (parent == null) {
                 throw new ClientException(String.format(
                         "Cannot find the parent of document %s: virtual folder from factory %s.", doc.getId(),
