@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of the top level {@link FolderItem}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
@@ -81,7 +81,9 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
                     continue;
                 }
                 DocumentModel doc = session.getDocument(idRef);
-                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this);
+                // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this, false, false,
+                        false);
                 if (child == null) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(

@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Permission based implementation of the parent {@link FolderItem} of the user's shared synchronization roots.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
@@ -87,7 +87,9 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
                 // NuxeoDriveManager#getSynchronizationRoots(Principal
                 // principal)
                 if (!session.getPrincipal().getName().equals(doc.getPropertyValue("dc:creator"))) {
-                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this);
+                    // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this, false,
+                            false, false);
                     if (child == null) {
                         if (log.isDebugEnabled()) {
                             log.debug(String.format(

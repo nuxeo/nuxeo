@@ -475,7 +475,9 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
         // to have a special handling for the roots.
         FileSystemItem fsItem = null;
         try {
-            fsItem = Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(doc);
+            // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+            fsItem = Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(doc, false, false,
+                    false);
         } catch (RootlessItemException e) {
             // Can happen for an unregistered synchronization root that cannot
             // be adapted as a FileSystemItem: nothing to do.

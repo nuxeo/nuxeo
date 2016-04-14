@@ -399,8 +399,9 @@ public class NuxeoDriveActions extends InputController implements Serializable {
 
     protected FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
         // Force parentItem to null to avoid computing ancestors
+        // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
         FileSystemItem fileSystemItem = Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(
-                doc, null);
+                doc, null, false, false, false);
         if (fileSystemItem == null) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Document %s (%s) is not adaptable as a FileSystemItem.",
