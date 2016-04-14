@@ -92,8 +92,9 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) {
-        return new UserSyncRootParentFolderItem(getName(), doc, parentItem, folderName, relaxSyncRootConstraint);
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
+        return new UserSyncRootParentFolderItem(getName(), doc, parentItem, folderName, relaxSyncRootConstraint,
+                getLockInfo);
     }
 
     /*------------------- FileSystemItemFactory ------------------- */
@@ -110,6 +111,14 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
         Principal principal = doc.getCoreSession().getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) {
+        Principal principal = doc.getCoreSession().getPrincipal();
+        return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint,
+                getLockInfo);
     }
 
     /*------------------- VirtualFolderItemFactory ------------------- */

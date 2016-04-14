@@ -54,7 +54,12 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
 
     public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) {
-        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
+        this(factoryName, parentItem, doc, relaxSyncRootConstraint, true);
+    }
+
+    public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
         canGetDescendants = false;
     }
 

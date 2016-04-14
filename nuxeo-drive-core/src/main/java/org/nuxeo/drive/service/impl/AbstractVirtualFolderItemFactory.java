@@ -101,6 +101,12 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
+        return getFileSystemItem(doc, false, false, true);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) {
         return null;
     }
 
@@ -117,6 +123,12 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) {
+        return getFileSystemItem(doc, parentItem, false, false, true);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
         return null;
     }
 

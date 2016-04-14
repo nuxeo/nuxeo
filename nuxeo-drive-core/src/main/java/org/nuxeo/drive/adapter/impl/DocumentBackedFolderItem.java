@@ -73,7 +73,12 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     public DocumentBackedFolderItem(String factoryName, DocumentModel doc, boolean relaxSyncRootConstraint) {
-        super(factoryName, doc, relaxSyncRootConstraint);
+        this(factoryName, doc, relaxSyncRootConstraint, true);
+    }
+
+    public DocumentBackedFolderItem(String factoryName, DocumentModel doc, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) {
+        super(factoryName, doc, relaxSyncRootConstraint, getLockInfo);
         initialize(doc);
     }
 
@@ -83,7 +88,12 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     public DocumentBackedFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) {
-        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
+        this(factoryName, parentItem, doc, relaxSyncRootConstraint, true);
+    }
+
+    public DocumentBackedFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
         initialize(doc);
     }
 
