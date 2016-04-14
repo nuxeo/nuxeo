@@ -139,7 +139,9 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             while (nbChildren < pageSize && hasNextPage) {
                 List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
                 for (DocumentModel dmChild : dmChildren) {
-                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this);
+                    // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this, false,
+                            false, false);
                     if (child != null) {
                         children.add(child);
                         nbChildren++;
@@ -203,7 +205,9 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             List<FileSystemItem> descendants = new ArrayList<>();
             for (DocumentModel dmDescendant : dmDescendants) {
                 // TODO: optimize FileSystemItem path computation
-                FileSystemItem descendant = getFileSystemItemAdapterService().getFileSystemItem(dmDescendant);
+                // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+                FileSystemItem descendant = getFileSystemItemAdapterService().getFileSystemItem(dmDescendant, false,
+                        false, false);
                 if (descendant != null) {
                     descendants.add(descendant);
                 }

@@ -906,6 +906,21 @@ public class TestDefaultFileSystemItemFactory {
             assertEquals("joe", lockInfo.getOwner());
             assertNotNull(lockInfo.getCreated());
 
+            // Check that the lock info is not fetched for FileSystemItem adaptation when calling getChildren or
+            // getDescendants
+            FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultSyncRootFolderItemFactory");
+            FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
+            List<FileSystemItem> children = syncRootFolderItem.getChildren();
+            assertEquals(5, children.size());
+            for (FileSystemItem child : children) {
+                assertNull(child.getLockInfo());
+            }
+            children = syncRootFolderItem.getDescendants(10, null);
+            assertEquals(5, children.size());
+            for (FileSystemItem child : children) {
+                assertNull(child.getLockInfo());
+            }
+
             try (CoreSession jackSession = coreFeature.openCoreSession("jack")) {
                 nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, jackSession);
                 DocumentModel jackFile = jackSession.getDocument(file.getRef());
