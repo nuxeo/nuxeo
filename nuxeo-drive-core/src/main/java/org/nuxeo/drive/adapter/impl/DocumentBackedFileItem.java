@@ -54,7 +54,12 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc,
             boolean relaxSyncRootConstraint) throws ClientException {
-        super(factory.getName(), doc, relaxSyncRootConstraint);
+        this(factory, doc, relaxSyncRootConstraint, true);
+    }
+
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
+        super(factory.getName(), doc, relaxSyncRootConstraint, getLockInfo);
         initialize(factory, doc);
     }
 
@@ -65,7 +70,12 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) throws ClientException {
-        super(factory.getName(), parentItem, doc, relaxSyncRootConstraint);
+        this(factory, parentItem, doc, relaxSyncRootConstraint, true);
+    }
+
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
+        super(factory.getName(), parentItem, doc, relaxSyncRootConstraint, getLockInfo);
         initialize(factory, doc);
     }
 

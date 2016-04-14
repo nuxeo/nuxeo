@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Base {@link FileSystemItemFactory} for a virtual {@link FolderItem}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderItemFactory {
@@ -102,6 +102,12 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException {
+        return getFileSystemItem(doc, false, false, true);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) throws ClientException {
         return null;
     }
 
@@ -119,6 +125,12 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) throws ClientException {
+        return getFileSystemItem(doc, parentItem, false, false, true);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
         return null;
     }
 

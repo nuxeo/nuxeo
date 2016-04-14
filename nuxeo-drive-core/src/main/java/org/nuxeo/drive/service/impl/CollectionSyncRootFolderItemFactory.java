@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link FileSystemItemFactory} for a collection synchronization root {@link FolderItem}.
- * 
+ *
  * @author Antoine Taillefer
  * @since 6.0
  */
@@ -101,8 +101,8 @@ public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderIt
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
-        return new CollectionSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
+        return new CollectionSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
     }
 
 }

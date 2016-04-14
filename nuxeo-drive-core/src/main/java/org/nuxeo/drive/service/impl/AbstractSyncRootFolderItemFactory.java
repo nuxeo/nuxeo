@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base {@link FileSystemItemFactory} for a synchronization root {@link FolderItem}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSystemItemFactory {
@@ -147,6 +147,15 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
             throws ClientException {
         return getFileSystemItem(doc, getParentItem(doc), includeDeleted, relaxSyncRootConstraint);
+    }
+
+    /**
+     * Force parent using {@link #getParentItem(DocumentModel)}.
+     */
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) throws ClientException {
+        return getFileSystemItem(doc, getParentItem(doc), includeDeleted, relaxSyncRootConstraint, getLockInfo);
     }
 
 }

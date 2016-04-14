@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * Dummy file implementation of a {@link FileSystemItemFactory} for test purpose.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class DummyFileItemFactory extends DefaultFileSystemItemFactory {
@@ -49,6 +49,12 @@ public class DummyFileItemFactory extends DefaultFileSystemItemFactory {
     }
 
     @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) throws ClientException {
+        return getFileSystemItem(doc);
+    }
+
+    @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException {
         return new DummyFileItem(this, parentItem, doc);
     }
@@ -62,6 +68,12 @@ public class DummyFileItemFactory extends DefaultFileSystemItemFactory {
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) throws ClientException {
+        return getFileSystemItem(doc, parentItem);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
         return getFileSystemItem(doc, parentItem);
     }
 

@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of a collection synchronization root {@link FolderItem}.
- * 
+ *
  * @author Antoine Taillefer
  * @since 6.0
  */
@@ -52,7 +52,12 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem impl
 
     public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) throws ClientException {
-        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
+        this(factoryName, parentItem, doc, relaxSyncRootConstraint, true);
+    }
+
+    public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
     }
 
     protected CollectionSyncRootFolderItem() {

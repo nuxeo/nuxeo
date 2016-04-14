@@ -26,7 +26,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default implementation of a synchronization root {@link FolderItem}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem implements FolderItem {
@@ -40,7 +40,12 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem implemen
 
     public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint) throws ClientException {
-        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
+        this(factoryName, parentItem, doc, relaxSyncRootConstraint, true);
+    }
+
+    public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
         // A sync root can always be deleted since deletion is implemented as
         // unregistration
         this.canDelete = true;

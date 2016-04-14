@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * User workspace based implementation of the parent {@link FolderItem} of the user's synchronization roots.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
@@ -57,7 +57,12 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
 
     public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem,
             String folderName, boolean relaxSyncRootConstraint) throws ClientException {
-        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
+        this(factoryName, doc, parentItem, folderName, relaxSyncRootConstraint, true);
+    }
+
+    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem,
+            String folderName, boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
         name = folderName;
         canRename = false;
         canDelete = false;

@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Dummy folder implementation of a {@link FileSystemItemFactory} for test purpose.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
@@ -54,6 +54,12 @@ public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
     }
 
     @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) throws ClientException {
+        return getFileSystemItem(doc);
+    }
+
+    @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException {
         return new DummyFolderItem(name, parentItem, doc);
     }
@@ -67,6 +73,12 @@ public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) throws ClientException {
+        return getFileSystemItem(doc, parentItem);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
         return getFileSystemItem(doc, parentItem);
     }
 

@@ -23,6 +23,7 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.Lock;
 
 /**
  * Service for creating the right {@link FileSystemItem} adapter depending on the {@link DocumentModel} type or facet.
@@ -72,6 +73,26 @@ public interface FileSystemItemAdapterService {
             throws ClientException;
 
     /**
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
+     * <p>
+     * If {@code includeDeleted} is true no filter is applied on the "deleted" life cycle state, else if the document is
+     * in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * <p>
+     * If {@code relaxSyncRootConstraint} is true no filter is applied on the synchronization root aspect for the
+     * current user.
+     * <p>
+     * If {@code getLockInfo} is true the {@link Lock} is fetched from the {@link DocumentModel} and set on the returned
+     * {@link FileSystemItem}.
+     *
+     * @since 8.3
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
+     *         {@link FileSystemItem}
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, boolean, boolean, boolean)
+     */
+    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) throws ClientException;
+
+    /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id. If
      * the document is in the "deleted" life cycle state it is not considered as adaptable as a {@link FileSystemItem},
      * thus the method returns null.
@@ -109,6 +130,27 @@ public interface FileSystemItemAdapterService {
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) throws ClientException;
+
+    /**
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent with the given
+     * {@code parentItem}.
+     * <p>
+     * If {@code includeDeleted} is true no filter is applied on the "deleted" life cycle state, else if the document is
+     * in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * <p>
+     * If {@code relaxSyncRootConstraint} is true no filter is applied on the synchronization root aspect for the
+     * current user.
+     * <p>
+     * If {@code getLockInfo} is true the {@link Lock} is fetched from the {@link DocumentModel} and set on the returned
+     * {@link FileSystemItem}.
+     *
+     * @since 8.3
+     * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
+     *         {@link FileSystemItem}
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, FolderItem, boolean, boolean, boolean)
+     */
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException;
 
     /**
      * Gets the {@link FileSystemItemFactory} that can handle the the given {@link FileSystemItem} id.

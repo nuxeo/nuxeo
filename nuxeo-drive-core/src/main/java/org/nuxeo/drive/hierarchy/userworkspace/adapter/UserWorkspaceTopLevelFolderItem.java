@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
  * User workspace based implementation of the top level {@link FolderItem}.
  * <p>
  * Implements the following tree:
- * 
+ *
  * <pre>
  * Nuxeo Drive
  *  |-- User workspace child 1
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  *         |-- Synchronized folder 2
  *         |-- ...
  * </pre>
- * 
+ *
  * @author Antoine Taillefer
  */
 public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
@@ -65,7 +65,12 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
 
     public UserWorkspaceTopLevelFolderItem(String factoryName, DocumentModel userWorkspace, String folderName,
             String syncRootParentFactoryName, boolean relaxSyncRootConstraint) throws ClientException {
-        super(factoryName, null, userWorkspace, relaxSyncRootConstraint);
+        this(factoryName, userWorkspace, folderName, syncRootParentFactoryName, relaxSyncRootConstraint, true);
+    }
+
+    public UserWorkspaceTopLevelFolderItem(String factoryName, DocumentModel userWorkspace, String folderName,
+            String syncRootParentFactoryName, boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
+        super(factoryName, null, userWorkspace, relaxSyncRootConstraint, getLockInfo);
         name = folderName;
         canRename = false;
         canDelete = false;

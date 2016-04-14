@@ -29,7 +29,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default {@link FileSystemItemFactory} for a synchronization root {@link FolderItem}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class DefaultSyncRootFolderItemFactory extends AbstractSyncRootFolderItemFactory {
@@ -37,8 +37,8 @@ public class DefaultSyncRootFolderItemFactory extends AbstractSyncRootFolderItem
     /*------------------- AbstractFileSystemItemFactory ---------------------*/
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
-        return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
+        return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/

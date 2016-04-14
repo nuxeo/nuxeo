@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * User workspace based implementation of the {@link TopLevelFolderItemFactory}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory implements TopLevelFolderItemFactory {
@@ -95,9 +95,9 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
         return new UserWorkspaceTopLevelFolderItem(getName(), doc, folderName, syncRootParentFactoryName,
-                relaxSyncRootConstraint);
+                relaxSyncRootConstraint, getLockInfo);
     }
 
     /*---------------------- VirtualFolderItemFactory ---------------*/

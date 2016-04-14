@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * User workspace based implementation of {@link FileSystemItemFactory} for the parent {@link FolderItem} of the user's
  * synchronization roots.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory implements VirtualFolderItemFactory {
@@ -90,8 +90,9 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
-        return new UserSyncRootParentFolderItem(getName(), doc, parentItem, folderName, relaxSyncRootConstraint);
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
+        return new UserSyncRootParentFolderItem(getName(), doc, parentItem, folderName, relaxSyncRootConstraint,
+                getLockInfo);
     }
 
     /*------------------- FileSystemItemFactory ------------------- */
@@ -109,6 +110,14 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
             throws ClientException {
         Principal principal = doc.getCoreSession().getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) throws ClientException {
+        Principal principal = doc.getCoreSession().getPrincipal();
+        return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint,
+                getLockInfo);
     }
 
     /*------------------- VirtualFolderItemFactory ------------------- */

@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Permission based implementation of {@link FileSystemItemFactory} for a synchronization root {@link FolderItem}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory {
@@ -116,8 +116,8 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentId, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
-        return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
+            boolean relaxSyncRootConstraint, boolean getLockInfo) throws ClientException {
+        return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
