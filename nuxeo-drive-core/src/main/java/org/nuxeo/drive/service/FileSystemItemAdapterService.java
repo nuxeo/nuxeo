@@ -51,7 +51,7 @@ public interface FileSystemItemAdapterService {
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
      *         {@link FileSystemItem}
-     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel)
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, boolean)
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted);
 
@@ -66,7 +66,7 @@ public interface FileSystemItemAdapterService {
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
      *         {@link FileSystemItem}
-     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel)
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, boolean, boolean)
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint);
 
@@ -91,29 +91,31 @@ public interface FileSystemItemAdapterService {
             boolean getLockInfo);
 
     /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id. If
-     * the document is in the "deleted" life cycle state it is not considered as adaptable as a {@link FileSystemItem},
-     * thus the method returns null.
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent with the given
+     * {@code parentItem}. If the document is in the "deleted" life cycle state it is not considered as adaptable as a
+     * {@link FileSystemItem}, thus the method returns null.
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
      *         {@link FileSystemItem}
-     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, FolderItem)
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem);
 
     /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id. If
-     * {@code includeDeleted} is true no filter is applied on the "deleted" life cycle state, else if the document is in
-     * this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent with the given
+     * {@code parentItem}. If {@code includeDeleted} is true no filter is applied on the "deleted" life cycle state,
+     * else if the document is in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the
+     * method returns null.
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
      *         {@link FileSystemItem}
-     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, FolderItem, boolean)
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted);
 
     /**
-     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id.
+     * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent with the given
+     * {@code parentItem}.
      * <p>
      * If {@code includeDeleted} is true no filter is applied on the "deleted" life cycle state, else if the document is
      * in this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns null.
@@ -123,7 +125,7 @@ public interface FileSystemItemAdapterService {
      *
      * @return the {@link FileSystemItem} or null if the {@link DocumentModel} is not adaptable as a
      *         {@link FileSystemItem}
-     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
+     * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, FolderItem, boolean, boolean)
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint);

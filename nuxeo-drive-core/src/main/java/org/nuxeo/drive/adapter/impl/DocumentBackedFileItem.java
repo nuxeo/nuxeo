@@ -216,7 +216,8 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         DownloadService downloadService = Framework.getService(DownloadService.class);
         // Remove chars that are invalid in filesystem names
         String escapedFilename = name.replaceAll("(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
-        downloadURL = downloadService.getDownloadUrl(repositoryName, docId, DownloadService.BLOBHOLDER_0, escapedFilename);
+        downloadURL = downloadService.getDownloadUrl(repositoryName, docId, DownloadService.BLOBHOLDER_0,
+                escapedFilename);
     }
 
     protected void updateDigest(Blob blob) {
