@@ -58,10 +58,10 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     /**
      * Adapts the given {@link DocumentModel} to a {@link FileSystemItem}.
      *
-     * @see #getFileSystemItem(DocumentModel, boolean, String, boolean)
+     * @see #getFileSystemItem(DocumentModel, boolean, FolderItem, boolean, boolean, boolean)
      */
     protected abstract FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint);
+            boolean relaxSyncRootConstraint, boolean getLockInfo);
 
     @Override
     public String getName() {
@@ -90,12 +90,18 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) {
-        return getFileSystemItem(doc, false, null, includeDeleted, false);
+        return getFileSystemItem(doc, false, null, includeDeleted, false, true);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
-        return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint);
+        return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint, true);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) {
+        return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint, getLockInfo);
     }
 
     @Override
@@ -105,13 +111,19 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted) {
-        return getFileSystemItem(doc, true, parentItem, includeDeleted, false);
+        return getFileSystemItem(doc, true, parentItem, includeDeleted, false, true);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) {
-        return getFileSystemItem(doc, true, parentItem, includeDeleted, relaxSyncRootConstraint);
+        return getFileSystemItem(doc, true, parentItem, includeDeleted, relaxSyncRootConstraint, true);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
+        return getFileSystemItem(doc, true, parentItem, includeDeleted, relaxSyncRootConstraint, getLockInfo);
     }
 
     @Override
@@ -214,11 +226,11 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
 
     /*--------------------------- Protected ---------------------------------*/
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem) {
-        return adaptDocument(doc, forceParentItem, parentItem, false);
+        return adaptDocument(doc, forceParentItem, parentItem, false, true);
     }
 
     protected FileSystemItem getFileSystemItem(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean includeDeleted, boolean relaxSyncRootConstraint) {
+            boolean includeDeleted, boolean relaxSyncRootConstraint, boolean getLockInfo) {
 
         // If the doc is not adaptable as a FileSystemItem return null
         if (!isFileSystemItem(doc, includeDeleted, relaxSyncRootConstraint)) {
@@ -228,7 +240,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             }
             return null;
         }
-        return adaptDocument(doc, forceParentItem, parentItem, relaxSyncRootConstraint);
+        return adaptDocument(doc, forceParentItem, parentItem, relaxSyncRootConstraint, getLockInfo);
     }
 
     protected String[] parseFileSystemId(String id) {

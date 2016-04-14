@@ -56,7 +56,12 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
 
     public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem,
             String folderName, boolean relaxSyncRootConstraint) {
-        super(factoryName, parentItem, doc, relaxSyncRootConstraint);
+        this(factoryName, doc, parentItem, folderName, relaxSyncRootConstraint, true);
+    }
+
+    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem,
+            String folderName, boolean relaxSyncRootConstraint, boolean getLockInfo) {
+        super(factoryName, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
         name = folderName;
         canRename = false;
         canDelete = false;

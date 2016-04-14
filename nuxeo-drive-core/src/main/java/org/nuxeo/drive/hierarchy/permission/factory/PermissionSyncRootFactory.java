@@ -115,8 +115,8 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentId, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) {
-        return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
+        return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/

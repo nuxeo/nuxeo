@@ -94,9 +94,9 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) {
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
         return new UserWorkspaceTopLevelFolderItem(getName(), doc, folderName, syncRootParentFactoryName,
-                relaxSyncRootConstraint);
+                relaxSyncRootConstraint, getLockInfo);
     }
 
     /*---------------------- VirtualFolderItemFactory ---------------*/

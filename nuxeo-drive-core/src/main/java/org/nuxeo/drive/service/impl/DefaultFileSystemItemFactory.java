@@ -165,21 +165,21 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) {
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
         // Doc is either Folderish
         if (doc.isFolder()) {
             if (forceParentItem) {
-                return new DocumentBackedFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
+                return new DocumentBackedFolderItem(name, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
             } else {
-                return new DocumentBackedFolderItem(name, doc, relaxSyncRootConstraint);
+                return new DocumentBackedFolderItem(name, doc, relaxSyncRootConstraint, getLockInfo);
             }
         }
         // or a BlobHolder with a blob
         else {
             if (forceParentItem) {
-                return new DocumentBackedFileItem(this, parentItem, doc, relaxSyncRootConstraint);
+                return new DocumentBackedFileItem(this, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
             } else {
-                return new DocumentBackedFileItem(this, doc, relaxSyncRootConstraint);
+                return new DocumentBackedFileItem(this, doc, relaxSyncRootConstraint, getLockInfo);
             }
         }
     }

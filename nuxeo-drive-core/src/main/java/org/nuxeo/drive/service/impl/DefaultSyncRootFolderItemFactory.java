@@ -36,8 +36,8 @@ public class DefaultSyncRootFolderItemFactory extends AbstractSyncRootFolderItem
     /*------------------- AbstractFileSystemItemFactory ---------------------*/
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) {
-        return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
+        return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/

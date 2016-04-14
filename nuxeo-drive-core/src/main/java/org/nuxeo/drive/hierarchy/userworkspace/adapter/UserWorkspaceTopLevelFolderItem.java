@@ -66,7 +66,12 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
 
     public UserWorkspaceTopLevelFolderItem(String factoryName, DocumentModel userWorkspace, String folderName,
             String syncRootParentFactoryName, boolean relaxSyncRootConstraint) {
-        super(factoryName, null, userWorkspace, relaxSyncRootConstraint);
+        this(factoryName, userWorkspace, folderName, syncRootParentFactoryName, relaxSyncRootConstraint, true);
+    }
+
+    public UserWorkspaceTopLevelFolderItem(String factoryName, DocumentModel userWorkspace, String folderName,
+            String syncRootParentFactoryName, boolean relaxSyncRootConstraint, boolean getLockInfo) {
+        super(factoryName, null, userWorkspace, relaxSyncRootConstraint, getLockInfo);
         name = folderName;
         canRename = false;
         canDelete = false;

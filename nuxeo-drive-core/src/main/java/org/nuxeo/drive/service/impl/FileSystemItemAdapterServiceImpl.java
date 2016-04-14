@@ -130,33 +130,45 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     /*------------------------ FileSystemItemAdapterService -----------------------*/
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc) {
-        return getFileSystemItem(doc, false, null, false, false);
+        return getFileSystemItem(doc, false, null, false, false, true);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) {
-        return getFileSystemItem(doc, false, null, includeDeleted, false);
+        return getFileSystemItem(doc, false, null, includeDeleted, false, true);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
-        return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint);
+        return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint, true);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
+            boolean getLockInfo) {
+        return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint, getLockInfo);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) {
-        return getFileSystemItem(doc, true, parentItem, false, false);
+        return getFileSystemItem(doc, true, parentItem, false, false, true);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted) {
-        return getFileSystemItem(doc, true, parentItem, includeDeleted, false);
+        return getFileSystemItem(doc, true, parentItem, includeDeleted, false, true);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
             boolean relaxSyncRootConstraint) {
-        return getFileSystemItem(doc, true, parentItem, includeDeleted, relaxSyncRootConstraint);
+        return getFileSystemItem(doc, true, parentItem, includeDeleted, relaxSyncRootConstraint, true);
+    }
+
+    @Override
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
+            boolean relaxSyncRootConstraint, boolean getLockInfo) {
+        return getFileSystemItem(doc, true, parentItem, includeDeleted, relaxSyncRootConstraint, getLockInfo);
     }
 
     /**
@@ -258,15 +270,17 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
      * </ul>
      */
     protected FileSystemItem getFileSystemItem(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean includeDeleted, boolean relaxSyncRootConstraint) {
+            boolean includeDeleted, boolean relaxSyncRootConstraint, boolean getLockInfo) {
 
         FileSystemItem fileSystemItem = null;
 
         // Try the topLevelFolderItemFactory
         if (forceParentItem) {
-            fileSystemItem = getTopLevelFolderItemFactory().getFileSystemItem(doc, parentItem, includeDeleted);
+            fileSystemItem = getTopLevelFolderItemFactory().getFileSystemItem(doc, parentItem, includeDeleted,
+                    relaxSyncRootConstraint, getLockInfo);
         } else {
-            fileSystemItem = getTopLevelFolderItemFactory().getFileSystemItem(doc, includeDeleted);
+            fileSystemItem = getTopLevelFolderItemFactory().getFileSystemItem(doc, includeDeleted,
+                    relaxSyncRootConstraint, getLockInfo);
         }
         if (fileSystemItem != null) {
             return fileSystemItem;
@@ -293,10 +307,10 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                 try {
                     if (forceParentItem) {
                         fileSystemItem = factory.getFactory().getFileSystemItem(doc, parentItem, includeDeleted,
-                                relaxSyncRootConstraint);
+                                relaxSyncRootConstraint, getLockInfo);
                     } else {
                         fileSystemItem = factory.getFactory().getFileSystemItem(doc, includeDeleted,
-                                relaxSyncRootConstraint);
+                                relaxSyncRootConstraint, getLockInfo);
                     }
                 } catch (RootlessItemException e) {
                     // Give more information in the exception message on the
