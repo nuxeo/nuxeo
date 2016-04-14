@@ -55,19 +55,19 @@ public class TestBlobExtractor extends NXRuntimeTestCase {
         assertEquals(1, paths.size());
         assertEquals("simpleblob", paths.keySet().toArray()[0]);
         assertEquals(1, paths.get("simpleblob").size());
-        assertEquals("/blob", paths.get("simpleblob").get(0));
+        assertEquals("simpleblob:blob", paths.get("simpleblob").get(0));
 
         paths = bec.getBlobFieldPathForDocumentType("WithoutPrefixDocument");
         assertEquals(1, paths.size());
         assertEquals("wihtoutpref", paths.keySet().toArray()[0]);
         assertEquals(1, paths.get("wihtoutpref").size());
-        assertEquals("/blob", paths.get("wihtoutpref").get(0));
+        assertEquals("wihtoutpref:blob", paths.get("wihtoutpref").get(0));
 
         paths = bec.getBlobFieldPathForDocumentType("BlobInListDocument");
         assertEquals(1, paths.size());
         assertEquals("blobinlist", paths.keySet().toArray()[0]);
         assertEquals(1, paths.get("blobinlist").size());
-        assertEquals("/files/*/file", paths.get("blobinlist").get(0));
+        assertEquals("bil:files/*/file", paths.get("blobinlist").get(0));
     }
 
     @Test

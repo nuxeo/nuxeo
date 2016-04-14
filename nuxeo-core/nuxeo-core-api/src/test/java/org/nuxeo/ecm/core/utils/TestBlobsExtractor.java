@@ -17,6 +17,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -82,6 +84,18 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
     }
 
     @Test
+    public void testBlobFieldPaths() throws Exception {
+        BlobsExtractor extractor = new BlobsExtractor();
+        extractor.getBlobFieldPathForDocumentType("ComplexDoc");
+        Map<String, Map<String, List<String>>> blobFieldPaths = extractor.blobFieldPaths;
+        assertEquals(Collections.singleton("ComplexDoc"), blobFieldPaths.keySet());
+        Map<String, List<String>> values = blobFieldPaths.get("ComplexDoc");
+        assertEquals(new HashSet<>(Arrays.asList("file", "complexschema")), values.keySet());
+        assertEquals(Arrays.asList("file:content"), values.get("file"));
+        assertEquals(Arrays.asList("cmpf:aList/*/content", "cmpf:attachedFile/vignettes/*/content"), values.get("complexschema"));
+    }
+
+    @Test
     public void testWithRepositoryConfiguration() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
 
@@ -113,16 +127,14 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         BlobsExtractor extractor = new BlobsExtractor();
         List<Blob> blobs;
 
-        /*
-         * First configuration : only a simple property <index> <field>dc:title</field> </index>
-         */
+        // only a simple property
+        // <field>dc:title</field>
         extractor.setExtractorProperties(null, null, false);
         blobs = extractor.getBlobs(doc);
         assertEquals(0, blobs.size());
 
-        /*
-         * Second configuration : only blobs property <index> <fieldType>blob</fieldType> </index>
-         */
+        // only blobs
+        // <fieldType>blob</fieldType>
         extractor.setExtractorProperties(null, null, true);
         blobs = extractor.getBlobs(doc);
         assertEquals(3, blobs.size());
@@ -130,22 +142,37 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         assertTrue(blobs.contains(blob2));
         assertTrue(blobs.contains(blob3));
 
-        /*
-         * Third configuration : only a blob property whose schema has a prefix <index>
-         * <field>cmpf:attachedFile/vignettes//content/data</field> </index>
-         */
+        // only a blob property with schema prefix
+        // <field>cmpf:attachedFile/vignettes/*/content</field>
         Set<String> pathProps = new HashSet<String>();
-        pathProps.add("cmpf:attachedFile/vignettes/*/content/data");
+        pathProps.add("cmpf:attachedFile/vignettes/*/content");
         extractor.setExtractorProperties(pathProps, null, false);
         blobs = extractor.getBlobs(doc);
         assertEquals(2, blobs.size());
         assertTrue(blobs.contains(blob1));
         assertTrue(blobs.contains(blob2));
 
-        /*
-         * Fourth configuration : only the blob of file whose schema doesn't have a prefix <index>
-         * <field>content/data</field> </index>
-         */
+        // only the blob of file (no schema prefix)
+        // <field>content</field>
+        pathProps = new HashSet<String>();
+        pathProps.add("content");
+        extractor.setExtractorProperties(pathProps, null, false);
+        blobs = extractor.getBlobs(doc);
+        assertEquals(1, blobs.size());
+        assertTrue(blobs.contains(blob3));
+
+        // only the blob of file (with prefix when schema defined without prefix)
+        // <field>file:content</field>
+        pathProps = new HashSet<String>();
+        pathProps.add("file:content");
+        extractor.setExtractorProperties(pathProps, null, false);
+        blobs = extractor.getBlobs(doc);
+        assertEquals(1, blobs.size());
+        assertTrue(blobs.contains(blob3));
+
+        // only the blob of file (no schema prefix)
+        // the /data part is ignored  because we do prefix match of existing properties (???)
+        // <field>content/data</field>
         pathProps = new HashSet<String>();
         pathProps.add("content/data");
         extractor.setExtractorProperties(pathProps, null, false);
@@ -153,17 +180,25 @@ public class TestBlobsExtractor extends NXRuntimeTestCase {
         assertEquals(1, blobs.size());
         assertTrue(blobs.contains(blob3));
 
-        /*
-         * Fifth configuration : all blobs minus some blobs <index> <fieldType>blob</fieldType>
-         * <excludeField>content/data</excludeField> </index>
-         */
+        // exclude specific blob
+        // <fieldType>blob</fieldType>
+        // <excludeField>content</excludeField>
         pathProps = new HashSet<String>();
-        pathProps.add("content/data");
+        pathProps.add("content");
         extractor.setExtractorProperties(null, pathProps, true);
         blobs = extractor.getBlobs(doc);
         assertEquals(2, blobs.size());
         assertTrue(blobs.contains(blob2));
 
+        // exclude specific blob using schema prefix when schema is defined without prefix
+        // <fieldType>blob</fieldType>
+        // <excludeField>file:content</excludeField>
+        pathProps = new HashSet<String>();
+        pathProps.add("file:content");
+        extractor.setExtractorProperties(null, pathProps, true);
+        blobs = extractor.getBlobs(doc);
+        assertEquals(2, blobs.size());
+        assertTrue(blobs.contains(blob2));
     }
 
 }

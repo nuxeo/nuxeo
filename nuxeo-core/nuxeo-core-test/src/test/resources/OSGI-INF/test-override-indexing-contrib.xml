@@ -8,6 +8,18 @@
           <index name="binaries">
             <fieldType>blob</fieldType>
           </index>
+          <index name="nofile1">
+            <excludeField>file:content</excludeField>
+          </index>
+          <index name="nofile2">
+            <excludeField>content</excludeField> <!-- no prefix -->
+          </index>
+          <index name="nofile3">
+            <excludeField>file:content/data</excludeField> <!-- added /data -->
+          </index>
+          <index name="nofile4">
+            <excludeField>content/data</excludeField> <!-- no prefix and added /data -->
+          </index>
         </fulltext>
       </indexing>
     </repository>
