@@ -56,7 +56,7 @@ public class AutomationTraceGetOperation {
     @OperationMethod
     public String run() {
 
-        if (canManageTraces()) {
+        if (!canManageTraces()) {
             return null;
         }
 
