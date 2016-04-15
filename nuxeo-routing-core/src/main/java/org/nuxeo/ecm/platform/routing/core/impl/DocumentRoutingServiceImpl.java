@@ -349,6 +349,16 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
             DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
             routingEngine.resume(routeInstance, nodeId, task != null ? task.getId() : null, data, status, session);
+
+            // If task is null, it means we are resuming the workflow and about to cancel pending tasks.
+            // Do not notify
+            if (task != null) {
+                String comment = data != null ? (String) data.get(GraphNode.NODE_VARIABLE_COMMENT) : null;
+                final Map<String, Serializable> extraEventProperties = new HashMap<>();
+                extraEventProperties.put(DocumentRoutingConstants.WORKFLOW_TASK_COMPLETION_ACTION_KEY, status);
+                TaskEventNotificationHelper.notifyTaskEnded(session, (NuxeoPrincipal) session.getPrincipal(), task,
+                        comment, TaskEventNames.WORKFLOW_TASK_COMPLETED, extraEventProperties);
+            }
         }
 
     }
@@ -839,11 +849,6 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             throw new DocumentRouteException("Can not resume workflow, no related route");
         }
         completeTask(routeInstanceId, null, task, data, status, session);
-        final Map<String, Serializable> extraEventProperties = new HashMap<String, Serializable>();
-        extraEventProperties.put(DocumentRoutingConstants.WORKFLOW_TASK_COMPLETION_ACTION_KEY, status);
-        TaskEventNotificationHelper.notifyTaskEnded(session, (NuxeoPrincipal) session.getPrincipal(), task, comment,
-                TaskEventNames.WORKFLOW_TASK_COMPLETED, extraEventProperties);
-
     }
 
     @Override
