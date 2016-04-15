@@ -152,6 +152,17 @@ public class TestCoreGraph {
     }
 
     @Test
+    public void testAddWithKnowPredicateNamespace() {
+        assertEquals(Long.valueOf(0), graph.size());
+        Resource src = new ResourceImpl("http://foo.com/bar");
+        Statement stmt = new StatementImpl(src,
+                new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, "startContainer"),
+                new LiteralImpl("/html[1]/body[1]/p[4], 3"));
+        graph.add(stmt);
+        assertEquals(Long.valueOf(1), graph.size());
+    }
+
+    @Test
     public void testAddWithSession() throws Exception {
         useGraphWithSession();
         testAdd();
