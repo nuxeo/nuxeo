@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class AutomationTraceGetOperation {
 
     protected boolean canManageTraces() {
         NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
-        return principal != null && (principal.isAdministrator());
+        return principal != null && principal.isAdministrator();
     }
 
     @OperationMethod
