@@ -43,6 +43,11 @@ public class CollectionConstants {
 
     public static final String COLLECTION_PAGE_PROVIDER = "default_collection";
 
+    /**
+     * @since 8.3
+     */
+    public static final String USER_COLLECTION_PAGE_PROVIDER = "user_collections";
+
     public static final String MAGIC_PREFIX_ID = "-999999";
 
     public static final String DEFAULT_COLLECTIONS_NAME = "Collections";

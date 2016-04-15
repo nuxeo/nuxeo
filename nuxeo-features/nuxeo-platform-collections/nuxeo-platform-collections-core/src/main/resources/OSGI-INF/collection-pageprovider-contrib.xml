@@ -17,6 +17,19 @@
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="user_collections">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern quoteParameters="true" escapeParameters="true">
+        SELECT * FROM Document WHERE dc:title ILIKE :searchTerm AND ecm:mixinType = 'Collection' AND
+        ecm:primaryType != 'Favorites' AND
+        ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <parameter>#{currentUser.name}</parameter>
+      <sort column="dc:modified" ascending="false" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
     <coreQueryPageProvider name="default_collection_candidate">
       <property name="maxResults">PAGE_SIZE</property>
       <pattern quoteParameters="false" escapeParameters="true">
