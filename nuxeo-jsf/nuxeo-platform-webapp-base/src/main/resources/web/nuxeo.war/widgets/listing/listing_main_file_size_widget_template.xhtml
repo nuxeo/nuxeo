@@ -1,13 +1,19 @@
-<c:if test="true"
+<f:subview
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
-
-  <c:set var="mainBlob" value="#{blobHolderGenerator.getBlobHolder(fieldOrValue).blob}" />
-  <c:if test="#{!empty mainBlob and mainBlob.length >= 0}">
-    <h:outputText value="#{nxu:printFileSize(mainBlob.length)}"
-      styleClass="fieldColumn" />
-  </c:if>
-
-</c:if>
+  <nxu:set var="mainBlob" value="#{blobHolderGenerator.getBlobHolder(fieldOrValue).blob}">
+  <nxu:set var="mainBlobLength"
+    value="#{nxu:test(!empty mainBlob and mainBlob.length >= 0,nxu:printFileSize(mainBlob.length), '')}">
+    <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{mainBlobLength}</c:if>
+    <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+      <f:subview rendered="#{!empty mainBlob and mainBlob.length >= 0}">
+        <h:outputText value="#{mainBlobLength}"
+          styleClass="fieldColumn" />
+      </f:subview>
+    </c:if>
+  </nxu:set>
+  </nxu:set>
+</f:subview>
