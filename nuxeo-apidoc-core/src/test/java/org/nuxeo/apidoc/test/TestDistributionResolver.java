@@ -145,6 +145,18 @@ public class TestDistributionResolver {
                 }
 
                 @Override
+                public boolean isLatestFT() {
+                    // TODO Auto-generated method stub
+                    return false;
+                }
+
+                @Override
+                public boolean isLatestLTS() {
+                    // TODO Auto-generated method stub
+                    return false;
+                }
+
+                @Override
                 public List<String> getJavaComponentIds() {
                     // TODO Auto-generated method stub
                     return null;

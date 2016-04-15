@@ -21,6 +21,10 @@
           <widget>version</widget>
           <widget>key</widget>
         </row>
+        <row>
+          <widget>latestFT</widget>
+          <widget>latestLTS</widget>
+        </row>
       </rows>
       <widget name="name" type="text">
         <labels>
@@ -57,6 +61,24 @@
         <widgetModes>
           <mode value="create">hidden</mode>
         </widgetModes>
+      </widget>
+      <widget name="latestFT" type="checkbox">
+        <labels>
+          <label mode="any">Latest FT</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxdistribution:latestFT</field>
+        </fields>
+      </widget>
+      <widget name="latestLTS" type="checkbox">
+        <labels>
+          <label mode="any">Latest LTS</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxdistribution:latestLTS</field>
+        </fields>
       </widget>
     </layout>
 

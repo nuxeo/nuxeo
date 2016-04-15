@@ -42,6 +42,16 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     String PROP_KEY = "nxdistribution:key";
 
+    /**
+     * @since 8.3
+     */
+    String PROP_LATEST_FT = "nxdistribution:latestFT";
+
+    /**
+     * @since 8.3
+     */
+    String PROP_LATEST_LTS = "nxdistribution:latestLTS";
+
     String getKey();
 
     void cleanPreviousArtifacts();
@@ -93,4 +103,14 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
     List<OperationInfo> getOperations();
 
     JavaDocHelper getJavaDocHelper();
+
+    /**
+     * @since 8.3
+     */
+    boolean isLatestFT();
+
+    /**
+     * @since 8.3
+     */
+    boolean isLatestLTS();
 }

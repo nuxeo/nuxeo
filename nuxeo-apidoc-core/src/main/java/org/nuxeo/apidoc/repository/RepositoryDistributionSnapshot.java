@@ -68,13 +68,14 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             doc.setPropertyValue("dc:title", distrib.getKey());
             doc.setPropertyValue(PROP_KEY, distrib.getKey());
             doc.setPropertyValue(PROP_NAME, distrib.getName());
-            doc.setPropertyValue(PROP_VERSION, distrib.getVersion());
         } else {
             doc.setPropertyValue("dc:title", label);
             doc.setPropertyValue(PROP_KEY, label + "-" + distrib.getVersion());
             doc.setPropertyValue(PROP_NAME, label);
-            doc.setPropertyValue(PROP_VERSION, distrib.getVersion());
         }
+        doc.setPropertyValue(PROP_LATEST_FT, distrib.isLatestFT());
+        doc.setPropertyValue(PROP_LATEST_LTS, distrib.isLatestLTS());
+        doc.setPropertyValue(PROP_VERSION, distrib.getVersion());
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -417,5 +418,25 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             refs.add(doc.getRef());
         }
         getCoreSession().removeDocuments(refs.toArray(new DocumentRef[refs.size()]));
+    }
+
+    @Override
+    public boolean isLatestFT() {
+        try {
+            return (Boolean) doc.getPropertyValue(PROP_LATEST_FT);
+        } catch (PropertyException e) {
+            log.error("Error while reading nxdistribution:latestFT", e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isLatestLTS() {
+        try {
+            return (Boolean) doc.getPropertyValue(PROP_LATEST_LTS);
+        } catch (PropertyException e) {
+            log.error("Error while reading nxdistribution:latestLTS", e);
+            return false;
+        }
     }
 }

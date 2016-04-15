@@ -102,7 +102,15 @@ Here are the currently available distributions:
   <td>${distrib.name}</td>
   <td>${distrib.version}</td>
   <td>${distrib.creationDate?datetime}</td>
-  <td>&nbsp;</td>
+  <td>
+    <#if distrib.latestFT >
+      <span class="sticker current">Latest FT</span>
+    <#elseif distrib.latestLTS >
+      <span class="sticker current">Latest LTS</span>
+    <#else>
+      &nbsp;
+    </#if>
+  </td>
   <td>
     <p class="explore"><a class="button" href="${Root.path}/${distrib.key}/"> Explore </a></p>
   </td>

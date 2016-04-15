@@ -503,4 +503,14 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         // Can't delete anything in a runtime Snapshot
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean isLatestFT() {
+        return false;
+    }
+
+    @Override
+    public boolean isLatestLTS() {
+        return false;
+    }
 }
