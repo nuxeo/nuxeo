@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,14 +75,14 @@ public class BlobsExtractor {
         for (String schema : getBlobFieldPathForDocumentType(doc.getType()).keySet()) {
             List<String> pathsList = getBlobFieldPathForDocumentType(doc.getType()).get(schema);
             for (String path : pathsList) {
-                if (!isInterestingBlobProperty(path, schemaManager.getSchema(schema).getNamespace().prefix)) {
+                if (!isInterestingBlobProperty(path)) {
                     continue;
                 }
                 List<String> pathSplitted = Arrays.asList(path.split("/[*]/"));
                 if (pathSplitted.size() == 0) {
                     throw new IllegalStateException("Path detected not wellformed: " + pathsList);
                 }
-                Property prop = doc.getProperty(schema + ":" + pathSplitted.get(0));
+                Property prop = doc.getProperty(pathSplitted.get(0));
 
                 if (pathSplitted.size() >= 1) {
                     List<String> subPath = pathSplitted.subList(1, pathSplitted.size());
@@ -147,12 +148,21 @@ public class BlobsExtractor {
         boolean interesting = false;
         for (Field field : ct.getFields()) {
             Type type = field.getType();
+            String blobMatchedPath = field.getName().getPrefixedName();
+            if (path.isEmpty()) {
+                // add schema name as prefix if the schema doesn't have a prefix
+                if (!schema.getNamespace().hasPrefix()) {
+                    blobMatchedPath = schema.getName() + ":" + blobMatchedPath;
+                }
+            } else {
+                blobMatchedPath = path + "/" + blobMatchedPath;
+            }
             if (type.isSimpleType()) {
                 continue; // not binary text
             } else if (type.isListType()) {
                 Type ftype = ((ListType) type).getField().getType();
                 if (ftype.isComplexType()) {
-                    String blobMatchedPath = path + String.format("/%s/*", field.getName().getLocalName());
+                    blobMatchedPath += "/*";
                     if (findInteresting(docType, schema, blobMatchedPath, (ComplexType) ftype)) {
                         containsBlob(docType, schema, blobMatchedPath, field);
                         interesting |= true;
@@ -162,14 +172,10 @@ public class BlobsExtractor {
                 }
             } else { // complex type
                 ComplexType ctype = (ComplexType) type;
-                if (type.getName().equals(TypeConstants.CONTENT)) {
-                    // CB: Fix for NXP-3847 - do not accumulate field name in
-                    // the path
-                    String blobMatchedPath = path + String.format("/%s", field.getName().getLocalName());
+                if (TypeConstants.isContentType(type)) {
                     blobMatched(docType, schema, blobMatchedPath, field);
                     interesting = true;
                 } else {
-                    String blobMatchedPath = path + String.format("/%s", field.getName().getLocalName());
                     interesting |= findInteresting(docType, schema, blobMatchedPath, ctype);
                 }
             }
@@ -244,35 +250,65 @@ public class BlobsExtractor {
         return result;
     }
 
+    /**
+     * Sets extractor properties.
+     * <p>
+     * The properties have to be defined without prefix if there is no prefix in the schema definition. For blob
+     * properties, the path must include the {@code /data} part.
+     */
     public void setExtractorProperties(Set<String> pathProps, Set<String> excludedPathProps, boolean indexBlobs) {
-        pathProperties = pathProps;
-        excludedPathProperties = excludedPathProps;
+        pathProperties = normalizePaths(pathProps);
+        excludedPathProperties = normalizePaths(excludedPathProps);
         indexAllBinary = indexBlobs;
-        isDefaultConfiguration = (pathProps == null && excludedPathProps == null && Boolean.TRUE.equals(indexBlobs));
+        isDefaultConfiguration = (pathProps == null && excludedPathProps == null && indexBlobs);
     }
 
-    private boolean isInterestingBlobProperty(String path, String prefix) {
+    /**
+     * Removes the "/data" suffix used by FulltextConfiguration.
+     * <p>
+     * Adds missing schema name as prefix if no prefix ("content" -> "file:content").
+     */
+    protected Set<String> normalizePaths(Set<String> paths) {
+        if (paths == null) {
+            return null;
+        }
+        Set<String> normPaths = new HashSet<>();
+        SchemaManager schemaManager = getSchemaManager();
+        for (String path : paths) {
+            // remove "/data" suffix
+            if (path.endsWith("/data")) {
+                path = path.substring(0, path.length() - "/data".length());
+            }
+            // add schema if no schema prefix
+            if (schemaManager.getField(path) == null && !path.contains(":")) {
+                // check without prefix
+                // TODO precompute this in SchemaManagerImpl
+                int slash = path.indexOf('/');
+                String first = slash == -1 ? path : path.substring(0, slash);
+                for (Schema schema : schemaManager.getSchemas()) {
+                    if (!schema.getNamespace().hasPrefix()) {
+                        // schema without prefix, try it
+                        if (schema.getField(first) != null) {
+                            path = schema.getName() + ":" + path;
+                            break;
+                        }
+                    }
+                }
+            }
+            normPaths.add(path);
+        }
+        return normPaths;
+    }
+
+    private boolean isInterestingBlobProperty(String path) {
         if (isDefaultConfiguration) {
             return true;
-        } else if (pathProperties != null && matchProperty(prefix, path, pathProperties)) {
-            return true;
-        } else if (excludedPathProperties != null && matchProperty(prefix, path, excludedPathProperties)) {
+        } else if (excludedPathProperties != null && excludedPathProperties.contains(path)) {
             return false;
-        } else if (Boolean.TRUE.equals(indexAllBinary)) {
+        } else if (pathProperties != null && pathProperties.contains(path)) {
             return true;
-        }
-        return false;
-    }
-
-    private boolean matchProperty(String prefix, String fieldPath, Set<String> propPaths) {
-        if (!prefix.equals("")) {
-            prefix += ":";
-        }
-        String pathToMatch = prefix + fieldPath.substring(1);
-        for (String propPath : propPaths) {
-            if (propPath.startsWith(pathToMatch)) {
-                return true;
-            }
+        } else if (indexAllBinary) {
+            return true;
         }
         return false;
     }

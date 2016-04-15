@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -27,7 +28,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
@@ -117,8 +117,7 @@ public class TestSQLBinariesIndexingOverride {
     public void testTwoBinaryIndexes() throws Exception {
         DocumentModelList res;
         DocumentModel doc = session.createDocumentModel("/", "source", "File");
-        BlobHolder holder = doc.getAdapter(BlobHolder.class);
-        holder.setBlob(Blobs.createBlob("test"));
+        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("test"));
         doc = session.createDocument(doc);
         session.save();
 
@@ -137,8 +136,7 @@ public class TestSQLBinariesIndexingOverride {
     public void testGetBinaryFulltext() throws Exception {
         DocumentModelList res;
         DocumentModel doc = session.createDocumentModel("/", "source", "File");
-        BlobHolder holder = doc.getAdapter(BlobHolder.class);
-        holder.setBlob(Blobs.createBlob("test"));
+        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("test"));
         doc = session.createDocument(doc);
         session.save();
 
@@ -157,6 +155,28 @@ public class TestSQLBinariesIndexingOverride {
             assertEquals("test", map.get("binarytext"));
             assertEquals("test", map.get("binarytext_binaries"));
         }
+    }
+
+    @Test
+    public void testExcludeFieldBlob() throws Exception {
+        DocumentModelList res;
+        DocumentModel doc = session.createDocumentModel("/", "source", "File");
+        doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("test"));
+        doc = session.createDocument(doc);
+        session.save();
+
+        waitForFulltextIndexing();
+
+        // indexes the skip file:content
+
+        res = session.query("SELECT * FROM Document WHERE ecm:fulltext_nofile1 = 'test'");
+        assertEquals(0, res.size());
+        res = session.query("SELECT * FROM Document WHERE ecm:fulltext_nofile2 = 'test'");
+        assertEquals(0, res.size());
+        res = session.query("SELECT * FROM Document WHERE ecm:fulltext_nofile3 = 'test'");
+        assertEquals(0, res.size());
+        res = session.query("SELECT * FROM Document WHERE ecm:fulltext_nofile4 = 'test'");
+        assertEquals(0, res.size());
     }
 
 }

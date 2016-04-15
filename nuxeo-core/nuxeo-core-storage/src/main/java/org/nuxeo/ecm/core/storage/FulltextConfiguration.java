@@ -21,11 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -68,6 +71,8 @@ public class FulltextConfiguration {
     public final Map<String, Set<String>> indexesByPropPathSimple = new HashMap<String, Set<String>>();
 
     /** Indexes for each specific binary property path. */
+    // DBSTransactionState.findDirtyDocuments expects this to contain unprefixed versions for schemas
+    // without prefix, like "content/data".
     public final Map<String, Set<String>> indexesByPropPathBinary = new HashMap<String, Set<String>>();
 
     /** Indexes for each specific simple property path excluded. */
@@ -97,6 +102,7 @@ public class FulltextConfiguration {
         fulltextSearchDisabled = fulltextDescriptor.getFulltextSearchDisabled();
 
         // find what paths we mean by "all"
+        // for schemas without prefix, we add both the unprefixed and the prefixed version
         Set<String> allSimplePaths = new HashSet<>();
         Set<String> allBinaryPaths = new HashSet<>();
         PathsFinder pathsFinder = new PathsFinder(allSimplePaths, allBinaryPaths);
@@ -161,9 +167,25 @@ public class FulltextConfiguration {
             }
 
             for (Set<String> fields : Arrays.asList(desc.fields, desc.excludeFields)) {
+                boolean include = fields == desc.fields;
                 for (String path : fields) {
-                    boolean include = fields == desc.fields;
                     Field field = schemaManager.getField(path);
+                    if (field == null && !path.contains(":")) {
+                        // check without prefix
+                        // TODO precompute this in SchemaManagerImpl
+                        int slash = path.indexOf('/');
+                        String first = slash == -1 ? path : path.substring(0, slash);
+                        for (Schema schema : schemaManager.getSchemas()) {
+                            if (!schema.getNamespace().hasPrefix()) {
+                                // schema without prefix, try it
+                                if (schema.getField(first) != null) {
+                                    path = schema.getName() + ":" + path;
+                                    field = schemaManager.getField(path);
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     if (field == null) {
                         log.error(String.format("Ignoring unknown property '%s' in fulltext configuration: %s", path,
                                 name));
@@ -172,12 +194,20 @@ public class FulltextConfiguration {
                     Type baseType = getBaseType(field.getType());
                     Map<String, Set<String>> indexesByPropPath;
                     Map<String, Set<String>> propPathsByIndex;
+                    if (baseType instanceof ComplexType && TypeConstants.isContentType(baseType)) {
+                        baseType = ((ComplexType) baseType).getField(BaseDocument.BLOB_DATA).getType(); // BinaryType
+                    }
                     if (baseType instanceof StringType) {
                         indexesByPropPath = include ? indexesByPropPathSimple : indexesByPropPathExcludedSimple;
                         propPathsByIndex = include ? propPathsByIndexSimple : propPathsExcludedByIndexSimple;
                     } else if (baseType instanceof BinaryType) {
                         indexesByPropPath = include ? indexesByPropPathBinary : indexesByPropPathExcludedBinary;
                         propPathsByIndex = include ? propPathsByIndexBinary : propPathsExcludedByIndexBinary;
+                        if (!path.endsWith("/" + BaseDocument.BLOB_DATA)) {
+                            path += "/" + BaseDocument.BLOB_DATA;
+                            // needed for indexesByPropPathBinary as DBSTransactionState.findDirtyDocuments expects this
+                            // to be in the same format as what DirtyPathsFinder expects, like "content/data".
+                        }
                     } else {
                         log.error(String.format("Ignoring property '%s' with bad type %s in fulltext configuration: %s",
                                 path, field.getType(), name));
@@ -207,6 +237,14 @@ public class FulltextConfiguration {
         return type;
     }
 
+    /**
+     * Accumulates paths for string and binary properties in schemas passed to {@link #walkSchema}.
+     * <p>
+     * For schemas without prefix the path is accumulated both with and without prefix.
+     * <p>
+     * For binaries the path includes the final "/data" part.
+     */
+    // TODO precompute this in SchemaManagerImpl
     public static class PathsFinder {
 
         protected final Set<String> simplePaths;
@@ -219,46 +257,53 @@ public class FulltextConfiguration {
         }
 
         public void walkSchema(Schema schema) {
-            walkComplexType(schema, null);
+            String addPrefix = schema.getNamespace().hasPrefix() ? null : schema.getName();
+            walkComplexType(schema, null, addPrefix);
         }
 
-        protected void walkComplexType(ComplexType complexType, String path) {
+        protected void walkComplexType(ComplexType complexType, String path, String addPrefix) {
             for (Field field : complexType.getFields()) {
                 String name = field.getName().getPrefixedName();
                 String fieldPath = path == null ? name : path + '/' + name;
-                walkType(field.getType(), fieldPath);
+                walkType(field.getType(), fieldPath, addPrefix);
             }
         }
 
-        protected void walkType(Type type, String path) {
+        protected void walkType(Type type, String path, String addPrefix) {
             if (type.isSimpleType()) {
-                walkSimpleType(type, path);
+                walkSimpleType(type, path, addPrefix);
             } else if (type.isListType()) {
                 String listPath = path + "/*";
                 Type ftype = ((ListType) type).getField().getType();
                 if (ftype.isComplexType()) {
                     // complex list
-                    walkComplexType((ComplexType) ftype, listPath);
+                    walkComplexType((ComplexType) ftype, listPath, addPrefix);
                 } else {
                     // array
-                    walkSimpleType(ftype, listPath);
+                    walkSimpleType(ftype, listPath, addPrefix);
                 }
             } else {
                 // complex type
                 ComplexType ctype = (ComplexType) type;
-                walkComplexType(ctype, path);
+                walkComplexType(ctype, path, addPrefix);
             }
         }
 
-        protected void walkSimpleType(Type type, String path) {
+        protected void walkSimpleType(Type type, String path, String addPrefix) {
             while (type instanceof SimpleTypeImpl) {
                 // type with constraint
                 type = type.getSuperType();
             }
             if (type instanceof StringType) {
                 simplePaths.add(path);
+                if (addPrefix != null) {
+                    simplePaths.add(addPrefix + ":" + path);
+                }
             } else if (type instanceof BinaryType) {
                 binaryPaths.add(path);
+                if (addPrefix != null) {
+                    binaryPaths.add(addPrefix + ":" + path);
+                }
             }
         }
     }
