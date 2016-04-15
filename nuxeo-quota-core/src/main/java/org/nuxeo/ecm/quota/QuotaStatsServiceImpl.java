@@ -127,10 +127,10 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
             return null;
         } else if (state == State.SCHEDULED) {
             return STATUS_INITIAL_COMPUTATION_QUEUED;
-        } else if (state == State.COMPLETED) {
-            return STATUS_INITIAL_COMPUTATION_COMPLETED;
-        } else { // RUNNING
+        } else if (state == State.RUNNING) {
             return STATUS_INITIAL_COMPUTATION_PENDING;
+        } else { // RUNNING
+            return STATUS_INITIAL_COMPUTATION_COMPLETED;
         }
     }
 

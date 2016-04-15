@@ -41,7 +41,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -191,8 +190,8 @@ public class QuotaStatsActions implements Serializable {
 
     public boolean workQueuesInProgess() {
         WorkManager workManager = getWorkManager();
-        int running = workManager.getQueueSize("quota", State.RUNNING);
-        int scheduled = workManager.getQueueSize("quota", State.SCHEDULED);
+        long running = workManager.getQueueSize("quota", State.RUNNING);
+        long scheduled = workManager.getQueueSize("quota", State.SCHEDULED);
         return running + scheduled > 0;
     }
 
