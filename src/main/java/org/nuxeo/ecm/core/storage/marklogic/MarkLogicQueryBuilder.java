@@ -168,7 +168,7 @@ public class MarkLogicQueryBuilder {
         } else if (op == Operator.EQ) {
             return walkEq(lvalue, rvalue);
         } else if (op == Operator.NOTEQ) {
-            // walkNotEq(lvalue, rvalue);
+            return walkNotEq(lvalue, rvalue);
         } else if (op == Operator.LTEQ) {
             // walkLtEq(lvalue, rvalue);
         } else if (op == Operator.GTEQ) {
@@ -216,6 +216,13 @@ public class MarkLogicQueryBuilder {
             // TODO walk mixin types.
         }
         return leftInfo.eq((Literal) rvalue);
+    }
+
+    private Element walkNotEq(Operand lvalue, Operand rvalue) {
+        Element eq = walkEq(lvalue, rvalue);
+        Element neq = DocumentHelper.createElement(NOT);
+        neq.add(eq);
+        return neq;
     }
 
     private Element walkMultiExpression(MultiExpression expression) {
