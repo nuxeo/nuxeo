@@ -49,7 +49,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -108,15 +107,15 @@ public class TestCoreGraph {
     @Before
     public void setUp() throws Exception {
         statements = new ArrayList<>();
-        doc1 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, session.getRepositoryName()
-                + "/00010000-2c86-46fa-909e-02494bcb0001");
-        doc2 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, session.getRepositoryName()
-                + "/00020000-2c86-46fa-909e-02494bcb0002");
+        doc1 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE,
+                session.getRepositoryName() + "/00010000-2c86-46fa-909e-02494bcb0001");
+        doc2 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE,
+                session.getRepositoryName() + "/00020000-2c86-46fa-909e-02494bcb0002");
         isBasedOn = new QNameResourceImpl(DC_TERMS_NS, "IsBasedOn");
         references = new QNameResourceImpl(DC_TERMS_NS, "References");
         statements.add(new StatementImpl(doc2, isBasedOn, doc1));
-        statements.add(new StatementImpl(doc1, references, new ResourceImpl(
-                "http://www.wikipedia.com/Enterprise_Content_Management")));
+        statements.add(new StatementImpl(doc1, references,
+                new ResourceImpl("http://www.wikipedia.com/Enterprise_Content_Management")));
         statements.add(new StatementImpl(doc2, references, new LiteralImpl("NXRuntime")));
         Collections.sort(statements);
 
@@ -151,6 +150,17 @@ public class TestCoreGraph {
         assertEquals(Long.valueOf(0), graph.size());
         graph.add(statements);
         assertEquals(Long.valueOf(3), graph.size());
+    }
+
+    @Test
+    public void testAddWithKnowPredicateNamespace() {
+        assertEquals(Long.valueOf(0), graph.size());
+        Resource src = new ResourceImpl("http://foo.com/bar");
+        Statement stmt = new StatementImpl(src,
+                new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, "startContainer"),
+                new LiteralImpl("/html[1]/body[1]/p[4], 3"));
+        graph.add(stmt);
+        assertEquals(Long.valueOf(1), graph.size());
     }
 
     @Test
@@ -278,15 +288,15 @@ public class TestCoreGraph {
         stmts = graph.getStatements(new StatementImpl(doc1, null, null));
         Collections.sort(stmts);
         expected = new ArrayList<>();
-        expected.add(new StatementImpl(doc1, references, new ResourceImpl(
-                "http://www.wikipedia.com/Enterprise_Content_Management")));
+        expected.add(new StatementImpl(doc1, references,
+                new ResourceImpl("http://www.wikipedia.com/Enterprise_Content_Management")));
         assertEquals(expected, stmts);
 
         stmts = graph.getStatements(new StatementImpl(null, references, null));
         Collections.sort(stmts);
         expected = new ArrayList<>();
-        expected.add(new StatementImpl(doc1, references, new ResourceImpl(
-                "http://www.wikipedia.com/Enterprise_Content_Management")));
+        expected.add(new StatementImpl(doc1, references,
+                new ResourceImpl("http://www.wikipedia.com/Enterprise_Content_Management")));
         expected.add(new StatementImpl(doc2, references, new LiteralImpl("NXRuntime")));
         assertEquals(expected, stmts);
 
@@ -298,15 +308,16 @@ public class TestCoreGraph {
 
         // test with unknown nodes
         expected = new ArrayList<>();
-        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"), new ResourceImpl(
-                "http://propertty"), new ResourceImpl("http://object")));
+        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"),
+                new ResourceImpl("http://propertty"), new ResourceImpl("http://object")));
         assertEquals(expected, stmts);
 
-        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"), null, new LiteralImpl(
-                "literal")));
+        stmts = graph.getStatements(
+                new StatementImpl(new ResourceImpl("http://subject"), null, new LiteralImpl("literal")));
         assertEquals(expected, stmts);
 
-        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"), null, new BlankImpl("blank")));
+        stmts = graph.getStatements(
+                new StatementImpl(new ResourceImpl("http://subject"), null, new BlankImpl("blank")));
         assertEquals(expected, stmts);
     }
 

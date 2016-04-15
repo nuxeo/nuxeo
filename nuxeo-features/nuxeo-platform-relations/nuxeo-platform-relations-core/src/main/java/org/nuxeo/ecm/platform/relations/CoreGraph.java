@@ -265,8 +265,8 @@ public class CoreGraph implements Graph {
 
         protected DocumentModel setRelationProperties(DocumentModel rel, Statement statement) {
             Resource pred = statement.getPredicate();
-            NodeAsString predicate = getNodeAsString(pred);
-            if (predicate.uri == null) {
+            String predicateUri = pred.getUri();
+            if (predicateUri == null) {
                 throw new IllegalArgumentException("Invalid predicate in statement: " + statement);
             }
 
@@ -297,14 +297,14 @@ public class CoreGraph implements Graph {
             String comment = getComment(statement);
 
             String title = (source.id != null ? source.id : source.uri) + " "
-                    + predicate.uri.substring(predicate.uri.lastIndexOf('/') + 1) + " "
+                    + predicateUri.substring(predicateUri.lastIndexOf('/') + 1) + " "
                     + (target.id != null ? target.id : target.uri != null ? target.uri : target.string);
             int MAX_TITLE = 200;
             if (title.length() > MAX_TITLE) {
                 title = title.substring(0, MAX_TITLE);
             }
 
-            rel.setPropertyValue(REL_PREDICATE, predicate.uri);
+            rel.setPropertyValue(REL_PREDICATE, predicateUri);
             if (source.id != null) {
                 rel.setPropertyValue(REL_SOURCE_ID, source.id);
             } else {
