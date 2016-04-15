@@ -33,12 +33,12 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 7.1
@@ -55,6 +55,9 @@ public class TestBinaryMetadataAsyncListener {
 
     @Inject
     EventService eventService;
+
+    @Inject
+    TransactionalFeature txFeature;
 
     @Test
     public void testListener() throws Exception {
@@ -74,9 +77,7 @@ public class TestBinaryMetadataAsyncListener {
         DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
         session.saveDocument(doc);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-        eventService.waitForAsyncCompletion();
+        txFeature.nextTransaction();
 
         DocumentModel pdfDoc = session.getDocument(doc.getRef());
 
