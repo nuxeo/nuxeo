@@ -22,10 +22,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
 import javax.transaction.HeuristicMixedException;
@@ -44,7 +45,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.export.ArchiveFile;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -74,6 +74,9 @@ public class Distribution extends ModuleRoot {
     public static final String DIST_ID = "distId";
 
     protected static final Log log = LogFactory.getLog(Distribution.class);
+
+    protected static final Pattern VERSION_REGEX = Pattern.compile("^(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?(?:-.*)?",
+            Pattern.CASE_INSENSITIVE);
 
     // handle errors
     @Override
@@ -139,20 +142,16 @@ public class Distribution extends ModuleRoot {
 
     @Path("latest")
     public Resource getLatest() {
-        List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots((ctx.getCoreSession()));
-
-        List<String> keys = new ArrayList<>();
-        for (DistributionSnapshot snap : snaps) {
-            if (snap.getName().equalsIgnoreCase("Nuxeo Platform")) {
-                keys.add(snap.getKey());
-            }
-            Collections.sort(keys);
-            Collections.reverse(keys);
-        }
+        SnapshotManager sm = getSnapshotManager();
+        List<DistributionSnapshot> snaps = listPersistedDistributions().stream()
+                                                                       .filter(snap -> snap.getName()
+                                                                                           .toLowerCase()
+                                                                                           .startsWith("nuxeo platform"))
+                                                                       .collect(Collectors.toList());
 
         String latest = "current";
-        if (keys.size() > 0) {
-            latest = keys.get(0);
+        if (snaps.size() > 0) {
+            latest = snaps.get(0).getKey();
         }
         return ctx.newObject("redirectWO", "latest", latest);
     }
@@ -198,7 +197,30 @@ public class Distribution extends ModuleRoot {
     }
 
     public List<DistributionSnapshot> listPersistedDistributions() {
-        return getSnapshotManager().listPersistentSnapshots(ctx.getCoreSession());
+        SnapshotManager sm = getSnapshotManager();
+        return sm.listPersistentSnapshots(ctx.getCoreSession())
+                 .stream()
+                 .sorted((o1, o2) -> {
+                     Matcher m1 = VERSION_REGEX.matcher(o1.getVersion());
+                     Matcher m2 = VERSION_REGEX.matcher(o2.getVersion());
+
+                     if (m1.matches() && m2.matches()) {
+                         for (int i = 0; i < 3; i++) {
+                             String s1 = m1.group(i + 1);
+                             int c1 = s1 != null ? Integer.parseInt(s1) : 0;
+                             String s2 = m2.group(i + 1);
+                             int c2 = s2 != null ? Integer.parseInt(s2) : 0;
+
+                             if (c1 != c2 || i == 2) {
+                                 return Integer.compare(c2, c1);
+                             }
+                         }
+                     }
+                     log.info(String.format("Comparing version using String between %s - %s", o1.getVersion(),
+                             o2.getVersion()));
+                     return o2.getVersion().compareTo(o1.getVersion());
+                 })
+                 .collect(Collectors.toList());
     }
 
     public Map<String, DistributionSnapshot> getPersistedDistributions() {
