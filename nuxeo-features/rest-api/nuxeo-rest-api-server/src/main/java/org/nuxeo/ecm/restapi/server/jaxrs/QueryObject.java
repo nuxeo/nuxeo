@@ -139,7 +139,15 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         Properties namedParameters = new Properties();
         for (String namedParameterKey : queryParams.keySet()) {
             if (!queryParametersMap.containsValue(namedParameterKey)) {
-                namedParameters.put(namedParameterKey, queryParams.getFirst(namedParameterKey));
+                String value = queryParams.getFirst(namedParameterKey);
+                    if (value != null) {
+                    if (value.equals(CURRENT_USERID_PATTERN)) {
+                        value = ctx.getCoreSession().getPrincipal().getName();
+                    } else if (value.equals(CURRENT_REPO_PATTERN)) {
+                        value = ctx.getCoreSession().getRepositoryName();
+                    }
+                }
+                namedParameters.put(namedParameterKey, value);
             }
         }
 
