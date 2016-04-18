@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.blob.BlobManagerComponent;
 import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -69,6 +70,10 @@ public class CmisSuiteSession2 {
 
     @Inject
     protected CoreFeature coreFeature;
+
+    @Inject
+    protected TransactionalFeature txFeature;
+
 
     @Inject
     protected CmisFeatureSession cmisFeatureSession;
@@ -119,6 +124,7 @@ public class CmisSuiteSession2 {
 
     protected void setUpData() throws Exception {
         Helper.makeNuxeoRepository(coreSession);
+        txFeature.nextTransaction();
         coreFeature.getStorageConfiguration().sleepForFulltext();
     }
 

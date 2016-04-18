@@ -43,7 +43,6 @@ import org.apache.chemistry.opencmis.server.shared.ThresholdOutputStreamFactory;
 
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactory;
 import org.nuxeo.ecm.core.opencmis.bindings.NuxeoCmisServiceFactoryManager;
 import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoBinding;
@@ -51,8 +50,8 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepositories;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoRepository;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Common methods for the binding tests.
@@ -181,8 +180,12 @@ public abstract class TestCmisBindingBase {
         binding.close();
     }
 
+    @Inject
+    TransactionalFeature txFeature;
+
     protected void setUpData(CoreSession coreSession) throws Exception {
         Map<String, String> info = Helper.makeNuxeoRepository(coreSession, true); // add a proxy
+        txFeature.nextTransaction(); // flush
         sleepForFulltext();
         file5id = info.get("file5id");
         file6verid = info.get("file6verid");
@@ -191,7 +194,6 @@ public abstract class TestCmisBindingBase {
 
     protected void waitForAsyncCompletion() {
         nextTransaction();
-        Framework.getService(EventService.class).waitForAsyncCompletion();
     }
 
     protected void sleepForFulltext() {
@@ -204,10 +206,7 @@ public abstract class TestCmisBindingBase {
     }
 
     protected void nextTransaction() {
-        if (TransactionHelper.isTransactionActive()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
+        txFeature.nextTransaction();
     }
 
 }

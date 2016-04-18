@@ -22,11 +22,14 @@
     </layout>
   </appender>
 
+  <category name="org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger">
+    <priority value="TRACE"/>
+    <appender-ref ref="FILE"/>
+  </category>
 
   <root>
     <priority value="WARN" />
     <appender-ref ref="CONSOLE" />
-    <appender-ref ref="FILE" />
   </root>
 
 </log4j:configuration>

@@ -44,9 +44,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -220,14 +218,6 @@ public class Helper {
             info.put("file6verid", proxy.getSourceId());
             info.put("proxyid", proxy.getId());
         }
-
-        session.save();
-        if (TransactionHelper.isTransactionActive()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
-
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
 
         return info;
     }

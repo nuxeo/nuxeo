@@ -115,6 +115,7 @@ import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoContentStream;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -203,13 +204,15 @@ public class CmisSuiteSession {
 
     protected void setUpData() throws Exception {
         repoDetails = Helper.makeNuxeoRepository(coreSession);
+        txFeature.nextTransaction();
         coreFeature.getStorageConfiguration().sleepForFulltext();
     }
 
+    @Inject
+    TransactionalFeature txFeature;
+
     protected void waitForAsyncCompletion() {
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction();
     }
 
     @Test
