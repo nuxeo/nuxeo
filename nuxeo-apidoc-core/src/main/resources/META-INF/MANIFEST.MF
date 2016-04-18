@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: nuxeo api documentation server 
+Bundle-Name: nuxeo api documentation server
 Bundle-SymbolicName: org.nuxeo.apidoc.core;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Vendor: Nuxeo
@@ -14,4 +14,5 @@ Nuxeo-Component: OSGI-INF/schema-contrib.xml,
  OSGI-INF/ui-contrib.xml,
  OSGI-INF/directories-contrib.xml,
  OSGI-INF/directory-ui-contrib.xml,
- OSGI-INF/layout-contrib.xml
+ OSGI-INF/layout-contrib.xml,
+ OSGI-INF/listener-contrib.xml
