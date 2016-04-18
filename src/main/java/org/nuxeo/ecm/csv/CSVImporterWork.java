@@ -38,6 +38,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +86,9 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
-import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.work.TransientStoreWork;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.csv.CSVImportLog.Status;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
@@ -102,7 +105,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.7
  */
-public class CSVImporterWork extends AbstractWork {
+public class CSVImporterWork extends TransientStoreWork {
 
     public static final String NUXEO_CSV_MAIL_TO = "nuxeo.csv.mail.to";
 
@@ -179,7 +182,7 @@ public class CSVImporterWork extends AbstractWork {
 
     protected Date startDate;
 
-    protected List<CSVImportLog> importLogs = new ArrayList<>();
+    protected ArrayList<CSVImportLog> importLogs = new ArrayList<>();
 
     public CSVImporterWork(String id) {
         super(id);
@@ -214,6 +217,8 @@ public class CSVImporterWork extends AbstractWork {
 
     @Override
     public void work() {
+        TransientStore store = getStore();
+        store.putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.RUNNING));
         setStatus("Importing");
         openUserSession();
         try (Reader in = newReader(csvFile);
@@ -228,6 +233,46 @@ public class CSVImporterWork extends AbstractWork {
             sendMail();
         }
         setStatus(null);
+        store.putParameter(id, "logs", importLogs);
+    }
+
+    @Override
+    public void cleanUp(boolean ok, Exception e) {
+        try {
+            super.cleanUp(ok, e);
+        } finally {
+            getStore().putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.COMPLETED));
+        }
+    }
+
+    static final Serializable EMPTY_LOGS =new ArrayList<CSVImportLog>();
+
+    String launch() {
+        WorkManager works = Framework.getLocalService(WorkManager.class);
+        String queueId = works.getCategoryQueueId(CATEGORY_CSV_IMPORTER);
+
+        TransientStore store = getStore();
+        store.putParameter(id, "logs", EMPTY_LOGS);
+        store.putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.SCHEDULED, 0, works.getMetrics(queueId).scheduled.intValue()));
+        works.schedule(this, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+        return id;
+    }
+
+    static CSVImportStatus getStatus(String id) {
+        TransientStore store = getStore();
+        if (store.exists(id)) {
+            return null;
+        }
+        return  (CSVImportStatus) store.getParameter(id, "status");
+    }
+
+    @SuppressWarnings("unchecked")
+    static List<CSVImportLog> getLastImportLogs(String id) {
+        TransientStore store = getStore();
+        if (!store.exists(id)) {
+            return Collections.emptyList();
+        }
+        return (ArrayList<CSVImportLog>)store.getParameter(id, "logs");
     }
 
     /**

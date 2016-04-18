@@ -93,4 +93,5 @@ public class CSVImportLog implements Serializable {
     public boolean isError() {
         return status == Status.ERROR;
     }
+
 }

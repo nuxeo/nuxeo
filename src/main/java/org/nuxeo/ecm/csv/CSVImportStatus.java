@@ -19,11 +19,15 @@
 
 package org.nuxeo.ecm.csv;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
-public class CSVImportStatus {
+public class CSVImportStatus implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final State state;
 

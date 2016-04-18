@@ -35,7 +35,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -53,13 +52,14 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, SQLDirectoryFeature.class })
+@Features({ CoreFeature.class, SQLDirectoryFeature.class , TransientStoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.login", //
         "org.nuxeo.ecm.platform.web.common", //
         "org.nuxeo.ecm.platform.usermanager.api", //
@@ -108,10 +108,6 @@ public class TestCSVImport {
     @Inject
     protected CoreFeature coreFeature;
 
-    @Before
-    public void clearWorkQueue() {
-        workManager.clearCompletedWork(0);
-    }
 
     private File getCSVFile(String name) {
         return new File(FileUtils.getResourcePathFromContext(name));
