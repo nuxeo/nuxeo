@@ -18,15 +18,6 @@
  */
 package org.nuxeo.ftest.cap;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_NOTE_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
-import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,11 +29,9 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.nuxeo.functionaltests.pages.HomePage;
 import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
 import org.nuxeo.functionaltests.pages.UsersGroupsHomePage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.GroupCreationFormPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.GroupViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.GroupsTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserCreationFormPage;
-import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
@@ -50,6 +39,17 @@ import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
 import org.nuxeo.functionaltests.pages.workspace.WorkspaceHomePage;
 import org.nuxeo.functionaltests.pages.workspace.WorkspaceRepositoryPage;
 import org.openqa.selenium.By;
+
+import static org.nuxeo.ftest.cap.TestConstants.TEST_NOTE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+
+import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Users & Groups search & rights tests.
@@ -106,7 +106,7 @@ public class ITUsersGroupsTest extends AbstractTest {
             Locator.waitForTextPresent(By.id("viewGroupView:viewGroup"), "sub-admins");
 
             // Check that jdoe is member of sub-admins
-            UserViewTabSubPage userPage = adminGroupViewPage.getUsersTab().searchUser("jdo").viewUser("jdoe");
+            adminGroupViewPage.getUsersTab().searchUser("jdo").viewUser("jdoe");
             Locator.findElement(By.linkText("sub-admins"));
             logout();
 
@@ -141,7 +141,7 @@ public class ITUsersGroupsTest extends AbstractTest {
                                                              .getUsersTab()
                                                              .getUserCreatePage();
             Locator.waitUntilElementPresent(By.id("createUserView:createUser:button_save"));
-            GroupCreationFormPage groupCreatePage = userCreatePage.getGroupsTab(true).getGroupCreatePage();
+            userCreatePage.getGroupsTab(true).getGroupCreatePage();
             Locator.waitUntilElementPresent(By.id("createGroupView:createGroup:button_save"));
             logout();
         } finally {
