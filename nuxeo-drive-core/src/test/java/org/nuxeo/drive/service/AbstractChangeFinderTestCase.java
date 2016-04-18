@@ -53,7 +53,6 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Base class to test the {@link FileSystemChangeFinder} implementations.
@@ -171,14 +170,12 @@ public class AbstractChangeFinderTestCase {
         return changeSummary;
     }
 
-    protected void commitAndWaitForAsyncCompletion() throws Exception {
-        TransactionHelper.commitOrRollbackTransaction();
-        waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
-
-    }
 
     @Inject TransactionalFeature txFeature;
+
+    protected void commitAndWaitForAsyncCompletion() throws Exception {
+        txFeature.nextTransaction();
+    }
 
     protected void waitForAsyncCompletion() throws Exception {
         txFeature.nextTransaction(20, TimeUnit.SECONDS);

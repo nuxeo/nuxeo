@@ -18,12 +18,18 @@
  */
 package org.nuxeo.drive.test;
 
-import javax.inject.Inject;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature.Waiter;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -32,7 +38,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
  * Elasticsearch audit feature cleaning up audit log after each test.
- * 
+ *
  * @since 8.2
  */
 @Features({ PlatformFeature.class, RepositoryElasticSearchFeature.class })
@@ -44,8 +50,40 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @LocalDeploy("org.nuxeo.drive.elasticsearch:OSGI-INF/test-nuxeodrive-elasticsearch-contrib.xml")
 public class ESAuditFeature extends SimpleFeature {
 
-    @Inject
-    protected ElasticSearchAdmin esa;
+    @Override
+    public void initialize(FeaturesRunner runner) throws Exception {
+        runner.getFeature(TransactionalFeature.class)
+                .addWaiter(new Waiter() {
+
+                    @Override
+                    public boolean await(long deadline) throws InterruptedException {
+                        if (!Framework.getService(AuditLogger.class)
+                                .await(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS)) {
+                            return false;
+                        }
+                        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+                        if (esa == null) {
+                            return true;
+                        }
+                        // Wait for indexing
+                        try {
+                            esa.prepareWaitForIndexing().get(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+                        } catch (ExecutionException | TimeoutException cause) {
+                            return false;
+                        }
+                        // Explicit refresh
+                        esa.refresh();
+                        // Explicit refresh for the audit index until it is handled by esa.refresh
+                        esa.getClient()
+                           .admin()
+                           .indices()
+                           .prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE))
+                           .get();
+                        return true;
+                    }
+
+                });
+    }
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
@@ -53,6 +91,7 @@ public class ESAuditFeature extends SimpleFeature {
     }
 
     protected void cleanUpAuditLog() {
+        ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         esa.dropAndInitIndex(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
     }
 

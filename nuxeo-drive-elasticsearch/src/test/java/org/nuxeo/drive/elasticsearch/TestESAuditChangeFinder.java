@@ -19,14 +19,11 @@
  */
 package org.nuxeo.drive.elasticsearch;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite.SuiteClasses;
 import org.nuxeo.drive.service.AuditChangeFinderTestSuite;
 import org.nuxeo.drive.test.ESAuditFeature;
-import org.nuxeo.elasticsearch.ElasticSearchConstants;
-import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
@@ -34,25 +31,10 @@ import org.nuxeo.runtime.test.runner.Features;
  *
  * @since 7.3
  */
-@Features(ESAuditFeature.class)
-public class TestESAuditChangeFinder extends AuditChangeFinderTestSuite {
+@RunWith(ContributableFeaturesRunner.class)
+@Features({ ESAuditFeature.class })
+@SuiteClasses(AuditChangeFinderTestSuite.class)
+public class TestESAuditChangeFinder {
 
-    @Inject
-    protected ElasticSearchAdmin esa;
-
-    @Override
-    protected void waitForAsyncCompletion() throws Exception {
-        super.waitForAsyncCompletion();
-        // Wait for indexing
-        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
-        // Explicit refresh
-        esa.refresh();
-        // Explicit refresh for the audit index until it is handled by esa.refresh
-        esa.getClient()
-           .admin()
-           .indices()
-           .prepareRefresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE))
-           .get();
-    }
 
 }
