@@ -13,8 +13,8 @@
       <h:outputScript type="text/javascript" target="#{pageJsTarget}">
         function nxSuggestHandleEnterKey(search) {
             var searchUrl = '#{nxu:javaScriptEscape(searchUIActions.getSearchTabUrl(search))}';
-            var encdodedSearch = encodeURIComponent(search);
-            searchUrl += '&amp;#{searchUIActions.searchTermParameter}=' + encdodedSearch;
+            var encodedSearch = encodeURIComponent(search);
+            searchUrl += '&amp;#{searchUIActions.searchTermParameter}=' + encodedSearch;
             window.location.replace(searchUrl);
         }
 
