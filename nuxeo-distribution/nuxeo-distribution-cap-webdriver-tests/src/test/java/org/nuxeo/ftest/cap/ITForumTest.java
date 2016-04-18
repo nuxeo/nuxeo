@@ -90,7 +90,7 @@ public class ITForumTest extends AbstractTest {
 
         asPage(DocumentBasePage.class).getContentTab()
                                       .createForum(TEST_FORUM_TITLE, TEST_FORUM_DESCRIPTION)
-                                      .createTopic("testTopicWithoutModeration", "description", false, null);
+                                      .createTopic("testTopicWithoutModeration", "description", false);
 
         logout();
 

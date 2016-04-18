@@ -83,9 +83,7 @@ public class DocumentBasePage extends AbstractPage {
      * Exception occurred a user is expected to be connected but it isn't.
      */
     public class UserNotConnectedException extends Exception {
-        /**
-         *
-         */
+
         private static final long serialVersionUID = 1L;
 
         public UserNotConnectedException(String username) {

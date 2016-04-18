@@ -158,14 +158,13 @@ public class ITNoteDocumentTest extends AbstractTest {
             open(TEST_WORKSPACE_URL);
 
             // fill the node creation form but do not submit it
-            NoteCreationFormPage page = asPage(DocumentBasePage.class)
-                                                .getContentTab()
-                                                .getDocumentCreatePage(NOTE_TYPE, NoteCreationFormPage.class)
-                                                .fillCreateNoteForm(NOTE_TITLE, NOTE_DESCRIPTION, true, CONTENT_NOTE);
+            asPage(DocumentBasePage.class).getContentTab()
+                                          .getDocumentCreatePage(NOTE_TYPE, NoteCreationFormPage.class)
+                                          .fillCreateNoteForm(NOTE_TITLE, NOTE_DESCRIPTION, true, CONTENT_NOTE);
 
             // go back to the parent folder
-            WebElement breadcrumb = driver.findElement(By.xpath("//form[@id='breadcrumbForm']")).findElement(
-                    By.linkText(TEST_WORKSPACE_TITLE));
+            WebElement breadcrumb = driver.findElement(By.xpath("//form[@id='breadcrumbForm']"))
+                                          .findElement(By.linkText(TEST_WORKSPACE_TITLE));
             assertTrue(breadcrumb.isDisplayed());
             breadcrumb.click();
             Alert alert = driver.switchTo().alert();
