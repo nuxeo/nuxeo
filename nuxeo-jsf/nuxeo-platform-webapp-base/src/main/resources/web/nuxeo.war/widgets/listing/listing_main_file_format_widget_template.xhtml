@@ -1,18 +1,16 @@
-<f:subview
+<ui:fragment
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:f="http://java.sun.com/jsf/core">
+  xmlns:ui="http://java.sun.com/jsf/facelets">
   <nxu:set var="mainBlob" value="#{blobHolderGenerator.getBlobHolder(fieldOrValue).blob}">
   <nxu:set var="extension" value="#{nxu:test(!empty mainBlob, nxu:fileExtension(mainBlob.filename), '')}">
     <c:if test="#{nxl:isLikePlainMode(widget.mode)}">#{extension}</c:if>
     <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
-      <f:subview rendered="#{not empty extension}">
-        <h:outputText value="#{extension}"
-          styleClass="label" />
-      </f:subview>
+      <h:outputText value="#{extension}" rendered="#{not empty extension}"
+        styleClass="label" />
      </c:if>
   </nxu:set>
   </nxu:set>
-</f:subview>
+</ui:fragment>
