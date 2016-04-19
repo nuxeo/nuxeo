@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.properties.test">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.codec.usergroup.allowedCharacters">[^\/\?]*</property>
+  </extension>
+
+</component>

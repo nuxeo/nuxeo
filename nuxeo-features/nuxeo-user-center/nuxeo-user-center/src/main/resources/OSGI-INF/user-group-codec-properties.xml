@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.center.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property to control the regex used for allowed characters
+      in the user/group name when matching a request URL.
+
+      @since 8.3
+    </documentation>
+    <property name="nuxeo.codec.usergroup.allowedCharacters">[a-zA-Z_0-9\-\.@]*</property>
+  </extension>
+
+</component>
