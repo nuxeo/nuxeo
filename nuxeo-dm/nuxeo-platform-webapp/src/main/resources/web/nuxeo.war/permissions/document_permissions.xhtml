@@ -72,7 +72,7 @@
 
   <template is="dom-bind">
 
-    <nuxeo-connection id="nx_connection" url="#{baseURL}"></nuxeo-connection>
+    <nuxeo-connection id="nx_connection" url="#{baseURL}"  repository-name="#{currentDocument.repositoryName}"></nuxeo-connection>
     <document-permissions doc-id="#{currentDocument.id}"></document-permissions>
 
   </template>
