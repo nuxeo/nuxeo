@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.quota.size;
 
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
@@ -44,7 +44,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -54,7 +53,6 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.utils.BlobsExtractor;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
@@ -66,7 +64,6 @@ import org.nuxeo.runtime.api.Framework;
  * {@link org.nuxeo.ecm.quota.QuotaStatsUpdater} counting space used by Blobs in document. This default implementation
  * does not track the space used by versions, or the space used by non-Blob properties
  *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
 public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
@@ -371,11 +368,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     }
 
     protected void sendUpdateEvents(SizeUpdateEventContext eventCtx) {
-
-        Event quotaUpdateEvent = eventCtx.newQuotaUpdateEvent();
-        log.debug("prepared event on target tree with context " + eventCtx.toString());
-        EventService es = Framework.getLocalService(EventService.class);
-        es.fireEvent(quotaUpdateEvent);
+        new QuotaComputerProcessor().processQuotaComputation(eventCtx);
     }
 
     protected List<String> getParentUUIDS(CoreSession unrestrictedSession, final DocumentRef docRef)

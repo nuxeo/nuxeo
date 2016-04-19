@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.quota.QuotaStatsService;
 
@@ -38,8 +37,6 @@ import org.nuxeo.ecm.quota.QuotaStatsService;
  * @since 5.6
  */
 public class SizeUpdateEventContext extends DocumentEventContext {
-
-    public static final String QUOTA_UPDATE_NEEDED = "quotaUpdateNeeded";
 
     public static final String DOCUMENT_UPDATE_INITIAL_STATISTICS = "documentUpdateInitialStats";
 
@@ -63,19 +60,10 @@ public class SizeUpdateEventContext extends DocumentEventContext {
 
     public static final String SOURCE_EVENT_PROPERTY_KEY = "sourceEvent";
 
-    public static final String MARKER_KEY = "contextType";
-
-    public static final String MARKER_VALUE = "SizeUpdateEventContext";
-
     // mark that an update trash is needed
     // used when permanently deleting a doc and in the initial computation
     // if the doc is in trash
     public static final String _UPDATE_TRASH_SIZE = "_UPDATE_TRASH";
-
-    protected SizeUpdateEventContext(CoreSession session, DocumentEventContext evtCtx) {
-        super(session, evtCtx.getPrincipal(), evtCtx.getSourceDocument(), evtCtx.getDestination());
-        setProperty(MARKER_KEY, MARKER_VALUE);
-    }
 
     public SizeUpdateEventContext(CoreSession session, DocumentEventContext evtCtx, DocumentModel sourceDocument,
             BlobSizeInfo bsi, String sourceEvent) {
@@ -83,7 +71,6 @@ public class SizeUpdateEventContext extends DocumentEventContext {
         setBlobSize(bsi.getBlobSize());
         setBlobDelta(bsi.getBlobSizeDelta());
         setProperty(SOURCE_EVENT_PROPERTY_KEY, sourceEvent);
-        setProperty(MARKER_KEY, MARKER_VALUE);
     }
 
     public SizeUpdateEventContext(CoreSession session, BlobSizeInfo bsi, String sourceEvent,
@@ -92,7 +79,6 @@ public class SizeUpdateEventContext extends DocumentEventContext {
         setBlobSize(bsi.getBlobSize());
         setBlobDelta(bsi.getBlobSizeDelta());
         setProperty(SOURCE_EVENT_PROPERTY_KEY, sourceEvent);
-        setProperty(MARKER_KEY, MARKER_VALUE);
     }
 
     public SizeUpdateEventContext(CoreSession session, DocumentEventContext evtCtx, BlobSizeInfo bsi, String sourceEvent) {
@@ -100,7 +86,6 @@ public class SizeUpdateEventContext extends DocumentEventContext {
         setBlobSize(bsi.getBlobSize());
         setBlobDelta(bsi.getBlobSizeDelta());
         setProperty(SOURCE_EVENT_PROPERTY_KEY, sourceEvent);
-        setProperty(MARKER_KEY, MARKER_VALUE);
     }
 
     public SizeUpdateEventContext(CoreSession session, DocumentEventContext evtCtx, long totalSize, String sourceEvent) {
@@ -108,16 +93,6 @@ public class SizeUpdateEventContext extends DocumentEventContext {
         setBlobSize(totalSize);
         setBlobDelta(-totalSize);
         setProperty(SOURCE_EVENT_PROPERTY_KEY, sourceEvent);
-        setProperty(MARKER_KEY, MARKER_VALUE);
-    }
-
-    public static SizeUpdateEventContext unwrap(DocumentEventContext docCtx) {
-        if (MARKER_VALUE.equals(docCtx.getProperty(MARKER_KEY))) {
-            SizeUpdateEventContext ctx = new SizeUpdateEventContext(docCtx.getCoreSession(), docCtx);
-            ctx.setProperties(docCtx.getProperties());
-            return ctx;
-        }
-        return null;
     }
 
     public long getBlobSize() {
@@ -196,7 +171,4 @@ public class SizeUpdateEventContext extends DocumentEventContext {
         return sb.toString();
     }
 
-    public Event newQuotaUpdateEvent() {
-        return newEvent(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED);
-    }
 }

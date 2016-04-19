@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.quota.size;
 
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDOUT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED_BY_COPY;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
-import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
 import static org.nuxeo.ecm.quota.size.SizeUpdateEventContext.DOCUMENT_UPDATE_INITIAL_STATISTICS;
 
 import java.io.IOException;
@@ -40,77 +39,21 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 
 /**
- * Asynchronous listener triggered by the {@link QuotaSyncListenerChecker} when Quota needs to be recomputed
+ * Helper recomputing quotas.
  *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
-public class QuotaComputerProcessor implements PostCommitEventListener {
+public class QuotaComputerProcessor {
 
     protected static final Log log = LogFactory.getLog(QuotaComputerProcessor.class);
-
-    @Override
-    public void handleEvent(EventBundle eventBundle) {
-
-        if (eventBundle.containsEventName(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED)) {
-
-            for (Event event : eventBundle) {
-                if (event.getName().equals(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED)) {
-                    EventContext ctx = event.getContext();
-
-                    if (ctx instanceof DocumentEventContext) {
-                        SizeUpdateEventContext quotaCtx = SizeUpdateEventContext.unwrap((DocumentEventContext) ctx);
-                        if (quotaCtx != null) {
-                            processQuotaComputation(quotaCtx);
-                            // double check
-                            debugCheck(quotaCtx);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    protected void debugCheck(SizeUpdateEventContext quotaCtx) {
-        String sourceEvent = quotaCtx.getSourceEvent();
-        CoreSession session = quotaCtx.getCoreSession();
-        DocumentModel sourceDocument = quotaCtx.getSourceDocument();
-
-        if (session.exists(sourceDocument.getRef())) {
-            DocumentModel doc = session.getDocument(sourceDocument.getRef());
-            if (log.isTraceEnabled()) {
-                if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
-                    log.trace("Double Check Facet was added OK");
-                } else {
-                    log.trace("No facet !!!!");
-                }
-            }
-        } else {
-            log.debug("Document " + sourceDocument.getRef() + " no longer exists (" + sourceEvent + ")");
-        }
-
-    }
 
     public void processQuotaComputation(SizeUpdateEventContext quotaCtx) {
         String sourceEvent = quotaCtx.getSourceEvent();
         CoreSession session = quotaCtx.getCoreSession();
         DocumentModel sourceDocument = quotaCtx.getSourceDocument();
 
-        if (sourceDocument instanceof ShallowDocumentModel) {
-            if (!(ABOUT_TO_REMOVE.equals(sourceEvent) || ABOUT_TO_REMOVE_VERSION.equals(sourceEvent))) {
-                log.error("Unable to reconnect Document " + sourceDocument.getPathAsString() + " on event "
-                        + sourceEvent);
-                return;
-            }
-        }
         List<DocumentModel> parents = new ArrayList<DocumentModel>();
 
         log.debug(sourceEvent + "/ compute Quota on " + sourceDocument.getPathAsString() + " and parents");
