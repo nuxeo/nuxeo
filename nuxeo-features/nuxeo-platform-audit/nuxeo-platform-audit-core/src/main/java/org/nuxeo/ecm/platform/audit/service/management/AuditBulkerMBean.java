@@ -13,13 +13,13 @@
  *******************************************************************************/
 package org.nuxeo.ecm.platform.audit.service.management;
 
-import org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor;
-
 public interface AuditBulkerMBean {
 
-    AuditBulkerDescriptor getConfig();
+    int getBulkTimeout();
 
     void setBulkTimeout(int value);
+
+    int getBulkSize();
 
     void setBulkSize(int value);
 

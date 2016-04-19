@@ -19,19 +19,35 @@
 package org.nuxeo.ecm.platform.audit.service.extension;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.platform.audit.service.AuditBackend;
+import org.nuxeo.ecm.platform.audit.service.AuditBulker;
+import org.nuxeo.ecm.platform.audit.service.DefaultAuditBulker;
 
 @XObject("bulk")
 public class AuditBulkerDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @XNode("@class")
+    protected Class<? extends AuditBulker> klass = DefaultAuditBulker.class;
+
     @XNode("timeout")
-    public int timeout = 10;
+    public int timeout = 1000; // 1 second
 
     @XNode("size")
     public int size = 1000;
 
+    public AuditBulker newInstance(AuditBackend backend) {
+        try {
+            Constructor<? extends AuditBulker> declaredConstructor = klass.getDeclaredConstructor(AuditBackend.class, AuditBulkerDescriptor.class);
+            declaredConstructor.setAccessible(true);
+            return declaredConstructor.newInstance(backend, this);
+        } catch (ReflectiveOperationException cause) {
+            throw new RuntimeException("Cannot create audit backend of type " + klass.getName(), cause);
+        }
+    }
 }

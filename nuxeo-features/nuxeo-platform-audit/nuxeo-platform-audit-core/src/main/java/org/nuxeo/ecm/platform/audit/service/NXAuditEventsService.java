@@ -86,7 +86,7 @@ public class NXAuditEventsService extends DefaultComponent {
 
     protected AuditBackendDescriptor backendConfig = new AuditBackendDescriptor();
 
-    protected final AuditBulker bulker = new AuditBulker(this);
+    protected AuditBulker bulker;
 
     protected AuditBulkerDescriptor bulkerConfig = new AuditBulkerDescriptor();
 
@@ -99,7 +99,8 @@ public class NXAuditEventsService extends DefaultComponent {
     public void applicationStarted(ComponentContext context) {
         backend = backendConfig.newInstance(this);
         backend.onApplicationStarted();
-        bulker.startup();
+        bulker = bulkerConfig.newInstance(backend);
+        bulker.onApplicationStarted();
         Framework.addListener(new RuntimeServiceListener() {
 
             @Override
@@ -111,7 +112,11 @@ public class NXAuditEventsService extends DefaultComponent {
                 try {
                     backend.onShutdown();
                 } finally {
-                    bulker.shutdown();
+                    try {
+                        bulker.onShutdown();
+                    } finally {
+                        bulker = null;
+                    }
                     backend = null;
                 }
             }

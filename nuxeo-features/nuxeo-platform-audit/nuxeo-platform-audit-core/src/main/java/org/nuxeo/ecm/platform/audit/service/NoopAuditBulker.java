@@ -16,23 +16,43 @@
  */
 package org.nuxeo.ecm.platform.audit.service;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor;
 
 /**
  *
  *
  * @since 8.3
  */
-public interface AuditBulker {
+public class NoopAuditBulker implements AuditBulker{
 
-    void onApplicationStarted();
+    final AuditBackend backend;
 
-    void onShutdown();
+    NoopAuditBulker(AuditBackend backend, AuditBulkerDescriptor config) {
+        this.backend = backend;
+    }
 
-    void offer(LogEntry entry);
+    @Override
+    public void onApplicationStarted() {
 
-    boolean await(long delay, TimeUnit unit) throws InterruptedException;
+    }
+
+    @Override
+    public void onShutdown() {
+
+    }
+
+    @Override
+    public void offer(LogEntry entry) {
+        backend.addLogEntries(Collections.singletonList(entry));
+    }
+
+    @Override
+    public boolean await(long delay, TimeUnit unit) throws InterruptedException {
+        return true;
+    }
 
 }
