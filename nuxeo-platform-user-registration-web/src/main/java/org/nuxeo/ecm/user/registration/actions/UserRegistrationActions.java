@@ -305,7 +305,7 @@ public class UserRegistrationActions implements Serializable {
     }
 
     protected boolean isDocumentRevivable(DocumentModel doc) {
-        return "accepted".equals(doc.getCurrentLifeCycleState());
+        return "approved".equals(doc.getCurrentLifeCycleState());
     }
 
     public void validateUserRegistration() {
