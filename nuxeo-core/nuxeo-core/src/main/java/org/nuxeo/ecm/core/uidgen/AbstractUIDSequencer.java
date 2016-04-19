@@ -32,6 +32,11 @@ public abstract class AbstractUIDSequencer implements UIDSequencer {
     public abstract int getNext(String key);
 
     @Override
+    public long getNextLong(String key) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
     public abstract void dispose();
 
     @Override

@@ -19,14 +19,13 @@
  */
 package org.nuxeo.ecm.core.uidgen;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.nuxeo.ecm.core.uidgen.AbstractUIDSequencer;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class DummyUIDSequencerImpl extends AbstractUIDSequencer {
 
-    protected ConcurrentHashMap<String, AtomicInteger> counters = new ConcurrentHashMap<String, AtomicInteger>();
+    protected Map<String, AtomicLong> counters = new ConcurrentHashMap<>();
 
     @Override
     public void init() {
@@ -34,7 +33,12 @@ public class DummyUIDSequencerImpl extends AbstractUIDSequencer {
 
     @Override
     public int getNext(String key) {
-        counters.putIfAbsent(key, new AtomicInteger());
+        return (int) getNextLong(key);
+    }
+
+    @Override
+    public long getNextLong(String key) {
+        counters.putIfAbsent(key, new AtomicLong());
         return counters.get(key).incrementAndGet();
     }
 

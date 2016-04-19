@@ -56,7 +56,7 @@ public class TestSequenceGeneratorWithElasticSearch {
 
         assertEquals(1, seq.getNext("myseq"));
         assertEquals(2, seq.getNext("myseq"));
-        assertEquals(3, seq.getNext("myseq"));
+        assertEquals(3L, seq.getNextLong("myseq"));
         assertEquals(1, seq.getNext("myseq2"));
         assertEquals(4, seq.getNext("myseq"));
         assertEquals(2, seq.getNext("myseq2"));
@@ -73,6 +73,7 @@ public class TestSequenceGeneratorWithElasticSearch {
         assertTrue(seq.getNext("mySequence") > 1);
         seq.initSequence("mySequence", 10);
         assertTrue(seq.getNext("mySequence") > 10);
+        assertTrue(seq.getNextLong("mySequence") > 10);
     }
 
     @Test

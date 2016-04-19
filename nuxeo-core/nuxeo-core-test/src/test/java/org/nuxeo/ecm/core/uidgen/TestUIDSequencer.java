@@ -39,7 +39,7 @@ public class TestUIDSequencer extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.ecm.core");
         deployBundle("org.nuxeo.ecm.core.schema");
-        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/uidgenerator-seqgen-test-contrib.xml");
+        deployContrib("org.nuxeo.ecm.core", "OSGI-INF/test-uidgenerator-contrib.xml");
         service = Framework.getService(UIDGeneratorService.class);
     }
 
@@ -50,7 +50,7 @@ public class TestUIDSequencer extends NXRuntimeTestCase {
 
         // Test UIDSequencer#getNext
         assertEquals(1, seq.getNext("mySequence"));
-        assertEquals(2, seq.getNext("mySequence"));
+        assertEquals(2L, seq.getNextLong("mySequence"));
         assertEquals(1, seq.getNext("mySequence2"));
 
         // Test UIDSequencer#initSequence
@@ -58,6 +58,7 @@ public class TestUIDSequencer extends NXRuntimeTestCase {
         assertTrue(seq.getNext("mySequence") > 1);
         seq.initSequence("mySequence", 10);
         assertTrue(seq.getNext("mySequence") > 10);
+        assertTrue(seq.getNextLong("mySequence") > 10);
     }
 
 }

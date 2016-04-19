@@ -54,6 +54,11 @@ public class RedisUIDSequencer extends AbstractUIDSequencer {
 
     @Override
     public int getNext(String key) {
+        return (int) getNextLong(key);
+    }
+
+    @Override
+    public long getNextLong(String key) {
         RedisExecutor executor = Framework.getService(RedisExecutor.class);
         try {
             return executor.execute(new RedisCallable<Long>() {
@@ -61,7 +66,7 @@ public class RedisUIDSequencer extends AbstractUIDSequencer {
                 public Long call(Jedis jedis) {
                     return jedis.incr(namespace + key);
                 }
-            }).intValue();
+            });
         } catch (JedisException e) {
             throw new NuxeoException(e);
         }

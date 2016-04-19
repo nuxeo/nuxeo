@@ -65,11 +65,16 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
     }
 
     @Override
-    public int getNext(String sequenceName) {
+    public long getNextLong(String sequenceName) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
         IndexResponse res = getClient().prepareIndex(getESIndexName(), ElasticSearchConstants.SEQ_ID_TYPE, sequenceName).setSource(
                 source).execute().actionGet();
-        return (int) res.getVersion();
+        return res.getVersion();
+    }
+
+    @Override
+    public int getNext(String sequenceName) {
+        return (int) getNextLong(sequenceName);
     }
 
     @Override

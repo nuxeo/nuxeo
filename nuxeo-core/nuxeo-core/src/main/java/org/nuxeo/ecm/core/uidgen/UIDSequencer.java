@@ -64,6 +64,14 @@ public interface UIDSequencer {
     int getNext(String key);
 
     /**
+     * Extends {@link UIDSequencer#getNext(java.lang.String)} to return a long value. This method is compatible
+     * with getNext in the integer range.
+     *
+     * @since 8.3
+     */
+    long getNextLong(String key);
+
+    /**
      * Cleanup callback
      *
      * @since 7.3

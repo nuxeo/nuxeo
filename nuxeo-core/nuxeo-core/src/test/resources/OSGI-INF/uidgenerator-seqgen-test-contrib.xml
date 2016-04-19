@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<component name="org.nuxeo.ecm.core.uidgen.seqgen-testContribs">
-
-  <extension target="org.nuxeo.ecm.core.uidgen.UIDGeneratorService" point="sequencers">
-    <sequencer name="dummySequencer" class="org.nuxeo.ecm.core.uidgen.DummyUIDSequencerImpl" default="true"/>
-  </extension>
-
-</component>
