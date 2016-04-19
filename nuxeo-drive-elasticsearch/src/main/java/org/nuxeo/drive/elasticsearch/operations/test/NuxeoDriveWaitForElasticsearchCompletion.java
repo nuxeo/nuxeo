@@ -22,7 +22,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper;
+import org.elasticsearch.ElasticsearchException;
+import org.nuxeo.drive.operations.test.NuxeoDriveWaitForAsyncCompletion;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -36,14 +37,18 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.3
  */
 @Operation(id = NuxeoDriveWaitForElasticsearchCompletion.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Wait for Elasticsearch audit completion")
-public class NuxeoDriveWaitForElasticsearchCompletion {
+public class NuxeoDriveWaitForElasticsearchCompletion extends NuxeoDriveWaitForAsyncCompletion {
 
     public static final String ID = "NuxeoDrive.WaitForElasticsearchCompletion";
 
+    @Override
     @OperationMethod
     public void run() throws InterruptedException, ExecutionException, TimeoutException {
-        NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
-        NuxeoDriveIntegrationTestsHelper.waitForAsyncCompletion();
+        super.run();
+        waitForElasticIndexing();
+    }
+
+    protected void waitForElasticIndexing() throws InterruptedException, ExecutionException, TimeoutException, ElasticsearchException {
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         // Wait for indexing
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);

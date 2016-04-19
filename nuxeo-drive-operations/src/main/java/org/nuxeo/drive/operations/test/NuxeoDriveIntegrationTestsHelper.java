@@ -19,7 +19,6 @@
 package org.nuxeo.drive.operations.test;
 
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
@@ -30,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.center.profile.UserProfileService;
 import org.nuxeo.runtime.api.Framework;
@@ -120,7 +120,15 @@ public final class NuxeoDriveIntegrationTestsHelper {
     }
 
     public static void waitForAsyncCompletion() throws InterruptedException {
-        Framework.getService(WorkManager.class).awaitCompletion(20, TimeUnit.SECONDS);
+        if (!Framework.getService(WorkManager.class).awaitCompletion(20, TimeUnit.SECONDS)) {
+            throw new AssertionError("Cannot synch with work manager in 20 seconds");
+        }
+    }
+
+    public static void waitForAuditIngestion() throws InterruptedException {
+        if (Framework.getService(AuditLogger.class).await(20, TimeUnit.SECONDS)) {
+            throw new AssertionError("Cannot synch with work manager in 20 seconds");
+        }
     }
 
 }
