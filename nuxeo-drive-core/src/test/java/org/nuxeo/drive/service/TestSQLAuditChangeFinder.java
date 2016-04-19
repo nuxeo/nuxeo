@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,21 @@
  */
 package org.nuxeo.drive.service;
 
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite.SuiteClasses;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.test.SQLAuditFeature;
+import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
- * Runs the {@link AuditChangeFinderTestSuite} using the {@link AuditChangeFinder}.
+ * Runs the {@link AuditChangeFinderClusteringEnabledTestSuite} using the {@link AuditChangeFinder}.
+ *
+ * @since 8.2
  */
+@RunWith(ContributableFeaturesRunner.class)
 @Features(SQLAuditFeature.class)
-public class TestAuditFileSystemChangeFinder extends AuditChangeFinderTestSuite {
+@SuiteClasses({AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class})
+public class TestSQLAuditChangeFinder {
 
 }
