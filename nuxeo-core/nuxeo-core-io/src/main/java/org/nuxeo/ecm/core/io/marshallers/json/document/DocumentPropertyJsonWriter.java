@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015-2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
+ *     Ronan DANIELLOU <rdaniellou@nuxeo.com>
  */
 
 package org.nuxeo.ecm.core.io.marshallers.json.document;
@@ -254,7 +255,13 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
             return "";
         }
         DownloadService downloadService = Framework.getService(DownloadService.class);
-        String xpath = prop.getSchema().getName() + ":" + ComplexTypeImpl.canonicalXPath(prop.getPath().substring(1));
+
+        String xpath = ComplexTypeImpl.canonicalXPath(prop.getPath().substring(1));
+        // if no prefix, use schema name as prefix:
+        if (!xpath.contains(":")) {
+            xpath = prop.getSchema().getName() + ":" + xpath;
+        }
+
         String filename = ((Blob) prop.getValue()).getFilename();
         return ctx.getBaseUrl() + downloadService.getDownloadUrl(doc, xpath, filename);
     }
