@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.tag.Tag;
@@ -245,7 +246,10 @@ public class TagActionsBean implements Serializable {
                 try {
                     doc = documentManager.getDocument(new IdRef(id));
                 } catch (DocumentNotFoundException e) {
-                    log.error(e, e);
+                    log.error(e.getMessage(), e);
+                } catch (DocumentSecurityException e) {
+                    // user don't have access to the document
+                    doc = null;
                 }
                 if (doc != null) {
                     docs.add(doc);
