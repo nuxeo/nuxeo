@@ -29,7 +29,7 @@
  -->
   
   <root>
-    <priority value="INFO" />
+    <priority value="WARN" />
     <appender-ref ref="CONSOLE" />
   </root>
 
