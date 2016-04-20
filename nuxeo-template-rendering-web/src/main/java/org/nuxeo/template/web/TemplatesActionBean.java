@@ -119,6 +119,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
         if (template != null) {
             currentDocument = template.saveParams(templateEditableInputs, true);
         }
+        navigationContext.invalidateCurrentDocument();
         return navigationContext.navigateToDocument(currentDocument);
     }
 
@@ -163,6 +164,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
             currentDocument = template.saveParams(templateEditableInputs, true);
             newInput = null;
             templateEditableInputs = null;
+            navigationContext.invalidateCurrentDocument();
             return navigationContext.navigateToDocument(currentDocument);
         } else {
             return null;
