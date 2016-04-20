@@ -126,7 +126,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
     }
 
     public static void waitForAuditIngestion() throws InterruptedException {
-        if (Framework.getService(AuditLogger.class).await(20, TimeUnit.SECONDS)) {
+        if (!Framework.getService(AuditLogger.class).await(20, TimeUnit.SECONDS)) {
             throw new AssertionError("Cannot synch with work manager in 20 seconds");
         }
     }
