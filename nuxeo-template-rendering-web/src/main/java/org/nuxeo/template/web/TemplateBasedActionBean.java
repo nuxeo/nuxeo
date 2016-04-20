@@ -156,6 +156,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
             currentDocument = template.saveParams(editableTemplateName, templateEditableInputs, true);
         }
         reset();
+        navigationContext.invalidateCurrentDocument();
         return navigationContext.navigateToDocument(currentDocument);
     }
 
@@ -220,6 +221,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         return navigationContext.navigateToDocument(doc.getAdaptedDoc());
     }
 
+    @Override
     public boolean canResetParameters() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
