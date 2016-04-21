@@ -53,6 +53,7 @@ public class ElasticSearchLocalConfig implements Serializable {
     @XNode("@networkHost")
     protected String networkHost = "127.0.0.1";
 
+    // @since 8.3
     @XNode("@useExternalVersion")
     protected boolean externalVersion = false;
 

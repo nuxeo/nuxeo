@@ -194,7 +194,7 @@ public interface ElasticSearchAdmin {
      * When true use an external version for Elasticsearch document, this enable an optimistic concurrency control
      * ensuring that an older version of a document never overwrites a newer version.
      *
-     * @since 7.2
+     * @since 8.3
      */
     boolean useExternalVersion();
 

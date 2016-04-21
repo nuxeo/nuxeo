@@ -51,6 +51,7 @@ public class ElasticSearchRemoteConfig implements Serializable {
     @XNode("@clientTransportNodesSamplerInterval")
     protected String clientTransportNodesSamplerInterval = "5s";
 
+    // @since 8.3
     @XNode("@useExternalVersion")
     protected boolean externalVersion = false;
 
