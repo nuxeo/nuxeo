@@ -31,12 +31,13 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class TestUserCodec {
+public class TestUserCodec extends NXRuntimeTestCase {
 
     private DocumentView getDocumentView(String username, String view) {
         DocumentLocation docLoc = new DocumentLocationImpl("demo", null);
@@ -71,7 +72,8 @@ public class TestUserCodec {
     }
 
     @Test
-    public void shouldGetDocumentView() {
+    public void shouldGetDocumentView() throws Exception {
+        deployContrib("org.nuxeo.ecm.user.center", "OSGI-INF/user-group-codec-properties.xml");
         UserCodec codec = new UserCodec();
         String url = "user/bender";
         DocumentView docView = codec.getDocumentViewFromUrl(url);
@@ -112,6 +114,15 @@ public class TestUserCodec {
         assertEquals("true", docView.getParameter("showUser"));
         assertEquals(DEFAULT_USERS_TAB, docView.getParameter("tabIds"));
         assertEquals("zoidberg@planet-express.com", docView.getParameter("username"));
+
+        deployContrib("org.nuxeo.ecm.user.center.tests", "OSGI-INF/test-user-group-codec-properties.xml");
+        url = "user/bender%20bending";
+        docView = codec.getDocumentViewFromUrl(url);
+        assertNotNull(docView);
+        assertEquals(DEFAULT_VIEW_ID, docView.getViewId());
+        assertEquals("true", docView.getParameter("showUser"));
+        assertEquals(DEFAULT_USERS_TAB, docView.getParameter("tabIds"));
+        assertEquals("bender bending", docView.getParameter("username"));
     }
 
 }

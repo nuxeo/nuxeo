@@ -8,4 +8,5 @@ Nuxeo-Component: OSGI-INF/actions-contrib.xml,
  OSGI-INF/action-widgets-contrib.xml,
  OSGI-INF/theme-contrib.xml,
  OSGI-INF/auth-contrib.xml,
- OSGI-INF/urlservice-contrib.xml
+ OSGI-INF/urlservice-contrib.xml,
+ OSGI-INF/user-group-codec-properties.xml
