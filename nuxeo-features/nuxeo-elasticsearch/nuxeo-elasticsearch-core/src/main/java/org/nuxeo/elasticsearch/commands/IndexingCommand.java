@@ -331,12 +331,12 @@ public class IndexingCommand implements Serializable {
         }
     }
 
-    // @since 8.2
+    // @since 8.3
     public long getOrder() {
         return order;
     }
 
-    // @since 8.2
+    // @since 8.3
     public void setOrder(long order) {
         this.order = order;
     }

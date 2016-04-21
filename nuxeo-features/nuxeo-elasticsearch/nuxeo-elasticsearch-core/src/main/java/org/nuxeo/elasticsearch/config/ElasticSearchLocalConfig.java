@@ -53,7 +53,7 @@ public class ElasticSearchLocalConfig implements Serializable {
     @XNode("@useExternalVersion")
     protected boolean externalVersion = false;
 
-   public String getDataPath() {
+    public String getDataPath() {
         if (dataPath == null) {
             File dir = new File(Framework.getRuntime().getHome(), "data/elasticsearch");
             dataPath = dir.getPath();
