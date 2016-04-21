@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -44,11 +45,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters.ParameterValue;
+import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 import org.nuxeo.ecm.platform.commandline.executor.service.EnvironmentDescriptor;
 
@@ -248,9 +248,13 @@ public class ShellExecutor implements Executor {
         String[] systemPaths = System.getenv("PATH").split(File.pathSeparator);
         for (String ext : extensions) {
             for (String sp : systemPaths) {
-                Path path = Paths.get(sp);
-                if (Files.exists(path.resolve(command + ext))) {
-                    return path.resolve(command + ext).toString();
+                try {
+                    Path path = Paths.get(sp.trim());
+                    if (Files.exists(path.resolve(command + ext))) {
+                        return path.resolve(command + ext).toString();
+                    }
+                } catch (InvalidPathException e) {
+                    log.warn("PATH environment variable contains an invalid path : " + e.getMessage());
                 }
             }
         }
