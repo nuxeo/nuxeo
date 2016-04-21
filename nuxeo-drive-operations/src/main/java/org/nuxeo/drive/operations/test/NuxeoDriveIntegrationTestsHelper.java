@@ -120,14 +120,14 @@ public final class NuxeoDriveIntegrationTestsHelper {
     }
 
     public static void waitForAsyncCompletion() throws InterruptedException {
-        if (!Framework.getService(WorkManager.class).awaitCompletion(20, TimeUnit.SECONDS)) {
-            throw new AssertionError("Cannot synch with work manager in 20 seconds");
+        if (!Framework.getService(WorkManager.class).awaitCompletion(2, TimeUnit.MINUTES)) {
+            throw new AssertionError("Cannot synch with work manager in 2 minutes");
         }
     }
 
     public static void waitForAuditIngestion() throws InterruptedException {
-        if (!Framework.getService(AuditLogger.class).await(20, TimeUnit.SECONDS)) {
-            throw new AssertionError("Cannot synch with work manager in 20 seconds");
+        if (!Framework.getService(AuditLogger.class).await(2, TimeUnit.MINUTES)) {
+            throw new AssertionError("Cannot synch with audi in 2 minutes");
         }
     }
 
