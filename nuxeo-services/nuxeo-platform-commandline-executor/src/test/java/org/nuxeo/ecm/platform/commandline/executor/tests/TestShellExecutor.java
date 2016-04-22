@@ -96,8 +96,8 @@ public class TestShellExecutor {
         // path must have been trimmed
         assertEquals(testResourcesDirAbsPath + File.separator + "fakecmd", cmdAbsPath);
 
-        // set invalid path in the PATH environment variable (column at the end)
-        newenv.put("PATH", testResourcesDirAbsPath + ":");
+        // set invalid path (windows) in the PATH environment variable (< at the end)
+        newenv.put("PATH", "badpath<");
         setEnv(newenv);
 
         cmdAbsPath = ShellExecutor.getCommandAbsolutePath("fakecmd");
