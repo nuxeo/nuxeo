@@ -31,12 +31,14 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
-public class TestUserCodec {
+public class TestUserCodec extends NXRuntimeTestCase {
 
     private DocumentView getDocumentView(String username, String view) {
         DocumentLocation docLoc = new DocumentLocationImpl("demo", null);
@@ -113,6 +115,16 @@ public class TestUserCodec {
         assertEquals(DEFAULT_USERS_TAB, docView.getParameter("tabIds"));
         assertEquals("zoidberg@planet-express.com",
                 docView.getParameter("username"));
+
+        Framework.getProperties().setProperty("nuxeo.codec.usergroup.allowedCharacters", "[^\\/\\?]*");
+        url = "user/bender%20bending";
+        docView = codec.getDocumentViewFromUrl(url);
+        assertNotNull(docView);
+        assertEquals(DEFAULT_VIEW_ID, docView.getViewId());
+        assertEquals("true", docView.getParameter("showUser"));
+        assertEquals(DEFAULT_USERS_TAB, docView.getParameter("tabIds"));
+        assertEquals("bender bending", docView.getParameter("username"));
+        Framework.getProperties().remove("nuxeo.codec.usergroup.allowedCharacters");
     }
 
 }

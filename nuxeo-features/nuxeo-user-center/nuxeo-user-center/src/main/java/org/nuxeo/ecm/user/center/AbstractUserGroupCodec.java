@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.user.center;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.regex.Pattern;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.DocumentLocation;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
@@ -42,12 +45,7 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
 
     public static final String DEFAULT_VIEW_ID = "view_home";
 
-    // prefix/groupname/view_id?requestParams
-    public static final String GET_URL_PATTERN = "/" // slash
-            + "([a-zA-Z_0-9\\-\\.@]*)?" // username (group 1)
-            + "(/([a-zA-Z_0-9\\-\\.]*))?" // view id (group 3) (optional)
-            + "/?" // final slash (optional)
-            + "(\\?((.*)?))?"; // query (group 5) (optional)
+    public static final String ALLOWED_CHARACTERS_REGEX = "nuxeo.codec.usergroup.allowedCharacters";
 
     /**
      * Get the DocumentView for a user or a group from a URL.
@@ -63,8 +61,22 @@ public abstract class AbstractUserGroupCodec extends AbstractDocumentViewCodec {
             String defaultTab,
             String paramIdName,
             String paramShowName) {
-        Pattern pattern = Pattern.compile(getPrefix()
-                + GET_URL_PATTERN);
+        String allowedCharsRegex = Framework.getProperty(ALLOWED_CHARACTERS_REGEX, "[a-zA-Z_0-9\\-\\.@]*");
+        String userGroupNameRegex = String.format("(%s)?", allowedCharsRegex);
+
+        // prefix/groupname/view_id?requestParams
+        String url_pattern = "/" // slash
+            + userGroupNameRegex // username/groupname (group 1)
+            + "(/([a-zA-Z_0-9\\-\\.]*))?" // view id (group 3) (optional)
+            + "/?" // final slash (optional)
+            + "(\\?((.*)?))?"; // query (group 5) (optional)
+
+        Pattern pattern = Pattern.compile(getPrefix() + url_pattern);
+        try {
+            url = URLDecoder.decode(url, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new NuxeoException("Unable to decode the requested url", e);
+        }
         Matcher m = pattern.matcher(url);
         if (m.matches()) {
             if (m.groupCount() >= 1) {
