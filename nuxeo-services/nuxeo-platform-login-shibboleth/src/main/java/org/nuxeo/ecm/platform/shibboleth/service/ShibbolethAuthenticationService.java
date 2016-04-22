@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.platform.shibboleth.service;
 
+import com.google.common.collect.BiMap;
+
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,5 +74,12 @@ public interface ShibbolethAuthenticationService {
      * @return metadata map
      */
     Map<String, Object> getUserMetadata(String idField, HttpServletRequest httpRequest);
+
+    /**
+     * Returns a bi-map of the user metadata {response headers, values} based on the configuration.
+     *
+     * @since 8.3
+     */
+    BiMap<String, String> getUserMetadata();
 
 }
