@@ -42,7 +42,8 @@ class Sim50CleanupRemoteScan extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
 
-  val scn = scenario("CleanupRemoteScan").exec(Cleanup.run(Parameters.getConcurrentUsers(10, prefix = "remoteScan.")))
+  val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
+  val scn = scenario("CleanupRemoteScan").exec(Cleanup.run(userCount))
 
   Feeders.clearTokens()
   setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
