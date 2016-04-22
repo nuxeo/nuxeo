@@ -33,8 +33,10 @@
       <nxu:methodResult name="canManagePublishing"
                         value="#{publishActions.canManagePublishing}">
 
-        <h:outputText rendered="#{publishActions.pending}"
-                      value="#{messages['label.document.pending']}"/>
+        <div>
+          <h:outputText rendered="#{publishActions.pending}"
+                        value="#{messages['label.document.pending']}"/>
+        </div>
 
         <h:panelGroup rendered="#{publishActions.hasValidationTask()}">
           <table class="dataInput">
