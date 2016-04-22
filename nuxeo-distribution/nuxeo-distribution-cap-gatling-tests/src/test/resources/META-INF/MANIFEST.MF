@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Name: org.nuxeo.cap.bench.test
+Bundle-SymbolicName: org.nuxeo.cap.bench.test;singleton:=true
