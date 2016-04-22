@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.storage.sql;
 import static org.junit.Assume.assumeTrue;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * All the tests of TestSQLBackend with storage of collections as array columns activated.
@@ -45,6 +47,13 @@ public class TestSQLBackendArrayColumns extends TestSQLBackend {
     @Override
     protected boolean useArrayColumns() {
         return DatabaseHelper.DATABASE.supportsArrayColumns();
+    }
+
+    @Override
+    @Test
+    @Ignore("NXP-19542")
+    public void testParallelArrayUpdate() throws Exception {
+        super.testParallelArrayUpdate();
     }
 
     // TODO add to TestSQLBackend these tests that exercise arrays:
