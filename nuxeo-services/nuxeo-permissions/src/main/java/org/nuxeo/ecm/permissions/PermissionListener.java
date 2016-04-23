@@ -36,7 +36,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -83,64 +87,90 @@ public class PermissionListener implements EventListener {
         }
     }
 
-    protected void handleUpdateACP(DocumentEventContext docCtx, ACP oldACP, ACP newACP) {
-        DocumentModel doc = docCtx.getSourceDocument();
+    protected void doAsSystemUser(Runnable runnable) {
+        LoginContext loginContext;
+        try {
+            loginContext = Framework.login();
+        } catch (LoginException e) {
+            throw new NuxeoException(e);
+        }
 
-        List<ACLDiff> aclDiffs = extractACLDiffs(oldACP, newACP);
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        for (ACLDiff diff : aclDiffs) {
-            try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
-                for (ACE ace : diff.removedACEs) {
-                    String id = computeDirectoryId(doc, diff.aclName, ace.getId());
-                    session.deleteEntry(id);
+        try {
+            runnable.run();
+        } finally {
+            try {
+                // Login context may be null in tests
+                if (loginContext != null) {
+                    loginContext.logout();
                 }
-
-                for (ACE ace : diff.addedACEs) {
-                    String id = computeDirectoryId(doc, diff.aclName, ace.getId());
-                    // remove it if it exists
-                    if (session.hasEntry(id)) {
-                        session.deleteEntry(id);
-                    }
-
-                    Boolean notify = (Boolean) ace.getContextData(NOTIFY_KEY);
-                    String comment = (String) ace.getContextData(Constants.COMMENT_KEY);
-                    notify = notify != null ? notify : false;
-                    Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, diff.aclName, ace, notify,
-                            comment);
-                    session.createEntry(m);
-
-                    if (notify && ace.isGranted() && ace.isEffective()) {
-                        firePermissionNotificationEvent(docCtx, diff.aclName, ace);
-                    }
-                }
+            } catch (LoginException e) {
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }
 
+    protected void handleUpdateACP(DocumentEventContext docCtx, ACP oldACP, ACP newACP) {
+        doAsSystemUser(() -> {
+            DocumentModel doc = docCtx.getSourceDocument();
+
+            List<ACLDiff> aclDiffs = extractACLDiffs(oldACP, newACP);
+            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+            for (ACLDiff diff : aclDiffs) {
+                try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
+                    for (ACE ace : diff.removedACEs) {
+                        String id = computeDirectoryId(doc, diff.aclName, ace.getId());
+                        session.deleteEntry(id);
+                    }
+
+                    for (ACE ace : diff.addedACEs) {
+                        String id = computeDirectoryId(doc, diff.aclName, ace.getId());
+                        // remove it if it exists
+                        if (session.hasEntry(id)) {
+                            session.deleteEntry(id);
+                        }
+
+                        Boolean notify = (Boolean) ace.getContextData(NOTIFY_KEY);
+                        String comment = (String) ace.getContextData(Constants.COMMENT_KEY);
+                        notify = notify != null ? notify : false;
+                        Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, diff.aclName, ace, notify,
+                                comment);
+                        session.createEntry(m);
+
+                        if (notify && ace.isGranted() && ace.isEffective()) {
+                            firePermissionNotificationEvent(docCtx, diff.aclName, ace);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     protected void handleReplaceACE(DocumentEventContext docCtx, String changedACLName, ACE oldACE, ACE newACE) {
-        DocumentModel doc = docCtx.getSourceDocument();
+      doAsSystemUser(() -> {
+          DocumentModel doc = docCtx.getSourceDocument();
 
-        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
-            Boolean notify = (Boolean) newACE.getContextData(NOTIFY_KEY);
-            String comment = (String) newACE.getContextData(COMMENT_KEY);
+          DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+          try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
+              Boolean notify = (Boolean) newACE.getContextData(NOTIFY_KEY);
+              String comment = (String) newACE.getContextData(COMMENT_KEY);
 
-            String oldId = computeDirectoryId(doc, changedACLName, oldACE.getId());
-            DocumentModel oldEntry = session.getEntry(oldId);
-            if (oldEntry != null) {
-                // remove the old entry
-                session.deleteEntry(oldId);
-            }
+              String oldId = computeDirectoryId(doc, changedACLName, oldACE.getId());
+              DocumentModel oldEntry = session.getEntry(oldId);
+              if (oldEntry != null) {
+                  // remove the old entry
+                  session.deleteEntry(oldId);
+              }
 
-            // add the new entry
-            notify = notify != null ? notify : false;
-            Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, changedACLName, newACE, notify, comment);
-            session.createEntry(m);
+              // add the new entry
+              notify = notify != null ? notify : false;
+              Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, changedACLName, newACE, notify, comment);
+              session.createEntry(m);
 
-            if (notify && newACE.isGranted() && newACE.isEffective()) {
-                firePermissionNotificationEvent(docCtx, changedACLName, newACE);
-            }
-        }
+              if (notify && newACE.isGranted() && newACE.isEffective()) {
+                  firePermissionNotificationEvent(docCtx, changedACLName, newACE);
+              }
+          }
+      });
     }
 
     protected List<ACLDiff> extractACLDiffs(ACP oldACP, ACP newACP) {
