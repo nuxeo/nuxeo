@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.quota.size;
 
+import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.quota.QuotaUtils;
@@ -32,26 +34,38 @@ import org.nuxeo.ecm.quota.QuotaUtils;
  */
 public class QuotaAwareDocumentFactory implements DocumentAdapterFactory {
 
-    public static QuotaAwareDocument make(DocumentModel doc, boolean save) {
-        if (!doc.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
-            doc.addFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
-            if (save) {
-                DocumentModel origDoc = doc;
-                // set flags to disable listeners
-                QuotaUtils.disableListeners(doc);
-                doc = doc.getCoreSession().saveDocument(doc);
-                // remove flags as they could be kept in the document for a long time otherwise
-                QuotaUtils.clearContextData(doc);
-                // also remove flags from original doc, which the caller still references
-                QuotaUtils.clearContextData(origDoc);
-            }
+    public static QuotaAware make(DocumentModel doc) {
+        if (!doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
+            doc.addFacet(DOCUMENTS_SIZE_STATISTICS_FACET);
         }
-        return (QuotaAwareDocument) doc.getAdapter(QuotaAware.class);
+        return new QuotaAwareDocument(doc);
+    }
+
+    public static void unmake(DocumentModel doc) {
+        if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
+            new QuotaAwareDocument(doc).resetInfos();
+            saveDocument(doc); // first save to flush the reset
+            doc.removeFacet(DOCUMENTS_SIZE_STATISTICS_FACET);
+            saveDocument(doc); // second save to flush facet removal
+        }
+    }
+
+    protected static DocumentModel saveDocument(DocumentModel doc) {
+        doc.putContextData(DocumentsSizeUpdater.DISABLE_QUOTA_CHECK_LISTENER, Boolean.TRUE);
+        // set flags to disable listeners
+        QuotaUtils.disableListeners(doc);
+        DocumentModel origDoc = doc;
+        doc = doc.getCoreSession().saveDocument(doc);
+        // remove flags as they could be kept in the document for a long time otherwise
+        QuotaUtils.clearContextData(doc);
+        // also remove flags from original doc, which the caller still references
+        QuotaUtils.clearContextData(origDoc);
+        return doc;
     }
 
     @Override
     public Object getAdapter(DocumentModel doc, Class<?> adapter) {
-        if (doc.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
+        if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
             return adapter.cast(new QuotaAwareDocument(doc));
         }
         return null;

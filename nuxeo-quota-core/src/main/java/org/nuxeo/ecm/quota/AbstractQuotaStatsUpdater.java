@@ -19,7 +19,10 @@
 
 package org.nuxeo.ecm.quota;
 
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.UNDELETE_TRANSITION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_REMOVE_VERSION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_RESTORE;
@@ -32,6 +35,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,11 +44,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.quota.size.QuotaExceededException;
 
 /**
@@ -98,39 +100,59 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
     @Override
     public void updateStatistics(CoreSession session, DocumentEventContext docCtx, Event event) {
         DocumentModel doc = docCtx.getSourceDocument();
-
         if (!needToProcessEventOnDocument(event, doc)) {
             log.debug("Exit Listener !!!!");
             return;
         }
-
-        String eventName = event.getName();
-
         try {
-            if (DOCUMENT_CREATED.equals(eventName)) {
-                processDocumentCreated(session, doc, docCtx);
-            } else if (ABOUT_TO_REMOVE.equals(eventName) || ABOUT_TO_REMOVE_VERSION.equals(eventName)) {
-                processDocumentAboutToBeRemoved(session, doc, docCtx);
-            } else if (DOCUMENT_CREATED_BY_COPY.equals(eventName)) {
-                processDocumentCopied(session, doc, docCtx);
-            } else if (DOCUMENT_MOVED.equals(eventName)) {
+            switch (event.getName()) {
+            case DOCUMENT_CREATED:
+                processDocumentCreated(session, doc);
+                break;
+            case ABOUT_TO_REMOVE:
+            case ABOUT_TO_REMOVE_VERSION:
+                processDocumentAboutToBeRemoved(session, doc);
+                break;
+            case DOCUMENT_CREATED_BY_COPY:
+                processDocumentCopied(session, doc);
+                break;
+            case DOCUMENT_MOVED:
                 DocumentRef sourceParentRef = (DocumentRef) docCtx.getProperty(CoreEventConstants.PARENT_PATH);
-                DocumentModel sourceParent = session.getDocument(sourceParentRef);
-                processDocumentMoved(session, doc, sourceParent, docCtx);
-            } else if (DOCUMENT_UPDATED.equals(eventName)) {
-                processDocumentUpdated(session, doc, docCtx);
-            } else if (BEFORE_DOC_UPDATE.equals(eventName)) {
-                processDocumentBeforeUpdate(session, doc, docCtx);
-            } else if (TRANSITION_EVENT.equals(eventName)) {
-                processDocumentTrashOp(session, doc, docCtx);
-            } else if (DOCUMENT_CHECKEDIN.equals(eventName)) {
-                processDocumentCheckedIn(session, doc, docCtx);
-            } else if (DOCUMENT_CHECKEDOUT.equals(eventName)) {
-                processDocumentCheckedOut(session, doc, docCtx);
-            } else if (DOCUMENT_RESTORED.equals(eventName)) {
-                processDocumentRestored(session, doc, docCtx);
-            } else if (BEFORE_DOC_RESTORE.equals(eventName)) {
-                processDocumentBeforeRestore(session, doc, docCtx);
+                DocumentRef destinationRef = (DocumentRef) docCtx.getProperty(CoreEventConstants.DESTINATION_REF);
+                DocumentModel sourceParent = sourceParentRef == null ? null : session.getDocument(sourceParentRef);
+                DocumentModel parent = destinationRef == null ? null : session.getDocument(destinationRef);
+                if (sourceParent == null && parent == null
+                        || sourceParent != null && parent != null && sourceParent.getId().equals(parent.getId())) {
+                    // rename
+                    break;
+                }
+                processDocumentMoved(session, doc, sourceParent);
+                break;
+            case DOCUMENT_UPDATED:
+                processDocumentUpdated(session, doc);
+                break;
+            case BEFORE_DOC_UPDATE:
+                processDocumentBeforeUpdate(session, doc);
+                break;
+            case TRANSITION_EVENT:
+                String transition = (String) docCtx.getProperty(TRANSTION_EVENT_OPTION_TRANSITION);
+                if (!DELETE_TRANSITION.equals(transition) && !UNDELETE_TRANSITION.equals(transition)) {
+                    break;
+                }
+                processDocumentTrashOp(session, doc, transition);
+                break;
+            case DOCUMENT_CHECKEDIN:
+                processDocumentCheckedIn(session, doc);
+                break;
+            case DOCUMENT_CHECKEDOUT:
+                processDocumentCheckedOut(session, doc);
+                break;
+            case BEFORE_DOC_RESTORE:
+                processDocumentBeforeRestore(session, doc);
+                break;
+            case DOCUMENT_RESTORED:
+                processDocumentRestored(session, doc);
+                break;
             }
         } catch (QuotaExceededException e) {
             handleQuotaExceeded(e, event);
@@ -138,47 +160,39 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         }
     }
 
+    /** Gets all the ancestors of the document, including the root. */
     protected List<DocumentModel> getAncestors(CoreSession session, DocumentModel doc) {
-        List<DocumentModel> ancestors = new ArrayList<DocumentModel>();
-        if (doc != null && doc.getParentRef() != null) {
-            doc = session.getDocument(doc.getParentRef());
-            while (doc != null && !doc.getPath().isRoot()) {
-                ancestors.add(doc);
-                doc = session.getDocument(doc.getParentRef());
-            }
+        List<DocumentModel> ancestors = new ArrayList<>();
+        for (DocumentRef documentRef : session.getParentDocumentRefs(doc.getRef())) {
+            ancestors.add(session.getDocument(documentRef));
         }
         return ancestors;
     }
 
     protected abstract void handleQuotaExceeded(QuotaExceededException e, Event event);
 
-    protected abstract boolean needToProcessEventOnDocument(Event event, DocumentModel targetDoc);
+    protected abstract boolean needToProcessEventOnDocument(Event event, DocumentModel doc);
 
-    protected abstract void processDocumentCreated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
+    protected abstract void processDocumentCreated(CoreSession session, DocumentModel doc);
 
-    protected abstract void processDocumentCopied(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
+    protected abstract void processDocumentCopied(CoreSession session, DocumentModel doc);
 
-    protected abstract void processDocumentCheckedIn(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
+    protected abstract void processDocumentCheckedIn(CoreSession session, DocumentModel doc);
 
-    protected abstract void processDocumentCheckedOut(CoreSession session, DocumentModel doc,
-            DocumentEventContext docCtx);
+    protected abstract void processDocumentCheckedOut(CoreSession session, DocumentModel doc);
 
-    protected abstract void processDocumentUpdated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
+    protected abstract void processDocumentUpdated(CoreSession session, DocumentModel doc);
 
-    protected abstract void processDocumentMoved(CoreSession session, DocumentModel doc, DocumentModel sourceParent,
-            DocumentEventContext docCtx);
+    protected abstract void processDocumentMoved(CoreSession session, DocumentModel doc, DocumentModel sourceParent);
 
-    protected abstract void processDocumentAboutToBeRemoved(CoreSession session, DocumentModel doc,
-            DocumentEventContext docCtx);
+    protected abstract void processDocumentAboutToBeRemoved(CoreSession session, DocumentModel doc);
 
-    protected abstract void processDocumentBeforeUpdate(CoreSession session, DocumentModel targetDoc,
-            DocumentEventContext docCtx);
+    protected abstract void processDocumentBeforeUpdate(CoreSession session, DocumentModel doc);
 
-    protected abstract void processDocumentTrashOp(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
+    protected abstract void processDocumentTrashOp(CoreSession session, DocumentModel doc, String transition);
 
-    protected abstract void processDocumentRestored(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
+    protected abstract void processDocumentRestored(CoreSession session, DocumentModel doc);
 
-    protected abstract void processDocumentBeforeRestore(CoreSession session, DocumentModel doc,
-            DocumentEventContext docCtx);
+    protected abstract void processDocumentBeforeRestore(CoreSession session, DocumentModel doc);
 
 }

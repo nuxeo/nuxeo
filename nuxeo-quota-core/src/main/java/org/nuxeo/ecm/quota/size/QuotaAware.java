@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.quota.size;
 
-import java.io.IOException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -29,8 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @since 5.6
  */
 public interface QuotaAware {
-
-    public static final String QUOTA_TOTALSIZE_CACHE_NAME = "quota-totalsize-cache";
 
     long getInnerSize();
 
@@ -42,62 +39,24 @@ public interface QuotaAware {
 
     long getMaxQuota();
 
-    void setInnerSize(long size, boolean save);
+    void addInnerSize(long additionalSize);
 
-    void addInnerSize(long additionalSize, boolean save);
+    void addTotalSize(long additionalSize);
 
-    void addTotalSize(long additionalSize, boolean save);
+    void addTrashSize(long additionalSize);
 
-    void addTrashSize(long additionalSize, boolean save);
-
-    void addVersionsSize(long additionalSize, boolean save);
+    void addVersionsSize(long additionalSize);
 
     void save();
 
-    /**
-     * @since 5.7 allows to save the document without notifying DublincoreListener and the notification service
-     */
-    void save(boolean disableNotifications);
-
     DocumentModel getDoc();
 
-    void setMaxQuota(long maxSize, boolean save);
+    void setMaxQuota(long maxSize);
 
-    void setMaxQuota(long maxSize, boolean save, boolean skipValidation);
+    void setMaxQuota(long maxSize, boolean skipValidation);
 
     QuotaInfo getQuotaInfo();
 
-    void resetInfos(boolean save);
+    void resetInfos();
 
-    /**
-     * Invalidates "total size" key-value in cache if exists.
-     * 
-     * @throws IOException when unable to invalidate key-value
-     * @since 6.0-HF16, 7.4
-     */
-    void invalidateTotalSizeCache() throws IOException;
-    
-    /**
-     * Returns value of "total size" cache of document OR <code>null</code> if cache does not exist or key does not exist in cache.
-     * 
-     * @return <code>Long</code> object or <code>null</code>
-     * @since 6.0-HF16, 7.4
-     */
-    Long getTotalSizeCache() throws IOException;
-    
-    /**
-     * Stores "total size" value in cache if it exists.
-     * 
-     * @param size
-     * @throws IOException if unable to store value
-     * @since 6.0-HF16, 7.4
-     */
-    void putTotalSizeCache(long size) throws IOException;
-    
-    /**
-     * @return <code>true</code> if "total size" cache exists otherwise <code>false</code>.
-     * 
-     * @since 6.0-HF16, 7.4
-     */
-    boolean totalSizeCacheExists();
 }

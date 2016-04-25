@@ -25,7 +25,7 @@ import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISA
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerListener.DISABLE_HTMLSANITIZER_LISTENER;
 import static org.nuxeo.ecm.platform.publisher.listeners.DomainEventsListener.DISABLE_DOMAIN_LISTENER;
-import static org.nuxeo.ecm.quota.size.QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER;
+import static org.nuxeo.ecm.quota.size.DocumentsSizeUpdater.DISABLE_QUOTA_CHECK_LISTENER;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +39,7 @@ public class QuotaUtils {
     }
 
     public static List<String> FLAGS = Arrays.asList( //
+            DISABLE_QUOTA_CHECK_LISTENER, //
             DISABLE_AUDIT_LOGGER, //
             DISABLE_DUBLINCORE_LISTENER, //
             DISABLE_NOTIFICATION_SERVICE, //
@@ -70,7 +71,6 @@ public class QuotaUtils {
             doc.putContextData(flag, null);
         }
         doc.putContextData(VERSIONING_OPTION, null);
-        doc.putContextData(DISABLE_QUOTA_CHECK_LISTENER, null);
     }
 
 }

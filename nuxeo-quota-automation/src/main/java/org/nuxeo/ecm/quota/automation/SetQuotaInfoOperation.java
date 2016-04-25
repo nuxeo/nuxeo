@@ -44,11 +44,9 @@ public class SetQuotaInfoOperation {
 
     @OperationMethod()
     public Long run(DocumentModel doc) {
-        QuotaAware qa = doc.getAdapter(QuotaAware.class);
-        if (qa == null) {
-            qa = QuotaAwareDocumentFactory.make(doc, false);
-        }
-        qa.setMaxQuota(targetSize, true);
+        QuotaAware qa = QuotaAwareDocumentFactory.make(doc);
+        qa.setMaxQuota(targetSize);
+        qa.save();
         return qa.getMaxQuota();
     }
 

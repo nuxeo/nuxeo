@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
 
 import java.io.Serializable;
@@ -72,7 +73,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ QuotaFeature.class })
-@LocalDeploy("org.nuxeo.ecm.quota.core:cache-contrib.xml")
 public class TestDocumentsSizeUpdater {
 
     @Inject
@@ -90,6 +90,9 @@ public class TestDocumentsSizeUpdater {
     @Inject
     protected UserWorkspaceService uwm;
 
+    @Inject
+    protected WorkManager workManager;
+
     protected DocumentRef wsRef;
 
     protected DocumentRef firstFolderRef;
@@ -105,8 +108,6 @@ public class TestDocumentsSizeUpdater {
     protected DocumentRef secondFileRef;
 
     private IsolatedSessionRunner isr;
-
-    protected static final boolean verboseMode = false;
 
     @Before
     public void cleanupSessionAssociationBeforeTest() throws Exception {
@@ -606,7 +607,8 @@ public class TestDocumentsSizeUpdater {
                 assertEquals(-1L, qa.getMaxQuota());
 
                 // set the quota to 400
-                qa.setMaxQuota(400L, true);
+                qa.setMaxQuota(400);
+                qa.save();
             }
         });
 
@@ -625,7 +627,6 @@ public class TestDocumentsSizeUpdater {
                     firstFile = session.saveDocument(firstFile);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
                     TransactionHelper.setTransactionRollbackOnly();
@@ -648,7 +649,8 @@ public class TestDocumentsSizeUpdater {
                 assertEquals(400L, qa.getMaxQuota());
 
                 // set the quota to -1 / unlimited
-                qa.setMaxQuota(-1L, true);
+                qa.setMaxQuota(-1);
+                qa.save();
 
             }
         });
@@ -659,7 +661,7 @@ public class TestDocumentsSizeUpdater {
             public void run() throws Exception {
                 dump();
 
-                Boolean canNotExceedQuota = false;
+                boolean canNotExceedQuota = false;
                 try {
                     // now try to update one
                     DocumentModel firstFile = session.getDocument(firstFileRef);
@@ -667,7 +669,6 @@ public class TestDocumentsSizeUpdater {
                     firstFile = session.saveDocument(firstFile);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
                     TransactionHelper.setTransactionRollbackOnly();
@@ -692,8 +693,8 @@ public class TestDocumentsSizeUpdater {
                 assertEquals(300L, qa.getTotalSize());
                 assertEquals(-1L, qa.getMaxQuota());
                 // set the quota to 300
-                qa.setMaxQuota(500L, true);
-                assertTrue(qa.totalSizeCacheExists());
+                qa.setMaxQuota(500);
+                qa.save();
             }
         });
         isr.run(new RunnableWithException() {
@@ -709,7 +710,6 @@ public class TestDocumentsSizeUpdater {
                     session.save();
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
                         quotaExceeded = true;
                     }
                     TransactionHelper.setTransactionRollbackOnly();
@@ -738,7 +738,6 @@ public class TestDocumentsSizeUpdater {
                     doc = session.createDocument(doc);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
                         quotaExceeded = true;
                     }
                     TransactionHelper.setTransactionRollbackOnly();
@@ -806,7 +805,8 @@ public class TestDocumentsSizeUpdater {
                 // set the quota
                 qa = getFirstSubFolder().getAdapter(QuotaAware.class);
                 assertNotNull(qa);
-                qa.setMaxQuota(maxSize, true);
+                qa.setMaxQuota(maxSize);
+                qa.save();
             }
         });
         isr.run(new RunnableWithException() {
@@ -820,15 +820,17 @@ public class TestDocumentsSizeUpdater {
                 for (DocumentModel doc : docsToCopy) {
                     refsToCopy.add(doc.getRef());
                 }
+                boolean quotaExceeded = false;
                 try {
                     session.move(refsToCopy, firstSubFolderRef);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("!! raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
+                        quotaExceeded = true;
                     }
                     // Rollback all copy operations
                     TransactionHelper.setTransactionRollbackOnly();
                 }
+                assertTrue(quotaExceeded);
                 eventService.waitForAsyncCompletion();
             }
         });
@@ -840,18 +842,11 @@ public class TestDocumentsSizeUpdater {
                 assertTrue(qa.getTotalSize() < maxSize);
 //                assertEquals(firstSubFolderTotalSize+(expectedNbrDocsCopied*fileSize), qa.getTotalSize());
                 assertEquals(firstSubFolderTotalSize, qa.getTotalSize());
-                DocumentModel parent = session.getDocument(firstSubFolderRef);
-                System.out.println("parent: " + parent + " " + parent.getAdapter(QuotaAware.class).getQuotaInfo());
                 DocumentModelList children = session.getChildren(firstSubFolderRef, "File");
-                System.out.println("children:");
-                for (DocumentModel doc : children) {
-                    System.out.println(doc + " " + doc.getAdapter(QuotaAware.class).getQuotaInfo());
-                }
 //                assertEquals(firstSubFolderExistingFilesNbr + expectedNbrDocsCopied, children.size());
                 assertEquals(firstSubFolderExistingFilesNbr, children.size());
             }
         });
-        // make sure cache key has been invalidated
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
@@ -864,7 +859,6 @@ public class TestDocumentsSizeUpdater {
                     doc = session.createDocument(doc);
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("2. raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
                         quotaExceeded = true;
                     }
                     TransactionHelper.setTransactionRollbackOnly();
@@ -895,7 +889,8 @@ public class TestDocumentsSizeUpdater {
                 assertEquals(-1L, qa.getMaxQuota());
 
                 // set the quota to 350
-                qa.setMaxQuota(350L, true);
+                qa.setMaxQuota(350);
+                qa.save();
 
             }
         });
@@ -916,7 +911,6 @@ public class TestDocumentsSizeUpdater {
                     firstFile.checkOut();
                 } catch (Exception e) {
                     if (QuotaExceededException.isQuotaExceededException(e)) {
-                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
                         canNotExceedQuota = true;
                     }
                     TransactionHelper.setTransactionRollbackOnly();
@@ -952,7 +946,6 @@ public class TestDocumentsSizeUpdater {
 
                 String updaterName = "documentsSizeUpdater";
                 quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName());
-                WorkManager workManager = Framework.getLocalService(WorkManager.class);
                 String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
 
                 workManager.awaitCompletion(queueId, 10, TimeUnit.SECONDS);
@@ -1031,9 +1024,10 @@ public class TestDocumentsSizeUpdater {
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
+                eventService.waitForAsyncCompletion();
+
                 String updaterName = "documentsSizeUpdater";
                 quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName());
-                WorkManager workManager = Framework.getLocalService(WorkManager.class);
                 String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
 
                 workManager.awaitCompletion(queueId, 10, TimeUnit.SECONDS);
@@ -1319,11 +1313,13 @@ public class TestDocumentsSizeUpdater {
                 QuotaAware qa = ws.getAdapter(QuotaAware.class);
                 assertNotNull(qa);
                 // set the quota to 400
-                qa.setMaxQuota(400L, true);
+                qa.setMaxQuota(400);
+                qa.save();
 
                 DocumentModel firstSubFolder = session.getDocument(firstSubFolderRef);
                 QuotaAware qaFSF = firstSubFolder.getAdapter(QuotaAware.class);
-                qaFSF.setMaxQuota(200L, true);
+                qaFSF.setMaxQuota(200);
+                qaFSF.save();
 
             }
         });
@@ -1335,14 +1331,14 @@ public class TestDocumentsSizeUpdater {
 
                 DocumentModel secondFolder = session.getDocument(secondFolderRef);
                 QuotaAware qaSecFolder = secondFolder.getAdapter(QuotaAware.class);
-                boolean canSetQuota = true;
                 try {
-                    qaSecFolder.setMaxQuota(300L, true);
+                    qaSecFolder.setMaxQuota(300);
+                    fail();
                 } catch (QuotaExceededException e) {
-                    canSetQuota = false;
+                    // ok
                 }
-                assertFalse(canSetQuota);
-                qaSecFolder.setMaxQuota(200L, true);
+                qaSecFolder.setMaxQuota(200);
+                qaSecFolder.save();
             }
         });
 
@@ -1356,22 +1352,20 @@ public class TestDocumentsSizeUpdater {
 
                 QuotaAware qaFirstFolder = getFirstFolder().getAdapter(QuotaAware.class);
 
-                boolean canSetQuota = true;
                 try {
-                    qaFirstFolder.setMaxQuota(50L, true);
+                    qaFirstFolder.setMaxQuota(50);
+                    fail();
                 } catch (QuotaExceededException e) {
-                    canSetQuota = false;
+                    // ok
                 }
-                assertFalse(canSetQuota);
 
                 QuotaAware qaSecSubFolder = getSecondSubFolder().getAdapter(QuotaAware.class);
-                canSetQuota = true;
                 try {
-                    qaSecSubFolder.setMaxQuota(50L, true);
+                    qaSecSubFolder.setMaxQuota(50);
+                    fail();
                 } catch (QuotaExceededException e) {
-                    canSetQuota = false;
+                    // ok
                 }
-                assertFalse(canSetQuota);
             }
         });
     }
@@ -1492,7 +1486,6 @@ public class TestDocumentsSizeUpdater {
             }
         });
 
-        WorkManager workManager = Framework.getLocalService(WorkManager.class);
         workManager.awaitCompletion("quota", 3, TimeUnit.SECONDS);
         assertEquals(0, workManager.getQueueSize("quota", null));
 
@@ -1655,9 +1648,6 @@ public class TestDocumentsSizeUpdater {
     }
 
     protected void doUpdateContent() throws Exception {
-        if (verboseMode) {
-            System.out.println("Update content");
-        }
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
@@ -1684,9 +1674,6 @@ public class TestDocumentsSizeUpdater {
     }
 
     protected void doCheckIn() throws Exception {
-        if (verboseMode) {
-            System.out.println("CheckIn first file");
-        }
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
@@ -1697,9 +1684,6 @@ public class TestDocumentsSizeUpdater {
     }
 
     protected void doCheckOut() throws Exception {
-        if (verboseMode) {
-            System.out.println("CheckOut first file");
-        }
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
@@ -1711,9 +1695,6 @@ public class TestDocumentsSizeUpdater {
     }
 
     protected void doUpdateAndVersionContent() throws Exception {
-        if (verboseMode) {
-            System.out.println("Update content and create version ");
-        }
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
@@ -1742,9 +1723,6 @@ public class TestDocumentsSizeUpdater {
     }
 
     protected void doSimpleVersion() throws Exception {
-        if (verboseMode) {
-            System.out.println("simply create a version ");
-        }
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
@@ -1759,9 +1737,6 @@ public class TestDocumentsSizeUpdater {
     }
 
     protected void doRemoveFirstVersion() throws Exception {
-        if (verboseMode) {
-            System.out.println("remove first created version ");
-        }
         isr.run(new RunnableWithException() {
             @Override
             public void run() throws Exception {
@@ -1847,8 +1822,7 @@ public class TestDocumentsSizeUpdater {
     }
 
     protected void dump() throws Exception {
-
-        if (!verboseMode) {
+        if (Boolean.TRUE.booleanValue()) {
             return;
         }
         System.out.println("\n####################################\n");

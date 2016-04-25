@@ -24,8 +24,6 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,10 +58,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.quota.core", "org.nuxeo.ecm.quota.automation", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.cache" })
+@Deploy({ "org.nuxeo.ecm.quota.core", "org.nuxeo.ecm.quota.automation", "org.nuxeo.ecm.automation.core" })
 public class TestQuotaViaAutomation {
-
-    private Log log = LogFactory.getLog(TestQuotaViaAutomation.class);
 
     @Inject
     AutomationService automationService;
@@ -123,8 +119,9 @@ public class TestQuotaViaAutomation {
             ws = session.createDocument(ws);
             wsRef = ws.getRef();
 
-            QuotaAware wsqa = QuotaAwareDocumentFactory.make(ws, true);
-            wsqa.setMaxQuota(400L, true);
+            QuotaAware wsqa = QuotaAwareDocumentFactory.make(ws);
+            wsqa.setMaxQuota(400);
+            wsqa.save();
 
             DocumentModel firstFolder = session.createDocumentModel(ws.getPathAsString(), "folder1", "Folder");
             firstFolder = session.createDocument(firstFolder);

@@ -93,7 +93,11 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
             public void run() {
                 List<QuotaStatsUpdater> quotaStatsUpdaters = quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
                 for (QuotaStatsUpdater updater : quotaStatsUpdaters) {
-                    log.debug("Calling updateStatistics of " + updater.getName() + " FOR " + event.getName() + " ON " + docCtx.getSourceDocument().getPathAsString());
+                    if (log.isTraceEnabled()) {
+                        DocumentModel doc = docCtx.getSourceDocument();
+                        log.trace("Calling updateStatistics of " + updater.getName() + " for " + event.getName()
+                                + " on " + doc.getId() + " (" + doc.getPathAsString() + ")");
+                    }
                     updater.updateStatistics(session, docCtx, event);
                 }
             }
@@ -176,11 +180,9 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
             @Override
             public void run() {
                 DocumentModel uwRoot = session.getDocument(new IdRef(userWorkspacesRootId));
-                QuotaAware qa = uwRoot.getAdapter(QuotaAware.class);
-                if (qa == null) {
-                    qa = QuotaAwareDocumentFactory.make(uwRoot, false);
-                }
-                qa.setMaxQuota(maxQuota, true, false);
+                QuotaAware qa = QuotaAwareDocumentFactory.make(uwRoot);
+                qa.setMaxQuota(maxQuota);
+                qa.save();
 
             };
         }.runUnrestricted();

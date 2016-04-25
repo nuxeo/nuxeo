@@ -69,12 +69,10 @@ public class QuotaMaxSizeSetterWork extends AbstractWork {
             public void run() {
                 for (String docId : docIds) {
                     DocumentModel doc = session.getDocument(new IdRef(docId));
-                    QuotaAware qa = doc.getAdapter(QuotaAware.class);
-                    if (qa == null) {
-                        qa = QuotaAwareDocumentFactory.make(doc, true);
-                    }
+                    QuotaAware qa = QuotaAwareDocumentFactory.make(doc);
                     // skip validation on other children quotas
-                    qa.setMaxQuota(maxSize, true, true);
+                    qa.setMaxQuota(maxSize, true);
+                    qa.save();
                 }
             }
         }.runUnrestricted();

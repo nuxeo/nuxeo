@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  * Contributors:
- *     Thomas Roger <troger@nuxeo.com>
+ *     Thomas Roger
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.quota.count;
 
 import static org.nuxeo.ecm.core.schema.FacetNames.FOLDERISH;
@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.ecm.quota.QuotaUtils;
@@ -50,7 +49,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * <p>
  * Store the descendant and children count on {@code Folderish} documents.
  *
- * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.5
  */
 public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
@@ -60,8 +58,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     public static final int BATCH_SIZE = 50;
 
     @Override
-    protected void processDocumentCreated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            {
+    protected void processDocumentCreated(CoreSession session, DocumentModel doc) {
         if (doc.isVersion()) {
             return;
         }
@@ -71,33 +68,28 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentCopied(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            {
+    protected void processDocumentCopied(CoreSession session, DocumentModel doc) {
         List<DocumentModel> ancestors = getAncestors(session, doc);
         long docCount = getCount(doc);
         updateCountStatistics(session, doc, ancestors, docCount);
     }
 
     @Override
-    protected void processDocumentCheckedIn(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            {
+    protected void processDocumentCheckedIn(CoreSession session, DocumentModel doc) {
         // NOP
     }
 
     @Override
-    protected void processDocumentCheckedOut(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            {
+    protected void processDocumentCheckedOut(CoreSession session, DocumentModel doc) {
         // NOP
     }
 
     @Override
-    protected void processDocumentUpdated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            {
+    protected void processDocumentUpdated(CoreSession session, DocumentModel doc) {
     }
 
     @Override
-    protected void processDocumentMoved(CoreSession session, DocumentModel doc, DocumentModel sourceParent,
-            DocumentEventContext docCtx) {
+    protected void processDocumentMoved(CoreSession session, DocumentModel doc, DocumentModel sourceParent) {
         List<DocumentModel> ancestors = getAncestors(session, doc);
         List<DocumentModel> sourceAncestors = getAncestors(session, sourceParent);
         sourceAncestors.add(0, sourceParent);
@@ -107,8 +99,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentAboutToBeRemoved(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            {
+    protected void processDocumentAboutToBeRemoved(CoreSession session, DocumentModel doc) {
         List<DocumentModel> ancestors = getAncestors(session, doc);
         long docCount = getCount(doc);
         updateCountStatistics(session, doc, ancestors, -docCount);
@@ -120,12 +111,12 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected boolean needToProcessEventOnDocument(Event event, DocumentModel targetDoc) {
+    protected boolean needToProcessEventOnDocument(Event event, DocumentModel doc) {
         return true;
     }
 
     @Override
-    protected void processDocumentBeforeUpdate(CoreSession session, DocumentModel targetDoc, DocumentEventContext docCtx) {
+    protected void processDocumentBeforeUpdate(CoreSession session, DocumentModel doc) {
         // NOP
     }
 
@@ -163,8 +154,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         session.save();
     }
 
-    protected void updateParentChildrenCount(CoreSession session, DocumentModel parent, long count)
-            {
+    protected void updateParentChildrenCount(CoreSession session, DocumentModel parent, long count) {
         Number previous;
         if (parent.hasFacet(DOCUMENTS_COUNT_STATISTICS_FACET)) {
             previous = (Number) parent.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY);
@@ -218,8 +208,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
         }
     }
 
-    protected Map<String, Count> computeDocumentsCountByFolder(CoreSession session, Map<String, String> folders)
-            {
+    protected Map<String, Count> computeDocumentsCountByFolder(CoreSession session, Map<String, String> folders) {
         IterableQueryResult res = session.queryAndFetch("SELECT ecm:uuid, ecm:parentId FROM Document", "NXQL");
         try {
             Map<String, Count> foldersCount = new HashMap<String, Count>();
@@ -318,19 +307,17 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected void processDocumentTrashOp(CoreSession session, DocumentModel doc, DocumentEventContext docCtx) {
+    protected void processDocumentTrashOp(CoreSession session, DocumentModel doc, String transition) {
         // do nothing for count
     }
 
     @Override
-    protected void processDocumentRestored(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            {
+    protected void processDocumentRestored(CoreSession session, DocumentModel doc) {
         // do nothing
     }
 
     @Override
-    protected void processDocumentBeforeRestore(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            {
+    protected void processDocumentBeforeRestore(CoreSession session, DocumentModel doc) {
         // do nothing
     }
 }

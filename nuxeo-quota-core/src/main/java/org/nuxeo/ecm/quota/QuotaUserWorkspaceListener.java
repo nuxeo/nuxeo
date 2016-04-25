@@ -55,11 +55,9 @@ public class QuotaUserWorkspaceListener implements EventListener {
             // no global quota activated on user workspaces
             return;
         }
-        QuotaAware qa = userWorkspace.getAdapter(QuotaAware.class);
-        if (qa == null) {
-            qa = QuotaAwareDocumentFactory.make(userWorkspace, false);
-        }
+        QuotaAware qa = QuotaAwareDocumentFactory.make(userWorkspace);
         // skip validation on other children quotas
-        qa.setMaxQuota(qaUserWorkspaces.getMaxQuota(), true, true);
+        qa.setMaxQuota(qaUserWorkspaces.getMaxQuota(), true);
+        qa.save();
     }
 }

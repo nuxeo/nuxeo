@@ -17,7 +17,7 @@
       descriptionLabel="label.quota.documentsCountUpdater.description"/>
 
     <quotaStatsUpdater name="documentsSizeUpdater"
-      class="org.nuxeo.ecm.quota.size.QuotaSyncListenerChecker"
+      class="org.nuxeo.ecm.quota.size.DocumentsSizeUpdater"
       label="label.quota.documentsCountSizeUpdater"
       descriptionLabel="label.quota.documentsCountAndSizeUpdater.description"/>
 

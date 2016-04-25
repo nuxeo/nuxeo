@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
- * Exception throws by the {@link QuotaSyncListenerChecker} to enforce Quotas in case a transaction tries to add too
+ * Exception throws by the {@link DocumentsSizeUpdater} to enforce Quotas in case a transaction tries to add too
  * much Blobs
  * 
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
