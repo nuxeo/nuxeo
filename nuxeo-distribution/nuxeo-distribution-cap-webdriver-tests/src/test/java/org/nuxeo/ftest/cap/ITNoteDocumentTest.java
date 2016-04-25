@@ -61,6 +61,10 @@ public class ITNoteDocumentTest extends AbstractTest {
 
     protected final static String NOTE_DESCRIPTION = "Description note 1";
 
+    protected static final String NOTE_VERSION = "VERSION 0.0";
+
+    protected static final String NOTE_VERSION_EDITED = "VERSION 0.1";
+
     @Before
     public void before() {
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
@@ -131,16 +135,21 @@ public class ITNoteDocumentTest extends AbstractTest {
         // Create a Note
         NoteDocumentBasePage noteDocumentPage = asPage(DocumentBasePage.class).createNote(NOTE_TITLE, NOTE_DESCRIPTION,
                 true, CONTENT_NOTE);
+
+        // Check version
+        NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
+        assertEquals(NOTE_VERSION, noteSummaryPage.getVersionNumberText());
+
         // Edit the note
         EditTabSubPage editTab = noteDocumentPage.getEditTab();
         RichEditorElement editor = new RichEditorElement(driver, "document_edit:nxl_note:nxw_note_editor");
         editor.setInputValue(CONTENT_NOTE_EDITED);
-        editTab.save();
+        editTab.edit(null, null, EditTabSubPage.MINOR_VERSION_INCREMENT_VALUE);
 
         // Check the result
         String expectedText = String.format("%s%s", CONTENT_NOTE_EDITED, CONTENT_NOTE);
-        NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
         assertEquals(expectedText, noteSummaryPage.getTextBlockContentText().replace("\n", ""));
+        assertEquals(NOTE_VERSION_EDITED, noteSummaryPage.getVersionNumberText());
 
         logout();
     }
