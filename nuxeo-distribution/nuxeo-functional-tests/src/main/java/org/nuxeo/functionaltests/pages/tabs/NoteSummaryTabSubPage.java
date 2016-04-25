@@ -38,6 +38,9 @@ public class NoteSummaryTabSubPage extends AbstractPage {
     @FindBy(xpath = "//div[@class=\"textBlock note_content_block\"]")
     WebElement textBlockViewField;
 
+    @FindBy(xpath = "//span[@class=\"versionNumber\"]")
+    WebElement versionNumberField;
+
     /**
      * @param driver
      */
@@ -55,5 +58,12 @@ public class NoteSummaryTabSubPage extends AbstractPage {
 
     public WebElement getTextBlockViewField() {
         return textBlockViewField;
+    }
+
+    /**
+     * @since 8.3
+     */
+    public String getVersionNumberText() {
+        return versionNumberField.getText();
     }
 }
