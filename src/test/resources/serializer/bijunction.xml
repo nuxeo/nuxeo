@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns:ecm="http://www.nuxeo.org/ecm/schemas/ecm/" xmlns:dub="http://www.nuxeo.org/ecm/schemas/dub/"
-          xmlns:ml="http://www.nuxeo.org/ecm/schemas/ml/">
+          xmlns:nxml="http://www.nuxeo.org/ecm/schemas/nxml/">
   <ecm:id xsi:type="xs:string">ID</ecm:id>
   <dub:creationDate xsi:type="xs:dateTime">2016-03-21T18:01:43.113</dub:creationDate>
   <subState>
     <nbValues xsi:type="xs:long">2</nbValues>
     <values>
-      <ml:item>
+      <nxml:item>
         <item xsi:type="xs:string">itemState1</item>
         <read xsi:type="xs:boolean">true</read>
         <write xsi:type="xs:boolean">true</write>
-      </ml:item>
-      <ml:item>
+      </nxml:item>
+      <nxml:item>
         <item xsi:type="xs:string">itemState2</item>
         <read xsi:type="xs:boolean">true</read>
         <write xsi:type="xs:boolean">false</write>
-      </ml:item>
+      </nxml:item>
     </values>
     <valuesAsArray>
-      <ml:item xsi:type="xs:long">3</ml:item>
-      <ml:item xsi:type="xs:long">4</ml:item>
+      <nxml:item xsi:type="xs:long">3</nxml:item>
+      <nxml:item xsi:type="xs:long">4</nxml:item>
     </valuesAsArray>
   </subState>
 </document>

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns:ecm="http://www.nuxeo.org/ecm/schemas/ecm/" xmlns:ml="http://www.nuxeo.org/ecm/schemas/ml/">
+          xmlns:ecm="http://www.nuxeo.org/ecm/schemas/ecm/" xmlns:nxml="http://www.nuxeo.org/ecm/schemas/nxml/">
   <ecm:id xsi:type="xs:string">ID</ecm:id>
   <nbValues xsi:type="xs:long">2</nbValues>
   <values>
-    <ml:item>
+    <nxml:item>
       <item xsi:type="xs:string">itemState1</item>
       <read xsi:type="xs:boolean">true</read>
       <write xsi:type="xs:boolean">true</write>
-    </ml:item>
-    <ml:item>
+    </nxml:item>
+    <nxml:item>
       <item xsi:type="xs:string">itemState2</item>
       <read xsi:type="xs:boolean">true</read>
       <write xsi:type="xs:boolean">false</write>
-    </ml:item>
+    </nxml:item>
   </values>
 </document>

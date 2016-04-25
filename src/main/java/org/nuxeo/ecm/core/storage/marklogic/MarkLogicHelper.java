@@ -33,7 +33,7 @@ final class MarkLogicHelper {
 
     public static final String DOCUMENT_ROOT = "document";
 
-    public static final String ARRAY_ITEM_NAMESPACE = "ml";
+    public static final String ARRAY_ITEM_NAMESPACE = "nxml";
 
     public static final String ARRAY_ITEM_KEY = ARRAY_ITEM_NAMESPACE + ":item";
 
