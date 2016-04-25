@@ -121,7 +121,7 @@ final class MarkLogicStateSerializer {
         element.addNamespace(namespace, MarkLogicHelper.getNamespaceUri(namespace));
     }
 
-    private static Optional<String> getPrefix(String key) {
+    public static Optional<String> getPrefix(String key) {
         int colon = key.indexOf(':');
         if (colon > 0) {
             return Optional.of(key.substring(0, colon));

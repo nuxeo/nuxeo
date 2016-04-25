@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 
+import com.marklogic.client.document.DocumentMetadataPatchBuilder.Call;
 import com.marklogic.client.document.DocumentMetadataPatchBuilder.Cardinality;
 import com.marklogic.client.document.DocumentMetadataPatchBuilder.PatchHandle;
 import com.marklogic.client.document.DocumentPatchBuilder;
@@ -69,11 +70,15 @@ class MarkLogicUpdateBuilder implements Function<StateDiff, PatchHandle> {
             String subPath = path + "/" + entry.getKey();
             Serializable value = entry.getValue();
             if (value instanceof StateDiff) {
+                MarkLogicStateSerializer.getPrefix(entry.getKey()).ifPresent(namespaces::add);
                 fillPatch(patchBuilder, subPath, (StateDiff) value, namespaces);
             } else if (value instanceof ListDiff) {
+                MarkLogicStateSerializer.getPrefix(entry.getKey()).ifPresent(namespaces::add);
                 fillPatch(patchBuilder, subPath, (ListDiff) value, namespaces);
             } else if (value instanceof Delta) {
-
+                MarkLogicStateSerializer.getPrefix(entry.getKey()).ifPresent(namespaces::add);
+                Call call = patchBuilder.call().add(((Delta) value).getDeltaValue());
+                patchBuilder.replaceApply(subPath, Cardinality.ONE, call);
             } else {
                 Optional<Element> fragment = MarkLogicStateSerializer.serialize(entry.getKey(), value, namespaces);
                 if (fragment.isPresent()) {

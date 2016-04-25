@@ -27,6 +27,7 @@ import java.util.Date;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -54,6 +55,14 @@ public class TestMarkLogicUpdateBuilder extends AbstractTest {
         stateDiff.put("ecm:acl", new String[] { "Administrator", "Members" });
         String patch = UPDATE_BUILDER.apply(stateDiff).toString();
         assertXMLFileAgainstString("update-builder/basic-update.xml", patch);
+    }
+
+    @Test
+    public void testDeltaUpdate() throws Exception {
+        StateDiff stateDiff = new StateDiff();
+        stateDiff.put("ecm:minorVersion", new DeltaLong(1, 1));
+        String patch = UPDATE_BUILDER.apply(stateDiff).toString();
+        assertXMLFileAgainstString("update-builder/delta-update.xml", patch);
     }
 
     @Test
