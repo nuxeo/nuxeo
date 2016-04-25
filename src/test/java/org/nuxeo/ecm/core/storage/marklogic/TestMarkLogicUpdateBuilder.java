@@ -21,11 +21,14 @@ package org.nuxeo.ecm.core.storage.marklogic;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nuxeo.ecm.core.storage.State;
+import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 
 public class TestMarkLogicUpdateBuilder extends AbstractTest {
@@ -51,6 +54,25 @@ public class TestMarkLogicUpdateBuilder extends AbstractTest {
         stateDiff.put("ecm:acl", new String[] { "Administrator", "Members" });
         String patch = UPDATE_BUILDER.apply(stateDiff).toString();
         assertXMLFileAgainstString("update-builder/basic-update.xml", patch);
+    }
+
+    @Test
+    public void testListUpdate() throws Exception {
+        ListDiff listDiff = new ListDiff();
+        listDiff.diff = new ArrayList<>(3);
+        listDiff.diff.add(null);
+        listDiff.diff.add(State.NOP);
+        StateDiff vignette = new StateDiff();
+        vignette.put("width", 100L);
+        listDiff.diff.add(vignette);
+        listDiff.rpush = new ArrayList<>(1);
+        vignette = new StateDiff();
+        vignette.put("width", 200L);
+        listDiff.rpush.add(vignette);
+        StateDiff stateDiff = new StateDiff();
+        stateDiff.put("vignettes", listDiff);
+        String patch = UPDATE_BUILDER.apply(stateDiff).toString();
+        assertXMLFileAgainstString("update-builder/list-update.xml", patch);
     }
 
 }
