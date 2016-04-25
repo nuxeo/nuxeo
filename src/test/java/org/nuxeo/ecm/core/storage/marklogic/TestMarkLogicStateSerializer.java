@@ -127,4 +127,32 @@ public class TestMarkLogicStateSerializer extends AbstractTest {
         assertXMLFileAgainstString("serializer/bijunction.xml", xml);
     }
 
+    /*
+     * Test serialization of state issued from TestSQLRepositoryAPI#testMarkDirtyForList.
+     */
+    @Test
+    public void testMarkDirtyForList() throws Exception {
+        State state = new State();
+        state.put("ecm:id", "672f3fc9-38e3-43ec-8b31-f15f6e89f486");
+        state.put("ecm:primaryType", "ComplexDoc");
+        state.put("ecm:name", "doc");
+        state.put("ecm:parentId", "00000000-0000-0000-0000-000000000000");
+        State attachedFile = new State();
+        ArrayList<State> vignettes = new ArrayList<>();
+        State vignette = new State();
+        vignette.put("width", 111L);
+        vignettes.add(vignette);
+        attachedFile.put("vignettes", vignettes);
+        state.put("cmpf:attachedFile", attachedFile);
+        state.put("ecm:ancestorIds", new Object[] { "00000000-0000-0000-0000-000000000000" });
+        state.put("ecm:lifeCyclePolicy", "undefined");
+        state.put("ecm:lifeCycleState", "undefined");
+        state.put("ecm:majorVersion", 0L);
+        state.put("ecm:minorVersion", 0L);
+        state.put("ecm:racl", new String[] { "Administrator", "administrators", "members" });
+        String xml = MarkLogicStateSerializer.serialize(state);
+        assertNotNull(xml);
+        assertXMLFileAgainstString("serializer/mark-dirty-for-list.xml", xml);
+    }
+
 }

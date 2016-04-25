@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:ecm="http://www.nuxeo.org/ecm/schemas/ecm/" xmlns:cmpf="http://www.nuxeo.org/ecm/schemas/cmpf/"
+          xmlns:ml="http://www.nuxeo.org/ecm/schemas/ml/">
+  <ecm:name xsi:type="xs:string">doc</ecm:name>
+  <ecm:majorVersion xsi:type="xs:long">0</ecm:majorVersion>
+  <ecm:lifeCyclePolicy xsi:type="xs:string">undefined</ecm:lifeCyclePolicy>
+  <ecm:racl>
+    <ml:item xsi:type="xs:string">Administrator</ml:item>
+    <ml:item xsi:type="xs:string">administrators</ml:item>
+    <ml:item xsi:type="xs:string">members</ml:item>
+  </ecm:racl>
+  <ecm:primaryType xsi:type="xs:string">ComplexDoc</ecm:primaryType>
+  <ecm:id xsi:type="xs:string">672f3fc9-38e3-43ec-8b31-f15f6e89f486</ecm:id>
+  <ecm:parentId xsi:type="xs:string">00000000-0000-0000-0000-000000000000</ecm:parentId>
+  <ecm:ancestorIds>
+    <ml:item xsi:type="xs:string">00000000-0000-0000-0000-000000000000</ml:item>
+  </ecm:ancestorIds>
+  <ecm:minorVersion xsi:type="xs:long">0</ecm:minorVersion>
+  <ecm:lifeCycleState xsi:type="xs:string">undefined</ecm:lifeCycleState>
+  <cmpf:attachedFile>
+    <vignettes>
+      <ml:item>
+        <width xsi:type="xs:long">111</width>
+      </ml:item>
+    </vignettes>
+  </cmpf:attachedFile>
+</document>

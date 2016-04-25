@@ -123,4 +123,34 @@ public class TestMarkLogicStateDeserializer extends AbstractTest {
         assertEquals(expectedState, state);
     }
 
+    /*
+     * Test deserialization of state issued from TestSQLRepositoryAPI#testMarkDirtyForList.
+     */
+    @Test
+    public void testMarkDirtyForList() throws Exception {
+        String xml = readFile("serializer/mark-dirty-for-list.xml");
+        State state = MarkLogicStateDeserializer.deserialize(xml);
+        assertNotNull(state);
+        State expectedState = new State();
+        expectedState.put("ecm:id", "672f3fc9-38e3-43ec-8b31-f15f6e89f486");
+        expectedState.put("ecm:primaryType", "ComplexDoc");
+        expectedState.put("ecm:name", "doc");
+        expectedState.put("ecm:parentId", "00000000-0000-0000-0000-000000000000");
+        State attachedFile = new State();
+        ArrayList<State> vignettes = new ArrayList<>();
+        State vignette = new State();
+        vignette.put("width", 111L);
+        vignettes.add(vignette);
+        attachedFile.put("vignettes", vignettes);
+        expectedState.put("cmpf:attachedFile", attachedFile);
+        // Here we have a String[] in deserialization instead of Object[] in serialization
+        expectedState.put("ecm:ancestorIds", new String[] { "00000000-0000-0000-0000-000000000000" });
+        expectedState.put("ecm:lifeCyclePolicy", "undefined");
+        expectedState.put("ecm:lifeCycleState", "undefined");
+        expectedState.put("ecm:majorVersion", 0L);
+        expectedState.put("ecm:minorVersion", 0L);
+        expectedState.put("ecm:racl", new String[] { "Administrator", "administrators", "members" });
+        assertEquals(expectedState, state);
+    }
+
 }
