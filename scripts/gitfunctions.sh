@@ -34,14 +34,17 @@ gitfa() {
     from_root=true
     gitf "$@"
     cd addons
+  else
+    from_root=false
   fi
   ADDONS=$(mvn help:effective-pom -N|grep '<module>' |cut -d ">" -f 2 |cut -d "<" -f 1)
-  for dir in . $ADDONS; do
+  $from_root || ADDONS=". $ADDONS"
+  for dir in $ADDONS; do
     if [ -e "$dir"/.git ]; then
       echo "[$dir]"
       (cd "$dir" ; git "$@")
       echo
     fi
   done
-  [ -z $from_root ] || cd ..
+  $from_root && cd ..
 }
