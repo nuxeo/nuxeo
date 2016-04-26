@@ -244,7 +244,7 @@ public class ITCollectionsTest extends AbstractTest {
 
         documentBasePage = workspacePage.createCollection(COLLECTION_NAME_2, COLLECTION_DESCRIPTION_2);
 
-        documentBasePage.getPermissionsTab().grantPermissionForUser(CAN_COLLECT_RIGHT, TEST_USERNAME);
+        documentBasePage.getPermissionsTab().grantPermission(CAN_COLLECT_RIGHT, TEST_USERNAME);
 
         logout();
 
