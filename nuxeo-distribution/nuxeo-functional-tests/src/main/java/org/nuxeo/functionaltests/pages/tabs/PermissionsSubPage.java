@@ -35,7 +35,11 @@ import org.openqa.selenium.support.FindBy;
  */
 public class PermissionsSubPage extends AbstractPage {
 
+    // moved @Required on this element to allow read only view
     @Required
+    @FindBy(xpath = "//div[contains(@class, 'jsLocalPermissions')]")
+    WebElement localPermissions;
+
     @FindBy(xpath = "//div[contains(@class, 'jsLocalPermissions')]/*/paper-button")
     WebElement newPermission;
 
@@ -159,5 +163,16 @@ public class PermissionsSubPage extends AbstractPage {
             }
         }
         return null;
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasNewPermissionButton() {
+        try {
+            return newPermission.isDisplayed();
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 }

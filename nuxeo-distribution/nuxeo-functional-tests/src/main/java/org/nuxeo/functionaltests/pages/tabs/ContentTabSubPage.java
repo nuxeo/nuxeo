@@ -285,4 +285,15 @@ public class ContentTabSubPage extends DocumentBasePage {
             return false;
         }
     }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasNewButton() {
+        try {
+            return newButton.isDisplayed();
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
 }
