@@ -74,7 +74,7 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
 
     private static final Log log = LogFactory.getLog(CmisFeatureSessionHttp.class);
 
-    public static final String BASE_RESOURCE = "/jetty-test";
+    public static final String BASE_RESOURCE = "jetty-test";
 
     public static final String HOST = "localhost";
 
@@ -258,7 +258,7 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
         // endpoint.getSocketProperties().setSoReuseAddress(true);
         endpoint.setMaxKeepAliveRequests(1); // vital for clean shutdown
 
-        URL url = getClass().getResource(BASE_RESOURCE);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(BASE_RESOURCE);
         assertNotNull(url);
         File docBase = new File(url.getPath());
         org.apache.catalina.Context context = tomcat.addContext("/" + CONTEXT, docBase.getAbsolutePath());
