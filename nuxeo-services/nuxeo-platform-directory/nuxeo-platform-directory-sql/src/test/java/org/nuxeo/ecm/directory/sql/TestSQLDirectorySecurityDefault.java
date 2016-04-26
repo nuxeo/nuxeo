@@ -48,7 +48,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features({ SQLDirectoryFeature.class, ClientLoginFeature.class })
 @LocalDeploy({ "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-schema-override.xml",
         "org.nuxeo.ecm.directory.sql.tests:test-sql-directories-bundle.xml" })
-public class TestDefaultSQLDirectorySecurity {
+public class TestSQLDirectorySecurityDefault {
 
     @Inject
     ClientLoginFeature dummyLogin;
