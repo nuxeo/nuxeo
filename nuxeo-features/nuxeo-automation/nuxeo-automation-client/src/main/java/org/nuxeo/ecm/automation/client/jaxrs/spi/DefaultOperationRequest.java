@@ -158,7 +158,7 @@ public class DefaultOperationRequest implements OperationRequest {
     }
 
     public OperationRequest setContextProperty(String key, Object value) {
-        ctx.put(key, value != null ? value : null);
+        ctx.put(key, value);
         return this;
     }
 
