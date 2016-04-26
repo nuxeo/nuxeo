@@ -71,6 +71,25 @@ object NuxeoRest {
       .check(status.in(204))
   }
 
+  def search(nxql: String, sortBy: String = "", sortOrder: String = "", comment: String = "Search with NXQL", pageSize: Int = 10, maxResults: Int = 100,
+             currentPageIndex: Int = 0, schemas: String = "*", enrichers: String = "", parts: String = "") = {
+    http(comment)
+      .get(Constants.API_QUERY)
+      .headers(Headers.base)
+      .header("Content-Type", "application/json")
+      .header("X-NXproperties", schemas)
+      .header("X-NXenrichers.document", enrichers)
+      .header("X-NXfetch.document", parts)
+      .basicAuth("${user}", "${password}")
+      .queryParam("query", nxql)
+      .queryParam("pageSize", pageSize)
+      .queryParam("maxResults", maxResults)
+      .queryParam("currentPageIndex", currentPageIndex)
+      .queryParam("sortBy", sortBy)
+      .queryParam("sortOrder", sortOrder)
+      .check(status.in(200))
+  }
+
   def getParentFolderOfCurrentDocument(comment: String = "Get Parent Folder", schemas: String = "*", enrichers: String = "", parts: String = "") = {
     http(comment)
       .get(Constants.GAT_API_PATH + "/${parentPath}")

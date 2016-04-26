@@ -24,6 +24,7 @@ object Feeders {
   val usersCircular = csv("users.csv").circular
   val users = csv("users.csv").circular
   val admins = csv("admins.csv").circular
+  val fulltextSearch = csv("fulltext.csv").circular
 
   // redis feeds
   def createDocFeeder() = {

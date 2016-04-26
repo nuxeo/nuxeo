@@ -212,6 +212,15 @@
                 </configuration>
               </execution>
               <execution>
+                <id>search</id>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim30Search</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
                 <id>warmup-jsf</id>
                 <goals>
                   <goal>execute</goal>
