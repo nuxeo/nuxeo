@@ -53,7 +53,18 @@ public class PermissionsSubPage extends AbstractPage {
         super(driver);
     }
 
+    /**
+     * @deprecated as of 8.3, replaced by {@link #hasPermission(String, String)}
+     */
+    @Deprecated
     public boolean hasPermissionForUser(String permission, String username) {
+        return hasPermission(permission, username);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasPermission(String permission, String userOrGroupName) {
         List<WebElement> elements = driver.findElements(By.xpath("//div[contains(@class, 'acl-table-row effective')]"));
         boolean hasPermission = false;
         for (WebElement element : elements) {
@@ -65,7 +76,7 @@ public class PermissionsSubPage extends AbstractPage {
             if (names.size() > 0 && perms.size() > 0) {
                 String title = names.get(0).getAttribute("title");
                 String perm = perms.get(0).getText();
-                if (title.startsWith(username) && permission.equalsIgnoreCase(perm)) {
+                if (title.startsWith(userOrGroupName) && permission.equalsIgnoreCase(perm)) {
                     hasPermission = true;
                     break;
                 }
@@ -74,7 +85,18 @@ public class PermissionsSubPage extends AbstractPage {
         return hasPermission;
     }
 
+    /**
+     * @deprecated as of 8.3, replaced by {@link #grantPermission(String, String)}
+     */
+    @Deprecated
     public PermissionsSubPage grantPermissionForUser(String permission, String username) {
+        return grantPermission(permission, username);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public PermissionsSubPage grantPermission(String permission, String userOrGroupName) {
 
         newPermission.click();
 
@@ -83,7 +105,7 @@ public class PermissionsSubPage extends AbstractPage {
 
         Select2WidgetElement userSelection = new Select2WidgetElement(driver,
                 popup.findElement(By.className("select2-container")), false);
-        userSelection.selectValue(username);
+        userSelection.selectValue(userOrGroupName);
 
         // select the permission
         popup.findElement(By.tagName("iron-icon")).click();
@@ -105,13 +127,13 @@ public class PermissionsSubPage extends AbstractPage {
 
         // click on Create
         popup.findElement(By.xpath(".//paper-button[text()='Create']")).click();
-        waitForPermissionAdded(permission, username);
+        waitForPermissionAdded(permission, userOrGroupName);
 
         return asPage(PermissionsSubPage.class);
     }
 
     protected void waitForPermissionAdded(String permission, String username) {
-        Locator.waitUntilGivenFunction(input -> hasPermissionForUser(permission, username));
+        Locator.waitUntilGivenFunction(input -> hasPermission(permission, username));
     }
 
     /**
@@ -139,7 +161,8 @@ public class PermissionsSubPage extends AbstractPage {
         WebElement deleteButton = findDeleteButton(permission, username);
         if (deleteButton != null) {
             deleteButton.click();
-            Locator.waitUntilElementPresent(By.xpath("//h2[contains(text(), 'The following permission will be deleted')]"));
+            Locator.waitUntilElementPresent(
+                    By.xpath("//h2[contains(text(), 'The following permission will be deleted')]"));
             driver.findElement(By.xpath("//paper-button[text()='Delete']")).click();
             Locator.waitUntilElementPresent(By.xpath("//span[text()='Permission deleted.']"));
         }

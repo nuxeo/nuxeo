@@ -68,16 +68,23 @@ public class ITPermissionsTest extends AbstractTest {
         ContentTabSubPage contentTab = page.getContentTab();
         assertTrue(contentTab.hasDocumentLink(TEST_WORKSPACE_TITLE));
 
+        login("linnet", "linnet1");
+        open(WORKSPACES_URL);
+
+        page = asPage(DocumentBasePage.class);
+        contentTab = page.getContentTab();
+        assertTrue(contentTab.hasDocumentLink(TEST_WORKSPACE_TITLE));
+
         login(TEST_USERNAME, TEST_PASSWORD);
         open(TEST_WORKSPACE_URL);
 
         page = asPage(DocumentBasePage.class);
         PermissionsSubPage permissionsTab = page.getPermissionsTab();
-        assertTrue(permissionsTab.hasPermissionForUser("Read", "members"));
+        assertTrue(permissionsTab.hasPermission("Read", "members"));
         permissionsTab = permissionsTab.blockPermissions();
-        assertTrue(permissionsTab.hasPermissionForUser("Manage everything", TEST_USERNAME));
-        assertTrue(permissionsTab.hasPermissionForUser("Manage everything", "administrators"));
-        assertFalse(permissionsTab.hasPermissionForUser("Read", "members"));
+        assertTrue(permissionsTab.hasPermission("Manage everything", TEST_USERNAME));
+        assertTrue(permissionsTab.hasPermission("Manage everything", "administrators"));
+        assertFalse(permissionsTab.hasPermission("Read", "members"));
 
         login("bree", "bree1");
         open(WORKSPACES_URL);
@@ -98,9 +105,9 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         permissionsTab = page.getPermissionsTab();
-        assertFalse(permissionsTab.hasPermissionForUser("Read", "members"));
+        assertFalse(permissionsTab.hasPermission("Read", "members"));
         permissionsTab = permissionsTab.unblockPermissions();
-        assertTrue(permissionsTab.hasPermissionForUser("Read", "members"));
+        assertTrue(permissionsTab.hasPermission("Read", "members"));
 
         login("bree", "bree1");
         open(WORKSPACES_URL);
@@ -136,8 +143,8 @@ public class ITPermissionsTest extends AbstractTest {
         PermissionsSubPage permissionsTab = page.getPermissionsTab();
 
         // grant manage everything to bree
-        PermissionsSubPage permissionsSubPage = permissionsTab.grantPermissionForUser("Manage everything", "bree");
-        assertTrue(permissionsSubPage.hasPermissionForUser("Manage everything", "bree"));
+        PermissionsSubPage permissionsSubPage = permissionsTab.grantPermission("Manage everything", "bree");
+        assertTrue(permissionsSubPage.hasPermission("Manage everything", "bree"));
 
         login("bree", "bree1");
         open(TEST_WORKSPACE_URL);
@@ -157,7 +164,7 @@ public class ITPermissionsTest extends AbstractTest {
 
         // revoke manage everything to bree
         permissionsSubPage = permissionsTab.deletePermission("Manage everything", "bree");
-        assertFalse(permissionsSubPage.hasPermissionForUser("Manage everything", "bree"));
+        assertFalse(permissionsSubPage.hasPermission("Manage everything", "bree"));
 
         login("bree", "bree1");
         open(TEST_WORKSPACE_URL);
@@ -183,8 +190,8 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         PermissionsSubPage permissionsTab = page.getPermissionsTab();
-        PermissionsSubPage permissionsSubPage = permissionsTab.grantPermissionForUser("Edit", "bree");
-        assertTrue(permissionsSubPage.hasPermissionForUser("Edit", "bree"));
+        PermissionsSubPage permissionsSubPage = permissionsTab.grantPermission("Edit", "bree");
+        assertTrue(permissionsSubPage.hasPermission("Edit", "bree"));
 
         login("bree", "bree1");
         open(TEST_WORKSPACE_URL);
