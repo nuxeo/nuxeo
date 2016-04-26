@@ -719,6 +719,9 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         Document folder = (Document) session.newRequest(CreateDocument.ID)
                                             .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
                                             .setInput(automationTestFolder)
+                                            // Check for context null property marshalling
+                                            .setContextProperty("test", null)
+                                            .setContextProperty("test1", "hello")
                                             .set("type", document.getType())
                                             .set("name", document.getId())
                                             .set("properties", document)
