@@ -668,9 +668,16 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         document.set("dc:title", "My Test Folder");
         document.set("dc:description", "test");
         document.set("dc:subjects", "a,b,c\\,d");
-        Document folder = (Document) session.newRequest(CreateDocument.ID).setHeader(Constants.HEADER_NX_SCHEMAS, "*").setInput(
-                automationTestFolder).set("type", document.getType()).set("name", document.getId()).set("properties",
-                document).execute();
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                                            .setInput(automationTestFolder)
+                                            // Check for context null property marshalling
+                                            .setContextProperty("test", null)
+                                            .setContextProperty("test1", "hello")
+                                            .set("type", document.getType())
+                                            .set("name", document.getId())
+                                            .set("properties", document)
+                                            .execute();
 
         assertEquals("My Test Folder", folder.getString("dc:title"));
         assertEquals("test", folder.getString("dc:description"));
