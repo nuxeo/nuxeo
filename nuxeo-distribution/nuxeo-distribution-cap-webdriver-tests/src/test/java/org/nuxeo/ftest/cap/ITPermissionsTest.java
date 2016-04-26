@@ -118,7 +118,60 @@ public class ITPermissionsTest extends AbstractTest {
     }
 
     @Test
-    public void testLocalPermissions() throws DocumentBasePage.UserNotConnectedException {
+    public void testWorkspacePermissionsByAdmin() throws DocumentBasePage.UserNotConnectedException {
+        login("bree", "bree1");
+        open(TEST_WORKSPACE_URL);
+
+        // check bree has only read permission
+        DocumentBasePage page = asPage(DocumentBasePage.class);
+        assertFalse(hasNewButton(page));
+        assertFalse(hasEditTab(page));
+        assertFalse(hasNewPermissionsButton(page));
+        assertFalse(hasManageTab(page));
+
+        login();
+        open(TEST_WORKSPACE_URL);
+
+        page = asPage(DocumentBasePage.class);
+        PermissionsSubPage permissionsTab = page.getPermissionsTab();
+
+        // grant manage everything to bree
+        PermissionsSubPage permissionsSubPage = permissionsTab.grantPermissionForUser("Manage everything", "bree");
+        assertTrue(permissionsSubPage.hasPermissionForUser("Manage everything", "bree"));
+
+        login("bree", "bree1");
+        open(TEST_WORKSPACE_URL);
+
+        // check result
+        page = asPage(DocumentBasePage.class);
+        assertTrue(hasNewButton(page));
+        assertTrue(hasEditTab(page));
+        assertTrue(hasNewPermissionsButton(page));
+        assertTrue(hasManageTab(page));
+
+        login();
+        open(TEST_WORKSPACE_URL);
+
+        page = asPage(DocumentBasePage.class);
+        permissionsTab = page.getPermissionsTab();
+
+        // revoke manage everything to bree
+        permissionsSubPage = permissionsTab.deletePermission("Manage everything", "bree");
+        assertFalse(permissionsSubPage.hasPermissionForUser("Manage everything", "bree"));
+
+        login("bree", "bree1");
+        open(TEST_WORKSPACE_URL);
+
+        // check result
+        page = asPage(DocumentBasePage.class);
+        assertFalse(hasNewButton(page));
+        assertFalse(hasEditTab(page));
+        assertFalse(hasNewPermissionsButton(page));
+        assertFalse(hasManageTab(page));
+    }
+
+    @Test
+    public void testWorkspacePermissionsByManager() throws DocumentBasePage.UserNotConnectedException {
         login("bree", "bree1");
         open(TEST_WORKSPACE_URL);
 
@@ -153,9 +206,35 @@ public class ITPermissionsTest extends AbstractTest {
         assertFalse(hasEditTab(page));
     }
 
+    @Test
+    public void testSectionPermissions() throws DocumentBasePage.UserNotConnectedException {
+
+    }
+
+    @Test
+    public void testDocumentPermissions() throws DocumentBasePage.UserNotConnectedException {
+
+    }
+
+    private boolean hasNewButton(DocumentBasePage page) {
+        return page.getContentTab().hasNewButton();
+    }
+
     private boolean hasEditTab(DocumentBasePage page) {
         try {
             return page.getEditTab() != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    private boolean hasNewPermissionsButton(DocumentBasePage page) {
+        return page.getPermissionsTab().hasNewPermissionButton();
+    }
+
+    private boolean hasManageTab(DocumentBasePage page) {
+        try {
+            return page.getManageTab() != null;
         } catch (NoSuchElementException e) {
             return false;
         }
