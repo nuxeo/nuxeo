@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.DirectorySecurityException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
@@ -326,7 +327,12 @@ public class TestMultiDirectory {
             e.setProperty("schema3", "thefoo", "fffooo1");
             e.setProperty("schema3", "thebar", "babar1");
 
-            readonlyDir.updateEntry(e);
+            try {
+                readonlyDir.updateEntry(e);
+                fail("Should not be able to update entry");
+            } catch (DirectorySecurityException ee) {
+                // ok
+            }
             e = readonlyDir.getEntry("1");
             // the multidirectory entry was not updated
             assertEquals("foo1", e.getProperty("schema3", "thefoo"));

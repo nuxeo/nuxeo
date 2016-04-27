@@ -144,12 +144,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     @Override
     @SuppressWarnings("unchecked")
     public DocumentModel createEntry(Map<String, Object> fieldMap) {
-        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
-            return null;
-        }
-        if (isReadOnly()) {
-            return null;
-        }
+        checkPermission(SecurityConstants.WRITE);
         LDAPDirectoryDescriptor descriptor = getDirectory().getDescriptor();
         List<String> referenceFieldList = new LinkedList<String>();
         try {
@@ -243,10 +238,10 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @Override
     public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
-        if (isCurrentUserAllowed(SecurityConstants.READ)) {
-            return directory.getCache().getEntry(id, this, fetchReferences);
+        if (!hasPermission(SecurityConstants.READ)) {
+            return null;
         }
-        return null;
+        return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
     @Override
@@ -341,6 +336,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @Override
     public DocumentModelList getEntries() throws DirectoryException {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return new DocumentModelListImpl();
+        }
         try {
             SearchControls scts = getDirectory().getSearchControls(true);
             if (log.isDebugEnabled()) {
@@ -360,13 +358,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     @Override
     @SuppressWarnings("unchecked")
     public void updateEntry(DocumentModel docModel) {
-        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
-            return;
-        }
-        if (isReadOnlyEntry(docModel)) {
-            // do not edit readonly entries
-            return;
-        }
+        checkPermission(SecurityConstants.WRITE);
         List<String> updateList = new ArrayList<String>();
         List<String> referenceFieldList = new LinkedList<String>();
 
@@ -472,12 +464,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @Override
     public void deleteEntry(String id) {
-        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
-            return;
-        }
-        if (isReadOnly()) {
-            return;
-        }
+        checkPermission(SecurityConstants.WRITE);
         try {
             for (String fieldName : schemaFieldMap.keySet()) {
                 if (getDirectory().isReference(fieldName)) {
@@ -511,6 +498,9 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, boolean fetchReferences,
             Map<String, String> orderBy) throws DirectoryException {
+        if (!hasPermission(SecurityConstants.READ)) {
+            return new DocumentModelListImpl();
+        }
         try {
             // building the query using filterExpr / filterArgs to
             // escape special characters and to fulltext search only on
@@ -822,9 +812,6 @@ public class LDAPSession extends BaseSession implements EntrySource {
     protected DocumentModelList ldapResultsToDocumentModels(NamingEnumeration<SearchResult> results,
             boolean fetchReferences) throws DirectoryException, NamingException {
         DocumentModelListImpl list = new DocumentModelListImpl();
-        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
-            return list;
-        }
         try {
             while (results.hasMore()) {
                 SearchResult result = results.next();

@@ -23,6 +23,7 @@ package org.nuxeo.ecm.directory.multi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -38,6 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectorySecurityException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.memory.MemoryDirectory;
@@ -193,10 +195,14 @@ public class TestMultiDirectorySecurity {
         map.put("uid", "5");
         map.put("thefoo", "foo5");
         map.put("thebar", "bar5");
-        DocumentModel entry = dir.createEntry(map);
-        assertNull(entry);
+        try {
+            dir.createEntry(map);
+            fail("Should not be able to create entry");
+        } catch (DirectorySecurityException ee) {
+            // ok
+        }
 
-        entry = dir.getEntry("5");
+        DocumentModel entry = dir.getEntry("5");
         assertNull(entry);
 
         dummyLogin.logout();
@@ -250,7 +256,13 @@ public class TestMultiDirectorySecurity {
         assertEquals("bar1", e.getProperty("schema3", "thebar"));
         e.setProperty("schema3", "thefoo", "fffooo1");
         e.setProperty("schema3", "thebar", "babar1");
-        dir.updateEntry(e);
+        try {
+            dir.updateEntry(e);
+            fail("Should not be able to update entry");
+        } catch (DirectorySecurityException ee) {
+            // ok
+        }
+
         e = dir.getEntry("1");
         assertEquals("foo1", e.getProperty("schema3", "thefoo"));
         assertEquals("bar1", e.getProperty("schema3", "thebar"));
@@ -276,7 +288,12 @@ public class TestMultiDirectorySecurity {
         // Given a reader user
         dummyLogin.loginAs(READER_USER);
 
-        dir.deleteEntry("1");
+        try {
+            dir.deleteEntry("1");
+            fail("Should not be able to delete entry");
+        } catch (DirectorySecurityException ee) {
+            // ok
+        }
         assertNotNull(dir.getEntry("1"));
 
         dummyLogin.logout();

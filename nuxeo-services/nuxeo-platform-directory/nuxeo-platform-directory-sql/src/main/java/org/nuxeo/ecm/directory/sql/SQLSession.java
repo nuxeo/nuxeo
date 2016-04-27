@@ -75,8 +75,6 @@ import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
  */
 public class SQLSession extends BaseSession implements EntrySource {
 
-    private static final String READ_ONLY_VOCABULARY_WARN = "This SQLDirectory is ReadOnly, you are not allowed to modify it.";
-
     private static final Log log = LogFactory.getLog(SQLSession.class);
 
     protected final Map<String, Field> schemaFieldMap;
@@ -180,14 +178,8 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap) {
+        checkPermission(SecurityConstants.WRITE);
 
-        if (isReadOnly()) {
-            log.warn(READ_ONLY_VOCABULARY_WARN);
-            return null;
-        }
-        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
-            return null;
-        }
         Field schemaIdField = schemaFieldMap.get(idField);
 
         String idFieldName = schemaIdField.getName().getPrefixedName();
@@ -335,10 +327,10 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
-        if (isCurrentUserAllowed(SecurityConstants.READ)) {
-            return directory.getCache().getEntry(id, this, fetchReferences);
+        if (!hasPermission(SecurityConstants.READ)) {
+            return null;
         }
-        return null;
+        return directory.getCache().getEntry(id, this, fetchReferences);
     }
 
     protected String addFilterWhereClause(String whereClause) throws DirectoryException {
@@ -481,16 +473,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public void updateEntry(DocumentModel docModel) {
-
-        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
-            return;
-        }
-
-        if (isReadOnly()) {
-            log.warn(READ_ONLY_VOCABULARY_WARN);
-            return;
-        }
-
+        checkPermission(SecurityConstants.WRITE);
         acquireConnection();
         List<Column> storedColumnList = new LinkedList<>();
         List<String> referenceFieldList = new LinkedList<>();
@@ -608,16 +591,9 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public void deleteEntry(String id) {
+        checkPermission(SecurityConstants.WRITE);
+
         acquireConnection();
-
-        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
-            return;
-        }
-
-        if (isReadOnly()) {
-            log.warn(READ_ONLY_VOCABULARY_WARN);
-            return;
-        }
 
         if (!canDeleteMultiTenantEntry(id)) {
             throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
@@ -685,12 +661,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
-
-        if (isReadOnly()) {
-            log.warn(READ_ONLY_VOCABULARY_WARN);
-            return;
-        }
-
+        checkPermission(SecurityConstants.WRITE);
         acquireConnection();
 
         if (!canDeleteMultiTenantEntry(id)) {
@@ -769,8 +740,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences, int limit, int offset) throws DirectoryException {
-
-        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
+        if (!hasPermission(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
         }
         acquireConnection();

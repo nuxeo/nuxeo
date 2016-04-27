@@ -93,89 +93,98 @@ public abstract class BaseSession implements Session {
     }
 
     /**
-     * Check the current user rights for the given permission against the permission descriptor
+     * Checks the current user rights for the given permission against the read-only flag and the permission descriptor.
+     * <p>
+     * Throws {@link DirectorySecurityException} if the user does not have adequate privileges.
      *
-     * @return true if the user
-     * @since 6.0
+     * @throws DirectorySecurityException if access is denied
+     * @since 8.3
      */
-    public boolean isCurrentUserAllowed(String permissionTocheck) {
-        PermissionDescriptor[] permDescriptors = permissions;
-        NuxeoPrincipal currentUser = ClientLoginModule.getCurrentPrincipal();
-
-        if (currentUser == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Can't get current user to check directory permission. EVERYTHING is allowed by default");
-            }
-            return true;
+    public void checkPermission(String permission) {
+        if (hasPermission(permission)) {
+            return;
         }
-        String username = currentUser.getName();
-        List<String> userGroups = currentUser.getAllGroups();
-
-        if (username.equalsIgnoreCase(LoginComponent.SYSTEM_USERNAME)) {
-            return true;
+        if (permission.equals(SecurityConstants.WRITE) && isReadOnly()) {
+            throw new DirectorySecurityException("Directory is read-only");
+        } else {
+            NuxeoPrincipal user = ClientLoginModule.getCurrentPrincipal();
+            throw new DirectorySecurityException("User " + user + " does not have " + permission + " permission");
         }
-
-        if (permDescriptors == null || permDescriptors.length == 0) {
-            if (currentUser.isAdministrator()) {
-                // By default if nothing is specified, admin is allowed
-                return true;
-            }
-            if (currentUser.isMemberOf(POWER_USERS_GROUP)) {
-                return true;
-            }
-
-            // Return true for read access to anyone when nothing defined
-            if (permissionTocheck.equalsIgnoreCase(SecurityConstants.READ)) {
-                return true;
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("User '%s', is not allowed for permission '%s' on the directory", currentUser,
-                        permissionTocheck));
-            }
-            // Deny in all other case
-            return false;
-        }
-        boolean allowed = checkPermission(permDescriptors, permissionTocheck, username, userGroups);
-        if (allowed != true) {
-            // If the permission has not been found and if the permission to
-            // check is read
-            // Then try to check if the current user is allowed, because having
-            // write access include read
-            if (permissionTocheck.equalsIgnoreCase(SecurityConstants.READ)) {
-                allowed = checkPermission(permDescriptors, SecurityConstants.WRITE, username, userGroups);
-            }
-        }
-        if (log.isDebugEnabled() && !allowed) {
-            log.debug(String.format("User '%s', is not allowed for permission '%s' on the directory", currentUser,
-                    permissionTocheck));
-        }
-        return allowed;
-
     }
 
-    private boolean checkPermission(PermissionDescriptor permDescriptors[], String permToChek, String username,
-            List<String> userGroups) {
-    	List<String> groups = new ArrayList<String>(userGroups);
-    	groups.add(SecurityConstants.EVERYONE);
-        for (int i = 0; i < permDescriptors.length; i++) {
-            PermissionDescriptor currentDesc = permDescriptors[i];
-            if (currentDesc.name.equalsIgnoreCase(permToChek)) {
-                if (currentDesc.groups != null) {
-                    for (int j = 0; j < currentDesc.groups.length; j++) {
-                        String groupName = currentDesc.groups[j];
-                        if (groups.contains(groupName)) {
-                            return true;
-                        }
+    /**
+     * Checks the current user rights for the given permission against the read-only flag and the permission descriptor.
+     * <p>
+     * Returns {@code false} if the user does not have adequate privileges.
+     *
+     * @return {@code false} if access is denied
+     * @since 8.3
+     */
+    public boolean hasPermission(String permission) {
+        if (permission.equals(SecurityConstants.WRITE) && isReadOnly()) {
+            if (log.isTraceEnabled()) {
+                log.trace("Directory is read-only");
+            }
+            return false;
+        }
+        NuxeoPrincipal user = ClientLoginModule.getCurrentPrincipal();
+        if (user == null) {
+            return true;
+        }
+        String username = user.getName();
+        if (username.equals(LoginComponent.SYSTEM_USERNAME)) {
+            return true;
+        }
+
+        if (permissions == null || permissions.length == 0) {
+            if (user.isAdministrator()) {
+                return true;
+            }
+            if (user.isMemberOf(POWER_USERS_GROUP)) {
+                return true;
+            }
+            // Return true for read access to anyone when nothing defined
+            if (permission.equals(SecurityConstants.READ)) {
+                return true;
+            }
+            // Deny in all other cases
+            if (log.isTraceEnabled()) {
+                log.trace("User " + user + " does not have " + permission + " permission");
+            }
+            return false;
+        }
+
+        List<String> groups = new ArrayList<>(user.getAllGroups());
+        groups.add(SecurityConstants.EVERYONE);
+        boolean allowed = hasPermission(permission, username, groups);
+        if (!allowed) {
+            // if the permission Read is not explicitly granted, check Write which includes it
+            if (permission.equals(SecurityConstants.READ)) {
+                allowed = hasPermission(SecurityConstants.WRITE, username, groups);
+            }
+        }
+        if (!allowed && log.isTraceEnabled()) {
+            log.trace("User " + user + " does not have " + permission + " permission");
+        }
+        return allowed;
+    }
+
+    protected boolean hasPermission(String permission, String username, List<String> groups) {
+        for (PermissionDescriptor desc : permissions) {
+            if (!desc.name.equals(permission)) {
+                continue;
+            }
+            if (desc.groups != null) {
+                for (String group : desc.groups) {
+                    if (groups.contains(group)) {
+                        return true;
                     }
                 }
-
-                if (currentDesc.users != null) {
-                    for (int j = 0; j < currentDesc.users.length; j++) {
-                        String currentUsername = currentDesc.users[j];
-                        if (currentUsername.equals(username)) {
-                            return true;
-                        }
+            }
+            if (desc.users != null) {
+                for (String user : desc.users) {
+                    if (user.equals(username)) {
+                        return true;
                     }
                 }
             }

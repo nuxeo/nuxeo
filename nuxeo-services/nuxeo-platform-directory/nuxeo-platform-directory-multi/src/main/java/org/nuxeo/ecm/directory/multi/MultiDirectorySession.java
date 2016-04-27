@@ -347,7 +347,7 @@ public class MultiDirectorySession extends BaseSession {
 
     @Override
     public DocumentModel getEntry(String id, boolean fetchReferences) throws DirectoryException {
-        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
+        if (!hasPermission(SecurityConstants.READ)) {
             return null;
         }
         init();
@@ -406,8 +406,8 @@ public class MultiDirectorySession extends BaseSession {
     @Override
     @SuppressWarnings("boxing")
     public DocumentModelList getEntries() {
-        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
-            return null;
+        if (!hasPermission(SecurityConstants.READ)) {
+            return new DocumentModelListImpl();
         }
         init();
 
@@ -502,9 +502,7 @@ public class MultiDirectorySession extends BaseSession {
 
     @Override
     public DocumentModel createEntry(Map<String, Object> fieldMap) {
-        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
-            return null;
-        }
+        checkPermission(SecurityConstants.WRITE);
         init();
         final Object rawid = fieldMap.get(schemaIdField);
         if (rawid == null) {
@@ -536,9 +534,7 @@ public class MultiDirectorySession extends BaseSession {
 
     @Override
     public void deleteEntry(String id) {
-        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
-            return;
-        }
+        checkPermission(SecurityConstants.WRITE);
         init();
         for (SourceInfo sourceInfo : sourceInfos) {
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
@@ -600,10 +596,8 @@ public class MultiDirectorySession extends BaseSession {
 
     @Override
     public void updateEntry(DocumentModel docModel) {
-        if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
-            return;
-        }
-        if (isReadOnly() || isReadOnlyEntry(docModel)) {
+        checkPermission(SecurityConstants.WRITE);
+        if (isReadOnlyEntry(docModel)) {
             return;
         }
         init();
@@ -646,10 +640,8 @@ public class MultiDirectorySession extends BaseSession {
     @SuppressWarnings("boxing")
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
             boolean fetchReferences) {
-        // list of entries
-        final DocumentModelList results = new DocumentModelListImpl();
-        if (!isCurrentUserAllowed(SecurityConstants.READ)) {
-            return results;
+        if (!hasPermission(SecurityConstants.READ)) {
+            return new DocumentModelListImpl();
         }
         init();
 
@@ -660,6 +652,7 @@ public class MultiDirectorySession extends BaseSession {
         }
         Set<String> readOnlyEntries = new HashSet<String>();
 
+        DocumentModelList results = new DocumentModelListImpl();
         for (SourceInfo sourceInfo : sourceInfos) {
             // accumulated map for each entry
             final Map<String, Map<String, Object>> maps = new HashMap<String, Map<String, Object>>();

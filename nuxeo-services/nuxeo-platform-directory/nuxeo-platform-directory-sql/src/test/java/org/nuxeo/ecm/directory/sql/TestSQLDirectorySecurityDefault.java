@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import static org.junit.Assert.fail;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectorySecurityException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
@@ -117,8 +120,12 @@ public class TestSQLDirectorySecurityDefault {
         map.put("groups", Arrays.asList("members", "administrators"));
 
         // When I call the create entry
-        DocumentModel entry = session.createEntry(map);
-        Assert.assertNull(entry);
+        try {
+            session.createEntry(map);
+            fail("Should not be able to create entry");
+        } catch (DirectorySecurityException e) {
+            // ok
+        }
 
         dummyLogin.logout();
     }
@@ -142,7 +149,12 @@ public class TestSQLDirectorySecurityDefault {
         // When I call delete entry
         DocumentModel entry = session.getEntry("user_3");
         Assert.assertNotNull(entry);
-        session.deleteEntry("user_3");
+        try {
+            session.deleteEntry("user_3");
+            fail("Should not be able to delete entry");
+        } catch (DirectorySecurityException e) {
+            // ok
+        }
         entry = session.getEntry("user_3");
         Assert.assertNotNull(entry);
 

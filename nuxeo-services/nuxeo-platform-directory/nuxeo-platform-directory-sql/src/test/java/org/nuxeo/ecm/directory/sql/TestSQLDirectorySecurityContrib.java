@@ -20,6 +20,8 @@
 
 package org.nuxeo.ecm.directory.sql;
 
+import static org.junit.Assert.fail;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,6 +39,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectorySecurityException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -90,10 +93,13 @@ public class TestSQLDirectorySecurityContrib {
             map.put("password", "pass_0");
             map.put("intField", Long.valueOf(5));
             map.put("groups", Arrays.asList("members", "administrators"));
-            DocumentModel entry = userDirSession.createEntry(map);
-            Assert.assertNull(entry);
-
-            entry = userDirSession.getEntry("user_0");
+            try {
+                userDirSession.createEntry(map);
+                fail("Should not be able to create entry");
+            } catch (DirectorySecurityException e) {
+                // ok
+            }
+            DocumentModel entry = userDirSession.getEntry("user_0");
             Assert.assertNull(entry);
         } finally {
             dummyLogin.logout();
@@ -125,6 +131,7 @@ public class TestSQLDirectorySecurityContrib {
         dummyLogin.loginAs("aUser");
 
         DocumentModel entry = userDirSession.getEntry("user_1");
+        // no DirectorySecurityException here, just null
         Assert.assertNull(entry);
 
         dummyLogin.logout();
@@ -150,6 +157,7 @@ public class TestSQLDirectorySecurityContrib {
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         map.put("username", "user_3");
         DocumentModelList results = userDirSession.query(map);
+        // no DirectorySecurityException here, just an empty list
         Assert.assertEquals(0, results.size());
 
         dummyLogin.logout();

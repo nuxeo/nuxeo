@@ -25,8 +25,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.security.auth.login.LoginContext;
+
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.directory.Directory;
@@ -123,34 +130,41 @@ public class SQLDirectoryFeature extends SimpleFeature {
             // failure (exception or assumption failed) before any method was run
             return;
         }
-        DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        // clear all directories
-        for (Directory dir : directoryService.getDirectories()) {
-            try (Session session = dir.getSession()) {
-                List<String> ids = session.getProjection(Collections.emptyMap(), dir.getIdField());
-                for (String id : ids) {
-                    session.deleteEntry(id);
+        // system user to bypass directory security
+        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
+        loginStack.push(new SystemPrincipal(null), null, null);
+        try {
+            DirectoryService directoryService = Framework.getService(DirectoryService.class);
+            // clear all directories
+            for (Directory dir : directoryService.getDirectories()) {
+                try (Session session = dir.getSession()) {
+                    List<String> ids = session.getProjection(Collections.emptyMap(), dir.getIdField());
+                    for (String id : ids) {
+                        session.deleteEntry(id);
+                    }
                 }
             }
-        }
-        // re-create all directory entries
-        for (Entry<String, Map<String, Map<String, Object>>> each : allDirectoryData.entrySet()) {
-            String directoryName = each.getKey();
-            Directory directory = directoryService.getDirectory(directoryName);
-            Collection<Map<String, Object>> data = each.getValue().values();
-            try (Session session = directory.getSession()) {
-                for (Map<String, Object> map : data) {
-                    try {
-                        session.createEntry(map);
-                    } catch (DirectoryException e) {
-                        // happens for filter directories
-                        // or when testing config changes
-                        if (!e.getMessage().contains("already exists") && !e.getMessage().contains("Missing id")) {
-                            throw e;
+            // re-create all directory entries
+            for (Entry<String, Map<String, Map<String, Object>>> each : allDirectoryData.entrySet()) {
+                String directoryName = each.getKey();
+                Directory directory = directoryService.getDirectory(directoryName);
+                Collection<Map<String, Object>> data = each.getValue().values();
+                try (Session session = directory.getSession()) {
+                    for (Map<String, Object> map : data) {
+                        try {
+                            session.createEntry(map);
+                        } catch (DirectoryException e) {
+                            // happens for filter directories
+                            // or when testing config changes
+                            if (!e.getMessage().contains("already exists") && !e.getMessage().contains("Missing id")) {
+                                throw e;
+                            }
                         }
                     }
                 }
             }
+        } finally {
+            loginStack.pop();
         }
         allDirectoryData = null;
     }
