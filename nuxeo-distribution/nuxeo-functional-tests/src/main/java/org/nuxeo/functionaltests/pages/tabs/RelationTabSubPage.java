@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *      <a href="mailto:grenard@nuxeo.com">Guillaume</a>
+ *      Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -56,7 +57,11 @@ public class RelationTabSubPage extends DocumentBasePage {
 
     private static final String SELECT2_DOCUMENT_XPATH = "//*[@id='s2id_createForm:nxw_singleDocumentSuggestion_2_select2']";
 
+    // moved @Required on this element to allow read only view
     @Required
+    @FindBy(xpath = "//div[@id='nxw_documentTabs_tab_content']/div")
+    WebElement messageContainer;
+
     @FindBy(linkText = "Add a New Relation")
     WebElement addANewRelationLink;
 
@@ -101,8 +106,11 @@ public class RelationTabSubPage extends DocumentBasePage {
             }
         };
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(CREATE_FORM_LOADING_TIMEOUT,
-                TimeUnit.SECONDS).pollingEvery(100, TimeUnit.MILLISECONDS).ignoring(NoSuchElementException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver)
+                                                                .withTimeout(CREATE_FORM_LOADING_TIMEOUT,
+                                                                        TimeUnit.SECONDS)
+                                                                .pollingEvery(100, TimeUnit.MILLISECONDS)
+                                                                .ignoring(NoSuchElementException.class);
 
         wait.until(createRelationFormVisible);
 
@@ -148,8 +156,9 @@ public class RelationTabSubPage extends DocumentBasePage {
 
         org.junit.Assert.assertTrue(isObjectDocumentChecked());
 
-        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(SELECT2_CHANGE_TIMEOUT, TimeUnit.SECONDS).pollingEvery(
-                100, TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(SELECT2_CHANGE_TIMEOUT, TimeUnit.SECONDS)
+                                                                .pollingEvery(100, TimeUnit.MILLISECONDS)
+                                                                .ignoring(StaleElementReferenceException.class);
 
         wait.until(isDocumentSelected);
 
@@ -161,6 +170,17 @@ public class RelationTabSubPage extends DocumentBasePage {
         addButton.click();
 
         return asPage(RelationTabSubPage.class);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasNewRelationLink() {
+        try {
+            return addANewRelationLink.isDisplayed();
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
 }

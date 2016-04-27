@@ -16,6 +16,7 @@
  * Contributors:
  *     Anahide Tchertchian
  *     Gabriel Barata
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -93,6 +94,17 @@ public class SectionContentTabSubPage extends DocumentBasePage {
         try {
             WebElement element = getElement().findElement(By.linkText(title));
             return element != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasNewButton() {
+        try {
+            return newButton.isDisplayed();
         } catch (NoSuchElementException e) {
             return false;
         }

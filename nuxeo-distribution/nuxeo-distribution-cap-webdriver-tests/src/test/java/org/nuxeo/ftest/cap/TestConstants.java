@@ -37,6 +37,12 @@ public class TestConstants {
 
     public static final String TEST_WORKSPACE_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH);
 
+    public static final String TEST_SECTION_TITLE = "section";
+
+    public static final String TEST_SECTION_PATH = Constants.SECTIONS_PATH + TEST_SECTION_TITLE + "/";
+
+    public static final String TEST_SECTION_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_SECTION_PATH);
+
     public static final String TEST_FILE_TITLE = "file";
 
     public static final String TEST_FOLDER_TITLE = "folder";
@@ -48,5 +54,7 @@ public class TestConstants {
     public static final String TEST_NOTE_TITLE = "note";
 
     public static final String TEST_NOTE_PATH = TEST_WORKSPACE_PATH + TEST_NOTE_TITLE;
+
+    public static final String TEST_NOTE_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_NOTE_PATH);
 
 }
