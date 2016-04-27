@@ -65,6 +65,11 @@ public class CollectionConstants {
     public static final String COLLECTION_CONTENT_PAGE_PROVIDER = "default_content_collection";
 
     /**
+     * @since 8.3
+     */
+    public static final String ORDERED_COLLECTION_CONTENT_PAGE_PROVIDER = "ordered_content_collection";
+
+    /**
      * @since 6.0
      */
     public static final String ALL_COLLECTIONS_PAGE_PROVIDER = "all_collections";

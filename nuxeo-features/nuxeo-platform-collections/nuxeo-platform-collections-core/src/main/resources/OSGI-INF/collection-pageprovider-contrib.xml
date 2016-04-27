@@ -53,6 +53,16 @@
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="ordered_content_collection">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern>
+        SELECT collection:documentIds/* FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+        'deleted' AND ecm:uuid = ?
+      </pattern>
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
     <coreQueryPageProvider name="all_collections">
       <property name="maxResults">PAGE_SIZE</property>
       <pattern>

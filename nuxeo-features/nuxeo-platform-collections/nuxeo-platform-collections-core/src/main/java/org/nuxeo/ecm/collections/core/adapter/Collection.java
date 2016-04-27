@@ -21,6 +21,7 @@ package org.nuxeo.ecm.collections.core.adapter;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
@@ -67,6 +68,49 @@ public class Collection {
 
     public DocumentModel getDocument() {
         return document;
+    }
+
+    /**
+     * Move member1Id right after the member2Id of at first position if member2Id is null.
+     *
+     * @param member1Id
+     * @param member2Id
+     * @return true if successful
+     * @since 8.3
+     */
+    public boolean moveMembers(String member1Id, String member2Id) {
+        List<String> documentIds = getCollectedDocumentIds();
+        int member1IdIndex = documentIds.indexOf(member1Id);
+        if (member1IdIndex < 0) {
+            return false;
+        }
+        if (StringUtils.isBlank(member2Id)) {
+            documentIds.remove(member1IdIndex);
+            documentIds.add(0, member1Id);
+            setDocumentIds(documentIds);
+            return true;
+        }
+        else {
+            int member2IdIndex = documentIds.indexOf(member2Id);
+            if (member2IdIndex < 0) {
+                return false;
+            }
+            if (member1Id.equals(member2IdIndex)) {
+               return false;
+            }
+            documentIds.remove(member1IdIndex);
+            int newMember2IdIndex = documentIds.indexOf(member2Id);
+            documentIds.add(newMember2IdIndex + 1, member1Id);
+            setDocumentIds(documentIds);
+            return true;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public int size() {
+        return getCollectedDocumentIds().size();
     }
 
 }

@@ -155,6 +155,20 @@ public interface CollectionManager {
     boolean isInCollection(final DocumentModel collection, final DocumentModel document, final CoreSession session);
 
     /**
+     * Move the member1 right after the member2 within the collection. If the member2 is null, then the member1 is
+     * moved to first position of the collection.
+     *
+     * @param session the session
+     * @param collection the collection
+     * @param member1 the member1
+     * @param member2 the member2
+     * @return true if successfully moved
+     * @since 8.3
+     */
+    boolean moveMembers(final CoreSession session, final DocumentModel collection, final DocumentModel member1,
+            final DocumentModel member2);
+
+    /**
      * Update all documents referenced by a collection to add a reference back the collection. This is used when a
      * creation is created by copy in order to tell the members of a copied collection that they also belongs to the
      * newly created collection.
