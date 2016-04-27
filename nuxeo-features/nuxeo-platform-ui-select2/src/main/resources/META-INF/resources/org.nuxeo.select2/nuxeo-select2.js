@@ -265,6 +265,11 @@
       enterKeyHandlerFunction = eval(params.onEnterKeyHandler);
     }
 
+    var frequency = 300;
+    if (params.frequency && params.frequency.length > 0) {
+        frequency = params.frequency;
+    }
+
     // build select2 parameters
     var requestInProgress = false;
     var nextQueryId;
@@ -303,7 +308,7 @@
         window.clearTimeout(nextQueryId);
         nextQueryId = window.setTimeout(function() {
           serverCall()
-        }, 300);
+        }, frequency);
         ;
       }
     }

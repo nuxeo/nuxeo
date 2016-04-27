@@ -167,6 +167,24 @@
       </fields>
     </widget>
 
+    <widget name="select2_frequency" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Select2 frequency</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Delay (in milliseconds) before sending a request
+          to the server after a character is typed.
+          Default value is 300ms.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>frequency</field>
+      </fields>
+    </widget>
 
     <widget name="select2_directory_labelFieldName" type="text">
       <categories>
@@ -1179,6 +1197,9 @@
                   <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_frequency</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
@@ -1319,6 +1340,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_frequency</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
@@ -1465,6 +1489,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_frequency</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
@@ -1624,6 +1651,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_frequency</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
@@ -1833,6 +1863,9 @@
                   <widget category="widgetTypeConf">suggestion_width</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_frequency</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
                 </row>
                 <row>
@@ -1953,6 +1986,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_width</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_frequency</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">suggestion_minChars</widget>
