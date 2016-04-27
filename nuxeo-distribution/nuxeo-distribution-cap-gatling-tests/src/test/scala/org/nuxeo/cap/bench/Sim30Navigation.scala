@@ -36,8 +36,9 @@ object ScnNavigation {
               10.0 -> exec(NuxeoRest.getDocument("Get document with acl", enrichers = "acl")),
               10.0 -> exec(NuxeoRest.getDocument("Get document with breadcrumb", enrichers = "breadcrumb")),
               10.0 -> exec(NuxeoRest.getDocument("Get document with thumbnail", enrichers = "thumbnail")),
-              10.0 -> exec(NuxeoRest.getDocument("Get document with versionLabel", parts = "versionLabel")),
-              10.0 -> exec(NuxeoRest.getDocument("Get document with lock", parts = "lock"))
+              10.0 -> exec(NuxeoRest.getDocument("Get document with properties", parts = "properties")),
+              5.0 -> exec(NuxeoRest.getDocument("Get document with versionLabel", parts = "versionLabel")),
+              5.0 -> exec(NuxeoRest.getDocument("Get document with lock", parts = "lock"))
             )
             .pause(pause)
         }

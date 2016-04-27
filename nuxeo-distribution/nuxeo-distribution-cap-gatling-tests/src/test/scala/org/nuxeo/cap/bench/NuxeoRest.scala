@@ -50,7 +50,7 @@ object NuxeoRest {
       .check(status.in(200))
   }
 
-  def getDocument(comment: String = "Get ${type}", schemas: String = "*", enrichers: String = "", parts: String = "") = {
+  def getDocument(comment: String = "Get ${type}", schemas: String = "*", enrichers: String = "", parts: String = "nxp-19581") = {
     http(comment)
       .get(Constants.GAT_API_PATH + "/${url}")
       .headers(Headers.base)
@@ -72,7 +72,7 @@ object NuxeoRest {
   }
 
   def search(nxql: String, sortBy: String = "", sortOrder: String = "", comment: String = "Search with NXQL", pageSize: Int = 10, maxResults: Int = 100,
-             currentPageIndex: Int = 0, schemas: String = "*", enrichers: String = "", parts: String = "") = {
+             currentPageIndex: Int = 0, schemas: String = "*", enrichers: String = "", parts: String = "nxp-19581") = {
     http(comment)
       .get(Constants.API_QUERY)
       .headers(Headers.base)
