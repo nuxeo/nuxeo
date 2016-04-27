@@ -20,6 +20,22 @@
 
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_SECTION_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_SECTION_URL;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_URL;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.SECTIONS_PATH;
+import static org.nuxeo.functionaltests.Constants.SECTION_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_URL;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,13 +46,6 @@ import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SectionContentTabSubPage;
 import org.openqa.selenium.NoSuchElementException;
-
-import static org.nuxeo.ftest.cap.TestConstants.*;
-
-import static org.nuxeo.functionaltests.Constants.*;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @since 8.3
@@ -132,7 +141,6 @@ public class ITPermissionsTest extends AbstractTest {
         testPermissionsOn(TEST_WORKSPACE_URL, false, false);
     }
 
-
     @Test
     public void testSectionPermissions() throws DocumentBasePage.UserNotConnectedException {
         testPermissionsOn(TEST_SECTION_URL, true, false);
@@ -143,17 +151,17 @@ public class ITPermissionsTest extends AbstractTest {
         testPermissionsOn(TEST_FILE_URL, false, true);
     }
 
-    private void testPermissionsOn(String docUrl, boolean isSection, boolean isFile) throws DocumentBasePage.UserNotConnectedException {
+    private void testPermissionsOn(String docUrl, boolean isSection, boolean isFile)
+            throws DocumentBasePage.UserNotConnectedException {
         // check bree has only read permission
         login("bree", "bree1");
         open(docUrl);
 
         DocumentBasePage page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertFalse(hasFilesTab(page));
             assertFalse(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertFalse(hasNewButton(page, isSection));
         }
         assertFalse(hasEditTab(page));
@@ -165,11 +173,10 @@ public class ITPermissionsTest extends AbstractTest {
         open(docUrl);
 
         page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertFalse(hasFilesTab(page));
             assertFalse(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertFalse(hasNewButton(page, isSection));
         }
         assertFalse(hasEditTab(page));
@@ -192,11 +199,10 @@ public class ITPermissionsTest extends AbstractTest {
         open(docUrl);
 
         page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertTrue(hasFilesTab(page));
             assertTrue(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertTrue(hasNewButton(page, isSection));
         }
         assertTrue(hasEditTab(page));
@@ -208,11 +214,10 @@ public class ITPermissionsTest extends AbstractTest {
         open(docUrl);
 
         page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertTrue(hasFilesTab(page));
             assertTrue(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertTrue(hasNewButton(page, isSection));
         }
         assertTrue(hasEditTab(page));
@@ -236,11 +241,10 @@ public class ITPermissionsTest extends AbstractTest {
         open(docUrl);
 
         page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertFalse(hasFilesTab(page));
             assertFalse(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertFalse(hasNewButton(page, isSection));
         }
         assertFalse(hasEditTab(page));
@@ -252,11 +256,10 @@ public class ITPermissionsTest extends AbstractTest {
         open(docUrl);
 
         page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertFalse(hasFilesTab(page));
             assertFalse(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertFalse(hasNewButton(page, isSection));
         }
         assertFalse(hasEditTab(page));
@@ -268,11 +271,10 @@ public class ITPermissionsTest extends AbstractTest {
         open(docUrl);
 
         page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertFalse(hasFilesTab(page));
             assertFalse(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertFalse(hasNewButton(page, isSection));
         }
         assertFalse(hasEditTab(page));
@@ -295,11 +297,10 @@ public class ITPermissionsTest extends AbstractTest {
         open(docUrl);
 
         page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertTrue(hasFilesTab(page));
             assertTrue(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertTrue(hasNewButton(page, isSection));
         }
         assertTrue(hasEditTab(page));
@@ -311,11 +312,10 @@ public class ITPermissionsTest extends AbstractTest {
         open(docUrl);
 
         page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertTrue(hasFilesTab(page));
             assertTrue(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertTrue(hasNewButton(page, isSection));
         }
         assertTrue(hasEditTab(page));
@@ -339,11 +339,10 @@ public class ITPermissionsTest extends AbstractTest {
         open(docUrl);
 
         page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertFalse(hasFilesTab(page));
             assertFalse(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertFalse(hasNewButton(page, isSection));
         }
         assertFalse(hasEditTab(page));
@@ -355,11 +354,10 @@ public class ITPermissionsTest extends AbstractTest {
         open(docUrl);
 
         page = asPage(DocumentBasePage.class);
-        if(isFile){
+        if (isFile) {
             assertFalse(hasFilesTab(page));
             assertFalse(hasNewRelationLink(page));
-        }
-        else{
+        } else {
             assertFalse(hasNewButton(page, isSection));
         }
         assertFalse(hasEditTab(page));
@@ -380,7 +378,7 @@ public class ITPermissionsTest extends AbstractTest {
     }
 
     private boolean hasNewButton(DocumentBasePage page, boolean isSection) {
-        if(isSection){
+        if (isSection) {
             return page.getContentTab(SectionContentTabSubPage.class).hasNewButton();
         }
         return page.getContentTab().hasNewButton();
