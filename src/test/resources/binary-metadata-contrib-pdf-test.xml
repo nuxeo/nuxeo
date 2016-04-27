@@ -6,6 +6,7 @@
                      ignorePrefix="false">
       <metadata name="PDF:Language" xpath="dc:title"/>
       <metadata name="PDF:Producer" xpath="dc:source"/>
+      <metadata name="PDF:Keywords" xpath="dc:subjects"/>
     </metadataMapping>
     <metadataMapping id="PDFBIS" processor="exifTool" blobXPath="file:content"
                      ignorePrefix="false">
