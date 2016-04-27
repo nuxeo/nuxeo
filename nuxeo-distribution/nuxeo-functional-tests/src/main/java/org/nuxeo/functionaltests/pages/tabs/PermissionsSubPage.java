@@ -68,10 +68,7 @@ public class PermissionsSubPage extends AbstractPage {
         List<WebElement> elements = driver.findElements(By.xpath("//div[contains(@class, 'acl-table-row effective')]"));
         boolean hasPermission = false;
         for (WebElement element : elements) {
-            List<WebElement> names = element.findElements(By.xpath(".//span[contains(@class, 'tag user')]"));
-            if (names.isEmpty()) {
-                names = element.findElements(By.xpath(".//span[contains(@class, 'tag group')]"));
-            }
+            List<WebElement> names = element.findElements(By.xpath(".//span[contains(@class, 'tag')]"));
             List<WebElement> perms = element.findElements(By.className("label"));
             if (names.size() > 0 && perms.size() > 0) {
                 String title = names.get(0).getAttribute("title");
@@ -132,8 +129,8 @@ public class PermissionsSubPage extends AbstractPage {
         return asPage(PermissionsSubPage.class);
     }
 
-    protected void waitForPermissionAdded(String permission, String username) {
-        Locator.waitUntilGivenFunction(input -> hasPermission(permission, username));
+    protected void waitForPermissionAdded(String permission, String userOrGroupName) {
+        Locator.waitUntilGivenFunction(input -> hasPermission(permission, userOrGroupName));
     }
 
     /**
@@ -157,8 +154,8 @@ public class PermissionsSubPage extends AbstractPage {
     /**
      * @since 8.3
      */
-    public PermissionsSubPage deletePermission(String permission, String username) {
-        WebElement deleteButton = findDeleteButton(permission, username);
+    public PermissionsSubPage deletePermission(String permission, String userOrGroupName) {
+        WebElement deleteButton = findDeleteButton(permission, userOrGroupName);
         if (deleteButton != null) {
             deleteButton.click();
             Locator.waitUntilElementPresent(
@@ -169,18 +166,15 @@ public class PermissionsSubPage extends AbstractPage {
         return asPage(PermissionsSubPage.class);
     }
 
-    private WebElement findDeleteButton(String permission, String username) {
+    private WebElement findDeleteButton(String permission, String userOGroupName) {
         List<WebElement> elements = driver.findElements(By.xpath("//div[contains(@class, 'acl-table-row effective')]"));
         for (WebElement element : elements) {
-            List<WebElement> names = element.findElements(By.xpath(".//span[contains(@class, 'tag user')]"));
-            if (names.isEmpty()) {
-                names = element.findElements(By.xpath(".//span[contains(@class, 'tag group')]"));
-            }
+            List<WebElement> names = element.findElements(By.xpath(".//span[contains(@class, 'tag')]"));
             List<WebElement> perms = element.findElements(By.className("label"));
             if (names.size() > 0 && perms.size() > 0) {
                 String title = names.get(0).getAttribute("title");
                 String perm = perms.get(0).getText();
-                if (title.startsWith(username) && permission.equalsIgnoreCase(perm)) {
+                if (title.startsWith(userOGroupName) && permission.equalsIgnoreCase(perm)) {
                     return element.findElement(By.xpath(".//paper-icon-button[@icon='delete']"));
                 }
             }
