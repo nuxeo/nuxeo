@@ -564,11 +564,11 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         PropertyData<?> npd = properties.getProperties().get(PropertyIds.NAME);
         String name = npd == null ? null : (String) npd.getFirstValue();
         if (StringUtils.isBlank(name)) {
-            name = null;
+            throw new CmisConstraintException("The mandatory property " + PropertyIds.NAME + " is missing");
         }
 
         // content stream filename default
-        if (contentStream != null && StringUtils.isBlank(contentStream.getFileName()) && name != null) {
+        if (contentStream != null && StringUtils.isBlank(contentStream.getFileName())) {
             // infer filename from name property
             contentStream = new ContentStreamImpl(name, contentStream.getBigLength(),
                     contentStream.getMimeType().trim(), contentStream.getStream());

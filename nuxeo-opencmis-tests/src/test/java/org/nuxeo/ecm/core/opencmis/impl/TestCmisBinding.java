@@ -759,6 +759,20 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
+    public void testCreateDocumentWithoutName() throws Exception {
+        List<PropertyData<?>> props = new ArrayList<>();
+        props.add(factory.createPropertyIdData(PropertyIds.OBJECT_TYPE_ID, "cmis:document"));
+        Properties properties = factory.createPropertiesData(props);
+        try {
+            objService.createDocument(repositoryId, properties, rootFolderId, null, VersioningState.NONE, null, null,
+                    null, null);
+            fail("Creation without cmis:name should fail");
+        } catch (CmisConstraintException e) {
+            // ok
+        }
+    }
+
+    @Test
     public void testUpdateProperties() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));

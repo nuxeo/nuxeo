@@ -351,6 +351,19 @@ public class CmisSuiteSession {
     }
 
     @Test
+    public void testCreateDocumentWithoutName() throws Exception {
+        Map<String, Serializable> properties = new HashMap<>();
+        properties.put(PropertyIds.OBJECT_TYPE_ID, "File");
+        try {
+            session.getRootFolder().createDocument(properties, null, null, null, null, null,
+                    NuxeoSession.DEFAULT_CONTEXT);
+            fail("Creation without cmis:name should fail");
+        } catch (CmisConstraintException e) {
+            // ok
+        }
+    }
+
+    @Test
     public void testCreateRelationship() throws Exception {
         if (!(isAtomPub || isBrowser)) {
             // createRelationship admin user only empowered for AtomPub &
