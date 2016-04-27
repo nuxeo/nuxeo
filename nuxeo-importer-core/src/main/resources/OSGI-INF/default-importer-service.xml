@@ -7,10 +7,12 @@
 
     <code>
       <extension target="org.nuxeo.ecm.platform.importer.service.DefaultImporterComponent" point="importerConfiguration">
- 	      <importerConfig>
-          <sourceNode sourceNodeClass="org.nuxeo.ecm.platform.importer.source.FileSourceNode" />
-          <documentModelFactory  leafType="File" folderishType="Folder" documentModelFactoryClass="org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory" />
- 	      </importerConfig>
+        <importerConfig sourceNodeClass="org.nuxeo.ecm.platform.importer.source.FileSourceNode">
+          <documentModelFactory documentModelFactoryClass="org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory"
+            leafType="File" folderishType="Folder" />
+          <repository>default</repository>
+          <bulkMode>true</bulkMode>
+        </importerConfig>
       </extension>
     </code>
 

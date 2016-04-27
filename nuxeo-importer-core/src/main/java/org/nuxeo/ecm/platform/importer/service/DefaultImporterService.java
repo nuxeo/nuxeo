@@ -121,4 +121,12 @@ public interface DefaultImporterService {
     @Deprecated
     Class<? extends ImporterDocumentModelFactory> getDocModelFactoryClass();
 
+    /**
+     * Sets the bulk mode for the importer.
+     *
+     * @param bulkMode {@code true} to enable bulk mode (default), or {@code false} to disable it
+     * @since 8.3
+     */
+    void setBulkMode(boolean bulkMode);
+
 }

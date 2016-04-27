@@ -31,12 +31,15 @@ public class ImporterConfigurationDescriptor {
     @XNode("@importerLogClass")
     protected Class<? extends ImporterLogger> importerLogClass;
 
+    @XNode("bulkMode")
+    protected Boolean bulkMode;
+
     @XNode("documentModelFactory")
     protected DocumentModelFactory documentModelFactory;
 
     @XNode("repository")
     protected String repository;
-    
+
     @XObject("documentModelFactory")
     public static class DocumentModelFactory {
 
@@ -76,6 +79,10 @@ public class ImporterConfigurationDescriptor {
 
     public String getRepository() {
         return repository;
-    }    
+    }
+
+    public Boolean getBulkMode() {
+        return bulkMode;
+    }
 
 }
