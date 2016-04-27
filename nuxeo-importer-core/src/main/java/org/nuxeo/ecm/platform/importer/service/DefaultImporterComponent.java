@@ -84,11 +84,14 @@ public class DefaultImporterComponent extends DefaultComponent {
                     throw new RuntimeException(e);
                 }
             }
-            
+
             if (descriptor.getRepository()!=null) {
                 importerService.setRepository(descriptor.getRepository());
             }
 
+            if (descriptor.getBulkMode() != null) {
+                importerService.setBulkMode(descriptor.getBulkMode().booleanValue());
+            }
         }
     }
 

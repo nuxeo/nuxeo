@@ -52,6 +52,8 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     private String repositoryName;
 
+    private boolean bulkMode = true;
+
     @Override
     public void importDocuments(String destinationPath, String sourcePath, boolean skipRootContainerCreation,
             int batchSize, int noImportingThreads) {
@@ -89,7 +91,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
                 batchSize).nbThreads(noImportingThreads).repository(repositoryName).build();
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
         runner.setTransactionTimeout(transactionTimeout);
-        ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, false, true);
+        ImporterFilter filter = new EventServiceConfiguratorFilter(false, false, false, false, bulkMode);
         runner.addFilter(filter);
         runner.setFactory(getDocumentModelFactory());
         return executor.run(runner, interactive);
@@ -214,4 +216,10 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     public void setRepository(String repositoryName) {
         this.repositoryName=repositoryName;
     }
+
+    @Override
+    public void setBulkMode(boolean bulkMode) {
+        this.bulkMode = bulkMode;
+    }
+
 }
