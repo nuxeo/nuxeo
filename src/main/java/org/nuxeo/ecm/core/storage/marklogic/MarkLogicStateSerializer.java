@@ -70,7 +70,7 @@ final class MarkLogicStateSerializer {
     }
 
     public static Optional<Element> serialize(String key, Object value, Set<String> namespaces) {
-        getPrefix(key).ifPresent(namespaces::add);
+        MarkLogicHelper.getNamespace(key).ifPresent(namespaces::add);
         Optional<Element> result;
         if (value == null) {
             result = Optional.empty();
@@ -83,20 +83,24 @@ final class MarkLogicStateSerializer {
         } else if (value instanceof Object[]) {
             result = Optional.of(serialize(key, Arrays.asList((Object[]) value), namespaces));
         } else {
-            String nodeValue;
-            if (value instanceof Calendar) {
-                nodeValue = MarkLogicHelper.serializeCalendar((Calendar) value);
-            } else if (value instanceof DateTime) {
-                nodeValue = ((DateTime) value).toString(MarkLogicHelper.DATE_TIME_FORMATTER);
-            } else {
-                nodeValue = value.toString();
-            }
-            Element element = DocumentHelper.createElement(key);
-            element.addAttribute(MarkLogicHelper.ATTRIBUTE_XSI_TYPE, ElementType.getType(value.getClass()).getKey());
-            element.setText(nodeValue);
-            result = Optional.of(element);
+            result = Optional.of(serializeNonNullPrimitive(key, value));
         }
         return result;
+    }
+
+    public static Element serializeNonNullPrimitive(String key, Object value) {
+        String nodeValue;
+        if (value instanceof Calendar) {
+            nodeValue = MarkLogicHelper.serializeCalendar((Calendar) value);
+        } else if (value instanceof DateTime) {
+            nodeValue = ((DateTime) value).toString(MarkLogicHelper.DATE_TIME_FORMATTER);
+        } else {
+            nodeValue = value.toString();
+        }
+        Element element = DocumentHelper.createElement(key);
+        element.addAttribute(MarkLogicHelper.ATTRIBUTE_XSI_TYPE, ElementType.getType(value.getClass()).getKey());
+        element.setText(nodeValue);
+        return element;
     }
 
     private static Element serialize(String key, List<Object> list, Set<String> namespaces) {
@@ -119,14 +123,6 @@ final class MarkLogicStateSerializer {
 
     public static void addNamespace(Element element, String namespace) {
         element.addNamespace(namespace, MarkLogicHelper.getNamespaceUri(namespace));
-    }
-
-    public static Optional<String> getPrefix(String key) {
-        int colon = key.indexOf(':');
-        if (colon > 0) {
-            return Optional.of(key.substring(0, colon));
-        }
-        return Optional.empty();
     }
 
 }

@@ -32,14 +32,14 @@ import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 
-public class TestMarkLogicUpdateBuilder extends AbstractTest {
+public class TestMarkLogicStateUpdateBuilder extends AbstractTest {
 
-    private static MarkLogicUpdateBuilder UPDATE_BUILDER;
+    private static MarkLogicStateUpdateBuilder UPDATE_BUILDER;
 
     @BeforeClass
     public static void beforeClass() {
         AbstractTest.beforeClass();
-        UPDATE_BUILDER = new MarkLogicUpdateBuilder(CLIENT.newXMLDocumentManager()::newPatchBuilder);
+        UPDATE_BUILDER = new MarkLogicStateUpdateBuilder(CLIENT.newXMLDocumentManager()::newPatchBuilder);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class TestMarkLogicUpdateBuilder extends AbstractTest {
         stateDiff.put("ecm:fulltextJobId", "6306c216-ef0c-4168-9a36-14ef96ebbcce");
         stateDiff.put("ecm:acl", new String[] { "Administrator", "Members" });
         String patch = UPDATE_BUILDER.apply(stateDiff).toString();
-        assertXMLFileAgainstString("update-builder/basic-update.xml", patch);
+        assertXMLFileAgainstString("state-update-builder/basic-update.xml", patch);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class TestMarkLogicUpdateBuilder extends AbstractTest {
         StateDiff stateDiff = new StateDiff();
         stateDiff.put("ecm:minorVersion", new DeltaLong(1, 1));
         String patch = UPDATE_BUILDER.apply(stateDiff).toString();
-        assertXMLFileAgainstString("update-builder/delta-update.xml", patch);
+        assertXMLFileAgainstString("state-update-builder/delta-update.xml", patch);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class TestMarkLogicUpdateBuilder extends AbstractTest {
         StateDiff stateDiff = new StateDiff();
         stateDiff.put("vignettes", listDiff);
         String patch = UPDATE_BUILDER.apply(stateDiff).toString();
-        assertXMLFileAgainstString("update-builder/list-update.xml", patch);
+        assertXMLFileAgainstString("state-update-builder/list-update.xml", patch);
     }
 
 }

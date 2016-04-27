@@ -45,11 +45,11 @@ import com.marklogic.client.util.EditableNamespaceContext;
  *
  * @since 8.3
  */
-class MarkLogicUpdateBuilder implements Function<StateDiff, PatchHandle> {
+class MarkLogicStateUpdateBuilder implements Function<StateDiff, PatchHandle> {
 
     private final Supplier<DocumentPatchBuilder> supplier;
 
-    public MarkLogicUpdateBuilder(Supplier<DocumentPatchBuilder> supplier) {
+    public MarkLogicStateUpdateBuilder(Supplier<DocumentPatchBuilder> supplier) {
         this.supplier = supplier;
     }
 
@@ -57,7 +57,9 @@ class MarkLogicUpdateBuilder implements Function<StateDiff, PatchHandle> {
     public PatchHandle apply(StateDiff diff) {
         DocumentPatchBuilder patchBuilder = supplier.get();
         Set<String> namespaces = new HashSet<>();
-        fillPatch(patchBuilder, "/" + MarkLogicHelper.DOCUMENT_ROOT, diff, namespaces);
+        // Build patch
+        fillPatch(patchBuilder, MarkLogicHelper.DOCUMENT_ROOT_PATH, diff, namespaces);
+        // Set namespaces
         EditableNamespaceContext namespaceContext = new EditableNamespaceContext();
         namespaceContext.putAll(namespaces.stream().collect(
                 Collectors.toMap(Function.identity(), MarkLogicHelper::getNamespaceUri)));
@@ -70,13 +72,13 @@ class MarkLogicUpdateBuilder implements Function<StateDiff, PatchHandle> {
             String subPath = path + "/" + entry.getKey();
             Serializable value = entry.getValue();
             if (value instanceof StateDiff) {
-                MarkLogicStateSerializer.getPrefix(entry.getKey()).ifPresent(namespaces::add);
+                MarkLogicHelper.getNamespace(entry.getKey()).ifPresent(namespaces::add);
                 fillPatch(patchBuilder, subPath, (StateDiff) value, namespaces);
             } else if (value instanceof ListDiff) {
-                MarkLogicStateSerializer.getPrefix(entry.getKey()).ifPresent(namespaces::add);
+                MarkLogicHelper.getNamespace(entry.getKey()).ifPresent(namespaces::add);
                 fillPatch(patchBuilder, subPath, (ListDiff) value, namespaces);
             } else if (value instanceof Delta) {
-                MarkLogicStateSerializer.getPrefix(entry.getKey()).ifPresent(namespaces::add);
+                MarkLogicHelper.getNamespace(entry.getKey()).ifPresent(namespaces::add);
                 Call call = patchBuilder.call().add(((Delta) value).getDeltaValue());
                 patchBuilder.replaceApply(subPath, Cardinality.ONE, call);
             } else {

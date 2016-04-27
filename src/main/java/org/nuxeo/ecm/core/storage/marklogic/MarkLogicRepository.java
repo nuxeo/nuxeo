@@ -21,6 +21,8 @@ package org.nuxeo.ecm.core.storage.marklogic;
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
@@ -28,8 +30,10 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -41,9 +45,12 @@ import javax.resource.spi.ConnectionManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
@@ -55,7 +62,11 @@ import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.DatabaseClientFactory.Authentication;
+import com.marklogic.client.FailedRequestException;
 import com.marklogic.client.ResourceNotFoundException;
+import com.marklogic.client.admin.ServerConfigurationManager;
+import com.marklogic.client.admin.ServerConfigurationManager.UpdatePolicy;
+import com.marklogic.client.document.DocumentDescriptor;
 import com.marklogic.client.document.DocumentMetadataPatchBuilder.PatchHandle;
 import com.marklogic.client.document.DocumentPage;
 import com.marklogic.client.document.DocumentRecord;
@@ -108,6 +119,13 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     protected void initRepository() {
         initRoot();
+        // Activate Optimistic Locking
+        // https://docs.marklogic.com/guide/java/transactions#id_81051
+        ServerConfigurationManager configMgr = markLogicClient.newServerConfigManager();
+        configMgr.readConfiguration();
+        configMgr.setUpdatePolicy(UpdatePolicy.VERSION_OPTIONAL);
+        // write the server configuration to the database
+        configMgr.writeConfiguration();
     }
 
     @Override
@@ -156,7 +174,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public void updateState(String id, StateDiff diff) {
         XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
-        PatchHandle patch = new MarkLogicUpdateBuilder(docManager::newPatchBuilder).apply(diff);
+        PatchHandle patch = new MarkLogicStateUpdateBuilder(docManager::newPatchBuilder).apply(diff);
         if (log.isTraceEnabled()) {
             log.trace("MarkLogic: UPDATE " + id + ": " + patch.toString());
         }
@@ -295,27 +313,115 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public Lock getLock(String id) {
-        throw new IllegalStateException("Not implemented yet");
+        // TODO test performance : retrieve document with read or search document with extract
+        // TODO retrieve only some field
+        // https://docs.marklogic.com/guide/search-dev/qbe#id_54044
+        State state = readState(id);
+        if (state == null) {
+            throw new DocumentNotFoundException(id);
+        }
+        String owner = (String) state.get(KEY_LOCK_OWNER);
+        if (owner == null) {
+            // not locked
+            return null;
+        }
+        Calendar created = (Calendar) state.get(KEY_LOCK_CREATED);
+        return new Lock(owner, created);
     }
 
     @Override
     public Lock setLock(String id, Lock lock) {
-        throw new IllegalStateException("Not implemented yet");
+        // Here we use Optimistic Locking to set the lock
+        // https://docs.marklogic.com/guide/java/transactions#id_81051
+        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
+        DocumentDescriptor descriptor = docManager.newDescriptor(ID_FORMATTER.apply(id));
+        // TODO test performance : retrieve document with read or search document with extract
+        // TODO retrieve only some field
+        // https://docs.marklogic.com/guide/search-dev/qbe#id_54044
+        try {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: READ " + id);
+            }
+            State state = docManager.read(descriptor, new StateHandle()).get();
+            Optional<Lock> oldLock = extractLock(state);
+            if (oldLock.isPresent()) {
+                // Lock owner already set
+                return oldLock.get();
+            }
+            // Set the lock
+            PatchHandle patch = new MarkLogicLockUpdateBuilder(docManager::newPatchBuilder).set(lock);
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: UPDATE " + id + ": " + patch.toString());
+            }
+            docManager.patch(descriptor, patch);
+            // doc is now locked
+            return null;
+        } catch (ResourceNotFoundException e) {
+            // Document not found
+            throw new DocumentNotFoundException(id, e);
+        } catch (FailedRequestException e) {
+            // There was a race condition - another lock was set
+            return extractLock(readState(id)).orElseThrow(() -> new ConcurrentUpdateException("Lock " + id));
+        }
     }
 
     @Override
     public Lock removeLock(String id, String owner) {
-        throw new IllegalStateException("Not implemented yet");
+        // Here we use Optimistic Locking to set the lock
+        // https://docs.marklogic.com/guide/java/transactions#id_81051
+        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
+        DocumentDescriptor descriptor = docManager.newDescriptor(ID_FORMATTER.apply(id));
+        // TODO test performance : retrieve document with read or search document with extract
+        // TODO retrieve only some field
+        // https://docs.marklogic.com/guide/search-dev/qbe#id_54044
+        try {
+            if (log.isTraceEnabled()) {
+                log.trace("MarkLogic: READ " + id);
+            }
+            // Retrieve state of document
+            State state = docManager.read(descriptor, new StateHandle()).get();
+            Optional<Lock> oldLockOpt = extractLock(state);
+            if (oldLockOpt.isPresent()) {
+                // A Lock exist on document
+                Lock oldLock = oldLockOpt.get();
+                if (LockManager.canLockBeRemoved(oldLock.getOwner(), owner)) {
+                    // Delete the lock
+                    PatchHandle patch = new MarkLogicLockUpdateBuilder(docManager::newPatchBuilder).delete();
+                    if (log.isTraceEnabled()) {
+                        log.trace("MarkLogic: UPDATE " + id + ": " + patch.toString());
+                    }
+                    docManager.patch(descriptor, patch);
+                    // Return previous lock
+                    return oldLock;
+                } else {
+                    // existing mismatched lock, flag failure
+                    return new Lock(oldLock.getOwner(), oldLock.getCreated(), true);
+                }
+            } else {
+                // document was not locked
+                return null;
+            }
+        } catch (ResourceNotFoundException e) {
+            // Document not found
+            throw new DocumentNotFoundException(id, e);
+        }
+    }
+
+    private Optional<Lock> extractLock(State state) {
+        String owner =(String) state.get(KEY_LOCK_OWNER);
+        if (owner == null) {
+            return Optional.empty();
+        }
+        Calendar oldCreated = (Calendar) state.get(KEY_LOCK_CREATED);
+        return Optional.of(new Lock(owner, oldCreated));
     }
 
     @Override
     public void closeLockManager() {
-        throw new IllegalStateException("Not implemented yet");
     }
 
     @Override
     public void clearLockManagerCaches() {
-        throw new IllegalStateException("Not implemented yet");
     }
 
     @Override
