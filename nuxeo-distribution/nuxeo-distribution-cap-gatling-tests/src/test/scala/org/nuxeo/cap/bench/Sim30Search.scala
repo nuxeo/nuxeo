@@ -29,7 +29,7 @@ object ScnSearch {
   def get = (duration: Duration, pause: Duration) => {
     scenario("SearchRest").exec(
       during(duration, "counterName") {
-        feed(Feeders.usersCircular).repeat(10) {
+        feed(Feeders.users).repeat(10) {
           feed(Feeders.fulltextSearch)
             .randomSwitch(
               10.0 -> exec(NuxeoRest.search("SELECT * FROM Document", comment = "Search All")),

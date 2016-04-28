@@ -28,7 +28,7 @@ class Sim90Cleanup extends Simulation {
     feed(Feeders.admins)
       .exec(NuxeoRest.deleteFileDocumentAsAdmin(Constants.GAT_WS_PATH))
       .repeat(userCount.intValue(), "count") {
-      feed(Feeders.usersCircular)
+      feed(Feeders.users)
         .exec(NuxeoRest.deleteUser())
     }.exec(NuxeoRest.deleteGroup(Constants.GAT_GROUP_NAME))
   }

@@ -29,7 +29,7 @@ object ScnNavigationJsf {
     val tabPause = pause / 4
     scenario("NavigationJsf").exec(
       during(duration, "counterName") {
-        feed(Feeders.usersCircular)
+        feed(Feeders.users)
           .exec(NuxeoJsf.loginAndGoToGatlingWorkspace())
           .pause(pause)
           .feed(documents)

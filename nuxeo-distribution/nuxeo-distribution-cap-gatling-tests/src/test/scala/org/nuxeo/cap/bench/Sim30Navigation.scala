@@ -27,7 +27,7 @@ object ScnNavigation {
   def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
     scenario("NavigationRest").exec(
       during(duration, "counterName") {
-        feed(Feeders.usersCircular).repeat(5) {
+        feed(Feeders.users).repeat(5) {
           feed(documents)
             .randomSwitch(
               30.0 -> exec(NuxeoRest.getDocument("Get document")),

@@ -28,7 +28,7 @@ object ScnCRUD {
     scenario("DeleteCreateUpdateReadDocuments").exec(
       during(duration, "counterName") {
         feed(documents)
-          .feed(Feeders.usersCircular)
+          .feed(Feeders.users)
           .exec(NuxeoRest.deleteDocument())
           .pause(pause)
           .exec(NuxeoRest.createDocument())

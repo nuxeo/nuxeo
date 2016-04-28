@@ -28,7 +28,7 @@ object ScnCreateDocuments {
     scenario("CreateDocuments").exec(
       asLongAs(session => Feeders.notEmpty(session), exitASAP = true) {
         feed(documents)
-          .feed(Feeders.usersCircular)
+          .feed(Feeders.users)
           .exec(NuxeoRest.createDocument())
           .doIf(session => Redis.markDocumentCreated(session)) {
           exec()

@@ -28,7 +28,7 @@ object ScnUpdateDocuments {
     scenario("UpdateDocuments").exec(
       during(duration, "counterName") {
         feed(documents)
-          .feed(Feeders.usersCircular)
+          .feed(Feeders.users)
           .exec(NuxeoRest.updateDocument())
           .pause(pause)
       }

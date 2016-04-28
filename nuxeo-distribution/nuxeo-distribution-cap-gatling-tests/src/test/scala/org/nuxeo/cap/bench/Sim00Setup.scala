@@ -34,7 +34,7 @@ object ScnSetup {
         .exec(NuxeoRest.grantReadWritePermission(Constants.GAT_WS_PATH, Constants.GAT_GROUP_NAME)).exitHereIfFailed
         .exec(NuxeoRest.createDocumentIfNotExistsAsAdmin(Constants.GAT_WS_PATH, Constants.GAT_FOLDER_NAME, "Folder")).exitHereIfFailed
         .repeat(userCount.intValue(), "count") {
-        feed(Feeders.usersCircular)
+        feed(Feeders.users)
           .exec(NuxeoRest.createUserIfNotExists(Constants.GAT_GROUP_NAME)).pause(pause)
         //.exec(Actions.createDocumentIfNotExists(Constants.GAT_WS_PATH, Constants.GAT_USER_FOLDER_NAME, "Folder"))
       }

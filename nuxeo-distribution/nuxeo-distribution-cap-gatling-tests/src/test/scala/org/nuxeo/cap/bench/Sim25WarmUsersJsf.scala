@@ -18,14 +18,19 @@ package org.nuxeo.cap.bench
  */
 
 import io.gatling.core.Predef._
+import io.gatling.core.config.GatlingFiles
 import io.gatling.http.Predef._
+
+import scala.io.Source
 
 object ScnWarmupUsersJsf {
 
-  def get = () => {
+  def get = (userCount: Integer) => {
     scenario("WarmUsersJsf").exec(
+      repeat(userCount.intValue(), "count") {
         feed(Feeders.users)
           .exec(NuxeoJsf.loginAndGoToGatlingWorkspace()).exec(NuxeoJsf.logout())
+      }
     )
   }
 }
@@ -36,7 +41,8 @@ class Sim25WarmUsersJsf extends Simulation {
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
-  val scn = ScnWarmupUsersJsf.get()
+  val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
+  val scn = ScnWarmupUsersJsf.get(userCount)
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
 }

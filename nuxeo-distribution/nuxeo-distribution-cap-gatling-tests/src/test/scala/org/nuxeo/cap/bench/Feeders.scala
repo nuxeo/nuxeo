@@ -21,7 +21,6 @@ import io.gatling.core.Predef._
 object Feeders {
 
   // csv feeds
-  val usersCircular = csv("users.csv").circular
   val users = csv("users.csv").circular
   val admins = csv("admins.csv").circular
   val fulltextSearch = csv("fulltext.csv").circular

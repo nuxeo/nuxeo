@@ -28,7 +28,7 @@ object ScnCreateFolders {
     scenario("CreateFolders").exec(
       asLongAs(session => Feeders.notEmpty(session), exitASAP = true) {
         feed(folders)
-          .feed(Feeders.usersCircular)
+          .feed(Feeders.users)
           .exec(NuxeoRest.createDocument())
           .doIf(session => Redis.markFolderCreated(session)) {
           exec()
