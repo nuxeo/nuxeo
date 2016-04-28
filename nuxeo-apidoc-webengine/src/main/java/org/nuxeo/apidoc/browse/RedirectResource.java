@@ -57,11 +57,10 @@ public class RedirectResource extends DefaultObject {
 
     protected Response newLocation(String target, String subPath) {
         String path = getPrevious().getPath();
-        String url = ctx.getServerURL().append(path).append("/" + target).toString();
+        String url = ctx.getServerURL().append(path).append("/").append(target).toString();
         if (subPath != null) {
             url = url + "/" + subPath;
         }
         return redirect(url);
     }
-
 }

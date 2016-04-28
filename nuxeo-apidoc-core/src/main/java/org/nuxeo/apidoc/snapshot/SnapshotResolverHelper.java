@@ -19,10 +19,12 @@
 package org.nuxeo.apidoc.snapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class SnapshotResolverHelper {
 
@@ -50,8 +52,8 @@ public class SnapshotResolverHelper {
             String name = parts[0];
             String version = distributionId.replace(name + "-", "");
             name = getName(name);
-            List<String> potentialVersions = new ArrayList<String>();
-            Map<String, String> dist4Version = new HashMap<String, String>();
+            List<String> potentialVersions = new ArrayList<>();
+            Map<String, String> dist4Version = new HashMap<>();
             for (DistributionSnapshot snap : snaps) {
                 if (getName(snap.getName()).equalsIgnoreCase(name)) {
                     potentialVersions.add(snap.getVersion());
@@ -81,12 +83,10 @@ public class SnapshotResolverHelper {
     }
 
     protected static String getName(String name) {
-        for (String dname : capaliases) {
-            if (dname.equalsIgnoreCase(name)) {
-                return "cap";
-            }
-        }
-        return name;
+        Optional<String> first = Arrays.stream(capaliases)
+                                       .filter(s -> name.toLowerCase().startsWith(s.toLowerCase()))
+                                       .findFirst();
+        return first.isPresent() ? "cap" : name;
     }
 
 }
