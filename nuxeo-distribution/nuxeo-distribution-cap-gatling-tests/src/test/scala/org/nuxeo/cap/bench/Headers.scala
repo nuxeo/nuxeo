@@ -20,7 +20,8 @@ package org.nuxeo.cap.bench
 object Headers {
 
   val base = Map(
-    "User-Agent" -> "Gatling"
+    "User-Agent" -> "Gatling",
+    "Accept-Language" -> "en-us"
   )
 
   val default = base.++(
@@ -35,7 +36,7 @@ object Headers {
       "depth" -> "max"))
 
   val jsfHeader = Map(
-
+    "Accept-Language" -> "en-us",
     "Accept" -> "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "User-Agent" -> "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:40.0) Gecko/20100101 Firefox/Gatling/40.0"
   )
