@@ -14,7 +14,7 @@
 
       @since 8.2
     </documentation>
-    <property name="nuxeo.jsf.layout.removeAliasOptims">false</property>
+    <property name="nuxeo.jsf.layout.removeAliasOptims">true</property>
   </extension>
 
 </component>
