@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Antoine Taillefer
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -92,8 +93,8 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      */
     public ArchivedVersionsSubPage selectVersion(String versionLabel) {
 
-        List<WebElement> trElements = documentVersionsForm.findElement(By.tagName("tbody")).findElements(
-                By.tagName("tr"));
+        List<WebElement> trElements = documentVersionsForm.findElement(By.tagName("tbody"))
+                                                          .findElements(By.tagName("tr"));
         for (WebElement trItem : trElements) {
             try {
                 trItem.findElement(By.xpath("td[text()=\"" + versionLabel + "\"]"));
@@ -223,8 +224,8 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
      */
     public DocumentBasePage executeActionOnVersion(String versionLabel, String actionId) {
 
-        List<WebElement> trElements = documentVersionsForm.findElement(By.tagName("tbody")).findElements(
-                By.tagName("tr"));
+        List<WebElement> trElements = documentVersionsForm.findElement(By.tagName("tbody"))
+                                                          .findElements(By.tagName("tr"));
         for (WebElement trItem : trElements) {
             try {
                 trItem.findElement(By.xpath("td[text()=\"" + versionLabel + "\"]"));
@@ -236,5 +237,12 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
             }
         }
         return asPage(DocumentBasePage.class);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public String getDocumentVersionsText() {
+        return documentVersions.getText();
     }
 }
