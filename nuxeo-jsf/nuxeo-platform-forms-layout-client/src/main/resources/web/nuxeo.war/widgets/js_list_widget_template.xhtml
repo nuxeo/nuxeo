@@ -131,7 +131,7 @@
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <nxu:validateDocumentConstraint handleSubProperties="false" />
-                <tr>
+                <tr class="listItem">
                   <td style="display:none;">
                     <h:inputHidden>
                       <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
@@ -179,7 +179,7 @@
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <nxu:validateDocumentConstraint handleSubProperties="false" />
-            <h:panelGrid columns="#{isEditMode and showActions?2:1}">
+            <h:panelGrid columns="#{isEditMode and showActions?2:1}" styleClass="listItem">
               <h:inputHidden>
                 <f:passThroughAttribute name="name" value="#{listClientId}:#{isListTemplate ? 'TEMPLATE_INDEX_MARKER:': ''}rowIndex[]" />
                 <f:attribute name="value" value="#{isListTemplate ? 'TEMPLATE_INDEX_MARKER' : model.rowIndex}"/>
