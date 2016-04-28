@@ -8,7 +8,7 @@
 
       @since 8.2
     </documentation>
-    <property name="nuxeo.jsf.actions.removeActionOptims">false</property>
+    <property name="nuxeo.jsf.actions.removeActionOptims">true</property>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
