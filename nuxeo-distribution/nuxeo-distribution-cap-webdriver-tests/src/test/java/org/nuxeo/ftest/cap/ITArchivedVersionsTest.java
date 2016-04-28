@@ -18,6 +18,18 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_URL;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_NOTE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_NOTE_URL;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,20 +40,10 @@ import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
+import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ArchivedVersionsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
-
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_URL;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
-
-import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the Archived versions screen.
@@ -52,6 +54,7 @@ public class ITArchivedVersionsTest extends AbstractTest {
     public void before() throws DocumentBasePage.UserNotConnectedException {
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
         RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, "Test File description");
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, NOTE_TYPE, TEST_NOTE_TITLE, "Test Note description");
 
         login();
         open(TEST_FILE_URL);
@@ -68,6 +71,20 @@ public class ITArchivedVersionsTest extends AbstractTest {
     @After
     public void after() {
         RestHelper.cleanup();
+    }
+
+    @Test
+    public void testNoArchivedVersions() throws UserNotConnectedException {
+        login();
+        open(TEST_NOTE_URL);
+
+        DocumentBasePage notePage = asPage(DocumentBasePage.class);
+
+        // Go to archived versions sub tab
+        ArchivedVersionsSubPage archivedVersionsPage = notePage.getHistoryTab().getArchivedVersionsSubTab();
+        assertEquals("This document has no archived version.", archivedVersionsPage.getDocumentVersionsText());
+
+        logout();
     }
 
     @Test
