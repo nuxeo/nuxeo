@@ -30,9 +30,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContextImpl.RenderingContextBuilder;
-import org.nuxeo.ecm.platform.web.common.locale.LocaleProvider;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Utility class that get or create a {@link RenderingContext} from the current {@link HttpServletRequest}.
@@ -115,15 +113,8 @@ public final class RenderingContextWebUtils {
             // current session
             CoreSession session = SessionFactory.getSession(webRequest);
             builder.base(baseURL).session(session);
-            // get the locale, first try through the user's prefs, then through the request
-            Locale locale = null;
-            LocaleProvider localeProvider = Framework.getService(LocaleProvider.class);
-            if (localeProvider != null) {
-                locale = localeProvider.getLocale(session);
-            }
-            if (locale == null) {
-                locale = request.getLocale();
-            }
+            // gets the locale from the request or takes the server's default
+            Locale locale = request.getLocale();
             if (locale != null) {
                 builder.locale(locale);
             }
