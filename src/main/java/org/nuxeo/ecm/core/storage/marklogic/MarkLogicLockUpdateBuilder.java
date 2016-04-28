@@ -21,19 +21,13 @@ package org.nuxeo.ecm.core.storage.marklogic;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.nuxeo.ecm.core.api.Lock;
 
 import com.marklogic.client.document.DocumentMetadataPatchBuilder.PatchHandle;
 import com.marklogic.client.document.DocumentPatchBuilder;
 import com.marklogic.client.document.DocumentPatchBuilder.Position;
-import com.marklogic.client.util.EditableNamespaceContext;
 
 /**
  * Builder to update a document for lock features.
@@ -41,15 +35,6 @@ import com.marklogic.client.util.EditableNamespaceContext;
  * @since 8.3
  */
 class MarkLogicLockUpdateBuilder {
-
-    private static final Map<String, String> LOCK_NAMESPACES = Stream.of(KEY_LOCK_OWNER, KEY_LOCK_CREATED)
-                                                                     .map(MarkLogicHelper::getNamespace)
-                                                                     .filter(Optional::isPresent)
-                                                                     .map(Optional::get)
-                                                                     .distinct()
-                                                                     .collect(
-                                                                             Collectors.toMap(Function.identity(),
-                                                                                     MarkLogicHelper::getNamespaceUri));
 
     private final Supplier<DocumentPatchBuilder> supplier;
 
@@ -61,12 +46,8 @@ class MarkLogicLockUpdateBuilder {
         DocumentPatchBuilder patchBuilder = supplier.get();
         // Build patch
         String documentPath = MarkLogicHelper.DOCUMENT_ROOT_PATH + '/';
-        patchBuilder.delete(documentPath + KEY_LOCK_OWNER);
-        patchBuilder.delete(documentPath + KEY_LOCK_CREATED);
-        // Set namespaces
-        EditableNamespaceContext namespaceContext = new EditableNamespaceContext();
-        namespaceContext.putAll(LOCK_NAMESPACES);
-        patchBuilder.setNamespaces(namespaceContext);
+        patchBuilder.delete(documentPath + MarkLogicHelper.serializeKey(KEY_LOCK_OWNER));
+        patchBuilder.delete(documentPath + MarkLogicHelper.serializeKey(KEY_LOCK_CREATED));
         return patchBuilder.build();
     }
 
@@ -74,13 +55,9 @@ class MarkLogicLockUpdateBuilder {
         DocumentPatchBuilder patchBuilder = supplier.get();
         // Build patch
         patchBuilder.insertFragment(MarkLogicHelper.DOCUMENT_ROOT_PATH, Position.LAST_CHILD,
-                MarkLogicStateSerializer.serializeNonNullPrimitive(KEY_LOCK_OWNER, lock.getOwner()).asXML());
+                MarkLogicStateSerializer.serialize(KEY_LOCK_OWNER, lock.getOwner()).get().asXML());
         patchBuilder.insertFragment(MarkLogicHelper.DOCUMENT_ROOT_PATH, Position.LAST_CHILD,
-                MarkLogicStateSerializer.serializeNonNullPrimitive(KEY_LOCK_CREATED, lock.getCreated()).asXML());
-        // Set namespaces
-        EditableNamespaceContext namespaceContext = new EditableNamespaceContext();
-        namespaceContext.putAll(LOCK_NAMESPACES);
-        patchBuilder.setNamespaces(namespaceContext);
+                MarkLogicStateSerializer.serialize(KEY_LOCK_CREATED, lock.getCreated()).get().asXML());
         return patchBuilder.build();
     }
 }

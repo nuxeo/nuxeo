@@ -19,13 +19,10 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.dom4j.Element;
 import org.nuxeo.ecm.core.api.model.Delta;
@@ -38,7 +35,6 @@ import com.marklogic.client.document.DocumentMetadataPatchBuilder.Cardinality;
 import com.marklogic.client.document.DocumentMetadataPatchBuilder.PatchHandle;
 import com.marklogic.client.document.DocumentPatchBuilder;
 import com.marklogic.client.document.DocumentPatchBuilder.Position;
-import com.marklogic.client.util.EditableNamespaceContext;
 
 /**
  * Builder to convert a {@link StateDiff} into a {@link PatchHandle}.
@@ -56,33 +52,24 @@ class MarkLogicStateUpdateBuilder implements Function<StateDiff, PatchHandle> {
     @Override
     public PatchHandle apply(StateDiff diff) {
         DocumentPatchBuilder patchBuilder = supplier.get();
-        Set<String> namespaces = new HashSet<>();
         // Build patch
-        fillPatch(patchBuilder, MarkLogicHelper.DOCUMENT_ROOT_PATH, diff, namespaces);
-        // Set namespaces
-        EditableNamespaceContext namespaceContext = new EditableNamespaceContext();
-        namespaceContext.putAll(namespaces.stream().collect(
-                Collectors.toMap(Function.identity(), MarkLogicHelper::getNamespaceUri)));
-        patchBuilder.setNamespaces(namespaceContext);
+        fillPatch(patchBuilder, MarkLogicHelper.DOCUMENT_ROOT_PATH, diff);
         return patchBuilder.build();
     }
 
-    private void fillPatch(DocumentPatchBuilder patchBuilder, String path, StateDiff diff, Set<String> namespaces) {
+    private void fillPatch(DocumentPatchBuilder patchBuilder, String path, StateDiff diff) {
         for (Entry<String, Serializable> entry : diff.entrySet()) {
-            String subPath = path + "/" + entry.getKey();
+            String subPath = path + "/" + MarkLogicHelper.serializeKey(entry.getKey());
             Serializable value = entry.getValue();
             if (value instanceof StateDiff) {
-                MarkLogicHelper.getNamespace(entry.getKey()).ifPresent(namespaces::add);
-                fillPatch(patchBuilder, subPath, (StateDiff) value, namespaces);
+                fillPatch(patchBuilder, subPath, (StateDiff) value);
             } else if (value instanceof ListDiff) {
-                MarkLogicHelper.getNamespace(entry.getKey()).ifPresent(namespaces::add);
-                fillPatch(patchBuilder, subPath, (ListDiff) value, namespaces);
+                fillPatch(patchBuilder, subPath, (ListDiff) value);
             } else if (value instanceof Delta) {
-                MarkLogicHelper.getNamespace(entry.getKey()).ifPresent(namespaces::add);
                 Call call = patchBuilder.call().add(((Delta) value).getDeltaValue());
                 patchBuilder.replaceApply(subPath, Cardinality.ONE, call);
             } else {
-                Optional<Element> fragment = MarkLogicStateSerializer.serialize(entry.getKey(), value, namespaces);
+                Optional<Element> fragment = MarkLogicStateSerializer.serialize(entry.getKey(), value);
                 if (fragment.isPresent()) {
                     patchBuilder.replaceInsertFragment(subPath, path, Position.LAST_CHILD, fragment.get().asXML());
                 } else {
@@ -92,16 +79,16 @@ class MarkLogicStateUpdateBuilder implements Function<StateDiff, PatchHandle> {
         }
     }
 
-    private void fillPatch(DocumentPatchBuilder patchBuilder, String path, ListDiff listDiff, Set<String> namespaces) {
+    private void fillPatch(DocumentPatchBuilder patchBuilder, String path, ListDiff listDiff) {
         if (listDiff.diff != null) {
             int i = 1;
             for (Object value : listDiff.diff) {
                 String subPath = path + '/' + MarkLogicHelper.ARRAY_ITEM_KEY + '[' + i + ']';
                 if (value instanceof StateDiff) {
-                    fillPatch(patchBuilder, subPath, (StateDiff) value, namespaces);
+                    fillPatch(patchBuilder, subPath, (StateDiff) value);
                 } else if (value != State.NOP) {
                     Optional<Element> fragment = MarkLogicStateSerializer.serialize(MarkLogicHelper.ARRAY_ITEM_KEY,
-                            value, namespaces);
+                            value);
                     if (fragment.isPresent()) {
                         patchBuilder.replaceFragment(subPath, Cardinality.ONE, fragment.get().asXML());
                     } else {
@@ -113,8 +100,7 @@ class MarkLogicStateUpdateBuilder implements Function<StateDiff, PatchHandle> {
         }
         if (listDiff.rpush != null) {
             for (Object value : listDiff.rpush) {
-                Element fragment = MarkLogicStateSerializer.serialize(MarkLogicHelper.ARRAY_ITEM_KEY, value, namespaces)
-                                                           .get();
+                Element fragment = MarkLogicStateSerializer.serialize(MarkLogicHelper.ARRAY_ITEM_KEY, value).get();
                 patchBuilder.insertFragment(path, Position.LAST_CHILD, fragment.asXML());
             }
         }

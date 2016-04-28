@@ -19,9 +19,7 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -51,8 +49,6 @@ public class MarkLogicQueryByExampleBuilder {
     /** Cursor to "&lt;document /&gt;" object in MarkLogic query. */
     private final Element documentToQuery;
 
-    private final Set<String> namespaces;
-
     public MarkLogicQueryByExampleBuilder() {
         documentToQuery = DocumentHelper.createElement(MarkLogicHelper.DOCUMENT_ROOT);
         Element query = DocumentHelper.createElement(QUERY);
@@ -63,11 +59,10 @@ public class MarkLogicQueryByExampleBuilder {
 
         qbe.addNamespace("q", "http://marklogic.com/appservices/querybyexample");
         MarkLogicStateSerializer.addDefaultNamespaces(qbe);
-        namespaces = new HashSet<>();
     }
 
     public MarkLogicQueryByExampleBuilder eq(String key, Object value) {
-        MarkLogicStateSerializer.serialize(key, value, namespaces).ifPresent(documentToQuery::add);
+        MarkLogicStateSerializer.serialize(key, value).ifPresent(documentToQuery::add);
         return this;
     }
 
@@ -75,11 +70,11 @@ public class MarkLogicQueryByExampleBuilder {
         if (!values.isEmpty()) {
             Element conditionElement;
             if (values.size() == 1) {
-                conditionElement = MarkLogicStateSerializer.serialize(key, values.iterator().next(), namespaces).get();
+                conditionElement = MarkLogicStateSerializer.serialize(key, values.iterator().next()).get();
             } else {
                 conditionElement = DocumentHelper.createElement(OR);
                 values.stream()
-                      .map(value -> MarkLogicStateSerializer.serialize(key, value, namespaces))
+                      .map(value -> MarkLogicStateSerializer.serialize(key, value))
                       .filter(Optional::isPresent)
                       .map(Optional::get)
                       .forEach(conditionElement::add);
@@ -92,7 +87,6 @@ public class MarkLogicQueryByExampleBuilder {
     }
 
     public StructureWriteHandle build() {
-        MarkLogicStateSerializer.addNamespaces(document.getRootElement(), namespaces);
         return new DOM4JHandle(document);
     }
 }

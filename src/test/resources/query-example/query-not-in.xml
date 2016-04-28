@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <q:qbe xmlns:q="http://marklogic.com/appservices/querybyexample" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecm="http://www.nuxeo.org/ecm/schemas/ecm/">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <q:query>
     <document>
       <q:not>
         <q:or>
-          <ecm:id xsi:type="xs:string">ID1</ecm:id>
-          <ecm:id xsi:type="xs:string">ID2</ecm:id>
+          <ecm__id xsi:type="xs:string">ID1</ecm__id>
+          <ecm__id xsi:type="xs:string">ID2</ecm__id>
         </q:or>
       </q:not>
     </document>

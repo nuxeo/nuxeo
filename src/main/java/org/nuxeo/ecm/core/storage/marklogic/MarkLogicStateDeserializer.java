@@ -59,7 +59,7 @@ final class MarkLogicStateDeserializer {
         Iterator elements = parent.elementIterator();
         while (elements.hasNext()) {
             Element element = (Element) elements.next();
-            state.put(element.getQualifiedName(), deserializeValue(element));
+            state.put(MarkLogicHelper.deserializeKey(element.getQualifiedName()), deserializeValue(element));
         }
         return state;
     }

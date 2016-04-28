@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.util.Calendar;
-import java.util.Optional;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -36,27 +35,15 @@ final class MarkLogicHelper {
 
     public static final String DOCUMENT_ROOT_PATH = '/'+ DOCUMENT_ROOT;
 
-    public static final String ARRAY_ITEM_NAMESPACE = "nxml";
-
-    public static final String ARRAY_ITEM_KEY = ARRAY_ITEM_NAMESPACE + ":item";
+    public static final String ARRAY_ITEM_KEY = serializeKey("nxml:item");
 
     public static final String ATTRIBUTE_TYPE = "type";
 
     public static final String ATTRIBUTE_XSI_TYPE = "xsi:" + ATTRIBUTE_TYPE;
 
-    private static final String NAMESPACE_URI_FORMAT = "http://www.nuxeo.org/ecm/schemas/%s/";
+    private static final String SCHEMA_ORIGINAL_DELIMITER = ":";
 
-    public static Optional<String> getNamespace(String key) {
-        int colon = key.indexOf(':');
-        if (colon > 0) {
-            return Optional.of(key.substring(0, colon));
-        }
-        return Optional.empty();
-    }
-
-    public static String getNamespaceUri(String namespace) {
-        return String.format(MarkLogicHelper.NAMESPACE_URI_FORMAT, namespace);
-    }
+    private static final String SCHEMA_MARKLOGIC_DELIMITER = "__";
 
     public static String serializeCalendar(Calendar cal) {
         return DateTime.now().withMillis(cal.getTimeInMillis()).toString(DATE_TIME_FORMATTER);
@@ -67,6 +54,14 @@ final class MarkLogicHelper {
         Calendar cal = Calendar.getInstance();
         cal.setTime(dateTime.toDate());
         return cal;
+    }
+
+    public static String serializeKey(String key) {
+        return key.replace(SCHEMA_ORIGINAL_DELIMITER, SCHEMA_MARKLOGIC_DELIMITER);
+    }
+
+    public static String deserializeKey(String key) {
+        return key.replace(SCHEMA_MARKLOGIC_DELIMITER, SCHEMA_ORIGINAL_DELIMITER);
     }
 
     public enum ElementType {

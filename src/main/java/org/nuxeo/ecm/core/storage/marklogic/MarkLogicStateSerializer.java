@@ -21,15 +21,12 @@ package org.nuxeo.ecm.core.storage.marklogic;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.xml.XMLConstants;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.joda.time.DateTime;
@@ -48,66 +45,55 @@ final class MarkLogicStateSerializer {
     }
 
     public static String serialize(State state) {
-        // Create Set for namespace
-        Set<String> namespaces = new HashSet<>();
         // Serialize root
-        Element root = serialize(MarkLogicHelper.DOCUMENT_ROOT, state, namespaces);
+        Element root = serialize(MarkLogicHelper.DOCUMENT_ROOT, state);
         // Add namespaces
         addDefaultNamespaces(root);
-        addNamespaces(root, namespaces);
         // Create document
-        Document document = DocumentHelper.createDocument();
-        document.setRootElement(root);
-        return document.asXML();
+        return DocumentHelper.createDocument(root).asXML();
     }
 
-    private static Element serialize(String key, State state, Set<String> namespaces) {
-        Element element = DocumentHelper.createElement(key);
+    private static Element serialize(String key, State state) {
+        Element element = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
         for (Entry<String, Serializable> entry : state.entrySet()) {
-            serialize(entry.getKey(), entry.getValue(), namespaces).ifPresent(element::add);
+            serialize(entry.getKey(), entry.getValue()).ifPresent(element::add);
         }
         return element;
     }
 
-    public static Optional<Element> serialize(String key, Object value, Set<String> namespaces) {
-        MarkLogicHelper.getNamespace(key).ifPresent(namespaces::add);
+    public static Optional<Element> serialize(String key, Object value) {
         Optional<Element> result;
         if (value == null) {
             result = Optional.empty();
         } else if (value instanceof State) {
-            result = Optional.of(serialize(key, (State) value, namespaces));
+            result = Optional.of(serialize(key, (State) value));
         } else if (value instanceof List) {
             @SuppressWarnings("unchecked")
             List<Object> values = (List<Object>) value;
-            result = Optional.of(serialize(key, values, namespaces));
+            result = Optional.of(serialize(key, values));
         } else if (value instanceof Object[]) {
-            result = Optional.of(serialize(key, Arrays.asList((Object[]) value), namespaces));
+            result = Optional.of(serialize(key, Arrays.asList((Object[]) value)));
         } else {
-            result = Optional.of(serializeNonNullPrimitive(key, value));
+            String nodeValue;
+            if (value instanceof Calendar) {
+                nodeValue = MarkLogicHelper.serializeCalendar((Calendar) value);
+            } else if (value instanceof DateTime) {
+                nodeValue = ((DateTime) value).toString(MarkLogicHelper.DATE_TIME_FORMATTER);
+            } else {
+                nodeValue = value.toString();
+            }
+            Element element = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
+            element.addAttribute(MarkLogicHelper.ATTRIBUTE_XSI_TYPE, ElementType.getType(value.getClass()).getKey());
+            element.setText(nodeValue);
+            result = Optional.of(element);
         }
         return result;
     }
 
-    public static Element serializeNonNullPrimitive(String key, Object value) {
-        String nodeValue;
-        if (value instanceof Calendar) {
-            nodeValue = MarkLogicHelper.serializeCalendar((Calendar) value);
-        } else if (value instanceof DateTime) {
-            nodeValue = ((DateTime) value).toString(MarkLogicHelper.DATE_TIME_FORMATTER);
-        } else {
-            nodeValue = value.toString();
-        }
-        Element element = DocumentHelper.createElement(key);
-        element.addAttribute(MarkLogicHelper.ATTRIBUTE_XSI_TYPE, ElementType.getType(value.getClass()).getKey());
-        element.setText(nodeValue);
-        return element;
-    }
-
-    private static Element serialize(String key, List<Object> list, Set<String> namespaces) {
-        namespaces.add(MarkLogicHelper.ARRAY_ITEM_NAMESPACE);
-        Element array = DocumentHelper.createElement(key);
+    private static Element serialize(String key, List<Object> list) {
+        Element array = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
         for (Object object : list) {
-            serialize(MarkLogicHelper.ARRAY_ITEM_KEY, object, namespaces).ifPresent(array::add);
+            serialize(MarkLogicHelper.ARRAY_ITEM_KEY, object).ifPresent(array::add);
         }
         return array;
     }
@@ -115,14 +101,6 @@ final class MarkLogicStateSerializer {
     public static void addDefaultNamespaces(Element root) {
         root.addNamespace("xs", XMLConstants.W3C_XML_SCHEMA_NS_URI);
         root.addNamespace("xsi", XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-    }
-
-    public static void addNamespaces(Element element, Iterable<String> namespaces) {
-        namespaces.forEach(namespace -> addNamespace(element, namespace));
-    }
-
-    public static void addNamespace(Element element, String namespace) {
-        element.addNamespace(namespace, MarkLogicHelper.getNamespaceUri(namespace));
     }
 
 }

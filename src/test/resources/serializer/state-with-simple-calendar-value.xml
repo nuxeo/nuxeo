@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns:ecm="http://www.nuxeo.org/ecm/schemas/ecm/" xmlns:dub="http://www.nuxeo.org/ecm/schemas/dub/">
-  <ecm:id xsi:type="xs:string">ID</ecm:id>
-  <dub:creationDate xsi:type="xs:dateTime">1970-01-01T00:00:00.001</dub:creationDate>
+<document xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ecm__id xsi:type="xs:string">ID</ecm__id>
+  <dub__creationDate xsi:type="xs:dateTime">1970-01-01T00:00:00.001</dub__creationDate>
 </document>

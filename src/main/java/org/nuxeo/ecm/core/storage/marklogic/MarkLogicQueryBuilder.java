@@ -19,10 +19,8 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -96,8 +94,6 @@ public class MarkLogicQueryBuilder {
 
     private Document document;
 
-    private Set<String> namespaces = new HashSet<>();
-
     public MarkLogicQueryBuilder(Expression expression, SelectClause selectClause,
             OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled) {
         this.expression = expression;
@@ -134,7 +130,6 @@ public class MarkLogicQueryBuilder {
             MarkLogicStateSerializer.addDefaultNamespaces(qbe);
 
             documentToQuery.add(walkExpression(expression));
-            MarkLogicStateSerializer.addNamespaces(qbe, namespaces);
         }
         return new DOM4JHandle(document);
     }
@@ -337,7 +332,7 @@ public class MarkLogicQueryBuilder {
         }
     }
 
-    private class FieldInfo {
+    private static class FieldInfo {
 
         /** NXQL property. */
         private final String prop;
@@ -383,7 +378,7 @@ public class MarkLogicQueryBuilder {
         public Element eq(Literal literal) {
             Object value = getLiteral(literal);
             // TODO check get()
-            return MarkLogicStateSerializer.serialize(fullField, value, namespaces).get();
+            return MarkLogicStateSerializer.serialize(fullField, value).get();
         }
 
         private Object getLiteral(Literal literal) {
