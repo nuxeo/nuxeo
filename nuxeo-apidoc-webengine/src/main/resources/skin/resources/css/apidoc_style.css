@@ -251,24 +251,27 @@ article {
   display:block }
 
 .hiddenResource {
-  display:none;
   border: 1px solid #ccc }
 
 .resourceToggle,
-.resourceToggleUp {
+.resourceToggleDown {
   border: 1px solid #ccc;
   border-radius: 2px;
   color: #213f7d;
   cursor: pointer;
   font-weight: bold;
   padding: .2em .3em .2em 1.5em;
-  background:url(../images/down.gif) no-repeat scroll 3px center / 12px auto transparent }
-
-.resourceToggleUp {
   background:url(../images/up.gif) no-repeat scroll 3px center / 12px auto transparent }
 
+/*NXP-19585: Do not display toggle for now; in case we'd like them back one day. */
+.resourceToggle {
+  display: none }
+
+.resourceToggleDown {
+  background:url(../images/down.gif) no-repeat scroll 3px center / 12px auto transparent }
+
 .resourceToggle:hover,
-.resourceToggleUp:hover {
+.resourceToggleDown:hover {
   border-color: #aaa;
   box-shadow: 0 0 2px rgba(0,0,0,0.2) }
 
@@ -635,7 +638,7 @@ p.export a:hover {
   background-color:#4e9ae1;
   border-color: #4e9ae1;
   color: #fff }
-  
+
 .tabs  {
   background-color:#ccc;
   border-style:solid;
@@ -720,4 +723,4 @@ footer a:hover {
 
 .highlight {
   background-color: yellow }
-  
+

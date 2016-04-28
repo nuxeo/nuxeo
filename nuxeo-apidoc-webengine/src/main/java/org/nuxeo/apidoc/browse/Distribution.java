@@ -467,4 +467,8 @@ public class Distribution extends ModuleRoot {
     public boolean showCurrentDistribution() {
         return !Framework.isBooleanPropertyTrue("org.nuxeo.explorer.hide.current.distribution");
     }
+
+    public boolean showSeamComponent() {
+        return Framework.isBooleanPropertyFalse("org.nuxeo.explorer.hide.seam.components");
+    }
 }

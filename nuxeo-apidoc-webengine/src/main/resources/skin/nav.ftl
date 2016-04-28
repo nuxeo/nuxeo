@@ -34,6 +34,7 @@
   </li>
  </#if>
 
+  <#if Root.showSeamComponent() >
   <li <#if navPoint=="listSeamComponents">class="selected"</#if> >
     <a href="${Root.path}/${distId}/listSeamComponents">
        Seam components
@@ -42,6 +43,7 @@
         <ul><li class="selected">view Seam Component</li></ul>
       </#if>
   </li>
+  </#if>
   <li <#if navPoint=="listBundleGroups">class="selected"</#if> >
     <a href="${Root.path}/${distId}/listBundleGroups">
        Bundle groups

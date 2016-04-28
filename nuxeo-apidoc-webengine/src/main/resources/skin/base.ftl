@@ -86,6 +86,11 @@
              </div>
              <div style="clear:both;"></div>
            </#if>
+             <#if !enableDocumentationView && !Root.isEmbeddedMode() >
+               <div class="tabsbutton">
+                 <a href="${This.path}/doc">Add custom Documentation</a>
+               </div>
+             </#if>
              <div class="tabscontent">
              <#if !enableDocumentationView && !Root.isEmbeddedMode() >
                <a href="${This.path}/doc">Add custom Documentation</a>
@@ -161,9 +166,9 @@
 
     // toggle code viewer
     $(".resourceToggle").click(function() {
-     $(this).next().toggleClass('hiddenResource');
+     $(this).next().toggle();
      $(this).toggleClass('resourceToggle');
-     $(this).toggleClass('resourceToggleUp');
+     $(this).toggleClass('resourceToggleDown');
     });
 
     // toggle title bars
