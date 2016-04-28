@@ -19,6 +19,7 @@
 package org.nuxeo.apidoc.test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -154,6 +155,11 @@ public class TestDistributionResolver {
                 public boolean isLatestLTS() {
                     // TODO Auto-generated method stub
                     return false;
+                }
+
+                @Override
+                public List<String> getAliases() {
+                    return Collections.emptyList();
                 }
 
                 @Override

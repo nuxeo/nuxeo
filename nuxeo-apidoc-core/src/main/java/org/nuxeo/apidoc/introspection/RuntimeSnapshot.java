@@ -19,6 +19,7 @@
 package org.nuxeo.apidoc.introspection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -512,5 +513,10 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     @Override
     public boolean isLatestLTS() {
         return false;
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return Collections.singletonList("current");
     }
 }

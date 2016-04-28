@@ -143,44 +143,18 @@ public class Distribution extends ModuleRoot {
 
     @Path("latest")
     public Resource getLatest() {
-        Optional<DistributionSnapshot> distribution = listPersistedDistributions().stream()
-                                                                                  .filter(snap -> snap.getName()
-                                                                                                      .toLowerCase()
-                                                                                                      .startsWith(
-                                                                                                              "nuxeo platform"))
-                                                                                  .findFirst();
+        List<DistributionSnapshot> snaps = listPersistedDistributions();
+        Optional<DistributionSnapshot> distribution = snaps.stream()
+                                                           .filter(snap -> snap.getName()
+                                                                               .toLowerCase()
+                                                                               .startsWith("nuxeo platform"))
+                                                           .findFirst();
 
         String latest = "current";
         if (distribution.isPresent()) {
             latest = distribution.get().getKey();
         }
         return ctx.newObject("redirectWO", "latest", latest);
-    }
-
-    @Path("latestLTS")
-    public Object getLatestLTS() {
-        Optional<DistributionSnapshot> distribution = listPersistedDistributions().stream()
-                                                                                  .filter(DistributionSnapshot::isLatestLTS)
-                                                                                  .findFirst();
-
-        if (distribution.isPresent()) {
-            return ctx.newObject("redirectWO", "latest", distribution.get().getKey());
-        } else {
-            return Response.status(404);
-        }
-    }
-
-    @Path("latestFT")
-    public Object getLatestFT() {
-        Optional<DistributionSnapshot> distribution = listPersistedDistributions().stream()
-                                                                                  .filter(DistributionSnapshot::isLatestFT)
-                                                                                  .findFirst();
-
-        if (distribution.isPresent()) {
-            return ctx.newObject("redirectWO", "latest", distribution.get().getKey());
-        } else {
-            return Response.status(404);
-        }
     }
 
     @Path("{distributionId}")

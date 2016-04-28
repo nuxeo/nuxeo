@@ -52,6 +52,11 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
      */
     String PROP_LATEST_LTS = "nxdistribution:latestLTS";
 
+    /**
+     * @since 8.3
+     */
+    String PROP_ALIASES = "nxdistribution:aliases";
+
     String getKey();
 
     void cleanPreviousArtifacts();
@@ -113,4 +118,9 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
      * @since 8.3
      */
     boolean isLatestLTS();
+
+    /**
+     * @since 8.3
+     */
+    List<String> getAliases();
 }

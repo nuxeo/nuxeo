@@ -25,6 +25,9 @@
           <widget>latestFT</widget>
           <widget>latestLTS</widget>
         </row>
+        <row>
+          <widget>aliases</widget>
+        </row>
       </rows>
       <widget name="name" type="text">
         <labels>
@@ -79,6 +82,28 @@
         <fields>
           <field>nxdistribution:latestLTS</field>
         </fields>
+      </widget>
+      <widget name="aliases" type="list">
+        <labels>
+          <label mode="any">Aliases</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxdistribution:aliases</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+        </properties>
+        <subWidgets>
+          <widget name="listItem" type="text">
+            <fields>
+              <field />
+            </fields>
+            <labels>
+              <label mode="any" />
+            </labels>
+          </widget>
+        </subWidgets>
       </widget>
     </layout>
 
@@ -193,7 +218,6 @@
     </layout>
 
 
-
     <layout name="component">
       <templates>
         <template mode="any">
@@ -277,7 +301,6 @@
       </widget>
 
     </layout>
-
 
 
     <layout name="extensionpoint">
@@ -511,8 +534,6 @@
       </widget>
 
     </layout>
-
-
 
 
     <layout name="seam">

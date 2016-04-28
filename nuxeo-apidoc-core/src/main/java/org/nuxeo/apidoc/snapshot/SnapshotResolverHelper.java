@@ -35,15 +35,23 @@ public class SnapshotResolverHelper {
         if (distributionId == null || "".equals(distributionId.trim())) {
             return null;
         }
-        if ("current".equalsIgnoreCase((distributionId.trim()))) {
-            return "current";
-        }
+//        if ("current".equalsIgnoreCase((distributionId.trim()))) {
+//            return "current";
+//        }
 
         // exact match
         for (DistributionSnapshot snap : snaps) {
             if (snap.getKey().equalsIgnoreCase(distributionId)) {
                 return snap.getKey();
             }
+        }
+
+        // aliases
+        Optional<DistributionSnapshot> first = snaps.stream()
+                                                    .filter(s -> s.getAliases().contains(distributionId))
+                                                    .findFirst();
+        if (first.isPresent()) {
+            return first.get().getKey();
         }
 
         // name match + best version

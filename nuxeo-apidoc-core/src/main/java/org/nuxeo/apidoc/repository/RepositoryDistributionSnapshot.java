@@ -383,8 +383,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         if (id.startsWith(OperationInfo.ARTIFACT_PREFIX)) {
             id = id.substring(OperationInfo.ARTIFACT_PREFIX.length());
         }
-        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc()) + " AND " + OperationInfo.PROP_NAME + " = "
-                + NXQL.escapeString(id);
+        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc()) + " AND " + OperationInfo.PROP_NAME
+                + " = " + NXQL.escapeString(id);
         DocumentModelList docs = getCoreSession().query(query);
         return docs.isEmpty() ? null : docs.get(0).getAdapter(OperationInfo.class);
     }
@@ -438,5 +438,16 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
             log.error("Error while reading nxdistribution:latestLTS", e);
             return false;
         }
+    }
+
+    @Override
+    public List<String> getAliases() {
+        List<String> aliases = (List<String>) doc.getPropertyValue(PROP_ALIASES);
+        if (isLatestLTS()) {
+            aliases.add("latestLTS");
+        } else if (isLatestFT()) {
+            aliases.add("latestFT");
+        }
+        return aliases;
     }
 }
