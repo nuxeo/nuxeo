@@ -115,7 +115,7 @@
                 diff="#{widgetProperty_diff}"
                 rendered="#{isEditMode or not empty fieldOrValue}">
                 <nxu:validateDocumentConstraint handleSubProperties="false" />
-                <tr>
+                <tr class="listItem">
                   <c:if test="#{showActions}">
                     <td class="listWidgetActions">
                       <ui:include src="/widgets/list_widget_template_actions.xhtml" />
@@ -150,7 +150,7 @@
             diff="#{widgetProperty_diff}"
             rendered="#{isEditMode or not empty fieldOrValue}">
             <nxu:validateDocumentConstraint handleSubProperties="false" />
-            <h:panelGrid columns="#{isEditMode and showActions?2:1}">
+            <h:panelGrid columns="#{isEditMode and showActions?2:1}" styleClass="listItem">
               <c:if test="#{showActions}">
                 <h:panelGroup styleClass="listWidgetActionsTable" id="#{widget.id}_actions">
                   <ui:include src="/widgets/list_widget_template_actions.xhtml" />
