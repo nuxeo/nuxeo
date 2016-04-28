@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
@@ -57,6 +58,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.storage.sql.listeners.DummyUpdateBeforeModificationListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -69,7 +71,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml" })
+@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml",
+        "org.nuxeo.ecm.core.test.tests:OSGI-INF/test-listener-beforemod-updatedoc-contrib.xml" })
 public class TestSQLRepositoryVersioning {
 
     @Inject
@@ -227,7 +230,7 @@ public class TestSQLRepositoryVersioning {
         maybeSleepToNextSecond();
         file = session.saveDocument(file);
         file.checkIn(VersioningOption.MINOR, null);
-        file.checkOut();  // to allow deleting last version
+        file.checkOut(); // to allow deleting last version
 
         checkVersions(file, "0.1", "0.2", "0.3");
     }
@@ -1073,6 +1076,42 @@ public class TestSQLRepositoryVersioning {
         // remove the folder, containing the doc which is a proxy target
         session.removeDocument(fold.getRef());
         session.save();
+    }
+
+    @Test
+    public void testDirtyStateBehaviours() throws Exception {
+        // given a created doc with a given version
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.checkIn(doc.getRef(), VersioningOption.MAJOR, "Increment major version");
+        doc = session.getDocument(doc.getRef());
+        String v1 = doc.getVersionLabel();
+
+        // when I update the doc with no change
+        doc = session.saveDocument(doc);
+        // then the version doesnt change
+        doc = session.getDocument(doc.getRef());
+        assertEquals(v1, doc.getVersionLabel());
+
+        // when I update the doc with changes
+        doc.setPropertyValue("dc:title", "coucou");
+        doc = session.saveDocument(doc);
+        // then the version change
+        doc = session.getDocument(doc.getRef());
+        assertNotEquals(v1, doc.getVersionLabel());
+
+        // reset the version
+        session.checkIn(doc.getRef(), VersioningOption.MAJOR, "Increment major version");
+        doc = session.getDocument(doc.getRef());
+        String v3 = doc.getVersionLabel();
+
+        // when I update the doc though a event listener
+        doc.getContextData().putScopedValue(ScopeType.DEFAULT,
+                DummyUpdateBeforeModificationListener.PERDORM_UPDATE_FLAG, true);
+        doc = session.saveDocument(doc);
+        // then the version change
+        doc = session.getDocument(doc.getRef());
+        assertNotEquals(v3, doc.getVersionLabel());
     }
 
 }
