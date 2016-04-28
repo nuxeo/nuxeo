@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Thomas Roger
+ *     Yannis JULIENNE
  *
  */
 
@@ -44,8 +45,6 @@ import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
-import org.nuxeo.functionaltests.pages.tabs.SectionContentTabSubPage;
-import org.openqa.selenium.NoSuchElementException;
 
 /**
  * @since 8.3
@@ -159,14 +158,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         DocumentBasePage page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertFalse(hasFilesTab(page));
-            assertFalse(hasNewRelationLink(page));
+            assertFalse(page.hasFilesTab());
+            assertFalse(page.hasNewRelationLink());
         } else {
-            assertFalse(hasNewButton(page, isSection));
+            assertFalse(page.hasNewButton(isSection));
         }
-        assertFalse(hasEditTab(page));
-        assertFalse(hasNewPermissionsButton(page));
-        assertFalse(hasManageTab(page));
+        assertFalse(page.hasEditTab());
+        assertFalse(page.hasNewPermissionsButton());
+        assertFalse(page.hasManageTab());
 
         // check linnet has only read permission
         login("linnet", "linnet1");
@@ -174,14 +173,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertFalse(hasFilesTab(page));
-            assertFalse(hasNewRelationLink(page));
+            assertFalse(page.hasFilesTab());
+            assertFalse(page.hasNewRelationLink());
         } else {
-            assertFalse(hasNewButton(page, isSection));
+            assertFalse(page.hasNewButton(isSection));
         }
-        assertFalse(hasEditTab(page));
-        assertFalse(hasNewPermissionsButton(page));
-        assertFalse(hasManageTab(page));
+        assertFalse(page.hasEditTab());
+        assertFalse(page.hasNewPermissionsButton());
+        assertFalse(page.hasManageTab());
 
         // grant manage everything to bree and housewives group as admin
         login();
@@ -200,14 +199,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertTrue(hasFilesTab(page));
-            assertTrue(hasNewRelationLink(page));
+            assertTrue(page.hasFilesTab());
+            assertTrue(page.hasNewRelationLink());
         } else {
-            assertTrue(hasNewButton(page, isSection));
+            assertTrue(page.hasNewButton(isSection));
         }
-        assertTrue(hasEditTab(page));
-        assertTrue(hasNewPermissionsButton(page));
-        assertTrue(hasManageTab(page));
+        assertTrue(page.hasEditTab());
+        assertTrue(page.hasNewPermissionsButton());
+        assertTrue(page.hasManageTab());
 
         // check result for linnet
         login("linnet", "linnet1");
@@ -215,14 +214,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertTrue(hasFilesTab(page));
-            assertTrue(hasNewRelationLink(page));
+            assertTrue(page.hasFilesTab());
+            assertTrue(page.hasNewRelationLink());
         } else {
-            assertTrue(hasNewButton(page, isSection));
+            assertTrue(page.hasNewButton(isSection));
         }
-        assertTrue(hasEditTab(page));
-        assertTrue(hasNewPermissionsButton(page));
-        assertTrue(hasManageTab(page));
+        assertTrue(page.hasEditTab());
+        assertTrue(page.hasNewPermissionsButton());
+        assertTrue(page.hasManageTab());
 
         // revoke manage everything to bree and housewives as admin
         login();
@@ -242,14 +241,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertFalse(hasFilesTab(page));
-            assertFalse(hasNewRelationLink(page));
+            assertFalse(page.hasFilesTab());
+            assertFalse(page.hasNewRelationLink());
         } else {
-            assertFalse(hasNewButton(page, isSection));
+            assertFalse(page.hasNewButton(isSection));
         }
-        assertFalse(hasEditTab(page));
-        assertFalse(hasNewPermissionsButton(page));
-        assertFalse(hasManageTab(page));
+        assertFalse(page.hasEditTab());
+        assertFalse(page.hasNewPermissionsButton());
+        assertFalse(page.hasManageTab());
 
         // check result for linnet
         login("linnet", "linnet1");
@@ -257,14 +256,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertFalse(hasFilesTab(page));
-            assertFalse(hasNewRelationLink(page));
+            assertFalse(page.hasFilesTab());
+            assertFalse(page.hasNewRelationLink());
         } else {
-            assertFalse(hasNewButton(page, isSection));
+            assertFalse(page.hasNewButton(isSection));
         }
-        assertFalse(hasEditTab(page));
-        assertFalse(hasNewPermissionsButton(page));
-        assertFalse(hasManageTab(page));
+        assertFalse(page.hasEditTab());
+        assertFalse(page.hasNewPermissionsButton());
+        assertFalse(page.hasManageTab());
 
         // check susan has only read premission
         login("susan", "susan1");
@@ -272,14 +271,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertFalse(hasFilesTab(page));
-            assertFalse(hasNewRelationLink(page));
+            assertFalse(page.hasFilesTab());
+            assertFalse(page.hasNewRelationLink());
         } else {
-            assertFalse(hasNewButton(page, isSection));
+            assertFalse(page.hasNewButton(isSection));
         }
-        assertFalse(hasEditTab(page));
-        assertFalse(hasNewPermissionsButton(page));
-        assertFalse(hasManageTab(page));
+        assertFalse(page.hasEditTab());
+        assertFalse(page.hasNewPermissionsButton());
+        assertFalse(page.hasManageTab());
 
         // grant edit to bree and housewives as manager
         login(TEST_USERNAME, TEST_PASSWORD);
@@ -298,14 +297,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertTrue(hasFilesTab(page));
-            assertTrue(hasNewRelationLink(page));
+            assertTrue(page.hasFilesTab());
+            assertTrue(page.hasNewRelationLink());
         } else {
-            assertTrue(hasNewButton(page, isSection));
+            assertTrue(page.hasNewButton(isSection));
         }
-        assertTrue(hasEditTab(page));
-        assertFalse(hasNewPermissionsButton(page));
-        assertFalse(hasManageTab(page));
+        assertTrue(page.hasEditTab());
+        assertFalse(page.hasNewPermissionsButton());
+        assertFalse(page.hasManageTab());
 
         // check result for susan
         login("susan", "susan1");
@@ -313,14 +312,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertTrue(hasFilesTab(page));
-            assertTrue(hasNewRelationLink(page));
+            assertTrue(page.hasFilesTab());
+            assertTrue(page.hasNewRelationLink());
         } else {
-            assertTrue(hasNewButton(page, isSection));
+            assertTrue(page.hasNewButton(isSection));
         }
-        assertTrue(hasEditTab(page));
-        assertFalse(hasNewPermissionsButton(page));
-        assertFalse(hasManageTab(page));
+        assertTrue(page.hasEditTab());
+        assertFalse(page.hasNewPermissionsButton());
+        assertFalse(page.hasManageTab());
 
         // revoke edit to bree and housewives as manager
         login(TEST_USERNAME, TEST_PASSWORD);
@@ -340,14 +339,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertFalse(hasFilesTab(page));
-            assertFalse(hasNewRelationLink(page));
+            assertFalse(page.hasFilesTab());
+            assertFalse(page.hasNewRelationLink());
         } else {
-            assertFalse(hasNewButton(page, isSection));
+            assertFalse(page.hasNewButton(isSection));
         }
-        assertFalse(hasEditTab(page));
-        assertFalse(hasNewPermissionsButton(page));
-        assertFalse(hasManageTab(page));
+        assertFalse(page.hasEditTab());
+        assertFalse(page.hasNewPermissionsButton());
+        assertFalse(page.hasManageTab());
 
         // check result for susan
         login("susan", "susan1");
@@ -355,52 +354,14 @@ public class ITPermissionsTest extends AbstractTest {
 
         page = asPage(DocumentBasePage.class);
         if (isFile) {
-            assertFalse(hasFilesTab(page));
-            assertFalse(hasNewRelationLink(page));
+            assertFalse(page.hasFilesTab());
+            assertFalse(page.hasNewRelationLink());
         } else {
-            assertFalse(hasNewButton(page, isSection));
+            assertFalse(page.hasNewButton(isSection));
         }
-        assertFalse(hasEditTab(page));
-        assertFalse(hasNewPermissionsButton(page));
-        assertFalse(hasManageTab(page));
+        assertFalse(page.hasEditTab());
+        assertFalse(page.hasNewPermissionsButton());
+        assertFalse(page.hasManageTab());
     }
 
-    private boolean hasNewRelationLink(DocumentBasePage page) {
-        return page.getRelationTab().hasNewRelationLink();
-    }
-
-    private boolean hasFilesTab(DocumentBasePage page) {
-        try {
-            return page.getFilesTab() != null;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
-    }
-
-    private boolean hasNewButton(DocumentBasePage page, boolean isSection) {
-        if (isSection) {
-            return page.getContentTab(SectionContentTabSubPage.class).hasNewButton();
-        }
-        return page.getContentTab().hasNewButton();
-    }
-
-    private boolean hasEditTab(DocumentBasePage page) {
-        try {
-            return page.getEditTab() != null;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
-    }
-
-    private boolean hasNewPermissionsButton(DocumentBasePage page) {
-        return page.getPermissionsTab().hasNewPermissionButton();
-    }
-
-    private boolean hasManageTab(DocumentBasePage page) {
-        try {
-            return page.getManageTab() != null;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
-    }
 }
