@@ -87,6 +87,9 @@
              <div style="clear:both;"></div>
            </#if>
              <div class="tabscontent">
+             <#if !enableDocumentationView && !Root.isEmbeddedMode() >
+               <a href="${This.path}/doc">Add custom Documentation</a>
+             </#if>
              <@block name="right">
                Content
              </@block>

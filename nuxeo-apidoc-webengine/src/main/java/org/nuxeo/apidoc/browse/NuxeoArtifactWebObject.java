@@ -41,6 +41,7 @@ import org.nuxeo.apidoc.doc.SimpleDocumentationItem;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.model.Template;
@@ -68,7 +69,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     @Override
     public Template getView(String viewId) {
         return super.getView(viewId).arg(Distribution.DIST_ID, getDistributionId()).arg("enableDocumentationView",
-                Boolean.TRUE);
+                showDocumentation());
     }
 
     public abstract NuxeoArtifact getNxArtifact();
@@ -249,4 +250,9 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         return ds.getCategories();
     }
 
+    public boolean showDocumentation() {
+        CoreSession session = ctx.getCoreSession();
+        boolean hideDocView = Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.hide.documentation.view");
+        return !hideDocView || getNxArtifact().getAssociatedDocuments(session).getDocumentationItems(session).size() > 0;
+    }
 }

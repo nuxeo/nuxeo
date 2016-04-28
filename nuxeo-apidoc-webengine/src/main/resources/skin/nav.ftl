@@ -132,14 +132,13 @@
 </#macro>
 
 <@tree id="myTree" root="/"/>
-
-<#if !Root.isEmbeddedMode()>
 </div>
 
+<#if !Root.isEmbeddedMode()>
 <div class="nav-box">
 <h4>Browse documentation</h4>
 <ul><li <#if navPoint=="documentation"> class="selected"</#if> >
-<A href="${Root.path}/${distId}/doc"> FAQ and How to </A>
+<a href="${Root.path}/${distId}/doc"> FAQ and How to </a>
 </li></ul>
 </div>
 </#if>
