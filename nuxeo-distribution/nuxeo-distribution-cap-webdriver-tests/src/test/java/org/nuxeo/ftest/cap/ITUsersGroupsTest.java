@@ -15,8 +15,28 @@
  *
  * Contributors:
  *     Anahide Tchertchian
+ *     Yannis JULIENNE
  */
 package org.nuxeo.ftest.cap;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_NOTE_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_SECTION_TITLE;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
+import static org.nuxeo.functionaltests.Constants.SECTIONS_PATH;
+import static org.nuxeo.functionaltests.Constants.SECTIONS_TITLE;
+import static org.nuxeo.functionaltests.Constants.SECTION_TYPE;
+import static org.nuxeo.functionaltests.Constants.TEMPLATES_TITLE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_TITLE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,27 +49,19 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedExceptio
 import org.nuxeo.functionaltests.pages.HomePage;
 import org.nuxeo.functionaltests.pages.NoteDocumentBasePage;
 import org.nuxeo.functionaltests.pages.UsersGroupsHomePage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.GroupEditFormPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.GroupViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.GroupsTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserCreationFormPage;
+import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UserViewTabSubPage;
 import org.nuxeo.functionaltests.pages.admincenter.usermanagement.UsersTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.CommentsTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.HistoryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.SectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.workspace.WorkspaceHomePage;
 import org.nuxeo.functionaltests.pages.workspace.WorkspaceRepositoryPage;
 import org.openqa.selenium.By;
-
-import static org.nuxeo.ftest.cap.TestConstants.TEST_NOTE_TITLE;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
-import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
-
-import static org.nuxeo.functionaltests.Constants.NOTE_TYPE;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Users & Groups search & rights tests.
@@ -63,10 +75,11 @@ public class ITUsersGroupsTest extends AbstractTest {
         RestHelper.createUser("jdoe", "jdoe1", "John", "Doe", "Nuxeo", "dev@null", null);
         RestHelper.createUser("jsmith", "jsmith1", "Jim", "Smith", "Nuxeo", "dev@null", null);
         RestHelper.createUser("bree", "bree1", "Bree", "Van de Kaamp", "Nuxeo", "dev@null", null);
-        RestHelper.createUser("lbramard", "lbramard1", "Lucien", "Bramard", "Nuxeo", "dev@null", null);
+        RestHelper.createUser("gabrielle", "gabrielle1", "Gabrielle", "Solis", "Nuxeo", "dev@null", null);
         RestHelper.createGroup("Johns", "Johns group", new String[] { "jdoe", "jsmith", "bree" }, null);
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
         RestHelper.createDocument(TEST_WORKSPACE_PATH, NOTE_TYPE, TEST_NOTE_TITLE, "Test Note description");
+        RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, TEST_SECTION_TITLE, null);
     }
 
     @After
@@ -114,8 +127,8 @@ public class ITUsersGroupsTest extends AbstractTest {
             WorkspaceRepositoryPage repository = login("jdoe", "jdoe1").goToWorkspaces().goToRepository();
             Locator.waitUntilElementPresent(By.id("nxw_newDomain_form:nxw_newDomain"));
             WorkspaceHomePage domainPage = repository.getContentTab()
-                                                    .goToDocument("Domain")
-                                                    .asPage(WorkspaceHomePage.class);
+                                                     .goToDocument("Domain")
+                                                     .asPage(WorkspaceHomePage.class);
             DocumentBasePage workspacesPage = domainPage.goToDocumentWorkspaces();
             Locator.waitUntilElementPresent(By.id("nxw_TAB_WORKSPACE_EDIT_form:nxw_TAB_WORKSPACE_EDIT"));
             Locator.waitUntilElementPresent(By.id("nxw_newWorkspace_form:nxw_newWorkspace"));
@@ -148,6 +161,88 @@ public class ITUsersGroupsTest extends AbstractTest {
             RestHelper.deleteGroup("sub-admins");
         }
 
+    }
+
+    @Test
+    public void testCreateSubGroupMember() throws Exception {
+        try {
+            // check gabrielle has no rights
+            WorkspaceHomePage workspaceHomePage = getLoginPage().login("gabrielle", "gabrielle1", HomePage.class)
+                                                                .goToWorkspaces();
+            assertFalse(workspaceHomePage.hasElement(By.linkText(SECTIONS_TITLE)));
+            assertFalse(workspaceHomePage.hasElement(By.linkText(TEMPLATES_TITLE)));
+            assertFalse(workspaceHomePage.hasElement(By.linkText(WORKSPACES_TITLE)));
+
+            // create sub-members group
+            GroupsTabSubPage groupsTab = login().getAdminCenter().getUsersGroupsHomePage().getGroupsTab();
+            groupsTab = groupsTab.getGroupCreatePage()
+                                 .createGroup("sub-members", "SubMembers", new String[] { "gabrielle" }, null)
+                                 .getGroupsTab(true);
+
+            // check sub-members group search and view
+            assertTrue(groupsTab.searchGroup("sub-members").isGroupFound("sub-members"));
+            GroupViewTabSubPage groupViewTab = groupsTab.viewGroup("sub-members");
+            assertEquals("sub-members", groupViewTab.getGroupName());
+            assertEquals("SubMembers", groupViewTab.getGroupLabel());
+            List<String> groupMembers = groupViewTab.getGroupMembers();
+            assertEquals(1, groupMembers.size());
+            assertTrue(groupMembers.contains("gabrielle"));
+            assertEquals(0, groupViewTab.getSubGroupLabels().size());
+
+            // add sub-members as sub group of members
+            groupsTab = groupViewTab.backToTheList();
+            GroupEditFormPage editGroupTab = groupsTab.searchGroup("members").viewGroup("members").getEditGroupTab();
+            editGroupTab.setSubGroups("sub-members");
+            groupViewTab = editGroupTab.save();
+
+            // check members group view
+            assertEquals("members", groupViewTab.getGroupName());
+            assertFalse(groupViewTab.getGroupMembers().contains("gabrielle"));
+            List<String> subGroups = groupViewTab.getSubGroupLabels();
+            assertEquals(1, subGroups.size());
+            assertTrue(subGroups.contains("SubMembers"));
+
+            // check gabrielle user view
+            UsersTabSubPage usersTab = groupViewTab.getUsersTab();
+            UserViewTabSubPage userViewTab = usersTab.searchUser("gab").viewUser("gabrielle");
+            List<String> userGroups = userViewTab.getGroupLabels();
+            assertEquals(1, userGroups.size());
+            assertTrue(userGroups.contains("SubMembers"));
+
+            // check gabrielle has inherited members group rights
+            login("gabrielle", "gabrielle1");
+            workspaceHomePage = asPage(WorkspaceHomePage.class);
+            assertTrue(workspaceHomePage.hasElement(By.linkText(SECTIONS_TITLE)));
+            assertTrue(workspaceHomePage.hasElement(By.linkText(TEMPLATES_TITLE)));
+            assertTrue(workspaceHomePage.hasElement(By.linkText(WORKSPACES_TITLE)));
+            DocumentBasePage workspacesPage = workspaceHomePage.goToDocumentWorkspaces();
+            // on test workspace
+            DocumentBasePage testWorkspacePage = workspacesPage.getContentTab().goToDocument(TEST_WORKSPACE_TITLE);
+            assertFalse(testWorkspacePage.hasNewButton(false));
+            assertFalse(testWorkspacePage.hasEditTab());
+            assertFalse(testWorkspacePage.hasNewPermissionsButton());
+            assertFalse(testWorkspacePage.hasManageTab());
+            // on test note
+            DocumentBasePage testNotePage = testWorkspacePage.getContentTab().goToDocument(TEST_NOTE_TITLE);
+            assertFalse(testNotePage.hasFilesTab());
+            assertFalse(testNotePage.hasNewRelationLink());
+            assertFalse(testNotePage.hasEditTab());
+            assertFalse(testNotePage.hasNewPermissionsButton());
+            assertFalse(testNotePage.hasManageTab());
+            // on test section
+            driver.findElementByLinkText(SECTIONS_TITLE).click();
+            SectionContentTabSubPage sectionsPage = asPage(SectionContentTabSubPage.class);
+            DocumentBasePage testSectionPage = sectionsPage.goToDocument(TEST_SECTION_TITLE);
+            assertFalse(testSectionPage.hasNewButton(true));
+            assertFalse(testSectionPage.hasEditTab());
+            assertFalse(testSectionPage.hasNewPermissionsButton());
+            assertFalse(testSectionPage.hasManageTab());
+
+            logout();
+
+        } finally {
+            RestHelper.deleteGroup("sub-members");
+        }
     }
 
 }

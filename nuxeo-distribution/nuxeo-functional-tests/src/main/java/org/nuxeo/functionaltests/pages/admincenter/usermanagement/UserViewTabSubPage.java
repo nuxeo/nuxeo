@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,14 @@
  * Contributors:
  *     Benoit Delbosc
  *     Antoine Taillefer
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
 import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.Alert;
@@ -50,6 +54,9 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
 
     @FindBy(xpath = "//div[@id='nxw_userCenterSubTabs_tab_content']//h1")
     WebElement currentUserName;
+
+    @FindBy(id = "viewUserView:viewUser:nxl_gridUserLayout:nxw_userPanelLeft_panel")
+    WebElement viewUserPanel;
 
     public UserViewTabSubPage(WebDriver driver) {
         super(driver);
@@ -90,5 +97,17 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
      */
     public WebElement getCurrentUserName() {
         return currentUserName;
+    }
+
+    /**
+     * @since 8.3
+     */
+    public List<String> getGroupLabels() {
+        List<WebElement> goupElements = viewUserPanel.findElements(By.className("group"));
+        List<String> groups = new ArrayList<>();
+        for (WebElement groupElement : goupElements) {
+            groups.add(groupElement.getText());
+        }
+        return groups;
     }
 }

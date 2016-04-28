@@ -59,6 +59,7 @@ import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.PermissionsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.PublishTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.RelationTabSubPage;
+import org.nuxeo.functionaltests.pages.tabs.SectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SectionsContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.TopicTabSubPage;
@@ -405,8 +406,9 @@ public class DocumentBasePage extends AbstractPage {
      */
     public AddAllToCollectionForm getAddAllToCollectionPopup() {
         Locator.waitUntilGivenFunctionIgnoring(
-                driver -> StringUtils.isBlank(driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute(
-                        "disabled")), StaleElementReferenceException.class);
+                driver -> StringUtils.isBlank(
+                        driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).getAttribute("disabled")),
+                StaleElementReferenceException.class);
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.begin();
         driver.findElement(By.id(ADD_ALL_TO_COLLECTION_ACTION_ID)).click();
@@ -432,7 +434,8 @@ public class DocumentBasePage extends AbstractPage {
         Locator.waitUntilGivenFunctionIgnoring(
                 driver -> !userMenuActions.findElement(By.xpath("//ul[@class='actionSubList']"))
                                           .getAttribute("style")
-                                          .equals("display: none;"), StaleElementReferenceException.class);
+                                          .equals("display: none;"),
+                StaleElementReferenceException.class);
     }
 
     /**
@@ -518,7 +521,8 @@ public class DocumentBasePage extends AbstractPage {
      */
     public DocumentBasePage createSection(String sectionTitle, String sectionDescription) {
         getNavigationSubPage().goToDocument(Constants.SECTIONS_TITLE);
-        DublinCoreCreationDocumentFormPage sectionCreationPage = asPage(SectionsContentTabSubPage.class).getSectionCreatePage();
+        DublinCoreCreationDocumentFormPage sectionCreationPage = asPage(
+                SectionsContentTabSubPage.class).getSectionCreatePage();
         return sectionCreationPage.createDocument(sectionTitle, sectionDescription);
     }
 
@@ -583,7 +587,8 @@ public class DocumentBasePage extends AbstractPage {
         DublinCoreCreationDocumentFormPage dublinCoreDocumentFormPage = getContentTab().getDocumentCreatePage(
                 "Collections", DublinCoreCreationDocumentFormPage.class);
         // Create File
-        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle, fileDescription);
+        DocumentBasePage documentBasePage = dublinCoreDocumentFormPage.createDocument(collectionsTitle,
+                fileDescription);
         return documentBasePage;
     }
 
@@ -641,6 +646,63 @@ public class DocumentBasePage extends AbstractPage {
         // Create a Forum
         ForumTabSubPage forumPage = forumCreationFormPage.createForumDocument(forumTitle, forumDescription);
         return forumPage;
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasNewRelationLink() {
+        return getRelationTab().hasNewRelationLink();
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasFilesTab() {
+        try {
+            return getFilesTab() != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasNewButton(boolean isSection) {
+        if (isSection) {
+            return getContentTab(SectionContentTabSubPage.class).hasNewButton();
+        }
+        return getContentTab().hasNewButton();
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasEditTab() {
+        try {
+            return getEditTab() != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasNewPermissionsButton() {
+        return getPermissionsTab().hasNewPermissionButton();
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasManageTab() {
+        try {
+            return getManageTab() != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
 }
