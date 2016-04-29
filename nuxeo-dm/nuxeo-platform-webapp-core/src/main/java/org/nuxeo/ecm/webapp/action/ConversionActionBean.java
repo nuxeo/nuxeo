@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ public class ConversionActionBean implements ConversionAction {
 
     protected String pdfConverterName;
 
-    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<Boolean>(20);
+    protected static final ThreadSafeCacheHolder<Boolean> exportableToPDFCache = new ThreadSafeCacheHolder<>(20);
 
     public String display() {
         return "view_file";
@@ -117,11 +117,7 @@ public class ConversionActionBean implements ConversionAction {
             return false;
         }
         Blob blob = bh.getBlob();
-        if (blob == null) {
-            return false;
-        } else {
-            return isExportableToPDF(blob);
-        }
+        return blob != null && isExportableToPDF(blob);
     }
 
     @Override
@@ -133,8 +129,8 @@ public class ConversionActionBean implements ConversionAction {
         if (getPDFConversionURL(blob) != null) {
             return true;
         }
-        String mimetype = blob.getMimeType();
-        return isMimeTypeExportableToPDF(mimetype);
+        String mimeType = blob.getMimeType();
+        return isMimeTypeExportableToPDF(mimeType);
     }
 
     protected String getPDFConversionURL(Blob blob) {
@@ -150,27 +146,27 @@ public class ConversionActionBean implements ConversionAction {
         return null;
     }
 
-    protected boolean isMimeTypeExportableToPDF(String mimetype) {
+    protected boolean isMimeTypeExportableToPDF(String mimeType) {
         // Don't bother searching for NO MIME type.
-        if (mimetype == null) {
+        if (mimeType == null) {
             return false;
         }
 
         // Initialize the converter check result map.
         if (pdfConverterForTypes == null) {
-            pdfConverterForTypes = new HashMap<String, ConverterCheckResult>();
+            pdfConverterForTypes = new HashMap<>();
         }
 
         // Check if there is any saved ConverterCheckResult for the desired
         // MIME type.
-        if (pdfConverterForTypes.containsValue(mimetype)) {
-            return pdfConverterForTypes.get(mimetype).isAvailable();
+        if (pdfConverterForTypes.containsValue(mimeType)) {
+            return pdfConverterForTypes.get(mimeType).isAvailable();
         }
 
         try {
             ConverterCheckResult pdfConverterAvailability;
             ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-            Iterator<String> converterNames = conversionService.getConverterNames(mimetype, PDF_MIMETYPE).iterator();
+            Iterator<String> converterNames = conversionService.getConverterNames(mimeType, PDF_MIMETYPE).iterator();
             while (converterNames.hasNext()) {
                 pdfConverterName = converterNames.next();
                 pdfConverterAvailability = conversionService.isConverterAvailable(pdfConverterName, true);
