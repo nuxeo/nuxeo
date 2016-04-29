@@ -69,6 +69,7 @@ Needed parameters:
                     </p>
                   </c:if>
                   <c:if test="#{demoLayout.useAjaxForm}">
+                    <input type="hidden" name="display" value="#{request.getParameter('display')}" />
                     <p class="buttonsGadget">
                       <h:commandButton
                         value="#{messages['label.layoutDemo.widgetDemo.submit']}"
