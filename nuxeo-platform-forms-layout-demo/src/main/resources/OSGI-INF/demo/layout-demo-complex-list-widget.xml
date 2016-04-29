@@ -26,7 +26,7 @@
           <property name="required">true</property>
         </properties>
         <properties widgetMode="any">
-          <property name="display">table</property>
+          <property name="display">#{request.getParameter('display')}</property>
         </properties>
         <subWidgets>
           <widget name="stringComplexItem" type="text">

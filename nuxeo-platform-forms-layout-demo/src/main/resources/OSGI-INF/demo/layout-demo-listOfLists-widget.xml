@@ -27,7 +27,7 @@
           <property name="orderable">true</property>
         </properties>
         <properties widgetMode="any">
-          <property name="display">block_left</property>
+          <property name="display">#{request.getParameter('display')}</property>
         </properties>
         <!-- subwidgets for complex -->
         <subWidgets>
