@@ -57,6 +57,8 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
     private static final String USER_JDOE = "jdoe_workflow";
 
+    private static final String USER_NO_RIGHT = "no_right_workflow";
+
     @Override
     protected DocumentBasePage initRepository(DocumentBasePage currentPage) throws Exception {
         // Create test Workspace
@@ -69,16 +71,23 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
     protected void createTestUser(String username, String pswd) throws Exception {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
-        createTestUser(usersTab, username, pswd);
+        createTestUser(usersTab, username, pswd, "members");
         logout();
     }
 
     protected UsersTabSubPage createTestUser(UsersTabSubPage usersTab, String username, String pswd) throws Exception {
+        return createTestUser(usersTab, username, pswd, "members");
+    }
+
+    /**
+     * @since 8.3
+     */
+    protected UsersTabSubPage createTestUser(UsersTabSubPage usersTab, String username, String pswd, String group) throws Exception {
         UsersGroupsBasePage page;
         usersTab = usersTab.searchUser(username);
         if (!usersTab.isUserFound(username)) {
             page = usersTab.getUserCreatePage().createUser(username, username, "lastname1", "company1", "email1", pswd,
-                    "members");
+                    group);
             usersTab = page.getUsersTab(true);
             // make sure user has been created
             usersTab = usersTab.searchUser(username);
@@ -103,18 +112,18 @@ public class ITDefaultWorkflowTest extends AbstractTest {
 
     @Test
     public void testDefaultSerialWorkflow() throws Exception {
-        createTestUser(USER_JDOE, USER_JDOE);
+        UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
+        usersTab = createTestUser(usersTab, USER_NO_RIGHT, USER_NO_RIGHT, null);
         // create a file doc
         DocumentBasePage defaultDomainPage = login();
         DocumentBasePage filePage = initRepository(defaultDomainPage);
         // start the default serial workflow and choose jdoe_workflow as
         // reviewer
-        filePage = startDefaultSerialWorkflow(filePage, USER_JDOE);
+        filePage = startDefaultSerialWorkflow(filePage, USER_NO_RIGHT);
 
         logout();
-        filePage = login(USER_JDOE, USER_JDOE);
 
-        UserHomePage homePage = filePage.getUserHome();
+        UserHomePage homePage = getLoginPage().login(USER_NO_RIGHT, USER_NO_RIGHT, UserHomePage.class);
         // check that jdoe_workflow has an open task on his tasks dashboard
         WorkflowHomePage workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.taskExistsOnTasksDashboard("Validate the Document"));
@@ -133,12 +142,10 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         // the value is stored in a global workflow variable
         String participantsOnTheReview = taskLayoutDiv.findElement(By.className("user")).getText();
 
-        assertEquals("jdoe_workflow lastname1", participantsOnTheReview);
-        workflowTab.endTask("Validate");
+        assertEquals(USER_NO_RIGHT + " lastname1", participantsOnTheReview);
+        homePage = workflowTab.endTask("Validate", UserHomePage.class);
 
-        summaryTabPage = workflowTab.getSummaryTab();
-        homePage = filePage.getUserHome();
-        // check that jdoe_workflow doesn't have the task on his workflow tasks
+        // check that USER_NO_RIGHT doesn't have the task on his workflow tasks
         // dashboard
         workflowHomePage = homePage.getWorkflowHomePage();
         assertTrue(workflowHomePage.isTasksDashboardEmpty());
@@ -148,7 +155,7 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         login();
         cleanRepository(filePage);
         logout();
-        deleteTestUser(USER_JDOE);
+        deleteTestUser(USER_NO_RIGHT);
     }
 
     @Test

@@ -102,6 +102,14 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     /**
+     * @since 8.3
+     */
+    public <T> T endTask(String taskName, Class<T> pageClassToProxy) {
+        endTask(taskName);
+        return asPage(pageClassToProxy);
+    }
+
+    /**
      * @since 5.8
      */
     public WebElement getTaskLayoutNode() {
