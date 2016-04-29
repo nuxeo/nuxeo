@@ -116,7 +116,7 @@ public class JSListWidgetElement extends AbstractWidgetElement {
         if (display == Display.TABLE || display == Display.INLINE) {
             return driver.findElement(By.cssSelector(getRowCssSelector(i) + " > .listWidgetActions"));
         }
-        return getSubElement(getListSubElementSuffix(getWidgetId() + "_actions", i));
+        return driver.findElement(By.cssSelector(getRowCssSelector(i) + " .listWidgetActionsTable"));
     }
 
     public String getSubWidgetMessageValue(String id, int idx) {
