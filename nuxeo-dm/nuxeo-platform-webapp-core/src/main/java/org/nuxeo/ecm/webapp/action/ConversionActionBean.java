@@ -161,7 +161,7 @@ public class ConversionActionBean implements ConversionAction {
 
         // Check if there is any saved ConverterCheckResult for the desired
         // MIME type.
-        if (pdfConverterForTypes.containsValue(mimetype)) {
+        if (pdfConverterForTypes.containsKey(mimetype)) {
             return pdfConverterForTypes.get(mimetype).isAvailable();
         }
 
