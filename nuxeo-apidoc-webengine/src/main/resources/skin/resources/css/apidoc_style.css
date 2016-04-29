@@ -129,7 +129,7 @@ textarea {
   color: #aaa }
 
 iframe {
-height:280px }
+  height:280px }
 
 h1 {
   font-size: 1.4em;
@@ -663,59 +663,37 @@ p.export a:hover {
 
 /* Footer */
 footer {
-  background-color: #3670b9;
-  box-shadow: 0 6px 5px rgba(0, 0, 0, 0.2) inset;
-  clear: both;
-  color: #f1f2f3;
+  background: #404040;
+  font-size: 85%;
+  font-size: 14px;
   font: 12px 'Lucida Grande',Lucida,Arial,Helvetica,Sans-serif;
-  margin: 0;
-  padding: 10px 0;
-  text-align: center }
+  line-height: 24px;
+  color: #fffimportant;
+  padding: 40px 0 }
 
-footer nav {
-  margin: 0 auto 10px;
-  max-width: 1000px }
-
-footer nav ul {
+footer .col {
+  width: 17.79005525%;
+  border-left-width: 0;
+  padding: 0;
+  border: 0 solid rgba(0,0,0,0);
   float: left;
-  list-style: none outside none;
+  box-sizing: border-box;
+  background-clip: padding-box!important;
+}
+
+#menu-footer li a {
+  color: #fff;
+}
+
+footer ul {
+  padding: 0;
+  list-style: none;
   margin: 0;
-  padding: 5px 20px;
-  text-align: left }
+}
 
-footer nav li {
-  line-height: 150%;
-  list-style: none outside none;
-  margin: 0 0 0 25px;
-  padding: 0 0 2px;
-  text-align: left }
-
-footer h6 {
-  color: #f1f2f3;
-  font-size: 12px;
-  margin: 0;
-  padding: 16px 0 8px;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5) }
-
-footer ul ul {
-  list-style: none outside none;
-  margin: 5px 0;
-  padding: 0 }
-
-footer ul li ul li {
-  list-style-type: disc;
-  text-transform: none }
-
-footer a:link,
-footer a:visited,
-footer a:active,
-footer a.PagerLink {
-  color: #f1f2f3;
-  font-size: 11px;
-  text-decoration: none }
-
-footer a:hover {
-  color: #fff }
+#menu-footer li.col > a {
+  display: none;
+}
 
 /* Helpers */
 .clearfix {
@@ -723,4 +701,3 @@ footer a:hover {
 
 .highlight {
   background-color: yellow }
-
