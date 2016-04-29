@@ -36,4 +36,24 @@
     </antcall>
   </target>
 
+  <target name="add-custom-template" if="osfamily-unix">
+    <echo level="info">Add custom template to nuxeo.conf</echo>
+    <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl" />
+    <exec executable="sh" failonerror="true">
+      <arg value="-c" />
+      <arg value="${nuxeo.home}/bin/nuxeoctl config nuxeo.templates  &quot;$(${nuxeo.home}/bin/nuxeoctl config --get nuxeo.templates -q),custom&quot;" />
+    </exec>
+  </target>
+
+  <target name="copy-drive-bundles">
+    <echo level="info">Copy nuxeo-drive-server bundles to custom template</echo>
+    <copy todir="${nuxeo.home}/templates/custom/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" artifactId="nuxeo-drive*" type="!pom" />
+        </includes>
+      </artifact:set>
+    </copy>
+  </target>
+
 </project>

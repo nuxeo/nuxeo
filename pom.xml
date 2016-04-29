@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -19,14 +20,11 @@
     <module>nuxeo-drive-core</module>
     <module>nuxeo-drive-operations</module>
     <module>nuxeo-drive-elasticsearch</module>
-    <!-- scala module that create no artifact making mvn install fail
-    <module>nuxeo-drive-bench</module>
-    -->
   </modules>
 
-  <!-- Used for multi-database tests -->
   <profiles>
     <profile>
+      <!-- Used for multi-database tests -->
       <id>customdb</id>
       <build>
         <plugins>
@@ -67,6 +65,23 @@
                 </configuration>
               </execution>
             </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>bench</id>
+      <modules>
+        <module>nuxeo-drive-bench</module>
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <!-- Allows to skip surefire tests without skipping failsafe tests -->
+              <skipTests>${skip.surefire.tests}</skipTests>
+            </configuration>
           </plugin>
         </plugins>
       </build>
