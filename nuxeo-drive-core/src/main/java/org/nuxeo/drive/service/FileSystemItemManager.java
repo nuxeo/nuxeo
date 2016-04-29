@@ -24,6 +24,7 @@ import java.util.List;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.impl.FileSystemItemManagerImpl;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -102,14 +103,19 @@ public interface FileSystemItemManager {
     List<FileSystemItem> getChildren(String id, Principal principal);
 
     /**
-     * Gets at most {@code max} descendants of the {@link FolderItem} with the given {@code id} for the given
-     * {@code principal}, starting with the {@link FileSystemItem} with the given {@code lowerId} (not included) in a
-     * list of descendants ordered by id.
+     * Retrieves at most {@code batchSize} descendants of the {@link FolderItem} with the given {@code id} for the given
+     * {@code principal} and the given {@code scrollId}.
+     * <p>
+     * When passing a null {@code scrollId} the initial search request is executed and the first batch of results is
+     * returned along with a {@code scrollId} which should be passed to the next call in order to retrieve the next
+     * batch of results.
+     * <p>
+     * Results are not necessarily sorted.
      *
-     * @see FolderItem#getDescendants(int, String)
+     * @see FolderItem#scrollDescendants(int, String)
      * @since 8.3
      */
-    List<FileSystemItem> getDescendants(String id, Principal principal, int max, String lowerId);
+    ScrollFileSystemItemList scrollDescendants(String id, Principal principal, String scrollId, int batchSize);
 
     /**
      * Return true if the {@link FileSystemItem} with the given source id can be moved to the {@link FileSystemItem}

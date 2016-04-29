@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
@@ -69,7 +70,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
         canDelete = false;
         isUserWorkspaceSyncRoot = isUserWorkspaceSyncRoot(doc);
         canCreateChild = isUserWorkspaceSyncRoot;
-        canGetDescendants = isUserWorkspaceSyncRoot;
+        canScrollDescendants = isUserWorkspaceSyncRoot;
     }
 
     protected UserSyncRootParentFolderItem() {
@@ -148,12 +149,12 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
     }
 
     @Override
-    public List<FileSystemItem> getDescendants(int max, String lowerId) {
-        if (getCanGetDescendants()) {
-            return super.getDescendants(max, lowerId);
+    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize) {
+        if (getCanScrollDescendants()) {
+            return super.scrollDescendants(scrollId, batchSize);
         } else {
             throw new UnsupportedOperationException(
-                    "Cannot get descendants of the user sync root parent folder item, please call getChildren() instead.");
+                    "Cannot scroll through the descendants of the user sync root parent folder item, please call getChildren() instead.");
         }
     }
 

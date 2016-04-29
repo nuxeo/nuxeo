@@ -357,20 +357,20 @@ object Actions {
       .check(status.in(200))
   }
 
-  def getDescendants = (id: String, max: String, lowerId: String) => {
+  def scrollDescendants = (id: String, scrollId: String, batchSize: String) => {
     val params = new StringBuilder
     params ++= """{"id": """"
     params ++= id
-    params ++= """", "max": """
-    params ++= max
-    if (!lowerId.isEmpty) {
-      params ++= """, "lowerId": """"
-      params ++= lowerId.get
+    params ++= """", "batchSize": """
+    params ++= batchSize
+    if (!scrollId.isEmpty) {
+      params ++= """, "scrollId": """"
+      params ++= scrollId.get
       params += '"'
     }
     params += '}'
-    http("Get descendants")
-      .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.GetDescendants")
+    http("Scroll descendants")
+      .post(Constants.AUTOMATION_PATH + "/NuxeoDrive.ScrollDescendants")
       .headers(Headers.nxProperties)
       .headers(Headers.drive)
       .header("X-Device-Id", "${deviceId}")

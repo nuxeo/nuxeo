@@ -42,6 +42,7 @@ import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
+import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.adapter.impl.FileSystemItemHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
@@ -86,7 +87,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.core.io",
         "org.nuxeo.ecm.platform.collections.core", "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
         "org.nuxeo.runtime.reload", "org.nuxeo.ecm.core.cache",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestDefaultFileSystemItemFactory {
 
@@ -305,9 +307,10 @@ public class TestDefaultFileSystemItemFactory {
         List<FileSystemItem> children = folderItem.getChildren();
         assertNotNull(children);
         assertEquals(0, children.size());
-        assertTrue(folderItem.getCanGetDescendants());
-        List<FileSystemItem> descendants = folderItem.getDescendants(10, null);
+        assertTrue(folderItem.getCanScrollDescendants());
+        ScrollFileSystemItemList descendants = folderItem.scrollDescendants(null, 10);
         assertNotNull(descendants);
+        assertNotNull(descendants.getScrollId());
         assertEquals(0, descendants.size());
 
         // FolderishFile => adaptable as a FolderItem since the default
@@ -521,8 +524,8 @@ public class TestDefaultFileSystemItemFactory {
         assertTrue(fsItem.isFolder());
         FolderItem folderItem = (FolderItem) fsItem;
         assertTrue(folderItem.getChildren().isEmpty());
-        assertTrue(folderItem.getCanGetDescendants());
-        assertTrue(folderItem.getDescendants(10, null).isEmpty());
+        assertTrue(folderItem.getCanScrollDescendants());
+        assertTrue(folderItem.scrollDescendants(null, 10).isEmpty());
         // Not adaptable as a FileSystemItem
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
                 + notAFileSystemItem.getId(), principal);
@@ -797,9 +800,9 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals("Note child.txt", childBlob.getFilename());
         assertEquals("This is the Note child.", childBlob.getString());
 
-        // ------------------------------------------------------------------------------------------
-        // FolderItem#getChildren, FolderItem#getCanGetDescendants and FolderItem#getDescendants
-        // ------------------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------------------
+        // FolderItem#getChildren, FolderItem#getCanScrollDescendants and FolderItem#scrollDescendants
+        // --------------------------------------------------------------------------------------------
         // Create another child adaptable as a FileSystemItem => should be
         // retrieved
         DocumentModel adaptableChild = session.createDocumentModel("/syncRoot/aFolder", "adaptableChild", "File");
@@ -822,23 +825,23 @@ public class TestDefaultFileSystemItemFactory {
         checkChildren(folderChildren, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
                 adaptableChild.getId(), ordered);
 
-        // Check getDescendants
-        assertTrue(folderItem.getCanGetDescendants());
-        // Get all descendants in one breath
-        List<FileSystemItem> folderDescendants = folderItem.getDescendants(10, null);
+        // Check scrollDescendants
+        assertTrue(folderItem.getCanScrollDescendants());
+        // Scroll through all descendants in one breath
+        ScrollFileSystemItemList folderDescendants = folderItem.scrollDescendants(null, 10);
+        assertNotNull(folderDescendants.getScrollId());
         assertEquals(4, folderDescendants.size());
         // Order is not determined
         checkChildren(folderDescendants, folder.getId(), note.getId(), file.getId(), subFolder.getId(),
                 adaptableChild.getId(), false);
-        // Get all descendants in several steps
+        // Scroll through descendants in several steps
         folderDescendants.clear();
-        List<FileSystemItem> descendantsBatch;
-        int max = 2;
-        String lowerId = null;
-        while (!(descendantsBatch = folderItem.getDescendants(max, lowerId)).isEmpty()) {
-            int descendantsBatchSize = descendantsBatch.size();
-            assertTrue(descendantsBatchSize > 0);
-            lowerId = descendantsBatch.get(descendantsBatchSize - 1).getId();
+        ScrollFileSystemItemList descendantsBatch;
+        int batchSize = 2;
+        String scrollId = null;
+        while (!(descendantsBatch = folderItem.scrollDescendants(scrollId, batchSize)).isEmpty()) {
+            assertTrue(descendantsBatch.size() > 0);
+            scrollId = descendantsBatch.getScrollId();
             folderDescendants.addAll(descendantsBatch);
         }
         assertEquals(4, folderDescendants.size());
@@ -848,8 +851,8 @@ public class TestDefaultFileSystemItemFactory {
 
         // Check batch size limit
         try {
-            folderItem.getDescendants(10000, null);
-            fail("Should not be able to get more descendants than the maximum batch size allowed.");
+            folderItem.scrollDescendants(null, 10000);
+            fail("Should not be able to scroll through more descendants than the maximum batch size allowed.");
         } catch (NuxeoException e) {
             log.trace(e);
         }
@@ -907,7 +910,7 @@ public class TestDefaultFileSystemItemFactory {
             assertNotNull(lockInfo.getCreated());
 
             // Check that the lock info is not fetched for FileSystemItem adaptation when calling getChildren or
-            // getDescendants
+            // scrollDescendants
             FileSystemItemFactory defaultSyncRootFolderItemFactory = ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultSyncRootFolderItemFactory");
             FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
             List<FileSystemItem> children = syncRootFolderItem.getChildren();
@@ -915,7 +918,7 @@ public class TestDefaultFileSystemItemFactory {
             for (FileSystemItem child : children) {
                 assertNull(child.getLockInfo());
             }
-            children = syncRootFolderItem.getDescendants(10, null);
+            children = syncRootFolderItem.scrollDescendants(null, 10);
             assertEquals(5, children.size());
             for (FileSystemItem child : children) {
                 assertNull(child.getLockInfo());
@@ -1111,9 +1114,10 @@ public class TestDefaultFileSystemItemFactory {
                     List<FileSystemItem> childFolderChildren = folderItem.getChildren();
                     assertNotNull(childFolderChildren);
                     assertEquals(0, childFolderChildren.size());
-                    assertTrue(folderItem.getCanGetDescendants());
-                    List<FileSystemItem> childFolderDescendants = folderItem.getDescendants(10, null);
+                    assertTrue(folderItem.getCanScrollDescendants());
+                    ScrollFileSystemItemList childFolderDescendants = folderItem.scrollDescendants(null, 10);
                     assertNotNull(childFolderDescendants);
+                    assertNotNull(childFolderDescendants.getScrollId());
                     assertEquals(0, childFolderDescendants.size());
                     isSubFolderFound = true;
                     childrenCount++;

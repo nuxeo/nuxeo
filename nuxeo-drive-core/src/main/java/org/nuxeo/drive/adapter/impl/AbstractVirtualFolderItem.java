@@ -25,6 +25,7 @@ import java.util.List;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.ecm.core.api.Blob;
 
@@ -39,7 +40,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
 
     protected boolean canCreateChild;
 
-    protected boolean canGetDescendants;
+    protected boolean canScrollDescendants;
 
     public AbstractVirtualFolderItem(String factoryName, Principal principal, String parentId, String parentPath,
             String folderName) {
@@ -56,7 +57,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
         canRename = false;
         canDelete = false;
         canCreateChild = false;
-        canGetDescendants = false;
+        canScrollDescendants = false;
         path = "/" + getId();
         if (parentPath != null) {
             path = parentPath + path;
@@ -94,14 +95,14 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
 
     /*--------------------- FolderItem -----------------*/
     @Override
-    public boolean getCanGetDescendants() {
-        return canGetDescendants;
+    public boolean getCanScrollDescendants() {
+        return canScrollDescendants;
     }
 
     @Override
-    public List<FileSystemItem> getDescendants(int max, String lowerId) {
+    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize) {
         throw new UnsupportedOperationException(
-                "Cannot get descendants of a virtual folder item, please call getChildren() instead.");
+                "Cannot scroll through the descendants of a virtual folder item, please call getChildren() instead.");
     }
 
     @Override
@@ -124,8 +125,8 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
         this.canCreateChild = canCreateChild;
     }
 
-    protected void setCanGetDescendants(boolean canGetDescendants) {
-        this.canGetDescendants = canGetDescendants;
+    protected void setCanScrollDescendants(boolean canScrollDescendants) {
+        this.canScrollDescendants = canScrollDescendants;
     }
 
 }

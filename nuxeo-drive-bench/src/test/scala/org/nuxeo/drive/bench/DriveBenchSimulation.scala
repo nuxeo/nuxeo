@@ -55,7 +55,7 @@ class Sim45BenchBatchedRemoteScan extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .acceptEncodingHeader("identity")
     .connection("keep-alive")
-    .disableCaching // disabling Etag cache since If-None-Modified on GetChildren and GetDescendants fails
+    .disableCaching // disabling Etag cache since If-None-Modified on GetChildren and ScrollDescendants fails
 
   val remoteScan = BatchedRemoteScan.run(Parameters.getDescendantsBatchSize(100))
 

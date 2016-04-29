@@ -56,9 +56,9 @@ import org.nuxeo.drive.hierarchy.permission.adapter.PermissionTopLevelFolderItem
 import org.nuxeo.drive.hierarchy.permission.adapter.SharedSyncRootParentFolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.UserSyncRootParentFolderItem;
 import org.nuxeo.drive.operations.NuxeoDriveGetChildren;
-import org.nuxeo.drive.operations.NuxeoDriveGetDescendants;
 import org.nuxeo.drive.operations.NuxeoDriveGetFileSystemItem;
 import org.nuxeo.drive.operations.NuxeoDriveGetTopLevelFolder;
+import org.nuxeo.drive.operations.NuxeoDriveScrollDescendants;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
@@ -97,7 +97,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.types.core", "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
         "org.nuxeo.ecm.core.cache", "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-permission-contrib.xml",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
 @Jetty(port = 18080)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @TransactionalConfig(autoStart = true)
@@ -330,15 +331,15 @@ public class TestPermissionHierarchy {
         // Check top level folder children
         // ---------------------------------------------
         // Check descendants
-        assertFalse(topLevelFolder.getCanGetDescendants());
+        assertFalse(topLevelFolder.getCanScrollDescendants());
         try {
-            clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+            clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
                           .set("id", topLevelFolder.getId())
-                          .set("max", 10)
+                          .set("batchSize", 10)
                           .execute();
-            fail("Getting descendants of the permission top level folder item should be unsupported.");
+            fail("Scrolling through the descendants of the permission top level folder item should be unsupported.");
         } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+            assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", e.getMessage());
         }
 
         // Get children
@@ -383,7 +384,7 @@ public class TestPermissionHierarchy {
         // Check user synchronization roots
         // --------------------------------------------
         // Check descendants
-        assertTrue(userSyncRootParent.getCanGetDescendants());
+        assertTrue(userSyncRootParent.getCanScrollDescendants());
         assertTrue(CollectionUtils.isEqualCollection(
                 Arrays.asList(user1File2, user1Folder1, user1File1, user1Folder2, user1Folder3, user1File3,
                         user1Folder4)
@@ -391,9 +392,9 @@ public class TestPermissionHierarchy {
                       .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
                       .collect(Collectors.toList()),
                 mapper.readValue(
-                        ((Blob) clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+                        ((Blob) clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
                                               .set("id", userSyncRootParent.getId())
-                                              .set("max", 10)
+                                              .set("batchSize", 10)
                                               .execute()).getStream(), JsonNode.class).findValuesAsText("id")));
 
         // Get children
@@ -467,15 +468,15 @@ public class TestPermissionHierarchy {
         // Check shared synchronization roots
         // ---------------------------------------------
         // Check descendants
-        assertFalse(topLevelFolder.getCanGetDescendants());
+        assertFalse(topLevelFolder.getCanScrollDescendants());
         try {
-            clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+            clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
                           .set("id", sharedSyncRootParent.getId())
-                          .set("max", 10)
+                          .set("batchSize", 10)
                           .execute();
-            fail("Getting descendants of the shared sync root parent folder item should be unsupported.");
+            fail("Scrolling through the descendants of the shared sync root parent folder item should be unsupported.");
         } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+            assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", e.getMessage());
         }
 
         // Get children
@@ -583,15 +584,15 @@ public class TestPermissionHierarchy {
         // Check user synchronization roots
         // --------------------------------------------
         // Check descendants
-        assertFalse(topLevelFolder.getCanGetDescendants());
+        assertFalse(topLevelFolder.getCanScrollDescendants());
         try {
-            clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+            clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
                           .set("id", userSyncRootParent.getId())
-                          .set("max", 10)
+                          .set("batchSize", 10)
                           .execute();
-            fail("Getting descendants of the user sync root parent folder item not registered as a sync root should be unsupported.");
+            fail("Scrolling through the descendants of the user sync root parent folder item not registered as a sync root should be unsupported.");
         } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+            assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", e.getMessage());
         }
 
         // Get children

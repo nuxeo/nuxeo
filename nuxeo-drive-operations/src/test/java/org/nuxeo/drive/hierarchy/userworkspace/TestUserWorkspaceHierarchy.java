@@ -52,8 +52,8 @@ import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceSyncRootParentFolderItem;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceTopLevelFolderItem;
 import org.nuxeo.drive.operations.NuxeoDriveGetChildren;
-import org.nuxeo.drive.operations.NuxeoDriveGetDescendants;
 import org.nuxeo.drive.operations.NuxeoDriveGetTopLevelFolder;
+import org.nuxeo.drive.operations.NuxeoDriveScrollDescendants;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
@@ -90,7 +90,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.filemanager.core",
         "org.nuxeo.ecm.platform.types.core", "org.nuxeo.drive.core", "org.nuxeo.drive.operations",
         "org.nuxeo.ecm.core.cache", "org.nuxeo.drive.core:OSGI-INF/nuxeodrive-hierarchy-userworkspace-contrib.xml",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18080)
 public class TestUserWorkspaceHierarchy {
@@ -287,15 +288,15 @@ public class TestUserWorkspaceHierarchy {
         assertTrue(topLevelFolder.getCanCreateChild());
 
         // Check descendants
-        assertFalse(topLevelFolder.getCanGetDescendants());
+        assertFalse(topLevelFolder.getCanScrollDescendants());
         try {
-            clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+            clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
                           .set("id", topLevelFolder.getId())
-                          .set("max", 10)
+                          .set("batchSize", 10)
                           .execute();
-            fail("Getting descendants of the user workspace top level folder item should be unsupported.");
+            fail("Scrolling through the descendants of the user workspace top level folder item should be unsupported.");
         } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+            assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", e.getMessage());
         }
 
         // Get children
@@ -327,15 +328,15 @@ public class TestUserWorkspaceHierarchy {
         assertFalse(syncRootParent.getCanCreateChild());
 
         // Check descendants
-        assertFalse(syncRootParent.getCanGetDescendants());
+        assertFalse(syncRootParent.getCanScrollDescendants());
         try {
-            clientSession1.newRequest(NuxeoDriveGetDescendants.ID)
+            clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
                           .set("id", syncRootParent.getId())
-                          .set("max", 10)
+                          .set("batchSize", 10)
                           .execute();
-            fail("Getting descendants of a virtual folder item should be unsupported.");
+            fail("Scrolling through the descendants of a virtual folder item should be unsupported.");
         } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+            assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", e.getMessage());
         }
 
         // Get children

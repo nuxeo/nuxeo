@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.NuxeoDriveManager;
@@ -73,7 +74,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.drive.core", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.core.io",
         "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestFileSystemItemManagerService {
 
@@ -314,33 +316,33 @@ public class TestFileSystemItemManagerService {
         assertTrue(children.isEmpty());
 
         // ------------------------------------------------------
-        // Check #getDescendants
+        // Check #scrollDescendants
         // ------------------------------------------------------
-        // Need to flush VCS cache for the session used in DocumentBackedFolderItem#getgetDescendants to be aware of
+        // Need to flush VCS cache for the session used in DocumentBackedFolderItem#scrollDescendants to be aware of
         // changes in the current session
         session.save();
         FolderItem folderItem = (FolderItem) fileSystemItemManagerService.getFileSystemItemById(
                 DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal);
-        assertTrue(folderItem.getCanGetDescendants());
+        assertTrue(folderItem.getCanScrollDescendants());
 
-        // Get all descendants in one breath
-        List<FileSystemItem> folderDescendants = fileSystemItemManagerService.getDescendants(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal, 10, null);
+        // Scroll through all descendants in one breath
+        ScrollFileSystemItemList folderDescendants = fileSystemItemManagerService.scrollDescendants(
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal, null, 10);
         assertNotNull(folderDescendants);
+        assertNotNull(folderDescendants.getScrollId());
         assertEquals(4, folderDescendants.size());
         // Order is not determined
         checkChildren(folderDescendants, folder.getId(), file.getId(), note.getId(), folderishFile.getId(),
                 subFolder.getId(), false);
 
-        // Get all descendants in several steps
+        // Scroll through descendants in several steps
         folderDescendants.clear();
-        List<FileSystemItem> descendantsBatch;
-        int max = 2;
-        String lowerId = null;
-        while (!(descendantsBatch = folderItem.getDescendants(max, lowerId)).isEmpty()) {
-            int descendantsBatchSize = descendantsBatch.size();
-            assertTrue(descendantsBatchSize > 0);
-            lowerId = descendantsBatch.get(descendantsBatchSize - 1).getId();
+        ScrollFileSystemItemList descendantsBatch;
+        int batchSize = 2;
+        String scrollId = null;
+        while (!(descendantsBatch = folderItem.scrollDescendants(scrollId, batchSize)).isEmpty()) {
+            assertTrue(descendantsBatch.size() > 0);
+            scrollId = descendantsBatch.getScrollId();
             folderDescendants.addAll(descendantsBatch);
         }
         assertEquals(4, folderDescendants.size());
@@ -348,8 +350,8 @@ public class TestFileSystemItemManagerService {
         checkChildren(folderDescendants, folder.getId(), file.getId(), note.getId(), folderishFile.getId(),
                 subFolder.getId(), false);
 
-        folderDescendants = fileSystemItemManagerService.getDescendants(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder.getId(), principal, 10, null);
+        folderDescendants = fileSystemItemManagerService.scrollDescendants(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
+                + subFolder.getId(), principal, null, 10);
         assertTrue(folderDescendants.isEmpty());
 
         // ------------------------------------------------------

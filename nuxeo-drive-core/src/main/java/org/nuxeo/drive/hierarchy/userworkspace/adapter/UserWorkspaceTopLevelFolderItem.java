@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
@@ -77,7 +78,7 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
         name = folderName;
         canRename = false;
         canDelete = false;
-        canGetDescendants = false;
+        canScrollDescendants = false;
         this.userWorkspace = userWorkspace;
         this.syncRootParentFactoryName = syncRootParentFactoryName;
     }
@@ -140,9 +141,9 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
     }
 
     @Override
-    public List<FileSystemItem> getDescendants(int max, String lowerId) {
+    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize) {
         throw new UnsupportedOperationException(
-                "Cannot get descendants of the user workspace top level folder item, please call getChildren() instead.");
+                "Cannot scroll through the descendants of the user workspace top level folder item, please call getChildren() instead.");
     }
 
     protected NuxeoDriveManager getNuxeoDriveManager() {

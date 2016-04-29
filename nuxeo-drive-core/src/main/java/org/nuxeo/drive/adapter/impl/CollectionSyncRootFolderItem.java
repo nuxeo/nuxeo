@@ -29,6 +29,7 @@ import java.util.Map;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -60,7 +61,7 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
     public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint, boolean getLockInfo) {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint, getLockInfo);
-        canGetDescendants = false;
+        canScrollDescendants = false;
     }
 
     protected CollectionSyncRootFolderItem() {
@@ -92,9 +93,9 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
     }
 
     @Override
-    public List<FileSystemItem> getDescendants(int max, String lowerId) {
+    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize) {
         throw new UnsupportedOperationException(
-                "Cannot get descendants of a collection sync root folder item, please call getChildren() instead.");
+                "Cannot scroll through the descendants of a collection sync root folder item, please call getChildren() instead.");
     }
 
     @Override

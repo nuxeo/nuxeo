@@ -126,16 +126,16 @@ public class TestCollectionSyncRootFolderItemFactory {
         assertEquals(COLLECTION_SYNC_ROOT_ITEM_ID_PREFIX + collection.getId(), child2.getParentId());
         assertEquals("doc2", child2.getName());
 
-        log.trace("Check FolderItem#getCanGetDescendants");
-        assertFalse(collectionFSItem.getCanGetDescendants());
+        log.trace("Check FolderItem#getCanScrollDescendants");
+        assertFalse(collectionFSItem.getCanScrollDescendants());
 
         log.trace("Check descendants");
         try {
-            collectionFSItem.getDescendants(10, null);
-            fail("Should not be able to get descendants of a CollectionSyncRootFolderItem.");
+            collectionFSItem.scrollDescendants(null, 10);
+            fail("Should not be able to scroll through the descendants of a CollectionSyncRootFolderItem.");
         } catch (UnsupportedOperationException e) {
             assertEquals(
-                    "Cannot get descendants of a collection sync root folder item, please call getChildren() instead.",
+                    "Cannot scroll through the descendants of a collection sync root folder item, please call getChildren() instead.",
                     e.getMessage());
         }
 

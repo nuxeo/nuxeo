@@ -37,6 +37,7 @@ import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
+import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.Blob;
@@ -178,7 +179,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public List<FileSystemItem> getDescendants(String id, Principal principal, int max, String lowerId) {
+    public ScrollFileSystemItemList scrollDescendants(String id, Principal principal, String scrollId, int batchSize) {
         FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
         if (fileSystemItem == null) {
             throw new NuxeoException(String.format(
@@ -189,7 +190,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
                     "Cannot get the descendants of file system item with id %s because it is not a folder.", id));
         }
         FolderItem folderItem = (FolderItem) fileSystemItem;
-        return folderItem.getDescendants(max, lowerId);
+        return folderItem.scrollDescendants(scrollId, batchSize);
     }
 
     @Override

@@ -24,8 +24,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -33,13 +35,22 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.RootlessItemException;
+import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheService;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -60,13 +71,15 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     private static final String FOLDER_ITEM_CHILDREN_PAGE_PROVIDER = "FOLDER_ITEM_CHILDREN";
 
+    protected static final String DESCENDANTS_SCROLL_CACHE = "driveDescendantsScroll";
+
     protected static final String MAX_DESCENDANTS_BATCH_SIZE_PROPERTY = "org.nuxeo.drive.maxDescendantsBatchSize";
 
     protected static final String MAX_DESCENDANTS_BATCH_SIZE_DEFAULT = "1000";
 
     protected boolean canCreateChild;
 
-    protected boolean canGetDescendants;
+    protected boolean canScrollDescendants;
 
     public DocumentBackedFolderItem(String factoryName, DocumentModel doc) {
         this(factoryName, doc, false);
@@ -164,55 +177,199 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     @Override
-    public boolean getCanGetDescendants() {
-        return canGetDescendants;
+    public boolean getCanScrollDescendants() {
+        return canScrollDescendants;
     }
 
     @Override
-    public List<FileSystemItem> getDescendants(int max, String lowerId) {
+    @SuppressWarnings("unchecked")
+    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize) {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
 
             // Limit batch size sent by the client
             int maxDescendantsBatchSize = Integer.parseInt(Framework.getService(ConfigurationService.class)
                                                                     .getProperty(MAX_DESCENDANTS_BATCH_SIZE_PROPERTY,
                                                                             MAX_DESCENDANTS_BATCH_SIZE_DEFAULT));
-            if (max > maxDescendantsBatchSize) {
+            if (batchSize > maxDescendantsBatchSize) {
                 throw new NuxeoException(
                         String.format(
-                                "Maximum number of descendants %d is greater than the maximum batch size allowed %d. If you need to increase this limit you can set the %s configuration property but this is not recommended for performance reasons.",
-                                max, maxDescendantsBatchSize, MAX_DESCENDANTS_BATCH_SIZE_PROPERTY));
+                                "Batch size %d is greater than the maximum batch size allowed %d. If you need to increase this limit you can set the %s configuration property but this is not recommended for performance reasons.",
+                                batchSize, maxDescendantsBatchSize, MAX_DESCENDANTS_BATCH_SIZE_PROPERTY));
             }
 
-            // Fetch documents
-            StringBuilder sb = new StringBuilder(String.format("SELECT * FROM Document WHERE ecm:ancestorId = '%s'",
-                    docId));
-            sb.append(" AND ecm:currentLifeCycleState != 'deleted'");
-            sb.append(" AND ecm:mixinType != 'HiddenInNavigation'");
-            // Don't need to add ecm:isCheckedInVersion = 0 because versions are already excluded by the
-            // ecm:ancestorId clause since they have no path
-            if (!StringUtils.isEmpty(lowerId)) {
-                String lowerDocId = parseFileSystemId(lowerId)[2];
-                sb.append(String.format(" AND ecm:uuid > '%s'", lowerDocId));
+            Cache scrollingCache = Framework.getService(CacheService.class).getCache(DESCENDANTS_SCROLL_CACHE);
+            if (scrollingCache == null) {
+                throw new NuxeoException("Cache not found: " + DESCENDANTS_SCROLL_CACHE);
             }
-            sb.append(" ORDER BY ecm:uuid");
-            String query = sb.toString();
+            String newScrollId;
+            List<String> descendantIds;
+            if (StringUtils.isEmpty(scrollId)) {
+                // Perform initial query to fetch ids of all the descendant documents and put the result list in a
+                // cache, aka "search context"
+                descendantIds = new ArrayList<>();
+                StringBuilder sb = new StringBuilder(String.format(
+                        "SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", docId));
+                sb.append(" AND ecm:currentLifeCycleState != 'deleted'");
+                sb.append(" AND ecm:mixinType != 'HiddenInNavigation'");
+                // Don't need to add ecm:isCheckedInVersion = 0 because versions are already excluded by the
+                // ecm:ancestorId clause since they have no path
+                String query = sb.toString();
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Executing initial query to scroll through the descendants of %s: %s",
+                            docPath, query));
+                }
+                try (IterableQueryResult res = session.queryAndFetch(sb.toString(), NXQL.NXQL)) {
+                    Iterator<Map<String, Serializable>> it = res.iterator();
+                    while (it.hasNext()) {
+                        descendantIds.add((String) it.next().get(NXQL.ECM_UUID));
+                    }
+                }
+                // Generate a scroll id
+                newScrollId = UUID.randomUUID().toString();
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Put initial query result list (search context) in the %s cache at key (scrollId) %s",
+                            DESCENDANTS_SCROLL_CACHE, newScrollId));
+                }
+                scrollingCache.put(newScrollId, (Serializable) descendantIds);
+            } else {
+                // Get the descendant ids from the cache
+                descendantIds = (List<String>) scrollingCache.get(scrollId);
+                if (descendantIds == null) {
+                    throw new NuxeoException(String.format("No search context found in the %s cache for scrollId [%s]",
+                            DESCENDANTS_SCROLL_CACHE, scrollId));
+                }
+                newScrollId = scrollId;
+            }
+
+            if (descendantIds.isEmpty()) {
+                // No more descendants left to return
+                return new ScrollFileSystemItemListImpl(newScrollId, 0);
+            }
+
+            // Fetch a batch of documents from VCS
+            List<String> descendantIdsBatch = getBatch(descendantIds, batchSize);
+            DocumentModelList descendantDocsBatch = fetchFromVCS(descendantIdsBatch, session);
+
+            // Adapt documents as FileSystemItems using a cache for the FolderItem ancestors
+            Map<DocumentRef, FolderItem> ancestorCache = new HashMap<>();
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Getting %d descendants of %s using query: %s", max, docPath, query));
+                log.debug(String.format("Caching current FolderItem for doc %s: %s", docPath, getPath()));
             }
-            DocumentModelList dmDescendants = session.query(query, max);
-
-            // Adapt documents as FileSystemItems
-            List<FileSystemItem> descendants = new ArrayList<>();
-            for (DocumentModel dmDescendant : dmDescendants) {
-                // TODO: optimize FileSystemItem path computation
+            ancestorCache.put(new IdRef(docId), this);
+            List<FileSystemItem> descendants = new ArrayList<>(descendantDocsBatch.size());
+            int descendantCount = 0;
+            for (DocumentModel doc : descendantDocsBatch) {
+                FolderItem parent = populateAncestorCache(ancestorCache, doc, session, false);
                 // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-                FileSystemItem descendant = getFileSystemItemAdapterService().getFileSystemItem(dmDescendant, false,
+                FileSystemItem descendant = getFileSystemItemAdapterService().getFileSystemItem(doc, parent, false,
                         false, false);
                 if (descendant != null) {
+                    if (descendant.isFolder()) {
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Caching descendant FolderItem for doc %s: %s",
+                                    doc.getPathAsString(), descendant.getPath()));
+                        }
+                        ancestorCache.put(doc.getRef(), (FolderItem) descendant);
+                    }
                     descendants.add(descendant);
+                    descendantCount++;
                 }
             }
-            return descendants;
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Retrieved %d descendants of FolderItem %s (batchSize = %d)", descendantCount,
+                        docPath, batchSize));
+            }
+            return new ScrollFileSystemItemListImpl(newScrollId, descendants);
+        }
+    }
+
+    /**
+     * Extracts batchSize elements form the input list.
+     */
+    protected List<String> getBatch(List<String> ids, int batchSize) {
+        List<String> batch = new ArrayList<>(batchSize);
+        int idCount = 0;
+        Iterator<String> it = ids.iterator();
+        while (it.hasNext() && idCount < batchSize) {
+            batch.add(it.next());
+            it.remove();
+            idCount++;
+        }
+        return batch;
+    }
+
+    protected DocumentModelList fetchFromVCS(List<String> ids, CoreSession session) {
+        int docCount = ids.size();
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM Document WHERE ecm:uuid IN (");
+        for (int i = 0; i < docCount; i++) {
+            sb.append(NXQL.escapeString(ids.get(i)));
+            if (i < docCount - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append(")");
+        String query = sb.toString();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Fetching %d documents from VCS: %s", docCount, query));
+        }
+        return session.query(query);
+    }
+
+    protected FolderItem populateAncestorCache(Map<DocumentRef, FolderItem> cache, DocumentModel doc,
+            CoreSession session, boolean cacheItem) {
+        // TODO: handle collections
+        DocumentRef parentDocRef = session.getParentDocumentRef(doc.getRef());
+        if (parentDocRef == null) {
+            throw new RootlessItemException("Reached repository root");
+        }
+
+        FolderItem parentItem = cache.get(parentDocRef);
+        if (parentItem != null) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Found parent FolderItem in cache for doc %s: %s", doc.getPathAsString(),
+                        parentItem.getPath()));
+            }
+            return getFolderItem(cache, doc, parentItem, cacheItem);
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("No parent FolderItem found in cache for doc %s, computing ancestor cache",
+                    doc.getPathAsString()));
+        }
+        DocumentModel parentDoc = null;
+        try {
+            parentDoc = session.getDocument(parentDocRef);
+        } catch (DocumentSecurityException e) {
+            throw new RootlessItemException(String.format("User %s has no READ access on parent of document %s (%s).",
+                    principal.getName(), doc.getPathAsString(), doc.getId()), e);
+        }
+        parentItem = populateAncestorCache(cache, parentDoc, session, true);
+        return getFolderItem(cache, doc, parentItem, cacheItem);
+    }
+
+    protected FolderItem getFolderItem(Map<DocumentRef, FolderItem> cache, DocumentModel doc, FolderItem parentItem,
+            boolean cacheItem) {
+        if (cacheItem) {
+            // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+            FileSystemItem fsItem = getFileSystemItemAdapterService().getFileSystemItem(doc, parentItem, true, false,
+                    false);
+            if (fsItem == null) {
+                throw new RootlessItemException(
+                        String.format(
+                                "Reached a document %s that cannot be  adapted as a (possibly virtual) descendant of the top level folder item.",
+                                doc.getPathAsString()));
+            }
+            FolderItem folderItem = (FolderItem) fsItem;
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Caching FolderItem for doc %s: %s", doc.getPathAsString(),
+                        folderItem.getPath()));
+            }
+            cache.put(doc.getRef(), folderItem);
+            return folderItem;
+        } else {
+            return parentItem;
         }
     }
 
@@ -279,7 +436,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
                 this.canCreateChild = doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN);
             }
         }
-        this.canGetDescendants = true;
+        this.canScrollDescendants = true;
     }
 
     protected FileManager getFileManager() {
@@ -291,8 +448,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         this.canCreateChild = canCreateChild;
     }
 
-    protected void setCanGetDescendants(boolean canGetDescendants) {
-        this.canGetDescendants = canGetDescendants;
+    protected void setCanScrollDescendants(boolean canScrollDescendants) {
+        this.canScrollDescendants = canScrollDescendants;
     }
 
 }

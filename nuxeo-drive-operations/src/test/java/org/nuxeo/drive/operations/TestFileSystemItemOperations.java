@@ -45,10 +45,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
+import org.nuxeo.drive.adapter.impl.ScrollFileSystemItemListImpl;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.automation.client.Session;
@@ -87,7 +89,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.platform.types.core",
         "org.nuxeo.ecm.webapp.base:OSGI-INF/ecm-types-contrib.xml", "org.nuxeo.drive.core",
         "org.nuxeo.drive.operations", "org.nuxeo.ecm.core.cache",
-        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml" })
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-sync-root-cache-contrib.xml",
+        "org.nuxeo.drive.core.test:OSGI-INF/test-nuxeodrive-descendants-scrolling-cache-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18080)
 public class TestFileSystemItemOperations {
@@ -237,15 +240,15 @@ public class TestFileSystemItemOperations {
         assertTrue(child.getCanCreateChild());
 
         // Check descendants
-        assertFalse(topLevelFolder.getCanGetDescendants());
+        assertFalse(topLevelFolder.getCanScrollDescendants());
         try {
-            clientSession.newRequest(NuxeoDriveGetDescendants.ID)
+            clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
                          .set("id", topLevelFolder.getId())
-                         .set("max", 10)
+                         .set("batchSize", 10)
                          .execute();
-            fail("Getting descendants of the default top level folder item should be unsupported.");
+            fail("Scrolling through the descendants of the default top level folder item should be unsupported.");
         } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.GetDescendants", e.getMessage());
+            assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", e.getMessage());
         }
     }
 
@@ -385,41 +388,42 @@ public class TestFileSystemItemOperations {
     }
 
     @Test
-    public void testGetDescendants() throws Exception {
+    public void testScrollDescendants() throws Exception {
 
         // Get descendants of sync root 1
-        // Get all descendants in one breath
-        Blob descendantsJSON = (Blob) clientSession.newRequest(NuxeoDriveGetDescendants.ID)
+        // Scroll through all descendants in one breath
+        Blob descendantsJSON = (Blob) clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
                                                    .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
-                                                   .set("max", 10)
+                                                   .set("batchSize", 10)
                                                    .execute();
         assertNotNull(descendantsJSON);
-        JsonNode descendants = mapper.readValue(descendantsJSON.getStream(), JsonNode.class);
+        ScrollFileSystemItemList descendants = mapper.readValue(descendantsJSON.getStream(),
+                ScrollFileSystemItemListImpl.class);
         assertNotNull(descendants);
+        assertNotNull(descendants.getScrollId());
         assertEquals(4, descendants.size());
         List<String> expectedIds = Arrays.asList(file1, subFolder1, file3, file4)
                                          .stream()
                                          .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
                                          .collect(Collectors.toList());
-        List<String> descendantIds = descendants.findValuesAsText("id");
+        List<String> descendantIds = descendants.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList());
         // Note that order is not determined
         assertTrue(CollectionUtils.isEqualCollection(expectedIds, descendantIds));
 
-        // Get all descendants in several steps
+        // Scroll through descendants in several steps
         descendantIds.clear();
-        List<String> descendantIdsBatch;
-        int max = 2;
-        String lowerId = null;
-        while (!(descendantIdsBatch = mapper.readValue(
-                ((Blob) clientSession.newRequest(NuxeoDriveGetDescendants.ID)
+        ScrollFileSystemItemList descendantsBatch;
+        int batchSize = 2;
+        String scrollId = null;
+        while (!(descendantsBatch = mapper.readValue(
+                ((Blob) clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
                                      .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
-                                     .set("max", max)
-                                     .set("lowerId", lowerId)
-                                     .execute()).getStream(), JsonNode.class).findValuesAsText("id")).isEmpty()) {
-            int descendantIdsBatchSize = descendantIdsBatch.size();
-            assertTrue(descendantIdsBatchSize > 0);
-            lowerId = descendantIdsBatch.get(descendantIdsBatchSize - 1);
-            descendantIds.addAll(descendantIdsBatch);
+                                     .set("batchSize", batchSize)
+                                     .set("scrollId", scrollId)
+                                     .execute()).getStream(), ScrollFileSystemItemListImpl.class)).isEmpty()) {
+            assertTrue(descendantsBatch.size() > 0);
+            scrollId = descendantsBatch.getScrollId();
+            descendantIds.addAll(descendantsBatch.stream().map(fsItem -> fsItem.getId()).collect(Collectors.toList()));
         }
         assertEquals(4, descendantIds.size());
         // Note that order is not determined
@@ -432,9 +436,9 @@ public class TestFileSystemItemOperations {
                       .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
                       .collect(Collectors.toList()),
                 mapper.readValue(
-                        ((Blob) clientSession.newRequest(NuxeoDriveGetDescendants.ID)
+                        ((Blob) clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
                                              .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
-                                             .set("max", 10)
+                                             .set("batchSize", 10)
                                              .execute()).getStream(), JsonNode.class).findValuesAsText("id")));
     }
 

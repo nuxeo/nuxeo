@@ -40,21 +40,26 @@ public interface FolderItem extends FileSystemItem {
     List<FileSystemItem> getChildren();
 
     /**
-     * Returns {@code true} if the {@link #getDescendants(int, String)} API can be used.
+     * Returns {@code true} if the {@link #scrollDescendants(int, String)} API can be used.
      *
      * @since 8.3
      */
-    boolean getCanGetDescendants();
+    boolean getCanScrollDescendants();
 
     /**
-     * Gets at most {@code max} descendants starting with the {@link FileSystemItem} with the given {@code lowerId} (not
-     * included) in a list of descendants ordered by id.
+     * Retrieves at most {@code batchSize} {@link FileSystemItem} descendants for the given {@code scrollId}.
+     * <p>
+     * When passing a null {@code scrollId} the initial search request is executed and the first batch of results is
+     * returned along with a {@code scrollId} which should be passed to the next call in order to retrieve the next
+     * batch of results.
+     * <p>
+     * Results are not necessarily sorted.
      *
-     * @throws UnsupportedOperationException if {@link #getCanGetDescendants()} returns {@code false}.
+     * @throws UnsupportedOperationException if {@link #getCanScrollDescendants()} returns {@code false}.
      * @since 8.3
      */
     @JsonIgnore
-    List<FileSystemItem> getDescendants(int max, String lowerId);
+    ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize);
 
     boolean getCanCreateChild();
 
