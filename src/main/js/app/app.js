@@ -115,13 +115,19 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
       // Setup the SpreadSheet
       sheet = new Spreadsheet($('#grid'), nx, layout, resultColumns, pageProvider, language);
 
+      // If we don't have a content view we're done...
+      if (isStandalone) {
+        return;
+      }
+      // ... otherwise let's set it up
+
       // Add query parameters
-      if (cv && cv.queryParameters) {
+      if (cv.queryParameters) {
         sheet.queryParameters = cv.queryParameters;
       }
 
       // Add the search document
-      if (cv && cv.searchDocument) {
+      if (cv.searchDocument) {
         var namedParameters = {};
         for (var k in cv.searchDocument.properties) {
           var v = cv.searchDocument.properties[k];
@@ -134,9 +140,13 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
         sheet.namedParameters = namedParameters;
       }
 
-      if (!isStandalone) {
-        doQuery();
+      // Add sort infos
+      if (cv.sortInfos) {
+        sheet.sortInfos = cv.sortInfos;
       }
+
+      // Run the query
+      doQuery();
     });
   });
 }
