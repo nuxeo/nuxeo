@@ -1456,6 +1456,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         // recompute the dirty state
         dirty = docModel.isDirty();
+        options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
 
         VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
         docModel.putContextData(VersioningService.VERSIONING_OPTION, null);
