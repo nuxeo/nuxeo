@@ -77,6 +77,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     protected static final String MAX_DESCENDANTS_BATCH_SIZE_DEFAULT = "1000";
 
+    protected static final int VCS_CHUNK_SIZE = 100;
+
     protected boolean canCreateChild;
 
     protected boolean canScrollDescendants;
@@ -300,6 +302,29 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     protected DocumentModelList fetchFromVCS(List<String> ids, CoreSession session) {
+        DocumentModelList res = null;
+        int size = ids.size();
+        int start = 0;
+        int end = Math.min(VCS_CHUNK_SIZE, size);
+        boolean done = false;
+        while (!done) {
+            DocumentModelList docs = fetchFromVcsChunk(ids.subList(start, end), session);
+            if (res == null) {
+                res = docs;
+            } else {
+                res.addAll(docs);
+            }
+            if (end >= ids.size()) {
+                done = true;
+            } else {
+                start = end;
+                end = Math.min(start + VCS_CHUNK_SIZE, size);
+            }
+        }
+        return res;
+    }
+
+    protected DocumentModelList fetchFromVcsChunk(final List<String> ids, CoreSession session) {
         int docCount = ids.size();
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM Document WHERE ecm:uuid IN (");
