@@ -28,6 +28,7 @@
         <properties widgetMode="any">
           <property name="hideSubLabels">true</property>
           <property name="orderable">true</property>
+          <property name="display">#{param.display}</property>
         </properties>
         <subWidgets>
           <widget name="listItem" type="text">

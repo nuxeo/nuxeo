@@ -24,10 +24,18 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.forms.JSListWidgetElement;
+import org.nuxeo.functionaltests.forms.JSListWidgetElement.Display;
 import org.nuxeo.functionaltests.forms.RichEditorElement;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.forms.WidgetElement;
@@ -41,6 +49,7 @@ import org.openqa.selenium.support.ui.Select;
  *
  * @since 7.2
  */
+@RunWith(Parameterized.class)
 public class ITJSListWidgetTest extends AbstractTest {
 
     private final static String DUMMY_HTML_TEXT_CONTENT_1 = "dummy content";
@@ -57,23 +66,37 @@ public class ITJSListWidgetTest extends AbstractTest {
 
     ListStandardWidgetPage page;
 
+    private Display display;
+
+    @Parameter
+    public String displayParam;
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            { "BLOCK_LEFT" }, { "BLOCK_TOP" }, { "TABLE" }, { "INLINE" }
+        });
+    }
+
+
     @Before
     public void setUp() {
         driver.get(HomePage.URL);
-        page = get(HomePage.URL + "listWidget", ListStandardWidgetPage.class);
+        page = get(HomePage.URL + "listWidget?display=" + displayParam.toLowerCase(), ListStandardWidgetPage.class);
         page.goToOverviewTab();
+        display = Display.valueOf(displayParam);
     }
 
     @Test
     public void testListArrayWidget() {
-        JSListWidgetElement listWidget = page.getListArrayEditWidget();
+        JSListWidgetElement listWidget = page.getListArrayEditWidget(display);
         assertNotNull(listWidget);
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
         assertEquals(0, listWidget.getRows().size());
 
         listWidget.addNewElement();
         assertEquals(1, listWidget.getRows().size());
-        listWidget = page.submitListArrayWidget();
+        listWidget = page.submitListArrayWidget(display);
         assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_listItem", 0));
 
         listWidget.getSubWidget("nxw_listItem", 0).setInputValue("test");
@@ -81,13 +104,13 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("test", listWidget.getSubWidget("nxw_listItem", 0).getInputValue());
         listWidget.getSubWidget("nxw_listItem", 1).setInputValue("test 2");
 
-        listWidget = page.submitListArrayWidget();
+        listWidget = page.submitListArrayWidget(display);
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
         assertEquals("test", listWidget.getSubWidget("nxw_listItem", 0).getInputValue());
         assertEquals("test 2", listWidget.getSubWidget("nxw_listItem", 1).getInputValue());
 
         listWidget.removeElement(1);
-        listWidget = page.submitListArrayWidget();
+        listWidget = page.submitListArrayWidget(display);
         assertEquals("test", listWidget.getSubWidget("nxw_listItem", 0).getInputValue());
         assertEquals(1, listWidget.getRows().size());
     }
@@ -95,14 +118,14 @@ public class ITJSListWidgetTest extends AbstractTest {
     @Test
     public void testListWidget() {
         // Edit mode
-        JSListWidgetElement listWidget = page.getListEditWidget();
+        JSListWidgetElement listWidget = page.getListEditWidget(display);
         assertNotNull(listWidget);
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
         assertEquals(0, listWidget.getRows().size());
 
         listWidget.addNewElement();
         assertEquals(1, listWidget.getRows().size());
-        listWidget = page.submitListWidget();
+        listWidget = page.submitListWidget(display);
         assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_listItem", 0, 1));
 
         listWidget.getSubWidget("nxw_listItem_2", 0).setInputValue("test");
@@ -110,30 +133,30 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("test", listWidget.getSubWidget("nxw_listItem_2", 0).getInputValue());
         listWidget.getSubWidget("nxw_listItem_2", 1).setInputValue("test 2");
 
-        page.submitListWidget();
+        page.submitListWidget(display);
 
         // View mode
-        listWidget = page.getListViewWidget();
+        listWidget = page.getListViewWidget(display);
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
         assertEquals("test", listWidget.getSubWidget("nxw_listItem_3", 0).getOutputValue());
         assertEquals("test 2", listWidget.getSubWidget("nxw_listItem_3", 1).getOutputValue());
 
         // remove
-        page.getListEditWidget().removeElement(1);
-        page.submitListWidget();
+        page.getListEditWidget(display).removeElement(1);
+        page.submitListWidget(display);
 
-        listWidget = page.getListViewWidget();
+        listWidget = page.getListViewWidget(display);
         assertEquals("test", listWidget.getSubWidget("nxw_listItem_3", 0).getOutputValue());
         assertEquals(1, listWidget.getRows().size());
     }
 
     @Test
     public void testComplexListWidget() {
-        JSListWidgetElement listWidget = page.getComplexListEditWidget();
+        JSListWidgetElement listWidget = page.getComplexListEditWidget(display);
         assertNotNull(listWidget);
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
 
-        listWidget = page.submitComplexListWidget();
+        listWidget = page.submitComplexListWidget(display);
         assertEquals(VALUE_REQUIRED, listWidget.getMessageValue());
 
         listWidget.addNewElement();
@@ -153,18 +176,18 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget.getSubWidget("nxw_text", 1).setInputValue("field 3");
         listWidget.getSubWidget("nxw_text_1", 1).setInputValue("field 4");
 
-        listWidget = page.submitComplexListWidget();
+        listWidget = page.submitComplexListWidget(display);
 
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
         assertEquals("'lala' is not a number. Example: 99.",
                 listWidget.getSubWidgetMessageValue("nxw_intComplexItem", 0));
 
         listWidget.getSubWidget("nxw_intComplexItem", 0).setInputValue("3");
-        listWidget = page.submitComplexListWidget();
+        listWidget = page.submitComplexListWidget(display);
         assertThat(listWidget.getSubWidgetMessageValue("nxw_intComplexItem", 0), isEmptyString());
 
         // View mode
-        listWidget = page.getComplexListViewWidget();
+        listWidget = page.getComplexListViewWidget(display);
         assertEquals("test", listWidget.getSubWidget("nxw_stringComplexItem_1", 0).getOutputValue());
         assertEquals("9/7/2010", listWidget.getSubWidget("nxw_dateComplexItem_1", 0).getOutputValue());
         assertEquals("3", listWidget.getSubWidget("nxw_intComplexItem_1", 0).getOutputValue());
@@ -179,13 +202,13 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("field 3", listWidget.getSubWidget("nxw_text_2", 1).getOutputValue());
         assertEquals("field 4", listWidget.getSubWidget("nxw_text_3", 1).getOutputValue());
 
-        page.getComplexListEditWidget().removeElement(1);
-        listWidget = page.submitComplexListWidget();
+        page.getComplexListEditWidget(display).removeElement(1);
+        listWidget = page.submitComplexListWidget(display);
 
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
 
         // View mode
-        listWidget = page.getComplexListViewWidget();
+        listWidget = page.getComplexListViewWidget(display);
         assertEquals("test", listWidget.getSubWidget("nxw_stringComplexItem_1", 0).getOutputValue());
         assertEquals("9/7/2010", listWidget.getSubWidget("nxw_dateComplexItem_1", 0).getOutputValue());
         assertEquals("3", listWidget.getSubWidget("nxw_intComplexItem_1", 0).getOutputValue());
@@ -197,7 +220,7 @@ public class ITJSListWidgetTest extends AbstractTest {
     @Test
     public void testComplexList2Widget() {
         // Test select2 + html text (tiny_mce) in complex list widget
-        JSListWidgetElement listWidget = page.getS2HtmlTextComplexListEditWidget();
+        JSListWidgetElement listWidget = page.getS2HtmlTextComplexListEditWidget(display);
         assertNotNull(listWidget);
         listWidget.addNewElement();
 
@@ -219,10 +242,10 @@ public class ITJSListWidgetTest extends AbstractTest {
         richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 1, RichEditorElement.class, true);
         richEditorElement.setInputValue(DUMMY_HTML_TEXT_CONTENT_2);
 
-        page.submitS2HtmlTextComplexListWidget();
+        page.submitS2HtmlTextComplexListWidget(display);
 
         // View mode
-        listWidget = page.getS2HtmlTextComplexListViewWidget();
+        listWidget = page.getS2HtmlTextComplexListViewWidget(display);
         select2WidgetElement = listWidget.getSubWidget("nxw_suggest_1_select2", 0, Select2WidgetElement.class, true);
         select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
         assertEquals("Europe/" + S2_SELECTION_1, select2WidgetElement.getSelectedValue().getText());
@@ -238,7 +261,7 @@ public class ITJSListWidgetTest extends AbstractTest {
 
     @Test
     public void testListOfListsWidget() {
-        JSListWidgetElement listWidget = page.getListOfListsEditWidget();
+        JSListWidgetElement listWidget = page.getListOfListsEditWidget(display);
         assertNotNull(listWidget);
         assertNotEquals(VALUE_REQUIRED, listWidget.getMessageValue());
         assertEquals(0, listWidget.getRows().size());
@@ -249,14 +272,14 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertNotNull(stringItem);
         stringItem.setInputValue("test");
 
-        listWidget = page.submitListOfListsWidget();
+        listWidget = page.submitListOfListsWidget(display);
 
         assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0));
 
         WidgetElement stringArrayItem = listWidget.getSubWidget("nxw_stringArrayItem", 0, WidgetElement.class, false);
         new Select(stringArrayItem.getInputElement()).selectByValue("cartman");
 
-        listWidget = page.submitListOfListsWidget();
+        listWidget = page.submitListOfListsWidget(display);
 
         assertThat(listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0), isEmptyString());
 
@@ -275,10 +298,10 @@ public class ITJSListWidgetTest extends AbstractTest {
         stringListItem2.addNewElement();
         stringListItem2.getSubWidget("nxw_stringListSubItem2", 1).setInputValue("test sublist 2 bis");
 
-        page.submitListOfListsWidget();
+        page.submitListOfListsWidget(display);
 
         // View mode
-        listWidget = page.getListOfListsViewWidget();
+        listWidget = page.getListOfListsViewWidget(display);
 
         assertEquals("test", listWidget.getSubWidget("nxw_stringItem_1", 0).getOutputValue());
 
@@ -294,14 +317,14 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("test sublist 2 bis", stringListItem2.getSubWidget("nxw_stringListSubItem2_1", 1).getOutputValue());
 
         // delete 2nd row in stringListItem
-        listWidget = page.getListOfListsEditWidget();
+        listWidget = page.getListOfListsEditWidget(display);
         stringListItem = listWidget.getSubWidget("nxw_stringListItem", 0, JSListWidgetElement.class, false);
         stringListItem.removeElement(1);
         assertEquals(1, stringListItem.getRows().size());
 
-        page.submitListOfListsWidget();
+        page.submitListOfListsWidget(display);
 
-        listWidget = page.getListOfListsViewWidget();
+        listWidget = page.getListOfListsViewWidget(display);
 
         assertEquals("test", listWidget.getSubWidget("nxw_stringItem_1", 0).getOutputValue());
 
@@ -317,7 +340,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertEquals("test sublist 2 bis", stringListItem2.getSubWidget("nxw_stringListSubItem2_1", 1).getOutputValue());
 
         // non regression tests for NXP-5576
-        listWidget = page.getListOfListsEditWidget();
+        listWidget = page.getListOfListsEditWidget(display);
 
         listWidget.addNewElement();
         assertEquals(2, listWidget.getRows().size());
@@ -327,7 +350,7 @@ public class ITJSListWidgetTest extends AbstractTest {
     // non regression tests for NXP-6933
     @Test
     public void testNonRegression_NXP_6933() {
-        JSListWidgetElement listWidget = page.getListArrayEditWidget();
+        JSListWidgetElement listWidget = page.getListArrayEditWidget(display);
 
         listWidget.addNewElement();
         WidgetElement listItem0 = listWidget.getSubWidget("nxw_listItem", 0);
@@ -344,10 +367,10 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget.removeElement(0);
         assertEquals(1, listWidget.getRows().size());
 
-        page.submitListArrayWidget();
+        page.submitListArrayWidget(display);
 
-        assertEquals("BBB", page.getListArrayViewWidget().getSubWidget("nxw_listItem_1", 0).getOutputValue());
-        assertEquals("BBB", page.getListArrayEditWidget().getSubWidget("nxw_listItem", 0).getInputValue());
+        assertEquals("BBB", page.getListArrayViewWidget(display).getSubWidget("nxw_listItem_1", 0).getOutputValue());
+        assertEquals("BBB", page.getListArrayEditWidget(display).getSubWidget("nxw_listItem", 0).getInputValue());
     }
 
     /**
@@ -357,7 +380,7 @@ public class ITJSListWidgetTest extends AbstractTest {
      */
     @Test
     public void testRemovedElementValidation() {
-        JSListWidgetElement listWidget = page.getListOfListsEditWidget();
+        JSListWidgetElement listWidget = page.getListOfListsEditWidget(display);
         assertNotNull(listWidget);
         // add 2 elements
         listWidget.addNewElement();
@@ -371,7 +394,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget.removeElement(0);
 
         // submit => there should not be any validation error
-        listWidget = page.submitListOfListsWidget();
+        listWidget = page.submitListOfListsWidget(display);
 
         assertNotEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0));
     }
@@ -383,7 +406,7 @@ public class ITJSListWidgetTest extends AbstractTest {
      */
     @Test
     public void testMovedElementValidation() {
-        JSListWidgetElement listWidget = page.getListOfListsEditWidget();
+        JSListWidgetElement listWidget = page.getListOfListsEditWidget(display);
         assertNotNull(listWidget);
         // add 3 elements
         listWidget.addNewElement();
@@ -398,10 +421,10 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget.moveUpElement(1);
 
         // remove now second element
-        listWidget.removeElement(0);
+        listWidget.removeElement(1);
 
         // submit => there should not be a validation error on second item
-        listWidget = page.submitListOfListsWidget();
+        listWidget = page.submitListOfListsWidget(display);
 
         assertNotEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 0));
         assertEquals(VALUE_REQUIRED, listWidget.getSubWidgetMessageValue("nxw_stringArrayItem", 1));
@@ -414,7 +437,7 @@ public class ITJSListWidgetTest extends AbstractTest {
      */
     @Test
     public void testRemovedElementReset() {
-        JSListWidgetElement listWidget = page.getListEditWidget();
+        JSListWidgetElement listWidget = page.getListEditWidget(display);
         assertNotNull(listWidget);
         listWidget.addNewElement();
         assertEquals("", listWidget.getSubWidget("nxw_listItem_2", 0).getInputValue());
@@ -435,7 +458,7 @@ public class ITJSListWidgetTest extends AbstractTest {
      */
     @Test
     public void testRemovedSubElementReset() {
-        JSListWidgetElement listWidget = page.getListOfListsEditWidget();
+        JSListWidgetElement listWidget = page.getListOfListsEditWidget(display);
         assertNotNull(listWidget);
         listWidget.addNewElement();
 
@@ -460,7 +483,7 @@ public class ITJSListWidgetTest extends AbstractTest {
      */
     @Test
     public void testRemovedComplexElementReset() {
-        JSListWidgetElement listWidget = page.getComplexListEditWidget();
+        JSListWidgetElement listWidget = page.getComplexListEditWidget(display);
         assertNotNull(listWidget);
         listWidget.addNewElement();
         assertEquals("", listWidget.getSubWidget("nxw_stringComplexItem", 0).getInputValue());

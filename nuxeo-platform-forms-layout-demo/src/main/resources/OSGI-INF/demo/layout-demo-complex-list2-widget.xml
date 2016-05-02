@@ -23,6 +23,9 @@
         <fields>
           <field>lds:complexList2</field>
         </fields>
+        <properties widgetMode="any">
+          <property name="display">#{param.display}</property>
+        </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
         </properties>
