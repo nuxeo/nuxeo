@@ -131,6 +131,7 @@
     <module>nuxeo-travel-expenses</module>
     <module>nuxeo-agenda</module>
     <module>nuxeo-platform-smart-search</module>
+    <module>nuxeo-api-playground</module>
   </modules>
 
   <dependencyManagement>
