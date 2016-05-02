@@ -77,6 +77,8 @@
       <cacheMaxSize>1000</cacheMaxSize>
       <table>cert</table>
       <idField>userid</idField>
+      <passwordField>keypassword</passwordField>
+      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
       <autoincrementIdField>false</autoincrementIdField>
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
