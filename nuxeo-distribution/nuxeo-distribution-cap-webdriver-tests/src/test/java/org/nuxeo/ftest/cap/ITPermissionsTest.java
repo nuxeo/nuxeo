@@ -40,6 +40,7 @@ import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -59,14 +60,16 @@ public class ITPermissionsTest extends AbstractTest {
         RestHelper.createUser("susan", "susan1", null, null, null, null, "members");
         RestHelper.createGroup("housewives", "Housewives", new String[] { "linnet", "susan" }, null);
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
-        RestHelper.addPermission(WORKSPACES_PATH, TEST_USERNAME, "Everything");
+        RestHelper.addPermission(WORKSPACES_PATH, TEST_USERNAME, SecurityConstants.EVERYTHING);
         RestHelper.createDocument(SECTIONS_PATH, SECTION_TYPE, TEST_SECTION_TITLE, null);
-        RestHelper.addPermission(SECTIONS_PATH, TEST_USERNAME, "Everything");
+        RestHelper.addPermission(SECTIONS_PATH, TEST_USERNAME, SecurityConstants.EVERYTHING);
         RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_TITLE, null);
     }
 
     @After
     public void after() {
+        RestHelper.removePermissions(WORKSPACES_PATH, TEST_USERNAME);
+        RestHelper.removePermissions(SECTIONS_PATH, TEST_USERNAME);
         RestHelper.cleanup();
     }
 
