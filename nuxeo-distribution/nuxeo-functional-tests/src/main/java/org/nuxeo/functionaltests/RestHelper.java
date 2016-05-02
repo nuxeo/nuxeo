@@ -94,8 +94,8 @@ public class RestHelper {
         return createUser(username, password, null, null, null, null, null);
     }
 
-    public static String createUser(String username, String password, String firstName, String lastName,
-            String company, String email, String group) {
+    public static String createUser(String username, String password, String firstName, String lastName, String company,
+            String email, String group) {
         String json = buildUserJSON(username, password, firstName, lastName, company, email, group);
 
         RequestBody body = RequestBody.create(JSON, json);
@@ -153,6 +153,23 @@ public class RestHelper {
         Request request = newRequest().url(url).delete().build();
         try {
             client.newCall(request).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void removePermissions(String pathOrId, String username) {
+        String json = buildRemovePermissionJSON(pathOrId, username);
+        RequestBody body = RequestBody.create(AUTOMATION_JSON, json);
+        String url = String.join("/",
+                Arrays.asList(AbstractTest.NUXEO_URL, "api/v1/automation", "Document.RemovePermission"));
+        Request request = newRequest().url(url).post(body).build();
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new RuntimeException(
+                        String.format("Unable to delete permissions for user '%s' on '%s'", username, pathOrId));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -293,6 +310,17 @@ public class RestHelper {
         sb.append("\"params\": {").append("\n");
         sb.append("\"username\": \"").append(username).append("\",\n");
         sb.append("\"permission\": \"").append(permission).append("\"\n");
+        sb.append("}").append(",\n");
+        sb.append("\"input\": \"").append(pathOrId).append("\"\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    private static String buildRemovePermissionJSON(String pathOrId, String username) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{").append("\n");
+        sb.append("\"params\": {").append("\n");
+        sb.append("\"user\": \"").append(username).append("\"\n");
         sb.append("}").append(",\n");
         sb.append("\"input\": \"").append(pathOrId).append("\"\n");
         sb.append("}");
