@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,9 +133,6 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
     }
 
     /**
-     * @param blobHolder2preview
-     * @return
-     * @throws PreviewException
      * @since 5.7.3
      */
     private Blob getBlob2preview(BlobHolder blobHolder2preview) throws PreviewException {
@@ -150,9 +147,6 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
     /**
      * Returns a blob holder suitable for a preview.
      *
-     * @param xpath
-     * @param adaptedDoc
-     * @return
      * @since 5.7.3
      */
     private BlobHolder getBlobHolder2preview(String xpath) {
