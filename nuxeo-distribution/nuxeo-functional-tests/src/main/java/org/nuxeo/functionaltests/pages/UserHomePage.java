@@ -21,19 +21,26 @@ package org.nuxeo.functionaltests.pages;
 import org.nuxeo.functionaltests.pages.profile.ProfilePage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-
-import java.util.NoSuchElementException;
 
 /**
  * @since 5.7
  */
 public class UserHomePage extends AbstractPage {
 
+    private static final String ITEM_XPATH_BASE = ".//table[@class='dataOutput']/tbody/tr[td//text()[contains(.,'%s')]]";
+
     @FindBy(id = "nxw_dashboard_user_tasks")
     WebElement userTasks;
+
+    @FindBy(id = "nxw_dashboard_user_documents")
+    WebElement userDocuments;
+
+    @FindBy(id = "nxw_dashboard_domain_documents")
+    WebElement domainDocuments;
 
     public UserHomePage(WebDriver driver) {
         super(driver);
@@ -80,13 +87,53 @@ public class UserHomePage extends AbstractPage {
         return asPage(ProfilePage.class);
     }
 
+    /**
+     * @since 8.3
+     */
+    public boolean hasUserDocument(String docName) {
+        try {
+            return getUserDocument(docName) != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasDomainDocument(String docName) {
+        try {
+            return getDomainDocument(docName) != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public DocumentBasePage goToDomainDocument(String docName) {
+        getDomainDocument(docName).findElement(By.className("documentTitle")).click();
+        return asPage(DocumentBasePage.class);
+    }
+
     protected void goToTab(String id) {
         clickOnTabIfNotSelected("nxw_homeTabs_panel", id);
     }
 
     protected WebElement getTask(String taskName) {
-        String xpath = String.format(".//table[@class='dataOutput']/tbody/tr[td//text()[contains(.,'%s')]]", taskName);
+        String xpath = String.format(ITEM_XPATH_BASE, taskName);
         return userTasks.findElement(By.xpath(xpath));
+    }
+
+    protected WebElement getUserDocument(String docName) {
+        String xpath = String.format(ITEM_XPATH_BASE, docName);
+        return userDocuments.findElement(By.xpath(xpath));
+    }
+
+    protected WebElement getDomainDocument(String docName) {
+        String xpath = String.format(ITEM_XPATH_BASE, docName);
+        return domainDocuments.findElement(By.xpath(xpath));
     }
 
 }

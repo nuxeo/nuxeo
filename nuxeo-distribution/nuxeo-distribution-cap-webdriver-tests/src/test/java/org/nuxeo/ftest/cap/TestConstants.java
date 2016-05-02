@@ -57,4 +57,10 @@ public class TestConstants {
 
     public static final String TEST_NOTE_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_NOTE_PATH);
 
+    public static final String TEST_FORUM_TITLE = "forum";
+
+    public static final String TEST_FORUM_PATH = TEST_WORKSPACE_PATH + TEST_FORUM_TITLE + "/";
+
+    public static final String TEST_FORUM_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_FORUM_PATH);
+
 }
