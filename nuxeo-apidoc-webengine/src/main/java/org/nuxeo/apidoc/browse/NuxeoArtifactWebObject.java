@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.webengine.model.Module;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
@@ -251,8 +252,13 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     }
 
     public boolean showDocumentation() {
+        boolean isSiteMode = Distribution.isSiteMode();
+
         CoreSession session = ctx.getCoreSession();
         boolean hideDocView = Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.hide.documentation.view");
-        return !hideDocView || getNxArtifact().getAssociatedDocuments(session).getDocumentationItems(session).size() > 0;
+        return !isSiteMode
+                && (!hideDocView || getNxArtifact().getAssociatedDocuments(session)
+                                                   .getDocumentationItems(session)
+                                                   .size() > 0);
     }
 }

@@ -32,7 +32,9 @@ Here are the currently available distributions:
 <th> Creation date</th>
 <th></th>
 <th></th>
+<#if !Root.isSiteMode() >
 <th></th>
+</#if>
 </tr>
 
   <#if Root.showCurrentDistribution()>
@@ -42,6 +44,10 @@ Here are the currently available distributions:
   <td>${rtSnap.creationDate?datetime}</td>
   <td><span class="sticker current">Current deployed distribution (live)</span></td>
 
+  <td>
+    <p class="explore"><a class="button" href="${Root.path}/current/"> Explore </a></p>
+  </td>
+<#if !Root.isSiteMode()>
   <td>
   <#if Root.isEditor()>
     <div id="saveBtn">
@@ -88,11 +94,7 @@ Here are the currently available distributions:
 
   </#if>
   </td>
-
-  <td>
-    <p class="explore"><a class="button" href="${Root.path}/current/"> Explore </a></p>
-  </td>
-
+</#if>
 </tr>
 </#if>
 
@@ -114,9 +116,11 @@ Here are the currently available distributions:
   <td>
     <p class="explore"><a class="button" href="${Root.path}/${distrib.key}/"> Explore </a></p>
   </td>
+<#if !Root.isSiteMode()>
   <td>
     <p class="explore export"><a class="button" href="${Root.path}/download/${distrib.key}">Export as zip.</a></p>
   </td>
+</#if>
 </tr>
 </#list>
 
@@ -134,6 +138,7 @@ Here are the currently available distributions:
 
     </td>
   </tr>
+  <tr>
     <td width="50%">
       <h2>What is Nuxeo Platform Explorer?</h2>
       <p>
@@ -152,28 +157,28 @@ Here are the currently available distributions:
       </#if>
     </td>
     <td width="50%">
+<#if !Root.isSiteMode()>
+  <div>
+    <h2>Documentation</h2>
 
-<h2>Documentation</h2>
+    <p>
+      Documentation items are associated to the Nuxeo Platform artifacts.<br/>
+      Documentation packs can be downloaded or uploaded here.
+    </p>
+    <p>
+      Documentation contains currently ${Root.documentationInfo}
+    </p>
 
-<p>
-Documentation items are associated to the Nuxeo Platform artifacts.<br/>
-Documentation packs can be downloaded or uploaded here.
-</p>
-
-<p>
-Documentation contains currently ${Root.documentationInfo}
-</p>
-
-<p><a href="${Root.path}/downloadDoc" class="button">Export all documentation as a zip.</a></p>
-
-<#if Root.isEditor()>
-You can use the form below to upload a documentation pack (zip):<br/>
-<form method="POST" action="${Root.path}/uploadDoc" enctype="multipart/form-data" >
-  <input type="file" name="archive">
-  <input type="submit" value="Upload doc pack">
-</form>
+    <p><a href="${Root.path}/downloadDoc" class="button">Export all documentation as a zip.</a></p>
+    <#if Root.isEditor()>
+      <p>You can use the form below to upload a documentation pack (zip):</p>
+      <form method="POST" action="${Root.path}/uploadDoc" enctype="multipart/form-data">
+        <input type="file" name="archive">
+        <input type="submit" value="Upload doc pack">
+      </form>
+    </#if>
+  </div>
 </#if>
-
     </td>
   </tr>
 </table>

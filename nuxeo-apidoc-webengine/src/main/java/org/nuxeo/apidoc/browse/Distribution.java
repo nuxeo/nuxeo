@@ -376,6 +376,22 @@ public class Distribution extends ModuleRoot {
                        .build();
     }
 
+    /**
+     * Use to allow authorized users to upload distribution even in site mode
+     *
+     * @since 8.3
+     */
+    @GET
+    @Path("_admin")
+    public Object getForms() {
+        NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
+        if (SecurityHelper.canEditDocumentation(principal)) {
+            return getView("forms").arg("hideNav", Boolean.TRUE);
+        } else {
+            return Response.status(401).build();
+        }
+    }
+
     @POST
     @Path("uploadDistrib")
     @Produces("text/html")
@@ -457,22 +473,22 @@ public class Distribution extends ModuleRoot {
     }
 
     public boolean isEditor() {
-        if (isEmbeddedMode()) {
+        if (isEmbeddedMode() || isSiteMode()) {
             return false;
         }
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
         return SecurityHelper.canEditDocumentation(principal);
     }
 
-    public boolean showCurrentDistribution() {
+    public static boolean showCurrentDistribution() {
         return Framework.isBooleanPropertyFalse("org.nuxeo.apidoc.hide.current.distribution") && !isSiteMode();
     }
 
-    public boolean showSeamComponent() {
+    public static boolean showSeamComponent() {
         return Framework.isBooleanPropertyFalse("org.nuxeo.apidoc.hide.seam.components") && !isSiteMode();
     }
 
-    public boolean isSiteMode() {
+    public static boolean isSiteMode() {
         return Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.site.mode");
     }
 }
