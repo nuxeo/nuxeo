@@ -131,6 +131,7 @@
     <module>nuxeo-travel-expenses</module>
     <module>nuxeo-agenda</module>
     <module>nuxeo-platform-smart-search</module>
+    <module>nuxeo-connect-tools</module>
   </modules>
 
   <dependencyManagement>
@@ -953,6 +954,34 @@
       <dependency>
         <groupId>org.nuxeo.sample</groupId>
         <artifactId>nuxeo-travel-expenses</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Connect Tools -->
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools-report-client</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools-report-api</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools-report-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.connect.tools</groupId>
+        <artifactId>nuxeo-connect-tools-report-core</artifactId>
+        <type>test-jar</type>
         <version>${nuxeo.addons.version}</version>
       </dependency>
     </dependencies>
