@@ -17,8 +17,11 @@
 package org.nuxeo.ecm.platform.preview.adapter.base;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -126,6 +129,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         try {
             result = getConversionService().convert(converterName, blobHolder2preview, null);
             setMimeType(result);
+            setDigest(result);
             return result.getBlobs();
         } catch (ConversionException e) {
             throw new PreviewException(e.getMessage(), e);
@@ -163,6 +167,19 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
                     && blob.getFilename().endsWith("html")) {
                 String mimeTpye = getMimeType(blob);
                 blob.setMimeType(mimeTpye);
+            }
+        }
+    }
+
+    protected void setDigest(BlobHolder result) {
+        for (Blob blob : result.getBlobs()) {
+            if (blob.getDigest() == null) {
+                try (InputStream stream = blob.getStream()) {
+                    String digest = DigestUtils.md5Hex(stream);
+                    blob.setDigest(digest);
+                } catch (IOException e) {
+                    log.warn("Unable to compute digest of blob.", e);
+                }
             }
         }
     }

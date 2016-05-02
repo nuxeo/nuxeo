@@ -24,6 +24,7 @@ import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.international.LocaleSelector;
@@ -78,7 +79,8 @@ public class AnnotationBlobPostProcessor implements BlobPostProcessor {
             String blobAsString = getBlobAsString(blob, encoding);
             String processedBlob = addAnnotationModule(blobAsString);
 
-            blob = Blobs.createBlob(processedBlob, blob.getMimeType(), encoding);
+            blob = Blobs.createBlob(processedBlob, blob.getMimeType(), encoding, blob.getFilename());
+            blob.setDigest(DigestUtils.md5Hex(processedBlob));
         } catch (IOException e) {
             log.debug("Unable to process Blob", e);
         }
