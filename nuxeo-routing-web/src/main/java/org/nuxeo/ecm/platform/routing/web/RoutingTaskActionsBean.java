@@ -239,6 +239,7 @@ public class RoutingTaskActionsBean implements Serializable {
         }
         // if the user only had temporary permissions on the current doc given
         // by the workflow
+        navigationContext.setCurrentDocument(null);
         return navigationContext.goHome();
     }
 
