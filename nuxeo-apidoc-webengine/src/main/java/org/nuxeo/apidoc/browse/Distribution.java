@@ -453,7 +453,7 @@ public class Distribution extends ModuleRoot {
 
     public boolean isEmbeddedMode() {
         Boolean embed = (Boolean) getContext().getProperty("embeddedMode", Boolean.FALSE);
-        return embed == null ? false : embed.booleanValue();
+        return embed != null && embed;
     }
 
     public boolean isEditor() {
@@ -465,10 +465,14 @@ public class Distribution extends ModuleRoot {
     }
 
     public boolean showCurrentDistribution() {
-        return !Framework.isBooleanPropertyTrue("org.nuxeo.explorer.hide.current.distribution");
+        return Framework.isBooleanPropertyFalse("org.nuxeo.apidoc.hide.current.distribution") && !isSiteMode();
     }
 
     public boolean showSeamComponent() {
-        return Framework.isBooleanPropertyFalse("org.nuxeo.explorer.hide.seam.components");
+        return Framework.isBooleanPropertyFalse("org.nuxeo.apidoc.hide.seam.components") && !isSiteMode();
+    }
+
+    public boolean isSiteMode() {
+        return Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.site.mode");
     }
 }

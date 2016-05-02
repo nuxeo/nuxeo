@@ -252,7 +252,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     public boolean showDocumentation() {
         CoreSession session = ctx.getCoreSession();
-        boolean hideDocView = Framework.isBooleanPropertyTrue("org.nuxeo.explorer.hide.documentation.view");
+        boolean hideDocView = Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.hide.documentation.view");
         return !hideDocView || getNxArtifact().getAssociatedDocuments(session).getDocumentationItems(session).size() > 0;
     }
 }
