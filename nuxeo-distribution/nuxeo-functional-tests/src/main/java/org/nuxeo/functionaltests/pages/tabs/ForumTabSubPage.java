@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Gabriel Barata
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -71,6 +72,14 @@ public class ForumTabSubPage extends DocumentBasePage {
         try {
             WebElement element = forumContentForm.findElement(By.linkText(title));
             return element != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    public boolean hasNewTopicButton() {
+        try {
+            return newTopicButtonLink.isDisplayed();
         } catch (NoSuchElementException e) {
             return false;
         }
