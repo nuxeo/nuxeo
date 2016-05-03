@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<q:qbe xmlns:q="http://marklogic.com/appservices/querybyexample" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <q:query>
-    <document>
-      <ecm__id xsi:type="xs:string">ID</ecm__id>
-    </document>
-  </q:query>
-</q:qbe>

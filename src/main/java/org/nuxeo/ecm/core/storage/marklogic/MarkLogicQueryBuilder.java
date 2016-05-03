@@ -58,7 +58,7 @@ import com.marklogic.client.io.marker.StructureWriteHandle;
  *
  * @since 8.3
  */
-public class MarkLogicQueryBuilder {
+class MarkLogicQueryBuilder {
 
     private static final Long ZERO = 0L;
 

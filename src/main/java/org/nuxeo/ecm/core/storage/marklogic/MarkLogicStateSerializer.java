@@ -74,14 +74,7 @@ final class MarkLogicStateSerializer {
         } else if (value instanceof Object[]) {
             result = Optional.of(serialize(key, Arrays.asList((Object[]) value)));
         } else {
-            String nodeValue;
-            if (value instanceof Calendar) {
-                nodeValue = MarkLogicHelper.serializeCalendar((Calendar) value);
-            } else if (value instanceof DateTime) {
-                nodeValue = ((DateTime) value).toString(MarkLogicHelper.DATE_TIME_FORMATTER);
-            } else {
-                nodeValue = value.toString();
-            }
+            String nodeValue = serializeValue(value);
             Element element = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
             element.addAttribute(MarkLogicHelper.ATTRIBUTE_XSI_TYPE, ElementType.getType(value.getClass()).getKey());
             element.setText(nodeValue);
@@ -96,6 +89,18 @@ final class MarkLogicStateSerializer {
             serialize(MarkLogicHelper.ARRAY_ITEM_KEY, object).ifPresent(array::add);
         }
         return array;
+    }
+
+    public static String serializeValue(Object value) {
+        String serializedValue;
+        if (value instanceof Calendar) {
+            serializedValue = MarkLogicHelper.serializeCalendar((Calendar) value);
+        } else if (value instanceof DateTime) {
+            serializedValue = ((DateTime) value).toString(MarkLogicHelper.DATE_TIME_FORMATTER);
+        } else {
+            serializedValue = value.toString();
+        }
+        return serializedValue;
     }
 
     public static void addDefaultNamespaces(Element root) {

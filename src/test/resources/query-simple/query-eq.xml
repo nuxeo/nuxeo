@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+       xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <or-query>
+    <value-query type="string">
+      <element ns="" name="ecm__id" />
+      <text>ID</text>
+    </value-query>
+    <container-query>
+      <element ns="" name="ecm__id" />
+      <value-query type="string">
+        <element ns="" name="nxml__item" />
+        <text>ID</text>
+      </value-query>
+    </container-query>
+  </or-query>
+</query>

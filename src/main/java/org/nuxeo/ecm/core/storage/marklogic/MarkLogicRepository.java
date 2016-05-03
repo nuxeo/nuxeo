@@ -72,7 +72,7 @@ import com.marklogic.client.document.DocumentPage;
 import com.marklogic.client.document.DocumentRecord;
 import com.marklogic.client.document.XMLDocumentManager;
 import com.marklogic.client.io.marker.StructureWriteHandle;
-import com.marklogic.client.query.QueryDefinition;
+import com.marklogic.client.query.RawQueryDefinition;
 
 /**
  * MarkLogic implementation of a {@link Repository}.
@@ -192,21 +192,21 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public State readChildState(String parentId, String name, Set<String> ignored) {
-        StructureWriteHandle query = getChildQuery(parentId, name, ignored);
+        RawQueryDefinition query = getChildQuery(parentId, name, ignored);
         return findOne(query);
     }
 
     @Override
     public boolean hasChild(String parentId, String name, Set<String> ignored) {
-        StructureWriteHandle query = getChildQuery(parentId, name, ignored);
+        RawQueryDefinition query = getChildQuery(parentId, name, ignored);
         return exist(query);
     }
 
-    private StructureWriteHandle getChildQuery(String parentId, String name, Set<String> ignored) {
-        return new MarkLogicQueryByExampleBuilder().eq(KEY_PARENT_ID, parentId)
-                                                   .eq(KEY_NAME, name)
-                                                   .notIn(KEY_ID, ignored)
-                                                   .build();
+    private RawQueryDefinition getChildQuery(String parentId, String name, Set<String> ignored) {
+        return new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager()).eq(KEY_PARENT_ID, parentId)
+                                                                                 .eq(KEY_NAME, name)
+                                                                                 .notIn(KEY_ID, ignored)
+                                                                                 .build();
     }
 
     @Override
@@ -216,7 +216,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        MarkLogicQueryByExampleBuilder builder = new MarkLogicQueryByExampleBuilder();
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager());
         builder.eq(key1, value1);
         builder.eq(key2, value2);
         builder.notIn(KEY_ID, ignored);
@@ -228,11 +228,13 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             Map<String, Object[]> targetProxies) {
         // TODO retrieve only some field
         // https://docs.marklogic.com/guide/search-dev/qbe#id_54044
-        StructureWriteHandle query = new MarkLogicQueryByExampleBuilder().eq(key, value).build();
+        RawQueryDefinition query = new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager()).eq(key, value)
+                                                                                                     .build();
         if (log.isTraceEnabled()) {
             logQuery(query);
         }
-        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(init(query), 0)) {
+
+        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(query, 0)) {
             for (DocumentRecord record : page) {
                 State state = record.getContent(new StateHandle()).get();
                 String id = (String) state.get(KEY_ID);
@@ -271,7 +273,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             // so we need the full state from the database
             evaluator.parse();
         }
-        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(init(query), 0)) {
+        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(
+                markLogicClient.newQueryManager().newRawQueryByExampleDefinition(query), 0)) {
             List<Map<String, Serializable>> projections = new ArrayList<>((int) page.size());
             for (DocumentRecord record : page) {
                 State state = record.getContent(new StateHandle()).get();
@@ -408,7 +411,7 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     }
 
     private Optional<Lock> extractLock(State state) {
-        String owner =(String) state.get(KEY_LOCK_OWNER);
+        String owner = (String) state.get(KEY_LOCK_OWNER);
         if (owner == null) {
             return Optional.empty();
         }
@@ -429,26 +432,25 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         throw new IllegalStateException("Not implemented yet");
     }
 
-    private <T> T queryKeyValue(String key, Object value, Set<String> ignored,
-            Function<StructureWriteHandle, T> executor) {
-        MarkLogicQueryByExampleBuilder builder = new MarkLogicQueryByExampleBuilder();
+    private <T> T queryKeyValue(String key, Object value, Set<String> ignored, Function<RawQueryDefinition, T> executor) {
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(markLogicClient.newQueryManager());
         builder.eq(key, value);
         builder.notIn(KEY_ID, ignored);
         return executor.apply(builder.build());
     }
 
-    private boolean exist(StructureWriteHandle query) {
+    private boolean exist(RawQueryDefinition query) {
         if (log.isTraceEnabled()) {
             logQuery(query);
         }
-        return markLogicClient.newQueryManager().findOne(init(query)) != null;
+        return markLogicClient.newQueryManager().findOne(query) != null;
     }
 
-    private State findOne(StructureWriteHandle query) {
+    private State findOne(RawQueryDefinition query) {
         if (log.isTraceEnabled()) {
             logQuery(query);
         }
-        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(init(query), 0)) {
+        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(query, 0)) {
             if (page.hasNext()) {
                 return page.nextContent(new StateHandle()).get();
             }
@@ -456,14 +458,14 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         }
     }
 
-    private List<State> findAll(StructureWriteHandle query) {
+    private List<State> findAll(RawQueryDefinition query) {
         if (log.isTraceEnabled()) {
             logQuery(query);
         }
-        return findAll(init(query), 1);
+        return findAll(query, 1);
     }
 
-    private List<State> findAll(QueryDefinition query, long start) {
+    private List<State> findAll(RawQueryDefinition query, long start) {
         try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(query, start)) {
             List<State> states = new ArrayList<>((int) (page.getTotalSize() - start + 1));
             for (DocumentRecord record : page) {
@@ -476,12 +478,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         }
     }
 
-    private QueryDefinition init(StructureWriteHandle query) {
-        return markLogicClient.newQueryManager().newRawQueryByExampleDefinition(query);
-    }
-
-    private void logQuery(StructureWriteHandle query) {
-        log.trace("MarkLogic: QUERY " + query);
+    private void logQuery(RawQueryDefinition query) {
+        log.trace("MarkLogic: QUERY " + query.getHandle());
     }
 
 }

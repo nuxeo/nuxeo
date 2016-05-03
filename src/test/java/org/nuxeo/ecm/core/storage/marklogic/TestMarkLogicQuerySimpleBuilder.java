@@ -25,28 +25,27 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-public class TestMarkLogicQueryByExampleBuilder extends AbstractTest {
+public class TestMarkLogicQuerySimpleBuilder extends AbstractTest {
 
     @Test
     public void testEq() throws Exception {
-        String query = new MarkLogicQueryByExampleBuilder().eq(KEY_ID, "ID").build().toString();
-        assertXMLFileAgainstString("query-example/query-eq.xml", query);
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(CLIENT.newQueryManager());
+        String query = builder.eq(KEY_ID, "ID").build().toString();
+        assertXMLFileAgainstString("query-simple/query-eq.xml", query);
     }
 
     @Test
     public void testNotIn() throws Exception {
-        String query = new MarkLogicQueryByExampleBuilder().notIn(KEY_ID, Arrays.asList("ID1", "ID2"))
-                                                           .build()
-                                                           .toString();
-        assertXMLFileAgainstString("query-example/query-not-in.xml", query);
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(CLIENT.newQueryManager());
+        String query = builder.notIn(KEY_ID, Arrays.asList("ID1", "ID2")).build().toString();
+        assertXMLFileAgainstString("query-simple/query-not-in.xml", query);
     }
 
     @Test
     public void testNotInOneElement() throws Exception {
-        String query = new MarkLogicQueryByExampleBuilder().notIn(KEY_ID, Collections.singleton("ID1"))
-                                                           .build()
-                                                           .toString();
-        assertXMLFileAgainstString("query-example/query-not-in-one-element.xml", query);
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(CLIENT.newQueryManager());
+        String query = builder.notIn(KEY_ID, Collections.singleton("ID1")).build().toString();
+        assertXMLFileAgainstString("query-simple/query-not-in-one-element.xml", query);
     }
 
 }
