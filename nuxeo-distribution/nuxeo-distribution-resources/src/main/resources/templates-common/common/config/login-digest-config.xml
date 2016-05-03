@@ -18,6 +18,7 @@
     <userManager>
       <digestAuthDirectory>digestauth</digestAuthDirectory>
       <digestAuthRealm>NUXEO</digestAuthRealm>
+      <userCacheName>default-cache</userCacheName>
     </userManager>
   </extension>
 
