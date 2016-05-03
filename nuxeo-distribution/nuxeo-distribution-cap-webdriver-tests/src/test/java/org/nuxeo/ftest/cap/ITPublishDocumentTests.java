@@ -16,6 +16,7 @@
  * Contributors:
  *     Gabriel Barata
  *     Nelson Silva
+ *     Yannis JULIENNE
  */
 
 package org.nuxeo.ftest.cap;
@@ -57,6 +58,18 @@ public class ITPublishDocumentTests extends AbstractTest {
 
     protected final static String TEST_SECTION_TITLE = "Test Section " + new Date().getTime();
 
+    protected final static String TEST_SECTION_URL = String.format(Constants.NXPATH_URL_FORMAT,
+            SECTIONS_PATH + TEST_SECTION_TITLE);
+
+    protected final static String TEST_FOLER_URL = String.format(Constants.NXPATH_URL_FORMAT,
+            TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE);
+
+    protected final static String TEST_FILE_URL = String.format(Constants.NXPATH_URL_FORMAT,
+            TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE + "/" + TEST_FILE_TITLE);
+
+    protected final static String TEST_FILE_IN_SECTION_URL = String.format(Constants.NXPATH_URL_FORMAT,
+            SECTIONS_PATH + TEST_SECTION_TITLE + "/" + TEST_FILE_TITLE);
+
     private static final String MANAGER_USERNAME = TEST_USERNAME;
 
     private static final String PUBLISHER_USERNAME = "linnet";
@@ -89,10 +102,9 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionManager() throws UserNotConnectedException, IOException {
         login(MANAGER_USERNAME, MANAGER_USERNAME);
 
-        open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
-        PublishTabSubPage publishTab = asPage(DocumentBasePage.class)
-                .createFile(TEST_FILE_TITLE, "description", false, null, null, null)
-                .getPublishTab();
+        open(TEST_FOLER_URL);
+        PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
+                null, null, null).getPublishTab();
 
         publishTab.publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
@@ -101,19 +113,19 @@ public class ITPublishDocumentTests extends AbstractTest {
         assertEquals("Unpublish",
                 publishTab.getPublishingInfos().get(0).findElement(By.xpath(".//a[@class='button']")).getText());
 
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
 
-        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class)
-                .goToDocument(TEST_FILE_TITLE).getSummaryTab().isPublished());
+        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class).goToDocument(
+                TEST_FILE_TITLE).getSummaryTab().isPublished());
 
         logout();
 
         // Check the publish status for the readers of the section
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
 
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
-        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class)
-                .goToDocument(TEST_FILE_TITLE).getSummaryTab().isPublished());
+        open(TEST_SECTION_URL);
+        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class).goToDocument(
+                TEST_FILE_TITLE).getSummaryTab().isPublished());
 
         logout();
     }
@@ -122,23 +134,22 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionManagerApproval()
             throws UserNotConnectedException, IOException {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
-        PublishTabSubPage publishTab = asPage(DocumentBasePage.class)
-                .createFile(TEST_FILE_TITLE, "description", false, null, null, null)
-                .getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        open(TEST_FOLER_URL);
+        PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
+                null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
         // No unpublish button
         assertEquals(1, publishTab.getPublishingInfos().size());
         assertTrue(publishTab.getPublishingInfos().get(0).findElements(By.xpath(".//a[@class='button']")).isEmpty());
 
         // Document is waiting for approval
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
-        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class)
-                .goToDocument(TEST_FILE_TITLE).getSummaryTab().isAwaitingPublication());
+        open(TEST_SECTION_URL);
+        assertTrue(asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class).goToDocument(
+                TEST_FILE_TITLE).getSummaryTab().isAwaitingPublication());
         logout();
 
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         // The document is not visible until approved
         assertTrue(driver.getPageSource().contains("This folder contains no document"));
         logout();
@@ -147,9 +158,9 @@ public class ITPublishDocumentTests extends AbstractTest {
     @Test
     public void testPublishingApprovalBySectionManager() throws UserNotConnectedException, IOException {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
-        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null)
-                .getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        open(TEST_FOLER_URL);
+        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null,
+                null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
         logout();
 
         // manager has a publication task in the home dashboard
@@ -172,14 +183,14 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         // check readers can see the published document
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         SectionContentTabSubPage section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertTrue(section.hasDocumentLink(TEST_FILE_TITLE));
         assertTrue(section.goToDocument(TEST_FILE_TITLE).getSummaryTab().isPublished());
 
         // check the update for the used who published the document
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertTrue(section.hasDocumentLink(TEST_FILE_TITLE));
         assertTrue(section.goToDocument(TEST_FILE_TITLE).getSummaryTab().isPublished());
@@ -189,18 +200,16 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionWriterApproval()
             throws UserNotConnectedException, IOException {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
-        PublishTabSubPage publishTab = asPage(DocumentBasePage.class)
-                .createFile(TEST_FILE_TITLE, "description", false, null, null, null)
-                .getPublishTab()
-                .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        open(TEST_FOLER_URL);
+        PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
+                null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
         // No unpublish button
         assertEquals(1, publishTab.getPublishingInfos().size());
         assertTrue(publishTab.getPublishingInfos().get(0).findElements(By.xpath(".//a[@class='button']")).isEmpty());
 
         // Check the document is waiting for approval in the section
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         SectionContentTabSubPage section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertTrue(section.hasDocumentLink(TEST_FILE_TITLE));
         assertTrue(section.goToDocument(TEST_FILE_TITLE).getSummaryTab().isAwaitingPublication());
@@ -209,7 +218,7 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         // Check that readers do not see the document waiting for approval
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
@@ -239,14 +248,14 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         // Check that readers now see the document in the section
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertTrue(section.hasDocumentLink(TEST_FILE_TITLE));
         logout();
 
         // Check that the published now sees the document as published
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertTrue(section.hasDocumentLink(TEST_FILE_TITLE));
         assertTrue(section.goToDocument(TEST_FILE_TITLE).getSummaryTab().isPublished());
@@ -254,21 +263,19 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testPublishDocumentBySectionReaderForSectionWriterReject() throws UserNotConnectedException,
-            IOException {
+    public void testPublishDocumentBySectionReaderForSectionWriterReject()
+            throws UserNotConnectedException, IOException {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
-        PublishTabSubPage publishTab = asPage(DocumentBasePage.class)
-                .createFile(TEST_FILE_TITLE, "description", false, null, null, null)
-                .getPublishTab()
-                .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        open(TEST_FOLER_URL);
+        PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
+                null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
         // No unpublish button
         assertEquals(1, publishTab.getPublishingInfos().size());
         assertTrue(publishTab.getPublishingInfos().get(0).findElements(By.xpath(".//a[@class='button']")).isEmpty());
 
         // Check the document is waiting for approval in the section
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         SectionContentTabSubPage section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertTrue(section.hasDocumentLink(TEST_FILE_TITLE));
         assertTrue(section.goToDocument(TEST_FILE_TITLE).getSummaryTab().isAwaitingPublication());
@@ -277,7 +284,7 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         // Check that readers do not see the document waiting for approval
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
@@ -308,20 +315,19 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         // Check that readers don't see the document in the section
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
         logout();
 
         // Check that the publisher also doesn't see the document
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
         // Check the document as a publisher
-        open(String.format(Constants.NXPATH_URL_FORMAT,
-                TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE + "/" + TEST_FILE_TITLE));
+        open(TEST_FILE_URL);
         assertEquals(0, asPage(DocumentBasePage.class).getPublishTab().getPublishingInfos().size());
 
         logout();
@@ -331,18 +337,16 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionManagerReject()
             throws UserNotConnectedException, IOException {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
-        PublishTabSubPage publishTab = asPage(DocumentBasePage.class)
-                .createFile(TEST_FILE_TITLE, "description", false, null, null, null)
-                .getPublishTab()
-                .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        open(TEST_FOLER_URL);
+        PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
+                null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
         // No unpublish button
         assertEquals(1, publishTab.getPublishingInfos().size());
         assertTrue(publishTab.getPublishingInfos().get(0).findElements(By.xpath(".//a[@class='button']")).isEmpty());
 
         // Check the document is waiting for approval in the section
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         SectionContentTabSubPage section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertTrue(section.hasDocumentLink(TEST_FILE_TITLE));
         assertTrue(section.goToDocument(TEST_FILE_TITLE).getSummaryTab().isAwaitingPublication());
@@ -351,7 +355,7 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         // Check that readers do not see the document waiting for approval
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
@@ -382,20 +386,19 @@ public class ITPublishDocumentTests extends AbstractTest {
 
         // Check that readers don't see the document in the section
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
         logout();
 
         // Check that the publisher also doesn't see the document
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
         // Check the document as a publisher
-        open(String.format(Constants.NXPATH_URL_FORMAT,
-                TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE + "/" + TEST_FILE_TITLE));
+        open(TEST_FILE_URL);
         assertEquals(0, asPage(DocumentBasePage.class).getPublishTab().getPublishingInfos().size());
 
         logout();
@@ -406,45 +409,41 @@ public class ITPublishDocumentTests extends AbstractTest {
         login(MANAGER_USERNAME, MANAGER_USERNAME);
 
         // Publish a file
-        open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
-        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null)
-                .getPublishTab()
-                .publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        open(TEST_FOLER_URL);
+        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null,
+                null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
         // Unpublish it
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         SectionContentTabSubPage section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertTrue(section.hasDocumentLink(TEST_FILE_TITLE));
         section.unpublishDocument(TEST_FILE_TITLE);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
         // Check the document
-        open(String.format(Constants.NXPATH_URL_FORMAT,
-                TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE + "/" + TEST_FILE_TITLE));
+        open(TEST_FILE_URL);
         assertEquals(0, asPage(DocumentBasePage.class).getPublishTab().getPublishingInfos().size());
 
         // Check that readers don't see the document in the section
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
         // Check the document as a reader
-        open(String.format(Constants.NXPATH_URL_FORMAT,
-                TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE + "/" + TEST_FILE_TITLE));
+        open(TEST_FILE_URL);
         assertEquals(0, asPage(DocumentBasePage.class).getPublishTab().getPublishingInfos().size());
 
         logout();
 
         // Check that writers don't see the document in the section
         login(WRITER_USERNAME, WRITER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
         // Check the document as a writer
-        open(String.format(Constants.NXPATH_URL_FORMAT,
-                TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE + "/" + TEST_FILE_TITLE));
+        open(TEST_FILE_URL);
         assertEquals(0, asPage(DocumentBasePage.class).getPublishTab().getPublishingInfos().size());
 
         logout();
@@ -455,48 +454,155 @@ public class ITPublishDocumentTests extends AbstractTest {
         login(MANAGER_USERNAME, MANAGER_USERNAME);
 
         // Publish a file
-        open(String.format(Constants.NXPATH_URL_FORMAT, TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE));
-        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null)
-                .getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+        open(TEST_FOLER_URL);
+        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null,
+                null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
         logout();
 
         // Unpublish it
         login(WRITER_USERNAME, WRITER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         SectionContentTabSubPage section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertTrue(section.hasDocumentLink(TEST_FILE_TITLE));
         section.unpublishDocument(TEST_FILE_TITLE);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
         // Check the document
-        open(String.format(Constants.NXPATH_URL_FORMAT,
-                TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE + "/" + TEST_FILE_TITLE));
+        open(TEST_FILE_URL);
         assertEquals(0, asPage(DocumentBasePage.class).getPublishTab().getPublishingInfos().size());
 
         // Check that readers don't see the document in the section
         login(READER_USERNAME, READER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
         // Check the document as a reader
-        open(String.format(Constants.NXPATH_URL_FORMAT,
-                TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE + "/" + TEST_FILE_TITLE));
+        open(TEST_FILE_URL);
         assertEquals(0, asPage(DocumentBasePage.class).getPublishTab().getPublishingInfos().size());
 
         logout();
 
         // Check that managers don't see the document in the section
         login(MANAGER_USERNAME, MANAGER_USERNAME);
-        open(String.format(Constants.NXPATH_URL_FORMAT, SECTIONS_PATH + TEST_SECTION_TITLE));
+        open(TEST_SECTION_URL);
         section = asPage(DocumentBasePage.class).getContentTab(SectionContentTabSubPage.class);
         assertFalse(section.hasDocumentLink(TEST_FILE_TITLE));
 
         // Check the document as a manager
-        open(String.format(Constants.NXPATH_URL_FORMAT,
-                TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE + "/" + TEST_FILE_TITLE));
+        open(TEST_FILE_URL);
         assertEquals(0, asPage(DocumentBasePage.class).getPublishTab().getPublishingInfos().size());
+
+        logout();
+    }
+
+    @Test
+    public void testMultiplePublications() throws UserNotConnectedException, IOException {
+        // create file as admin
+        login();
+        open(TEST_FOLER_URL);
+        asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null);
+
+        // publish as reader
+        login(READER_USERNAME, READER_USERNAME);
+        open(TEST_FILE_URL);
+        asPage(DocumentBasePage.class).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+
+        // check result as reader
+        open(TEST_FILE_IN_SECTION_URL);
+        SummaryTabSubPage summaryTab = asPage(SummaryTabSubPage.class);
+        assertTrue(summaryTab.isAwaitingPublication());
+        assertFalse(summaryTab.hasRejectPublicationComment());
+        assertFalse(summaryTab.hasApprovePublicationButton());
+        assertFalse(summaryTab.hasRejectPublicationButton());
+
+        // publish as publisher
+        login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
+        open(TEST_FILE_URL);
+        asPage(DocumentBasePage.class).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+
+        // check result as publisher
+        open(TEST_FILE_IN_SECTION_URL);
+        summaryTab = asPage(SummaryTabSubPage.class);
+        assertTrue(summaryTab.isAwaitingPublication());
+        assertFalse(summaryTab.hasRejectPublicationComment());
+        assertFalse(summaryTab.hasApprovePublicationButton());
+        assertFalse(summaryTab.hasRejectPublicationButton());
+
+        // check result as writer
+        login(WRITER_USERNAME, WRITER_USERNAME);
+        open(TEST_FILE_IN_SECTION_URL);
+        summaryTab = asPage(SummaryTabSubPage.class);
+        assertTrue(summaryTab.isAwaitingPublication());
+        assertTrue(summaryTab.hasRejectPublicationComment());
+        assertTrue(summaryTab.hasApprovePublicationButton());
+        assertTrue(summaryTab.hasRejectPublicationButton());
+
+        // publish as writer
+        summaryTab = summaryTab.approvePublication();
+
+        // check result as writer
+        assertTrue(summaryTab.isPublished());
+        assertFalse(summaryTab.hasRejectPublicationComment());
+        assertFalse(summaryTab.hasApprovePublicationButton());
+        assertFalse(summaryTab.hasRejectPublicationButton());
+
+        // check result as reader
+        login(READER_USERNAME, READER_USERNAME);
+        open(TEST_FILE_IN_SECTION_URL);
+        summaryTab = asPage(SummaryTabSubPage.class);
+        assertTrue(summaryTab.isPublished());
+
+        // check result as publisher
+        login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
+        open(TEST_FILE_IN_SECTION_URL);
+        summaryTab = asPage(SummaryTabSubPage.class);
+        assertTrue(summaryTab.isPublished());
+
+        // unpublish as manager
+        login(MANAGER_USERNAME, MANAGER_USERNAME);
+        open(TEST_FILE_URL);
+        asPage(DocumentBasePage.class).getPublishTab().unpublish(TEST_SECTION_TITLE, "0.1");
+
+        // check result on homepage as manager
+        UserHomePage homePage = asPage(DocumentBasePage.class).getUserHome();
+        assertTrue(homePage.isUserTasksEmpty());
+
+        // publish as publisher
+        login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
+        open(TEST_FILE_URL);
+        asPage(DocumentBasePage.class).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+
+        // publish as reader
+        login(READER_USERNAME, READER_USERNAME);
+        open(TEST_FILE_URL);
+        asPage(DocumentBasePage.class).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+
+        // check result on homepage as manager
+        login(MANAGER_USERNAME, MANAGER_USERNAME);
+        homePage = asPage(DocumentBasePage.class).getUserHome();
+        assertTrue(homePage.taskExistsOnUserTasks(TEST_FILE_TITLE));
+
+        // publish by task as manager
+        summaryTab = homePage.redirectToTask(TEST_FILE_TITLE);
+        summaryTab.approvePublication();
+
+        // check result on homepage as manager
+        homePage = asPage(DocumentBasePage.class).getUserHome();
+        assertTrue(homePage.isUserTasksEmpty());
+
+        // check result as reader
+        login(READER_USERNAME, READER_USERNAME);
+        open(TEST_FILE_IN_SECTION_URL);
+        summaryTab = asPage(SummaryTabSubPage.class);
+        assertTrue(summaryTab.isPublished());
+
+        // check result as publisher
+        login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
+        open(TEST_FILE_IN_SECTION_URL);
+        summaryTab = asPage(SummaryTabSubPage.class);
+        assertTrue(summaryTab.isPublished());
 
         logout();
     }
