@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 
-import com.marklogic.client.io.marker.StructureWriteHandle;
+import com.marklogic.client.query.RawQueryDefinition;
 
 public class TestMarkLogicQueryBuilder extends AbstractTest {
 
@@ -54,12 +54,16 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
                                     .collect(Collectors.toList()));
         MultiExpression expression = new MultiExpression(Operator.AND, Collections.singletonList(new Expression(
                 new Reference(KEY_PRIMARY_TYPE), Operator.IN, inPrimaryTypes)));
+        // SELECT 'ecm:id' WHERE ecm:primaryType IN 'OrderedFolder', 'HiddenFile', 'DocWithAge', 'TemplateRoot',
+        // 'TestDocument2', 'TestDocumentWithDefaultPrefetch', 'SectionRoot', 'Document', 'Folder', 'WorkspaceRoot',
+        // 'HiddenFolder', 'Section', 'TestDocument', 'Relation', 'FolderWithSearch', 'MyDocType', 'Book', 'Note',
+        // 'ComplexDoc', 'Domain', 'File', 'Workspace'
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
-        StructureWriteHandle query = new MarkLogicQueryBuilder(evaluator.getExpression(), evaluator.getSelectClause(),
-                null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
-        assertXMLFileAgainstString("query-expression/core-feature.xml", query.toString());
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/core-feature.xml", query.getHandle().toString());
     }
 
 }

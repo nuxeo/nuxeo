@@ -18,22 +18,18 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
-import org.nuxeo.ecm.core.query.sql.model.Function;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
@@ -50,8 +46,10 @@ import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 
-import com.marklogic.client.extra.dom4j.DOM4JHandle;
-import com.marklogic.client.io.marker.StructureWriteHandle;
+import com.marklogic.client.query.QueryManager;
+import com.marklogic.client.query.RawQueryDefinition;
+import com.marklogic.client.query.StructuredQueryBuilder;
+import com.marklogic.client.query.StructuredQueryDefinition;
 
 /**
  * Query builder for a MarkLogic query from an {@link Expression}.
@@ -64,16 +62,6 @@ class MarkLogicQueryBuilder {
 
     private static final Long ONE = 1L;
 
-    private static final String QBE = "q:qbe";
-
-    private static final String QUERY = "q:query";
-
-    private static final String NOT = "q:not";
-
-    private static final String AND = "q:and";
-
-    private static final String OR = "q:or";
-
     // non-canonical index syntax, for replaceAll
     private final static Pattern NON_CANON_INDEX = Pattern.compile("[^/\\[\\]]+" // name
             + "\\[(\\d+|\\*|\\*\\d+)\\]" // index in brackets
@@ -81,6 +69,8 @@ class MarkLogicQueryBuilder {
 
     /** Splits foo.*.bar into foo, *, bar and split foo.*1.bar into foo, *1, bar with the last bar part optional */
     protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*)\\.\\*(\\d*)(?:\\.(.*))?");
+
+    private final StructuredQueryBuilder sqb;
 
     private final Expression expression;
 
@@ -94,8 +84,9 @@ class MarkLogicQueryBuilder {
 
     private Document document;
 
-    public MarkLogicQueryBuilder(Expression expression, SelectClause selectClause,
+    public MarkLogicQueryBuilder(QueryManager queryManager, Expression expression, SelectClause selectClause,
             OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled) {
+        this.sqb = queryManager.newStructuredQueryBuilder();
         this.expression = expression;
         this.selectClause = selectClause;
         this.orderByClause = orderByClause;
@@ -117,24 +108,11 @@ class MarkLogicQueryBuilder {
     }
 
 
-    public StructureWriteHandle buildQuery() {
-        if (document == null) {
-            Element documentToQuery = DocumentHelper.createElement(MarkLogicHelper.DOCUMENT_ROOT);
-            Element query = DocumentHelper.createElement(QUERY);
-            query.add(documentToQuery);
-            Element qbe = DocumentHelper.createElement(QBE);
-            qbe.add(query);
-            document = DocumentHelper.createDocument(qbe);
-
-            qbe.addNamespace("q", "http://marklogic.com/appservices/querybyexample");
-            MarkLogicStateSerializer.addDefaultNamespaces(qbe);
-
-            documentToQuery.add(walkExpression(expression));
-        }
-        return new DOM4JHandle(document);
+    public RawQueryDefinition buildQuery() {
+        return sqb.build(walkExpression(expression));
     }
 
-    private Element walkExpression(Expression expression) {
+    private StructuredQueryDefinition walkExpression(Expression expression) {
         Operator op = expression.operator;
         Operand lvalue = expression.lvalue;
         Operand rvalue = expression.rvalue;
@@ -202,7 +180,7 @@ class MarkLogicQueryBuilder {
         throw new QueryParseException("Unknown operator: " + op);
     }
 
-    private Element walkEq(Operand lvalue, Operand rvalue) {
+    private StructuredQueryDefinition walkEq(Operand lvalue, Operand rvalue) {
         FieldInfo leftInfo = walkReference(lvalue);
         if (leftInfo.isMixinTypes()) {
             if (!(rvalue instanceof StringLiteral)) {
@@ -213,84 +191,65 @@ class MarkLogicQueryBuilder {
         return leftInfo.eq((Literal) rvalue);
     }
 
-    private Element walkNotEq(Operand lvalue, Operand rvalue) {
-        Element eq = walkEq(lvalue, rvalue);
-        Element neq = DocumentHelper.createElement(NOT);
-        neq.add(eq);
-        return neq;
+    private StructuredQueryDefinition walkNotEq(Operand lvalue, Operand rvalue) {
+        StructuredQueryDefinition eq = walkEq(lvalue, rvalue);
+        return sqb.not(eq);
     }
 
-    private Element walkMultiExpression(MultiExpression expression) {
+    private StructuredQueryDefinition walkMultiExpression(MultiExpression expression) {
         return walkAnd(expression.values);
     }
 
-    private Element walkAnd(Operand lvalue, Operand rvalue) {
+    private StructuredQueryDefinition walkAnd(Operand lvalue, Operand rvalue) {
         return walkAnd(Arrays.asList(lvalue, rvalue));
     }
 
-    private Element walkAnd(List<Operand> values) {
-        return walk(AND, values);
+    private StructuredQueryDefinition walkAnd(List<Operand> values) {
+        List<StructuredQueryDefinition> queries = walkOperandToExpression(values);
+        if (queries.size() == 1) {
+            return queries.get(0);
+        }
+        return sqb.and(queries.toArray(new StructuredQueryDefinition[queries.size()]));
     }
 
-    private Element walkOr(Operand lvalue, Operand rvalue) {
+    private StructuredQueryDefinition walkOr(Operand lvalue, Operand rvalue) {
         return walkOr(Arrays.asList(lvalue, rvalue));
     }
 
-    private Element walkOr(List<Operand> values) {
-        return walk(OR, values);
-    }
-
-    private Element walk(String operand, List<Operand> values) {
-        List<Element> list = walkOperand(values);
-        if (list.size() == 1) {
-            return list.get(0);
-        } else {
-            Element op = DocumentHelper.createElement(operand);
-            list.forEach(op::add);
-            return op;
+    private StructuredQueryDefinition walkOr(List<Operand> values) {
+        List<StructuredQueryDefinition> queries = walkOperandToExpression(values);
+        if (queries.size() == 1) {
+            return queries.get(0);
         }
+        return sqb.or(queries.toArray(new StructuredQueryDefinition[queries.size()]));
     }
 
-    private Element walkIn(Operand lvalue, Operand rvalue, boolean positive) {
+    private StructuredQueryDefinition walkIn(Operand lvalue, Operand rvalue, boolean positive) {
         if (!(rvalue instanceof LiteralList)) {
             throw new QueryParseException("Invalid IN, right hand side must be a list: " + rvalue);
         }
-        Element or = DocumentHelper.createElement(OR);
-        ((LiteralList) rvalue).stream().map(literal -> walkEq(lvalue, literal)).forEach(or::add);
+        StructuredQueryDefinition[] queries = ((LiteralList) rvalue).stream()
+                                                                    .map(literal -> walkEq(lvalue, literal))
+                                                                    .toArray(StructuredQueryDefinition[]::new);
+        StructuredQueryDefinition orQuery = sqb.or(queries);
         if (positive) {
-            return or;
+            return orQuery;
         }
-        Element not = DocumentHelper.createElement(NOT);
-        not.add(or);
-        return not;
+        return sqb.not(orQuery);
     }
 
-    private List<Element> walkOperand(List<Operand> operands) {
-        return operands.stream().map(this::walkOperand).collect(Collectors.toCollection(LinkedList::new));
-    }
-
-    private Element walkOperand(Operand operand) {
-        if (operand instanceof Literal) {
-//            return walkLiteral((Literal) operand);
-        } else if (operand instanceof LiteralList) {
-            // return walkLiteral((LiteralList) operand);
-        } else if (operand instanceof Function) {
-            return walkFunction((Function) operand);
-        } else if (operand instanceof Expression) {
-            return walkExpression((Expression) operand);
-        } else if (operand instanceof Reference) {
-            // return walkReference((Reference) operand);
+    /**
+     * Method used to walk on a list of {@link Expression} typed as {@link Operand}.
+     */
+    private List<StructuredQueryDefinition> walkOperandToExpression(List<Operand> operands) {
+        List<StructuredQueryDefinition> queries = new ArrayList<>(operands.size());
+        for (Operand operand : operands) {
+            if (!(operand instanceof Expression)) {
+                throw new IllegalArgumentException("Operand " + operand + "is not an Expression.");
+            }
+            queries.add(walkExpression((Expression) operand));
         }
-        throw new QueryParseException("Unknown operand: " + operand);
-    }
-
-    private List<Element> walkLiteral(LiteralList literals) {
-//        return literals.stream().map(this::walkLiteral).collect(Collectors.toList());
-        return null;
-    }
-
-    private Element walkFunction(Function func) {
-        throw new UnsupportedOperationException(func.name);
+        return queries;
     }
 
     private FieldInfo walkReference(Operand value) {
@@ -332,7 +291,7 @@ class MarkLogicQueryBuilder {
         }
     }
 
-    private static class FieldInfo {
+    private class FieldInfo {
 
         /** NXQL property. */
         private final String prop;
@@ -375,10 +334,11 @@ class MarkLogicQueryBuilder {
             return hasWildcard;
         }
 
-        public Element eq(Literal literal) {
+        public StructuredQueryDefinition eq(Literal literal) {
+            String serializedKey = MarkLogicHelper.serializeKey(fullField);
             Object value = getLiteral(literal);
-            // TODO check get()
-            return MarkLogicStateSerializer.serialize(fullField, value).get();
+            String serializedValue = MarkLogicStateSerializer.serializeValue(value);
+            return sqb.value(sqb.element(serializedKey), serializedValue);
         }
 
         private Object getLiteral(Literal literal) {

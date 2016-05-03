@@ -1,32 +1,93 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<q:qbe xmlns:q="http://marklogic.com/appservices/querybyexample" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <q:query>
-    <document>
-      <q:or>
-        <ecm__primaryType xsi:type="xs:string">OrderedFolder</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">HiddenFile</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">DocWithAge</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">TemplateRoot</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">TestDocument2</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">TestDocumentWithDefaultPrefetch</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">SectionRoot</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">Document</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">Folder</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">WorkspaceRoot</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">HiddenFolder</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">Section</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">TestDocument</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">Relation</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">FolderWithSearch</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">MyDocType</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">Book</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">Note</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">ComplexDoc</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">Domain</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">File</ecm__primaryType>
-        <ecm__primaryType xsi:type="xs:string">Workspace</ecm__primaryType>
-      </q:or>
-    </document>
-  </q:query>
-</q:qbe>
+<query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+       xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <or-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>OrderedFolder</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>HiddenFile</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>DocWithAge</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>TemplateRoot</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>TestDocument2</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>TestDocumentWithDefaultPrefetch</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>SectionRoot</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>Document</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>Folder</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>WorkspaceRoot</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>HiddenFolder</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>Section</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>TestDocument</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>Relation</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>FolderWithSearch</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>MyDocType</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>Book</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>Note</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>ComplexDoc</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>Domain</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>File</text>
+    </value-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>Workspace</text>
+    </value-query>
+  </or-query>
+</query>

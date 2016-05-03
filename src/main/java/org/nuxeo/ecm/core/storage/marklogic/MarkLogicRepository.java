@@ -71,7 +71,6 @@ import com.marklogic.client.document.DocumentMetadataPatchBuilder.PatchHandle;
 import com.marklogic.client.document.DocumentPage;
 import com.marklogic.client.document.DocumentRecord;
 import com.marklogic.client.document.XMLDocumentManager;
-import com.marklogic.client.io.marker.StructureWriteHandle;
 import com.marklogic.client.query.RawQueryDefinition;
 
 /**
@@ -261,10 +260,11 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
-        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(evaluator.getExpression(),
-                evaluator.getSelectClause(), orderByClause, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
+        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(markLogicClient.newQueryManager(),
+                evaluator.getExpression(), evaluator.getSelectClause(), orderByClause, evaluator.pathResolver,
+                evaluator.fulltextSearchDisabled);
         // TODO add select
-        StructureWriteHandle query = builder.buildQuery();
+        RawQueryDefinition query = builder.buildQuery();
         // Don't do manual projection if there are no projection wildcards, as this brings no new
         // information and is costly. The only difference is several identical rows instead of one.
         boolean manualProjection = !distinctDocuments && builder.hasProjectionWildcard();
@@ -273,8 +273,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             // so we need the full state from the database
             evaluator.parse();
         }
-        try (DocumentPage page = markLogicClient.newXMLDocumentManager().search(
-                markLogicClient.newQueryManager().newRawQueryByExampleDefinition(query), 0)) {
+        XMLDocumentManager docManager = markLogicClient.newXMLDocumentManager();
+        try (DocumentPage page = docManager.search(query, offset)) {
             List<Map<String, Serializable>> projections = new ArrayList<>((int) page.size());
             for (DocumentRecord record : page) {
                 State state = record.getContent(new StateHandle()).get();
