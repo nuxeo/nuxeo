@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.functionaltests.Constants.SECTION_TYPE;
 
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.contentView.ContentViewElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
@@ -49,6 +50,9 @@ public class SectionContentTabSubPage extends DocumentBasePage {
 
     @FindBy(linkText = "New")
     WebElement newButton;
+
+    @FindBy(id = "nxw_contentViewActions_refreshContentView_form:nxw_contentViewActions_refreshContentView")
+    WebElement refreshContentLink;
 
     public SectionContentTabSubPage(WebDriver driver) {
         super(driver);
@@ -108,6 +112,17 @@ public class SectionContentTabSubPage extends DocumentBasePage {
         } catch (NoSuchElementException e) {
             return false;
         }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public SectionContentTabSubPage refreshContent() {
+        AjaxRequestManager arm = new AjaxRequestManager(driver);
+        arm.begin();
+        refreshContentLink.click();
+        arm.end();
+        return asPage(SectionContentTabSubPage.class);
     }
 
 }

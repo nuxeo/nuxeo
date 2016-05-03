@@ -30,13 +30,16 @@ import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.UserHomePage;
+import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.PublishTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -58,10 +61,12 @@ public class ITPublishDocumentTests extends AbstractTest {
 
     protected final static String TEST_SECTION_TITLE = "Test Section " + new Date().getTime();
 
+    protected final static String TEST_NOTE_TITLE = "Test note to be versionned";
+
     protected final static String TEST_SECTION_URL = String.format(Constants.NXPATH_URL_FORMAT,
             SECTIONS_PATH + TEST_SECTION_TITLE);
 
-    protected final static String TEST_FOLER_URL = String.format(Constants.NXPATH_URL_FORMAT,
+    protected final static String TEST_FOLDER_URL = String.format(Constants.NXPATH_URL_FORMAT,
             TEST_WORKSPACE_PATH + TEST_FOLDER_TITLE);
 
     protected final static String TEST_FILE_URL = String.format(Constants.NXPATH_URL_FORMAT,
@@ -102,7 +107,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionManager() throws UserNotConnectedException, IOException {
         login(MANAGER_USERNAME, MANAGER_USERNAME);
 
-        open(TEST_FOLER_URL);
+        open(TEST_FOLDER_URL);
         PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
                 null, null, null).getPublishTab();
 
@@ -134,7 +139,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionManagerApproval()
             throws UserNotConnectedException, IOException {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(TEST_FOLER_URL);
+        open(TEST_FOLDER_URL);
         PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
                 null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
@@ -158,7 +163,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     @Test
     public void testPublishingApprovalBySectionManager() throws UserNotConnectedException, IOException {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(TEST_FOLER_URL);
+        open(TEST_FOLDER_URL);
         asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null,
                 null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
         logout();
@@ -200,7 +205,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionWriterApproval()
             throws UserNotConnectedException, IOException {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(TEST_FOLER_URL);
+        open(TEST_FOLDER_URL);
         PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
                 null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
@@ -266,7 +271,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionWriterReject()
             throws UserNotConnectedException, IOException {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(TEST_FOLER_URL);
+        open(TEST_FOLDER_URL);
         PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
                 null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
@@ -337,7 +342,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testPublishDocumentBySectionReaderForSectionManagerReject()
             throws UserNotConnectedException, IOException {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
-        open(TEST_FOLER_URL);
+        open(TEST_FOLDER_URL);
         PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
                 null, null, null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
@@ -409,7 +414,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         login(MANAGER_USERNAME, MANAGER_USERNAME);
 
         // Publish a file
-        open(TEST_FOLER_URL);
+        open(TEST_FOLDER_URL);
         asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null,
                 null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
@@ -454,7 +459,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         login(MANAGER_USERNAME, MANAGER_USERNAME);
 
         // Publish a file
-        open(TEST_FOLER_URL);
+        open(TEST_FOLDER_URL);
         asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null,
                 null).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
@@ -501,7 +506,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     public void testMultiplePublications() throws UserNotConnectedException, IOException {
         // create file as admin
         login();
-        open(TEST_FOLER_URL);
+        open(TEST_FOLDER_URL);
         asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null, null);
 
         // publish as reader
@@ -539,10 +544,13 @@ public class ITPublishDocumentTests extends AbstractTest {
         assertTrue(summaryTab.hasApprovePublicationButton());
         assertTrue(summaryTab.hasRejectPublicationButton());
 
-        // publish as writer
-        summaryTab = summaryTab.approvePublication();
+        // publish over as writer
+        open(TEST_FILE_URL);
+        asPage(DocumentBasePage.class).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
 
         // check result as writer
+        open(TEST_FILE_IN_SECTION_URL);
+        summaryTab = asPage(SummaryTabSubPage.class);
         assertTrue(summaryTab.isPublished());
         assertFalse(summaryTab.hasRejectPublicationComment());
         assertFalse(summaryTab.hasApprovePublicationButton());
@@ -584,7 +592,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         homePage = asPage(DocumentBasePage.class).getUserHome();
         assertTrue(homePage.taskExistsOnUserTasks(TEST_FILE_TITLE));
 
-        // publish by task as manager
+        // approve publication by task as manager
         summaryTab = homePage.redirectToTask(TEST_FILE_TITLE);
         summaryTab.approvePublication();
 
@@ -605,5 +613,200 @@ public class ITPublishDocumentTests extends AbstractTest {
         assertTrue(summaryTab.isPublished());
 
         logout();
+    }
+
+    @Test
+    public void testMultipleVersionsPublicationsByApproval() throws IOException, UserNotConnectedException {
+        // create file to be versionned and published
+        login(MANAGER_USERNAME, MANAGER_USERNAME);
+        open(TEST_FOLDER_URL);
+        asPage(DocumentBasePage.class).createNote(TEST_NOTE_TITLE, "first version of the note", false, null);
+
+        // publish note as manager
+        asPage(DocumentBasePage.class).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+
+        // edit note
+        asPage(DocumentBasePage.class).getEditTab().edit(TEST_NOTE_TITLE, "second version of the note",
+                EditTabSubPage.MINOR_VERSION_INCREMENT_VALUE);
+
+        // check only version 0.1 is published in test section as manager
+        open(TEST_SECTION_URL);
+        SectionContentTabSubPage sectionPage = asPage(SectionContentTabSubPage.class);
+        List<WebElement> items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(1, items.size());
+        assertEquals("0.1", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // check only version 0.1 is published in test section as reader
+        login(READER_USERNAME, READER_USERNAME);
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class);
+        items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(1, items.size());
+        assertEquals("0.1", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // publish version 0.2 as reader
+        open(TEST_FOLDER_URL);
+        asPage(DocumentBasePage.class).getContentTab().goToDocument(TEST_NOTE_TITLE).getPublishTab().publish(
+                "Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+
+        // check version 0.2 is waiting for publication approval as reader (need refresh)
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class).refreshContent();
+        items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(2, items.size());
+        assertEquals("0.2", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.1", items.get(1).findElement(By.id(
+                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // check both version 0.1 and 0.2 are listed in test section as manager
+        login(MANAGER_USERNAME, MANAGER_USERNAME);
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class);
+        items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(2, items.size());
+        assertEquals("0.2", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.1", items.get(1).findElement(By.id(
+                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // approve version 0.2 as manager
+        sectionPage.goToDocument(TEST_NOTE_TITLE);
+        asPage(SummaryTabSubPage.class).approvePublication();
+
+        // check only 0.2 are published in test section as manager (need refresh)
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class).refreshContent();
+        items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(1, items.size());
+        assertEquals("0.2", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // check result as reader
+        login(READER_USERNAME, READER_USERNAME);
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class);
+        items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(1, items.size());
+        assertEquals("0.2", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // unpublish as admin
+        login();
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class);
+        sectionPage.unpublishDocument(TEST_NOTE_TITLE);
+
+        // permanent delete as admin
+        open(TEST_FOLDER_URL);
+        asPage(DocumentBasePage.class).getContentTab().removeDocument(TEST_NOTE_TITLE);
+        asPage(DocumentBasePage.class).getManageTab().getTrashSubTab().emptyTrash();
+
+    }
+
+    @Test
+    public void testMultipleVersionsPublicationsByPublishOver() throws IOException, UserNotConnectedException {
+        // create file to be versionned and published
+        login(MANAGER_USERNAME, MANAGER_USERNAME);
+        open(TEST_FOLDER_URL);
+        asPage(DocumentBasePage.class).createNote(TEST_NOTE_TITLE, "first version of the note", false, null);
+
+        // publish note as manager
+        asPage(DocumentBasePage.class).getPublishTab().publish("Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+
+        // edit note
+        asPage(DocumentBasePage.class).getEditTab().edit(TEST_NOTE_TITLE, "second version of the note",
+                EditTabSubPage.MINOR_VERSION_INCREMENT_VALUE);
+
+        // check only version 0.1 is published in test section as manager
+        open(TEST_SECTION_URL);
+        SectionContentTabSubPage sectionPage = asPage(SectionContentTabSubPage.class);
+        List<WebElement> items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(1, items.size());
+        assertEquals("0.1", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // check only version 0.1 is published in test section as reader
+        login(READER_USERNAME, READER_USERNAME);
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class);
+        items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(1, items.size());
+        assertEquals("0.1", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // publish version 0.2 as reader
+        open(TEST_FOLDER_URL);
+        asPage(DocumentBasePage.class).getContentTab().goToDocument(TEST_NOTE_TITLE).getPublishTab().publish(
+                "Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+
+        // check version 0.2 is waiting for publication approval as reader (need refresh)
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class).refreshContent();
+        items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(2, items.size());
+        assertEquals("0.2", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.1", items.get(1).findElement(By.id(
+                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // check both version 0.1 and 0.2 are listed in test section as manager
+        login(MANAGER_USERNAME, MANAGER_USERNAME);
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class);
+        items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(2, items.size());
+        assertEquals("0.2", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+        assertEquals("0.1", items.get(1).findElement(By.id(
+                "section_content:section_content_repeat:1:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // publish over version 0.2 as manager
+        open(TEST_FOLDER_URL);
+        asPage(DocumentBasePage.class).getContentTab().goToDocument(TEST_NOTE_TITLE).getPublishTab().publish(
+                "Local Sections (Domain)", "None", TEST_SECTION_TITLE);
+
+        // check only 0.2 are published in test section as manager (need refresh)
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class).refreshContent();
+        items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(1, items.size());
+        assertEquals("0.2", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // check result as reader
+        login(READER_USERNAME, READER_USERNAME);
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class);
+        items = sectionPage.getContentView().getItems();
+        assertTrue(sectionPage.hasDocumentLink(TEST_NOTE_TITLE));
+        assertEquals(1, items.size());
+        assertEquals("0.2", items.get(0).findElement(By.id(
+                "section_content:section_content_repeat:0:nxl_document_listing_table_1:nxw_listing_version")).getText());
+
+        // unpublish as admin
+        login();
+        open(TEST_SECTION_URL);
+        sectionPage = asPage(SectionContentTabSubPage.class);
+        sectionPage.unpublishDocument(TEST_NOTE_TITLE);
+
+        // permanent delete as admin
+        open(TEST_FOLDER_URL);
+        asPage(DocumentBasePage.class).getContentTab().removeDocument(TEST_NOTE_TITLE);
+        asPage(DocumentBasePage.class).getManageTab().getTrashSubTab().emptyTrash();
+
     }
 }
