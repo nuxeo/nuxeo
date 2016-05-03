@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,20 @@
  * limitations under the License.
  *
  * Contributors:
+ *     Nicolas Chapurlat
  *     Thomas Roger
  */
 
 package org.nuxeo.ecm.core.io.marshallers.json.document;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -40,7 +44,9 @@ import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonFactoryProvider;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+@LocalDeploy({ "org.nuxeo.ecm.core.test.tests:OSGI-INF/defaultvalue-docTypes.xml" })
 public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<DocumentModelJsonWriter, DocumentModel> {
 
     public DocumentModelJsonReaderTest() {
@@ -87,6 +93,78 @@ public class DocumentModelJsonReaderTest extends AbstractJsonWriterTest.Local<Do
         assertNotNull(noteDocument);
         assertTrue(noteDocument instanceof SimpleDocumentModel);
         assertEquals("note content", noteDocument.getPropertyValue("note:note"));
+    }
+
+    @Test
+    public void testScalarCreatedWithDefaultValue() throws Exception {
+        // given a doc json with a property with a default value not modified
+        String noteJson = "{ \"entity-type\": \"document\", \"type\": \"DocDefaultValue\", \"name\": \"aDoc\" }";
+
+        // when I parse it it
+        DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
+        JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson);
+        JsonNode jn = jp.readValueAsTree();
+        DocumentModel noteDocument = reader.read(jn);
+
+        // then the default value must be set
+        String[] schemas = noteDocument.getSchemas();
+        assertEquals(1, schemas.length);
+        assertEquals("defaultvalue", schemas[0]);
+        Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();
+        assertNull(null, values.get("dv:simpleWithoutDefault"));
+        assertEquals("value", values.get("dv:simpleWithDefault"));
+    }
+
+    @Test
+    public void testScalarSetOnNullDontSetDefaultValueAgain() throws Exception {
+        // given a doc json with a property with a default value set to null
+        String noteJson = "{ \"entity-type\": \"document\", \"type\": \"DocDefaultValue\", \"name\": \"aDoc\", \"properties\": {\"dv:simpleWithDefault\":null} }";
+
+        // when I parse it it
+        DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
+        JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson);
+        JsonNode jn = jp.readValueAsTree();
+        DocumentModel noteDocument = reader.read(jn);
+
+        // then the property with the default value must null
+        Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();
+        assertNull(values.get("dv:simpleWithDefault"));
+    }
+
+    @Test
+    public void testMultiCreatedWithDefaultValue() throws Exception {
+        // given a doc json with a property with a default value not modified
+        String noteJson = "{ \"entity-type\": \"document\", \"type\": \"DocDefaultValue\", \"name\": \"aDoc\" }";
+
+        // when I parse it
+        DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
+        JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson);
+        JsonNode jn = jp.readValueAsTree();
+        DocumentModel noteDocument = reader.read(jn);
+
+        // then the default value must be set
+        String[] schemas = noteDocument.getSchemas();
+        assertEquals(1, schemas.length);
+        assertEquals("defaultvalue", schemas[0]);
+        Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();
+        assertNull(null, values.get("dv:multiWithoutDefault"));
+        assertArrayEquals(new String[] { "value1", "value2" }, (String[]) values.get("dv:multiWithDefault"));
+    }
+
+    @Test
+    public void testMultiSetOnNullDontSetDefaultValueAgain() throws Exception {
+        // given a doc json with a property with a default value not modified
+        String noteJson = "{ \"entity-type\": \"document\", \"type\": \"DocDefaultValue\", \"name\": \"aDoc\", \"properties\": {\"dv:multiWithDefault\":null} }";
+
+        // when I parse it
+        DocumentModelJsonReader reader = registry.getInstance(CtxBuilder.get(), DocumentModelJsonReader.class);
+        JsonParser jp = JsonFactoryProvider.get().createJsonParser(noteJson);
+        JsonNode jn = jp.readValueAsTree();
+        DocumentModel noteDocument = reader.read(jn);
+
+        // then the property with the default value must null
+        Map<String, Object> values = noteDocument.getDataModel("defaultvalue").getMap();
+        assertNull(values.get("dv:multiWithDefault"));
     }
 
 }

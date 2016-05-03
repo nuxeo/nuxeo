@@ -49,7 +49,11 @@ import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.Reader;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Convert Json as {@link DocumentModel}.
@@ -126,7 +130,15 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
                 doc = wrapper.getSession().getDocument(new IdRef(uid));
             }
             avoidBlobUpdate(simpleDoc, doc);
-            applyPropertyValues(simpleDoc, doc);
+            applyDirtyPropertyValues(simpleDoc, doc);
+        } else if (StringUtils.isNotBlank(type)) {
+            SimpleDocumentModel createdDoc = new SimpleDocumentModel();
+            if (StringUtils.isNotBlank(name)) {
+                createdDoc.setPathInfo(null, name);
+            }
+            createdDoc.setType(simpleDoc.getType());
+            applyAllPropertyValues(simpleDoc, createdDoc);
+            doc = createdDoc;
         } else {
             doc = simpleDoc;
         }
@@ -168,10 +180,24 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
     }
 
     public static void applyPropertyValues(DocumentModel src, DocumentModel dst) {
-        for (String schema : src.getSchemas()) {
+        applyPropertyValues(src, dst, true);
+    }
+
+    public static void applyPropertyValues(DocumentModel src, DocumentModel dst, boolean dirtyOnly) {
+        // if not "dirty only", it handles all the schemas for the given type
+        // so it will trigger the default values initialization
+        if (dirtyOnly) {
+            applyDirtyPropertyValues(src, dst);
+        } else {
+            applyAllPropertyValues(src, dst);
+        }
+    }
+
+    public static void applyDirtyPropertyValues(DocumentModel src, DocumentModel dst) {
+        String[] schemas = src.getSchemas();
+        for (String schema : schemas) {
             DataModelImpl dataModel = (DataModelImpl) dst.getDataModel(schema);
             DataModelImpl fromDataModel = (DataModelImpl) src.getDataModel(schema);
-
             for (String field : fromDataModel.getDirtyFields()) {
                 Serializable data = (Serializable) fromDataModel.getData(field);
                 try {
@@ -179,6 +205,30 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
                         dataModel.setData(field, data);
                     } else {
                         dataModel.setData(field, decodeBlob(data));
+                    }
+                } catch (PropertyNotFoundException e) {
+                    continue;
+                }
+            }
+        }
+    }
+
+    public static void applyAllPropertyValues(DocumentModel src, DocumentModel dst) {
+        SchemaManager service = Framework.getService(SchemaManager.class);
+        DocumentType type = service.getDocumentType(src.getType());
+        String[] schemas = type.getSchemaNames();
+        for (String schemaName : schemas) {
+            Schema schema = service.getSchema(schemaName);
+            DataModelImpl dataModel = (DataModelImpl) dst.getDataModel(schemaName);
+            DataModelImpl fromDataModel = (DataModelImpl) src.getDataModel(schemaName);
+            for (Field field : schema.getFields()) {
+                String fieldName = field.getName().getLocalName();
+                Serializable data = (Serializable) fromDataModel.getData(fieldName);
+                try {
+                    if (!(dataModel.getDocumentPart().get(fieldName) instanceof BlobProperty)) {
+                        dataModel.setData(fieldName, data);
+                    } else {
+                        dataModel.setData(fieldName, decodeBlob(data));
                     }
                 } catch (PropertyNotFoundException e) {
                     continue;
