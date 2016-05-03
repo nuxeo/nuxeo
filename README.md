@@ -12,7 +12,9 @@ created as other documents. It presents the search results on its view tab,
 and a form similar to the smart search form on its edit tab and creation
 page.
 
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-platform-smart-search-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-smart-search-master/)
+Unit Tests: [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_nuxeo-platform-smart-search-master)](https://qa.nuxeo.org/jenkins/job/addons_nuxeo-platform-smart-search-master/)
+
+Webdriver Tests: [![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=addons_FT_nuxeo-platform-smart-search-master)](https://qa.nuxeo.org/jenkins/job/addons_FT_nuxeo-platform-smart-search-master/)
 
 ## Building
 
