@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -89,23 +90,24 @@ public class SummaryTabSubPage extends AbstractPage {
     }
 
     public boolean workflowAlreadyStarted() {
-        return findElementWithTimeout(By.xpath("//*[@id='nxl_grid_summary_layout:nxw_summary_document_route_form']")).getText().contains(
-                "review has been started");
+        return findElementWithTimeout(
+                By.xpath("//*[@id='nxl_grid_summary_layout:nxw_summary_document_route_form']")).getText().contains(
+                        "review has been started");
     }
 
     public boolean openTaskForCurrentUser() {
-        return findElementWithTimeout(
-                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")).getText().contains(
-                "Please accept or reject the document");
+        return findElementWithTimeout(By.xpath(
+                "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")).getText().contains(
+                        "Please accept or reject the document");
     }
 
     /**
      * @since 5.8
      */
     public boolean parallelOpenTaskForCurrentUser() {
-        return findElementWithTimeout(
-                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")).getText().contains(
-                "Please give your opinion. Click on N/A if you have no advice.");
+        return findElementWithTimeout(By.xpath(
+                "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")).getText().contains(
+                        "Please give your opinion. Click on N/A if you have no advice.");
     }
 
     public WorkflowTabSubPage getWorkflow() {
@@ -114,9 +116,9 @@ public class SummaryTabSubPage extends AbstractPage {
     }
 
     public boolean cantStartWorkflow() {
-        return findElementWithTimeout(
-                By.xpath("//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_document_route_form')]")).getText().contains(
-                "No workflow process can be started on this document.");
+        return findElementWithTimeout(By.xpath(
+                "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_document_route_form')]")).getText().contains(
+                        "No workflow process can be started on this document.");
     }
 
     /**
@@ -173,8 +175,8 @@ public class SummaryTabSubPage extends AbstractPage {
      * @since 5.9.3
      */
     public int getCollectionCount() {
-        return driver.findElement(By.id(COLLECTIONS_FORM_ID)).findElements(
-                By.xpath("div/span[@id='nxl_grid_summary_layout:nxw_summary_current_document_collections_form:collections']/span[@class='tag tagLink']")).size();
+        return driver.findElement(By.id(COLLECTIONS_FORM_ID)).findElements(By.xpath(
+                "div/span[@id='nxl_grid_summary_layout:nxw_summary_current_document_collections_form:collections']/span[@class='tag tagLink']")).size();
     }
 
     /**
@@ -204,9 +206,42 @@ public class SummaryTabSubPage extends AbstractPage {
     /**
      * @since 8.3
      */
+    public boolean hasApprovePublicationButton() {
+        try {
+            return publicationBlock.findElement(By.xpath(".//input[@value='Approve']")) != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
     public SummaryTabSubPage approvePublication() {
         publicationBlock.findElement(By.xpath(".//input[@value='Approve']")).click();
         return asPage(SummaryTabSubPage.class);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasRejectPublicationComment() {
+        try {
+            return publicationBlock.findElement(By.xpath(".//*[contains(@name, 'rejectPublishingComment')]")) != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasRejectPublicationButton() {
+        try {
+            return publicationBlock.findElement(By.xpath(".//input[@value='Reject']")) != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
     }
 
     /**
