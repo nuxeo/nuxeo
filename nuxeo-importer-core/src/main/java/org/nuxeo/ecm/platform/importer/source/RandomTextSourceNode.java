@@ -78,7 +78,7 @@ public class RandomTextSourceNode implements SourceNode {
 
     public RandomTextSourceNode(boolean folderish, int level, int idx, boolean onlyText) {
         this.folderish = folderish;
-        hazard = new Random(System.currentTimeMillis());
+        hazard = new Random();
         this.level = level;
         this.idx = idx;
         this.onlyText = onlyText;
