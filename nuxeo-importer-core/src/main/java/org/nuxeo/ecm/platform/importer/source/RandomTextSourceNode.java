@@ -44,9 +44,24 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected static int maxNode = 10000;
 
+    /**
+     * Used in {@link #getMaxChildren()} and {@link #getMaxFolderish()}.
+     */
+    protected static boolean nonUniformRepartition = false;
+
     public static int maxDepth = 8;
 
     public static int defaultNbDataNodesPerFolder = 100;
+
+    /**
+     * Used to generate a big number of children nodes when {@link #nonUniformRepartition} is {@code true}.
+     */
+    public static int bigNbNodesFactor = 50;
+
+    /**
+     * Used to generate a small number of children nodes when {@link #nonUniformRepartition} is {@code true}.
+     */
+    public static int smallNbNodesDivider = defaultNbDataNodesPerFolder;
 
     protected static int minGlobalFolders = 0;
 
@@ -55,6 +70,8 @@ public class RandomTextSourceNode implements SourceNode {
     protected static Integer nbNodes = 1;
 
     protected static Integer nbFolders = 0;
+
+    protected static Integer nbVisitedFolders = 0;
 
     protected static Long size;
 
@@ -89,19 +106,25 @@ public class RandomTextSourceNode implements SourceNode {
     }
 
     public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText) {
-        return init(maxSize, blobSizeInKB, onlyText, new HunspellDictionaryHolder("fr_FR.dic"));
+        return init(maxSize, blobSizeInKB, onlyText, false);
+    }
+
+    public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText, boolean nonUniform) {
+        return init(maxSize, blobSizeInKB, onlyText, new HunspellDictionaryHolder("fr_FR.dic"), nonUniform);
     }
 
     public static RandomTextSourceNode init(int maxSize, Integer blobSizeInKB, boolean onlyText,
-            DictionaryHolder dictionaryHolder) {
+            DictionaryHolder dictionaryHolder, boolean nonUniform) {
         gen = new RandomTextGenerator(dictionaryHolder);
         gen.prefilCache();
         maxNode = maxSize;
         nbNodes = 1;
+        nbVisitedFolders = 0;
         size = new Long(0);
         RandomTextSourceNode.blobSizeInKB = blobSizeInKB;
         minGlobalFolders = maxNode / defaultNbDataNodesPerFolder;
         minFoldersPerNode = 1 + (int) Math.pow(minGlobalFolders, (1.0 / maxDepth));
+        nonUniformRepartition = nonUniform;
         return new RandomTextSourceNode(true, 0, 0, onlyText);
     }
 
@@ -135,6 +158,34 @@ public class RandomTextSourceNode implements SourceNode {
         return 1 + (target / 2) + hazard.nextInt(target);
     }
 
+    /**
+     * Allows to get a non uniform distribution of the number of nodes per folder. Returns:
+     * <ul>
+     * <li>A small number of nodes 10% of the time, see {@link #smallNbNodesDivider}.</li>
+     * <li>A big number of nodes 10% of the time, see {@link #bigNbNodesFactor}.</li>
+     * <li>A random variation of the target number of nodes 80% of the time.</li>
+     * </ul>
+     */
+    protected int getNonUniform(int target, boolean folderish) {
+        int res;
+        int remainder = nbVisitedFolders % 10;
+        if (remainder == 8) {
+            res = 1 + target / smallNbNodesDivider;
+        } else if (remainder == 9) {
+            int factor;
+            // Big number of folderish nodes is 10 times smaller than the big number of data nodes
+            if (folderish) {
+                factor = bigNbNodesFactor / 10;
+            } else {
+                factor = bigNbNodesFactor;
+            }
+            res = 1 + target * factor;
+        } else {
+            res = getMidRandom(target);
+        }
+        return res;
+    }
+
     protected int getMaxChildren() {
         if (maxNode < nbNodes) {
             return 0;
@@ -147,14 +198,22 @@ public class RandomTextSourceNode implements SourceNode {
         if (target <= 0) {
             return 0;
         }
-        return getMidRandom(target);
+        if (nonUniformRepartition) {
+            return getNonUniform(target, false);
+        } else {
+            return getMidRandom(target);
+        }
     }
 
     protected int getMaxFolderish() {
         if (maxNode <= nbNodes) {
             return 0;
         }
-        return getMidRandom(minFoldersPerNode);
+        if (nonUniformRepartition) {
+            return getNonUniform(minFoldersPerNode, true);
+        } else {
+            return getMidRandom(minFoldersPerNode);
+        }
     }
 
     @Override
@@ -178,21 +237,31 @@ public class RandomTextSourceNode implements SourceNode {
         synchronized (nbNodes) {
             nbNodes = nbNodes + nbChildren;
         }
+
         for (int i = 0; i < nbChildren; i++) {
             children.add(new RandomTextSourceNode(false, level, i, onlyText));
         }
         if (level < maxDepth) {
-            int nbFolderish = getMaxFolderish();
-            for (int i = 0; i < nbFolderish; i++) {
-                children.add(new RandomTextSourceNode(true, level + 1, i, onlyText));
-            }
-            synchronized (nbFolders) {
-                nbFolders = nbFolders + nbFolderish;
+            // In the case of a non uniform repartition, don't add folderish nodes if there are no data nodes to not
+            // overload the tree with folderish nodes that would probably be empty
+            if (!nonUniformRepartition || nbChildren > 0) {
+                int nbFolderish = getMaxFolderish();
+                for (int i = 0; i < nbFolderish; i++) {
+                    children.add(new RandomTextSourceNode(true, level + 1, i, onlyText));
+                }
+                synchronized (nbFolders) {
+                    nbFolders = nbFolders + nbFolderish;
+                }
             }
         }
         if (CACHE_CHILDREN) {
             cachedChildren = children;
         }
+
+        synchronized (nbVisitedFolders) {
+            nbVisitedFolders++;
+        }
+
         return children;
     }
 
