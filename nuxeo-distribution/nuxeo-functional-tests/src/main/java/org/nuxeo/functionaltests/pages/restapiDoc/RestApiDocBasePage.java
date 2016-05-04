@@ -98,4 +98,8 @@ public class RestApiDocBasePage {
     @FindBy(linkText = "task")
     public WebElement taskLink;
 
+    @Required
+    @FindBy(linkText = "search")
+    public WebElement searchLink;
+
 }

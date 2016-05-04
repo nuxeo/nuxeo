@@ -15,6 +15,10 @@
             "description": "Document Search"
         },
         {
+            "path": "/search.{format}",
+            "description": "Search documents and save searches"
+        },
+        {
             "path": "/blobAdapter.{format}",
             "description": "Get main document blob"
         },

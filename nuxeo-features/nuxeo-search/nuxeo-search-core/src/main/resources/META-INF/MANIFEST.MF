@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Search Core
+Bundle-SymbolicName: org.nuxeo.ecm.platform.search.core;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Nuxeo-Component: OSGI-INF/savedsearch-service.xml,
+ OSGI-INF/savedsearch-core-types-contrib.xml,
+ OSGI-INF/savedsearch-adapter-contrib.xml,
+ OSGI-INF/savedsearch-pageprovider-contrib.xml,
+ OSGI-INF/marshallers-contrib.xml

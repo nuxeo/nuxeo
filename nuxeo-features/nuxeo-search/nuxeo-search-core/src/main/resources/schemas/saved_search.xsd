@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/saved_search/"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:nxs="http://www.nuxeo.org/ecm/schemas/saved_search/">
+
+  <xs:include schemaLocation="base.xsd" />
+
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="param">
+    <xs:sequence>
+      <xs:element name="key" type="xs:string" />
+      <xs:element name="value" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="params">
+    <xs:sequence>
+      <xs:element name="param" type="nxs:param"
+                  minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="queryParams" type="xs:string" />
+  <xs:element name="namedParams" type="nxs:params" />
+  <xs:element name="query" type="xs:string" />
+  <xs:element name="queryLanguage" type="xs:string" />
+  <xs:element name="providerName" type="xs:string" />
+
+  <xs:element name="pageSize" type="xs:long" />
+  <xs:element name="currentPageIndex" type="xs:long" />
+  <xs:element name="maxResults" type="xs:long" />
+  <xs:element name="sortBy" type="xs:string" />
+  <xs:element name="sortOrder" type="xs:string" />
+  <xs:element name="contentViewData" type="nxs:clob" />
+
+</xs:schema>
