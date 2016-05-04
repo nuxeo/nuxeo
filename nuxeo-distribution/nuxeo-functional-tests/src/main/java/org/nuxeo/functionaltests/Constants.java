@@ -35,6 +35,8 @@ public class Constants {
 
     public static final String NXDOC_URL_FORMAT = "/nxdoc/default/%s/view_documents";
 
+    public static final String DOMAIN_TITLE = "Domain";
+
     public static final String SECTIONS_PATH = "/default-domain/sections/";
 
     public static final String SECTIONS_TITLE = "Sections";

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  *
  * Contributors:
  *     Mariana Cedica
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages;
 
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.profile.ProfilePage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
@@ -31,16 +33,31 @@ import org.openqa.selenium.support.FindBy;
  */
 public class UserHomePage extends AbstractPage {
 
-    private static final String ITEM_XPATH_BASE = ".//table[@class='dataOutput']/tbody/tr[td[contains(text(),'%s')]]";
+    private static final String TASK_XPATH_BASE = ".//table[@class='dataOutput']/tbody/tr[td[normalize-space(text())='%s']]";
 
+    private static final String DOCUMENT_XPATH_BASE = ".//table[@class='dataOutput']/tbody/tr[td/div/a/span[normalize-space(text())='%s']]";
+
+    @Required
     @FindBy(id = "nxw_dashboard_user_tasks")
     WebElement userTasks;
 
+    @Required
+    @FindBy(id = "nxw_dashboard_user_workspaces")
+    WebElement userWorkspaces;
+
+    @Required
     @FindBy(id = "nxw_dashboard_user_documents")
     WebElement userDocuments;
 
+    @Required
     @FindBy(id = "nxw_dashboard_domain_documents")
     WebElement domainDocuments;
+
+    @FindBy(id = "selectDashboardDomain:selectDashboardDomainMenu")
+    WebElement selectDomainInput;
+
+    @FindBy(id = "selectDashboardDomain:dashboardDomainSubmitButton")
+    WebElement selectDomainSubmitButton;
 
     public UserHomePage(WebDriver driver) {
         super(driver);
@@ -51,7 +68,7 @@ public class UserHomePage extends AbstractPage {
      */
     public boolean taskExistsOnUserTasks(String taskName) {
         try {
-            return getTask(taskName).isDisplayed();
+            return getUserTask(taskName).isDisplayed();
         } catch (NoSuchElementException e) {
             return false;
         }
@@ -90,6 +107,37 @@ public class UserHomePage extends AbstractPage {
     /**
      * @since 8.3
      */
+    public boolean hasSelectDomainInput() {
+        try {
+            return selectDomainInput.isDisplayed();
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
+    public UserHomePage selectDomain(String domainName) {
+        selectItemInDropDownMenu(selectDomainInput, domainName);
+        selectDomainSubmitButton.click();
+        return asPage(UserHomePage.class);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean hasUserWorkspace(String workspaceName) {
+        try {
+            return getUserWorkspace(workspaceName) != null;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    /**
+     * @since 8.3
+     */
     public boolean hasUserDocument(String docName) {
         try {
             return getUserDocument(docName) != null;
@@ -121,18 +169,23 @@ public class UserHomePage extends AbstractPage {
         clickOnTabIfNotSelected("nxw_homeTabs_panel", id);
     }
 
-    protected WebElement getTask(String taskName) {
-        String xpath = String.format(ITEM_XPATH_BASE, taskName);
+    protected WebElement getUserTask(String taskName) {
+        String xpath = String.format(TASK_XPATH_BASE, taskName);
         return userTasks.findElement(By.xpath(xpath));
     }
 
+    protected WebElement getUserWorkspace(String workspaceName) {
+        String xpath = String.format(DOCUMENT_XPATH_BASE, workspaceName);
+        return userWorkspaces.findElement(By.xpath(xpath));
+    }
+
     protected WebElement getUserDocument(String docName) {
-        String xpath = String.format(ITEM_XPATH_BASE, docName);
+        String xpath = String.format(DOCUMENT_XPATH_BASE, docName);
         return userDocuments.findElement(By.xpath(xpath));
     }
 
     protected WebElement getDomainDocument(String docName) {
-        String xpath = String.format(ITEM_XPATH_BASE, docName);
+        String xpath = String.format(DOCUMENT_XPATH_BASE, docName);
         return domainDocuments.findElement(By.xpath(xpath));
     }
 
