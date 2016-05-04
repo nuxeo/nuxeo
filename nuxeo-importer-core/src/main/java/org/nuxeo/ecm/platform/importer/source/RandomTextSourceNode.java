@@ -136,6 +136,7 @@ public class RandomTextSourceNode implements SourceNode {
         }
     }
 
+    @Override
     public BlobHolder getBlobHolder() {
         if (folderish) {
             return null;

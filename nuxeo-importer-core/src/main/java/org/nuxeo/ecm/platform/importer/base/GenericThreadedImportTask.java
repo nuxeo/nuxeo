@@ -339,6 +339,7 @@ public class GenericThreadedImportTask implements Runnable {
         }
     }
 
+    @Override
     public synchronized void run() {
         TransactionHelper.startTransaction(transactionTimeout);
         synchronized (this) {

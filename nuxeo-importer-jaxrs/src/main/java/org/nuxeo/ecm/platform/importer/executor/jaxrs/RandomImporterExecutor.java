@@ -23,7 +23,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import groovy.util.IFileNameFinder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
@@ -76,8 +75,10 @@ public class RandomImporterExecutor extends AbstractJaxRSImporterExecutor {
         getLogger().info("Random text generator initialized");
 
         ImporterRunnerConfiguration configuration = new ImporterRunnerConfiguration.Builder(source, targetPath,
-                getLogger()).skipRootContainerCreation(skipRootContainerCreation).batchSize(batchSize).nbThreads(
-                nbThreads).build();
+                getLogger()).skipRootContainerCreation(skipRootContainerCreation)
+                            .batchSize(batchSize)
+                            .nbThreads(nbThreads)
+                            .build();
         GenericMultiThreadedImporter runner = new GenericMultiThreadedImporter(configuration);
 
         ImporterFilter filter = new EventServiceConfiguratorFilter(blockSyncPostCommitProcessing, blockAsyncProcessing,
