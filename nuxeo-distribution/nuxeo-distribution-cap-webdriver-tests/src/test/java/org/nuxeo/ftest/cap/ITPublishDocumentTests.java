@@ -99,6 +99,8 @@ public class ITPublishDocumentTests extends AbstractTest {
 
     @After
     public void after() {
+        RestHelper.removePermissions(SECTIONS_PATH, MANAGER_USERNAME);
+        RestHelper.removePermissions(SECTIONS_PATH, WRITER_USERNAME);
         RestHelper.cleanup();
     }
 
