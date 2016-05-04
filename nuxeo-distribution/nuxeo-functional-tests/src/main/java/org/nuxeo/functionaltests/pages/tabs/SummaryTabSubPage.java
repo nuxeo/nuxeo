@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -68,6 +69,7 @@ public class SummaryTabSubPage extends AbstractPage {
     @FindBy(xpath = "//form[@id='nxl_grid_summary_layout:nxw_summary_current_document_states_form']")
     public WebElement lifeCycleState;
 
+    @Required
     @FindBy(xpath = "//div[@class='publication_block']")
     public WebElement publicationBlock;
 

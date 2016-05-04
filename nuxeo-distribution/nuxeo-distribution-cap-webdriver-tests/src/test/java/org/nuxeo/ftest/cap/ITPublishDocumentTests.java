@@ -40,7 +40,6 @@ import org.openqa.selenium.WebElement;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -590,7 +589,7 @@ public class ITPublishDocumentTests extends AbstractTest {
         // check result on homepage as manager
         login(MANAGER_USERNAME, MANAGER_USERNAME);
         homePage = asPage(DocumentBasePage.class).getUserHome();
-        assertTrue(homePage.taskExistsOnUserTasks(TEST_FILE_TITLE));
+        assertTrue(homePage.taskExistsOnUserTasks("Publish Document"));
 
         // approve publication by task as manager
         summaryTab = homePage.redirectToTask(TEST_FILE_TITLE);

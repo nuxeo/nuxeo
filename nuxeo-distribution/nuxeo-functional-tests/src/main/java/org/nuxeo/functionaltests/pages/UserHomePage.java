@@ -31,7 +31,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class UserHomePage extends AbstractPage {
 
-    private static final String ITEM_XPATH_BASE = ".//table[@class='dataOutput']/tbody/tr[td//text()[contains(.,'%s')]]";
+    private static final String ITEM_XPATH_BASE = ".//table[@class='dataOutput']/tbody/tr[td[contains(text(),'%s')]]";
 
     @FindBy(id = "nxw_dashboard_user_tasks")
     WebElement userTasks;
