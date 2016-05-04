@@ -14,8 +14,6 @@
 
 <div class="nav-box">
   <h4>Browse by category</h4>
-
-
 <ul>
   <li <#if navPoint=="listOperations">class="selected"</#if> >
     <a href="${Root.path}/${distId}/listOperations">
@@ -94,13 +92,7 @@
             </#if>
           </li>
             </ul>
-
           </li>
-
-
-         </li>
-
-         </li>
       </ul>
   </li>
 </ul>
