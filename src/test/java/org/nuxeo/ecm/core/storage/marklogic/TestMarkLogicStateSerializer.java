@@ -21,15 +21,12 @@ package org.nuxeo.ecm.core.storage.marklogic;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.function.Function;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.storage.State;
 
-public class TestMarkLogicStateSerializer extends AbstractTest {
+public class TestMarkLogicStateSerializer extends AbstractSerializerTest {
 
     @Test
     public void testEmptyState() throws Exception {
@@ -50,8 +47,7 @@ public class TestMarkLogicStateSerializer extends AbstractTest {
 
     @Test
     public void testStateWithSimpleValue() throws Exception {
-        State state = new State();
-        state.put("ecm:id", "ID");
+        State state = createStateWithSimpleValue();
         String xml = MarkLogicStateSerializer.serialize(state);
         assertNotNull(xml);
         assertXMLFileAgainstString("serializer/state-with-simple-value.xml", xml);
@@ -59,10 +55,7 @@ public class TestMarkLogicStateSerializer extends AbstractTest {
 
     @Test
     public void testStateWithSimpleCalendarValue() throws Exception {
-        State state = new State();
-        state.put("ecm:id", "ID");
-        Calendar creationDate = MarkLogicHelper.deserializeCalendar("1970-01-01T00:00:00.001");
-        state.put("dub:creationDate", creationDate);
+        State state = createStateWithSimpleCalendarValue();
         String xml = MarkLogicStateSerializer.serialize(state);
         assertNotNull(xml);
         assertXMLFileAgainstString("serializer/state-with-simple-calendar-value.xml", xml);
@@ -70,12 +63,7 @@ public class TestMarkLogicStateSerializer extends AbstractTest {
 
     @Test
     public void testStateWithSubState() throws Exception {
-        State state = new State();
-        state.put("ecm:id", "ID");
-        State subState = new State();
-        subState.put("nbValues", 2L);
-        subState.put("valuesPresent", false);
-        state.put("subState", subState);
+        State state = createStateWithSubState();
         String xml = MarkLogicStateSerializer.serialize(state);
         assertNotNull(xml);
         assertXMLFileAgainstString("serializer/state-with-sub-state.xml", xml);
@@ -83,18 +71,7 @@ public class TestMarkLogicStateSerializer extends AbstractTest {
 
     @Test
     public void testStateWithList() throws Exception {
-        State state = new State();
-        state.put("ecm:id", "ID");
-        state.put("nbValues", 2L);
-        State state1 = new State();
-        state1.put("item", "itemState1");
-        state1.put("read", true);
-        state1.put("write", true);
-        State state2 = new State();
-        state2.put("item", "itemState2");
-        state2.put("read", true);
-        state2.put("write", false);
-        state.put("values", new ArrayList<>(Arrays.asList(state1, state2)));
+        State state = createStateWithList();
         String xml = MarkLogicStateSerializer.serialize(state);
         assertNotNull(xml);
         assertXMLFileAgainstString("serializer/state-with-list.xml", xml);
@@ -102,13 +79,18 @@ public class TestMarkLogicStateSerializer extends AbstractTest {
 
     @Test
     public void testStateWithArray() throws Exception {
-        State state = new State();
-        state.put("ecm:id", "ID");
-        state.put("nbValues", 2L);
-        state.put("values", new Long[] { 3L, 4L });
+        State state = createStateWithArray();
         String xml = MarkLogicStateSerializer.serialize(state);
         assertNotNull(xml);
         assertXMLFileAgainstString("serializer/state-with-array.xml", xml);
+    }
+
+    @Test
+    public void testStateWithEmptyArray() throws Exception {
+        State state = createStateWithEmptyArray();
+        String xml = MarkLogicStateSerializer.serialize(state);
+        assertNotNull(xml);
+        assertXMLFileAgainstString("serializer/state-with-empty-array.xml", xml);
     }
 
     @Test
@@ -132,27 +114,22 @@ public class TestMarkLogicStateSerializer extends AbstractTest {
      */
     @Test
     public void testMarkDirtyForList() throws Exception {
-        State state = new State();
-        state.put("ecm:id", "672f3fc9-38e3-43ec-8b31-f15f6e89f486");
-        state.put("ecm:primaryType", "ComplexDoc");
-        state.put("ecm:name", "doc");
-        state.put("ecm:parentId", "00000000-0000-0000-0000-000000000000");
-        State attachedFile = new State();
-        ArrayList<State> vignettes = new ArrayList<>();
-        State vignette = new State();
-        vignette.put("width", 111L);
-        vignettes.add(vignette);
-        attachedFile.put("vignettes", vignettes);
-        state.put("cmpf:attachedFile", attachedFile);
-        state.put("ecm:ancestorIds", new Object[] { "00000000-0000-0000-0000-000000000000" });
-        state.put("ecm:lifeCyclePolicy", "undefined");
-        state.put("ecm:lifeCycleState", "undefined");
-        state.put("ecm:majorVersion", 0L);
-        state.put("ecm:minorVersion", 0L);
-        state.put("ecm:racl", new String[] { "Administrator", "administrators", "members" });
+        State state = createStateForMarkDirtyForList();
         String xml = MarkLogicStateSerializer.serialize(state);
         assertNotNull(xml);
         assertXMLFileAgainstString("serializer/mark-dirty-for-list.xml", xml);
+    }
+
+    /*
+     * Test serialization of state issued from TestDocument#testSetValueErrors2.
+     */
+    @Test
+    public void testStateWithEmptyStateInList() throws Exception {
+        State state = createStateForStateWithEmptyMapInList();
+        String xml = MarkLogicStateSerializer.serialize(state);
+        assertNotNull(xml);
+        assertXMLFileAgainstString("serializer/state-with-empty-state-in-list.xml", xml);
+
     }
 
 }

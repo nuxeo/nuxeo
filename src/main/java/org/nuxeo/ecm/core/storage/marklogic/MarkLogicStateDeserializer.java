@@ -75,7 +75,9 @@ final class MarkLogicStateDeserializer {
                 result = deserializeState(element);
             }
         } else {
-            ElementType type = getElementType(element);
+            ElementType type = getElementType(element)
+            // fallback on String
+            .orElse(ElementType.STRING);
             switch (type) {
             case BOOLEAN:
                 result = Boolean.parseBoolean(element.getText());
@@ -106,13 +108,13 @@ final class MarkLogicStateDeserializer {
             result = null;
         } else {
             Element first = (Element) items.get(0);
-            if (first.elements().isEmpty()) {
-                ElementType type = getElementType(first);
+            Optional<ElementType> type = getElementType(first);
+            if (first.elements().isEmpty() && type.isPresent()) {
                 List<Object> l = new ArrayList<>(items.size());
                 for (Object element : items) {
                     l.add(deserializeValue((Element) element));
                 }
-                Class<?> scalarType = scalarTypeToSerializableClass(type);
+                Class<?> scalarType = scalarTypeToSerializableClass(type.get());
                 result = l.toArray((Object[]) Array.newInstance(scalarType, l.size()));
             } else {
                 ArrayList<Serializable> l = new ArrayList<>(items.size());
@@ -125,10 +127,8 @@ final class MarkLogicStateDeserializer {
         return result;
     }
 
-    private static ElementType getElementType(Element element) {
-        return Optional.ofNullable(element.attributeValue(MarkLogicHelper.ATTRIBUTE_TYPE)).map(ElementType::of)
-        // fallback on string
-                       .orElse(ElementType.STRING);
+    private static Optional<ElementType> getElementType(Element element) {
+        return Optional.ofNullable(element.attributeValue(MarkLogicHelper.ATTRIBUTE_TYPE)).map(ElementType::of);
     }
 
     private static Class<?> scalarTypeToSerializableClass(ElementType type) {

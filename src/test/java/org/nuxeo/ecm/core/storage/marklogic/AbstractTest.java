@@ -76,26 +76,6 @@ public abstract class AbstractTest {
         CLIENT = Mockito.mock(DatabaseClientImpl.class, Answers.CALLS_REAL_METHODS.get());
     }
 
-    protected State createStateForBijunction() {
-        State state = new State();
-        state.put("ecm:id", "ID");
-        state.put("dub:creationDate", MarkLogicHelper.deserializeCalendar("2016-03-21T18:01:43.113"));
-        State subState = new State();
-        subState.put("nbValues", 2L);
-        State state1 = new State();
-        state1.put("item", "itemState1");
-        state1.put("read", true);
-        state1.put("write", true);
-        State state2 = new State();
-        state2.put("item", "itemState2");
-        state2.put("read", true);
-        state2.put("write", false);
-        subState.put("values", new ArrayList<>(Arrays.asList(state1, state2)));
-        subState.put("valuesAsArray", new Long[] { 3L, 4L });
-        state.put("subState", subState);
-        return state;
-    }
-
     public String readFile(String file) throws Exception {
         return new String(Files.readAllBytes(Paths.get(this.getClass().getResource("/" + file).toURI())));
     }
