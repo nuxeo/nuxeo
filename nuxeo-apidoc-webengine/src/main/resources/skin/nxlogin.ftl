@@ -83,7 +83,6 @@ $(document).ready(function() {
     </form>
 -->
 <#else>
-  <div class="logout"><span id="logstate">You are logged in as ${Context.principal.name}</span>
-  &nbsp;|&nbsp;
+  <div class="logout"><span id="logstate">${Context.principal.name}</span>
   <a href="" id="logout">Logout</a></div>
 </#if>

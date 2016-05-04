@@ -13,7 +13,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>All extension points (${eps?size})</h1>
+<h1>${eps?size} extension points</h1>
 <@tableFilterArea/>
 <table id="extensionPointsTable" class="tablesorter">
 <thead>

@@ -11,11 +11,6 @@
 
 <h1>Welcome to Nuxeo Platform Explorer</h1>
 
-<table class="welcome">
-  <tr>
-   <tr>
-    <td colspan="2">
-
 <h2>Nuxeo EP Distributions</h2>
 
 <p>
@@ -45,7 +40,7 @@ Here are the currently available distributions:
   <td><span class="sticker current">Current deployed distribution (live)</span></td>
 
   <td>
-    <p class="explore"><a class="button" href="${Root.path}/current/"> Explore </a></p>
+    <p><a class="button" href="${Root.path}/current/listBundles"> Explore </a></p>
   </td>
 <#if !Root.isSiteMode()>
   <td>
@@ -99,7 +94,6 @@ Here are the currently available distributions:
 </#if>
 
 <#list snapList as distrib>
-<tr><td colspan="6">&nbsp;</td></tr>
 <tr>
   <td>${distrib.name}</td>
   <td>${distrib.version}</td>
@@ -114,7 +108,7 @@ Here are the currently available distributions:
     </#if>
   </td>
   <td>
-    <p class="explore"><a class="button" href="${Root.path}/${distrib.key}/"> Explore </a></p>
+    <p class="explore"><a class="button" href="${Root.path}/${distrib.key}/listBundles"> Explore </a></p>
   </td>
 <#if !Root.isSiteMode()>
   <td>
@@ -179,9 +173,6 @@ Here are the currently available distributions:
     </#if>
   </div>
 </#if>
-    </td>
-  </tr>
-</table>
 
 </@block>
 

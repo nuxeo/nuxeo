@@ -8,7 +8,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>All components (${javaComponents?size + xmlComponents?size})</h1>
+<h1>${javaComponents?size + xmlComponents?size} components</h1>
 <@tableFilterArea/>
 <table id="componentsTable" class="tablesorter">
 <thead>

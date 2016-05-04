@@ -4,101 +4,52 @@
 
 <#if !Root.isEmbeddedMode()>
 
-<p class="explore"><a class="button" href="${Root.path}"> See all available distributions </A></p>
-
-<p class="explored"><a class="button" href="${Root.path}/${Root.currentDistribution.key}/">${Root.currentDistribution.name} ${Root.currentDistribution.version}</a>
-<#if Root.currentDistribution.isLive()>
- (Live)
-</#if>
-</p>
-
 <div class="nav-box">
-  <h4>Browse by category</h4>
 <ul>
+  <li <#if navPoint=="listBundles">class="selected"</#if> >
+    <a href="${Root.path}/${distId}/listBundles">Bundles</a>
+  </li>
+
   <li <#if navPoint=="listOperations">class="selected"</#if> >
-    <a href="${Root.path}/${distId}/listOperations">
-      Operations
-    </a>
-    <#if navPoint=="viewOperation">
-        <ul><li class="selected">view Operation</li></ul>
-      </#if>
+    <a href="${Root.path}/${distId}/listOperations">Operations</a>
   </li>
 
  <#if Root.currentDistribution.isLive()>
   <li>
-    <a href="/nuxeo/api/v1/doc" target="NuxeoREST">
-      REST API
-    </a>
+    <a href="/nuxeo/api/v1/doc" target="NuxeoREST">REST API</a>
   </li>
  </#if>
 
   <#if Root.showSeamComponent() >
   <li <#if navPoint=="listSeamComponents">class="selected"</#if> >
-    <a href="${Root.path}/${distId}/listSeamComponents">
-       Seam components
-      </a>
-    <#if navPoint=="viewSeamComponent">
-        <ul><li class="selected">view Seam Component</li></ul>
-      </#if>
+    <a href="${Root.path}/${distId}/listSeamComponents">Seam components</a>
   </li>
   </#if>
-  <li <#if navPoint=="listBundleGroups">class="selected"</#if> >
-    <a href="${Root.path}/${distId}/listBundleGroups">
-       Bundle groups
-      </a>
-    <#if navPoint=="viewBundleGroup">
-        <ul><li class="selected">view Bundle group</li></ul>
-      </#if>
-      <ul>
-        <li <#if navPoint=="listBundles">class="selected"</#if> >
-          <a href="${Root.path}/${distId}/listBundles">
-       Bundles
-      </a>
-          <#if navPoint=="viewBundle">
-          <ul><li class="selected">view Bundle</li></ul>
-          </#if>
 
-            <li <#if navPoint=="listComponents">class="selected"</#if> >
-            <a href="${Root.path}/${distId}/listComponents">
-       Components
-      </a>
-            <#if navPoint=="viewComponent">
-            <ul><li class="selected">view Component</li></ul>
-            </#if>
-
-            <ul>
-            <li <#if navPoint=="listServices">class="selected"</#if> >
-            <a href="${Root.path}/${distId}/listServices">
-       Services
-      </a>
-            <#if navPoint=="viewService">
-            <ul><li class="selected">view Service</li></ul>
-            </#if>
-          </li>
-           <li <#if navPoint=="listExtensionPoints">class="selected"</#if> >
-            <a href="${Root.path}/${distId}/listExtensionPoints">
-       Extension points
-      </a>
-            <#if navPoint=="viewExtensionPoint">
-            <ul><li class="selected">view Extension Point</li></ul>
-            </#if>
-          </li>
-           <li <#if navPoint=="listContributions">class="selected"</#if> >
-            <a href="${Root.path}/${distId}/listContributions">
-       Contributions
-      </a>
-            <#if navPoint=="viewContribution">
-            <ul><li class="selected">view Contribution</li></ul>
-            </#if>
-          </li>
-            </ul>
-          </li>
-      </ul>
+  <li <#if navPoint=="listComponents">class="selected"</#if> >
+    <a href="${Root.path}/${distId}/listComponents">Components</a>
   </li>
+
+  <li <#if navPoint=="listServices">class="selected"</#if> >
+    <a href="${Root.path}/${distId}/listServices">Services</a>
+  </li>
+
+  <li <#if navPoint=="listExtensionPoints">class="selected"</#if> >
+    <a href="${Root.path}/${distId}/listExtensionPoints">Extension points</a>
+  </li>
+
+  <li <#if navPoint=="listContributions">class="selected"</#if> >
+    <a href="${Root.path}/${distId}/listContributions">Contributions</a>
+  </li>
+
+  <li <#if navPoint=="documentation"> class="selected"</#if> >
+    <a href="${Root.path}/${distId}/doc">Documentation</a>
+  </li>
+
 </ul>
 </div>
 
-<div class="nav-box">
+<div class="nav-box display-none">
 <h4> Browse by hierarchy </h4>
 </#if> <#-- if embedded -->
 
@@ -127,14 +78,5 @@
 
 <@tree id="myTree" root="/"/>
 </div>
-
-<#if !Root.isEmbeddedMode()>
-<div class="nav-box">
-<h4>Browse documentation</h4>
-<ul><li <#if navPoint=="documentation"> class="selected"</#if> >
-<a href="${Root.path}/${distId}/doc"> FAQ and How to </a>
-</li></ul>
-</div>
-</#if>
 
 </#if>

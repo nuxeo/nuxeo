@@ -38,35 +38,36 @@
   <#if !Root.isEmbeddedMode()>
   <header role="banner">
     <@block name="header">
-    <h1>
-      <span class="nuxeo">nuxeo</span><span class="slash">/</span><span class="doctitle">Platform Explorer</span>
-    </h1>
-    <nav role="complementary">
+    <div class="top-banner">
+      <a href="/nuxeo/site/distribution">
+        <img src="${skinPath}/images/nuxeo.png">
+        <span>Platform Explorer</span>
+      </a>
+      <span>
+        / ${Root.currentDistribution.name} ${Root.currentDistribution.version}
+      </span>
       <div class="login">
-         <#include "nxlogin.ftl">
+        <#include "nxlogin.ftl">
          <!--input type="text" size="15" value="login">
          <input type="text" size="15" value="password">
          <input class="button" type="submit" value="ok"-->
       </div>
-     </nav>
-     </@block>
+    </div>
+    </@block>
+
+    <#if !hideNav>
+      <nav role="navigation">
+      <@block name="left">
+        <#include "nav.ftl">
+      </@block>
+      </nav>
+    </#if>
   </header>
   </#if>
-  <div class="container">
-    <table class="content">
-      <tr>
-      <@block name="middle">
-        <#if !hideNav>
-        <td class="leftblock">
-          <nav role="navigation">
-          <@block name="left">
-          <#include "nav.ftl">
-          </@block>
-          </nav>
-        </td>
-        </#if>
 
-        <td class="rightblock">
+  <div class="container content">
+      <@block name="middle">
+
          <section>
            <article role="contentinfo">
            <#if enableDocumentationView && !Root.isEmbeddedMode() >
@@ -97,10 +98,7 @@
              </div>
            </article>
          </section>
-       </td>
       </@block>
-      </tr>
-    </table>
   </div>
 <script type="text/javascript">
 

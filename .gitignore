@@ -1,6 +1,7 @@
 syntax:glob
 target
 *.class
+.DS_Store
 bin
 target
 .settings

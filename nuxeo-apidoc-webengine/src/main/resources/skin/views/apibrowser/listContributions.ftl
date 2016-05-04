@@ -8,7 +8,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>All contributions (${contributions?size})</h1>
+<h1>${contributions?size} contributions</h1>
 <@tableFilterArea/>
 <table id="contributionsTable" class="tablesorter">
 <thead>

@@ -8,7 +8,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>All bundles (${bundleIds?size}) </h1>
+<h1>${bundleIds?size} bundles</h1>
 <@tableFilterArea/>
 <table id="bundlesTable" class="tablesorter">
 <thead>
