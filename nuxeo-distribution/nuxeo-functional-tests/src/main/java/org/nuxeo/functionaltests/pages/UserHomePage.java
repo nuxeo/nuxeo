@@ -19,7 +19,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.profile.ProfilePage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
@@ -37,19 +36,19 @@ public class UserHomePage extends AbstractPage {
 
     private static final String DOCUMENT_XPATH_BASE = ".//table[@class='dataOutput']/tbody/tr[td/div/a/span[normalize-space(text())='%s']]";
 
-    @Required
+
     @FindBy(id = "nxw_dashboard_user_tasks")
     WebElement userTasks;
 
-    @Required
+
     @FindBy(id = "nxw_dashboard_user_workspaces")
     WebElement userWorkspaces;
 
-    @Required
+
     @FindBy(id = "nxw_dashboard_user_documents")
     WebElement userDocuments;
 
-    @Required
+
     @FindBy(id = "nxw_dashboard_domain_documents")
     WebElement domainDocuments;
 
