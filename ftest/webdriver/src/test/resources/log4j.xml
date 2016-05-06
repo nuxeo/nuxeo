@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Log4j Configuration - For more configuration information and examples see
+  the Jakarta Log4j - website: http://jakarta.apache.org/log4j
+
+  Duplicated from nuxeo-distribution-tomcat/src/main/resources/common/lib/log4j.xml
+-->
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+  debug="false" threshold="null">
+
+  <!-- ============================== -->
+  <!-- Append messages to the console -->
+  <!-- ============================== -->
+
+  <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+    <param name="Target" value="System.out" />
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
+    </layout>
+    <filter class="org.apache.log4j.varia.LevelRangeFilter">
+      <param name="levelMin" value="INFO" />
+    </filter>
+  </appender>
+
+  <!-- ================ -->
+  <!-- Limit categories -->
+  <!-- ================ -->
+
+  <category name="org.jboss.seam">
+    <priority value="INFO" />
+  </category>
+  <category name="org.jboss.ejb3">
+    <priority value="INFO" />
+  </category>
+  <category name="org.jboss.ejb3.cache.simple.StatefulSessionFilePersistenceManager">
+    <priority value="WARN" />
+  </category>
+  <category name="org.jboss.seam.contexts.Contexts">
+    <priority value="WARN" />
+  </category>
+  <category name="org.jboss.seam.contexts.Lifecycle">
+    <priority value="WARN" />
+  </category>
+  <category name="org.jboss.mx.loading">
+    <priority value="INFO" />
+  </category>
+  <category name="org.jboss.system.server.Server">
+    <priority value="INFO" />
+  </category>
+  <!-- Limit the JSR77 categories -->
+  <category name="org.jboss.management" additivity="true">
+    <priority value="INFO" />
+  </category>
+  <!-- Limit the jboss-serialization to INFO as its DEBUG is verbose -->
+  <category name="org.jboss.serial" additivity="true">
+    <priority value="INFO" />
+  </category>
+
+  <!-- Limit the org.apache category to INFO as its DEBUG is verbose -->
+  <category name="org.apache" additivity="true">
+    <priority value="INFO" />
+  </category>
+  <category name="org.apache.myfaces.renderkit.html.util.DefaultAddResource">
+    <priority value="ERROR" />
+  </category>
+
+  <category name="org.ajax4jsf">
+    <priority value="INFO" />
+  </category>
+  <category name="org.ajax4jsf.cache.LRUMapCacheFactory">
+    <priority value="ERROR" />
+  </category>
+
+  <category name="org.hibernate">
+    <priority value="WARN" />
+  </category>
+  <category name="org.hibernate.engine.StatefulPersistenceContext.ProxyWarnLog">
+    <priority value="ERROR" />
+  </category>
+  <category name="org.hibernate.impl.SessionFactoryObjectFactory">
+    <priority value="ERROR" />
+  </category>
+  <category name="org.hibernate.cache.EhCacheProvider">
+    <priority value="ERROR" />
+  </category>
+  <category name="org.hibernate.hql.ast.tree.FromElementType">
+    <priority value="ERROR" />
+  </category>
+
+  <category name="org.jbpm">
+    <priority value="INFO" />
+  </category>
+  <category name="org.jbpm.jpdl.xml.JpdlXmlReader">
+    <priority value="ERROR" />
+  </category>
+
+  <category name="org.compass.core.transaction">
+    <priority value="INFO" />
+  </category>
+  <category name="org.compass.core.lucene.engine.optimizer.ScheduledLuceneSearchEngineOptimizer">
+    <priority value="INFO" />
+  </category>
+
+  <category name="org.nuxeo">
+    <priority value="WARN" />
+  </category>
+  <!-- make webdriver logs visible -->
+  <category name="org.nuxeo.functionaltests">
+    <priority value="INFO" />
+  </category>
+  <!-- Uncomment for fragments pre-processing -->
+  <!--
+  <category name="org.nuxeo.runtime.deployment.preprocessor">
+    <priority value="INFO" />
+  </category>
+  -->
+  <category name="org.nuxeo.ecm.platform.ui.web.auth">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.runtime.osgi.OSGiRuntimeService">
+    <priority value="INFO" />
+  </category>
+  <!-- Uncomment for components registration info -->
+  <!--
+  <category name="org.nuxeo.runtime.model.impl">
+    <priority value="INFO" />
+  </category>
+  -->
+  <category name="org.nuxeo.osgi.application.loader.FrameworkLoader">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.osgi.application.StandaloneApplication">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.osgi.application.FrameworkBootstrap">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.runtime.jboss.deployment.NuxeoDeployer">
+    <priority value="INFO" />
+  </category>
+  <category name="org.nuxeo.runtime.tomcat.NuxeoDeployer">
+    <priority value="INFO" />
+  </category>
+
+  <category name="javax.enterprise.resource.webcontainer.jsf.renderkit">
+    <priority value="INFO" />
+  </category>
+  <category name="javax.enterprise.resource.webcontainer.jsf.application">
+    <priority value="INFO" />
+  </category>
+  <category name="javax.enterprise.resource.webcontainer.jsf.lifecycle">
+    <priority value="INFO" />
+  </category>
+
+  <!-- Limit the jacorb category to WARN as its INFO is verbose -->
+  <category name="jacorb" additivity="true">
+    <priority value="WARN" />
+  </category>
+
+  <!-- Limit the org.jgroups category to WARN as its INFO is verbose -->
+  <category name="org.jgroups" additivity="true">
+    <priority value="WARN" />
+  </category>
+
+  <!-- Limit the org.quartz category to INFO as its DEBUG is verbose -->
+  <category name="org.quartz" additivity="true">
+    <priority value="INFO" />
+  </category>
+
+  <!-- make Jersey less noisy -->
+  <category name="com.sun.jersey.spi.container.servlet.WebComponent">
+    <priority value="ERROR" />
+  </category>
+
+  <category name="org.apache.shindig.common.xml.XmlUtil">
+    <priority value="WARN" />
+  </category>
+
+  <category name="org.apache.myfaces.shared_tomahawk">
+    <priority value="WARN" />
+  </category>
+
+  <category name="org.artofsolving.jodconverter">
+    <priority value="WARN" />
+  </category>
+
+  <!--
+    Limit JBoss categories
+    <category name="org.jboss">
+      <priority value="INFO" />
+    </category>
+  -->
+
+  <!--
+    Show the evolution of the DataSource pool in the logs [inUse/Available/Max]
+    <category name="org.jboss.resource.connectionmanager.JBossManagedConnectionPool">
+      <priority value="WARN" />
+    </category>
+  -->
+
+  <!--
+    Decrease the priority threshold for the org.jboss.varia category
+    <category name="org.jboss.varia">
+      <priority value="DEBUG" />
+    </category>
+  -->
+
+  <!--
+    Enable JBossWS message tracing
+    <category name="org.jboss.ws.core.MessageTrace">
+      <priority value="WARN" />
+    </category>
+  -->
+
+  <!--
+    Logs these events to SNMP:
+    - server starts/stops
+    - cluster evolution (node death/startup)
+    - When an EJB archive is deployed (and associated verified messages)
+    - When an EAR archive is deployed
+    <category name="org.jboss.system.server.Server">
+      <priority value="INFO" />
+      <appender-ref ref="TRAP_LOG" />
+    </category>
+    <category name="org.jboss.ha.framework.interfaces.HAPartition.lifecycle">
+      <priority value="INFO" />
+      <appender-ref ref="TRAP_LOG" />
+    </category>
+    <category name="org.jboss.deployment.MainDeployer">
+      <priority value="ERROR" />
+      <appender-ref ref="TRAP_LOG" />
+    </category>
+    <category name="org.jboss.ejb.EJBDeployer">
+      <priority value="INFO" />
+      <appender-ref ref="TRAP_LOG" />
+    </category>
+    <category name="org.jboss.deployment.EARDeployer">
+      <priority value="INFO" />
+      <appender-ref ref="TRAP_LOG" />
+    </category>
+  -->
+
+  <!-- Clustering logging -->
+  <!--
+    Uncomment the following to redirect the org.jgroups and org.jboss.ha
+    categories to a cluster.log file.
+    <appender name="CLUSTER" class="org.apache.log4j.RollingFileAppender">
+    <errorHandler class="org.apache.log4j.helpers.OnlyOnceErrorHandler" />
+      <param name="File" value="${nuxeo.log.dir}/cluster.log" />
+      <param name="Append" value="false" />
+      <param name="MaxFileSize" value="500KB" />
+      <param name="MaxBackupIndex" value="1" />
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %-5p [%c] %m%n" />
+      </layout>
+    </appender>
+    <category name="org.jgroups">
+      <priority value="DEBUG" />
+      <appender-ref ref="CLUSTER" />
+    </category>
+    <category name="org.jboss.ha">
+      <priority value="DEBUG" />
+      <appender-ref ref="CLUSTER" />
+    </category>
+  -->
+
+  <!-- ======================= -->
+  <!-- Setup the Root category -->
+  <!-- ======================= -->
+  <root>
+    <level value="WARN" />
+    <appender-ref ref="CONSOLE" />
+  </root>
+
+</log4j:configuration>
