@@ -71,7 +71,7 @@ public class RandomTextSourceNode implements SourceNode {
 
     protected static int minFoldersPerNode = 0;
 
-    protected static Integer nbNodes = 1;
+    protected static Integer nbNodes = 0;
 
     protected static Integer nbFolders = 0;
 
@@ -122,7 +122,8 @@ public class RandomTextSourceNode implements SourceNode {
         gen = new RandomTextGenerator(dictionaryHolder);
         gen.prefilCache();
         maxNode = maxSize;
-        nbNodes = 1;
+        nbNodes = 0;
+        nbFolders = 1;
         nbVisitedFolders = 0;
         size = new Long(0);
         RandomTextSourceNode.blobSizeInKB = blobSizeInKB;
