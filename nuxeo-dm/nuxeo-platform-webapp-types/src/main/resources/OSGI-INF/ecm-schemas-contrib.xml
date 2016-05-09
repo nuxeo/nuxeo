@@ -6,6 +6,8 @@
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="advanced_search" src="schemas/advanced_search.xsd"
       prefix="search" />
+    <schema name="advanced_content" src="schemas/advanced_content.xsd"
+      prefix="advanced_content" />
     <schema name="documentsLists" src="schemas/documentsLists.xsd" />
     <schema name="content_view_display" src="schemas/content_view_display.xsd"
       prefix="cvd" />
@@ -19,6 +21,10 @@
 
     <doctype name="AdvancedSearch" extends="Document">
       <schema name="advanced_search" />
+    </doctype>
+
+    <doctype name="AdvancedContent" extends="Document">
+      <schema name="advanced_content" />
     </doctype>
 
   </extension>
