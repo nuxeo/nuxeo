@@ -70,7 +70,7 @@
 
          <section>
            <article role="contentinfo">
-             <#if enableDocumentationView?? && !enableDocumentationView && !Root.isEmbeddedMode()>
+             <#if Root.canAddDocumentation()>
                <div class="tabsbutton">
                  <a href="${This.path}/doc">Manage Documentation</a>
                </div>

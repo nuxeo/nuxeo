@@ -69,8 +69,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @Override
     public Template getView(String viewId) {
-        return super.getView(viewId).arg(Distribution.DIST_ID, getDistributionId()).arg("enableDocumentationView",
-                showDocumentation());
+        return super.getView(viewId).arg(Distribution.DIST_ID, getDistributionId());
     }
 
     public abstract NuxeoArtifact getNxArtifact();
@@ -249,16 +248,5 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Map<String, String> getCategories() {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategories();
-    }
-
-    public boolean showDocumentation() {
-        boolean isSiteMode = Distribution.isSiteMode();
-
-        CoreSession session = ctx.getCoreSession();
-        boolean hideDocView = Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.hide.documentation.view");
-        return !isSiteMode
-                && (!hideDocView || getNxArtifact().getAssociatedDocuments(session)
-                                                   .getDocumentationItems(session)
-                                                   .size() > 0);
     }
 }
