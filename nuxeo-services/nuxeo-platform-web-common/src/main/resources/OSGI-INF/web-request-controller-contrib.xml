@@ -48,6 +48,7 @@
     <header name="Cache-Control">no-cache, no-store, must-revalidate</header>
     <header name="X-Content-Type-Options">nosniff</header>
     <header name="X-XSS-Protection">1; mode=block</header>
+    <header name="X-Frame-Options">${nuxeo.frame.options:=SAMEORIGIN}</header>
   </extension>
 
 </component>
