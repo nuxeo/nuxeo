@@ -334,39 +334,6 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path("listExtensionPointsSimple")
-    @SuppressWarnings("boxing")
-    public Object getExtensionPointsSimple() {
-        List<String> epIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getExtensionPointIds();
-
-        Map<String, Integer> epSimpleIds = new HashMap<String, Integer>();
-
-        List<ArtifactLabel> labels = new ArrayList<ArtifactLabel>();
-        for (String id : epIds) {
-            ArtifactLabel label = ArtifactLabel.createLabelFromExtensionPoint(id);
-            labels.add(label);
-            Integer count = epSimpleIds.get(label.simpleId);
-            if (count == null) {
-                count = 1;
-            } else {
-                count = count + 1;
-            }
-            epSimpleIds.put(label.simpleId, count);
-        }
-
-        for (ArtifactLabel label : labels) {
-            if (epSimpleIds.get(label.simpleId) == 1) {
-                label.label = label.simpleId;
-            }
-        }
-
-        Collections.sort(labels);
-        return getView("listExtensionPointsSimple").arg("eps", labels).arg(Distribution.DIST_ID,
-                ctx.getProperty(Distribution.DIST_ID)).arg("hideNav", Boolean.TRUE);
-    }
-
-    @GET
-    @Produces("text/html")
     @Path("listExtensionPoints")
     public Object getExtensionPoints() {
         List<String> epIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getExtensionPointIds();

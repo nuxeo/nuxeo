@@ -14,13 +14,13 @@
 <thead>
   <tr>
     <th>
-      Type
-    </th>
-    <th>
       Component (short)
     </th>
     <th>
       Component
+    </th>
+    <th>
+      Type
     </th>
   </tr>
 </thead>
@@ -29,13 +29,13 @@
   <#assign rowCss = (component_index % 2 == 0)?string("even","odd")/>
   <tr class="${rowCss}">
     <td>
-      Java<span style="display:none"> ${component.label}</span>
-    </td>
-    <td>
       <a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</a>
     </td>
     <td>
       <a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.id}</a>
+    </td>
+    <td>
+      Java
     </td>
   </tr>
   </#list>
@@ -43,13 +43,13 @@
   <#assign rowCss = ((javaComponents?size + component_index) % 2 == 0)?string("even","odd")/>
   <tr class="${rowCss}">
     <td>
-      XML<span style="display:none"> ${component.label}</span>
-    </td>
-    <td>
       <a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</a>
     </td>
     <td>
       <a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.id}</a>
+    </td>
+    <td>
+      XML
     </td>
   </tr>
   </#list>

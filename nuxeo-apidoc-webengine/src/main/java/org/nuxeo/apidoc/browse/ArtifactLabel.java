@@ -96,8 +96,7 @@ public class ArtifactLabel implements Comparable<ArtifactLabel> {
         String[] parts = extensionPoint.split("--");
         String component = parts[0];
         String ep = parts[1];
-        String label = ep + " (" + component + ")";
-        return new ArtifactLabel(extensionPoint, label, component);
+        return new ArtifactLabel(extensionPoint, ep, component);
     }
 
     public static ArtifactLabel createLabelFromContribution(String contribution) {

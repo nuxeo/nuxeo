@@ -480,6 +480,11 @@ public class Distribution extends ModuleRoot {
         return SecurityHelper.canEditDocumentation(principal);
     }
 
+    public boolean canAddDocumentation() {
+        NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getPrincipal();
+        return !isEmbeddedMode() && SecurityHelper.canEditDocumentation(principal);
+    }
+
     public static boolean showCurrentDistribution() {
         return !(Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.hide.current.distribution") || isSiteMode());
     }

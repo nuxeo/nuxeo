@@ -42,10 +42,6 @@
     <a href="${Root.path}/${distId}/listContributions">Contributions</a>
   </li>
 
-  <li <#if navPoint=="documentation"> class="selected"</#if> >
-    <a href="${Root.path}/${distId}/doc">Documentation</a>
-  </li>
-
 </ul>
 </div>
 
