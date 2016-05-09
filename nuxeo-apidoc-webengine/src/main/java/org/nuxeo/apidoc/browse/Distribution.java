@@ -481,11 +481,11 @@ public class Distribution extends ModuleRoot {
     }
 
     public static boolean showCurrentDistribution() {
-        return Framework.isBooleanPropertyFalse("org.nuxeo.apidoc.hide.current.distribution") && !isSiteMode();
+        return !(Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.hide.current.distribution") || isSiteMode());
     }
 
     public static boolean showSeamComponent() {
-        return Framework.isBooleanPropertyFalse("org.nuxeo.apidoc.hide.seam.components") && !isSiteMode();
+        return !(Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.hide.seam.components") || isSiteMode());
     }
 
     public static boolean isSiteMode() {
