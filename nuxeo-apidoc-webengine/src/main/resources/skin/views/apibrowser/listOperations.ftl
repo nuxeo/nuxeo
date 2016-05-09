@@ -13,7 +13,7 @@
 <#include "/docMacros.ftl">
 
 <h1>${operations?size} operations</h1>
-<@tableFilterArea/>
+<@tableFilterArea "operation"/>
 <table id="operationsTable" class="tablesorter">
   <thead>
   <tr>

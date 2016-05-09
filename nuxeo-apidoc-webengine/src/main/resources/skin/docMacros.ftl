@@ -105,9 +105,9 @@
 </#macro>
 
 
-<#macro tableFilterArea>
+<#macro tableFilterArea name>
 <p>
-  <input name="filter" id="filter-box" value="" maxlength="30" size="30" type="search" placeholder="Which bundle are you looking for ?">
+  <input name="filter" id="filter-box" value="" maxlength="30" size="30" type="search" placeholder="Which ${name} are you looking for ?">
   <input id="filter-clear-button" type="submit" value="Clear"/>
 </p>
 </#macro>

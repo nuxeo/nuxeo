@@ -9,7 +9,7 @@
 <#include "/docMacros.ftl">
 
 <h1>${contributions?size} contributions</h1>
-<@tableFilterArea/>
+<@tableFilterArea "contribution"/>
 <table id="contributionsTable" class="tablesorter">
 <thead>
   <tr>

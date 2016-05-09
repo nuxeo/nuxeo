@@ -70,22 +70,9 @@
 
          <section>
            <article role="contentinfo">
-           <#if enableDocumentationView && !Root.isEmbeddedMode() >
-             <div class="tabsbar">
-               <ul>
-                 <li <#if selectedTab=="defView">class="selected"</#if> >
-                   <a href="${This.path}/">View</a>
-                 </li>
-                 <li <#if selectedTab=="docView">class="selected"</#if> >
-                   <a href="${This.path}/doc">Documentation view</a>
-                 </li>
-               </ul>
-             </div>
-             <div style="clear:both;"></div>
-           </#if>
              <#if enableDocumentationView?? && !enableDocumentationView && !Root.isEmbeddedMode()>
                <div class="tabsbutton">
-                 <a href="${This.path}/doc">Add custom Documentation</a>
+                 <a href="${This.path}/doc">Manage Documentation</a>
                </div>
              </#if>
              <div class="tabscontent">

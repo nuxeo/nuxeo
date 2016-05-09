@@ -13,7 +13,7 @@
 <#include "/docMacros.ftl">
 
 <h1>${seamComponents?size} Seam components</h1>
-<@tableFilterArea/>
+<@tableFilterArea "seam component"/>
 <table id="seamComponentsTable" class="tablesorter">
   <thead>
   <tr>

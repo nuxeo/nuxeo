@@ -14,7 +14,7 @@
 <#include "/docMacros.ftl">
 
 <h1>${eps?size} extension points</h1>
-<@tableFilterArea/>
+<@tableFilterArea "extension point"/>
 <table id="extensionPointsTable" class="tablesorter">
 <thead>
   <tr>

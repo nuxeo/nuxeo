@@ -14,34 +14,33 @@
     <a href="${Root.path}/${distId}/listOperations">Operations</a>
   </li>
 
- <#if Root.currentDistribution.isLive()>
-  <li>
-    <a href="/nuxeo/api/v1/doc" target="NuxeoREST">REST API</a>
-  </li>
- </#if>
-
   <#if Root.showSeamComponent() >
-  <li <#if navPoint=="listSeamComponents">class="selected"</#if> >
+    <li <#if navPoint=="listSeamComponents">class="selected"</#if> >
     <a href="${Root.path}/${distId}/listSeamComponents">Seam components</a>
-  </li>
+    </li>
   </#if>
 
   <li <#if navPoint=="listComponents">class="selected"</#if> >
-    <a href="${Root.path}/${distId}/listComponents">Components</a>
+  <a href="${Root.path}/${distId}/listComponents">Components</a>
   </li>
 
   <li <#if navPoint=="listServices">class="selected"</#if> >
-    <a href="${Root.path}/${distId}/listServices">Services</a>
+  <a href="${Root.path}/${distId}/listServices">Services</a>
   </li>
 
   <li <#if navPoint=="listExtensionPoints">class="selected"</#if> >
-    <a href="${Root.path}/${distId}/listExtensionPoints">Extension points</a>
+  <a href="${Root.path}/${distId}/listExtensionPoints">Extension points</a>
   </li>
 
   <li <#if navPoint=="listContributions">class="selected"</#if> >
-    <a href="${Root.path}/${distId}/listContributions">Contributions</a>
+  <a href="${Root.path}/${distId}/listContributions">Contributions</a>
   </li>
 
+  <#if Root.currentDistribution.isLive()>
+    <li>
+      <a href="/nuxeo/api/v1/doc" target="NuxeoREST">REST API</a>
+    </li>
+  </#if>
 </ul>
 </div>
 

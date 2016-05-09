@@ -9,7 +9,7 @@
 <#include "/docMacros.ftl">
 
 <h1>${services?size} services</h1>
-<@tableFilterArea/>
+<@tableFilterArea "service"/>
 <table id="servicesTable" class="tablesorter">
 <thead>
   <tr>

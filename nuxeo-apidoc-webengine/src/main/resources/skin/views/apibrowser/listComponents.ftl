@@ -9,7 +9,7 @@
 <#include "/docMacros.ftl">
 
 <h1>${javaComponents?size + xmlComponents?size} components</h1>
-<@tableFilterArea/>
+<@tableFilterArea "component"/>
 <table id="componentsTable" class="tablesorter">
 <thead>
   <tr>

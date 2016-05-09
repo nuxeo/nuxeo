@@ -48,7 +48,7 @@
     <#include "/docMacros.ftl">
 
   <h2>${bundleIds?size} bundles</h2>
-    <@tableFilterArea/>
+    <@tableFilterArea "bundle"/>
   <table id="bundlesTable" class="tablesorter">
     <thead>
     <tr>
