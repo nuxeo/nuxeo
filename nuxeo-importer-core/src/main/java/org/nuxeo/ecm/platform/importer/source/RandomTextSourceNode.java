@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -39,6 +41,8 @@ import org.nuxeo.ecm.platform.importer.random.RandomTextGenerator;
  * @author Thierry Delprat
  */
 public class RandomTextSourceNode implements SourceNode {
+
+    private static final Log log = LogFactory.getLog(RandomTextSourceNode.class);
 
     protected static RandomTextGenerator gen;
 
@@ -172,6 +176,15 @@ public class RandomTextSourceNode implements SourceNode {
         int remainder = nbVisitedFolders % 10;
         if (remainder == 8) {
             res = 1 + target / smallNbNodesDivider;
+            if (log.isDebugEnabled()) {
+                String nodeStr;
+                if (folderish) {
+                    nodeStr = "folderish";
+                } else {
+                    nodeStr = "data";
+                }
+                log.debug(String.format("### Small number of %s nodes: %d", nodeStr, res));
+            }
         } else if (remainder == 9) {
             int factor;
             // Big number of folderish nodes is 10 times smaller than the big number of data nodes
@@ -181,6 +194,15 @@ public class RandomTextSourceNode implements SourceNode {
                 factor = bigNbNodesFactor;
             }
             res = 1 + target * factor;
+            if (log.isDebugEnabled()) {
+                String nodeStr;
+                if (folderish) {
+                    nodeStr = "folderish";
+                } else {
+                    nodeStr = "data";
+                }
+                log.debug(String.format("### Big number of %s nodes: %d", nodeStr, res));
+            }
         } else {
             res = getMidRandom(target);
         }
@@ -234,14 +256,23 @@ public class RandomTextSourceNode implements SourceNode {
         }
 
         int nbChildren = getMaxChildren();
-
-        synchronized (nbNodes) {
-            nbNodes = nbNodes + nbChildren;
-        }
-
         for (int i = 0; i < nbChildren; i++) {
             children.add(new RandomTextSourceNode(false, level, i, onlyText));
         }
+        synchronized (nbNodes) {
+            nbNodes = nbNodes + nbChildren;
+            if (log.isDebugEnabled()) {
+                String nodeStr;
+                if (nbChildren > 1) {
+                    nodeStr = "nodes";
+                } else {
+                    nodeStr = "node";
+                }
+                log.debug(String.format("Added %d data %s to %s; data node total count = %d", nbChildren, nodeStr,
+                        getName(), nbNodes));
+            }
+        }
+
         if (level < maxDepth) {
             // In the case of a non uniform repartition, don't add folderish nodes if there are no data nodes to not
             // overload the tree with folderish nodes that would probably be empty
@@ -252,6 +283,16 @@ public class RandomTextSourceNode implements SourceNode {
                 }
                 synchronized (nbFolders) {
                     nbFolders = nbFolders + nbFolderish;
+                    if (log.isDebugEnabled()) {
+                        String nodeStr;
+                        if (nbFolderish > 1) {
+                            nodeStr = "nodes";
+                        } else {
+                            nodeStr = "node";
+                        }
+                        log.debug(String.format("Added %d folderish %s to %s; folderish node total count = %d",
+                                nbFolderish, nodeStr, getName(), nbFolders));
+                    }
                 }
             }
         }
@@ -261,6 +302,15 @@ public class RandomTextSourceNode implements SourceNode {
 
         synchronized (nbVisitedFolders) {
             nbVisitedFolders++;
+            if (log.isDebugEnabled()) {
+                String folderStr;
+                if (nbVisitedFolders > 1) {
+                    folderStr = "folders";
+                } else {
+                    folderStr = "folder";
+                }
+                log.debug(String.format("Visited %d %s", nbVisitedFolders, folderStr));
+            }
         }
 
         return children;
