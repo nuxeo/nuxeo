@@ -24,9 +24,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.runtime.api.Framework;
 import com.thetransactioncompany.cors.CORSFilter;
@@ -41,23 +38,9 @@ import com.thetransactioncompany.cors.CORSFilter;
  */
 public class NuxeoCorsFilter extends CORSFilter {
 
-    public static final String FRAME_OPTIONS_HEADER = "X-Frame-Options";
-
-    public static final String FRAME_OPTIONS_DEFAULT = "";
-
-    /** Frame options. Can be DENY, SAMEORIGIN, ALLOW-FROM someuri, or blank. */
-    public static final String FRAME_OPTIONS_PROPERTY = "nuxeo.frame.options";
-
-    public String frameOptions = Framework.getProperty(FRAME_OPTIONS_PROPERTY, FRAME_OPTIONS_DEFAULT);
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
-        // TODO move this to a separate filter, for instance one dealing with Content-Security-Policy
-        if (response instanceof HttpServletResponse && !StringUtils.isBlank(frameOptions)) {
-            ((HttpServletResponse) response).setHeader(FRAME_OPTIONS_HEADER, frameOptions);
-        }
-
         FilterConfig filterConfig = getFilterConfigFrom(request);
         if (filterConfig != null) {
             super.init(filterConfig);
