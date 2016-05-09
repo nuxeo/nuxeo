@@ -18,8 +18,10 @@
  */
 package org.nuxeo.functionaltests;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.nuxeo.functionaltests.pages.ErrorPage.ERROR_OCCURED_MESSAGE;
+import static org.nuxeo.functionaltests.pages.ErrorPage.ERROR_OCCURED_TITLE;
+import static org.nuxeo.functionaltests.pages.ErrorPage.NO_SUFFICIENT_RIGHTS_MESSAGE;
+import static org.nuxeo.functionaltests.pages.ErrorPage.NO_SUFFICIENT_RIGHTS_TITLE;
 
 import org.junit.Test;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -27,49 +29,101 @@ import org.nuxeo.functionaltests.pages.ErrorPage;
 import org.openqa.selenium.By;
 
 /**
- * Coverage Navigation tests.
+ * Error pages tests.
  */
 public class ITErrorPageTest extends AbstractTest {
 
     private static final String GO_TO_ERROR_PAGE = "Go to error page";
-
-    public static final String MESSAGE_SUFFIX_SHORT = " Click on the following links to go back to the application.";
-
-    public static final String MESSAGE_SUFFIX = " Click on the following links to get more information or go back to the application.";
-
-    private static final String PAGE_NOT_FOUND_TITLE = "Sorry, the page you requested cannot be found.";
-
-    private static final String PAGE_NOT_FOUND_MESSAGE = "The page you requested has been moved or deleted.";
-
-    private static final String ERROR_OCCURED_TITLE = "An error occurred.";
-
-    private static final String ERROR_OCCURED_MESSAGE = "An unexpected error occurred.";
 
     @Test
     public void testInvalidHTMLError() throws Exception {
         driver.get(NUXEO_URL);
         AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
         AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Error invalid html"));
-        checkErrorPage(ERROR_OCCURED_TITLE, ERROR_OCCURED_MESSAGE, true, false);
+        asPage(ErrorPage.class).checkErrorPage(ERROR_OCCURED_TITLE, ERROR_OCCURED_MESSAGE, true, false);
     }
 
     @Test
-    public void testPageNotFound() throws Exception {
-        driver.get(NUXEO_URL + "/notfound");
-        ErrorPage errorPage = asPage(ErrorPage.class);
-        errorPage.checkTitle(PAGE_NOT_FOUND_TITLE);
-        errorPage.checkMessage(PAGE_NOT_FOUND_MESSAGE + MESSAGE_SUFFIX_SHORT);
-        assertTrue(errorPage.hasBackToHomeLink());
-        assertTrue(errorPage.hasLogOutLink());
+    public void testJSFChckedError() throws Exception {
+        driver.get(NUXEO_URL);
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("JSF checked error"));
+        asPage(ErrorPage.class).checkErrorPage(ERROR_OCCURED_TITLE, ERROR_OCCURED_MESSAGE, true, false);
     }
 
-    private void checkErrorPage(String title, String message, boolean backToHomeAndLogOutLinks,
-            boolean showStackTraceAndContextDumpLinks) {
-        ErrorPage errorPage = asPage(ErrorPage.class);
-        errorPage.checkTitle(title);
-        errorPage.checkMessage(message + MESSAGE_SUFFIX);
-        assertEquals(backToHomeAndLogOutLinks, errorPage.hasBackToHomeLink() && errorPage.hasLogOutLink());
-        assertEquals(showStackTraceAndContextDumpLinks,
-                errorPage.hasShowStackTraceLink() && errorPage.hasShowContextDumpLink());
+    @Test
+    public void testJSFUnchckedError() throws Exception {
+        driver.get(NUXEO_URL);
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("JSF unchecked error"));
+        asPage(ErrorPage.class).checkErrorPage(ERROR_OCCURED_TITLE, ERROR_OCCURED_MESSAGE, true, false);
     }
+
+    @Test
+    public void testSeamGetterCheckedError() throws Exception {
+        driver.get(NUXEO_URL);
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Seam getter checked error"));
+        asPage(ErrorPage.class).checkErrorPage(ERROR_OCCURED_TITLE, ERROR_OCCURED_MESSAGE, true, false);
+    }
+
+    @Test
+    public void testSeamGetterUncheckedError() throws Exception {
+        driver.get(NUXEO_URL);
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Seam getter unchecked error"));
+        asPage(ErrorPage.class).checkErrorPage(ERROR_OCCURED_TITLE, ERROR_OCCURED_MESSAGE, true, false);
+    }
+
+    @Test
+    public void testSeamGetterSecurityError() throws Exception {
+        driver.get(NUXEO_URL);
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Seam getter security error"));
+        asPage(ErrorPage.class).checkErrorPage(NO_SUFFICIENT_RIGHTS_TITLE, NO_SUFFICIENT_RIGHTS_MESSAGE, true, false,
+                false, "");
+    }
+
+    @Test
+    public void testSeamFactoryCheckedError() throws Exception {
+        driver.get(NUXEO_URL);
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Seam factory checked error"));
+        asPage(ErrorPage.class).checkErrorPage(ERROR_OCCURED_TITLE, ERROR_OCCURED_MESSAGE, true, false);
+    }
+
+    @Test
+    public void testSeamFactoryUncheckedError() throws Exception {
+        driver.get(NUXEO_URL);
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Seam factory unchecked error"));
+        asPage(ErrorPage.class).checkErrorPage(ERROR_OCCURED_TITLE, ERROR_OCCURED_MESSAGE, true, false);
+    }
+
+    @Test
+    public void testSeamFactorySecurityError() throws Exception {
+        driver.get(NUXEO_URL);
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Seam factory security error"));
+        asPage(ErrorPage.class).checkErrorPage(NO_SUFFICIENT_RIGHTS_TITLE, NO_SUFFICIENT_RIGHTS_MESSAGE, true, false,
+                false, "");
+    }
+
+    @Test
+    public void testSeamActionUncheckedError() throws Exception {
+        driver.get(NUXEO_URL);
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Seam action unchecked error"));
+        asPage(ErrorPage.class).checkErrorPage(ERROR_OCCURED_TITLE, ERROR_OCCURED_MESSAGE, true, false);
+    }
+
+    @Test
+    public void testSeamActionSecurityError() throws Exception {
+        driver.get(NUXEO_URL);
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText(GO_TO_ERROR_PAGE));
+        AbstractPage.findElementWaitUntilEnabledAndClick(By.linkText("Seam action security error"));
+        asPage(ErrorPage.class).checkErrorPage(NO_SUFFICIENT_RIGHTS_TITLE, NO_SUFFICIENT_RIGHTS_MESSAGE, true, false,
+                false, "");
+    }
+
 }
