@@ -54,6 +54,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsResult;
+import org.nuxeo.elasticsearch.api.EsScrollResult;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.config.ElasticSearchDocWriterDescriptor;
 import org.nuxeo.elasticsearch.config.ElasticSearchIndexConfig;
@@ -484,6 +485,21 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public EsResult queryAndAggregate(NxQueryBuilder queryBuilder) {
         return ess.queryAndAggregate(queryBuilder);
+    }
+
+    @Override
+    public EsScrollResult scroll(NxQueryBuilder queryBuilder, long keepAlive) {
+        return ess.scroll(queryBuilder, keepAlive);
+    }
+
+    @Override
+    public EsScrollResult scanAndScroll(NxQueryBuilder queryBuilder, long keepAlive) {
+        return ess.scanAndScroll(queryBuilder, keepAlive);
+    }
+
+    @Override
+    public EsScrollResult scroll(EsScrollResult scrollResult) {
+        return ess.scroll(scrollResult);
     }
 
     @Deprecated
