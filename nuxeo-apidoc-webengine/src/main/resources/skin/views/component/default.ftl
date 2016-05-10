@@ -7,14 +7,9 @@
 <#include "/views/component/macros.ftl">
 
 <h1>Component <span class="componentTitle">${nxItem.id}</span></h1>
+<div class="include-in">In bundle <a href="${Root.path}/${distId}/viewBundle/${nxItem.bundle.id}">${nxItem.bundle.id}</a></div>
 
 <div class="tabscontent">
-
-  In bundle <a href="${Root.path}/${distId}/viewBundle/${nxItem.bundle.id}">${nxItem.bundle.id}</a>
-
-  <h2>Documentation</h2>
-  ${nxItem.documentationHtml}
-  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
 
   <#if !nxItem.xmlPureComponent>
   <h2>Implementation</h2>
@@ -48,10 +43,13 @@
 
 
   <h2>XML source</h2>
-  <span class="resourceToggle">View ${nxItem.xmlFileName?replace("^/","","r")}</span>
-  <div class="hiddenResource">
+  <div>
     <pre><code>${nxItem.xmlFileContent?html}</code></pre>
   </div>
+
+  <h2>Documentation</h2>
+  ${nxItem.documentationHtml}
+  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
 
   <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 

@@ -17,42 +17,29 @@
   <thead>
     <tr>
       <th>
-        Component (short)
-      </th>
-      <th>
-        Component
-      </th>
-      <th>
-        Type
+        Component Label
       </th>
     </tr>
   </thead>
   <tbody>
     <#list javaComponents as component>
-    <#assign rowCss = (component_index % 2 == 0)?string("even","odd")/>
-    <tr class="${rowCss}">
+    <tr>
       <td>
-        <a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</a>
-      </td>
-      <td>
-        <a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.id}</a>
-      </td>
-      <td>
-        Java
+        <div>
+          <h4><a title="Component Label" href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</a></h4>
+          <span title="Component Type" class="sticker">Java</span>
+          <span title="Component ID">${component.id}</span>
       </td>
     </tr>
     </#list>
     <#list xmlComponents as component>
-    <#assign rowCss = ((javaComponents?size + component_index) % 2 == 0)?string("even","odd")/>
-    <tr class="${rowCss}">
+    <tr>
       <td>
-        <a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</a>
-      </td>
-      <td>
-        <a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.id}</a>
-      </td>
-      <td>
-        XML
+        <div>
+          <h4><a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</a></h4>
+          <span title="Component Type" class="sticker">XML</span>
+          <span title="Component ID">${component.id}</span>
+        </div>
       </td>
     </tr>
     </#list>
@@ -63,7 +50,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<@tableSortFilterScript "#componentsTable" "[1,0]" />
+<@tableSortFilterScript "#componentsTable" "[0,0]" />
 </@block>
 
 </@extends>

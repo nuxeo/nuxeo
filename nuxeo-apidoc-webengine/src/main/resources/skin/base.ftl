@@ -48,9 +48,6 @@
       </span>
       <div class="login">
         <#include "nxlogin.ftl">
-         <!--input type="text" size="15" value="login">
-         <input type="text" size="15" value="password">
-         <input class="button" type="submit" value="ok"-->
       </div>
     </div>
     </@block>
@@ -85,19 +82,6 @@
 <script type="text/javascript">
 
     hljs.initHighlightingOnLoad();
-
-    // toggle code viewer
-    $(".resourceToggle").click(function() {
-     $(this).next().toggle();
-     $(this).toggleClass('resourceToggle');
-     $(this).toggleClass('resourceToggleDown');
-    });
-
-    // toggle title bars
-    //$(".blocTitle").click(function() {
-    // var toFold=$(this).parent().find(".foldablePanel").get(0);
-    // $(toFold).toggle("fold",{horizFirst: true },10);
-    //});
 
     var lastDisplayedDoc;
     function showAddDoc(docId) {

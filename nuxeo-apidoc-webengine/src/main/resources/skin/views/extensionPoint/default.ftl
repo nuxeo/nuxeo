@@ -7,14 +7,19 @@
 <#assign nestedLevel=0/>
 
 <h1>Extension point <span class="componentTitle">${nxItem.name}</span></h1>
+<div class="include-in">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a></div>
 
 <div class="tabscontent">
-
-  In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a>
-
-  <h2>Documentation</h2>
+  <div class="subnav">
+    <ul>
+      <li><a href="#">Documentation</a></li>
+      <li><a href="#contribute">Existing Contributions</a></li>
+    </ul>
+  </div>
+  <div class="description">
   ${nxItem.documentationHtml}
   <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+  </div>
 
   <h2>Descriptors</h2>
   <ul>
@@ -25,7 +30,7 @@
   </ul>
 
   <#if nxItem.extensions?size gt 0>
-  <h2>Contributions (${nxItem.extensions?size}) </h2>
+  <h2 id="contribute">Existing Contributions </h2>
   <input type="search" id="searchField" placeholder="Text in contributions"/>
   <input type="button" value="search" onclick="searchContrib($('#searchField').val());"/>
   <span id="searchMatchResult"></span>
@@ -33,7 +38,6 @@
   function searchContrib(text) {
 
     $('#highlight-plugin').removeHighlight();
-    $('div.searchableText').addClass('hiddenResource');
     $('#searchMatchResult').html("");
 
     if (text.trim().length==0) {
@@ -42,10 +46,6 @@
     }
 
     var elems = $('div.searchableText:contains("' + text +'")');
-    for (var i = 0; i < elems.size(); i++) {
-      var elem = $(elems[i]);
-      elem.removeClass('hiddenResource');
-    }
     if (elems.size()>0) {
       $('div.searchableText').highlight(text);
       $('#searchMatchResult').html(elems.size() + " matching contribution(s)");
@@ -56,17 +56,18 @@
   </script>
 
 
-    <ul id="highlight-plugin">
+    <ul id="highlight-plugin" class="block-list">
       <#list nxItem.extensions as contrib>
       <li>
-        <a href="${Root.path}/${distId}/viewContribution/${contrib.id}">
-        ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
-        </a>
-        <span class="resourceToggle">View XML source</span>
-  <div class="hiddenResource searchableText">
-    <span style="display:none">${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}</span>
-    <pre><code>${contrib.xml?xml}</code></pre>
-  </div>
+        <div class="block-title">
+          <a href="${Root.path}/${distId}/viewContribution/${contrib.id}">
+          ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
+          </a>
+        </div>
+        <div class="searchableText">
+          <span style="display:none">${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}</span>
+          <pre><code>${contrib.xml?xml}</code></pre>
+        </div>
       </li>
       </#list>
     </ul>

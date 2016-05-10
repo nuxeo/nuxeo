@@ -30,8 +30,7 @@
 
   <p><@docContent docItem=contributionDesc /></p>
 
-  <span class="resourceToggle"> XML file for this contribution</span>
-  <div class="hiddenResource">
+  <div>
   <pre>
   <code>
   ${contributionItem.xml?html}

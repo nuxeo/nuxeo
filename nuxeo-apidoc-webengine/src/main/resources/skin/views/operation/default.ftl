@@ -9,14 +9,8 @@
 
 <div class="tabscontent">
 
-  <div class="description">
-  ${nxItem.description}
-  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
-  </div>
-
   <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
-  <h2>General information</h2>
   <table class="listTable">
     <tr><th>Operation id</th><td> ${nxItem.name?html} </td></tr>
     <#if nxItem.aliases> <tr><th>Aliases</th><td>[<#list nxItem.aliases as alias> ${alias} </#list>]</td></tr></#if>
@@ -69,7 +63,13 @@
   </table>
 
   <h2>JSON definition</h2>
-  <p><a href="${Root.path}/../automation/${nxItem.name}" target="_new">JSON definition</a></p>
+  <p><a href="${Root.path}/../automation/${nxItem.name}" class="button" target="_new">Generate JSON definition</a></p>
+
+  <div class="description">
+  <h2>Description</h2>
+  ${nxItem.description}
+  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+  </div>
 
 </div>
 </@block>

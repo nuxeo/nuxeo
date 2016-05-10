@@ -14,15 +14,15 @@
 
   <table class="tablesorter distributions">
     <tr>
-      <th>&nbsp;Name</th>
-      <th>&nbsp;Version</th>
-      <th>&nbsp;Creation date</th>
-      <th>&nbsp;</th>
-      <th>&nbsp;</th>
+      <th>Name</th>
+      <th>Version</th>
+      <th>Creation date</th>
+      <th></th>
+      <th></th>
     </tr>
 
     <tr>
-      <td><a class="button" href="${Root.path}/current/">${rtSnap.name}</a></td>
+      <td><a class="button" href="${Root.path}/current/listBundles/">${rtSnap.name}</a></td>
       <td>${rtSnap.version}</td>
       <td>${rtSnap.creationDate?datetime}</td>
       <td><span class="sticker current">Current deployed distribution (live)</span></td>
@@ -39,15 +39,15 @@
           <form method="POST" action="${Root.path}/save">
             <table>
               <tr>
-                <td>Name :</td>
+                <td class="nowrap">Name</td>
                 <td><input type="text" name="name" value="${rtSnap.name}"/></td>
               </tr>
               <tr>
-                <td>Version :</td>
+                <td class="nowrap">Version</td>
                 <td>${rtSnap.version}</td>
               </tr>
             </table>
-            <i>( Existing snapshot with the same name and version will be updated )</i><br/>
+            <i>Existing snapshot with the same name and version will be updated.</i><br/>
             <input type="submit" value="Save"/>
           </form>
         </div>
@@ -55,15 +55,15 @@
           <form method="POST" action="${Root.path}/saveExtended">
             <table>
               <tr>
-                <td>Name :</td>
+                <td class="nowrap">Name</td>
                 <td><input type="text" name="name" value="${rtSnap.name}"/></td>
               </tr>
               <tr>
-                <td>Bundle prefixes :</td>
+                <td class="nowrap">Bundle prefixes</td>
                 <td><textarea rows="4" cols="30" name="bundles"></textarea></td>
               </tr>
               <tr>
-                <td>Packages prefixes :</td>
+                <td class="nowrap">Packages prefixes</td>
                 <td><textarea rows="4" cols="30" name="packages"></textarea></td>
               </tr>
             </table>
@@ -76,10 +76,7 @@
 
     <#list snapList as distrib>
       <tr>
-        <td colspan="6">&nbsp;</td>
-      </tr>
-      <tr>
-        <td><a class="button" href="${Root.path}/${distrib.key}/">${distrib.name}</a></td>
+        <td><a class="button" href="${Root.path}/${distrib.key}/listBundles/">${distrib.name}</a></td>
         <td>${distrib.version}</td>
         <td>${distrib.creationDate?datetime}</td>
         <td>
@@ -92,18 +89,18 @@
           </#if>
         </td>
         <td>
-          <p class="explore export"><a class="button" href="${Root.path}/download/${distrib.key}">Export as zip.</a></p>
+          <p><a class="button" href="${Root.path}/download/${distrib.key}">Export as zip</a></p>
         </td>
       </tr>
     </#list>
 
   </table>
 
-  <h2>Upload / Download forms</h2>
+  <h2>Upload Distribution</h2>
 
   <table class="Exports">
     <tr>
-      <td colspan="2">
+      <td>
         <p>You can use the form below to upload a distribution that has been exported as a zip:</p>
         <form method="POST" action="${Root.path}/uploadDistribTmp" enctype="multipart/form-data">
           <input type="file" name="archive">
@@ -111,21 +108,20 @@
         </form>
       </td>
     </tr>
-    <tr>
-      <td width="50%">
-        <h2>Documentation</h2>
+  </table>
 
+  <h2>Documentation</h2>
+  <table>
+    <tr>
+      <td>
         <p>
-          Documentation items are associated to the Nuxeo Platform artifacts.<br/>
+          Documentation items are associated to the Nuxeo Platform artifacts.
           Documentation packs can be downloaded or uploaded here.
         </p>
-
         <p>
-          Documentation contains currently ${Root.documentationInfo}
+          Documentation contains currently ${Root.documentationInfo}.
         </p>
-
         <p><a href="${Root.path}/downloadDoc" class="button">Export all documentation as a zip.</a></p>
-
         <p>You can use the form below to upload a documentation pack (zip):</p>
         <form method="POST" action="${Root.path}/uploadDoc" enctype="multipart/form-data">
           <input type="file" name="archive">

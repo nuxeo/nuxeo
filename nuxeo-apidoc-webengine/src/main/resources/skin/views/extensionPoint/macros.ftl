@@ -29,8 +29,7 @@
 
   <p><@docContent docItem=extensionPointDesc /></p>
 
-  <span class="resourceToggle"> Built-in documentation</span> for this extension point.
-  <div class="hiddenResource">
+  <div>
   ${extensionPointItem.documentationHtml}
   </div>
 

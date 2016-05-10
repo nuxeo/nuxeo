@@ -10,8 +10,7 @@
      	<br/>${iface}
      	<#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(iface)}"/>
      	<#assign javaDocUrl="${javaDocBaseUrl}/javadoc/${iface?replace('.','/')}.html"/>
-	    &nbsp;&nbsp;&nbsp;  <span class="resourceToggle"> JavaDoc </span>
-	    <div class="hiddenResource">
+	    <div>
 	      <a href="${javaDocUrl}" target="NxJavaDoc">Open in a new window</a>
 	      <iframe src="${javaDocUrl}" width="98%" height="300px" border="0"></iframe>
 	    </div>

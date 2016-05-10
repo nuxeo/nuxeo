@@ -15,22 +15,18 @@
   <thead>
     <tr>
       <th>
-        Service (short)
-      </th>
-      <th>
         Service
       </th>
     </tr>
   </thead>
   <tbody>
     <#list services as service>
-    <#assign rowCss = (service_index % 2 == 0)?string("even","odd")/>
-    <tr class="${rowCss}">
+    <tr>
       <td>
-        <a href="${Root.path}/${distId}/viewService/${service.id}">${service.label}</a>
-      </td>
-      <td>
-        <a href="${Root.path}/${distId}/viewService/${service.id}">${service.id}</a>
+        <div>
+          <h4><a title="Service Short Name" href="${Root.path}/${distId}/viewService/${service.id}">${service.label}</a></h4>
+          <span title="Service Name">${service.id}</span>
+       </div>
       </td>
     </tr>
     </#list>

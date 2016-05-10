@@ -21,31 +21,22 @@
   <thead>
     <tr>
       <th>
-        Extension point
-      </th>
-      <th>
-        Component (short)
-      </th>
-      <th>
-        Component
+        Extension Point
       </th>
     </tr>
   </thead>
   <tbody>
     <#list eps as ep>
-    <#assign rowCss = (ep_index % 2 == 0)?string("even","odd")/>
-    <tr class="${rowCss}">
+    <tr>
       <td>
-        <a href="${Root.path}/${distId}/viewExtensionPoint/${ep.id}">${ep.label}</a>
-        <#if showDesc>
-          <@inlineEdit ep.id descriptions[ep.id]/>
-        </#if>
-      </td>
-      <td>
-        <a href="${Root.path}/${distId}/viewComponent/${ep.simpleId}">${ep.simpleId?replace(".*\\.","","r")}</a>
-      </td>
-      <td>
-        <a href="${Root.path}/${distId}/viewComponent/${ep.simpleId}">${ep.simpleId}</a>
+        <div>
+          <h4><a title="Extension Point" href="${Root.path}/${distId}/viewExtensionPoint/${ep.id}">${ep.label}</a></h4>
+          <#if showDesc>
+            <@inlineEdit ep.id descriptions[ep.id]/>
+          </#if>
+          <span title="Component Label">${ep.simpleId?replace(".*\\.","","r")}</span> -
+          <span title="Component ID">${ep.simpleId}</span>
+        </div>
       </td>
     </tr>
     </#list>

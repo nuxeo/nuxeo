@@ -6,10 +6,9 @@
 <#include "/docMacros.ftl">
 
 <h1>Service <span class="componentTitle">${nxItem.id}</span></h1>
+<div class="include-in">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a></div>
 
 <div class="tabscontent">
-
-  In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a>
 
   <h2>Documentation</h2>
   ${nxItem.documentationHtml}

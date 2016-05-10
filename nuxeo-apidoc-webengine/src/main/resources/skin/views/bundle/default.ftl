@@ -9,10 +9,6 @@
 
 <div class="tabscontent">
 
-  <h2>Documentation</h2>
-  ${nxItem.documentationHtml}
-  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
-
   <h2>Components</h2>
   <#if nxItem.components?size == 0>
     No components.
@@ -33,10 +29,13 @@
   </table>
 
   <h2>Manifest</h2>
-  <span class="resourceToggle">View META-INF/MANIFEST.MF</span>
-  <div class="hiddenResource">
+  <div>
     <pre><code>${nxItem.manifest}</code></pre>
   </div>
+
+  <h2>Documentation</h2>
+  ${nxItem.documentationHtml}
+  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
 
   <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 

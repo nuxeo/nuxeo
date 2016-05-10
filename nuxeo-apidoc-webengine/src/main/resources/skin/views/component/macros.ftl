@@ -40,8 +40,7 @@
       <@viewComponentContributions componentItem/>
 
       <h2> XML source </h2>
-      <span class="resourceToggle">View ${componentItem.xmlFileName}</span>
-      <div class="hiddenResource">
+      <div>
         <pre><code>${componentItem.xmlFileContent?html}</code></pre>
       </div>
 

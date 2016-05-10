@@ -48,8 +48,7 @@
 
 <#macro viewSecManifest bundleItem>
   <h2> Manifest </h2>
-  <span class="resourceToggle">View MANIFEST.MF</span>
-  <div class="hiddenResource">
+  <div>
     <pre><code>${bundleItem.manifest}</code></pre>
   </div>
 </#macro>

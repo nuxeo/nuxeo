@@ -18,24 +18,28 @@
   <table id="operationsTable" class="tablesorter">
     <thead>
     <tr>
-      <th>Category</th>
-      <th>Label</th>
-      <th>Id</th>
-      <th>Aliases</th>
-      <th>Requires</th>
-      <th>Since</th>
+      <th>Operation</th>
     </tr>
     </thead>
   <tbody>
   <#list operations as operation>
-  <#assign rowCss = (operation_index % 2 == 0)?string("even","odd")/>
-    <tr class="${rowCss}">
-      <td><span class="sticker">${operation.category?html}</span></td>
-      <td><a href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.label?html}</a></td>
-      <td><a href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.name?html}</a></td>
-        <td><#if operation.aliases>[<#list operation.aliases as alias> ${alias} </#list>]</#if></td>
-      <td><span class="sticker">${operation.requires}</span></td>
-      <td><span class="sticker">${operation.since}</span></td>
+    <tr>
+      <td>
+        <div>
+          <h4><a title="Operation Label" href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.label?html}</a></h4>
+          <span title="Category" class="sticker">${operation.category?html}</span>
+          <span title="Operation ID">${operation.name?html}</span>
+          <#if operation.aliases>
+            <div>Alias [<#list operation.aliases as alias> ${alias} </#list>]</div>
+          </#if>
+          <#if operation.requires>
+          <span>Require <span class="sticker">${operation.requires}</span></span>
+          </#if>
+          <#if operation.since>
+          <span>Since <span class="sticker">${operation.since}</span></span>
+          </#if>
+        </div>
+      </td>
     </tr>
   </#list>
   </tbody>
@@ -45,7 +49,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<@tableSortFilterScript "#operationsTable" "[0,0],[1,0]" />
+<@tableSortFilterScript "#operationsTable" "[0,0]" />
 </@block>
 
 </@extends>

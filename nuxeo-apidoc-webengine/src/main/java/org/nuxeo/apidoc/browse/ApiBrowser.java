@@ -87,7 +87,7 @@ public class ApiBrowser extends DefaultObject {
         distributionId = (String) args[0];
         if (args.length > 1) {
             Boolean embed = (Boolean) args[1];
-            embeddedMode = embed == null ? false : embed.booleanValue();
+            embeddedMode = embed != null && embed;
         }
     }
 
@@ -111,12 +111,12 @@ public class ApiBrowser extends DefaultObject {
         if (embeddedMode) {
             DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
             Map<String, Integer> stats = new HashMap<String, Integer>();
-            stats.put("bundles", Integer.valueOf(snap.getBundleIds().size()));
-            stats.put("jComponents", Integer.valueOf(snap.getJavaComponentIds().size()));
-            stats.put("xComponents", Integer.valueOf(snap.getXmlComponentIds().size()));
-            stats.put("services", Integer.valueOf(snap.getServiceIds().size()));
-            stats.put("xps", Integer.valueOf(snap.getExtensionPointIds().size()));
-            stats.put("contribs", Integer.valueOf(snap.getComponentIds().size()));
+            stats.put("bundles", snap.getBundleIds().size());
+            stats.put("jComponents", snap.getJavaComponentIds().size());
+            stats.put("xComponents", snap.getXmlComponentIds().size());
+            stats.put("services", snap.getServiceIds().size());
+            stats.put("xps", snap.getExtensionPointIds().size());
+            stats.put("contribs", snap.getComponentIds().size());
             return getView("indexSimple").arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID)).arg("stats",
                     stats);
         } else {

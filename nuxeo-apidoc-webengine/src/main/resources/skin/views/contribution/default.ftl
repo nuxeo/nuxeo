@@ -24,20 +24,21 @@
   <h2>Contributed items</h2>
     <form method="POST" action="${Root.path}/${distId}/viewContribution/${nxItem.id}/override">
       <input id="overrideStart" type="button" value="Generate Override" onclick="showOverrideForm()"/>
-      <ul>
+      <ul class="block-list">
       <#list nxItem.contributionItems as contributionItem>
         <li>
+          <div class="block-title">
           <input type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none"/>
           ${contributionItem.label}
-          <p> ${contributionItem.documentation} </p>
-          <span class="resourceToggle">View XML source</span>
-          <div class="hiddenResource">
+          <span> ${contributionItem.documentation} </span>
+          </div>
+          <div>
             <pre><code>${contributionItem.xml}</code></pre>
           </div>
         </li>
       </#list>
       </ul>
-      <input id="overrideGen" type="submit" value="Generate XML file" style="display:none"/>
+      <input class="button primary" id="overrideGen" type="submit" value="Generate XML file" style="display:none"/>
   </form>
   <script>
   function showOverrideForm(event) {
@@ -48,8 +49,7 @@
   }
   </script>
   <h2>XML source</h2>
-  <span class="resourceToggle">View XML source</span>
-  <div class="hiddenResource">
+  <div>
     <pre><code>${nxItem.xml?html}</code></pre>
   </div>
 

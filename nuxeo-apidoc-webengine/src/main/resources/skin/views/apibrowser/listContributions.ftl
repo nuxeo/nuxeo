@@ -18,26 +18,17 @@
       <th>
         Contribution
       </th>
-      <th>
-        Target extension point
-      </th>
-      <th>
-        Target component
-      </th>
     </tr>
   </thead>
   <tbody>
     <#list contributions as contrib>
-    <#assign rowCss = (contrib_index % 2 == 0)?string("even","odd")/>
-    <tr class="${rowCss}">
+    <tr>
       <td>
-        <a href="${Root.path}/${distId}/viewContribution/${contrib.id}">${contrib.id}</a>
-      </td>
-      <td>
-        <a href="${Root.path}/${distId}/viewExtensionPoint/${contrib.extensionPoint}">${contrib.extensionPoint?split("--")[1]}</a>
-      </td>
-      <td>
-        <a href="${Root.path}/${distId}/viewComponent/${contrib.targetComponentName.name}">${contrib.targetComponentName.name}</a>
+        <div>
+          <h4><a title="Contribution" href="${Root.path}/${distId}/viewContribution/${contrib.id}">${contrib.id}</a></h4>
+          <span title="Target Extension Point">${contrib.extensionPoint?split("--")[1]}</span> -
+          <span title="Target Component Name">${contrib.targetComponentName.name}</<span>
+        </div>
       </td>
     </tr>
     </#list>
@@ -48,7 +39,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<@tableSortFilterScript "#contributionsTable" "[1,0]" />
+<@tableSortFilterScript "#contributionsTable" "[0,0]" />
 </@block>
 
 </@extends>

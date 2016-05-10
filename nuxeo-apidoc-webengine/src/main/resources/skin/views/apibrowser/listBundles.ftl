@@ -22,10 +22,11 @@
   </thead>
   <tbody>
     <#list bundleIds as bundleId>
-    <#assign rowCss = (bundleId_index % 2 == 0)?string("even","odd")/>
-    <tr class="${rowCss}">
+    <tr>
       <td>
-        <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>
+        <div>
+          <h4><a title="Bundle Name" href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a></h4>
+        </div>
       </td>
     </tr>
     </#list>
