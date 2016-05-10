@@ -3911,8 +3911,7 @@
       <dependency>
         <groupId>commons-validator</groupId>
         <artifactId>commons-validator</artifactId>
-        <version>1.4.0</version>
-        <scope>test</scope>
+        <version>1.5.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -5699,7 +5698,7 @@
                     <!-- Exclusions are tolerated for nightly "date-based" releases only -->
                     <excludes>
                       <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
-                      <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
+                      <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
                       <!-- To be removed after NXP-19707 -->
                       <exclude>org.nuxeo.client:nuxeo-java-client</exclude>
