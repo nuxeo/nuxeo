@@ -19,6 +19,17 @@
  */
 package org.nuxeo.launcher;
 
+import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_COMPANY;
+import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_COMPANY_REGEX;
+import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_DESCRIPTION;
+import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_EMAIL;
+import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PASSWORD;
+import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PASSWORDND;
+import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PROJECT;
+import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_PROJECT_REGEX;
+import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_TERMSNCONDITIONS;
+import static org.nuxeo.launcher.connect.ConnectRegistrationBroker.REGISTRATION_USERNAME_REGEX;
+
 import java.io.Console;
 import java.io.File;
 import java.io.FileWriter;
@@ -41,9 +52,11 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -61,12 +74,13 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.artofsolving.jodconverter.process.MacProcessManager;
 import org.artofsolving.jodconverter.process.ProcessManager;
 import org.artofsolving.jodconverter.process.PureJavaProcessManager;
@@ -89,7 +103,6 @@ import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.connect.ConnectBroker;
 import org.nuxeo.launcher.connect.ConnectRegistrationBroker;
-import org.nuxeo.launcher.connect.LauncherRegisterPromptHelper;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.NuxeoLauncherGUI;
 import org.nuxeo.launcher.info.CommandInfo;
@@ -487,15 +500,15 @@ public abstract class NuxeoLauncher {
             + "        mp-hotfix\t\tInstall all the available hotfixes for the current platform (requires a registered instance).\n"
             + "        mp-upgrade\t\tGet all the available upgrades for the Nuxeo Packages currently installed (requires a registered instance).\n"
             + "        mp-show\t\t\tShow Nuxeo Package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
-            + "        register\t\tRegister your instance with an existing Connect account. You must provide a valid username, password, instance type and project ID.\n"
-            + "        register-trial\t\tRegister your instance with a new trial Connect account. You must provide a valid email, a password and a company name as parameters.\n"
+            + "        register\t\tRegister your instance with an existing Connect account. You must provide the credentials, the project name or ID, its type and a description.\n"
+            + "        register-trial\t\tRegister your instance with a new trial Connect account. You must provide an email and a password as credentials, the company name, a project name and a description.\n"
             + "\nThe following commands are always executed in console/headless mode (no GUI): "
             + "\"configure\", \"mp-init\", \"mp-purge\", \"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", "
             + "\"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", \"mp-reset\", \"mp-list\", \"mp-listall\", \"mp-update\", "
             + "\"status\", \"showconf\", \"mp-show\", \"mp-set\", \"config\", \"encrypt\", \"decrypt\", \"help\".\n"
             + "\nThe following commands cannot be executed on a running server: \"pack\", \"mp-init\", \"mp-purge\", "
             + "\"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", \"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", "
-            + "\"mp-reset\", \"register\", \"register-trial\".\n"
+            + "\"mp-reset\".\n"
             + "\nCommand parameters may need to be prefixed with '--' to separate them from option arguments when confusion arises.";
 
     private static final String OPTION_HELP_USAGE = "        nuxeoctl <command> [options] [--] [command parameters]\n\n";
@@ -522,11 +535,16 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl mp-list|mp-listall|mp-init|mp-update [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
             + "        nuxeoctl mp-reset|mp-purge|mp-hotfix|mp-upgrade [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
             + "        nuxeoctl mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
-            + "        nuxeoctl register\n\n"
-            + "        nuxeoctl register-trial\n\n"
-            + "        nuxeoctl pack <target> [-d [<categories>]|-q]\n\n" + "OPTIONS";
+            + "        nuxeoctl register [<username> [<project> [<type> <description>] [<pwd>]]]\n\n"
+            + "        nuxeoctl register-trial [<email> <company> <project> <description> [<pwd>]]\n\n"
+            + "        nuxeoctl pack <target> [-d [<categories>]|-q]\n\n" //
+            + "OPTIONS";
 
     private static final String OPTION_HELP_FOOTER = "\nSee online documentation \"ADMINDOC/nuxeoctl and Control Panel Usage\": https://doc.nuxeo.com/x/FwNc";
+
+    private static final int PAGE_SIZE = 20;
+
+    public static final String CONNECT_TC_URL = "https://www.nuxeo.com/en/services/nuxeo-trial-tc";
 
     protected ConfigurationGenerator configurationGenerator;
 
@@ -1118,7 +1136,7 @@ public abstract class NuxeoLauncher {
         } catch (Exception e) {
             log.error("Cannot execute command. " + e.getMessage());
             log.debug(e, e);
-            System.exit(1);
+            System.exit(EXIT_CODE_ERROR);
         }
     }
 
@@ -1277,93 +1295,337 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    protected boolean registerRemoteInstance() throws IOException, ConfigurationException, PackageException {
-        String username;
-        String password;
-        String project;
-        String description = "";
+    /**
+     * Prompts for a valid email address according to RFC 822 standards. The remote service may apply stricter
+     * constraints on email validation such as some black listed domains.
+     *
+     * @return the user input. Never null.
+     * @throws ConfigurationException If the user input is read from stdin and is {@code null} or does not match the
+     *             {@code regex}
+     * @since 8.3
+     */
+    public String promptEmail() throws IOException, ConfigurationException {
+        EmailValidator validator = EmailValidator.getInstance();
+        final String message = "Email Address: ";
+        final String error = "Invalid email address.";
+        return prompt(message, validator::isValid, error);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public String promptDescription() throws ConfigurationException, IOException {
+        return prompt("Description: ", null, null);
+    }
+
+    /**
+     * Prompt for a value read from the console or stdin.
+     *
+     * @param message message to display at prompt
+     * @param predicate a predicate that must match a correct user input. Ignored if {@code null}.
+     * @param error an error message to display or raise when the user input is {@code null} or does not match the
+     *            {@code regex}
+     * @return the user input. Never null.
+     * @throws ConfigurationException If the user input is read from stdin and is {@code null} or does not match the
+     *             {@code regex}
+     * @since 8.3
+     */
+    public String prompt(String message, Predicate<String> predicate, String error) throws IOException,
+            ConfigurationException {
+        boolean doRegexMatch = predicate != null;
+        String value;
+        Console console = System.console();
+        if (console != null) {
+            value = console.readLine(message);
+            while (value == null || doRegexMatch && !predicate.test(value)) {
+                console.printf(error + "\n", value);
+                value = console.readLine(message);
+            }
+        } else { // try reading from stdin
+            value = IOUtils.toString(System.in);
+            if (value == null || doRegexMatch && !predicate.test(value)) {
+                throw new ConfigurationException(error);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * @param message message to display at prompt
+     * @since 8.3
+     */
+    public char[] promptPassword(String message) throws IOException {
+        Console console = System.console();
+        if (console != null) {
+            return console.readPassword(message);
+        } else { // try reading from stdin
+            return IOUtils.toCharArray(System.in);
+        }
+    }
+
+    /**
+     * @param confirmation if true, password is asked twice.
+     * @since 8.3
+     */
+    public char[] promptPassword(boolean confirmation) throws IOException, ConfigurationException {
+        char[] pwd = promptPassword("Please enter your password: ");
+        if (confirmation) {
+            char[] pwdVerification = promptPassword("Please re-enter your password: ");
+            if (!Arrays.equals(pwd, pwdVerification)) {
+                throw new ConfigurationException("Passwords do not match.");
+            }
+        }
+        return pwd;
+    }
+
+    /**
+     * @return a {@link NuxeoClientInstanceType}. Never {@code null}.
+     * @since 8.3
+     */
+    public NuxeoClientInstanceType promptInstanceType() throws IOException, ConfigurationException {
         NuxeoClientInstanceType type;
-        if (System.console() != null) {
-            username = LauncherRegisterPromptHelper.promptUsername();
-            password = LauncherRegisterPromptHelper.promptPassword();
-            List<ConnectProject> projs = getConnectRegistrationBroker().getAvailableProjects(username, password);
-            project = LauncherRegisterPromptHelper.promptProjectId(projs);
-            type = LauncherRegisterPromptHelper.promptInstanceType();
-            description = LauncherRegisterPromptHelper.promptDescription();
+        Console console = System.console();
+        if (console == null) {
+            String typeStr = IOUtils.toString(System.in);
+            type = NuxeoClientInstanceType.fromString(typeStr);
+            if (type == null) {
+                throw new ConfigurationException("Unknown type: " + typeStr);
+            }
+            return type;
+        }
+        do {
+            String s = console.readLine("Instance type (dev|preprod|prod): [dev] ");
+            if (StringUtils.isBlank(s)) {
+                type = NuxeoClientInstanceType.DEV;
+            } else {
+                type = NuxeoClientInstanceType.fromString(s);
+            }
+        } while (type == null);
+        return type;
+    }
+
+    /**
+     * @since 8.3
+     */
+    public boolean promptAcceptTerms() {
+        Console console = System.console();
+        if (console != null) {
+            String terms = console.readLine("Read and accept the Nuxeo Trial Terms and Conditions - " + CONNECT_TC_URL
+                    + " (yes/no)? [yes] ");
+            if (StringUtils.isEmpty(terms)) {
+                terms = "yes";
+            }
+            terms = terms.trim().toLowerCase();
+            return "y".equalsIgnoreCase(terms) || "yes".equalsIgnoreCase(terms);
         } else {
-            String[] input = new String(IOUtils.toByteArray(System.in)).split("\n");
-            if (input.length < 4) {
-                throw new IOException("Wrong number of arguments.");
-            }
-            username = input[0];
-            password = input[1];
-            project = input[2];
-            type = NuxeoClientInstanceType.fromString(input[3]);
-            if (input.length > 3) {
-                description = StringUtils.join(Arrays.copyOfRange(input, 4, input.length), "\n");
-            }
+            log.info("Read Nuxeo Trial Terms and Conditions - " + CONNECT_TC_URL);
+            return true;
+        }
+    }
+
+    /**
+     * @param projects available projects the user must choose one amongst.
+     * @return a project. Never null.
+     * @throws ConfigurationException If {@code projects} is empty or if there is not such a project named as the
+     *             parameter read from stdin.
+     * @since 8.3
+     */
+    public ConnectProject promptProject(@NotNull List<ConnectProject> projects) throws ConfigurationException,
+            IOException, PackageException {
+        if (projects.isEmpty()) {
+            throw new ConfigurationException("You don't have access to any project.");
+        }
+        if (projects.size() == 1) {
+            return projects.get(0);
         }
 
-        if (type == null) {
-            type = NuxeoClientInstanceType.DEV;
+        String projectName;
+        Console console = System.console();
+        if (console == null) {
+            projectName = IOUtils.toString(System.in);
+            ConnectProject project = getConnectRegistrationBroker().getProjectByName(projectName, projects);
+            if (project == null) {
+                throw new ConfigurationException("Unknown project: " + projectName);
+            }
+            return project;
         }
 
-        getConnectRegistrationBroker().registerRemote(username, password, project, type, description);
-        log.info("Your server is correctly registered to: " + username);
+        System.out.println("Available projects:");
+        int i = 0;
+        boolean hasNextPage = true;
+        while (true) {
+            if (i > 0 && !PlatformUtils.isWindows()) {
+                // Remove last line to only have projects
+                System.out.print("\33[1A\33[2K");
+            }
+
+            int fromIndex = i * PAGE_SIZE;
+            int toIndex = (i + 1) * PAGE_SIZE;
+            if (toIndex >= projects.size()) {
+                toIndex = projects.size();
+                hasNextPage = false;
+            }
+
+            projects.subList(fromIndex, toIndex).forEach(
+                    project -> System.out.println("\t- " + project.getSymbolicName()));
+            if (toIndex < projects.size()) {
+                int pageLeft = (int) Math.ceil((projects.size() - (i * PAGE_SIZE)) / PAGE_SIZE);
+                System.out.print(String.format("Project name (press Enter for next page; %d pages left): ", pageLeft));
+            } else {
+                System.out.print("Project name: ");
+            }
+            if (hasNextPage) {
+                i++;
+            }
+            projectName = console.readLine();
+            if (StringUtils.isNotEmpty(projectName)) {
+                ConnectProject project = getConnectRegistrationBroker().getProjectByName(projectName, projects);
+                if (project != null) {
+                    return project;
+                }
+                System.err.println("Unknown project: " + projectName);
+                i = 0;
+                hasNextPage = true;
+            }
+        }
+    }
+
+    /**
+     * Register the instance, generating the CLID.
+     *
+     * <pre>
+     * {@code
+     * nuxeoctl register [<username> [<project> [<type> <description>] [pwd]]]
+     * 0/1 param:        [<username>]
+     * 2/3 params:        <username> <project> [pwd]
+     * 4/5 params:        <username> <project> <type> <description> [pwd]
+     * }
+     * </pre>
+     *
+     * Missing parameters are read from stdin.
+     *
+     * @return true if succeed
+     * @since 8.3
+     */
+    public boolean registerRemoteInstance() throws IOException, ConfigurationException, PackageException {
+        if (params.length > 5) {
+            throw new ConfigurationException("Wrong number of arguments.");
+        }
+        String username;
+        if (params.length > 0) {
+            username = params[0];
+        } else {
+            username = prompt("Username: ", s -> Pattern.matches(REGISTRATION_USERNAME_REGEX, s), "Username cannot be empty.");
+        }
+        char[] password;
+        if (params.length == 3 || params.length == 5) {
+            password = params[params.length - 1].toCharArray();
+        } else {
+            password = promptPassword(false);
+        }
+        ConnectProject project;
+        List<ConnectProject> projs = getConnectRegistrationBroker().getAvailableProjects(username, password);
+        if (params.length > 1) {
+            String projectName = params[1];
+            project = getConnectRegistrationBroker().getProjectByName(projectName, projs);
+            if (project == null) {
+                throw new ConfigurationException("Unknown project: " + projectName);
+            }
+        } else {
+            project = promptProject(projs);
+        }
+        NuxeoClientInstanceType type;
+        String description;
+        if (params.length > 3) {
+            type = NuxeoClientInstanceType.fromString(params[2]);
+            if (type == null) {
+                throw new ConfigurationException("Unknown type: " + params[2]);
+            }
+            description = params[3];
+        } else {
+            type = promptInstanceType();
+            description = promptDescription();
+        }
+
+        getConnectRegistrationBroker().registerRemote(username, password, project.getUuid(), type, description);
+        log.info(String.format("Server registered to %s for project %s\nType: %s\nDescription: %s", username, project,
+                type, description));
         return true;
     }
 
-    protected boolean registerTrial() throws IOException, ConfigurationException, PackageException {
-        getConnectBroker(); // Initialize NuxeoConnectClient Oo
+    /**
+     * @since 8.3
+     */
+    public boolean registerTrial() throws IOException, ConfigurationException, PackageException {
         CommandInfo commandInfo = cset.newCommandInfo("register-trial");
+        if (params.length != 0 && params.length != 4 && params.length != 5) {
+            throw new ConfigurationException("Wrong number of arguments.");
+        }
 
         Map<String, String> registration = new HashMap<>();
-        if (System.console() != null) {
-            registration.put("email", LauncherRegisterPromptHelper.promptMail());
-            registration.put("company", LauncherRegisterPromptHelper.promptCompany());
+        if (params.length > 3) {
+            String email = params[0];
+            if (!EmailValidator.getInstance().isValid(email)) {
+                throw new ConfigurationException("Invalid email address.");
+            }
+            registration.put(REGISTRATION_EMAIL, email);
 
-            String pwd = LauncherRegisterPromptHelper.promptPassword(true);
-            registration.put("password", pwd);
-            registration.put("password_verif", pwd);
+            String company = params[1];
+            if (!Pattern.matches(REGISTRATION_COMPANY_REGEX, company)) {
+                throw new ConfigurationException("Company field is mandatory.");
+            }
+            registration.put(REGISTRATION_COMPANY, company);
 
-            registration.put("connectreg:projectName", LauncherRegisterPromptHelper.promptProjectName());
-            registration.put("description", LauncherRegisterPromptHelper.promptDescription());
+            String projectName = params[2];
+            if (!Pattern.matches(REGISTRATION_PROJECT_REGEX, projectName)) {
+                throw new ConfigurationException("Project name can only contain alphanumeric characters and dashes.");
+            }
+            registration.put(REGISTRATION_PROJECT, projectName);
+
+            registration.put(REGISTRATION_DESCRIPTION, params[3]);
         } else {
-            String[] input = new String(IOUtils.toByteArray(System.in)).split("\n");
-            if (input.length < 3) {
-                throw new IOException("Wrong number of arguments.");
-            }
-            registration.put("email", input[0]);
-            registration.put("company", input[1]);
-
-            registration.put("password", input[2]);
-            registration.put("password_verif", input[2]);
-
-            String projectName = "project1";
-            if (input.length >= 3) {
-                projectName = input[3];
-                registration.put("description", StringUtils.join(Arrays.copyOfRange(input, 4, input.length), "\n"));
-            }
-            registration.put("connectreg:projectName", projectName);
+            registration.put(REGISTRATION_EMAIL, promptEmail());
+            registration.put(REGISTRATION_COMPANY,
+                    prompt("Company: ", s -> s.matches(REGISTRATION_COMPANY_REGEX), "Company field is mandatory."));
+            registration.put(
+                    REGISTRATION_PROJECT,
+                    prompt("Project name: ", s -> s.matches(REGISTRATION_PROJECT_REGEX),
+                            "Project name can only contain alphanumeric characters and dashes."));
+            registration.put("description", promptDescription());
         }
 
-        if (!LauncherRegisterPromptHelper.promptAcceptTerms()) {
-            log.error("You must accept the Nuxeo Trial Terms and Condition to register your instance.");
-            commandInfo.exitCode = EXIT_CODE_INVALID;
+        if (params.length == 5) {
+            registration.put(REGISTRATION_PASSWORD, params[4]);
+            registration.put(REGISTRATION_PASSWORDND, params[4]);
+        } else {
+            // TODO NXP-19258 remove password_verif
+            char[] pwd = promptPassword(true);
+            registration.put(REGISTRATION_PASSWORD, new String(pwd));
+            registration.put(REGISTRATION_PASSWORDND, new String(pwd));
+        }
+
+        if (!promptAcceptTerms()) {
+            log.error("You must accept the Nuxeo Trial Terms and Conditions to register your instance.");
+            errorValue = EXIT_CODE_INVALID;
+            commandInfo.exitCode = 1;
             return false;
         }
-        registration.put("termsAndConditions", "true");
+        registration.put(REGISTRATION_TERMSNCONDITIONS, "true");
 
         try {
             getConnectRegistrationBroker().registerTrial(registration);
         } catch (RegistrationException e) {
             commandInfo.newMessage(e);
             e.getErrors().forEach(err -> commandInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, err.getMessage()));
-            commandInfo.exitCode = EXIT_CODE_NOT_CONFIGURED;
+            errorValue = EXIT_CODE_NOT_CONFIGURED;
+            commandInfo.exitCode = 1;
             return false;
         }
-
-        log.info("Please ensure you have validated your registration with the confirmation mail before starting the server.");
+        log.info(String.format(
+                "Trial registered to %s for project %s\nDescription: %s\n"
+                        + "Please ensure you have validated your registration with the confirmation email before starting the server.",
+                registration.get(REGISTRATION_EMAIL), registration.get(REGISTRATION_PROJECT),
+                registration.get(REGISTRATION_DESCRIPTION)));
         return true;
     }
 
@@ -2398,7 +2660,9 @@ public abstract class NuxeoLauncher {
             if (cmdLine.hasOption(OPTION_SNAPSHOT) || isSNAPSHOTDistribution()) {
                 connectBroker.setAllowSNAPSHOT(true);
             }
+            List<CommandInfo> csetCommands = cset.commands;
             cset = connectBroker.getCommandSet();
+            cset.commands.addAll(0, csetCommands);
         }
         return connectBroker;
     }
