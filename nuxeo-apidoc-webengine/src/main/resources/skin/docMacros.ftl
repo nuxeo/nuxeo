@@ -95,9 +95,6 @@
 
 <#macro viewSecDescriptions docsByCat title=true>
   <#if docsByCat?keys?seq_contains("Description")>
-    <#if title>
-      <h2> Description </h2>
-    </#if>
     <#list docsByCat["Description"] as docItem>
       <@docContent docItem/>
     </#list>
