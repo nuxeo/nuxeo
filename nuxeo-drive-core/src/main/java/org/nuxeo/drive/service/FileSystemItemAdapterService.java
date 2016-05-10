@@ -177,7 +177,7 @@ public interface FileSystemItemAdapterService {
     Set<String> getActiveFileSystemItemFactories();
 
     /**
-     * Allows to limit the number of concurrent scrolls run by {@link FolderItem#scrollDescendants(String, int)}.
+     * Allows to limit the number of concurrent scrolls run by {@link FolderItem#scrollDescendants(String, int, long)}.
      *
      * @since 8.3
      */

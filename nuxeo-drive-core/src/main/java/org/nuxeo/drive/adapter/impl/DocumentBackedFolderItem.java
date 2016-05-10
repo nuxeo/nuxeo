@@ -186,7 +186,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     @Override
-    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize) {
+    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize, long keepAlive) {
         Semaphore semaphore = Framework.getService(FileSystemItemAdapterService.class).getScrollBatchSemaphore();
         try {
             if (log.isTraceEnabled()) {
@@ -200,7 +200,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
                             "Thread [%s] acquired scroll batch semaphore, available permits reduced to %d",
                             Thread.currentThread().getName(), semaphore.availablePermits()));
                 }
-                return doScrollDescendants(scrollId, batchSize);
+                return doScrollDescendants(scrollId, batchSize, keepAlive);
             } finally {
                 semaphore.release();
                 if (log.isTraceEnabled()) {
@@ -216,109 +216,101 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     @SuppressWarnings("unchecked")
-    protected ScrollFileSystemItemList doScrollDescendants(String scrollId, int batchSize) {
+    protected ScrollFileSystemItemList doScrollDescendants(String scrollId, int batchSize, long keepAlive) {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
 
             // Limit batch size sent by the client
-            int maxDescendantsBatchSize = Integer.parseInt(Framework.getService(ConfigurationService.class)
-                                                                    .getProperty(MAX_DESCENDANTS_BATCH_SIZE_PROPERTY,
-                                                                            MAX_DESCENDANTS_BATCH_SIZE_DEFAULT));
-            if (batchSize > maxDescendantsBatchSize) {
-                throw new NuxeoException(
-                        String.format(
-                                "Batch size %d is greater than the maximum batch size allowed %d. If you need to increase this limit you can set the %s configuration property but this is not recommended for performance reasons.",
-                                batchSize, maxDescendantsBatchSize, MAX_DESCENDANTS_BATCH_SIZE_PROPERTY));
-            }
+            checkBatchSize(batchSize);
 
-            Cache scrollingCache = Framework.getService(CacheService.class).getCache(DESCENDANTS_SCROLL_CACHE);
-            if (scrollingCache == null) {
-                throw new NuxeoException("Cache not found: " + DESCENDANTS_SCROLL_CACHE);
-            }
-            String newScrollId;
-            List<String> descendantIds;
-            if (StringUtils.isEmpty(scrollId)) {
-                // Perform initial query to fetch ids of all the descendant documents and put the result list in a
-                // cache, aka "search context"
-                descendantIds = new ArrayList<>();
-                StringBuilder sb = new StringBuilder(String.format(
-                        "SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", docId));
-                sb.append(" AND ecm:currentLifeCycleState != 'deleted'");
-                sb.append(" AND ecm:mixinType != 'HiddenInNavigation'");
-                // Don't need to add ecm:isCheckedInVersion = 0 because versions are already excluded by the
-                // ecm:ancestorId clause since they have no path
-                String query = sb.toString();
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Executing initial query to scroll through the descendants of %s: %s",
-                            docPath, query));
-                }
-                try (IterableQueryResult res = session.queryAndFetch(sb.toString(), NXQL.NXQL)) {
-                    Iterator<Map<String, Serializable>> it = res.iterator();
-                    while (it.hasNext()) {
-                        descendantIds.add((String) it.next().get(NXQL.ECM_UUID));
-                    }
-                }
-                // Generate a scroll id
-                newScrollId = UUID.randomUUID().toString();
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format(
-                            "Put initial query result list (search context) in the %s cache at key (scrollId) %s",
-                            DESCENDANTS_SCROLL_CACHE, newScrollId));
-                }
-                scrollingCache.put(newScrollId, (Serializable) descendantIds);
-            } else {
-                // Get the descendant ids from the cache
-                descendantIds = (List<String>) scrollingCache.get(scrollId);
-                if (descendantIds == null) {
-                    throw new NuxeoException(String.format("No search context found in the %s cache for scrollId [%s]",
-                            DESCENDANTS_SCROLL_CACHE, scrollId));
-                }
-                newScrollId = scrollId;
-            }
-
-            if (descendantIds.isEmpty()) {
+            // Scroll through a batch of documents
+            ScrollDocumentModelList descendantDocsBatch = getScrollBatch(scrollId, batchSize, session, keepAlive);
+            String newScrollId = descendantDocsBatch.getScrollId();
+            if (descendantDocsBatch.isEmpty()) {
                 // No more descendants left to return
                 return new ScrollFileSystemItemListImpl(newScrollId, 0);
             }
 
-            // Fetch a batch of documents from VCS
-            List<String> descendantIdsBatch = getBatch(descendantIds, batchSize);
-            DocumentModelList descendantDocsBatch = fetchFromVCS(descendantIdsBatch, session);
-
-            // Adapt documents as FileSystemItems using a cache for the FolderItem ancestors
-            Map<DocumentRef, FolderItem> ancestorCache = new HashMap<>();
+            // Adapt documents as FileSystemItems
+            List<FileSystemItem> descendants = adaptDocuments(descendantDocsBatch, session);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Caching current FolderItem for doc %s: %s", docPath, getPath()));
-            }
-            ancestorCache.put(new IdRef(docId), this);
-            List<FileSystemItem> descendants = new ArrayList<>(descendantDocsBatch.size());
-            int descendantCount = 0;
-            for (DocumentModel doc : descendantDocsBatch) {
-                FolderItem parent = populateAncestorCache(ancestorCache, doc, session, false);
-                // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-                FileSystemItem descendant = getFileSystemItemAdapterService().getFileSystemItem(doc, parent, false,
-                        false, false);
-                if (descendant != null) {
-                    if (descendant.isFolder()) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Caching descendant FolderItem for doc %s: %s",
-                                    doc.getPathAsString(), descendant.getPath()));
-                        }
-                        ancestorCache.put(doc.getRef(), (FolderItem) descendant);
-                    }
-                    descendants.add(descendant);
-                    descendantCount++;
-                }
-            }
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Retrieved %d descendants of FolderItem %s (batchSize = %d)", descendantCount,
-                        docPath, batchSize));
+                log.debug(String.format("Retrieved %d descendants of FolderItem %s (batchSize = %d)",
+                        descendants.size(), docPath, batchSize));
             }
             return new ScrollFileSystemItemListImpl(newScrollId, descendants);
         }
     }
 
+    protected void checkBatchSize(int batchSize) {
+        int maxDescendantsBatchSize = Integer.parseInt(Framework.getService(ConfigurationService.class).getProperty(
+                MAX_DESCENDANTS_BATCH_SIZE_PROPERTY, MAX_DESCENDANTS_BATCH_SIZE_DEFAULT));
+        if (batchSize > maxDescendantsBatchSize) {
+            throw new NuxeoException(
+                    String.format(
+                            "Batch size %d is greater than the maximum batch size allowed %d. If you need to increase this limit you can set the %s configuration property but this is not recommended for performance reasons.",
+                            batchSize, maxDescendantsBatchSize, MAX_DESCENDANTS_BATCH_SIZE_PROPERTY));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected ScrollDocumentModelList getScrollBatch(String scrollId, int batchSize, CoreSession session, long keepAlive) {
+        Cache scrollingCache = Framework.getService(CacheService.class).getCache(DESCENDANTS_SCROLL_CACHE);
+        if (scrollingCache == null) {
+            throw new NuxeoException("Cache not found: " + DESCENDANTS_SCROLL_CACHE);
+        }
+        String newScrollId;
+        List<String> descendantIds;
+        if (StringUtils.isEmpty(scrollId)) {
+            // Perform initial query to fetch ids of all the descendant documents and put the result list in a
+            // cache, aka "search context"
+            descendantIds = new ArrayList<>();
+            StringBuilder sb = new StringBuilder(String.format(
+                    "SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", docId));
+            sb.append(" AND ecm:currentLifeCycleState != 'deleted'");
+            sb.append(" AND ecm:mixinType != 'HiddenInNavigation'");
+            // Don't need to add ecm:isCheckedInVersion = 0 because versions are already excluded by the
+            // ecm:ancestorId clause since they have no path
+            String query = sb.toString();
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Executing initial query to scroll through the descendants of %s: %s", docPath,
+                        query));
+            }
+            try (IterableQueryResult res = session.queryAndFetch(sb.toString(), NXQL.NXQL)) {
+                Iterator<Map<String, Serializable>> it = res.iterator();
+                while (it.hasNext()) {
+                    descendantIds.add((String) it.next().get(NXQL.ECM_UUID));
+                }
+            }
+            // Generate a scroll id
+            newScrollId = UUID.randomUUID().toString();
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Put initial query result list (search context) in the %s cache at key (scrollId) %s",
+                        DESCENDANTS_SCROLL_CACHE, newScrollId));
+            }
+            scrollingCache.put(newScrollId, (Serializable) descendantIds);
+        } else {
+            // Get the descendant ids from the cache
+            descendantIds = (List<String>) scrollingCache.get(scrollId);
+            if (descendantIds == null) {
+                throw new NuxeoException(String.format("No search context found in the %s cache for scrollId [%s]",
+                        DESCENDANTS_SCROLL_CACHE, scrollId));
+            }
+            newScrollId = scrollId;
+        }
+
+        if (descendantIds.isEmpty()) {
+            return new ScrollDocumentModelList(newScrollId, 0);
+        }
+
+        // Extract a batch of descendant ids
+        List<String> descendantIdsBatch = getBatch(descendantIds, batchSize);
+        // Fetch documents from VCS
+        DocumentModelList descendantDocsBatch = fetchFromVCS(descendantIdsBatch, session);
+        return new ScrollDocumentModelList(newScrollId, descendantDocsBatch);
+    }
+
     /**
-     * Extracts batchSize elements form the input list.
+     * Extracts batchSize elements from the input list.
      */
     protected List<String> getBatch(List<String> ids, int batchSize) {
         List<String> batch = new ArrayList<>(batchSize);
@@ -371,6 +363,36 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             log.debug(String.format("Fetching %d documents from VCS: %s", docCount, query));
         }
         return session.query(query);
+    }
+
+    /**
+     * Adapts the given {@link DocumentModelList} as {@link FileSystemItem}s using a cache for the {@link FolderItem}
+     * ancestors.
+     */
+    protected List<FileSystemItem> adaptDocuments(DocumentModelList docs, CoreSession session) {
+        Map<DocumentRef, FolderItem> ancestorCache = new HashMap<>();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Caching current FolderItem for doc %s: %s", docPath, getPath()));
+        }
+        ancestorCache.put(new IdRef(docId), this);
+        List<FileSystemItem> descendants = new ArrayList<>(docs.size());
+        for (DocumentModel doc : docs) {
+            FolderItem parent = populateAncestorCache(ancestorCache, doc, session, false);
+            // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+            FileSystemItem descendant = getFileSystemItemAdapterService().getFileSystemItem(doc, parent, false, false,
+                    false);
+            if (descendant != null) {
+                if (descendant.isFolder()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Caching descendant FolderItem for doc %s: %s", doc.getPathAsString(),
+                                descendant.getPath()));
+                    }
+                    ancestorCache.put(doc.getRef(), (FolderItem) descendant);
+                }
+                descendants.add(descendant);
+            }
+        }
+        return descendants;
     }
 
     protected FolderItem populateAncestorCache(Map<DocumentRef, FolderItem> cache, DocumentModel doc,

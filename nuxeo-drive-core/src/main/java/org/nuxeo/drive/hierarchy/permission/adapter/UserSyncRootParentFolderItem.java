@@ -149,9 +149,9 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
     }
 
     @Override
-    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize) {
+    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize, long keepAlive) {
         if (getCanScrollDescendants()) {
-            return super.scrollDescendants(scrollId, batchSize);
+            return super.scrollDescendants(scrollId, batchSize, keepAlive);
         } else {
             throw new UnsupportedOperationException(
                     "Cannot scroll through the descendants of the user sync root parent folder item, please call getChildren() instead.");

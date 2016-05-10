@@ -3,7 +3,8 @@ Bundle-Vendor: Nuxeo
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Name: org.nuxeo.drive.elasticsearch
-Nuxeo-Component: OSGI-INF/nuxeodrive-elasticsearch-contrib.xml,
+Nuxeo-Component: OSGI-INF/nuxeodrive-elasticsearch-change-finder-contrib.xml,
+ OSGI-INF/nuxeodrive-elasticsearch-adapter-contrib.xml,
  OSGI-INF/nuxeodrive-elasticsearch-operations.xml,
  OSGI-INF/nuxeodrive-elasticsearch-automation-bindings-contrib.xml
 Bundle-ManifestVersion: 2

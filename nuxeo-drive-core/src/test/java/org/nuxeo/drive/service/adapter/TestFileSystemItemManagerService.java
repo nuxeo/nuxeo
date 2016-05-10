@@ -327,7 +327,7 @@ public class TestFileSystemItemManagerService {
 
         // Scroll through all descendants in one breath
         ScrollFileSystemItemList folderDescendants = fileSystemItemManagerService.scrollDescendants(
-                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal, null, 10);
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + folder.getId(), principal, null, 10, 1000);
         assertNotNull(folderDescendants);
         assertNotNull(folderDescendants.getScrollId());
         assertEquals(4, folderDescendants.size());
@@ -340,7 +340,7 @@ public class TestFileSystemItemManagerService {
         ScrollFileSystemItemList descendantsBatch;
         int batchSize = 2;
         String scrollId = null;
-        while (!(descendantsBatch = folderItem.scrollDescendants(scrollId, batchSize)).isEmpty()) {
+        while (!(descendantsBatch = folderItem.scrollDescendants(scrollId, batchSize, 1000)).isEmpty()) {
             assertTrue(descendantsBatch.size() > 0);
             scrollId = descendantsBatch.getScrollId();
             folderDescendants.addAll(descendantsBatch);
@@ -351,7 +351,7 @@ public class TestFileSystemItemManagerService {
                 subFolder.getId(), false);
 
         folderDescendants = fileSystemItemManagerService.scrollDescendants(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
-                + subFolder.getId(), principal, null, 10);
+                + subFolder.getId(), principal, null, 10, 1000);
         assertTrue(folderDescendants.isEmpty());
 
         // ------------------------------------------------------

@@ -179,7 +179,8 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public ScrollFileSystemItemList scrollDescendants(String id, Principal principal, String scrollId, int batchSize) {
+    public ScrollFileSystemItemList scrollDescendants(String id, Principal principal, String scrollId, int batchSize,
+            long keepAlive) {
         FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
         if (fileSystemItem == null) {
             throw new NuxeoException(String.format(
@@ -190,7 +191,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
                     "Cannot get the descendants of file system item with id %s because it is not a folder.", id));
         }
         FolderItem folderItem = (FolderItem) fileSystemItem;
-        return folderItem.scrollDescendants(scrollId, batchSize);
+        return folderItem.scrollDescendants(scrollId, batchSize, keepAlive);
     }
 
     @Override

@@ -42,7 +42,7 @@ public interface FolderItem extends FileSystemItem {
     List<FileSystemItem> getChildren();
 
     /**
-     * Returns {@code true} if the {@link #scrollDescendants(int, String)} API can be used.
+     * Returns {@code true} if the {@link #scrollDescendants(String, int, long)} API can be used.
      *
      * @since 8.3
      */
@@ -55,6 +55,9 @@ public interface FolderItem extends FileSystemItem {
      * returned along with a {@code scrollId} which should be passed to the next call in order to retrieve the next
      * batch of results.
      * <p>
+     * Ideally, the search context made available by the initial search request is kept alive during {@code keepAlive}
+     * milliseconds if {@code keepAlive} is positive.
+     * <p>
      * Results are not necessarily sorted.
      * <p>
      * This method is protected by a {@link Semaphore}, made available by
@@ -65,7 +68,7 @@ public interface FolderItem extends FileSystemItem {
      * @since 8.3
      */
     @JsonIgnore
-    ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize);
+    ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize, long keepAlive);
 
     boolean getCanCreateChild();
 

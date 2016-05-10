@@ -36,7 +36,7 @@ object SetupRemoteScan {
       .exec(Actions.createDocumentIfNotExistsAsAdmin(Constants.ROOT_WORKSPACE_PATH, Constants.GAT_WS_NAME, "Workspace")).exitHereIfFailed
       .exec(Actions.grantReadWritePermission(Constants.GAT_WS_PATH, Constants.GAT_GROUP_NAME)).exitHereIfFailed
       .exec(NuxeoImporter.massImport(nbThreads, nbNodes))
-      .exec(NuxeoImporter.waitForAsyncJobs())
+      .exec(NuxeoImporter.waitForAsyncJobsAndESIndexation())
       .repeat(userCount.intValue(), "count") {
       feed(Feeders.usersQueue)
         .feed(Feeders.deviceId)

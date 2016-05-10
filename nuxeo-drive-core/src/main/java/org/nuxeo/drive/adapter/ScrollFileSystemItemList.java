@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Wrapper for the results of {@link FolderItem#scrollDescendants(String, int)}.
+ * Wrapper for the results of {@link FolderItem#scrollDescendants(String, int, long)}.
  *
  * @since 8.3
  */

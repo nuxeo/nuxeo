@@ -41,9 +41,12 @@ import org.nuxeo.runtime.api.Framework;
  * Retrieves at most {@code batchSize} descendants of the {@link FolderItem} with the given {@code id} for the currently
  * authenticated user and the given {@code scrollId}.
  * <p>
- * * When passing a null {@code scrollId} the initial search request is executed and the first batch of results is
+ * When passing a null {@code scrollId} the initial search request is executed and the first batch of results is
  * returned along with a {@code scrollId} which should be passed to the next call in order to retrieve the next batch of
  * results.
+ * <p>
+ * Ideally, the search context made available by the initial search request is kept alive during {@code keepAlive}
+ * milliseconds if {@code keepAlive} is positive.
  * <p>
  * Results are not necessarily sorted.
  *
@@ -66,12 +69,15 @@ public class NuxeoDriveScrollDescendants {
     @Param(name = "batchSize")
     protected int batchSize;
 
+    @Param(name = "keepAlive", required = false)
+    protected long keepAlive = 60000; // 1 minute
+
     @OperationMethod
     public Blob run() throws IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
         ScrollFileSystemItemList descendants = fileSystemItemManager.scrollDescendants(id, ctx.getPrincipal(),
-                scrollId, batchSize);
+                scrollId, batchSize, keepAlive);
         return writeJSONBlob(descendants);
     }
 

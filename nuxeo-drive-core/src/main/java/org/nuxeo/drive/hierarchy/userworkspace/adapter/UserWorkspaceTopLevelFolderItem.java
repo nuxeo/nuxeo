@@ -141,7 +141,7 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
     }
 
     @Override
-    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize) {
+    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize, long keepAlive) {
         throw new UnsupportedOperationException(
                 "Cannot scroll through the descendants of the user workspace top level folder item, please call getChildren() instead.");
     }

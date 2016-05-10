@@ -110,12 +110,16 @@ public interface FileSystemItemManager {
      * returned along with a {@code scrollId} which should be passed to the next call in order to retrieve the next
      * batch of results.
      * <p>
+     * Ideally, the search context made available by the initial search request is kept alive during {@code keepAlive}
+     * milliseconds if {@code keepAlive} is positive.
+     * <p>
      * Results are not necessarily sorted.
      *
-     * @see FolderItem#scrollDescendants(int, String)
+     * @see FolderItem#scrollDescendants(String, int, long)
      * @since 8.3
      */
-    ScrollFileSystemItemList scrollDescendants(String id, Principal principal, String scrollId, int batchSize);
+    ScrollFileSystemItemList scrollDescendants(String id, Principal principal, String scrollId, int batchSize,
+            long keepAlive);
 
     /**
      * Return true if the {@link FileSystemItem} with the given source id can be moved to the {@link FileSystemItem}

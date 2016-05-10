@@ -150,7 +150,7 @@ public class TestDefaultTopLevelFolderItemFactory {
         assertEquals(2, children.size());
         assertFalse(topLevelFolderItem.getCanScrollDescendants());
         try {
-            topLevelFolderItem.scrollDescendants(null, 10);
+            topLevelFolderItem.scrollDescendants(null, 10, 1000);
             fail("Should not be able to scroll through the descendants of the default top level folder item.");
         } catch (UnsupportedOperationException e) {
             assertEquals(

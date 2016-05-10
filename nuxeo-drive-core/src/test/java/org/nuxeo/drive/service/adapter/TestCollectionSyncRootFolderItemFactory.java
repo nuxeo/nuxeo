@@ -131,7 +131,7 @@ public class TestCollectionSyncRootFolderItemFactory {
 
         log.trace("Check descendants");
         try {
-            collectionFSItem.scrollDescendants(null, 10);
+            collectionFSItem.scrollDescendants(null, 10, 1000);
             fail("Should not be able to scroll through the descendants of a CollectionSyncRootFolderItem.");
         } catch (UnsupportedOperationException e) {
             assertEquals(

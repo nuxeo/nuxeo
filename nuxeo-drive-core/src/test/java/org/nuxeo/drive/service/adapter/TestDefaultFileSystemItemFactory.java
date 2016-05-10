@@ -308,7 +308,7 @@ public class TestDefaultFileSystemItemFactory {
         assertNotNull(children);
         assertEquals(0, children.size());
         assertTrue(folderItem.getCanScrollDescendants());
-        ScrollFileSystemItemList descendants = folderItem.scrollDescendants(null, 10);
+        ScrollFileSystemItemList descendants = folderItem.scrollDescendants(null, 10, 1000);
         assertNotNull(descendants);
         assertNotNull(descendants.getScrollId());
         assertEquals(0, descendants.size());
@@ -525,7 +525,7 @@ public class TestDefaultFileSystemItemFactory {
         FolderItem folderItem = (FolderItem) fsItem;
         assertTrue(folderItem.getChildren().isEmpty());
         assertTrue(folderItem.getCanScrollDescendants());
-        assertTrue(folderItem.scrollDescendants(null, 10).isEmpty());
+        assertTrue(folderItem.scrollDescendants(null, 10, 1000).isEmpty());
         // Not adaptable as a FileSystemItem
         fsItem = defaultFileSystemItemFactory.getFileSystemItemById(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
                 + notAFileSystemItem.getId(), principal);
@@ -828,7 +828,7 @@ public class TestDefaultFileSystemItemFactory {
         // Check scrollDescendants
         assertTrue(folderItem.getCanScrollDescendants());
         // Scroll through all descendants in one breath
-        ScrollFileSystemItemList folderDescendants = folderItem.scrollDescendants(null, 10);
+        ScrollFileSystemItemList folderDescendants = folderItem.scrollDescendants(null, 10, 1000);
         assertNotNull(folderDescendants.getScrollId());
         assertEquals(4, folderDescendants.size());
         // Order is not determined
@@ -839,7 +839,7 @@ public class TestDefaultFileSystemItemFactory {
         ScrollFileSystemItemList descendantsBatch;
         int batchSize = 2;
         String scrollId = null;
-        while (!(descendantsBatch = folderItem.scrollDescendants(scrollId, batchSize)).isEmpty()) {
+        while (!(descendantsBatch = folderItem.scrollDescendants(scrollId, batchSize, 1000)).isEmpty()) {
             assertTrue(descendantsBatch.size() > 0);
             scrollId = descendantsBatch.getScrollId();
             folderDescendants.addAll(descendantsBatch);
@@ -851,7 +851,7 @@ public class TestDefaultFileSystemItemFactory {
 
         // Check batch size limit
         try {
-            folderItem.scrollDescendants(null, 10000);
+            folderItem.scrollDescendants(null, 10000, 1000);
             fail("Should not be able to scroll through more descendants than the maximum batch size allowed.");
         } catch (NuxeoException e) {
             log.trace(e);
@@ -918,7 +918,7 @@ public class TestDefaultFileSystemItemFactory {
             for (FileSystemItem child : children) {
                 assertNull(child.getLockInfo());
             }
-            children = syncRootFolderItem.scrollDescendants(null, 10);
+            children = syncRootFolderItem.scrollDescendants(null, 10, 1000);
             assertEquals(5, children.size());
             for (FileSystemItem child : children) {
                 assertNull(child.getLockInfo());
@@ -1115,7 +1115,7 @@ public class TestDefaultFileSystemItemFactory {
                     assertNotNull(childFolderChildren);
                     assertEquals(0, childFolderChildren.size());
                     assertTrue(folderItem.getCanScrollDescendants());
-                    ScrollFileSystemItemList childFolderDescendants = folderItem.scrollDescendants(null, 10);
+                    ScrollFileSystemItemList childFolderDescendants = folderItem.scrollDescendants(null, 10, 1000);
                     assertNotNull(childFolderDescendants);
                     assertNotNull(childFolderDescendants.getScrollId());
                     assertEquals(0, childFolderDescendants.size());

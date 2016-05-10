@@ -93,7 +93,7 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
     }
 
     @Override
-    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize) {
+    public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize, long keepAlive) {
         throw new UnsupportedOperationException(
                 "Cannot scroll through the descendants of a collection sync root folder item, please call getChildren() instead.");
     }
