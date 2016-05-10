@@ -9,26 +9,29 @@
 <#include "/docMacros.ftl">
 
 <h1>${bundleIds?size} bundles</h1>
-<@tableFilterArea "bundle"/>
-<table id="bundlesTable" class="tablesorter">
-<thead>
-  <tr>
-    <th>
-      Bundle
-    </th>
-  </tr>
-</thead>
-<tbody>
-  <#list bundleIds as bundleId>
-  <#assign rowCss = (bundleId_index % 2 == 0)?string("even","odd")/>
-  <tr class="${rowCss}">
-    <td>
-      <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>
-    </td>
-  </tr>
-  </#list>
-</tbody>
-</table>
+
+<div class="tabscontent">
+  <@tableFilterArea "bundle"/>
+  <table id="bundlesTable" class="tablesorter">
+  <thead>
+    <tr>
+      <th>
+        Bundle
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <#list bundleIds as bundleId>
+    <#assign rowCss = (bundleId_index % 2 == 0)?string("even","odd")/>
+    <tr class="${rowCss}">
+      <td>
+        <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>
+      </td>
+    </tr>
+    </#list>
+  </tbody>
+  </table>
+</div>
 
 </@block>
 

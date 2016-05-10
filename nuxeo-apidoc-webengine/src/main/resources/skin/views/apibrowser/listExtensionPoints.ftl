@@ -14,41 +14,44 @@
 <#include "/docMacros.ftl">
 
 <h1>${eps?size} extension points</h1>
-<@tableFilterArea "extension point"/>
-<table id="extensionPointsTable" class="tablesorter">
-<thead>
-  <tr>
-    <th>
-      Extension point
-    </th>
-    <th>
-      Component (short)
-    </th>
-    <th>
-      Component
-    </th>
-  </tr>
-</thead>
-<tbody>
-  <#list eps as ep>
-  <#assign rowCss = (ep_index % 2 == 0)?string("even","odd")/>
-  <tr class="${rowCss}">
-    <td>
-      <a href="${Root.path}/${distId}/viewExtensionPoint/${ep.id}">${ep.label}</a>
-      <#if showDesc>
-        <@inlineEdit ep.id descriptions[ep.id]/>
-      </#if>
-    </td>
-    <td>
-      <a href="${Root.path}/${distId}/viewComponent/${ep.simpleId}">${ep.simpleId?replace(".*\\.","","r")}</a>
-    </td>
-    <td>
-      <a href="${Root.path}/${distId}/viewComponent/${ep.simpleId}">${ep.simpleId}</a>
-    </td>
-  </tr>
-  </#list>
-<tbody>
-</table>
+
+<div class="tabscontent">
+  <@tableFilterArea "extension point"/>
+  <table id="extensionPointsTable" class="tablesorter">
+  <thead>
+    <tr>
+      <th>
+        Extension point
+      </th>
+      <th>
+        Component (short)
+      </th>
+      <th>
+        Component
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <#list eps as ep>
+    <#assign rowCss = (ep_index % 2 == 0)?string("even","odd")/>
+    <tr class="${rowCss}">
+      <td>
+        <a href="${Root.path}/${distId}/viewExtensionPoint/${ep.id}">${ep.label}</a>
+        <#if showDesc>
+          <@inlineEdit ep.id descriptions[ep.id]/>
+        </#if>
+      </td>
+      <td>
+        <a href="${Root.path}/${distId}/viewComponent/${ep.simpleId}">${ep.simpleId?replace(".*\\.","","r")}</a>
+      </td>
+      <td>
+        <a href="${Root.path}/${distId}/viewComponent/${ep.simpleId}">${ep.simpleId}</a>
+      </td>
+    </tr>
+    </#list>
+  </tbody>
+  </table>
+</div>
 
 </@block>
 

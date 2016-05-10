@@ -13,23 +13,27 @@
 
 <h1>Bundle <span class="componentTitle">${bundle.bundleId}<span></h1>
 
-<@viewBundleArtifact bundleItem=This.nxArtifact/>
+<div class="tabscontent">
 
-<h2> MANIFEST </h2>
-<pre>
-${bundle.manifest}
-</pre>
+  <@viewBundleArtifact bundleItem=This.nxArtifact/>
 
-<h2> Components </h2>
-<#if components?size == 0>
-No components.
-<#else>
-<ul>
-<#list components as component>
-    <li><A href="${Root.path}/${distId}/viewComponent/${component.name}"> ${component.name} </A></li>
-</#list>
-</ul>
-</#if>
+  <h2> MANIFEST </h2>
+  <pre>
+  ${bundle.manifest}
+  </pre>
+
+  <h2> Components </h2>
+  <#if components?size == 0>
+  No components.
+  <#else>
+  <ul>
+  <#list components as component>
+      <li><A href="${Root.path}/${distId}/viewComponent/${component.name}"> ${component.name} </A></li>
+  </#list>
+  </ul>
+  </#if>
+
+</div>
 
 </@block>
 

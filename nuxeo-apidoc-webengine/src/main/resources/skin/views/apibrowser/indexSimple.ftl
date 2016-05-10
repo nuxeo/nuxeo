@@ -14,60 +14,65 @@
   <@block name="right">
   <h1> Your current Nuxeo EP distribution is ${Root.currentDistribution.key} </h1>
 
-  <p>
-    You can use this screen to browse your distribution.
-  </p>
+  <div class="tabscontent">
 
-  <table>
-    <tr>
-      <td> Number of bundles</td>
-      <td> ${stats.bundles}</td>
-    </tr>
-    <tr>
-      <td> Number of java components</td>
-      <td> ${stats.jComponents}</td>
-    </tr>
-    <tr>
-      <td> Number of Xml components</td>
-      <td> ${stats.xComponents}</td>
-    </tr>
-    <tr>
-      <td> Number of services</td>
-      <td> ${stats.services}</td>
-    </tr>
-    <tr>
-      <td> Number of Extension Points</td>
-      <td> ${stats.xps}</td>
-    </tr>
-    <tr>
-      <td> Number of Contributions</td>
-      <td> ${stats.contribs}</td>
-    </tr>
-  </table>
+    <p>
+      You can use this screen to browse your distribution.
+    </p>
 
-    <#include "/docMacros.ftl">
-
-  <h2>${bundleIds?size} bundles</h2>
-    <@tableFilterArea "bundle"/>
-  <table id="bundlesTable" class="tablesorter">
-    <thead>
-    <tr>
-      <th>
-        Bundle
-      </th>
-    </tr>
-    </thead>
-    <tbody>
-      <#list bundleIds as bundleId>
-        <#assign rowCss = (bundleId_index % 2 == 0)?string("even","odd")/>
-      <tr class="${rowCss}">
-        <td>
-          <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>
-        </td>
+    <table>
+      <tr>
+        <td> Number of bundles</td>
+        <td> ${stats.bundles}</td>
       </tr>
-      </#list>
-    </tbody>
-  </table>
+      <tr>
+        <td> Number of java components</td>
+        <td> ${stats.jComponents}</td>
+      </tr>
+      <tr>
+        <td> Number of Xml components</td>
+        <td> ${stats.xComponents}</td>
+      </tr>
+      <tr>
+        <td> Number of services</td>
+        <td> ${stats.services}</td>
+      </tr>
+      <tr>
+        <td> Number of Extension Points</td>
+        <td> ${stats.xps}</td>
+      </tr>
+      <tr>
+        <td> Number of Contributions</td>
+        <td> ${stats.contribs}</td>
+      </tr>
+    </table>
+
+      <#include "/docMacros.ftl">
+
+    <h2>${bundleIds?size} bundles</h2>
+      <@tableFilterArea "bundle"/>
+    <table id="bundlesTable" class="tablesorter">
+      <thead>
+      <tr>
+        <th>
+          Bundle
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+        <#list bundleIds as bundleId>
+          <#assign rowCss = (bundleId_index % 2 == 0)?string("even","odd")/>
+        <tr class="${rowCss}">
+          <td>
+            <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>
+          </td>
+        </tr>
+        </#list>
+      </tbody>
+    </table>
+
+  </div>
+
   </@block>
 
   <@block name="footer_scripts">

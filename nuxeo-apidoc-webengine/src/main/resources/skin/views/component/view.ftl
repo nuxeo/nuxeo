@@ -11,20 +11,22 @@
 <@block name="right">
 <#include "/views/component/macros.ftl">
 
-<h1>Component <span class="componentTitle">${component.id}</span>
-  <a href="${Root.path}/${distId}/viewBundle/${component.bundle.id}" title="Go to parent bundle">
-    <img src="${skinPath}/images/up.gif"/>
-  </a>
-</h1>
+<h1>Component <span class="componentTitle">${component.id}</span></h1>
 
-<@viewComponentDoc component This.getAssociatedDocuments()/>
-<@viewComponentImpl component/>
-<@viewComponentServices component/>
-<@viewComponentExtensionPoints component/>
-<@viewComponentContributions component/>
+<div class="tabscontent">
 
-<h2> XML source </h2>
-<pre><code>${component.xmlFileContent?html}</code></pre>
+  <@viewComponentDoc component This.getAssociatedDocuments()/>
+  <@viewComponentImpl component/>
+  <@viewComponentServices component/>
+  <@viewComponentExtensionPoints component/>
+  <@viewComponentContributions component/>
+
+  <h2> XML source </h2>
+  <pre>
+    <code>${component.xmlFileContent?html}</code>
+  </pre>
+
+</div>
 
 </@block>
 

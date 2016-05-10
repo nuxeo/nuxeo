@@ -13,32 +13,34 @@
 <#include "/docMacros.ftl">
 
 <h1>${operations?size} operations</h1>
-<@tableFilterArea "operation"/>
-<table id="operationsTable" class="tablesorter">
-  <thead>
-  <tr>
-    <th>Category</th>
-    <th>Label</th>
-    <th>Id</th>
-    <th>Aliases</th>
-    <th>Requires</th>
-    <th>Since</th>
-  </tr>
-  </thead>
-<tbody>
-<#list operations as operation>
-<#assign rowCss = (operation_index % 2 == 0)?string("even","odd")/>
-  <tr class="${rowCss}">
-    <td><span class="sticker">${operation.category?html}</span></td>
-    <td><a href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.label?html}</a></td>
-    <td><a href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.name?html}</a></td>
-      <td><#if operation.aliases>[<#list operation.aliases as alias> ${alias} </#list>]</#if></td>
-    <td><span class="sticker">${operation.requires}</span></td>
-    <td><span class="sticker">${operation.since}</span></td>
-  </tr>
-</#list>
-</tbody>
-</table>
+<div class="tabscontent">
+  <@tableFilterArea "operation"/>
+  <table id="operationsTable" class="tablesorter">
+    <thead>
+    <tr>
+      <th>Category</th>
+      <th>Label</th>
+      <th>Id</th>
+      <th>Aliases</th>
+      <th>Requires</th>
+      <th>Since</th>
+    </tr>
+    </thead>
+  <tbody>
+  <#list operations as operation>
+  <#assign rowCss = (operation_index % 2 == 0)?string("even","odd")/>
+    <tr class="${rowCss}">
+      <td><span class="sticker">${operation.category?html}</span></td>
+      <td><a href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.label?html}</a></td>
+      <td><a href="${Root.path}/${distId}/viewOperation/${operation.name}">${operation.name?html}</a></td>
+        <td><#if operation.aliases>[<#list operation.aliases as alias> ${alias} </#list>]</#if></td>
+      <td><span class="sticker">${operation.requires}</span></td>
+      <td><span class="sticker">${operation.since}</span></td>
+    </tr>
+  </#list>
+  </tbody>
+  </table>
+</div>
 
 </@block>
 

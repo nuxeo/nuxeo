@@ -8,17 +8,14 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<h1>Component <span class="componentTitle">${nxItem.id}</span>
-  <a href="${Root.path}/${distId}/viewBundle/${nxItem.bundle.id}" title="Go to parent bundle">
-    <img src="${skinPath}/images/up.gif"/>
-  </a>
-</h1>
+<h1>Component <span class="componentTitle">${nxItem.id}</span></h1>
 
-<#assign description=docs.getDescription(Context.getCoreSession())/>
+<div class="tabscontent">
+  <#assign description=docs.getDescription(Context.getCoreSession())/>
+  <#include "/views/component/macros.ftl">
+  <@viewComponent componentWO=This />
+</div>
 
-<#include "/views/component/macros.ftl">
-
-<@viewComponent componentWO=This />
 </@block>
 
 </@extends>

@@ -6,17 +6,20 @@
 <@block name="right">
 <h1> view Contribution ${contribution.id} </h1>
 
-<pre>
-<code>
-${contribution.xml?html}
-</code>
-</pre>
+<div class="tabscontent">
 
-<h2> target ExtensionPoint </h2>
-<a href="${Root.path}/${distId}/viewExtensionPoint/${contribution.extensionPoint}">
-${contribution.extensionPoint}
-</a>
+  <pre>
+    <code>
+    ${contribution.xml?html}
+    </code>
+  </pre>
 
+  <h2> target ExtensionPoint </h2>
+  <a href="${Root.path}/${distId}/viewExtensionPoint/${contribution.extensionPoint}">
+  ${contribution.extensionPoint}
+  </a>
+
+</div>
 </@block>
 
 </@extends>

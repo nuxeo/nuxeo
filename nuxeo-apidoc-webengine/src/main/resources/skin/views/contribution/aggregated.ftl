@@ -8,13 +8,12 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<h1> View Contribution <span class="componentTitle">${nxItem.id}</span>
-<A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.id?split("--")[0]}/" title="go to parent component"> <img src="${skinPath}/images/up.gif"/> </A>
-</h1>
+<h1> View Contribution <span class="componentTitle">${nxItem.id}</span></h1>
 
-<#include "/views/contribution/contributionMacros.ftl">
-
-<@viewContribution contributionWO=This />
+<div class="tabscontent">
+  <#include "/views/contribution/contributionMacros.ftl">
+  <@viewContribution contributionWO=This />
+</div>
 
 </@block>
 

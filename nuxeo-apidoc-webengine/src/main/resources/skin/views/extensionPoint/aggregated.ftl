@@ -10,14 +10,12 @@
 
 <h1>Extension point <span class="componentTitle">${nxItem.name}</span>
   of component ${nxItem.component.name?replace(".*\\.", "", "r")}
-  <a href="${Root.path}/${distId}/viewComponent/${nxItem.component.name}" title="Go to parent component">
-    <img src="${skinPath}/images/up.gif"/>
-  </a>
 </h1>
 
-<#include "/views/extensionPoint/macros.ftl">
-
-<@viewExtensionPoint extensionPointWO=This expand=false/>
+<div class="tabscontent">
+  <#include "/views/extensionPoint/macros.ftl">
+  <@viewExtensionPoint extensionPointWO=This expand=false/>
+</div>
 
 </@block>
 

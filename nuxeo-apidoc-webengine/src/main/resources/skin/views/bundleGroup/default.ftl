@@ -8,32 +8,36 @@
 
 <h1>Bundle group <span class="componentTitle">${nxItem.name}</span></h1>
 
-<h2>Documentation</h2>
-<@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
+<div class="tabscontent">
 
-<#if nxItem.subGroups?size gt 0>
-<h2>Bundle subgroups</h2>
-<ul>
-  <#list nxItem.subGroups as subGroup>
-  <li>
-    <a href="${Root.path}/${distId}/viewBundleGroup/${subGroup.name}">${subGroup.name}</a>
-  </li>
-  </#list>
-</ul>
-</#if>
+  <h2>Documentation</h2>
+  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
-<#if nxItem.bundleIds?size gt 0>
-<h2>Bundles</h2>
-<ul>
-  <#list nxItem.bundleIds as bundleId>
-  <li>
-    <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>
-  </li>
-  </#list>
-</ul>
-</#if>
+  <#if nxItem.subGroups?size gt 0>
+  <h2>Bundle subgroups</h2>
+  <ul>
+    <#list nxItem.subGroups as subGroup>
+    <li>
+      <a href="${Root.path}/${distId}/viewBundleGroup/${subGroup.name}">${subGroup.name}</a>
+    </li>
+    </#list>
+  </ul>
+  </#if>
 
-<@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
+  <#if nxItem.bundleIds?size gt 0>
+  <h2>Bundles</h2>
+  <ul>
+    <#list nxItem.bundleIds as bundleId>
+    <li>
+      <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>
+    </li>
+    </#list>
+  </ul>
+  </#if>
+
+  <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
+
+</div>
 
 </@block>
 </@extends>

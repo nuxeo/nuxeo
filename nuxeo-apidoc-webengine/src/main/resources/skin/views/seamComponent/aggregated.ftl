@@ -9,22 +9,26 @@
 
 <h1> View for Nuxeo Seam Component <span class="componentTitle">${nxItem.id}</span></h1>
 
- <#assign seamComponent=This.getNxArtifact()/>
- <#assign componentDocs=This.getAssociatedDocuments()/>
- <#assign componentDesc=componentDocs.getDescription(Context.getCoreSession())/>
+<div class="tabscontent">
 
- <#assign description=docs.getDescription(Context.getCoreSession())/>
+   <#assign seamComponent=This.getNxArtifact()/>
+   <#assign componentDocs=This.getAssociatedDocuments()/>
+   <#assign componentDesc=componentDocs.getDescription(Context.getCoreSession())/>
 
-<div id="SeamComponent.${seamComponent.id}_frame" class="blocFrame">
+   <#assign description=docs.getDescription(Context.getCoreSession())/>
 
- <span id="${componentDesc.getEditId()}_doctitle"> ${componentDesc.title}</span>
- <@quickEditorLinks docItem=componentDesc/>
+  <div id="SeamComponent.${seamComponent.id}_frame" class="blocFrame">
 
- <p><@docContent docItem=componentDesc /></p>
+   <span id="${componentDesc.getEditId()}_doctitle"> ${componentDesc.title}</span>
+   <@quickEditorLinks docItem=componentDesc/>
 
- <#include "/views/seamComponent/viewSimple.ftl">
+   <p><@docContent docItem=componentDesc /></p>
 
- <@viewAdditionalDoc docsByCat=componentDocs.getDocumentationItems(Context.getCoreSession())/>
+   <#include "/views/seamComponent/viewSimple.ftl">
+
+   <@viewAdditionalDoc docsByCat=componentDocs.getDocumentationItems(Context.getCoreSession())/>
+
+  </div>
 
 </div>
 

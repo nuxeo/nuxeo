@@ -10,11 +10,13 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<H1> View Bundle group ${nxItem.id}</H1>
+<h1> View Bundle group ${nxItem.id}</h1>
+<div class="tabscontent">
 
-<#include "/views/bundleGroup/macros.ftl">
+  <#include "/views/bundleGroup/macros.ftl">
 
-<@viewBundleGroup bundleGroupWO=This />
+  <@viewBundleGroup bundleGroupWO=This />
+</div>
 
 </@block>
 

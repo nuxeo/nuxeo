@@ -6,7 +6,7 @@
   <#assign contributionDesc=contributionDocs.getDescription(Context.getCoreSession())/>
 
   <div id="contribution.${contributionItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
-  <A name="contribution.${contributionItem.id}">  </A>
+  <a name="contribution.${contributionItem.id}">  </a>
 
   <div class="blocTitle bTitle${nestedLevel}" id="contribution.${contributionItem.id}">
   <img src="${skinPath}/images/${contributionDesc.targetType}.png" alt="Contribution"/>
@@ -16,9 +16,9 @@
 
 <#if This.nxArtifact.id!=contributionItem.id>
 &nbsp;&nbsp;
-    <A href="${Root.path}/${distId}/viewContribution/${contributionItem.id}/">
+    <a href="${Root.path}/${distId}/viewContribution/${contributionItem.id}/">
     <img src="${skinPath}/images/zoom_in.png" alt="Zoom"/>
-    </A>
+    </a>
 </#if>
 
   </div>
@@ -41,9 +41,9 @@
   <br/>
   <br/>
   <b> target ExtensionPoint </b>
-  <A href="${Root.path}/${distId}/viewExtensionPoint/${contributionItem.extensionPoint}">
+  <a href="${Root.path}/${distId}/viewExtensionPoint/${contributionItem.extensionPoint}">
   ${contributionItem.extensionPoint}
-  </A>
+  </a>
 
   <@viewAdditionalDoc docsByCat=contributionDocs.getDocumentationItems(Context.getCoreSession())/>
   </div>

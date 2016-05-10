@@ -13,42 +13,45 @@
 <#include "/docMacros.ftl">
 
 <h1>${seamComponents?size} Seam components</h1>
-<@tableFilterArea "seam component"/>
-<table id="seamComponentsTable" class="tablesorter">
-  <thead>
-  <tr>
-    <th>Scope</th>
-    <th>Seam component</th>
-    <th>Class</th>
-  </tr>
-  </thead>
-<tbody>
-<#list seamComponents as component>
-<#assign rowCss = (component_index % 2 == 0)?string("even","odd")/>
-  <tr class="${rowCss}">
-    <td><span class="sticker">${component.scope}</span></td>
-    <td>
-      <a href="${Root.path}/${distId}/viewSeamComponent/${component.id}">${component.name}</a>
-    </td>
-    <td>
-      <#assign class=component.className>
-      <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(class)}"/>
-      <#assign javaDocUrl="${javaDocBaseUrl}/javadoc/${class?replace('.','/')}.html"/>
-      <a href="${javaDocUrl}" target="_new">${class}</a>
-      <#list component.interfaceNames as iface>
-        <#if iface != component.className>
-          <br/>
-          <#assign class=iface>
-          <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(class)}"/>
-          <#assign javaDocUrl="${javaDocBaseUrl}/javadoc/${class?replace('.','/')}.html"/>
-          <a href="${javaDocUrl}" target="_new">${class}</a>
-        </#if>
-      </#list>
-    </td>
-  </tr>
-</#list>
-</tbody>
-</table>
+
+<div class="tabscontent">
+  <@tableFilterArea "seam component"/>
+  <table id="seamComponentsTable" class="tablesorter">
+    <thead>
+    <tr>
+      <th>Scope</th>
+      <th>Seam component</th>
+      <th>Class</th>
+    </tr>
+    </thead>
+  <tbody>
+  <#list seamComponents as component>
+  <#assign rowCss = (component_index % 2 == 0)?string("even","odd")/>
+    <tr class="${rowCss}">
+      <td><span class="sticker">${component.scope}</span></td>
+      <td>
+        <a href="${Root.path}/${distId}/viewSeamComponent/${component.id}">${component.name}</a>
+      </td>
+      <td>
+        <#assign class=component.className>
+        <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(class)}"/>
+        <#assign javaDocUrl="${javaDocBaseUrl}/javadoc/${class?replace('.','/')}.html"/>
+        <a href="${javaDocUrl}" target="_new">${class}</a>
+        <#list component.interfaceNames as iface>
+          <#if iface != component.className>
+            <br/>
+            <#assign class=iface>
+            <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(class)}"/>
+            <#assign javaDocUrl="${javaDocBaseUrl}/javadoc/${class?replace('.','/')}.html"/>
+            <a href="${javaDocUrl}" target="_new">${class}</a>
+          </#if>
+        </#list>
+      </td>
+    </tr>
+  </#list>
+  </tbody>
+  </table>
+</div>
 
 </@block>
 

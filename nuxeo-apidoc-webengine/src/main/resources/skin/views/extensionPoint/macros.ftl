@@ -6,7 +6,7 @@
   <#assign extensionPointDesc=extensionPointDocs.getDescription(Context.getCoreSession())/>
 
   <div id="extensionPoint.${extensionPointItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
-  <A name="extensionPoint.${extensionPointItem.id}"> </A>
+  <a name="extensionPoint.${extensionPointItem.id}"> </a>
 
   <div class="blocTitle bTitle${nestedLevel}" id="extensionPoint.${extensionPointItem.id}">
   <img src="${skinPath}/images/${extensionPointDesc.targetType}.png" alt="ExtensionPoint"/>
@@ -16,9 +16,9 @@
 
   &nbsp;&nbsp;
 <#if This.nxArtifact.id!=extensionPointItem.id>
-  <A href="${Root.path}/${distId}/viewExtensionPoint/${extensionPointItem.id}/">
+  <a href="${Root.path}/${distId}/viewExtensionPoint/${extensionPointItem.id}/">
   <img src="${skinPath}/images/zoom_in.png" alt="Zoom"/>
-  </A>
+  </a>
 </#if>
 
   </div>

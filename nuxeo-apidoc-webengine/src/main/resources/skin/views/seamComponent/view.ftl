@@ -12,7 +12,9 @@
 
 <h1> view Seam Component ${seamComponent.name}</h1>
 
- <#include "/views/seamComponent/viewSimple.ftl">
+<div class="tabscontent">
+  <#include "/views/seamComponent/viewSimple.ftl">
+</div>
 
 </@block>
 

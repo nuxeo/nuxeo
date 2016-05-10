@@ -11,12 +11,14 @@
 <#assign nestedLevel=0/>
 
 <h1>Bundle <span class="componentTitle">${nxItem.id}</span></h1>
-<#assign description=docs.getDescription(Context.getCoreSession())/>
 
-<#include "/views/bundle/macros.ftl">
+<div class="tabscontent">
+  <#assign description=docs.getDescription(Context.getCoreSession())/>
 
-<@viewBundle bundleWO=This />
+  <#include "/views/bundle/macros.ftl">
 
+  <@viewBundle bundleWO=This />
+</div>
 </@block>
 
 </@extends>

@@ -12,7 +12,7 @@
      	<#assign javaDocUrl="${javaDocBaseUrl}/javadoc/${iface?replace('.','/')}.html"/>
 	    &nbsp;&nbsp;&nbsp;  <span class="resourceToggle"> JavaDoc </span>
 	    <div class="hiddenResource">
-	      <A href="${javaDocUrl}" target="NxJavaDoc">Open in a new window</A>
+	      <a href="${javaDocUrl}" target="NxJavaDoc">Open in a new window</a>
 	      <iframe src="${javaDocUrl}" width="98%" height="300px" border="0"></iframe>
 	    </div>
      </#list>

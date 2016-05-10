@@ -13,7 +13,9 @@
 
 <h1> view ${doc.title} </h1>
 
-<@docContent doc/>
+<div class="tabscontent">
+  <@docContent doc/>
+</div>
 
 </@block>
 

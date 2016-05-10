@@ -7,54 +7,58 @@
 
 <h1>Seam component <span class="componentTitle">${nxItem.name}</span></h1>
 
-<h2>Documentation</h2>
-<@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+<div class="tabscontent">
 
-<h2>Scope</h2>
-${nxItem.scope}
+  <h2>Documentation</h2>
+  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
 
-<h2>Implementation</h2>
-<p><b>${nxItem.className}</b></p>
-<p><div id="shortjavadocimpl" class="description"></div></p>
-<#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(nxItem.className)}"/>
-<#assign urlBaseImpl="${javaDocBaseUrl}/javadoc/${nxItem.className?replace('.','/')}"/>
-<p><a href="${urlBaseImpl}.html" target="_new">Click for full Javadoc</a></p>
+  <h2>Scope</h2>
+  ${nxItem.scope}
 
-<#assign hasInterface=false/>
-<#list nxItem.interfaceNames as iface>
-  <#if iface != nxItem.className>
-    <#assign hasInterface=true/>
-    <#break>
-  </#if>
-</#list>
+  <h2>Implementation</h2>
+  <p><b>${nxItem.className}</b></p>
+  <p><div id="shortjavadocimpl" class="description"></div></p>
+  <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(nxItem.className)}"/>
+  <#assign urlBaseImpl="${javaDocBaseUrl}/javadoc/${nxItem.className?replace('.','/')}"/>
+  <p><a href="${urlBaseImpl}.html" target="_new">Click for full Javadoc</a></p>
 
-<#if hasInterface>
-<h2>Interfaces</h2>
-<ul>
+  <#assign hasInterface=false/>
   <#list nxItem.interfaceNames as iface>
-  <#if iface != nxItem.className>
-  <li>
-    <p><b>${iface}</b></p>
-    <p><div id="shortjavadociface${iface_index}" class="description"></div></p>
-    <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(iface)}"/>
-    <#assign urlBase="${javaDocBaseUrl}/javadoc/${iface?replace('.','/')}"/>
-    <p><a href="${urlBase}.html" target="_new">Click for full Javadoc</a></p>
-    <script type="text/javascript">
-      $(document).ready(function() {
-        $.ajax({
-          url: "${Root.path}/../../ajaxProxy?type=text&url=${urlBase?url}.type.html",
-          dataType: "text",
-          success: function(data) { $("#shortjavadociface${iface_index}").html(data) }
-        });
-      });
-    </script>
-  </li>
-  </#if>
+    <#if iface != nxItem.className>
+      <#assign hasInterface=true/>
+      <#break>
+    </#if>
   </#list>
-</ul>
-</#if>
 
-<@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
+  <#if hasInterface>
+  <h2>Interfaces</h2>
+  <ul>
+    <#list nxItem.interfaceNames as iface>
+    <#if iface != nxItem.className>
+    <li>
+      <p><b>${iface}</b></p>
+      <p><div id="shortjavadociface${iface_index}" class="description"></div></p>
+      <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(iface)}"/>
+      <#assign urlBase="${javaDocBaseUrl}/javadoc/${iface?replace('.','/')}"/>
+      <p><a href="${urlBase}.html" target="_new">Click for full Javadoc</a></p>
+      <script type="text/javascript">
+        $(document).ready(function() {
+          $.ajax({
+            url: "${Root.path}/../../ajaxProxy?type=text&url=${urlBase?url}.type.html",
+            dataType: "text",
+            success: function(data) { $("#shortjavadociface${iface_index}").html(data) }
+          });
+        });
+      </script>
+    </li>
+    </#if>
+    </#list>
+  </ul>
+  </#if>
+
+  <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
+
+</div>
 
 </@block>
 

@@ -9,32 +9,34 @@
 <#include "/docMacros.ftl">
 
 <h1>${services?size} services</h1>
-<@tableFilterArea "service"/>
-<table id="servicesTable" class="tablesorter">
-<thead>
-  <tr>
-    <th>
-      Service (short)
-    </th>
-    <th>
-      Service
-    </th>
-  </tr>
-</thead>
-<tbody>
-  <#list services as service>
-  <#assign rowCss = (service_index % 2 == 0)?string("even","odd")/>
-  <tr class="${rowCss}">
-    <td>
-      <a href="${Root.path}/${distId}/viewService/${service.id}">${service.label}</a>
-    </td>
-    <td>
-      <a href="${Root.path}/${distId}/viewService/${service.id}">${service.id}</a>
-    </td>
-  </tr>
-  </#list>
-</tbody>
-</table>
+<div class="tabscontent">
+  <@tableFilterArea "service"/>
+  <table id="servicesTable" class="tablesorter">
+  <thead>
+    <tr>
+      <th>
+        Service (short)
+      </th>
+      <th>
+        Service
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <#list services as service>
+    <#assign rowCss = (service_index % 2 == 0)?string("even","odd")/>
+    <tr class="${rowCss}">
+      <td>
+        <a href="${Root.path}/${distId}/viewService/${service.id}">${service.label}</a>
+      </td>
+      <td>
+        <a href="${Root.path}/${distId}/viewService/${service.id}">${service.id}</a>
+      </td>
+    </tr>
+    </#list>
+  </tbody>
+  </table>
+</div>
 
 </@block>
 

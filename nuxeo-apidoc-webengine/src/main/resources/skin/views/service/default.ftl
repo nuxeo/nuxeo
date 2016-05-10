@@ -5,26 +5,26 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>Service <span class="componentTitle">${nxItem.id}</span>
-  <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}" title="Go to parent component">
-    <img src="${skinPath}/images/up.gif"/>
-  </a>
-</h1>
+<h1>Service <span class="componentTitle">${nxItem.id}</span></h1>
 
-In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a>
+<div class="tabscontent">
 
-<h2>Documentation</h2>
-${nxItem.documentationHtml}
-<@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+  In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a>
 
-<h2>Implementation</h2>
-<p><b>${nxItem.id}</b></p>
-<p><div id="shortjavadoc" class="description"></div></p>
-<#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(nxItem.id)}"/>
-<#assign urlBase="${javaDocBaseUrl}/javadoc/${nxItem.id?replace('.','/')}"/>
-<p><a href="${urlBase}.html" target="_new">Click for full Javadoc</a></p>
+  <h2>Documentation</h2>
+  ${nxItem.documentationHtml}
+  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
 
-<@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
+  <h2>Implementation</h2>
+  <p><b>${nxItem.id}</b></p>
+  <p><div id="shortjavadoc" class="description"></div></p>
+  <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(nxItem.id)}"/>
+  <#assign urlBase="${javaDocBaseUrl}/javadoc/${nxItem.id?replace('.','/')}"/>
+  <p><a href="${urlBase}.html" target="_new">Click for full Javadoc</a></p>
+
+  <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
+
+</div>
 
 </@block>
 

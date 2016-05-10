@@ -8,13 +8,14 @@
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<h1> View Service <span class="componentTitle">${nxItem.id}</span>
-<A href="${Root.path}/${distId}/viewComponent/${This.nxArtifact.getComponentId()}" title="go to parent component"> <img src="${skinPath}/images/up.gif"/> </A>
-</h1>
+<h1> View Service <span class="componentTitle">${nxItem.id}</span></h1>
 
-<#include "/views/service/macros.ftl">
+<div class="tabscontent">
 
-<@viewService serviceWO=This />
+  <#include "/views/service/macros.ftl">
+  <@viewService serviceWO=This />
+
+</div>
 
 </@block>
 

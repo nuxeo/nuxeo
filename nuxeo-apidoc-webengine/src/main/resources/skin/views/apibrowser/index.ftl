@@ -10,6 +10,8 @@
 <@block name="right">
 <h1> Browsing ${Root.currentDistribution.key} distribution </h1>
 
+<div class="tabscontent">
+
 <ul class="apibrowser">
  <ul>
    <li class="bundles">
@@ -32,12 +34,14 @@
                </li>
              </ul>
            </li>
-         </ul>    
+         </ul>
        </li>
      </ul>
    </li>
  </ul>
 </ul>
+
+</div>
 
 
 </@block>
