@@ -72,17 +72,12 @@
            <article role="contentinfo">
              <#if Root.canAddDocumentation()>
                <div class="tabsbutton">
-                 <a href="${This.path}/doc">Manage Documentation</a>
+                 <a class="button" href="${This.path}/doc">Manage Documentation</a>
                </div>
-             </#if>
-             <div class="tabscontent">
-             <#if !enableDocumentationView && !Root.isEmbeddedMode() >
-               <a href="${This.path}/doc">Add custom Documentation</a>
              </#if>
              <@block name="right">
                Content
              </@block>
-             </div>
            </article>
          </section>
       </@block>
