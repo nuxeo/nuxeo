@@ -34,10 +34,10 @@ import com.thetransactioncompany.cors.CORSFilter;
 /**
  * Nuxeo CORS filter wrapper to com.thetransactioncompany.cors.CORSFilter
  * allowing to configure cors filter depending of the request url.
- * 
+ *
  * Each time a request matchs a contribution is found, CORSFilter had to be
  * re-initialized to change his configurations.
- * 
+ *
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 5.7.2
  */
@@ -50,14 +50,15 @@ public class NuxeoCorsFilter extends CORSFilter {
     /** Frame options. Can be DENY, SAMEORIGIN, ALLOW-FROM someuri, or blank. */
     public static final String FRAME_OPTIONS_PROPERTY = "nuxeo.frame.options";
 
-    public String frameOptions = Framework.getProperty(FRAME_OPTIONS_PROPERTY, FRAME_OPTIONS_DEFAULT);
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
         // TODO move this to a separate filter, for instance one dealing with Content-Security-Policy
-        if (response instanceof HttpServletResponse && !StringUtils.isBlank(frameOptions)) {
-            ((HttpServletResponse) response).setHeader(FRAME_OPTIONS_HEADER, frameOptions);
+        if (response instanceof HttpServletResponse) {
+            String frameOptions = Framework.getProperty(FRAME_OPTIONS_PROPERTY, FRAME_OPTIONS_DEFAULT);
+            if (!StringUtils.isBlank(frameOptions)) {
+                ((HttpServletResponse) response).setHeader(FRAME_OPTIONS_HEADER, frameOptions);
+            }
         }
 
         FilterConfig filterConfig = getFilterConfigFrom(request);
