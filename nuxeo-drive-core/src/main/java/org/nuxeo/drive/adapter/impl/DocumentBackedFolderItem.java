@@ -371,8 +371,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
      */
     protected List<FileSystemItem> adaptDocuments(DocumentModelList docs, CoreSession session) {
         Map<DocumentRef, FolderItem> ancestorCache = new HashMap<>();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Caching current FolderItem for doc %s: %s", docPath, getPath()));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("Caching current FolderItem for doc %s: %s", docPath, getPath()));
         }
         ancestorCache.put(new IdRef(docId), this);
         List<FileSystemItem> descendants = new ArrayList<>(docs.size());
@@ -383,8 +383,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
                     false);
             if (descendant != null) {
                 if (descendant.isFolder()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Caching descendant FolderItem for doc %s: %s", doc.getPathAsString(),
+                    if (log.isTraceEnabled()) {
+                        log.trace(String.format("Caching descendant FolderItem for doc %s: %s", doc.getPathAsString(),
                                 descendant.getPath()));
                     }
                     ancestorCache.put(doc.getRef(), (FolderItem) descendant);
@@ -405,15 +405,15 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
         FolderItem parentItem = cache.get(parentDocRef);
         if (parentItem != null) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Found parent FolderItem in cache for doc %s: %s", doc.getPathAsString(),
+            if (log.isTraceEnabled()) {
+                log.trace(String.format("Found parent FolderItem in cache for doc %s: %s", doc.getPathAsString(),
                         parentItem.getPath()));
             }
             return getFolderItem(cache, doc, parentItem, cacheItem);
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("No parent FolderItem found in cache for doc %s, computing ancestor cache",
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("No parent FolderItem found in cache for doc %s, computing ancestor cache",
                     doc.getPathAsString()));
         }
         DocumentModel parentDoc = null;
@@ -440,8 +440,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
                                 doc.getPathAsString()));
             }
             FolderItem folderItem = (FolderItem) fsItem;
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Caching FolderItem for doc %s: %s", doc.getPathAsString(),
+            if (log.isTraceEnabled()) {
+                log.trace(String.format("Caching FolderItem for doc %s: %s", doc.getPathAsString(),
                         folderItem.getPath()));
             }
             cache.put(doc.getRef(), folderItem);
