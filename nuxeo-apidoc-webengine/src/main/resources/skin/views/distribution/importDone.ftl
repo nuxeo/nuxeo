@@ -12,7 +12,7 @@
 
 <@block name="right">
 
-  Distribution uploaded ... <A href="${Root.path}/"> Continue </A>
+  Distribution uploaded ... <a href="${Root.path}/"> Continue </a>
 
 </@block>
 

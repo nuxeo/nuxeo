@@ -12,7 +12,7 @@
 
 <@block name="right">
 
-  Doc package uploaded ... <A href="${Root.path}/"> Continue </A>
+  Doc package uploaded ... <a href="${Root.path}/"> Continue </a>
 
 </@block>
 
