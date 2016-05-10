@@ -108,9 +108,8 @@ public class ITUsersGroupsTest extends AbstractTest {
         try {
             // Create sub-admins group
             GroupsTabSubPage groupsTab = login().getAdminCenter().getUsersGroupsHomePage().getGroupsTab();
-            groupsTab = groupsTab.getGroupCreatePage()
-                                 .createGroup("sub-admins", null, new String[] { "jdoe" }, null)
-                                 .getGroupsTab(true);
+            groupsTab = groupsTab.getGroupCreatePage().createGroup("sub-admins", null, new String[] { "jdoe" },
+                    null).getGroupsTab(true);
             assertTrue(groupsTab.searchGroup("sub-admins").isGroupFound("sub-admins"));
 
             // Add sub-admins as sub group of administrators
@@ -126,17 +125,14 @@ public class ITUsersGroupsTest extends AbstractTest {
             // Check member's rights on TEST_WORKSPACE_TITLE / TEST_NOTE_TITLE
             WorkspaceRepositoryPage repository = login("jdoe", "jdoe1").goToWorkspaces().goToRepository();
             Locator.waitUntilElementPresent(By.id("nxw_newDomain_form:nxw_newDomain"));
-            WorkspaceHomePage domainPage = repository.getContentTab()
-                                                     .goToDocument("Domain")
-                                                     .asPage(WorkspaceHomePage.class);
+            WorkspaceHomePage domainPage = repository.getContentTab().goToDocument("Domain").asPage(
+                    WorkspaceHomePage.class);
             DocumentBasePage workspacesPage = domainPage.goToDocumentWorkspaces();
             Locator.waitUntilElementPresent(By.id("nxw_TAB_WORKSPACE_EDIT_form:nxw_TAB_WORKSPACE_EDIT"));
             Locator.waitUntilElementPresent(By.id("nxw_newWorkspace_form:nxw_newWorkspace"));
-            NoteDocumentBasePage notePage = workspacesPage.getContentTab()
-                                                          .goToDocument(TEST_WORKSPACE_TITLE)
-                                                          .getContentTab()
-                                                          .goToDocument(TEST_NOTE_TITLE)
-                                                          .asPage(NoteDocumentBasePage.class);
+            NoteDocumentBasePage notePage = workspacesPage.getContentTab().goToDocument(
+                    TEST_WORKSPACE_TITLE).getContentTab().goToDocument(TEST_NOTE_TITLE).asPage(
+                            NoteDocumentBasePage.class);
             Locator.waitUntilElementPresent(By.id("nxw_TAB_PUBLISH_form:nxw_TAB_PUBLISH"));
             Locator.waitUntilElementPresent(By.id("nxw_TAB_EDIT_form:nxw_TAB_EDIT"));
             RelationTabSubPage relationPage = notePage.getFilesTab().getRelationTab();
@@ -149,10 +145,7 @@ public class ITUsersGroupsTest extends AbstractTest {
             assertNotNull(driver.findElement(By.linkText("Archived Versions")));
 
             // Check if jdoe can create an user or a group
-            UserCreationFormPage userCreatePage = historyPage.getAdminCenter()
-                                                             .getUsersGroupsHomePage()
-                                                             .getUsersTab()
-                                                             .getUserCreatePage();
+            UserCreationFormPage userCreatePage = historyPage.getAdminCenter().getUsersGroupsHomePage().getUsersTab().getUserCreatePage();
             Locator.waitUntilElementPresent(By.id("createUserView:createUser:button_save"));
             userCreatePage.getGroupsTab(true).getGroupCreatePage();
             Locator.waitUntilElementPresent(By.id("createGroupView:createGroup:button_save"));
@@ -166,18 +159,10 @@ public class ITUsersGroupsTest extends AbstractTest {
     @Test
     public void testCreateSubGroupMember() throws Exception {
         try {
-            // check gabrielle has no rights
-            WorkspaceHomePage workspaceHomePage = getLoginPage().login("gabrielle", "gabrielle1", HomePage.class)
-                                                                .goToWorkspaces();
-            assertFalse(workspaceHomePage.hasElement(By.linkText(SECTIONS_TITLE)));
-            assertFalse(workspaceHomePage.hasElement(By.linkText(TEMPLATES_TITLE)));
-            assertFalse(workspaceHomePage.hasElement(By.linkText(WORKSPACES_TITLE)));
-
             // create sub-members group
             GroupsTabSubPage groupsTab = login().getAdminCenter().getUsersGroupsHomePage().getGroupsTab();
-            groupsTab = groupsTab.getGroupCreatePage()
-                                 .createGroup("sub-members", "SubMembers", new String[] { "gabrielle" }, null)
-                                 .getGroupsTab(true);
+            groupsTab = groupsTab.getGroupCreatePage().createGroup("sub-members", "SubMembers",
+                    new String[] { "gabrielle" }, null).getGroupsTab(true);
 
             // check sub-members group search and view
             assertTrue(groupsTab.searchGroup("sub-members").isGroupFound("sub-members"));
@@ -211,7 +196,7 @@ public class ITUsersGroupsTest extends AbstractTest {
 
             // check gabrielle has inherited members group rights
             login("gabrielle", "gabrielle1");
-            workspaceHomePage = asPage(WorkspaceHomePage.class);
+            WorkspaceHomePage workspaceHomePage = asPage(WorkspaceHomePage.class);
             assertTrue(workspaceHomePage.hasElement(By.linkText(SECTIONS_TITLE)));
             assertTrue(workspaceHomePage.hasElement(By.linkText(TEMPLATES_TITLE)));
             assertTrue(workspaceHomePage.hasElement(By.linkText(WORKSPACES_TITLE)));
