@@ -57,7 +57,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
 
 /**
- * Elasticsearch query buidler for the Nuxeo ES api.
+ * Elasticsearch query builder for the Nuxeo ES api.
  *
  * @since 5.9.5
  */

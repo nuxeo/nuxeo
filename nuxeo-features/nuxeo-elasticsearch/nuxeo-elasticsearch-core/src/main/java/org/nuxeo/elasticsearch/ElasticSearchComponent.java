@@ -274,7 +274,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public long getPendingWorkerCount() {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
-        return  wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.SCHEDULED);
+        return wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.SCHEDULED);
     }
 
     @Override
@@ -300,7 +300,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public boolean isIndexingInProgress() {
-        return (runIndexingWorkerCount.get() > 0) || (getPendingWorkerCount() > 0) || (getRunningWorkerCount() >  0);
+        return (runIndexingWorkerCount.get() > 0) || (getPendingWorkerCount() > 0) || (getRunningWorkerCount() > 0);
     }
 
     @Override
@@ -312,7 +312,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
                 boolean completed = false;
                 do {
                     completed = wm.awaitCompletion(INDEXING_QUEUE_ID, 300, TimeUnit.SECONDS);
-                } while (! completed);
+                } while (!completed);
                 return true;
             }
         });
@@ -441,8 +441,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         }
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         for (String repositoryName : asyncCommands.keySet()) {
-            IndexingWorker idxWork = new IndexingWorker(repositoryName,
-                    asyncCommands.get(repositoryName));
+            IndexingWorker idxWork = new IndexingWorker(repositoryName, asyncCommands.get(repositoryName));
             // we are in afterCompletion don't wait for a commit
             wm.schedule(idxWork, false);
         }
@@ -455,8 +454,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         Transaction transaction = TransactionHelper.suspendTransaction();
         try {
             for (String repositoryName : syncCommands.keySet()) {
-                IndexingWorker idxWork = new IndexingWorker(repositoryName,
-                        syncCommands.get(repositoryName));
+                IndexingWorker idxWork = new IndexingWorker(repositoryName, syncCommands.get(repositoryName));
                 idxWork.run();
             }
         } finally {
@@ -490,8 +488,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Deprecated
     @Override
-    public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos)
-            {
+    public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos) {
         NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql).limit(limit).offset(offset).addSort(sortInfos);
         return query(query);
     }
@@ -500,8 +497,10 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) {
-        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
-                sortInfos);
+        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder)
+                                                          .limit(limit)
+                                                          .offset(offset)
+                                                          .addSort(sortInfos);
         return query(query);
     }
 

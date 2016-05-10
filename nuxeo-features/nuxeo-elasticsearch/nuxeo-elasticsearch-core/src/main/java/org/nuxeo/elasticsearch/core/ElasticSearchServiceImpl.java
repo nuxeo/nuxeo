@@ -81,8 +81,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     @Deprecated
     @Override
-    public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos)
-            {
+    public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos) {
         NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql).limit(limit).offset(offset).addSort(sortInfos);
         return query(query);
     }
@@ -91,8 +90,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
             SortInfo... sortInfos) {
-        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
-                sortInfos);
+        NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder)
+                                                          .limit(limit)
+                                                          .offset(offset)
+                                                          .addSort(sortInfos);
         return query(query);
     }
 
@@ -181,9 +182,10 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     protected SearchRequestBuilder buildEsSearchRequest(NxQueryBuilder query) {
-        SearchRequestBuilder request = esa.getClient().prepareSearch(
-                esa.getSearchIndexes(query.getSearchRepositories())).setTypes(DOC_TYPE).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder request = esa.getClient()
+                                          .prepareSearch(esa.getSearchIndexes(query.getSearchRepositories()))
+                                          .setTypes(DOC_TYPE)
+                                          .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
         query.updateRequest(request);
         if (query.isFetchFromElasticsearch()) {
             // fetch the _source without the binaryfulltext field
