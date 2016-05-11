@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     public List<TemplateInput> getTemplateEditableInputs() {
         if (editableTemplateName == null) {
-            return new ArrayList<TemplateInput>();
+            return new ArrayList<>();
         }
         if (templateEditableInputs == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -326,9 +326,9 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         List<DocumentModel> templates = tps.getAvailableTemplateDocs(documentManager, targetType);
 
-        List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
+        List<TemplateSourceDocument> result = new ArrayList<>();
         TemplateBasedDocument currentTBD = currentDocument.getAdapter(TemplateBasedDocument.class);
-        List<String> alreadyBoundTemplateNames = new ArrayList<String>();
+        List<String> alreadyBoundTemplateNames = new ArrayList<>();
         if (currentTBD != null) {
             alreadyBoundTemplateNames = currentTBD.getTemplateNames();
         }
@@ -344,7 +344,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     public List<SelectItem> getBindableTemplatesForDocumentAsSelectItems() {
 
-        List<SelectItem> items = new ArrayList<SelectItem>();
+        List<SelectItem> items = new ArrayList<>();
         List<TemplateSourceDocument> sources = getBindableTemplatesForDocument();
         for (TemplateSourceDocument sd : sources) {
             DocumentModel doc = sd.getAdaptedDoc();
@@ -376,7 +376,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     @Factory(value = "associatedRenderableTemplates", scope = ScopeType.EVENT)
     public List<TemplateSourceDocument> getRenderableTemplates() {
-        List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
+        List<TemplateSourceDocument> result = new ArrayList<>();
         TemplateBasedDocument template = getCurrentDocumentAsTemplateBasedDocument();
         if (template != null) {
             List<TemplateSourceDocument> sources = template.getSourceTemplates();

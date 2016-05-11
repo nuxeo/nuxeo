@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 @Deploy({ "org.nuxeo.template.manager.api", //
         "org.nuxeo.template.manager", //
 })
-public class TestAdapters  {
+public class TestAdapters {
 
     @Inject
     protected CoreSession session;

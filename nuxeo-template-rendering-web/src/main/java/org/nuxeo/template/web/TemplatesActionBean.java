@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -235,7 +235,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
 
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
         if (template != null) {
-            List<String> uuids = new ArrayList<String>();
+            List<String> uuids = new ArrayList<>();
             uuids.add(currentDocument.getId());
 
             if (showVersions) {
@@ -246,7 +246,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
             return uuids;
         }
 
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
     public boolean isShowParamEditor() {
