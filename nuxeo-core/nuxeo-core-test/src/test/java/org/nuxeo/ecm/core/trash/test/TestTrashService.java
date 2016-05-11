@@ -311,7 +311,7 @@ public class TestTrashService {
     // default platform behavior
     @Test
     public void testTrashCheckedInDocumentDefault() throws Exception {
-        doTestTrashCheckedInDocument(true);
+        doTestTrashCheckedInDocument(false);
     }
 
     protected void doTestTrashCheckedInDocument(boolean expectCheckedIn) throws Exception {

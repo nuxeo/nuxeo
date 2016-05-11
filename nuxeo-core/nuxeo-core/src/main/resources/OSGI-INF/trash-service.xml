@@ -19,7 +19,7 @@
       When true, the document will be kept checked in (this avoids growing quotas).
       When false, the document will be checked out (compatibility behavior).
     </documentation>
-    <property name="org.nuxeo.trash.keepCheckedIn">true</property>
+    <property name="org.nuxeo.trash.keepCheckedIn">false</property>
   </extension>
 
 </component>
