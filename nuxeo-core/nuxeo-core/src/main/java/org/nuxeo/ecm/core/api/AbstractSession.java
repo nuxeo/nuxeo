@@ -103,6 +103,7 @@ import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
@@ -134,6 +135,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public static final String MAX_RESULTS_PROPERTY = "org.nuxeo.ecm.core.max.results";
 
     public static final String LIMIT_RESULTS_PROPERTY = "org.nuxeo.ecm.core.limit.results";
+
+    public static final String TRASH_KEEP_CHECKED_IN_PROPERTY = "org.nuxeo.trash.keepCheckedIn";
 
     public static final String BINARY_TEXT_SYS_PROP = "fulltextBinary";
 
@@ -2016,8 +2019,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         checkPermission(doc, WRITE_LIFE_CYCLE);
 
         if (!doc.isVersion() && !doc.isProxy() && !doc.isCheckedOut()) {
-            checkOut(docRef);
-            doc = resolveReference(docRef);
+            boolean deleteOrUndelete = LifeCycleConstants.DELETE_TRANSITION.equals(transition)
+                    || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition);
+            if (!deleteOrUndelete || Framework.getService(ConfigurationService.class).isBooleanPropertyFalse(
+                    TRASH_KEEP_CHECKED_IN_PROPERTY)) {
+                checkOut(docRef);
+                doc = resolveReference(docRef);
+            }
         }
         String formerStateName = doc.getLifeCycleState();
         doc.followTransition(transition);
