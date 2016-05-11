@@ -7,18 +7,22 @@
 <#if nuxeo.db.xaMode == "false">
     <datasource name="${nuxeo.db.commonds}" driverClassName="${nuxeo.db.driver}"
       url="${nuxeo.db.jdbc.url}" username="${nuxeo.db.user}" password="${nuxeo.db.password}"
-      maxPoolSize="${nuxeo.db["max-pool-size"]}"
+      maxPoolSize="${nuxeo.db["max-pool-size"]}" 
       minPoolSize="${nuxeo.db["min-pool-size"]}"
       blockingTimeoutMillis="${nuxeo.db["blocking-timeout-millis"]}"
       idleTimeoutMinutes="${nuxeo.db["idle-timeout-minutes"]}"
+      sqlExceptionSorter="${nuxeo.db["sql-exception-sorter"]}"
       validationQuery="${nuxeo.db.validationQuery}"
       accessToUnderlyingConnectionAllowed="true" />
 <#else>
     <datasource name="${nuxeo.db.commonds}" xaDataSource="${nuxeo.db.xadatasource}"
-      maxPoolSize="${nuxeo.db["max-pool-size"]}"
+      maxPoolSize="${nuxeo.db["max-pool-size"]}" 
       minPoolSize="${nuxeo.db["min-pool-size"]}"
       blockingTimeoutMillis="${nuxeo.db["blocking-timeout-millis"]}"
-      idleTimeoutMinutes="${nuxeo.db["idle-timeout-minutes"]}" >
+      idleTimeoutMinutes="${nuxeo.db["idle-timeout-minutes"]}"
+      sqlExceptionSorter="${nuxeo.db["sql-exception-sorter"]}"
+      validationQuery="${nuxeo.db.validationQuery}"  
+      accessToUnderlyingConnectionAllowed="true" >
 <#include "xadatasource-params.ftl" parse=true />
     </datasource>
 </#if>

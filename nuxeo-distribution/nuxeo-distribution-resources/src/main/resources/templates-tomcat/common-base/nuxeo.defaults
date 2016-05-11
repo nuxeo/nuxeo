@@ -15,11 +15,12 @@ nuxeo.db.embeddedDatasources=true
 nuxeo.db.xaMode=false
 nuxeo.db.commonds=jdbc/nuxeo
 
-nuxeo.db.blocking-timeout-millis=10000
-nuxeo.db.idle-timeout-minutes=0
 nuxeo.db.min-pool-size=5
-
+nuxeo.db.max-pool-size=100
+nuxeo.db.blocking-timeout-millis=1000
+nuxeo.db.idle-timeout-minutes=5
 nuxeo.db.validationQuery=
+nuxeo.db.sql-exception-sorter=org.nuxeo.runtime.datasource.DatasourceExceptionSorter
 nuxeo.db.user_separator_key=,
 
 nuxeo.vcs.min-pool-size=0

@@ -1,104 +1,141 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.runtime.datasource">
-	<documentation>
-		Component use to register datasources.
+  <documentation>
+    Component use to register datasources.
+  </documentation>
 
-		Example contribution:
+  <require>org.nuxeo.runtime.jtajca.JtaActivator</require>
 
-		<code>
-			<datasource name="jdbc/foo" driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-				maxActive="20" maxIdle="5" maxWait="10000">
-				<property name="url">jdbc:derby:/home/db;create=true</property>
-				<property name="username">nuxeo</property>
-				<property name="password">nuxeo</property>
-			</datasource>
-		</code>
+  <service>
+    <provide interface="org.nuxeo.runtime.datasource.PooledDataSourceRegistry" />
+  </service>
 
-		Or, for a XA datasource:
+  <implementation class="org.nuxeo.runtime.datasource.DataSourceComponent" />
 
-		<code>
-			<datasource name="jdbc/foo"
-				xaDataSource="org.apache.derby.jdbc.EmbeddedXADataSource" maxActive="20"
-				maxIdle="5" maxWait="10000">
-				<property name="databaseName">/home/db</property>
-				<property name="createDatabase">create</property>
-				<property name="user">nuxeo</property>
-				<property name="password">nuxeo</property>
-			</datasource>
-		</code>
+  <extension-point name="datasources">
+    <documentation>
 
-		The allowed attributes of a
-		<b>datasource</b>
-		element are:
-		<ul>
-			<li>
-				<b>name</b>
-				the JNDI name (for instance
-				<tt>jdbc/foo</tt>
-				)
-			</li>
-			<li>
-				<b>driverClassName</b>
-				the JDBC driver class name (only for a non-XA datasource)
-			</li>
-			<li>
-				<b>xaDataSource</b>
-				the XA datasource class name (only for a XA datasource)
-			</li>
-		</ul>
-		<p />
-		To configure the characteristics of the pool:
-		<ul>
-			<li>
-				<b>maxActive</b>
-				the maximum number of active connections
-			</li>
-			<li>
-				<b>minIdle</b>
-				the minimum number of idle connections
-			</li>
-			<li>
-				<b>maxIdle</b>
-				the maximum number of idle connections
-			</li>
-			<li>
-				<b>maxWait</b>
-				the maximum number of milliseconds to wait for a connection to
-				be
-				available, or -1 (the default) to wait indefinitely
-			</li>
-			<li>
-				... see org.apache.commons.dbcp.BasicDataSource setters for more.
-			</li>
-		</ul>
-		<p />
-		To configure the datasource, individual property sub-elements must be
-		used.
-		For a non-XA datasource,
-		<b>url</b>
-		,
-		<b>username</b>
-		and
-		<b>password</b>
-		are commonly used. For a XA datasource, the properties are done
-		according
-		to the JavaBean setters of the datasource, see the
-		documentation for
-		your
-		JDBC driver for more.
-	</documentation>
+      Example contribution:
 
-    <require>org.nuxeo.runtime.jtajca.JtaActivator</require>
+      <code>
+        <datasource name="jdbc/foo"
+          driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+          maxActive="20" maxIdle="5" maxWait="10000">
+          <property name="url">jdbc:derby:/home/db;create=true
+          </property>
+          <property name="username">nuxeo</property>
+          <property name="password">nuxeo</property>
+        </datasource>
+      </code>
+
+      Or, for a XA datasource:
+
+      <code>
+        <datasource name="jdbc/foo"
+          xaDataSource="org.apache.derby.jdbc.EmbeddedXADataSource"
+          maxActive="20" maxIdle="5" maxWait="10000">
+          <property name="databaseName">/home/db</property>
+          <property name="createDatabase">create</property>
+          <property name="user">nuxeo</property>
+          <property name="password">nuxeo</property>
+        </datasource>
+      </code>
+
+      The allowed attributes of a
+      <b>datasource</b>
+      element are:
+      <ul>
+        <li>
+          <b>name</b>
+          the JNDI name (for instance
+          <tt>jdbc/foo</tt>
+          )
+        </li>
+        <li>
+          <b>driverClassName</b>
+          the JDBC driver class name (only for a non-XA datasource)
+        </li>
+        <li>
+          <b>xaDataSource</b>
+          the XA datasource class name (only for a XA datasource)
+        </li>
+      </ul>
+      <p />
+      To configure the characteristics of the pool:
+      <ul>
+        <li>
+          <b>maxActive</b>
+          the maximum number of active connections
+        </li>
+        <li>
+          <b>minIdle</b>
+          the minimum number of idle connections
+        </li>
+        <li>
+          <b>maxIdle</b>
+          the maximum number of idle connections
+        </li>
+        <li>
+          <b>maxWait</b>
+          the maximum number of milliseconds to wait for a connection to
+          be
+          available, or -1 (the default) to wait indefinitely
+        </li>
+        <li>
+          ... see org.apache.commons.dbcp.BasicDataSource setters for
+          more.
+        </li>
+      </ul>
+      <p />
+      To configure the datasource, individual property sub-elements must
+      be
+      used.
+      For a non-XA datasource,
+      <b>url</b>
+      ,
+      <b>username</b>
+      and
+      <b>password</b>
+      are commonly used. For a XA datasource, the properties are done
+      according
+      to the JavaBean setters of the datasource, see the
+      documentation for
+      your
+      JDBC driver for more.
+    </documentation>
+
+    <object class="org.nuxeo.runtime.datasource.DataSourceDescriptor" />
+    <object class="org.nuxeo.runtime.datasource.DataSourceLinkDescriptor" />
+  </extension-point>
+
+  <extension-point name="sorter">
+    <documentation>
+        <sorter  id="h2" path="org.h2" override="false">
+          <code>ConnectionException</code>
+          <code>RemoteDatabaseAccess</code>
+          <code>08001</code>
+        </sorter>
+        <p>SQL Exceptions thrown are checked by the datasource for stating if the connnection should be 
+        evicted from the pool. The datasource exception sorter enable you to contribute fatal sqlcodes for
+        a defined database. Each sorter contribution are identified uniquely by it's <emph>id</emph>. 
+        You could override or extend a sorted configuration using the <emph>override</emph> attribute. Once a exception is
+        thrown a sorter configuration is selected by comparing the exception stack trace packages with the <emph>path</emph> package attribute.
+        If a package in the stack trace is starting by the <emph>path</emph>, this sorter configuration is selected. If no sorter configuration
+        is matching the strack trace, the sorter configuration identified by the empty string is selected.</p>
+        <p>The contributed SQL codes could be a classcode or a complete sqlcode. For easier configuration, you could use the enumeration labels defined
+        for the standard SQL in <emph>org.nuxeo.runtime.datasource.DatasourceExceptionSorter.Classcode</emph>.</p>
+    </documentation>
     
-	<service>
-		<provide interface="org.nuxeo.runtime.datasource.PooledDataSourceRegistry" />
-	</service>
+    <object class="org.nuxeo.runtime.datasource.DatasourceExceptionSorter$Configuration" />
 
-	<implementation class="org.nuxeo.runtime.datasource.DataSourceComponent" />
+  </extension-point>
 
-	<extension-point name="datasources">
-		<object class="org.nuxeo.runtime.datasource.DataSourceDescriptor" />
-		<object class="org.nuxeo.runtime.datasource.DataSourceLinkDescriptor" />
-	</extension-point>
+  <extension target="org.nuxeo.runtime.datasource" point="sorter">
+    <sorter>
+      <code>ConnectionException</code>
+      <code>RemoteDatabaseAccess</code>
+      <code>SystemError</code>
+    </sorter>
+  </extension>
 
 </component>

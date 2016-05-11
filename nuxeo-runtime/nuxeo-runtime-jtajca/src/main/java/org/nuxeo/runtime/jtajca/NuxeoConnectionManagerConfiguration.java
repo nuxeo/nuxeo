@@ -15,6 +15,7 @@ package org.nuxeo.runtime.jtajca;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.runtime.jtajca.NuxeoValidationSupport.Validation;
 
 /**
  * Descriptor of the pool configuration, used by NuxeoContainer when creating a pool directly instead of the previous
@@ -69,6 +70,10 @@ public class NuxeoConnectionManagerConfiguration {
     @XNode("@idleTimeoutMinutes")
     private Integer idleTimeoutMinutes;
 
+    Validation testOnBorrow;
+
+    Validation testOnReturn;
+
     public NuxeoConnectionManagerConfiguration() {
     }
 
@@ -84,6 +89,8 @@ public class NuxeoConnectionManagerConfiguration {
         minPoolSize = other.minPoolSize;
         blockingTimeoutMillis = other.blockingTimeoutMillis;
         idleTimeoutMinutes = other.idleTimeoutMinutes;
+        testOnBorrow = other.testOnBorrow;
+        testOnReturn = other.testOnReturn;
     }
 
     public void merge(NuxeoConnectionManagerConfiguration other) {
@@ -119,6 +126,12 @@ public class NuxeoConnectionManagerConfiguration {
         }
         if (other.idleTimeoutMinutes != null) {
             idleTimeoutMinutes = other.idleTimeoutMinutes;
+        }
+        if (other.testOnBorrow != null) {
+            testOnBorrow = other.testOnBorrow;
+        }
+        if (other.testOnReturn != null) {
+            testOnReturn = other.testOnReturn;
         }
     }
 
@@ -222,6 +235,26 @@ public class NuxeoConnectionManagerConfiguration {
 
     public void setIdleTimeoutMinutes(int idleTimeoutMinutes) {
         this.idleTimeoutMinutes = Integer.valueOf(idleTimeoutMinutes);
+    }
+
+    @XNode("@validationQuery")
+    public void setValidationQuery(String sql) {
+        if (sql.isEmpty()) {
+            testOnBorrow = null;
+        } else {
+            testOnBorrow = new NuxeoValidationSupport.QuerySQLConnection(sql);
+        }
+    }
+
+
+    @XNode("@testOnBorrow")
+    public void setTestOnBorrow(Class<? extends Validation> typeof) throws ReflectiveOperationException {
+        testOnBorrow = typeof.newInstance();
+    }
+
+    @XNode("@testOnReturn")
+    public void setTestOnReturn(Class<? extends Validation> typeof) throws ReflectiveOperationException {
+        testOnReturn = typeof.newInstance();
     }
 
     @XNode("@maxActive")
