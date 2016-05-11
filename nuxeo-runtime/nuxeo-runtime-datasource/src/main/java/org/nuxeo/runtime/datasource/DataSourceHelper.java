@@ -26,7 +26,6 @@ import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.NameClassPair;
-import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -96,7 +95,7 @@ public class DataSourceHelper {
         }
         T ds = pools.getPool(relativize(name), clazz);
         if (ds == null) {
-            throw new NameNotFoundException(name + " not found in container");
+            return NuxeoContainer.lookup(name, clazz);
         }
         return ds;
     }
@@ -109,7 +108,7 @@ public class DataSourceHelper {
         }
         Context jdbc = (Context) naming.lookup(prefix);
         Enumeration<NameClassPair> namesPair = jdbc.list("");
-        Map<String, DataSource> datasourcesByName = new HashMap<String, DataSource>();
+        Map<String, DataSource> datasourcesByName = new HashMap<>();
         while (namesPair.hasMoreElements()) {
             NameClassPair pair = namesPair.nextElement();
             String name = pair.getName();

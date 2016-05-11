@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.datasource.tests">
+  <extension target="org.nuxeo.runtime.datasource" point="datasources">
+    <datasource name="jdbc/no-valid" driverClassName="org.h2.Driver"
+      url="jdbc:h2:tcp://localhost/~/test"
+      blocking-timeout-milliseconds="100" idleTimeoutMinutes="1" minPoolSize="5" sqlExceptionSorter="org.nuxeo.runtime.datasource.DatasourceExceptionSorter" />
+    <datasource name="jdbc/query-valid" driverClassName="org.h2.Driver"
+      url="jdbc:h2:tcp://localhost/~/test" validationQuery="SELECT 1"
+      blocking-timeout-milliseconds="100" idleTimeoutMinutes="1" minPoolSize="5" sqlExceptionSorter="org.nuxeo.runtime.datasource.DatasourceExceptionSorter" />
+    <datasource name="jdbc/sql-valid" driverClassName="org.h2.Driver"
+      url="jdbc:h2:tcp://localhost/~/test"
+      testOnBorrow="org.nuxeo.runtime.jtajca.NuxeoValidationSupport$ValidSQLConnection"
+      blocking-timeout-milliseconds="100" idleTimeoutMinutes="1" minPoolSize="5" sqlExceptionSorter="org.nuxeo.runtime.datasource.DatasourceExceptionSorter" />
+  </extension>
+</component>
