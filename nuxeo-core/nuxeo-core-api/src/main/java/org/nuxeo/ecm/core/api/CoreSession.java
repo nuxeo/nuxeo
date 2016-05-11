@@ -853,15 +853,11 @@ public interface CoreSession extends AutoCloseable {
      * <p>
      * The version model contains the label of the version to look for. On return, it is filled with the version's
      * description and creation date.
-     * <p>
-     * Restricted to administrators.
      *
      * @param versionableId the versionable id
      * @param versionModel the version model holding the label
      * @return the version, or {@code null} if not found
-     * @deprecated use version ids directly
      */
-    @Deprecated
     DocumentModel getVersion(String versionableId, VersionModel versionModel);
 
     /**
