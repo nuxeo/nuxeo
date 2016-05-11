@@ -171,6 +171,12 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
     }
 
     @Override
+    public boolean isInputExist(String inputName) {
+        List<TemplateInput> params = getParams();
+        return params != null && params.stream().map(TemplateInput::getName).anyMatch(inputName::equals);
+    }
+
+    @Override
     public String getTemplateType() {
         String ttype = (String) getAdaptedDoc().getPropertyValue(TEMPLATE_TYPE_PROP);
         if (TEMPLATE_TYPE_AUTO.equals(ttype)) {

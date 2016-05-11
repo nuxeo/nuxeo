@@ -48,6 +48,11 @@ public interface TemplateSourceDocument {
     List<TemplateInput> addInput(TemplateInput input);
 
     /**
+     * Returns whether or not the {@link TemplateInput} already exists, based on the name, in the template.
+     */
+    boolean isInputExist(String inputName);
+
+    /**
      * Return the template Type (i.e. the associated {@link TemplateProcessor} name.
      *
      * @return {@link TemplateProcessor} name if any, null otherwise

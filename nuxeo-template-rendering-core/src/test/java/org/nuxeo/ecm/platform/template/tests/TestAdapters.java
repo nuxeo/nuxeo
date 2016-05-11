@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.template.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -85,6 +86,8 @@ public class TestAdapters {
         assertNotNull(templateSource.getAdaptedDoc().getPropertyValue("tmpl:templateData"));
         assertEquals(1, templateSource.getParams().size());
         assertNotNull(templateSource.getParamsAsString());
+        assertTrue(templateSource.isInputExist("field1"));
+        assertFalse(templateSource.isInputExist("field2"));
 
         template = templateSource.save();
 

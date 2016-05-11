@@ -57,10 +57,6 @@ public class TemplatesActionBean extends BaseTemplateAction {
 
     protected List<TemplateInput> templateInputs;
 
-    protected List<TemplateInput> templateEditableInputs;
-
-    protected TemplateInput newInput;
-
     protected boolean showParamEditor = false;
 
     protected boolean showUsageListing = false;
@@ -160,20 +156,10 @@ public class TemplatesActionBean extends BaseTemplateAction {
         this.newInput = newInput;
     }
 
+    @Override
     public String addTemplateInput() {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-
         showParamEditor = true;
-        TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
-        if (template != null) {
-            template.addInput(newInput);
-            newInput = null;
-            templateEditableInputs = null;
-        } else {
-            return null;
-        }
-
-        return navigationContext.navigateToDocument(currentDocument);
+        return super.addTemplateInput();
     }
 
     public String removeTemplateInput(String name) {
