@@ -2,10 +2,13 @@ package org.nuxeo.template.web;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage.Severity;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -15,6 +18,7 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
@@ -31,6 +35,16 @@ public class BaseTemplateAction implements Serializable {
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected Map<String, String> messages;
+
+    protected List<TemplateInput> templateEditableInputs;
+
+    protected TemplateInput newInput;
 
     public boolean canAddTemplateInputs() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -89,6 +103,25 @@ public class BaseTemplateAction implements Serializable {
     public List<TemplateSourceDocument> getAvailableOfficeTemplates(String targetType) {
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         return tps.getAvailableOfficeTemplates(documentManager, targetType);
+    }
+
+    public String addTemplateInput() {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+
+        TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
+        if (template != null) {
+            if (template.isInputExist(newInput.getName())) {
+                facesMessages.add(Severity.WARN, messages.get("label.template.parameter.already.exist"),
+                        newInput.getName());
+                return null;
+            }
+            template.addInput(newInput);
+            newInput = null;
+            templateEditableInputs = null;
+        } else {
+            return null;
+        }
+        return navigationContext.navigateToDocument(currentDocument);
     }
 
 }
