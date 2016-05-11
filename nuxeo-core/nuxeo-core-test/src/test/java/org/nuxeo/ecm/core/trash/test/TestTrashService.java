@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
@@ -292,6 +294,72 @@ public class TestTrashService {
         assertNull(above);
         trashService.trashDocuments(Collections.singletonList(doc4));
         assertFalse(session.exists(doc4.getRef()));
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-checkin-keep.xml")
+    public void testTrashCheckedInDocumentKeepCheckedIn() throws Exception {
+        doTestTrashCheckedInDocument(true);
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-trash-checkin-dontkeep.xml")
+    public void testTrashCheckedInDocumentDontKeepCheckedIn() throws Exception {
+        doTestTrashCheckedInDocument(false);
+    }
+
+    // default platform behavior
+    @Test
+    public void testTrashCheckedInDocumentDefault() throws Exception {
+        doTestTrashCheckedInDocument(true);
+    }
+
+    protected void doTestTrashCheckedInDocument(boolean expectCheckedIn) throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/folder", "doc", "File");
+        doc = session.createDocument(doc);
+
+        // check in
+        doc.checkIn(VersioningOption.MAJOR, null);
+        assertFalse(doc.isCheckedOut());
+        session.save();
+
+        // trash
+        trashService.trashDocuments(Collections.singletonList(doc));
+
+        // make sure it's still checked in (or not if compat)
+        doc = session.getDocument(new IdRef(doc.getId()));
+        assertEquals(LifeCycleConstants.DELETED_STATE, doc.getCurrentLifeCycleState());
+        if (expectCheckedIn) {
+            assertFalse(doc.isCheckedOut());
+        } else {
+            assertTrue(doc.isCheckedOut());
+        }
+
+        // undelete
+        trashService.undeleteDocuments(Collections.singletonList(doc));
+
+        // make sure it's still checked in (or not if compat)
+        doc = session.getDocument(new IdRef(doc.getId()));
+        assertEquals("project", doc.getCurrentLifeCycleState());
+        if (expectCheckedIn) {
+            assertFalse(doc.isCheckedOut());
+        } else {
+            assertTrue(doc.isCheckedOut());
+        }
+
+        // another checked in doc
+        DocumentModel doc2 = session.createDocumentModel("/folder", "doc2", "File");
+        doc2 = session.createDocument(doc2);
+        doc2.checkIn(VersioningOption.MAJOR, null);
+        session.save();
+
+        // following a non-delete transition does a checkout like any other modification
+        session.followTransition(doc2, "approve");
+        doc2 = session.getDocument(new IdRef(doc2.getId()));
+        assertEquals("approved", doc2.getCurrentLifeCycleState());
+        assertTrue(doc2.isCheckedOut());
     }
 
 }

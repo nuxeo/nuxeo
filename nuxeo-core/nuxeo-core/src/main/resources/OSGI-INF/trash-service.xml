@@ -13,4 +13,13 @@
     based on the lifecycle state.
   </documentation>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property defining the behavior when putting a checked in document in the trash.
+      When true, the document will be kept checked in (this avoids growing quotas).
+      When false, the document will be checked out (compatibility behavior).
+    </documentation>
+    <property name="org.nuxeo.trash.keepCheckedIn">true</property>
+  </extension>
+
 </component>

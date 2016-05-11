@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.tests.trash.checkin.dontkeep">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.trash.keepCheckedIn">false</property>
+  </extension>
+
+</component>
