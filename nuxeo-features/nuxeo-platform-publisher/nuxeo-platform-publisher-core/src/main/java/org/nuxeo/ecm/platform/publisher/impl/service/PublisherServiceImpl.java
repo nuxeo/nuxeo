@@ -107,7 +107,9 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
             // RepositoryService failed to start, no need to go further
             return;
         }
-        if (TransactionHelper.startTransaction()) {
+        boolean started = TransactionHelper.isTransactionActive();
+
+        if (started || TransactionHelper.startTransaction()) {
             boolean completedAbruptly = true;
             try {
                 doApplicationStarted();
@@ -116,7 +118,9 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
                 if (completedAbruptly) {
                     TransactionHelper.setTransactionRollbackOnly();
                 }
-                TransactionHelper.commitOrRollbackTransaction();
+                if (started) {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
             }
         } else {
             doApplicationStarted();
@@ -407,8 +411,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params) {
 
         PublicationTree tree = liveTrees.get(targetNode.getSessionId());
         if (tree != null) {
@@ -498,8 +501,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     }
 
     @Override
-    public List<PublishedDocument> getExistingPublishedDocument(String sid, DocumentLocation docLoc)
-            {
+    public List<PublishedDocument> getExistingPublishedDocument(String sid, DocumentLocation docLoc) {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             return tree.getExistingPublishedDocument(docLoc);
@@ -530,8 +532,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     }
 
     @Override
-    public void validatorPublishDocument(String sid, PublishedDocument publishedDocument, String comment)
-            {
+    public void validatorPublishDocument(String sid, PublishedDocument publishedDocument, String comment) {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             tree.validatorPublishDocument(publishedDocument, comment);
@@ -541,8 +542,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     }
 
     @Override
-    public void validatorRejectPublication(String sid, PublishedDocument publishedDocument, String comment)
-            {
+    public void validatorRejectPublication(String sid, PublishedDocument publishedDocument, String comment) {
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             tree.validatorRejectPublication(publishedDocument, comment);
