@@ -103,7 +103,7 @@ public class QuotaAwareDocument implements QuotaAware {
 
     protected Number addDelta(String property, long delta) {
         Number oldValue = (Number) doc.getPropertyValue(property);
-        Number newValue = DeltaLong.deltaOrLong(oldValue, delta);
+        DeltaLong newValue = DeltaLong.valueOf(oldValue, delta);
         doc.setPropertyValue(property, newValue);
         return newValue;
     }

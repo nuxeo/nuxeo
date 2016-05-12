@@ -142,7 +142,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
                 ancestor.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
                 previous = null;
             }
-            Number descendantsCount = DeltaLong.deltaOrLong(previous, count);
+            DeltaLong descendantsCount = DeltaLong.valueOf(previous, count);
             ancestor.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY, descendantsCount);
             // do not send notifications
             QuotaUtils.disableListeners(ancestor);
@@ -162,7 +162,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
             parent.addFacet(DOCUMENTS_COUNT_STATISTICS_FACET);
             previous = null;
         }
-        Number childrenCount = DeltaLong.deltaOrLong(previous, count);
+        DeltaLong childrenCount = DeltaLong.valueOf(previous, count);
         parent.setPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY, childrenCount);
         // do not send notifications
         QuotaUtils.disableListeners(parent);
