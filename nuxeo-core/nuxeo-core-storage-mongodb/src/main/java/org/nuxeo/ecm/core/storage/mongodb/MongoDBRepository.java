@@ -384,7 +384,14 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 diffToUpdates((Delta) value, name, updates);
             } else {
                 // not a diff
-                updates.set.put(name, valueToBson(value));
+                if (value == null) {
+                    // for null values, beyond the space saving,
+                    // it's important to unset the field instead of setting the value to null
+                    // because $inc does not work on nulls but works on non-existent fields
+                    updates.unset.put(name, ONE);
+                } else {
+                    updates.set.put(name, valueToBson(value));
+                }
             }
         }
     }
@@ -417,6 +424,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected void diffToUpdates(Delta delta, String prefix, Updates updates) {
+        // MongoDB can $inc a field that doesn't exist, it's treated as 0 BUT it doesn't work on null
+        // so we ensure (in diffToUpdates) that we never store a null but remove the field instead
         Object inc = valueToBson(delta.getDeltaValue());
         updates.inc.put(prefix, inc);
     }

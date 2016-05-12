@@ -590,6 +590,7 @@ public class TestSQLRepositoryProperties {
         assertEquals("test", doc.getPropertyValue("tp:complex/string"));
     }
 
+    // NOTE that this test cannot pass if DEBUG_UUIDS=true due to the reset of the uuid counter
     @Test
     public void testComplexPropertySchemaUpdate() throws Exception {
         assumeTrue(coreFeature.getStorageConfiguration().isVCS());
@@ -1012,7 +1013,7 @@ public class TestSQLRepositoryProperties {
         doc = session.createDocument(doc);
         session.save();
 
-        doc.setPropertyValue("my:integer", new DeltaLong(fakebase, delta));
+        doc.setPropertyValue("my:integer", DeltaLong.valueOf(Long.valueOf(fakebase), delta));
 
         // re-reading the property before saveDocument() returns the Delta
         Serializable value = doc.getPropertyValue("my:integer");
@@ -1063,9 +1064,9 @@ public class TestSQLRepositoryProperties {
         doc = session.createDocument(doc);
         session.save();
 
-        doc.setPropertyValue("my:integer", new DeltaLong(fakebase, delta));
+        doc.setPropertyValue("my:integer", DeltaLong.valueOf(Long.valueOf(fakebase), delta));
         doc = session.saveDocument(doc);
-        doc.setPropertyValue("my:integer", new DeltaLong(fakebase, delta));
+        doc.setPropertyValue("my:integer", DeltaLong.valueOf(Long.valueOf(fakebase), delta));
         doc = session.saveDocument(doc);
 
         session.save();
@@ -1077,6 +1078,33 @@ public class TestSQLRepositoryProperties {
         Serializable value = doc.getPropertyValue("my:integer");
         assertTrue(value.getClass().getName(), value instanceof Long);
         assertEquals(base + delta * 2, ((Long) value).longValue());
+    }
+
+    @Test
+    public void testPropertyDeltaAfterNull() throws Exception {
+        doc = session.createDocumentModel("/", "doc", "MyDocType");
+        doc.setPropertyValue("my:integer", Long.valueOf(0));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // set to null
+        doc.setPropertyValue("my:integer", null);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // now apply the delta
+        doc.setPropertyValue("my:integer", DeltaLong.valueOf(null, 123));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        reopenSession();
+
+        // after refetch it's a Long with the correct value
+        doc = session.getDocument(new IdRef(doc.getId()));
+        Serializable value = doc.getPropertyValue("my:integer");
+        assertNotNull(value);
+        assertTrue(value.getClass().getName(), value instanceof Long);
+        assertEquals(123, ((Long) value).longValue());
     }
 
     /**
@@ -1105,7 +1133,7 @@ public class TestSQLRepositoryProperties {
                 // delta whose base is not the actual base, to check
                 // that we really do an increment instead of setting
                 // the full value
-                value = new DeltaLong(fakebase, i);
+                value = DeltaLong.valueOf(Long.valueOf(fakebase), i);
             }
             doc.setPropertyValue("my:integer", value);
             if (i % 2 == 0) {
@@ -1138,7 +1166,7 @@ public class TestSQLRepositoryProperties {
     @Test
     public void testPropertyDeltaOnCreate() throws Exception {
         doc = session.createDocumentModel("/", "doc", "MyDocType");
-        doc.setPropertyValue("my:integer", new DeltaLong(100, 123));
+        doc.setPropertyValue("my:integer", DeltaLong.valueOf(Long.valueOf(100), 123));
         doc = session.createDocument(doc);
         session.save();
 

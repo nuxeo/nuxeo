@@ -625,7 +625,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             for (ListIterator<String> it = keys.listIterator(); it.hasNext();) {
                 String key = it.next();
                 Serializable value = rowu.row.get(key);
-                if (value instanceof Delta) {
+                if (value instanceof Delta && ((Delta) value).isBasePresent()) {
                     deltas.add(key);
                     it.set(key + '+');
                 }

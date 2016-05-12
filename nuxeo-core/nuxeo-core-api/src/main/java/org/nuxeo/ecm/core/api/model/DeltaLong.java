@@ -29,44 +29,68 @@ public class DeltaLong extends Delta {
 
     private static final long serialVersionUID = 1L;
 
-    private final long base;
+    private final Long base;
 
     private final long delta;
 
     /**
      * A {@link DeltaLong} with the given base and delta.
      */
-    public DeltaLong(long base, long delta) {
+    public DeltaLong(Long base, long delta) {
         this.base = base;
         this.delta = delta;
     }
 
     /**
-     * Constructs a {@link DeltaLong} from the given base number and delta, or a {@link Long} if the base is
-     * {@code null}.
+     * A {@link DeltaLong} with the given base and delta.
+     *
+     * @deprecated since 8.3, use {@link #DeltaLong(Long, long)} instead.
+     */
+    @Deprecated
+    public DeltaLong(long base, long delta) {
+        this.base = Long.valueOf(base);
+        this.delta = delta;
+    }
+
+    /**
+     * Returns a {@link DeltaLong} from the given base number and delta.
      * <p>
-     * The base number may be a {@link Long} or a {@link DeltaLong}. If it is a {@link DeltaLong} then the returned
-     * value will keep its base and just add deltas.
+     * The base number may be a {@link Long} (which may be null), or a {@link DeltaLong}. If it is a {@link DeltaLong}
+     * then the returned value will keep its base and just add deltas.
      *
      * @param base the base number
      * @param delta the delta
-     * @return a new {@link DeltaLong} or {@link Long}
+     * @return a {@link DeltaLong}
      */
-    public static Number deltaOrLong(Number base, long delta) {
-        if (base == null) {
-            return Long.valueOf(delta);
-        } else if (base instanceof Long) {
-            return new DeltaLong(base.longValue(), delta);
+    public static DeltaLong valueOf(Number base, long delta) {
+        if (base == null || base instanceof Long) {
+            return new DeltaLong((Long) base, delta);
         } else if (base instanceof DeltaLong) {
             DeltaLong dl = (DeltaLong) base;
             if (delta == 0) {
                 return dl;
             } else {
-                return new DeltaLong(dl.getBase(), dl.getDelta() + delta);
+                return new DeltaLong(dl.base, dl.delta + delta);
             }
         } else {
             throw new IllegalArgumentException(base.getClass().getName());
         }
+    }
+
+    /**
+     * Returns a {@link DeltaLong} from the given base number and delta.
+     * <p>
+     * The base number may be a {@link Long} (which may be null), or a {@link DeltaLong}. If it is a {@link DeltaLong}
+     * then the returned value will keep its base and just add deltas.
+     *
+     * @param base the base number
+     * @param delta the delta
+     * @return a {@link DeltaLong}
+     * @deprecated since 8.3, use {@link #valueOf(Number, long)} instead.
+     */
+    @Deprecated
+    public static DeltaLong deltaOrLong(Number base, long delta) {
+        return valueOf(base, delta);
     }
 
     @Override
@@ -79,6 +103,7 @@ public class DeltaLong extends Delta {
     }
 
     @Override
+    @Deprecated
     public Number add(Number other) {
         if (!(other instanceof Long)) {
             throw new IllegalArgumentException("Cannot add " + getClass().getSimpleName() + " and "
@@ -88,13 +113,18 @@ public class DeltaLong extends Delta {
     }
 
     // @Override
-    public long getBase() {
+    public Long getBase() {
         return base;
     }
 
     // @Override
     public long getDelta() {
         return delta;
+    }
+
+    @Override
+    public boolean isBasePresent() {
+        return base != null;
     }
 
     @Override
@@ -109,7 +139,7 @@ public class DeltaLong extends Delta {
 
     @Override
     public long longValue() {
-        return base + delta;
+        return base == null ? delta : base.longValue() + delta;
     }
 
     @Override
@@ -136,14 +166,21 @@ public class DeltaLong extends Delta {
     public boolean equals(Object obj) {
         if (obj instanceof DeltaLong) {
             DeltaLong dl = (DeltaLong) obj;
-            return base == dl.base && delta == dl.delta;
+            if (delta != dl.delta) {
+                return false;
+            }
+            return base == null ? dl.base == null : base.equals(dl.base);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        int result = 31 + (int) (base ^ (base >>> 32));
+        int result = 31;
+        if (base != null) {
+            long b = base.longValue();
+            result += (int) (b ^ (b >>> 32));
+        }
         return 31 * result + (int) (delta ^ (delta >>> 32));
     }
 

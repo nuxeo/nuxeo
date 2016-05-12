@@ -527,7 +527,7 @@ public class TestDocument {
         doc.writeDocumentPart(dp, writeContext);
         session.save();
         // then write a delta, the database-level increment must work on 0 and not null
-        dp.setValue("my:testDefaultLong", new DeltaLong(0, 10));
+        dp.setValue("my:testDefaultLong", DeltaLong.valueOf(Long.valueOf(0), 10));
         writeContext = doc.getWriteContext();
         doc.writeDocumentPart(dp, writeContext);
 
