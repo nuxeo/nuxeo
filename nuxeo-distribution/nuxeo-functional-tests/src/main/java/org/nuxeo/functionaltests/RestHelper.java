@@ -22,22 +22,26 @@ package org.nuxeo.functionaltests;
 import static org.nuxeo.functionaltests.AbstractTest.NUXEO_URL;
 import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.client.api.NuxeoClient;
 import org.nuxeo.client.api.objects.Document;
 import org.nuxeo.client.api.objects.acl.ACE;
 import org.nuxeo.client.api.objects.user.Group;
-import org.nuxeo.client.api.objects.user.User;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
+
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * @since 8.3
@@ -57,6 +61,9 @@ public class RestHelper {
     private static final List<String> groupsToDelete = new ArrayList<>();
 
     protected static final Log log = LogFactory.getLog(RestHelper.class);
+
+    //@yannis : temporary fix for setting user password before JAVACLIENT-91
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private RestHelper() {
         // helper class
@@ -97,18 +104,51 @@ public class RestHelper {
 
     public static String createUser(String username, String password, String firstName, String lastName,
             String company, String email, String group) {
-        User user = new User();
-        user.setUserName(username);
-        //TODO add something to replace user.setPassword(password);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setCompany(company);
-        user.setEmail(email);
-        user.setGroups(Collections.singletonList(group));
+        //@yannis : temporary fix for setting user password before JAVACLIENT-91
+        String json = buildUserJSON(username, password, firstName, lastName, company, email, group);
 
-        String id = CLIENT.getUserManager().createUser(user).getId();
-        usersToDelete.add(id);
-        return id;
+        Response response = CLIENT.post(AbstractTest.NUXEO_URL+"/api/v1/user", json);
+        if (!response.isSuccessful()) {
+            throw new RuntimeException(String.format("Unable to create user '%s'", username));
+        }
+
+        try (ResponseBody responseBody = response.body()) {
+            JsonNode jsonNode = MAPPER.readTree(responseBody.charStream());
+            String id = jsonNode.get("id").getTextValue();
+            usersToDelete.add(id);
+            return id;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String buildUserJSON(String username, String password, String firstName, String lastName,
+            String company, String email, String group) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"entity-type\": \"user\"").append(",\n");
+        sb.append("\"id\": \"").append(username).append("\",\n");
+        sb.append("\"properties\": {").append("\n");
+        if (firstName != null) {
+            sb.append("\"firstName\": \"").append(firstName).append("\",\n");
+        }
+        if (lastName != null) {
+            sb.append("\"lastName\": \"").append(lastName).append("\",\n");
+        }
+        if (email != null) {
+            sb.append("\"email\": \"").append(email).append("\",\n");
+        }
+        if (company != null) {
+            sb.append("\"company\": \"").append(company).append("\",\n");
+        }
+        if (group != null) {
+            sb.append("\"groups\": [\"").append(group).append("\"]").append(",\n");
+        }
+        sb.append("\"username\": \"").append(username).append("\",\n");
+        sb.append("\"password\": \"").append(password).append("\"\n");
+        sb.append("}").append("\n");
+        sb.append("}");
+        return sb.toString();
     }
 
     public static void deleteUser(String username) {
