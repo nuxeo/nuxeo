@@ -50,7 +50,7 @@ public interface TemplateSourceDocument {
     /**
      * Returns whether or not the {@link TemplateInput} already exists, based on the name, in the template.
      */
-    boolean isInputExist(String inputName);
+    boolean hasInput(String inputName);
 
     /**
      * Return the template Type (i.e. the associated {@link TemplateProcessor} name.

@@ -171,7 +171,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
     }
 
     @Override
-    public boolean isInputExist(String inputName) {
+    public boolean hasInput(String inputName) {
         List<TemplateInput> params = getParams();
         return params != null && params.stream().map(TemplateInput::getName).anyMatch(inputName::equals);
     }
