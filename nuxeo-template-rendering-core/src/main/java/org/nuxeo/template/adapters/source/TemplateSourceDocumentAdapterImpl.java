@@ -402,12 +402,12 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
 
     @Override
     public String getLabel() {
-        StringBuffer sb = new StringBuffer(getTitle());
+        StringBuilder sb = new StringBuilder(getTitle());
         if (!getTitle().equals(getFileName())) {
-            sb.append(" (" + getFileName() + ")");
+            sb.append(" (").append(getFileName()).append(")");
         }
         if (getVersionLabel() != null) {
-            sb.append(" [" + getVersionLabel() + "]");
+            sb.append(" [").append(getVersionLabel()).append("]");
         }
         return sb.toString();
     }
