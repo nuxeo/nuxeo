@@ -60,9 +60,11 @@ public class RestHelper {
 
     private static final List<String> groupsToDelete = new ArrayList<>();
 
+    private static final int NOT_FOUND_ERROR_STATUS = 404;
+
     protected static final Log log = LogFactory.getLog(RestHelper.class);
 
-    //@yannis : temporary fix for setting user password before JAVACLIENT-91
+    // @yannis : temporary fix for setting user password before JAVACLIENT-91
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private RestHelper() {
@@ -83,11 +85,7 @@ public class RestHelper {
 
     public static void cleanupUsers() {
         for (String user : usersToDelete) {
-            try{
-                RestHelper.deleteDocument(String.format(USER_WORKSPACE_PATH_FORMAT, user));
-            }catch(NuxeoClientException e){
-                log.warn("User workspace not deleted for "+user+" (propably not found)");
-            }
+            RestHelper.deleteDocument(String.format(USER_WORKSPACE_PATH_FORMAT, user));
         }
         usersToDelete.forEach(RestHelper::deleteUser);
         usersToDelete.clear();
@@ -102,12 +100,12 @@ public class RestHelper {
         return createUser(username, password, null, null, null, null, null);
     }
 
-    public static String createUser(String username, String password, String firstName, String lastName,
-            String company, String email, String group) {
-        //@yannis : temporary fix for setting user password before JAVACLIENT-91
+    public static String createUser(String username, String password, String firstName, String lastName, String company,
+            String email, String group) {
+        // @yannis : temporary fix for setting user password before JAVACLIENT-91
         String json = buildUserJSON(username, password, firstName, lastName, company, email, group);
 
-        Response response = CLIENT.post(AbstractTest.NUXEO_URL+"/api/v1/user", json);
+        Response response = CLIENT.post(AbstractTest.NUXEO_URL + "/api/v1/user", json);
         if (!response.isSuccessful()) {
             throw new RuntimeException(String.format("Unable to create user '%s'", username));
         }
@@ -152,7 +150,15 @@ public class RestHelper {
     }
 
     public static void deleteUser(String username) {
-        CLIENT.getUserManager().deleteUser(username);
+        try {
+            CLIENT.getUserManager().deleteUser(username);
+        } catch (NuxeoClientException e) {
+            if (NOT_FOUND_ERROR_STATUS == e.getStatus()) {
+                log.warn(String.format("User %s not deleted because not found", username));
+            } else {
+                throw e;
+            }
+        }
     }
 
     public static void createGroup(String name, String label) {
@@ -175,7 +181,15 @@ public class RestHelper {
     }
 
     public static void deleteGroup(String name) {
-        CLIENT.getUserManager().deleteGroup(name);
+        try {
+            CLIENT.getUserManager().deleteGroup(name);
+        } catch (NuxeoClientException e) {
+            if (NOT_FOUND_ERROR_STATUS == e.getStatus()) {
+                log.warn(String.format("Group %s not deleted because not found", name));
+            } else {
+                throw e;
+            }
+        }
     }
 
     public static String createDocument(String idOrPath, String type, String title, String description) {
@@ -205,10 +219,18 @@ public class RestHelper {
 
     public static void deleteDocument(String idOrPath) {
         // TODO change that by proper deleteDocument(String)
-        if (idOrPath.startsWith("/")) {
-            CLIENT.repository().deleteDocument(CLIENT.repository().fetchDocumentByPath(idOrPath));
-        } else {
-            CLIENT.repository().deleteDocument(CLIENT.repository().fetchDocumentById(idOrPath));
+        try {
+            if (idOrPath.startsWith("/")) {
+                CLIENT.repository().deleteDocument(CLIENT.repository().fetchDocumentByPath(idOrPath));
+            } else {
+                CLIENT.repository().deleteDocument(CLIENT.repository().fetchDocumentById(idOrPath));
+            }
+        } catch (NuxeoClientException e) {
+            if (NOT_FOUND_ERROR_STATUS == e.getStatus()) {
+                log.warn(String.format("Document %s not deleted because not found", idOrPath));
+            } else {
+                throw e;
+            }
         }
     }
 
@@ -224,7 +246,7 @@ public class RestHelper {
         ace.setUsername(username);
         ace.setPermission(permission);
 
-        //@yannis : temporary fix for setting permission before JAVACLIENT-90 is done
+        // @yannis : temporary fix for setting permission before JAVACLIENT-90 is done
         Calendar beginDate = Calendar.getInstance();
         ace.setBegin(beginDate);
         Calendar endDate = Calendar.getInstance();
