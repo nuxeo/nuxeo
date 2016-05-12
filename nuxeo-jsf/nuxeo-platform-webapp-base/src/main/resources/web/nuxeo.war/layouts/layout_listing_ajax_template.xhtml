@@ -32,7 +32,7 @@
   value="#{provider.getSortInfos().size() > 1}"
   cache="true">
 
-<c:if test="#{showListingHeader and layout.properties.showListingHeader}">
+<ui:fragment rendered="#{showListingHeader and layout.properties.showListingHeader}">
   <thead>
     <tr>
       <nxl:layoutColumn>
@@ -186,13 +186,13 @@
       </nxl:layoutColumn>
     </tr>
   </thead>
-</c:if>
+</ui:fragment>
 
 </nxu:set>
 </ui:insert>
 
 <ui:insert name="listing_row">
-<c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
+<nxu:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}">
 <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
   <nxl:layoutColumn>
     <td class="#{layoutColumn.properties.columnStyleClass}" dir="auto">
@@ -205,6 +205,7 @@
     </td>
   </nxl:layoutColumn>
 </tr>
+</nxu:set>
 </ui:insert>
 
 </f:subview>
