@@ -622,7 +622,7 @@
         </label>
       </helpLabels>
       <fields>
-        <field>additionalParam</field>
+        <field>additionalOperationParameters</field>
       </fields>
     </widget>
 
