@@ -24,6 +24,7 @@ import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -182,6 +183,14 @@ public class RestHelper {
         ACE ace = new ACE();
         ace.setUsername(username);
         ace.setPermission(permission);
+
+        //@yannis : temporary fix for setting permission before JAVACLIENT-90 is done
+        Calendar beginDate = Calendar.getInstance();
+        ace.setBegin(beginDate);
+        Calendar endDate = Calendar.getInstance();
+        endDate.add(Calendar.YEAR, 1);
+        ace.setEnd(endDate);
+
         document.addPermission(ace);
     }
 
