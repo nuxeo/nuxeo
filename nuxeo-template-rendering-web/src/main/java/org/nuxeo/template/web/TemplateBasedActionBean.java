@@ -53,10 +53,6 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     protected List<TemplateInput> templateInputs;
 
-    protected List<TemplateInput> templateEditableInputs;
-
-    protected TemplateInput newInput;
-
     protected String templateIdToAssociate;
 
     protected String editableTemplateName;
@@ -154,21 +150,6 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     public void setNewInput(TemplateInput newInput) {
         this.newInput = newInput;
-    }
-
-    public String addTemplateInput() {
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-
-        TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
-        if (template != null) {
-            template.addInput(newInput);
-            newInput = null;
-            templateEditableInputs = null;
-        } else {
-            return null;
-        }
-
-        return navigationContext.navigateToDocument(currentDocument);
     }
 
     public String render(String templateName) {
