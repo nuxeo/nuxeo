@@ -68,8 +68,8 @@ public class TestAdapters  {
         assertNotNull(templateSource.getAdaptedDoc().getPropertyValue("tmpl:templateData"));
         assertEquals(1, templateSource.getParams().size());
         assertNotNull(templateSource.getParamsAsString());
-        assertTrue(templateSource.isInputExist("field1"));
-        assertFalse(templateSource.isInputExist("field2"));
+        assertTrue(templateSource.hasInput("field1"));
+        assertFalse(templateSource.hasInput("field2"));
 
         template = templateSource.save();
 

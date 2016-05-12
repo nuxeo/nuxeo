@@ -110,7 +110,7 @@ public class BaseTemplateAction implements Serializable {
 
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
         if (template != null) {
-            if (template.isInputExist(newInput.getName())) {
+            if (template.hasInput(newInput.getName())) {
                 facesMessages.add(Severity.WARN, messages.get("label.template.parameter.already.exist"),
                         newInput.getName());
                 return null;
