@@ -18,10 +18,10 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.dom4j.Document;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -153,7 +153,7 @@ class MarkLogicQueryBuilder {
                 return walkAnd(lvalue, rvalue);
             }
         } else if (op == Operator.NOT) {
-            // walkNot(lvalue);
+            return walkNot(lvalue);
         } else if (op == Operator.OR) {
             return walkOr(lvalue, rvalue);
         } else if (op == Operator.LIKE) {
@@ -178,6 +178,11 @@ class MarkLogicQueryBuilder {
             // walkBetween(lvalue, rvalue, false);
         }
         throw new QueryParseException("Unknown operator: " + op);
+    }
+
+    private StructuredQueryDefinition walkNot(Operand lvalue) {
+        StructuredQueryDefinition query = walkOperandAsExpression(lvalue);
+        return sqb.not(query);
     }
 
     private StructuredQueryDefinition walkEq(Operand lvalue, Operand rvalue) {
@@ -205,7 +210,7 @@ class MarkLogicQueryBuilder {
     }
 
     private StructuredQueryDefinition walkAnd(List<Operand> values) {
-        List<StructuredQueryDefinition> queries = walkOperandToExpression(values);
+        List<StructuredQueryDefinition> queries = walkOperandAsExpression(values);
         if (queries.size() == 1) {
             return queries.get(0);
         }
@@ -217,7 +222,7 @@ class MarkLogicQueryBuilder {
     }
 
     private StructuredQueryDefinition walkOr(List<Operand> values) {
-        List<StructuredQueryDefinition> queries = walkOperandToExpression(values);
+        List<StructuredQueryDefinition> queries = walkOperandAsExpression(values);
         if (queries.size() == 1) {
             return queries.get(0);
         }
@@ -241,15 +246,18 @@ class MarkLogicQueryBuilder {
     /**
      * Method used to walk on a list of {@link Expression} typed as {@link Operand}.
      */
-    private List<StructuredQueryDefinition> walkOperandToExpression(List<Operand> operands) {
-        List<StructuredQueryDefinition> queries = new ArrayList<>(operands.size());
-        for (Operand operand : operands) {
-            if (!(operand instanceof Expression)) {
-                throw new IllegalArgumentException("Operand " + operand + "is not an Expression.");
-            }
-            queries.add(walkExpression((Expression) operand));
+    private List<StructuredQueryDefinition> walkOperandAsExpression(List<Operand> operands) {
+        return operands.stream().map(this::walkOperandAsExpression).collect(Collectors.toList());
+    }
+
+    /**
+     * Method used to walk on an {@link Expression} typed as {@link Operand}.
+     */
+    private StructuredQueryDefinition walkOperandAsExpression(Operand operand) {
+        if (!(operand instanceof Expression)) {
+            throw new IllegalArgumentException("Operand " + operand + "is not an Expression.");
         }
-        return queries;
+        return walkExpression((Expression) operand);
     }
 
     private FieldInfo walkReference(Operand value) {
