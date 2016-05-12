@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
+import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 
 import com.marklogic.client.query.QueryManager;
 import com.marklogic.client.query.RawQueryDefinition;
@@ -95,7 +96,7 @@ class MarkLogicQueryBuilder {
     }
 
     public boolean hasProjectionWildcard() {
-        for (int i= 0; i < selectClause.elements.size(); i++) {
+        for (int i = 0; i < selectClause.elements.size(); i++) {
             Operand op = selectClause.elements.get(i);
             if (!(op instanceof Reference)) {
                 throw new QueryParseException("Projection not supported: " + op);
@@ -106,7 +107,6 @@ class MarkLogicQueryBuilder {
         }
         return false;
     }
-
 
     public RawQueryDefinition buildQuery() {
         return sqb.build(walkExpression(expression));
@@ -135,17 +135,17 @@ class MarkLogicQueryBuilder {
         } else if (op == Operator.DIV) {
             throw new UnsupportedOperationException("DIV");
         } else if (op == Operator.LT) {
-            // walkLt(lvalue, rvalue);
+            return walkLt(lvalue, rvalue);
         } else if (op == Operator.GT) {
-            // walkGt(lvalue, rvalue);
+            return walkGt(lvalue, rvalue);
         } else if (op == Operator.EQ) {
             return walkEq(lvalue, rvalue);
         } else if (op == Operator.NOTEQ) {
             return walkNotEq(lvalue, rvalue);
         } else if (op == Operator.LTEQ) {
-            // walkLtEq(lvalue, rvalue);
+            return walkLtEq(lvalue, rvalue);
         } else if (op == Operator.GTEQ) {
-            // walkGtEq(lvalue, rvalue);
+            return walkGtEq(lvalue, rvalue);
         } else if (op == Operator.AND) {
             if (expression instanceof MultiExpression) {
                 return walkMultiExpression((MultiExpression) expression);
@@ -199,6 +199,26 @@ class MarkLogicQueryBuilder {
     private StructuredQueryDefinition walkNotEq(Operand lvalue, Operand rvalue) {
         StructuredQueryDefinition eq = walkEq(lvalue, rvalue);
         return sqb.not(eq);
+    }
+
+    private StructuredQueryDefinition walkLt(Operand lvalue, Operand rvalue) {
+        FieldInfo leftInfo = walkReference(lvalue);
+        return leftInfo.lt((Literal) rvalue);
+    }
+
+    private StructuredQueryDefinition walkGt(Operand lvalue, Operand rvalue) {
+        FieldInfo leftInfo = walkReference(lvalue);
+        return leftInfo.gt((Literal) rvalue);
+    }
+
+    private StructuredQueryDefinition walkLtEq(Operand lvalue, Operand rvalue) {
+        FieldInfo leftInfo = walkReference(lvalue);
+        return leftInfo.lteq((Literal) rvalue);
+    }
+
+    private StructuredQueryDefinition walkGtEq(Operand lvalue, Operand rvalue) {
+        FieldInfo leftInfo = walkReference(lvalue);
+        return leftInfo.gteq((Literal) rvalue);
     }
 
     private StructuredQueryDefinition walkMultiExpression(MultiExpression expression) {
@@ -343,10 +363,38 @@ class MarkLogicQueryBuilder {
         }
 
         public StructuredQueryDefinition eq(Literal literal) {
-            String serializedKey = MarkLogicHelper.serializeKey(fullField);
+            String serializedKey = getSerializedKey();
             Object value = getLiteral(literal);
             String serializedValue = MarkLogicStateSerializer.serializeValue(value);
             return sqb.value(sqb.element(serializedKey), serializedValue);
+        }
+
+        public StructuredQueryDefinition lt(Literal literal) {
+            return range(StructuredQueryBuilder.Operator.LT, literal);
+        }
+
+        public StructuredQueryDefinition gt(Literal literal) {
+            return range(StructuredQueryBuilder.Operator.GT, literal);
+        }
+
+        public StructuredQueryDefinition lteq(Literal literal) {
+            return range(StructuredQueryBuilder.Operator.LE, literal);
+        }
+
+        public StructuredQueryDefinition gteq(Literal literal) {
+            return range(StructuredQueryBuilder.Operator.GE, literal);
+        }
+
+        private StructuredQueryDefinition range(StructuredQueryBuilder.Operator operator, Literal literal) {
+            String serializedKey = getSerializedKey();
+            Object value = getLiteral(literal);
+            String valueType = ElementType.getType(value.getClass()).getKey();
+            String serializedValue = MarkLogicStateSerializer.serializeValue(value);
+            return sqb.range(sqb.element(serializedKey), valueType, operator, serializedValue);
+        }
+
+        protected String getSerializedKey() {
+            return MarkLogicHelper.serializeKey(fullField);
         }
 
         private Object getLiteral(Literal literal) {
