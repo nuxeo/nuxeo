@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -36,9 +37,11 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Default implementation of the {@link FileSystemItemAdapterService}.
@@ -55,6 +58,10 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
 
     public static final String ACTIVE_FILE_SYSTEM_ITEM_FACTORIES_EP = "activeFileSystemItemFactories";
 
+    protected static final String CONCURRENT_SCROLL_BATCH_LIMIT = "org.nuxeo.drive.concurrentScrollBatchLimit";
+
+    protected static final String CONCURRENT_SCROLL_BATCH_LIMIT_DEFAULT = "4";
+
     protected TopLevelFolderItemFactoryRegistry topLevelFolderItemFactoryRegistry;
 
     protected FileSystemItemFactoryRegistry fileSystemItemFactoryRegistry;
@@ -66,6 +73,8 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     protected TopLevelFolderItemFactory topLevelFolderItemFactory;
 
     protected List<FileSystemItemFactoryWrapper> fileSystemItemFactories;
+
+    protected Semaphore scrollBatchSemaphore;
 
     /*------------------------ DefaultComponent -----------------------------*/
     @Override
@@ -122,11 +131,14 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     /**
-     * Sorts the contributed factories according to their order.
+     * Sorts the contributed factories according to their order and initializes the {@link #scrollBatchSemaphore}.
      */
     @Override
     public void applicationStarted(ComponentContext context) {
         setActiveFactories();
+        int concurrentScrollBatchLimit = Integer.parseInt(Framework.getService(ConfigurationService.class).getProperty(
+                CONCURRENT_SCROLL_BATCH_LIMIT, CONCURRENT_SCROLL_BATCH_LIMIT_DEFAULT));
+        scrollBatchSemaphore = new Semaphore(concurrentScrollBatchLimit, false);
     }
 
     /*------------------------ FileSystemItemAdapterService -----------------------*/
@@ -230,6 +242,11 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
                     "Found no active file system item factories. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"activeFileSystemItemFactories\"> declaring at least one factory.");
         }
         return activeFileSystemItemFactoryRegistry.activeFactories;
+    }
+
+    @Override
+    public Semaphore getScrollBatchSemaphore() {
+        return scrollBatchSemaphore;
     }
 
     /*------------------------- For test purpose ----------------------------------*/

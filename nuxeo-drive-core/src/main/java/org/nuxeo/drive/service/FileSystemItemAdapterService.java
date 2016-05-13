@@ -19,6 +19,7 @@
 package org.nuxeo.drive.service;
 
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
@@ -174,5 +175,12 @@ public interface FileSystemItemAdapterService {
      * Gets the active {@link FileSystemItem} factory names.
      */
     Set<String> getActiveFileSystemItemFactories();
+
+    /**
+     * Allows to limit the number of concurrent scrolls run by {@link FolderItem#scrollDescendants(String, int)}.
+     *
+     * @since 8.3
+     */
+    Semaphore getScrollBatchSemaphore();
 
 }

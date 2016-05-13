@@ -19,9 +19,11 @@
 package org.nuxeo.drive.adapter;
 
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -54,6 +56,10 @@ public interface FolderItem extends FileSystemItem {
      * batch of results.
      * <p>
      * Results are not necessarily sorted.
+     * <p>
+     * This method is protected by a {@link Semaphore}, made available by
+     * {@link FileSystemItemAdapterService#getScrollBatchSemaphore()}, to limit the number of concurrent executions and
+     * avoid too much memory pressure.
      *
      * @throws UnsupportedOperationException if {@link #getCanScrollDescendants()} returns {@code false}.
      * @since 8.3

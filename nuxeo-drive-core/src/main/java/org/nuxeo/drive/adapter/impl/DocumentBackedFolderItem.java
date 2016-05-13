@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Semaphore;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -37,6 +38,7 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
+import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -184,8 +186,37 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public ScrollFileSystemItemList scrollDescendants(String scrollId, int batchSize) {
+        Semaphore semaphore = Framework.getService(FileSystemItemAdapterService.class).getScrollBatchSemaphore();
+        try {
+            if (log.isTraceEnabled()) {
+                log.trace(String.format("Thread [%s] acquiring scroll batch semaphore", Thread.currentThread()
+                                                                                              .getName()));
+            }
+            semaphore.acquire();
+            try {
+                if (log.isTraceEnabled()) {
+                    log.trace(String.format(
+                            "Thread [%s] acquired scroll batch semaphore, available permits reduced to %d",
+                            Thread.currentThread().getName(), semaphore.availablePermits()));
+                }
+                return doScrollDescendants(scrollId, batchSize);
+            } finally {
+                semaphore.release();
+                if (log.isTraceEnabled()) {
+                    log.trace(String.format(
+                            "Thread [%s] released scroll batch semaphore, available permits increased to %d",
+                            Thread.currentThread().getName(), semaphore.availablePermits()));
+                }
+            }
+        } catch (InterruptedException cause) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException("Scroll batch interrupted", cause);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected ScrollFileSystemItemList doScrollDescendants(String scrollId, int batchSize) {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
 
             // Limit batch size sent by the client
