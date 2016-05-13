@@ -36,6 +36,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.client.api.NuxeoClient;
 import org.nuxeo.client.api.objects.Document;
+import org.nuxeo.client.api.objects.Documents;
 import org.nuxeo.client.api.objects.acl.ACE;
 import org.nuxeo.client.api.objects.user.Group;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
@@ -51,6 +52,8 @@ public class RestHelper {
     private static final NuxeoClient CLIENT = new NuxeoClient(NUXEO_URL, ADMINISTRATOR, ADMINISTRATOR);
 
     private static final String USER_WORKSPACE_PATH_FORMAT = "/default-domain/UserWorkspaces/%s";
+
+    private static final String DOCUMENT_QUERY_BY_PATH_BASE = "SELECT * FROM Document WHERE ecm:path = '%s'";
 
     private static final List<String> documentIdsToDelete = new ArrayList<>();
 
@@ -219,18 +222,14 @@ public class RestHelper {
 
     public static void deleteDocument(String idOrPath) {
         // TODO change that by proper deleteDocument(String)
-        try {
-            if (idOrPath.startsWith("/")) {
-                CLIENT.repository().deleteDocument(CLIENT.repository().fetchDocumentByPath(idOrPath));
-            } else {
-                CLIENT.repository().deleteDocument(CLIENT.repository().fetchDocumentById(idOrPath));
+        if (idOrPath.startsWith("/")) {
+            // @yannis : temporary way to avoid DocumentNotFoundException in server log before NXP-19658
+            Documents documents = CLIENT.repository().query(String.format(DOCUMENT_QUERY_BY_PATH_BASE, idOrPath));
+            if (documents.size() > 1) {
+                CLIENT.repository().deleteDocument(documents.getDocument(0));
             }
-        } catch (NuxeoClientException e) {
-            if (NOT_FOUND_ERROR_STATUS == e.getStatus()) {
-                log.warn(String.format("Document %s not deleted because not found", idOrPath));
-            } else {
-                throw e;
-            }
+        } else {
+            CLIENT.repository().deleteDocument(CLIENT.repository().fetchDocumentById(idOrPath));
         }
     }
 
