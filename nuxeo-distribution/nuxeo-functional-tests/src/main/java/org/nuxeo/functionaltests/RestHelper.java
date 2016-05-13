@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
@@ -52,6 +53,8 @@ public class RestHelper {
     private static final NuxeoClient CLIENT = new NuxeoClient(NUXEO_URL, ADMINISTRATOR, ADMINISTRATOR);
 
     private static final String USER_WORKSPACE_PATH_FORMAT = "/default-domain/UserWorkspaces/%s";
+
+    private static final String DEFAULT_USER_EMAIL = "devnull@nuxeo.com";
 
     private static final String DOCUMENT_QUERY_BY_PATH_BASE = "SELECT * FROM Document WHERE ecm:path = '%s'";
 
@@ -105,8 +108,11 @@ public class RestHelper {
 
     public static String createUser(String username, String password, String firstName, String lastName, String company,
             String email, String group) {
+
+        String finalEmail = StringUtils.isBlank(email) ? DEFAULT_USER_EMAIL : email;
+
         // @yannis : temporary fix for setting user password before JAVACLIENT-91
-        String json = buildUserJSON(username, password, firstName, lastName, company, email, group);
+        String json = buildUserJSON(username, password, firstName, lastName, company, finalEmail, group);
 
         Response response = CLIENT.post(AbstractTest.NUXEO_URL + "/api/v1/user", json);
         if (!response.isSuccessful()) {
