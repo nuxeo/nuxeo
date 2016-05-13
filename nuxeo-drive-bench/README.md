@@ -159,6 +159,8 @@ Options for the Remote Scan simulations:
     -DremoteScan.users=10
     # Batch size for the batched remote scan
     -DbatchSize=100
+    # Sleep time in milliseconds between batch calls
+    -DremoteScan.pauseMs=100
 
 Note that you may need to edit the administrator account if it is not the default one:
 

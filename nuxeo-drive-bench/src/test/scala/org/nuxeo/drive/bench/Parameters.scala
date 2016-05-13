@@ -66,4 +66,9 @@ object Parameters {
     Integer.getInteger("batchSize", default)
   }
 
+  def getPause(defaultMs: Integer = 0, prefix: String = ""): Duration = {
+    val pauseMs: Long = 0L + Integer.getInteger(prefix + "pauseMs", defaultMs)
+    Duration(pauseMs, "millisecond")
+  }
+
 }

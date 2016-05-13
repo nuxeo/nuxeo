@@ -57,7 +57,7 @@ class Sim45BenchBatchedRemoteScan extends Simulation {
     .connection("keep-alive")
     .disableCaching // disabling Etag cache since If-None-Modified on GetChildren and ScrollDescendants fails
 
-  val remoteScan = BatchedRemoteScan.run(Parameters.getDescendantsBatchSize(100))
+  val remoteScan = BatchedRemoteScan.run(Parameters.getDescendantsBatchSize(100), Parameters.getPause(100, prefix = "remoteScan."))
 
   setUp(remoteScan.inject(rampUsers(Parameters.getConcurrentUsers(10, prefix = "remoteScan.")).over(Parameters.getRampDuration(10))))
     .protocols(httpProtocol)

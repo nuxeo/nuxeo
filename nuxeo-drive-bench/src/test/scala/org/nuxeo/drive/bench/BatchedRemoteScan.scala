@@ -4,6 +4,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
+import scala.concurrent.duration.Duration
 
 object BatchedRemoteScan {
 
@@ -12,7 +13,7 @@ object BatchedRemoteScan {
   /**
    * Let's simultate Nuxeo Drive batched remote scan.
    */
-  def run = (batchSize: Integer) => {
+  def run = (batchSize: Integer, thinkTime: Duration) => {
     scenario("BatchedRemoteScan")
     .group("BatchedRemoteScan") {
       feed(Feeders.token)
@@ -51,9 +52,10 @@ object BatchedRemoteScan {
                       case None => Some(Vector.empty)
                       case descendants => descendants
                     }).saveAs("descendants")))
-                .doIf(session => session("descendants").as[Vector[Map[String, Any]]].isEmpty) {
-                  exec(session => session.remove("scrollId"))
-                }
+              .pause(thinkTime)
+              .doIf(session => session("descendants").as[Vector[Map[String, Any]]].isEmpty) {
+                exec(session => session.remove("scrollId"))
+              }
             }
             .exec(session => session.set("nodes", session("nodes").as[List[Map[String, Any]]].tail))
           } {
