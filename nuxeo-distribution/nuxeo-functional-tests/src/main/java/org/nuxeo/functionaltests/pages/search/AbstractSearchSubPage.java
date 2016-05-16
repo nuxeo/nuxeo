@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.search;
 
@@ -42,7 +43,7 @@ public abstract class AbstractSearchSubPage extends AbstractPage {
     }
 
     public SearchPage filter() {
-        filterButton.click();
+        waitUntilEnabledAndClick(filterButton);
         return asPage(SearchPage.class);
     }
 

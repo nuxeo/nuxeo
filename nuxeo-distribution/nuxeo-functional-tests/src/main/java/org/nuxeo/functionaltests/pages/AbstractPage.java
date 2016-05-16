@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
  *     Sun Seng David TAN
  *     Florent Guillaume
  *     Antoine Taillefer
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages;
 
@@ -213,12 +214,44 @@ public abstract class AbstractPage {
     }
 
     /**
-     * Waits until an element is enabled, with a timeout.
+     * Waits until an element is enabled, with a default timeout.
      *
      * @param element the element
      */
     public static void waitUntilEnabled(WebElement element) throws NotFoundException {
         Locator.waitUntilEnabled(element);
+    }
+
+    /**
+     * Waits until an element is enabled, with a timeout.
+     *
+     * @param element the element
+     * @param timeout the timeout in milliseconds
+     * @since 8.3
+     */
+    public static void waitUntilEnabled(WebElement element, int waitUntilEnabledTimeout) throws NotFoundException {
+        Locator.waitUntilEnabled(element, waitUntilEnabledTimeout);
+    }
+
+    /**
+     * Waits until an element is enabled, with a default timeout. Then clicks on the element.
+     *
+     * @param element the element
+     * @since 8.3
+     */
+    public static void waitUntilEnabledAndClick(WebElement element) throws NotFoundException {
+        Locator.waitUntilEnabledAndClick(element);
+    }
+
+    /**
+     * Waits until an element is enabled, with a timeout. Then clicks on the element.
+     *
+     * @param element the element
+     * @param timeout the timeout in milliseconds
+     * @since 8.3
+     */
+    public static void waitUntilEnabledAndClick(WebElement element, int waitUntilEnabledTimeout) throws NotFoundException {
+        Locator.waitUntilEnabledAndClick(element, waitUntilEnabledTimeout);
     }
 
     /**
@@ -259,7 +292,7 @@ public abstract class AbstractPage {
      */
     public static void findElementWaitUntilEnabledAndClick(By by, int findElementTimeout, int waitUntilEnabledTimeout)
             throws NotFoundException {
-        Locator.waitUntilElementEnabledAndClick(by, findElementTimeout, waitUntilEnabledTimeout);
+        Locator.findElementWaitUntilEnabledAndClick(by, findElementTimeout, waitUntilEnabledTimeout);
     }
 
     /**
@@ -323,10 +356,10 @@ public abstract class AbstractPage {
             if (useAjax) {
                 AjaxRequestManager arm = new AjaxRequestManager(driver);
                 arm.begin();
-                tabElement.click();
+                waitUntilEnabledAndClick(tabElement);
                 arm.end();
             } else {
-                tabElement.click();
+                waitUntilEnabledAndClick(tabElement);
             }
         }
     }

@@ -52,6 +52,7 @@ public class ITUsersTest extends AbstractTest {
     @After
     public void after() {
         RestHelper.deleteUser("jsmith");
+        RestHelper.deleteUser(TEST_USERNAME);
     }
 
     @Test

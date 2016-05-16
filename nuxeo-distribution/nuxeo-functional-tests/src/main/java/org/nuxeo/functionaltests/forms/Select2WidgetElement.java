@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
+ *     `Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.forms;
 
@@ -170,7 +171,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
         boolean found = false;
         for (WebElement el : getSelectedValues()) {
             if (el.getText().equals(displayedText)) {
-                el.findElement(By.xpath("a[@class='select2-search-choice-close']")).click();
+                Locator.waitUntilEnabledAndClick(el.findElement(By.xpath("a[@class='select2-search-choice-close']")));
                 found = true;
             }
         }
@@ -311,7 +312,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
         } else {
             select2Field = element.findElement(By.xpath("a[contains(@class,'select2-choice')]"));
         }
-        select2Field.click();
+        Locator.waitUntilEnabledAndClick(select2Field);
     }
 
     /**
@@ -384,4 +385,10 @@ public class Select2WidgetElement extends WebFragmentImpl {
         return AbstractTest.asPage(SearchPage.class);
     }
 
+    /**
+     * @since 8.3
+     */
+    public void hideSuggestionsByEscapeKey() {
+        getSuggestInput().sendKeys(Keys.ESCAPE);
+    }
 }

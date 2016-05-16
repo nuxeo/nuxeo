@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Thomas Roger
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -26,6 +27,7 @@ import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -95,7 +97,7 @@ public class PermissionsSubPage extends AbstractPage {
      */
     public PermissionsSubPage grantPermission(String permission, String userOrGroupName) {
 
-        newPermission.click();
+        waitUntilEnabledAndClick(newPermission);
 
         WebElement addPermissionH2 = findElementWithTimeout(By.xpath("//h2[text()='Add a Permission']"));
         WebElement popup = addPermissionH2.findElement(By.xpath(".."));
@@ -137,7 +139,7 @@ public class PermissionsSubPage extends AbstractPage {
      * @since 8.3
      */
     public PermissionsSubPage blockPermissions() {
-        blockPermissions.click();
+        waitUntilEnabledAndClick(blockPermissions);
         Locator.waitUntilElementPresent(By.xpath("//paper-button[@id='unblock']"));
         return asPage(PermissionsSubPage.class);
     }
@@ -146,7 +148,7 @@ public class PermissionsSubPage extends AbstractPage {
      * @since 8.3
      */
     public PermissionsSubPage unblockPermissions() {
-        unblockPermissions.click();
+        waitUntilEnabledAndClick(unblockPermissions);
         Locator.waitUntilElementPresent(By.xpath("//paper-button[@id='block']"));
         return asPage(PermissionsSubPage.class);
     }
@@ -187,8 +189,9 @@ public class PermissionsSubPage extends AbstractPage {
      */
     public boolean hasNewPermissionButton() {
         try {
-            return newPermission.isDisplayed();
-        } catch (NoSuchElementException e) {
+            waitUntilEnabled(newPermission);
+            return true;
+        } catch (NotFoundException e) {
             return false;
         }
     }

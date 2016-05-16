@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:glefevre@nuxeo.com">Gildas</a>
+ *     Yannis JULIENNE
  */
 package org.nuxeo.ftest.cap;
 
@@ -97,7 +98,7 @@ public class ITSuggestBoxTest extends AbstractTest {
         List<WebElement> listEntries = searchElement.typeAndGetResult("Tes");
         assertTrue(listEntries.size() > 0);
         searchElement.clearSuggestInput();
-        searchElement.clickSelect2Field();
+        searchElement.hideSuggestionsByEscapeKey();
         // Search for file01
         listEntries = searchElement.typeAndGetResult(FILE_01_NAME);
         assertTrue(listEntries.size() == 1);

@@ -168,4 +168,5 @@ public class WebFragmentImpl implements WebFragment {
     public void checkTextToBeNotPresent(String text) {
         assertFalse(element.getText().contains(text));
     }
+
 }

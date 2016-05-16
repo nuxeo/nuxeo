@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Benoit Delbosc
  *     Antoine Taillefer
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
@@ -51,7 +52,7 @@ public class UsersTabSubPage extends UsersGroupsBasePage {
     }
 
     public UserCreationFormPage getUserCreatePage() {
-        createNewUserLink.click();
+        waitUntilEnabledAndClick(createNewUserLink);
         return asPage(UserCreationFormPage.class);
     }
 

@@ -69,13 +69,13 @@ public class ITCollectionsTest extends AbstractTest {
 
     private static final String CAN_COLLECT_RIGHT = "Can Collect";
 
-    public static final String MY_COLLECTIONS_FR_LABEL = "Mes Collections";
+    public static final String MY_COLLECTIONS_FR_LABEL = "Mes collections";
 
-    public static final String MY_COLLECTIONS_EN_LABEL = "My Collections";
+    public static final String MY_COLLECTIONS_EN_LABEL = "My collections";
 
-    public static final String MY_FAVORITES_FR_LABEL = "Mes Favoris";
+    public static final String MY_FAVORITES_FR_LABEL = "Mes favoris";
 
-    public static final String MY_FAVORITES_EN_LABEL = "My Favorites";
+    public static final String MY_FAVORITES_EN_LABEL = "My favorites";
 
     @Before
     public void before() {

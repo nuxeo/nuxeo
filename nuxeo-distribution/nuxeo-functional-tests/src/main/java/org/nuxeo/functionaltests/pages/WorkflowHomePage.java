@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Mariana Cedica
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages;
 
@@ -63,11 +64,12 @@ public class WorkflowHomePage extends AbstractPage {
     }
 
     public void processFirstTask() {
-        userTasksPanel.findElement(By.xpath("//input[@type='submit' and @value='Process']")).click();
+        WebElement processButton = userTasksPanel.findElement(By.xpath("//input[@type='submit' and @value='Process']"));
+        waitUntilEnabledAndClick(processButton);
     }
 
     public SummaryTabSubPage redirectToTask(String taskTitle) {
-        driver.findElement(By.linkText(taskTitle)).click();
+        findElementWaitUntilEnabledAndClick(By.linkText(taskTitle));
         return new SummaryTabSubPage(driver);
     }
 
