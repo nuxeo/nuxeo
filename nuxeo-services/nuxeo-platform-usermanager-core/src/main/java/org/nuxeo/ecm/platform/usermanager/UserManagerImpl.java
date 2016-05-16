@@ -567,21 +567,26 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     @Override
     public NuxeoPrincipal getPrincipal(String username) throws ClientException {
-        if (!useCache()) {
-            return getPrincipal(username, null);
-        }
-        try {
-            if (!principalCache.hasEntry(username)) {
-                principalCache.put(username, getPrincipal(username, null));
+        if (useCache()) {
+            try {
+                return getPrincipalUsingCache(username);
+            } catch (IOException e) {
+                throw new ClientException(e);
             }
-            NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl) principalCache.get(username);
-            if (principal == null) {
-                return null;
-            }
-            return new NuxeoPrincipalImpl(principal); // should not return cached principal
-        } catch (IOException e) {
-            throw new ClientException(e);
         }
+        return getPrincipal(username, null);
+    }
+
+    protected NuxeoPrincipal getPrincipalUsingCache(String username) throws IOException {
+        NuxeoPrincipal ret = (NuxeoPrincipal) principalCache.get(username);
+        if (ret == null) {
+            ret = getPrincipal(username, null);
+            if (ret == null) {
+                return ret;
+            }
+            principalCache.put(username, ret);
+        }
+        return new NuxeoPrincipalImpl((NuxeoPrincipalImpl) ret); // should not return cached principal
     }
 
     @Override
