@@ -8,7 +8,7 @@
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:f="http://java.sun.com/jsf/core">
- 
+
  <script>
   jQuery(document).ready(function() {
 	  changeUnlimited();
@@ -29,12 +29,12 @@
 </script>
 
  <a4j:queue name="quotaActivateQueue"/>
- <a4j:region id="quotaActivateQueueReg" renderRegionOnly="true">
- 
+ <a4j:outputPanel id="quotaActivateQueueReg">
+
  <h:form>
   <a4j:poll id="checkQuotaStatus" interval="5000"
    enabled="true"
-   render="setQuotaOnUserWorkspacesPanel, checkQuotaStatus, quotaActivateQueueReg" />
+   render="setQuotaOnUserWorkspacesPanel checkQuotaStatus quotaActivateQueueReg" />
  </h:form>
 
   <a4j:outputPanel id="setQuotaOnUserWorkspacesPanel"
@@ -47,9 +47,9 @@
      <tr>
       <td class="labelColumn">
        <h:outputText value="#{messages['adm.quota.set.personalworkspace']}"/>
-     </td>	
+     </td>
     <td>
-     <h:selectOneRadio id="unlimitedChk" value="#{quotaStatsActions.activateQuotaOnUsersWorkspaces}" 
+     <h:selectOneRadio id="unlimitedChk" value="#{quotaStatsActions.activateQuotaOnUsersWorkspaces}"
      onchange="changeUnlimited()">
      <f:selectItem
       itemLabel="#{messages['label.forum.thread.moderated.yes']}"
@@ -68,17 +68,17 @@
   </nxu:set>
 
   <nxh:commandButton action="#{quotaStatsActions.saveQuotaActivatedOnUsersWorkspaces}"
-    id="activate_quota_on_userworkspaces" 
-    value="#{messages['command.save']}" render="setQuotaOnUserWorkspacesPanel,checkQuotaStatus"
+    id="activate_quota_on_userworkspaces"
+    value="#{messages['command.save']}" render="setQuotaOnUserWorkspacesPanel checkQuotaStatus"
     styleClass="button" />
 
   <h:message styleClass="errorMessage"
       for="unlimitedChk" id="unlimitedChk_message" />
-   
+
   </h:form>
  <h:messages/>
  </a4j:outputPanel>
  <h:outputText value="#{messages['status.quota.initialComputationInProgress']}" rendered="#{quotaStatsActions.workQueuesInProgess()}" class="processMessage running"/>
-</a4j:region>
+</a4j:outputPanel>
 
 </div>
