@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Benoit Delbosc
  *     Nelson Silva
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.admincenter.usermanagement;
 
@@ -50,7 +51,7 @@ public class UsersGroupsBasePage extends AdminCenterBasePage {
         assertNotNull(selectedTab);
 
         if (!selectedTab.equals(tabLink)) {
-            tabLink.click();
+            waitUntilEnabledAndClick(tabLink);
         }
     }
 
@@ -63,7 +64,7 @@ public class UsersGroupsBasePage extends AdminCenterBasePage {
      */
     public UsersTabSubPage getUsersTab(boolean force) {
         if (force) {
-            usersTabLink.click();
+            waitUntilEnabledAndClick(usersTabLink);
         } else {
             clickOnLinkIfNotSelected(usersTabLink);
         }
@@ -79,7 +80,7 @@ public class UsersGroupsBasePage extends AdminCenterBasePage {
      */
     public GroupsTabSubPage getGroupsTab(boolean force) {
         if (force) {
-            groupsTabLink.click();
+            waitUntilEnabledAndClick(groupsTabLink);
         } else {
             clickOnLinkIfNotSelected(groupsTabLink);
         }

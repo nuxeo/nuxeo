@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
  *     Sun Seng David TAN
  *     Florent Guillaume
  *     Antoine Taillefer
+ *     Yannis JULIENNE
  */
 package org.nuxeo.ftest.cap;
 
@@ -91,7 +92,7 @@ public class ITFileUploadTest extends AbstractTest {
         WebElement deleteChoice = Locator.findElementWithTimeout(
                 By.id("document_edit:nxl_file:nxw_file:nxw_file_file:choicedelete"));
         assertNotNull(deleteChoice);
-        deleteChoice.click();
+        Locator.waitUntilEnabledAndClick(deleteChoice);
         fileDocumentBasePage = editPage.save().asPage(FileDocumentBasePage.class);
         sumContent = Locator.findElementWithTimeout(By.xpath("//div[@class=\"content_block\"]"));
         assertNotNull(sumContent);

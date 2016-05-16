@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume Renard</a>
+ *     Yannis JULIENNE
  */
 package org.nuxeo.ftest.cap;
 
@@ -25,6 +26,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
@@ -112,9 +114,7 @@ public class ITSelect2Test extends AbstractTest {
         assertEquals(savedSubjects.size(), SUBJECTS.length);
 
         // Remove the second subject
-        WebElement deleteSecondSubjectAction = driver.findElement(
-                By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']/ul/li[2]/a"));
-        deleteSecondSubjectAction.click();
+        Locator.findElementWaitUntilEnabledAndClick(By.xpath("//*[@id='s2id_document_edit:nxl_dublincore:nxw_subjects_1_select2']/ul/li[2]/a"));
 
         // We need to do this because select2 take a little while to write in
         // the form that an entry has been deleted

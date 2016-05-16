@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Sun Seng David TAN <stan@nuxeo.com>
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.admincenter;
 
@@ -82,7 +83,7 @@ public class VocabulariesPage extends AdminCenterBasePage {
     public VocabulariesPage deleteEntry(final String entryId) {
         WebElement entryToBeDeleted = getDirectoryEntryRow(entryId);
         WebElement entryDeleteButton = entryToBeDeleted.findElement(By.xpath("td/input[@value='Delete']"));
-        entryDeleteButton.click();
+        waitUntilEnabledAndClick(entryDeleteButton);
         Alert confirmRemove = driver.switchTo().alert();
         confirmRemove.accept();
         Locator.waitForTextPresent(By.id("ambiance-notification"), "Vocabulary entry deleted");

@@ -74,7 +74,7 @@ public class UserHomePage extends AbstractPage {
     }
 
     public SummaryTabSubPage redirectToTask(String taskTitle) {
-        userTasks.findElement(By.linkText(taskTitle)).click();
+        waitUntilEnabledAndClick(userTasks.findElement(By.linkText(taskTitle)));
         return asPage(SummaryTabSubPage.class);
     }
 

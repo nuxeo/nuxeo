@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests;
 
@@ -26,11 +27,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidSelectorException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -84,7 +87,7 @@ public class Locator {
             final int waitUntilEnabledTimeout) throws NotFoundException {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         Function<WebDriver, WebElement> function = new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
@@ -110,8 +113,8 @@ public class Locator {
     public static List<WebElement> findElementsWithTimeout(final By by) throws NoSuchElementException {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
+                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
+                                NoSuchElementException.class);
         return wait.until(new Function<WebDriver, List<WebElement>>() {
             @Override
             public List<WebElement> apply(WebDriver driver) {
@@ -129,7 +132,7 @@ public class Locator {
      * @throws NotFoundException if the element is not found or not enabled
      */
     public static void findElementWaitUntilEnabledAndClick(By by) throws NotFoundException {
-        waitUntilElementEnabledAndClick(by, AbstractTest.LOAD_TIMEOUT_SECONDS * 1000,
+        findElementWaitUntilEnabledAndClick(by, AbstractTest.LOAD_TIMEOUT_SECONDS * 1000,
                 AbstractTest.AJAX_TIMEOUT_SECONDS * 1000);
     }
 
@@ -169,8 +172,8 @@ public class Locator {
     public static WebElement findElementWithTimeout(final By by, int timeout, final WebElement parentElement)
             throws NoSuchElementException {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(timeout,
-                TimeUnit.MILLISECONDS).pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                StaleElementReferenceException.class);
+                TimeUnit.MILLISECONDS).pollingEvery(AbstractTest.POLLING_FREQUENCY_MILLISECONDS,
+                        TimeUnit.MILLISECONDS).ignoring(StaleElementReferenceException.class);
         try {
             return wait.until(new Function<WebDriver, WebElement>() {
                 @Override
@@ -212,7 +215,7 @@ public class Locator {
     public static void waitForTextNotPresent(final WebElement element, final String text) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         wait.until((new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -233,7 +236,7 @@ public class Locator {
     public static void waitForTextPresent(By locator, String text) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         wait.until(ExpectedConditions.textToBePresentInElement(locator, text));
     }
 
@@ -245,7 +248,7 @@ public class Locator {
     public static void waitForTextPresent(final WebElement element, final String text) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         wait.until((new Function<WebDriver, Boolean>() {
             @Override
             public Boolean apply(WebDriver driver) {
@@ -267,7 +270,7 @@ public class Locator {
      * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
      * @throws NotFoundException if the element is not found or not enabled
      */
-    public static void waitUntilElementEnabledAndClick(final By by, final int findElementTimeout,
+    public static void findElementWaitUntilEnabledAndClick(final By by, final int findElementTimeout,
             final int waitUntilEnabledTimeout) throws NotFoundException {
 
         waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
@@ -275,9 +278,64 @@ public class Locator {
             public Boolean apply(WebDriver driver) {
                 // Find the element.
                 WebElement element = findElementAndWaitUntilEnabled(by, findElementTimeout, waitUntilEnabledTimeout);
+                // scroll to it
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(false);", element);
+                // click
+                try{
+                    element.click();
+                    return true;
+                }catch(WebDriverException e){
+                    if(e.getMessage().contains("Element is not clickable at point")){
+                        log.debug("Element is not clickable yet");
+                        return false;
+                    }
+                    throw e;
+                }
+            }
+        }, StaleElementReferenceException.class);
+    }
 
-                element.click();
-                return true;
+    /**
+     * Waits until the element is enabled, with a default timeout. Then clicks on the element.
+     *
+     * @param element the element
+     * @throws NotFoundException if the element is not found or not enabled
+     * @since 8.3
+     */
+    public static void waitUntilEnabledAndClick(final WebElement element)
+            throws NotFoundException {
+        waitUntilEnabledAndClick(element, AbstractTest.AJAX_TIMEOUT_SECONDS * 1000);
+    }
+
+    /**
+     * Waits until the element is enabled, with a {@code waitUntilEnabledTimeout}. Then clicks on the element.
+     *
+     * @param element the element
+     * @param waitUntilEnabledTimeout the wait until enabled timeout in milliseconds
+     * @throws NotFoundException if the element is not found or not enabled
+     * @since 8.3
+     */
+    public static void waitUntilEnabledAndClick(final WebElement element, final int waitUntilEnabledTimeout)
+            throws NotFoundException {
+
+        waitUntilGivenFunctionIgnoring(new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                // Wait until enabled.
+                waitUntilEnabled(element, waitUntilEnabledTimeout);
+                // scroll to it
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(false);", element);
+                // click
+                try{
+                    element.click();
+                    return true;
+                }catch(WebDriverException e){
+                    if(e.getMessage().contains("Element is not clickable at point")){
+                        log.debug("Element is not clickable yet");
+                        return false;
+                    }
+                    throw e;
+                }
             }
         }, StaleElementReferenceException.class);
     }
@@ -312,7 +370,7 @@ public class Locator {
     public static void waitUntilElementNotPresent(final By locator) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         wait.until((new Function<WebDriver, By>() {
             @Override
             public By apply(WebDriver driver) {
@@ -335,8 +393,8 @@ public class Locator {
     public static void waitUntilElementPresent(final By locator) {
         Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
-                NoSuchElementException.class);
+                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
+                                NoSuchElementException.class);
         wait.until(new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
@@ -397,7 +455,7 @@ public class Locator {
             Function<WebDriver, Boolean> function, java.lang.Class<? extends K>... ignoredExceptions) {
         FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         if (ignoredExceptions != null) {
             if (ignoredExceptions.length == 1) {
                 wait.ignoring(ignoredExceptions[0]);
@@ -420,7 +478,7 @@ public class Locator {
             Function<WebDriver, Boolean> function, java.lang.Class<? extends K> ignoredException) {
         FluentWait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
                 AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
-                AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
+                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS);
         if (ignoredException != null) {
             wait.ignoring(ignoredException);
         }

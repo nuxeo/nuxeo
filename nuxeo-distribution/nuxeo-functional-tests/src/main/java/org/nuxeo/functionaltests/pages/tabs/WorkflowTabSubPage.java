@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Mariana Cedica
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -86,7 +87,7 @@ public class WorkflowTabSubPage extends DocumentBasePage {
     }
 
     public void startWorkflow() {
-        findElementAndWaitUntilEnabled(By.xpath("//input[@value='Start the Review']")).click();
+        findElementWaitUntilEnabledAndClick(By.xpath("//input[@value='Start the Review']"));
     }
 
     /**
@@ -94,11 +95,11 @@ public class WorkflowTabSubPage extends DocumentBasePage {
      */
     public void endTask(String taskName, String comment) {
         findElementAndWaitUntilEnabled(By.tagName("textarea")).sendKeys(comment);
-        findElementAndWaitUntilEnabled(By.xpath(String.format("//input[@value='%s']", taskName))).click();
+        findElementWaitUntilEnabledAndClick(By.xpath(String.format("//input[@value='%s']", taskName)));
     }
 
     public void endTask(String taskName) {
-        findElementAndWaitUntilEnabled(By.xpath(String.format("//input[@value='%s']", taskName))).click();
+        findElementWaitUntilEnabledAndClick(By.xpath(String.format("//input[@value='%s']", taskName)));
     }
 
     /**
