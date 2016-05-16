@@ -559,17 +559,22 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @Override
     public NuxeoPrincipal getPrincipal(String username) {
-        if (!useCache()) {
-            return getPrincipal(username, null);
+        if (useCache()) {
+            return getPrincipalUsingCache(username);
         }
-        if (!principalCache.hasEntry(username)) {
-            principalCache.put(username, getPrincipal(username, null));
+        return getPrincipal(username, null);
+    }
+
+    protected NuxeoPrincipal getPrincipalUsingCache(String username) {
+        NuxeoPrincipal ret = (NuxeoPrincipal) principalCache.get(username);
+        if (ret == null) {
+            ret = getPrincipal(username, null);
+            if (ret == null) {
+                return ret;
+            }
+            principalCache.put(username, ret);
         }
-        NuxeoPrincipalImpl principal = (NuxeoPrincipalImpl) principalCache.get(username);
-        if (principal == null) {
-            return null;
-        }
-        return principal.cloneTransferable(); // should not return cached principal
+        return ((NuxeoPrincipalImpl) ret).cloneTransferable(); // should not return cached principal
     }
 
     @Override
