@@ -31,7 +31,6 @@ public class TestDeltaLong {
     @Test
     public void testDeltaLong() {
         DeltaLong dl = DeltaLong.valueOf(Long.valueOf(100), 123);
-        assertTrue(dl.isBasePresent());
         assertEquals(Long.valueOf(100), dl.getBase());
         assertEquals(123, dl.getDelta());
         assertEquals(223, dl.longValue());
@@ -46,7 +45,6 @@ public class TestDeltaLong {
     @Test
     public void testDeltaLongNull() {
         DeltaLong dl = DeltaLong.valueOf(null, 123);
-        assertFalse(dl.isBasePresent());
         assertNull(dl.getBase());
         assertEquals(123, dl.getDelta());
         assertEquals(123, dl.longValue());

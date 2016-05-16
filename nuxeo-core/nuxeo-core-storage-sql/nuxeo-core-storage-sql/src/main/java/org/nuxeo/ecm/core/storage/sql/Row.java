@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.nuxeo.ecm.core.api.model.Delta;
 
@@ -135,7 +136,7 @@ public final class Row extends RowId implements Serializable, Cloneable {
     }
 
     /**
-     * Puts a key/value.
+     * Puts a key/value. Does not deal with deltas.
      *
      * @param key the key
      * @param value the value
@@ -148,20 +149,45 @@ public final class Row extends RowId implements Serializable, Cloneable {
         // linear search but the array is small
         for (int i = 0; i < size; i++) {
             if (key.equals(keys[i])) {
-                Serializable oldValue = values[i];
-                if (oldValue instanceof Delta) {
-                    Delta oldDelta = (Delta) oldValue;
-                    if (value instanceof Delta) {
-                        if (value != oldDelta) {
-                            // add a delta to another delta
-                            value = oldDelta.add((Delta) value);
-                        }
-                    } else if (oldDelta.getFullValue().equals(value)) {
-                        // don't overwrite a delta with the full value
-                        // that actually comes from it
-                        return;
+                values[i] = value;
+                return;
+            }
+        }
+        ensureCapacity(size + 1);
+        keys[size] = key == null ? null: key.intern();
+        values[size++] = value;
+    }
+
+    /**
+     * Puts a key/value where the current or new value may be a delta. To resolve a delta, the oldvalues (in-database
+     * state) must be consulted.
+     *
+     * @param key the key
+     * @param value the value
+     * @param oldvalues the old values
+     */
+    public void put(String key, Serializable value, Serializable[] oldvalues) {
+        if (key.equals(Model.MAIN_KEY)) {
+            id = value;
+            return;
+        }
+        // linear search but the array is small
+        for (int i = 0; i < size; i++) {
+            if (key.equals(keys[i])) {
+                if (value instanceof Delta) {
+                    // the new value is a delta
+                    Delta delta = (Delta) value;
+                    Serializable deltaBase = delta.getBase();
+                    Serializable oldValue = oldvalues[i];
+                    if (!Objects.equals(oldValue, deltaBase)) {
+                        // delta's base is not the in-database value
+                        // -> set a new value, don't use a delta update
+                        value = delta.getFullValue();
                     }
+                    // else delta's base is the in-database value
+                    // because base is consistent with old value, assume the delta is already properly computed
                 }
+                // else use the new non-delta value
                 values[i] = value;
                 return;
             }

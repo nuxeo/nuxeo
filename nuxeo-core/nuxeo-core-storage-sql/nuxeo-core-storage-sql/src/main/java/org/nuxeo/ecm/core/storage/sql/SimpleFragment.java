@@ -89,8 +89,8 @@ public final class SimpleFragment extends Fragment {
      */
     public void put(String key, Serializable value) {
         accessed(); // maybe refetch other values
-        row.put(key, value);
-        // resize olddata to follow row if needed
+        row.put(key, value, oldvalues); // pass oldvalues to be able to deal with deltas
+        // resize oldvalues to follow row if needed
         if (oldvalues.length < row.values.length) {
             Serializable[] tmp = oldvalues;
             oldvalues = new Serializable[row.values.length];

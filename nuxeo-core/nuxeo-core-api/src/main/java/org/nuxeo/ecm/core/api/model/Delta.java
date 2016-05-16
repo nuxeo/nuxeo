@@ -44,12 +44,12 @@ public abstract class Delta extends Number {
     public abstract Number getDeltaValue();
 
     /**
-     * Checks if the base value is not {@code null}.
+     * Gets the base value.
      *
-     * @return {@code true} if the base value is not {@code null}
+     * @return the base value
      * @since 8.3
      */
-    public abstract boolean isBasePresent();
+    public abstract Number getBase();
 
     /**
      * Adds this delta to another delta.
@@ -64,9 +64,7 @@ public abstract class Delta extends Number {
      *
      * @param other the number
      * @return the resulting number
-     * @deprecated since 8.3, unused, will be removed
      */
-    @Deprecated
     public abstract Number add(Number other);
 
     // make these two abstract to force implementation

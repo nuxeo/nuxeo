@@ -44,11 +44,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PropertyException;
-import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
-import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
@@ -654,9 +652,6 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             if (type.isSimpleType()) {
                 // simple property
                 Object value = state.getSingle(name);
-                if (value instanceof Delta) {
-                    value = ((Delta) value).getFullValue();
-                }
                 property.init((Serializable) value);
             } else if (type.isComplexType()) {
                 // complex property
@@ -792,10 +787,6 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 // simple property
                 Serializable value = property.getValueForWrite();
                 state.setSingle(name, value);
-                if (value instanceof Delta) {
-                    value = ((Delta) value).getFullValue();
-                    ((ScalarProperty) property).internalSetValue(value);
-                }
             } else if (type.isComplexType()) {
                 // complex property
                 T childState = getChildForWrite(state, name, type);

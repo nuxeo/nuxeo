@@ -35,7 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.model.Delta;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -246,7 +245,7 @@ public class State implements StateAccessor, Serializable {
     /**
      * Sets a key/value.
      */
-    public void putInternal(String key, Serializable value) {
+    public void put(String key, Serializable value) {
         if (value == null) {
             // if we're using a ConcurrentHashMap
             // then null values are forbidden
@@ -291,27 +290,6 @@ public class State implements StateAccessor, Serializable {
                 }
             }
         }
-    }
-
-    /**
-     * Sets a key/value, dealing with deltas.
-     */
-    public void put(String key, Serializable value) {
-        Serializable oldValue = get(key);
-        if (oldValue instanceof Delta) {
-            Delta oldDelta = (Delta) oldValue;
-            if (value instanceof Delta) {
-                if (value != oldDelta) {
-                    // add a delta to another delta
-                    value = oldDelta.add((Delta) value);
-                }
-            } else if (oldDelta.getFullValue().equals(value)) {
-                // don't overwrite a delta with the full value
-                // that actually comes from it
-                return;
-            }
-        }
-        putInternal(key, value);
     }
 
     /**

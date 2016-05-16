@@ -103,7 +103,6 @@ public class DeltaLong extends Delta {
     }
 
     @Override
-    @Deprecated
     public Number add(Number other) {
         if (!(other instanceof Long)) {
             throw new IllegalArgumentException("Cannot add " + getClass().getSimpleName() + " and "
@@ -112,7 +111,7 @@ public class DeltaLong extends Delta {
         return Long.valueOf(((Long) other).longValue() + delta);
     }
 
-    // @Override
+    @Override
     public Long getBase() {
         return base;
     }
@@ -120,11 +119,6 @@ public class DeltaLong extends Delta {
     // @Override
     public long getDelta() {
         return delta;
-    }
-
-    @Override
-    public boolean isBasePresent() {
-        return base != null;
     }
 
     @Override

@@ -1006,19 +1006,18 @@ public class TestSQLRepositoryProperties {
     @Test
     public void testPropertyDelta() throws Exception {
         int base = 100;
-        int fakebase = 1000;
         int delta = 123;
         doc = session.createDocumentModel("/", "doc", "MyDocType");
         doc.setPropertyValue("my:integer", Long.valueOf(base));
         doc = session.createDocument(doc);
         session.save();
 
-        doc.setPropertyValue("my:integer", DeltaLong.valueOf(Long.valueOf(fakebase), delta));
+        doc.setPropertyValue("my:integer", DeltaLong.valueOf(Long.valueOf(base), delta));
 
         // re-reading the property before saveDocument() returns the Delta
         Serializable value = doc.getPropertyValue("my:integer");
         assertTrue(value.getClass().getName(), value instanceof DeltaLong);
-        assertEquals(fakebase + delta, ((DeltaLong) value).longValue());
+        assertEquals(DeltaLong.valueOf(Long.valueOf(base), delta), value);
 
         doc = session.saveDocument(doc);
 
@@ -1027,17 +1026,24 @@ public class TestSQLRepositoryProperties {
         doc.setPropertyValue("my:string", "foo");
         doc = session.saveDocument(doc);
 
-        // after saveDocument() we now read a Long
+        // after saveDocument() we still have a DeltaLong which is needed to keep base context
         value = doc.getPropertyValue("my:integer");
-        assertTrue(value.getClass().getName(), value instanceof Long);
-        assertEquals(fakebase + delta, ((Long) value).longValue());
+        assertTrue(value.getClass().getName(), value instanceof DeltaLong);
+        assertEquals(DeltaLong.valueOf(Long.valueOf(base), delta), value);
+
+        // even if we refetch it's still a DeltaLong
+        doc = session.getDocument(new IdRef(doc.getId()));
+        value = doc.getPropertyValue("my:integer");
+        assertTrue(value.getClass().getName(), value instanceof DeltaLong);
+        assertEquals(DeltaLong.valueOf(Long.valueOf(base), delta), value);
 
         session.save();
+        doc = session.getDocument(new IdRef(doc.getId()));
 
-        // after save() but before refetch still a Long
+        // after save() and refetch we now have a Long
         value = doc.getPropertyValue("my:integer");
         assertTrue(value.getClass().getName(), value instanceof Long);
-        assertEquals(fakebase + delta, ((Long) value).longValue());
+        assertEquals(Long.valueOf(base + delta), value);
 
         // write another property in the same schema
         // to make sure the delta is not applied twice
@@ -1051,22 +1057,24 @@ public class TestSQLRepositoryProperties {
         doc = session.getDocument(new IdRef(doc.getId()));
         value = doc.getPropertyValue("my:integer");
         assertTrue(value.getClass().getName(), value instanceof Long);
-        assertEquals(base + delta, ((Long) value).longValue());
+        assertEquals(Long.valueOf(base + delta), value);
     }
 
     @Test
     public void testPropertyDeltaTwice() throws Exception {
         int base = 100;
-        int fakebase = 1000;
         int delta = 123;
         doc = session.createDocumentModel("/", "doc", "MyDocType");
-        doc.setPropertyValue("my:integer", Long.valueOf(base));
+        Long v1 = Long.valueOf(base);
+        doc.setPropertyValue("my:integer", v1);
         doc = session.createDocument(doc);
         session.save();
 
-        doc.setPropertyValue("my:integer", DeltaLong.valueOf(Long.valueOf(fakebase), delta));
+        DeltaLong v2 = DeltaLong.valueOf(v1, delta);
+        doc.setPropertyValue("my:integer", v2);
         doc = session.saveDocument(doc);
-        doc.setPropertyValue("my:integer", DeltaLong.valueOf(Long.valueOf(fakebase), delta));
+        DeltaLong v3 = DeltaLong.valueOf(v2, delta);
+        doc.setPropertyValue("my:integer", v3);
         doc = session.saveDocument(doc);
 
         session.save();
@@ -1077,7 +1085,30 @@ public class TestSQLRepositoryProperties {
         doc = session.getDocument(new IdRef(doc.getId()));
         Serializable value = doc.getPropertyValue("my:integer");
         assertTrue(value.getClass().getName(), value instanceof Long);
-        assertEquals(base + delta * 2, ((Long) value).longValue());
+        assertEquals(Long.valueOf(base + delta * 2), value);
+    }
+
+    @Test
+    public void testPropertyDeltaWithoutSave() throws Exception {
+        doc = session.createDocumentModel("/", "doc", "MyDocType");
+        doc.setPropertyValue("my:integer", Long.valueOf(100));
+        doc = session.createDocument(doc);
+        session.save();
+
+        // reset to 0 then apply increment without intervening database save
+        doc.setPropertyValue("my:integer", Long.valueOf(0));
+        doc = session.saveDocument(doc);
+        doc.setPropertyValue("my:integer", DeltaLong.valueOf(Long.valueOf(0), 123));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        reopenSession();
+
+        // refetch
+        doc = session.getDocument(new IdRef(doc.getId()));
+        Serializable value = doc.getPropertyValue("my:integer");
+        assertTrue(value.getClass().getName(), value instanceof Long);
+        assertEquals(Long.valueOf(123), value);
     }
 
     @Test
@@ -1114,7 +1145,6 @@ public class TestSQLRepositoryProperties {
     public void testPropertyDeltaBatching() throws Exception {
         int n = 10;
         int base = 100;
-        int fakebase = 1000;
         for (int i = 0; i < n; i++) {
             DocumentModel doc = session.createDocumentModel("/", "doc" + i, "MyDocType");
             doc.setPropertyValue("my:integer", Long.valueOf(base));
@@ -1133,7 +1163,7 @@ public class TestSQLRepositoryProperties {
                 // delta whose base is not the actual base, to check
                 // that we really do an increment instead of setting
                 // the full value
-                value = DeltaLong.valueOf(Long.valueOf(fakebase), i);
+                value = DeltaLong.valueOf(Long.valueOf(base), i);
             }
             doc.setPropertyValue("my:integer", value);
             if (i % 2 == 0) {
