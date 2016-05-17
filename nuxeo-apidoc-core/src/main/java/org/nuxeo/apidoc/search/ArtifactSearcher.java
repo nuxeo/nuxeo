@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface ArtifactSearcher {
 
-    List<NuxeoArtifact> searchArtifact(CoreSession session, String fulltext);
+    List<NuxeoArtifact> searchArtifact(CoreSession session, String distribId, String fulltext);
 
     List<DocumentationItem> searchDocumentation(CoreSession session, String distribId, String fulltext,
             String targetType);

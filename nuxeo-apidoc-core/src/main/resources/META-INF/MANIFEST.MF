@@ -15,4 +15,5 @@ Nuxeo-Component: OSGI-INF/schema-contrib.xml,
  OSGI-INF/directories-contrib.xml,
  OSGI-INF/directory-ui-contrib.xml,
  OSGI-INF/layout-contrib.xml,
- OSGI-INF/listener-contrib.xml
+ OSGI-INF/listener-contrib.xml,
+ OSGI-INF/worker-contrib.xml

@@ -13,5 +13,6 @@
     <schema name="nxoperation" src="schemas/nxoperation.xsd" prefix="nxop"/>
 
     <schema name="nxdocumentation" src="schemas/nxdocumentation.xsd" prefix="nxdoc"/>
+    <schema name="apidoccommon" src="schemas/apidoccommon.xsd" prefix="adc"/>
   </extension>
 </component>

@@ -18,9 +18,11 @@
  */
 package org.nuxeo.apidoc.test;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -29,16 +31,21 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -59,6 +66,12 @@ public class TestSearcher {
     @Inject
     protected SnapshotManager snapshotManager;
 
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected WorkManager workManager;
+
     @Test
     public void testSearch() throws Exception {
         // DistributionSnapshot runtimeSnapshot =
@@ -67,14 +80,33 @@ public class TestSearcher {
         assertNotNull(persistent);
         session.save();
 
-        List<NuxeoArtifact> artifacts = searcher.searchArtifact(session, "event");
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        eventService.waitForAsyncCompletion();
+        workManager.awaitCompletion(20, TimeUnit.SECONDS);
+
+        List<String> componentIds = persistent.getComponentIds();
+        assertNotEquals(0, componentIds.size());
+
+        // Is fulltext ready
+        DocumentModel dist = ((RepositoryDistributionSnapshot) persistent).getDoc();
+        session.query(String.format("select * from Document where ecm:path STARTSWITH '%s'", dist.getPathAsString()))
+               .forEach(doc -> log.info(doc.getId() + " - " + doc.getPathAsString()));
+        String query = String.format("select * from Document where ecm:fulltext = 'a*' and ecm:path STARTSWITH '%s'",
+                dist.getPathAsString());
+        assertNotEquals(0, session.query(query));
+
+        List<NuxeoArtifact> artifacts = searcher.searchArtifact(session, persistent.getKey(), "related");
         log.info("Found " + artifacts.size() + " artifacts");
+        assertNotEquals(0, artifacts.size());
         for (NuxeoArtifact artifact : artifacts) {
             log.info(artifact.getId() + " -- " + artifact.getArtifactType());
         }
 
-        artifacts = searcher.filterArtifact(session, persistent.getKey(), "NXComponent", "event");
+        artifacts = searcher.filterArtifact(session, persistent.getKey(), "NXComponent", "related");
         log.info("Found " + artifacts.size() + " components");
+        assertNotEquals(0, artifacts.size());
         for (NuxeoArtifact artifact : artifacts) {
             log.info(artifact.getId() + " -- " + artifact.getArtifactType());
         }

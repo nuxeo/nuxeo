@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.apidoc.workmanager" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="extractXmlAttributes">
+      <maxThreads>1</maxThreads>
+      <category>extractXmlAttributes</category>
+    </queue>
+  </extension>
+
+</component>

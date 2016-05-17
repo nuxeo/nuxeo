@@ -19,7 +19,6 @@
 package org.nuxeo.apidoc.search;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -76,13 +75,13 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
     }
 
     @Override
-    public List<NuxeoArtifact> searchArtifact(CoreSession session, String fulltext) {
-        List<NuxeoArtifact> result = new ArrayList<NuxeoArtifact>();
-        StrBuilder q = new StrBuilder("SELECT * FROM Document WHERE " + NXQL.ECM_PRIMARYTYPE + " IN ('");
-        q.appendWithSeparators(Arrays.asList(BundleGroup.TYPE_NAME, BundleInfo.TYPE_NAME, ComponentInfo.TYPE_NAME,
-                ExtensionPointInfo.TYPE_NAME, ExtensionInfo.TYPE_NAME, DistributionSnapshot.TYPE_NAME,
-                ServiceInfo.TYPE_NAME), "', '");
-        q.append("')");
+    public List<NuxeoArtifact> searchArtifact(CoreSession session, String distribId, String fulltext) {
+        List<NuxeoArtifact> result = new ArrayList<>();
+
+        DistributionSnapshot snap = Framework.getLocalService(SnapshotManager.class).getSnapshot(distribId, session);
+        DocumentModel dist = ((RepositoryDistributionSnapshot) snap).getDoc();
+        StrBuilder q = new StrBuilder("SELECT * FROM Document WHERE ");
+        q.append("ecm:path STARTSWITH '").append(dist.getPathAsString()).append("'");
         String query = q.toString();
         if (fulltext != null) {
             query += " AND " + NXQL.ECM_FULLTEXT + " = " + NXQL.escapeString(fulltext);
@@ -119,12 +118,12 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
 
     @Override
     public List<NuxeoArtifact> filterArtifact(CoreSession session, String distribId, String type, String fulltext) {
-        List<NuxeoArtifact> result = new ArrayList<NuxeoArtifact>();
+        List<NuxeoArtifact> result = new ArrayList<>();
 
-        List<NuxeoArtifact> matchingArtifacts = searchArtifact(session, fulltext);
+        List<NuxeoArtifact> matchingArtifacts = searchArtifact(session, distribId, fulltext);
         List<DocumentationItem> matchingDocumentationItems = searchDocumentation(session, distribId, fulltext, null);
 
-        Map<String, ArtifactWithWeight> sortMap = new HashMap<String, ArtifactWithWeight>();
+        Map<String, ArtifactWithWeight> sortMap = new HashMap<>();
 
         for (NuxeoArtifact matchingArtifact : matchingArtifacts) {
             NuxeoArtifact resultArtifact = resolveInTree(session, distribId, matchingArtifact, type);

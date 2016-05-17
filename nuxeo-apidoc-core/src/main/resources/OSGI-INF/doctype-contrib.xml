@@ -11,7 +11,7 @@
 
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Folderish"/>
+      <facet name="Folderish" />
     </doctype>
 
 
@@ -23,7 +23,7 @@
 
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Folderish"/>
+      <facet name="Folderish" />
     </doctype>
 
 
@@ -34,7 +34,7 @@
       <schema name="nxbundle" />
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Folderish"/>
+      <facet name="Folderish" />
     </doctype>
 
     <doctype name="NXComponent" extends="Folder">
@@ -44,18 +44,19 @@
       <schema name="nxcomponent" />
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Folderish"/>
+      <facet name="Folderish" />
     </doctype>
 
     <doctype name="NXExtensionPoint" extends="Folder">
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="file" />
-    <schema name="nxextensionpoint" />
+      <schema name="nxextensionpoint" />
+      <schema name="apidoccommon" />
 
       <facet name="Commentable" />
       <facet name="Versionable" />
-      <facet name="Folderish"/>
+      <facet name="Folderish" />
     </doctype>
 
     <doctype name="NXContribution" extends="Document">
@@ -63,6 +64,7 @@
       <schema name="dublincore" />
       <schema name="file" />
       <schema name="nxcontribution" />
+      <schema name="apidoccommon" />
 
       <facet name="Commentable" />
       <facet name="Versionable" />
