@@ -107,9 +107,9 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
             // RepositoryService failed to start, no need to go further
             return;
         }
-        boolean started = TransactionHelper.isTransactionActive();
+        boolean txWasStartedOutsideComponent = TransactionHelper.isTransactionActiveOrMarkedRollback();
 
-        if (started || TransactionHelper.startTransaction()) {
+        if (txWasStartedOutsideComponent || TransactionHelper.startTransaction()) {
             boolean completedAbruptly = true;
             try {
                 doApplicationStarted();
@@ -118,7 +118,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
                 if (completedAbruptly) {
                     TransactionHelper.setTransactionRollbackOnly();
                 }
-                if (started) {
+                if (!txWasStartedOutsideComponent) {
                     TransactionHelper.commitOrRollbackTransaction();
                 }
             }
