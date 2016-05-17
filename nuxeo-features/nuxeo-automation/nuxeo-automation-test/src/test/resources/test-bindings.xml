@@ -109,6 +109,8 @@
             class="org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest"/>
     <operation
             class="org.nuxeo.ecm.automation.server.test.operations.ContextTraceOperation"/>
+    <operation
+            class="org.nuxeo.ecm.automation.server.test.operations.ContextInjectionOperation"/>
   </extension>
 
 </component>

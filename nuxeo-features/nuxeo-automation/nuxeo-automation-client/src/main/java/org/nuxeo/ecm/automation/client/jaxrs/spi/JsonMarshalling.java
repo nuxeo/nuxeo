@@ -364,6 +364,8 @@ public class JsonMarshalling {
             } else {
                 jg.writeObject(obj);
             }
+        } else {
+            jg.writeNull();
         }
     }
 
