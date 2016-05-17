@@ -14,9 +14,9 @@
     <delete failonerror="false" dir="${nxr}" />
     <mkdir dir="${nxr}" />
     <copy todir="${nxr}/bundles" overwrite="true">
-      <artifact:set>
+      <artifact:set excludeRoots="true">
         <includes>
-          <artifact groupId="org.nuxeo*" scope="!test" />
+          <artifact groupId="org.nuxeo*" scope="" />
         </includes>
         <excludes>
           <artifact groupId="org.nuxeo.lib*" />
@@ -27,8 +27,8 @@
     <copy todir="${nxr}/lib" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="!org.nuxeo*" scope="!test" />
-          <artifact groupId="org.nuxeo.lib*" scope="!test" />
+          <artifact groupId="!org.nuxeo*" scope="" />
+          <artifact groupId="org.nuxeo.lib*" scope="" />
         </includes>
       </artifact:set>
     </copy>

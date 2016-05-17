@@ -196,9 +196,9 @@ install nuxeo-dam</echo>
   <target name="reorganize-libs">
     <!-- Add Tomcat specific requirements -->
     <copy todir="${distribution.dir}/nxserver/bundles" overwrite="true">
-      <artifact:set>
+      <artifact:set excludeRoots="true">
         <includes>
-          <artifact groupId="org.nuxeo*" />
+          <artifact groupId="org.nuxeo*" scope="" />
         </includes>
         <excludes>
           <artifact groupId="org.nuxeo.lib*" />
@@ -208,8 +208,8 @@ install nuxeo-dam</echo>
     <copy todir="${distribution.dir}/nxserver/lib" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="!org.nuxeo*" scope="!test" />
-          <artifact groupId="org.nuxeo.lib*" scope="!test" />
+          <artifact groupId="!org.nuxeo*" scope="" />
+          <artifact groupId="org.nuxeo.lib*" scope="" />
         </includes>
       </artifact:set>
     </copy>
