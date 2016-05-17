@@ -99,7 +99,9 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
     @Override
     public void applicationStarted(ComponentContext context) {
-        if (TransactionHelper.startTransaction()) {
+        boolean txWasStartedOutsideComponent = TransactionHelper.isTransactionActiveOrMarkedRollback();
+
+        if (txWasStartedOutsideComponent || TransactionHelper.startTransaction()) {
             boolean completedAbruptly = true;
             try {
                 doApplicationStarted();
@@ -108,7 +110,9 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
                 if (completedAbruptly) {
                     TransactionHelper.setTransactionRollbackOnly();
                 }
-                TransactionHelper.commitOrRollbackTransaction();
+                if (!txWasStartedOutsideComponent) {
+                    TransactionHelper.commitOrRollbackTransaction();
+                }
             }
         } else {
             doApplicationStarted();
