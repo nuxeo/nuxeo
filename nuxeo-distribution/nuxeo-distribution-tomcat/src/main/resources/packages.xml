@@ -1,7 +1,7 @@
 <packages>
   <packageDefinitions baseUrl="http://cdn.nuxeo.com/nuxeo-8.3-SNAPSHOT/mp/">
-    <package id="nuxeo-cap" label="Content Application Platform (CAP)" color="#635959" textcolor="#FFF"
-      shortlabel="CAP" virtual="true" desc="Content Application Platform" />
+    <package id="nuxeo-server" label="Server" color="#635959" textcolor="#FFF"
+      shortlabel="SERVER" virtual="true" desc="Server" />
     <package id="nuxeo-dam" label="Digital Asset Management (DAM)" color="#ffeb6d" textcolor="#333" shortlabel="DAM"
       desc="Digital Asset Management" />
     <package id="nuxeo-drive" label="Drive" color="#5AC456" textcolor="#FFF" shortlabel="DRIVE" desc="Drive" />
@@ -22,7 +22,7 @@
   </packageDefinitions>
   <install>
     <packageOptions>
-      <package ref="nuxeo-cap" exclusive="false">
+      <package ref="nuxeo-server" exclusive="false">
         <package ref="nuxeo-dam" exclusive="false" />
         <package ref="nuxeo-drive" exclusive="false" />
         <package ref="nuxeo-diff" exclusive="false" />
@@ -36,6 +36,6 @@
     </packageOptions>
   </install>
   <presets>
-    <preset id="nuxeo-cap-preset" label="Nuxeo CAP Preset">nuxeo-cap,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile,nuxeo-showcase-content,nuxeo-template-rendering-samples</preset>
+    <preset id="nuxeo-server-preset" label="Nuxeo Server Preset">nuxeo-server,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile,nuxeo-showcase-content,nuxeo-template-rendering-samples</preset>
   </presets>
 </packages>

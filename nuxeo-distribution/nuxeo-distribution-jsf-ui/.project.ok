@@ -1,6 +1,6 @@
 <projectDescription>
-  <name>nuxeo-distribution-cap</name>
-  <comment>Nuxeo CAP NXR</comment>
+  <name>nuxeo-distribution-jsf-ui</name>
+  <comment>Nuxeo JSF UI NXR</comment>
   <projects/>
   <buildSpec>
     <buildCommand>

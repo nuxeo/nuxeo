@@ -1,6 +1,6 @@
 <projectDescription>
-  <name>nuxeo-distribution-cap</name>
-  <comment>Nuxeo CAP NXR</comment>
+  <name>nuxeo-distribution-server</name>
+  <comment>Nuxeo Server NXR</comment>
   <projects/>
   <buildSpec>
     <buildCommand>

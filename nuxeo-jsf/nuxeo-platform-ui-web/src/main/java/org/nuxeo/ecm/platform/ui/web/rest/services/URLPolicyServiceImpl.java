@@ -244,9 +244,12 @@ public class URLPolicyServiceImpl implements URLPolicyService {
         }
         URLPatternDescriptor desc = getURLPatternDescriptor(patternName);
         String codecName = desc.getDocumentViewCodecName();
+        DocumentView docView = null;
         DocumentViewCodecManager docViewService = getDocumentViewCodecService();
-        DocumentView docView = docViewService.getDocumentViewFromUrl(codecName, url, desc.getNeedBaseURL(),
-                BaseURL.getLocalBaseURL(request));
+        if (docViewService != null) {
+            docView = docViewService.getDocumentViewFromUrl(codecName, url, desc.getNeedBaseURL(),
+                    BaseURL.getLocalBaseURL(request));
+        }
         if (docView != null) {
             // set pattern name
             docView.setPatternName(patternName);

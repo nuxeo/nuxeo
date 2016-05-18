@@ -1,0 +1,50 @@
+<project name="nuxeo-jsf-ui-assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="build" description="Build JSF UI Nuxeo Package">
+    <tstamp />
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="marketplace" value="${outdir}/marketplace" />
+    <delete failonerror="false" dir="${marketplace}" />
+    <mkdir dir="${marketplace}" />
+
+    <!-- Add resources to marketplace/ -->
+    <copy todir="${marketplace}">
+      <fileset dir="src/main/resources" />
+      <filterset>
+        <filter token="VERSION" value="${maven.project.version}" />
+      </filterset>
+    </copy>
+
+    <!-- Server and JSF UI NXRs -->
+    <copy todir="${outdir}">
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-server::zip" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-jsf-ui::zip" />
+    </copy>
+
+    <!-- Compute the diff to marketplace/install/ -->
+    <nx:zipdiff file1="${outdir}/nuxeo-distribution-jsf-ui-${maven.project.version}.zip"
+                file2="${outdir}/nuxeo-distribution-server-${maven.project.version}.zip"
+                includesfile="${outdir}/includes"
+                excludesfile="${outdir}/excludesfile"
+                patternsetid="jsf-ui.versus.server"
+                ignoreContentPattern=".*\.jar$">
+    </nx:zipdiff>
+    <unzip src="${outdir}/nuxeo-distribution-jsf-ui-${maven.project.version}.zip" dest="${marketplace}/install">
+      <patternset refid="jsf-ui.versus.server" />
+    </unzip>
+
+    <!-- ZIP the complete marketplace -->
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${marketplace}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" type="zip" />
+
+    <!-- Cleanup -->
+    <delete file="${outdir}/nuxeo-distribution-jsf-ui-${maven.project.version}.zip" />
+    <delete file="${outdir}/nuxeo-distribution-server-${maven.project.version}.zip" />
+
+  </target>
+
+</project>

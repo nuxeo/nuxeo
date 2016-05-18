@@ -1,0 +1,22 @@
+<package type="addon" name="nuxeo-jsf-ui" version="@VERSION@">
+  <title>Nuxeo JSF UI</title>
+  <description>
+    <p>This package adds the JSF UI to Nuxeo Server.</p>
+  </description>
+  <home-page>http://doc.nuxeo.com/</home-page>
+  <vendor>Nuxeo</vendor>
+  <installer restart="true" />
+  <uninstaller restart="true" />
+  <hotreload-support>false</hotreload-support>
+  <require-terms-and-conditions-acceptance>false</require-terms-and-conditions-acceptance>
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>server-@VERSION@</platform>
+    <platform>server-@VERSION@-HF*</platform>
+  </platforms>
+  <license>Apache 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+  <visibility>PUBLIC</visibility>
+</package>

@@ -10,8 +10,8 @@
 
   <artifactId>nuxeo-distribution-tomcat</artifactId>
   <packaging>pom</packaging>
-  <name>Nuxeo CAP Tomcat Build</name>
-  <description>Package Nuxeo CAP with Tomcat</description>
+  <name>Nuxeo Server Tomcat Build</name>
+  <description>Package Nuxeo Server with Tomcat</description>
 
   <properties>
     <!-- Use a Nuxeo lightened Tomcat -->
@@ -57,46 +57,16 @@
     </dependency>
     <!-- Assembly dependencies -->
     <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-resources</artifactId>
-      <type>zip</type>
-      <classifier>doc</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-resources</artifactId>
-      <type>zip</type>
-      <classifier>root</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-resources</artifactId>
-      <type>zip</type>
-      <classifier>bin</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-resources</artifactId>
-      <type>zip</type>
-      <classifier>templates-common</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-resources</artifactId>
-      <type>zip</type>
-      <classifier>templates-tomcat</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-resources</artifactId>
-      <type>zip</type>
-      <classifier>templates-tomcat-coreserver</classifier>
-      <scope>provided</scope>
+      <groupId>org.nuxeo</groupId>
+      <artifactId>nuxeo-launcher</artifactId>
+      <classifier>jar-with-dependencies</classifier>
+      <exclusions>
+        <exclusion>
+          <!-- avoid pulling the POM -->
+          <groupId>org.nuxeo.shell</groupId>
+          <artifactId>nuxeo-shell</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -106,13 +76,13 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-coreserver</artifactId>
+      <artifactId>nuxeo-distribution-server</artifactId>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-cap</artifactId>
+      <artifactId>nuxeo-distribution-jsf-ui</artifactId>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
@@ -140,6 +110,12 @@
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
@@ -149,13 +125,6 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-    </profile>
-    <profile>
-      <id>nuxeo-coreserver</id>
-      <!-- profile for building Tomcat with only Nuxeo CoreServer -->
-      <properties>
-        <product.name>coreserver</product.name>
-      </properties>
     </profile>
     <profile>
       <id>nuxeo-cap</id>

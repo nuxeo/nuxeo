@@ -58,7 +58,7 @@ Ant usage: `ant package`
  * nuxeo-launcher: Control Panel and Launcher
  * nuxeo-distribution-resources: Resources for packaging (doc, binaries, configuration templates)
  * nuxeo-distribution-tests: Convenient helper POM listing the Nuxeo test dependencies
- * nuxeo-distribution-coreserver: Core Server NXR
+ * nuxeo-distribution-server: Server NXR
  * nuxeo-distribution-cap: Content Application Platform NXR
  * nuxeo-distribution-tomcat: Package Nuxeo CAP with Tomcat
  * nuxeo-distribution-tomcat-wizard-tests: WebDriver tests on Startup Wizard
@@ -72,12 +72,12 @@ Ant usage: `ant package`
 ## Produced packages
 
  * NXR packages
-   * Core Server
+   * Server
    * Content Application Platform (CAP)
  * Nuxeo Packages
    * Transitional Package for Advanced Document Management (DM)
  * Tomcat packages
-   * Core Server
+   * Server
    * Content Application Platform (CAP)
    * SDK
 
@@ -99,15 +99,15 @@ See also Nuxeo Documentation: [CORG/Maven+usage](http://doc.nuxeo.com/x/JQk7)
 
 ## Details about predefined applications
 
-### Nuxeo Core Server
+### Nuxeo Server
 
 A minimal server NXR. An embedded repository will be started. No other  platform services are available.
 
 This application can be used to debug, test or develop nuxeo components that need a repository connection.
 
-Built NXR is in `nuxeo-distribution-coreserver/target/`.
+Built NXR is in `nuxeo-distribution-server/target/`.
 
-It is packaged within Tomcat in `nuxeo-distribution-tomcat/target/` (see "coreserver").
+It is packaged within Tomcat in `nuxeo-distribution-tomcat/target/` (see "server").
 
 
 ### Nuxeo CAP

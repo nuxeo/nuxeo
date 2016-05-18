@@ -1,0 +1,72 @@
+<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+
+  <target name="build" description="Build Nuxeo Server NXR">
+    <echo level="info">Building Nuxeo Server NXR</echo>
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <artifact:nuxeo-expand includeTestScope="true" />
+    <artifact:print output="${outdir}/artifacts-server.properties" mode="sdk" />
+    <artifact:print output="${outdir}/test-artifacts-server.properties" mode="sdk" scopes="test" />
+    <artifact:print output="${outdir}/dependency-tree.log" />
+
+    <property name="nxr" value="${outdir}/nxr" />
+    <delete failonerror="false" dir="${nxr}" />
+    <mkdir dir="${nxr}" />
+
+    <!-- Bundles -->
+    <copy todir="${nxr}/bundles" overwrite="true">
+      <artifact:set excludeRoots="true">
+        <includes>
+          <artifact groupId="org.nuxeo*" scope="" type="!pom" />
+        </includes>
+        <excludes>
+          <artifact groupId="org.nuxeo.lib*" />
+        </excludes>
+      </artifact:set>
+    </copy>
+
+    <!-- Libs -->
+    <copy todir="${nxr}/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" scope="" />
+          <artifact groupId="org.nuxeo.lib*" scope="" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <nx:rmdups dir="${nxr}/lib" />
+
+    <!-- Templates -->
+    <copy todir="${nxr}/templates" overwrite="true">
+      <fileset dir="src/main/resources/templates" />
+    </copy>
+
+    <!-- Database JARs in templates -->
+    <copy todir="${nxr}/templates/default/nxserver/lib">
+      <artifact:file artifactId="derby" />
+    </copy>
+    <copy todir="${nxr}/templates/default/nxserver/lib">
+      <artifact:file artifactId="h2" />
+    </copy>
+    <copy todir="${nxr}/templates/mssql/lib">
+      <artifact:file artifactId="sqljdbc" />
+    </copy>
+    <copy todir="${nxr}/templates/mongodb/lib">
+      <artifact:file artifactId="mongo-java-driver" />
+    </copy>
+    <copy todir="${nxr}/templates/mysql/lib">
+      <artifact:file artifactId="mysql-connector-java" />
+    </copy>
+    <copy todir="${nxr}/templates/postgresql/lib">
+      <artifact:file artifactId="postgresql" />
+    </copy>
+
+    <copy file="${outdir}/artifacts-server.properties" todir="${nxr}" />
+    <copy file="${outdir}/test-artifacts-server.properties" todir="${nxr}" />
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" basedir="${nxr}" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" type="zip" />
+  </target>
+
+</project>
