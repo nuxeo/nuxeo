@@ -292,7 +292,9 @@ public class DocumentBasePage extends AbstractPage {
     public PermissionsSubPage getPermissionsTab() {
         // not ajaxified
         clickOnDocumentTabLink(permissionsTabLink, false);
-        return asPage(PermissionsSubPage.class);
+        PermissionsSubPage permissionsSubPage = asPage(PermissionsSubPage.class);
+        Locator.waitUntilAjaxFinished();
+        return permissionsSubPage;
     }
 
     public HistoryTabSubPage getHistoryTab() {

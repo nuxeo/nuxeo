@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,27 @@
  *
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
+ *     Yannis JULIENNE
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_TITLE;
+import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Constants;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.fragment.AddAllToCollectionForm;
 import org.nuxeo.functionaltests.fragment.AddToCollectionForm;
@@ -41,10 +51,6 @@ import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 /**
  * Test Collection feature.
  *
@@ -53,11 +59,17 @@ import static org.junit.Assert.assertTrue;
 
 public class ITCollectionsTest extends AbstractTest {
 
-    private final static String WORKSPACE_TITLE = ITCollectionsTest.class.getSimpleName() + "_WorkspaceTitle_" + new Date().getTime();
-
     public final static String TEST_FILE_NAME = "test1";
 
+    public static final String TEST_FILE_PATH = TEST_WORKSPACE_PATH + TEST_FILE_NAME;
+
+    public static final String TEST_FILE_URL = String.format(Constants.NXPATH_URL_FORMAT, TEST_FILE_PATH);
+
     public final static String TEST_FILE_NAME2 = "test2";
+
+    public static final String TEST_FILE_PATH2 = TEST_WORKSPACE_PATH + TEST_FILE_NAME2;
+
+    public static final String TEST_FILE_URL2 = String.format(Constants.NXPATH_URL_FORMAT, TEST_FILE_PATH2);
 
     public final static String COLLECTION_NAME_1 = "Collection1";
 
@@ -71,15 +83,18 @@ public class ITCollectionsTest extends AbstractTest {
 
     public static final String MY_COLLECTIONS_FR_LABEL = "Mes collections";
 
-    public static final String MY_COLLECTIONS_EN_LABEL = "My collections";
+    public static final String MY_COLLECTIONS_EN_LABEL = "My Collections";
 
     public static final String MY_FAVORITES_FR_LABEL = "Mes favoris";
 
-    public static final String MY_FAVORITES_EN_LABEL = "My favorites";
+    public static final String MY_FAVORITES_EN_LABEL = "My Favorites";
 
     @Before
     public void before() {
         RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, null, null, null, null, "members");
+        RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, TEST_WORKSPACE_TITLE, null);
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_NAME, "Test File description");
+        RestHelper.createDocument(TEST_WORKSPACE_PATH, FILE_TYPE, TEST_FILE_NAME2, "Test File description");
     }
 
     @After
@@ -103,11 +118,10 @@ public class ITCollectionsTest extends AbstractTest {
         DocumentBasePage documentBasePage = login();
         // Check we can not add Domain to a collection
         assertFalse(documentBasePage.isAddToCollectionUpperActionAvailable());
-        // Create test File
-        DocumentBasePage workspacePage = documentBasePage.createWorkspace(WORKSPACE_TITLE, null);
 
-        FileDocumentBasePage fileDocumentBasePage = workspacePage.createFile(TEST_FILE_NAME, "Test File description",
-                false, null, null, null);
+        // Open test file page
+        open(TEST_FILE_URL);
+        FileDocumentBasePage fileDocumentBasePage = asPage(FileDocumentBasePage.class);
 
         // Check that collection widget summary is not displayed
         SummaryTabSubPage summaryTabSubPage = fileDocumentBasePage.getSummaryTab();
@@ -127,10 +141,8 @@ public class ITCollectionsTest extends AbstractTest {
         assertTrue(summaryTabSubPage.isCollectionsFormDisplayed());
         assertEquals(1, summaryTabSubPage.getCollectionCount());
 
-        workspacePage = fileDocumentBasePage.getNavigationSubPage().goToDocument(WORKSPACE_TITLE);
-
-        fileDocumentBasePage = workspacePage.createFile(TEST_FILE_NAME2, "Test File description", false, null, null,
-                null);
+        // Open test file 2 page
+        open(TEST_FILE_URL2);
 
         addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
 
@@ -146,7 +158,7 @@ public class ITCollectionsTest extends AbstractTest {
 
         // Multiple add to collection
         ContentTabSubPage workspaceContentTab = fileDocumentBasePage.getNavigationSubPage()
-                                                                    .goToDocument(WORKSPACE_TITLE)
+                                                                    .goToDocument(TEST_WORKSPACE_TITLE)
                                                                     .getContentTab();
 
         workspaceContentTab.selectByIndex(0, 1);

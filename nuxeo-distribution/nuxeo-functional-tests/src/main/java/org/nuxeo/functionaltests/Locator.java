@@ -404,6 +404,24 @@ public class Locator {
     }
 
     /**
+     * Wait until no more ajax request is active, checking every 100 ms.
+     *
+     * @since 8.3
+     */
+    public static void waitUntilAjaxFinished() {
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(AbstractTest.driver).withTimeout(
+                AbstractTest.LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS).pollingEvery(
+                        AbstractTest.POLLING_FREQUENCY_MILLISECONDS, TimeUnit.MILLISECONDS).ignoring(
+                                NoSuchElementException.class);
+        wait.until(new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                return (Boolean) ((JavascriptExecutor)driver).executeScript("return jQuery.active == 0");
+            }
+        });
+    }
+
+    /**
      * Waits until an element is enabled, with a timeout.
      *
      * @param element the element
