@@ -226,9 +226,8 @@ public class ITJSListWidgetTest extends AbstractTest {
         assertNotNull(listWidget);
         listWidget.addNewElement();
 
-        Select2WidgetElement select2WidgetElement = listWidget.getSubWidget("nxw_suggest_select2", 0,
-                Select2WidgetElement.class, true);
-        select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
+        String select2WidgetElementId = listWidget.getSubWidgetId("nxw_suggest_select2", 0);
+        Select2WidgetElement select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElementId);
         select2WidgetElement.selectValue(S2_SELECTION_1, true);
         RichEditorElement richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 0, RichEditorElement.class,
                 true);
@@ -237,8 +236,8 @@ public class ITJSListWidgetTest extends AbstractTest {
         listWidget.addNewElement();
         assertEquals(2, listWidget.getRows().size());
 
-        select2WidgetElement = listWidget.getSubWidget("nxw_suggest_select2", 1, Select2WidgetElement.class, true);
-        select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
+        select2WidgetElementId = listWidget.getSubWidgetId("nxw_suggest_select2", 1);
+        select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElementId);
         select2WidgetElement.selectValue(S2_SELECTION_2, true);
 
         richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 1, RichEditorElement.class, true);
@@ -248,14 +247,14 @@ public class ITJSListWidgetTest extends AbstractTest {
 
         // View mode
         listWidget = page.getS2HtmlTextComplexListViewWidget(display);
-        select2WidgetElement = listWidget.getSubWidget("nxw_suggest_1_select2", 0, Select2WidgetElement.class, true);
-        select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
+        select2WidgetElementId = listWidget.getSubWidgetId("nxw_suggest_1_select2", 0);
+        select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElementId);
         assertEquals("Europe/" + S2_SELECTION_1, select2WidgetElement.getSelectedValue().getText());
         WidgetElement we = listWidget.getSubWidget("nxw_htmlTextItem_1", 0, true);
         assertEquals(DUMMY_HTML_TEXT_CONTENT_1, we.getValue(false));
 
-        select2WidgetElement = listWidget.getSubWidget("nxw_suggest_1_select2", 1, Select2WidgetElement.class, true);
-        select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElement.getId());
+        select2WidgetElementId = listWidget.getSubWidgetId("nxw_suggest_1_select2", 1);
+        select2WidgetElement = new Select2WidgetElement(driver, S2_PREFIX + select2WidgetElementId);
         assertEquals("Europe/" + S2_SELECTION_2, select2WidgetElement.getSelectedValue().getText());
         we = listWidget.getSubWidget("nxw_htmlTextItem_1", 1, true);
         assertEquals(DUMMY_HTML_TEXT_CONTENT_2, we.getValue(false));
