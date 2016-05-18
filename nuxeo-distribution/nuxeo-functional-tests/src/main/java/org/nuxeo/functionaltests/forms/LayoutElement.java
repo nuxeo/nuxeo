@@ -157,7 +157,7 @@ public class LayoutElement implements LayoutFragment {
      * Clears the given input element and sets the given value if not null.
      */
     public void setInput(WebElement elt, String value) {
-        elt.click();
+        Locator.waitUntilEnabledAndClick(elt);
         if (value != null) {
             elt.sendKeys(Keys.chord(Keys.CONTROL, "a"), value);
         }
