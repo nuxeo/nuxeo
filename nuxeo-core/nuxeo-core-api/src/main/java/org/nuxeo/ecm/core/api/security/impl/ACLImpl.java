@@ -85,7 +85,7 @@ public class ACLImpl extends ArrayList<ACE>implements ACL {
     }
 
     private void warnForDuplicateACEs(ACE[] aces) {
-        if (! log.isWarnEnabled()) {
+        if (! log.isWarnEnabled() || ! ACL.INHERITED_ACL.equals(name)) {
             return;
         }
         Set<ACE> aceSet = new HashSet<>(aces.length);
