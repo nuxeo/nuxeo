@@ -63,7 +63,7 @@ public class TestUserManagerWithContext extends UserManagerTestCase {
     MultiTenantUserManager mtum;
 
     @Before
-    public void setUp()  {
+    public void setUp() {
         UserMultiTenantManagement umtm = new DefaultUserMultiTenantManagementMock();
         // to simulate the directory local configuration
         ((UserManagerImpl) userManager).multiTenantManagement = umtm;
@@ -88,7 +88,7 @@ public class TestUserManagerWithContext extends UserManagerTestCase {
         mockery.checking(new Expectations() {
             {
                 allowing(session).adaptFirstMatchingDocumentWithFacet(with(any(DocumentRef.class)),
-                        with(any(String.class)), with(any(Class.class)));
+                        with(any(String.class)), with(DirectoryConfiguration.class));
                 will(returnValue(directoryConfiguration));
             }
         });
