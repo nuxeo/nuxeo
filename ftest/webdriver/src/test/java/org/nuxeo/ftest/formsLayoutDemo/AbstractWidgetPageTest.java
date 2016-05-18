@@ -101,7 +101,7 @@ public abstract class AbstractWidgetPageTest extends AbstractTest {
     }
 
     protected void doSubmitDemo() {
-        driver.findElement(By.xpath("//input[@value='Submit']")).click();
+        Locator.findElementWaitUntilEnabledAndClick(By.xpath("//input[@value='Submit']"));
     }
 
 }

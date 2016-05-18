@@ -68,7 +68,7 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         assertEquals("Cancel", action.getAttribute("value"));
         arm = new AjaxRequestManager(driver);
         arm.watchAjaxRequests();
-        action.click();
+        Locator.waitUntilEnabledAndClick(action);
         arm.waitForAjaxRequests();
 
         checkToggleButton(true);
@@ -126,7 +126,7 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         WebElement toggleAction = driver.findElement(By.id(toggleButtonId));
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.watchAjaxRequests();
-        toggleAction.click();
+        Locator.waitUntilEnabledAndClick(toggleAction);
         arm.waitForAjaxRequests();
 
         // check toggled form submit
@@ -173,7 +173,7 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         WebElement action = checkToggleButton(true);
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.watchAjaxRequests();
-        action.click();
+        Locator.waitUntilEnabledAndClick(action);
         arm.waitForAjaxRequests();
     }
 
@@ -183,7 +183,7 @@ public class ITToggleableLayoutWidgetTest extends AbstractWidgetPageTest {
         assertEquals("Save", action.getAttribute("value"));
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.watchAjaxRequests();
-        action.click();
+        Locator.waitUntilEnabledAndClick(action);
         arm.waitForAjaxRequests();
     }
 }

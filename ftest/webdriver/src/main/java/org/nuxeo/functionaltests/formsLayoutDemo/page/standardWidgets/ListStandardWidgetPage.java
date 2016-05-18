@@ -22,6 +22,7 @@ package org.nuxeo.functionaltests.formsLayoutDemo.page.standardWidgets;
 
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.JSListWidgetElement;
 import org.nuxeo.functionaltests.forms.JSListWidgetElement.Display;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.Page;
@@ -135,7 +136,7 @@ public class ListStandardWidgetPage extends Page {
     protected ListStandardWidgetPage submit(String buttonId) {
         AjaxRequestManager a = new AjaxRequestManager(AbstractTest.driver);
         a.watchAjaxRequests();
-        AbstractTest.driver.findElement(By.id(buttonId)).click();
+        Locator.findElementWaitUntilEnabledAndClick(By.id(buttonId));
         a.waitForAjaxRequests();
         return AbstractTest.asPage(ListStandardWidgetPage.class);
     }

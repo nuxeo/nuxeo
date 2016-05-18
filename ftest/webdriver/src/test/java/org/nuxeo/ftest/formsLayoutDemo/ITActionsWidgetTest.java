@@ -72,7 +72,7 @@ public class ITActionsWidgetTest extends AbstractWidgetPageTest {
         assertNotNull(driver.findElement(By.xpath(linkXpath)));
         assertNotNull(driver.findElement(By.xpath(actionsXpath)));
         assertNotNull(driver.findElement(By.xpath(fancyXPath)));
-        driver.findElement(By.xpath(fancyXPath)).click();
+        Locator.findElementWaitUntilEnabledAndClick(By.xpath(fancyXPath));
         Locator.waitUntilElementPresent(By.cssSelector("#nxw_actionsWidget_1_layoutDemoFancyBox_after_view_box > div > h3"));
         assertEquals("Fancy box sample",
                 driver.findElement(By.cssSelector("#nxw_actionsWidget_1_layoutDemoFancyBox_after_view_box > div > h3")).getText());
