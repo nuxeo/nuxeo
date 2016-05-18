@@ -17,6 +17,7 @@
  *     Sun Seng David TAN
  *     Florent Guillaume
  *     Antoine Taillefer
+ *     Yannis JULIENNE
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
@@ -270,7 +271,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.9.3
      */
     public DocumentBasePage goToDocument(final int index) {
-        getChildDocumentRows().get(index).findElement(By.xpath("td[3]/div/a[1]")).click();
+        waitUntilEnabledAndClick(getChildDocumentRows().get(index).findElement(By.xpath("td[3]/div/a[1]")));
         return asPage(DocumentBasePage.class);
     }
 

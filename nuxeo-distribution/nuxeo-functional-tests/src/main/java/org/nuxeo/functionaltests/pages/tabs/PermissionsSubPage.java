@@ -162,7 +162,7 @@ public class PermissionsSubPage extends AbstractPage {
             deleteButton.click();
             Locator.waitUntilElementPresent(
                     By.xpath("//h2[contains(text(), 'The following permission will be deleted')]"));
-            driver.findElement(By.xpath("//paper-button[text()='Delete']")).click();
+            findElementWaitUntilEnabledAndClick(By.xpath("//paper-button[text()='Delete']"));
             Locator.waitUntilElementPresent(By.xpath("//span[text()='Permission deleted.']"));
         }
         return asPage(PermissionsSubPage.class);
