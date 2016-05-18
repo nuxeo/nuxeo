@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.forms.JSListWidgetElement.Display;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -78,7 +79,7 @@ public class ListWidgetElement extends AbstractWidgetElement {
         WebElement addElement = getSubElement(wid + "_add");
         AjaxRequestManager arm = new AjaxRequestManager(AbstractTest.driver);
         arm.begin();
-        addElement.click();
+        Locator.waitUntilEnabledAndClick(addElement);
         arm.end();
     }
 
@@ -88,7 +89,7 @@ public class ListWidgetElement extends AbstractWidgetElement {
         WebElement delElement = getSubElement(delId);
         AjaxRequestManager arm = new AjaxRequestManager(AbstractTest.driver);
         arm.begin();
-        delElement.click();
+        Locator.waitUntilEnabledAndClick(delElement);
         arm.end();
     }
 
@@ -99,7 +100,7 @@ public class ListWidgetElement extends AbstractWidgetElement {
         WebElement moveElement = getRowActions(index).findElement(By.className("moveUpBtn"));
         AjaxRequestManager arm = new AjaxRequestManager(AbstractTest.driver);
         arm.begin();
-        moveElement.click();
+        Locator.waitUntilEnabledAndClick(moveElement);
         arm.end();
     }
 
@@ -110,7 +111,7 @@ public class ListWidgetElement extends AbstractWidgetElement {
         WebElement moveElement = getRowActions(index).findElement(By.className("moveDownBtn"));
         AjaxRequestManager arm = new AjaxRequestManager(AbstractTest.driver);
         arm.begin();
-        moveElement.click();
+        Locator.waitUntilEnabledAndClick(moveElement);
         arm.end();
     }
 
@@ -123,6 +124,13 @@ public class ListWidgetElement extends AbstractWidgetElement {
      */
     public WidgetElement getSubWidget(String id, int index) {
         return getSubWidget(id, index, false);
+    }
+
+    /**
+     * @since 8.3
+     */
+    public String getSubWidgetId(String id, int index) {
+        return getSubWidget(id, index, false).getId();
     }
 
     public WidgetElement getSubWidget(String id, int index, boolean wait) {
