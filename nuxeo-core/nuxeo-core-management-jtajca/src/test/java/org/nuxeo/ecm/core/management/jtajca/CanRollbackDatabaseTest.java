@@ -36,8 +36,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-import org.nuxeo.runtime.transaction.TransactionRuntimeException;
-
 import junit.framework.AssertionFailedError;
 
 @RunWith(FeaturesRunner.class)
@@ -48,7 +46,7 @@ public class CanRollbackDatabaseTest {
     protected RuntimeHarness harness;
 
     // don't use LocalDeploy, it fails on SQL Server (deploy is done on a connection with tx)
-    @Test(expected = TransactionRuntimeException.class)
+    @Test(expected = SQLException.class)
     public void testFatalRollback() throws Exception {
         harness.deployContrib("org.nuxeo.ecm.core.management.jtajca.test", "ds-contrib-with-fatal.xml");
         try {

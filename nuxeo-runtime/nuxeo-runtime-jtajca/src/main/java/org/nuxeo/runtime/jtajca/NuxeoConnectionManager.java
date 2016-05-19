@@ -22,6 +22,7 @@ import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
 import org.apache.geronimo.connector.outbound.ConnectionHandleInterceptor;
 import org.apache.geronimo.connector.outbound.ConnectionInterceptor;
 import org.apache.geronimo.connector.outbound.ConnectionTrackingInterceptor;
+import org.apache.geronimo.connector.outbound.GenericConnectionManager;
 import org.apache.geronimo.connector.outbound.MCFConnectionInterceptor;
 import org.apache.geronimo.connector.outbound.SubjectInterceptor;
 import org.apache.geronimo.connector.outbound.SubjectSource;
@@ -35,7 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Setups a connection according to the pooling attributes, mainly duplicated
+ * from {@link GenericConnectionManager} for injecting a connection validation
+ * interceptor.
  *
  * @since 8.3
  */
@@ -43,29 +46,6 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
     private static final long serialVersionUID = 1L;
     protected static final Logger log = LoggerFactory.getLogger(NuxeoConnectionManager.class);
 
-    // default constructor to support externalizable subclasses
-    public NuxeoConnectionManager() {
-        super();
-    }
-
-    /**
-     *
-     * @param transactionSupport
-     *            configuration of transaction support
-     * @param pooling
-     *            configuration of pooling
-     * @param subjectSource
-     *            If not null, use container managed security, getting the
-     *            Subject from the SubjectSource
-     * @param connectionTracker
-     *            tracks connections between calls as needed
-     * @param transactionManager
-     *            transaction manager
-     * @param name
-     *            name
-     * @param classLoader
-     *            classloader this component is running in.
-     */
     public NuxeoConnectionManager(NuxeoValidationSupport validationSupport,
             TransactionSupport transactionSupport,
             PoolingSupport pooling,
@@ -74,7 +54,8 @@ public class NuxeoConnectionManager extends AbstractConnectionManager {
             RecoverableTransactionManager transactionManager,
             String name,
             ClassLoader classLoader) {
-        super(new InterceptorsImpl(validationSupport, transactionSupport, pooling, subjectSource, name, connectionTracker, transactionManager, classLoader),
+        super(new InterceptorsImpl(validationSupport, transactionSupport, pooling, subjectSource, name, connectionTracker, transactionManager,
+                classLoader),
                 transactionManager, name);
     }
 
