@@ -5,7 +5,7 @@
       var adminMessageEle = jQuery(this);
       adminMessageEle.find(".close").click(function(e) {
         adminMessageEle.addClass("displayN");
-        jQuery.cookie(cookieName, adminMessageEle.data('timestamp'));
+        jQuery.cookie(cookieName, adminMessageEle.data('timestamp'), { path: '/' });
         e.preventDefault();
       });
 
