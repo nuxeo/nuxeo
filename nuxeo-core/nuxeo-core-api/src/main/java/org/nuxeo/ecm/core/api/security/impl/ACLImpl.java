@@ -16,8 +16,13 @@ package org.nuxeo.ecm.core.api.security.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -35,6 +40,8 @@ import com.google.common.collect.Lists;
 public class ACLImpl extends ArrayList<ACE>implements ACL {
 
     private static final long serialVersionUID = 5332101749929771434L;
+
+    private static final Log log = LogFactory.getLog(ACLImpl.class);
 
     private final String name;
 
@@ -67,6 +74,25 @@ public class ACLImpl extends ArrayList<ACE>implements ACL {
     public void setACEs(ACE[] aces) {
         clear();
         addAll(Arrays.asList(aces));
+        warnForDuplicateACEs(aces);
+    }
+
+    private void warnForDuplicateACEs(ACE[] aces) {
+        if (! log.isWarnEnabled() || ACL.INHERITED_ACL.equals(name)) {
+            return;
+        }
+        Set<ACE> aceSet = new HashSet<>(aces.length);
+        for (ACE ace : aces) {
+            if (!aceSet.add(ace)) {
+                Throwable throwable = null;
+                if (log.isTraceEnabled()) {
+                    throwable = new Throwable();
+                }
+                log.warn("Setting an ACL with at least one duplicate entry: " + ace + ", ACL entries: " + Arrays.toString(aces),
+                        throwable);
+                break;
+            }
+        }
     }
 
     public boolean isReadOnly() {

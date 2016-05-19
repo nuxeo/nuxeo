@@ -298,11 +298,12 @@ public final class ACE implements Serializable, Cloneable {
     public int hashCode() {
         int hash = 17;
         hash = hash * 37 + (isGranted ? 1 : 0);
-        hash = hash * 37 + username.hashCode();
+        hash = username != null ? hash * 37 + username.hashCode() : hash;
         hash = creator != null ? hash * 37 + creator.hashCode() : hash;
         hash = begin != null ? hash * 37 + begin.hashCode() : hash;
         hash = end != null ? hash * 37 + end.hashCode() : hash;
-        return hash * 37 + permission.hashCode();
+        hash = permission != null ? hash * 37 + permission.hashCode() : hash;
+        return hash;
     }
 
     @Override
