@@ -9,17 +9,22 @@
 
 <div class="tabscontent">
 
-  This contribution is part of XML component <a href="${Root.path}/${distId}/viewComponent/${nxItem.component.id}">${nxItem.component.id}</a>
+  This contribution is part of XML component <a class="tag components" href="${Root.path}/${distId}/viewComponent/${nxItem.component.id}">${nxItem.component.id}</a>
   inside ${nxItem.component.bundle.fileName} ${nxItem.component.xmlFileName}
 
   ${nxItem.documentationHtml}
   <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+  <#if Root.canAddDocumentation()>
+    <div class="tabsbutton">
+      <a class="button" href="${This.path}/doc">Manage Documentation</a>
+    </div>
+  </#if>
 
   <h2>Extension point</h2>
   Extension point
-  <a href="${Root.path}/${distId}/viewExtensionPoint/${nxItem.extensionPoint}">${nxItem.extensionPoint?split("--")[1]}</a>
+  <a class="tag extensions" href="${Root.path}/${distId}/viewExtensionPoint/${nxItem.extensionPoint}">${nxItem.extensionPoint?split("--")[1]}</a>
   of component
-  <a href="${Root.path}/${distId}/viewComponent/${nxItem.targetComponentName.name}">${nxItem.targetComponentName.name?replace(".*\\.","","r")}</a>.
+  <a class="tag components" href="${Root.path}/${distId}/viewComponent/${nxItem.targetComponentName.name}">${nxItem.targetComponentName.name?replace(".*\\.","","r")}</a>.
 
   <h2>Contributed items</h2>
     <form method="POST" action="${Root.path}/${distId}/viewContribution/${nxItem.id}/override">
@@ -27,13 +32,13 @@
       <ul class="block-list">
       <#list nxItem.contributionItems as contributionItem>
         <li>
-          <div class="block-title">
-          <input type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none"/>
-          ${contributionItem.label}
-          <span> ${contributionItem.documentation} </span>
-          </div>
           <div>
             <pre><code>${contributionItem.xml}</code></pre>
+          </div>
+          <div class="block-title">
+            <input type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none"/>
+            ${contributionItem.label}
+            <span> ${contributionItem.documentation} </span>
           </div>
         </li>
       </#list>

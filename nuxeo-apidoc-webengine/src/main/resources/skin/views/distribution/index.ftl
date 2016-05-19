@@ -10,11 +10,12 @@
 <@block name="right">
 <div class="explorer-home">
 <div class="fullspace intro">
+  <img src="${skinPath}/images/platform-explorer.png">
   <p class="main">
-  Explore all services, extensions, contributions, operations of the Nuxeo Platform to customize it.
+  Explore services, extension points, contributions, operations of the Nuxeo Platform to build your own components.
   </p>
   <p class="second">
-  Nuxeo Platform provides Java Services declared inside components. Components are declared via XLM files. Services are configurable by an extension system. Thanks to the Nuxeo Platform modularity, declare your service and its extensions in a given component and contribute to this extension in an other component that might come with your customisation.
+  Nuxeo Platform provides Java Services declared inside components. Components are declared via XLM files. Services are configurable by an extension system.
   </p>
   <#if Root.showCurrentDistribution()>
   <p class="second">
@@ -23,6 +24,7 @@
   </#if>
 </div>
 
+<div>
 <h2>Available Platforms</h2>
 
 <#assign rtSnap=Root.runtimeDistribution/>
@@ -39,65 +41,19 @@
       </time>
       <div class="timepoint"></div>
       <div class="timebox">
-        <div class="flex-1">
-          <div class="box-title">
-            <a href="${Root.path}/current/listBundles">
-              <span class="number">${rtSnap.name}</span>
-              <span class="detail">
-                ${rtSnap.version}
-              </span>
-            </a>
+        <div class="box-title">
+          <div>
+            <span class="number">${rtSnap.name}</span>
+            <span class="detail">${rtSnap.version}</span>
           </div>
         </div>
-        <div class="flex-2">
-          <#if !Root.isSiteMode()>
-            <div>
-            <#if Root.isEditor()>
-              <div id="saveBtn">
-              <form method="POST" action="${Root.path}/save">
-              <input type="button" value="Save" onclick="$('#stdSave').css('display','block');$('#saveBtn').css('display','none')">
-              <input type="button" value="Save Partial Snapshot" onclick="$('#extendedSave').css('display','block');$('#saveBtn').css('display','none')">
-              </form>
-              </div>
-              <div style="display:none" id="stdSave">
-              <form method="POST" action="${Root.path}/save">
-                <table>
-                <tr>
-                  <td class="nowrap">Name</td>
-                  <td><input type="text" name="name" value="${rtSnap.name}"/> </td>
-                </tr>
-                <tr>
-                  <td class="nowrap">Version</td>
-                  <td>${rtSnap.version} </td>
-                </tr>
-                </table>
-                <i>Existing snapshot with the same name and version will be updated</i><br/>
-                <input type="submit" value="Save"/>
-              </form>
-              </div>
-              <div style="display:none" id="extendedSave">
-              <form  method="POST" action="${Root.path}/saveExtended">
-                <table>
-                <tr>
-                  <td class="nowrap">Name</td>
-                  <td><input type="text" name="name" value="${rtSnap.name}"/> </td>
-                </tr>
-                <tr>
-                  <td class="nowrap">Bundle prefixes</td>
-                  <td><textarea rows="4" cols="30" name="bundles"></textarea></td>
-                </tr>
-                <tr>
-                  <td class="nowrap">Packages prefixes</td>
-                  <td><textarea rows="4" cols="30" name="packages"></textarea></td>
-                </tr>
-                </table>
-              <input type="submit" value="Save"/>
-              </form>
-              </div>
-            </#if>
-            </div>
-          </#if>
-          <a class="button primary" href="${Root.path}/current/listBundles"> Explore </a>
+        <div class="flex-ctn">
+          <div>
+            <a class="extensions" href="${Root.path}/current/listExtensionPoints">Contribute to an Extension</a>
+          </div>
+          <div><a class="contributions" href="${Root.path}/current/listContributions">Override a Contribution</a></div>
+          <div><a class="operations" href="${Root.path}/current/listOperations">Search Operations</a></div>
+          <div><a class="services" href="${Root.path}/current/listServices">Browse Services</a></div>
         </div>
       </div>
     </li>
@@ -117,28 +73,33 @@
       </time>
       <div class="timepoint"></div>
       <div class="timebox">
-        <div class="flex-1">
-          <div class="box-title">
-            <a href="${Root.path}/current/listBundles">
-              <span class="number">${distrib.name}</span>
-              <span class="detail">
-                ${distrib.version}
-              </span>
-            </a>
+        <div class="box-title">
+          <div>
+            <span class="number">${distrib.name}</span>
+            <span class="detail">${distrib.version}</span>
           </div>
         </div>
-        <div class="flex-2">
-          <#if !Root.isSiteMode()>
-          <a href="${Root.path}/download/${distrib.key}">ZIP Export</a>
-          </#if>
-          <a class="button primary" href="${Root.path}/${distrib.key}/listBundles">Explore</a>
-      </div>
+        <div class="flex-ctn">
+          <div>
+            <a class="extensions" href="${Root.path}/current/listExtensionPoints">Contribute to an Extension</a>
+          </div>
+          <div><a class="contributions" href="${Root.path}/current/listContributions">Override a Contribution</a></div>
+          <div><a class="operations" href="${Root.path}/current/listOperations">Search Operations</a></div>
+          <div><a class="services" href="${Root.path}/current/listServices">Browse Services</a></div>
+        </div>
     </li>
   </#list>
 
 
   </ul>
 
+</div>
+</div>
+
+<div class="fullspace intro center">
+  <p>
+   Thanks to the Nuxeo Platform modularity, declare your service and its extensions in a given component and contribute to this extension in an other component that might come with your customisation.</p>
+  <a target="_blank" class="button" href="https://doc.nuxeo.com/x/DIAO">Read Documentation</a>
 </div>
 
 

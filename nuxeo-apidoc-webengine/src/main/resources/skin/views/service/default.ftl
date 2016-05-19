@@ -6,13 +6,18 @@
 <#include "/docMacros.ftl">
 
 <h1>Service <span class="componentTitle">${nxItem.id}</span></h1>
-<div class="include-in">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a></div>
+<div class="include-in components">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a></div>
 
 <div class="tabscontent">
 
   <h2>Documentation</h2>
   ${nxItem.documentationHtml}
   <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+  <#if Root.canAddDocumentation()>
+    <div class="tabsbutton">
+      <a class="button" href="${This.path}/doc">Manage Documentation</a>
+    </div>
+  </#if>
 
   <h2>Implementation</h2>
   <p><b>${nxItem.id}</b></p>

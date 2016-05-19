@@ -64,14 +64,8 @@
 
   <div class="container content">
       <@block name="middle">
-
          <section>
            <article role="contentinfo">
-             <#if Root.canAddDocumentation()>
-               <div class="tabsbutton">
-                 <a class="button" href="${This.path}/doc">Manage Documentation</a>
-               </div>
-             </#if>
              <@block name="right">
                Content
              </@block>
@@ -98,8 +92,6 @@
 </script>
 
 <@block name="footer_scripts" />
-<#if !Root.isEmbeddedMode()>
-<script type="text/javascript" src="//www.nuxeo.com/wp-content/themes/nuxeo.com_wp/js/xnav_get.js" charset="utf-8"></script>
-</#if>
+
 </body>
 </html>

@@ -13,9 +13,9 @@
   <#if nxItem.components?size == 0>
     No components.
   <#else>
-    <ul>
+    <ul class="nolist">
       <#list nxItem.components as component>
-      <li><a href="${Root.path}/${distId}/viewComponent/${component.name}">${component.name}</a></li>
+      <li><a class="tag components" href="${Root.path}/${distId}/viewComponent/${component.name}">${component.name}</a></li>
       </#list>
     </ul>
   </#if>
@@ -36,6 +36,11 @@
   <h2>Documentation</h2>
   ${nxItem.documentationHtml}
   <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+  <#if Root.canAddDocumentation()>
+    <div class="tabsbutton">
+      <a class="button" href="${This.path}/doc">Manage Documentation</a>
+    </div>
+  </#if>
 
   <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 

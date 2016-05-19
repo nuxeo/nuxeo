@@ -30,7 +30,7 @@
           <span title="Category" class="sticker">${operation.category?html}</span>
           <span title="Operation ID">${operation.name?html}</span>
           <#if operation.aliases>
-            <div>Alias [<#list operation.aliases as alias> ${alias} </#list>]</div>
+            <div>Alias <code><#list operation.aliases as alias> ${alias} </#list></code></div>
           </#if>
           <#if operation.requires>
           <span>Require <span class="sticker">${operation.requires}</span></span>

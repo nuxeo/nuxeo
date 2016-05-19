@@ -7,7 +7,7 @@
 <#assign nestedLevel=0/>
 
 <h1>Extension point <span class="componentTitle">${nxItem.name}</span></h1>
-<div class="include-in">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a></div>
+<div class="include-in components">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a></div>
 
 <div class="tabscontent">
   <div class="subnav">
@@ -19,9 +19,14 @@
   <div class="description">
   ${nxItem.documentationHtml}
   <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+  <#if Root.canAddDocumentation()>
+    <div class="tabsbutton">
+      <a class="button" href="${This.path}/doc">Manage Documentation</a>
+    </div>
+  </#if>
   </div>
 
-  <h2>Descriptors</h2>
+  <h2>Contribution Descriptor</h2>
   <ul>
     <#list nxItem.descriptors as descriptor>
     <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(descriptor)}"/>
@@ -59,14 +64,14 @@
     <ul id="highlight-plugin" class="block-list">
       <#list nxItem.extensions as contrib>
       <li>
-        <div class="block-title">
-          <a href="${Root.path}/${distId}/viewContribution/${contrib.id}">
-          ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
-          </a>
-        </div>
         <div class="searchableText">
           <span style="display:none">${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}</span>
           <pre><code>${contrib.xml?xml}</code></pre>
+        </div>
+        <div class="block-title">
+          <a class="components" href="${Root.path}/${distId}/viewComponent/${contrib.component.id}">
+          ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
+          </a>
         </div>
       </li>
       </#list>
