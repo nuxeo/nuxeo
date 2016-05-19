@@ -365,6 +365,12 @@ class MarkLogicQueryBuilder {
         public StructuredQueryDefinition eq(Literal literal) {
             String serializedKey = getSerializedKey();
             Object value = getLiteral(literal);
+            // If the value is null it could be :
+            // - test for non existence of boolean field
+            // - a platform issue
+            if (value == null && isTrueOrNullBoolean) {
+                return sqb.not(sqb.value(sqb.element(serializedKey), true));
+            }
             String serializedValue = MarkLogicStateSerializer.serializeValue(value);
             return sqb.value(sqb.element(serializedKey), serializedValue);
         }
