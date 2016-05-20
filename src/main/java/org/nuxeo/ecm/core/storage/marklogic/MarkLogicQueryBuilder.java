@@ -140,9 +140,9 @@ class MarkLogicQueryBuilder {
             if (!(op instanceof Reference)) {
                 throw new QueryParseException("Projection not supported: " + op);
             }
-            FieldInfo fieldInfo = walkReference((Reference) op);
+            FieldBuilder fieldBuilder = walkReference((Reference) op);
             options.append("<extract-path>");
-            options.append(MarkLogicHelper.DOCUMENT_ROOT_PATH).append('/').append(fieldInfo.getFullField());
+            options.append(MarkLogicHelper.DOCUMENT_ROOT_PATH).append('/').append(fieldBuilder.getFullField());
             options.append("</extract-path>");
             // TODO check projection wildcard and fulltext score case (from mongodb)
         }
@@ -208,9 +208,9 @@ class MarkLogicQueryBuilder {
         } else if (op == Operator.NOTIN) {
             return walkIn(lvalue, rvalue, false);
         } else if (op == Operator.ISNULL) {
-            // walkIsNull(lvalue);
+            return walkIsNull(lvalue);
         } else if (op == Operator.ISNOTNULL) {
-            // walkIsNotNull(lvalue);
+            return walkIsNotNull(lvalue);
         } else if (op == Operator.BETWEEN) {
             // walkBetween(lvalue, rvalue, true);
         } else if (op == Operator.NOTBETWEEN) {
@@ -225,7 +225,7 @@ class MarkLogicQueryBuilder {
     }
 
     private StructuredQueryDefinition walkEq(Operand lvalue, Operand rvalue) {
-        FieldInfo leftInfo = walkReference(lvalue);
+        FieldBuilder leftInfo = walkReference(lvalue);
         if (leftInfo.isMixinTypes()) {
             if (!(rvalue instanceof StringLiteral)) {
                 throw new QueryParseException("Invalid EQ rhs: " + rvalue);
@@ -241,22 +241,22 @@ class MarkLogicQueryBuilder {
     }
 
     private StructuredQueryDefinition walkLt(Operand lvalue, Operand rvalue) {
-        FieldInfo leftInfo = walkReference(lvalue);
+        FieldBuilder leftInfo = walkReference(lvalue);
         return leftInfo.lt((Literal) rvalue);
     }
 
     private StructuredQueryDefinition walkGt(Operand lvalue, Operand rvalue) {
-        FieldInfo leftInfo = walkReference(lvalue);
+        FieldBuilder leftInfo = walkReference(lvalue);
         return leftInfo.gt((Literal) rvalue);
     }
 
     private StructuredQueryDefinition walkLtEq(Operand lvalue, Operand rvalue) {
-        FieldInfo leftInfo = walkReference(lvalue);
+        FieldBuilder leftInfo = walkReference(lvalue);
         return leftInfo.lteq((Literal) rvalue);
     }
 
     private StructuredQueryDefinition walkGtEq(Operand lvalue, Operand rvalue) {
-        FieldInfo leftInfo = walkReference(lvalue);
+        FieldBuilder leftInfo = walkReference(lvalue);
         return leftInfo.gteq((Literal) rvalue);
     }
 
@@ -292,6 +292,7 @@ class MarkLogicQueryBuilder {
         if (!(rvalue instanceof LiteralList)) {
             throw new QueryParseException("Invalid IN, right hand side must be a list: " + rvalue);
         }
+        FieldBuilder fieldBuilder = walkReference(lvalue);
         StructuredQueryDefinition[] queries = ((LiteralList) rvalue).stream()
                                                                     .map(literal -> walkEq(lvalue, literal))
                                                                     .toArray(StructuredQueryDefinition[]::new);
@@ -300,6 +301,16 @@ class MarkLogicQueryBuilder {
             return orQuery;
         }
         return sqb.not(orQuery);
+    }
+
+    private StructuredQueryDefinition walkIsNull(Operand lvalue) {
+        FieldBuilder fieldBuilder = walkReference(lvalue);
+        return fieldBuilder.isNull();
+    }
+
+    private StructuredQueryDefinition walkIsNotNull(Operand lvalue) {
+        FieldBuilder fieldBuilder = walkReference(lvalue);
+        return fieldBuilder.isNotNull();
     }
 
     /**
@@ -319,14 +330,14 @@ class MarkLogicQueryBuilder {
         return walkExpression((Expression) operand);
     }
 
-    private FieldInfo walkReference(Operand value) {
+    private FieldBuilder walkReference(Operand value) {
         if (!(value instanceof Reference)) {
             throw new QueryParseException("Invalid query, left hand side must be a property: " + value);
         }
         return walkReference((Reference) value);
     }
 
-    private FieldInfo walkReference(Reference reference) {
+    private FieldBuilder walkReference(Reference reference) {
         String name = reference.name;
         String prop = canonicalXPath(name);
         String[] parts = prop.split("/");
@@ -335,7 +346,7 @@ class MarkLogicQueryBuilder {
                 // return parseACP(prop, parts);
             }
             String field = DBSSession.convToInternal(prop);
-            return new FieldInfo(prop, field);
+            return new FieldBuilder(prop, field);
         }
 
         // Copied from Mongo
@@ -390,7 +401,7 @@ class MarkLogicQueryBuilder {
             firstPart = false;
         }
         String fullField = StringUtils.join(parts, '.');
-        return new FieldInfo(prop, fullField, type, false);
+        return new FieldBuilder(prop, fullField, type, false);
     }
 
     /**
@@ -411,7 +422,7 @@ class MarkLogicQueryBuilder {
         }
     }
 
-    private class FieldInfo {
+    private class FieldBuilder {
 
         /** NXQL property. */
         private final String prop;
@@ -426,15 +437,18 @@ class MarkLogicQueryBuilder {
 
         private final boolean hasWildcard;
 
-        public FieldInfo(String prop, String field) {
+        /**
+         * Constructor for a simple field.
+         */
+        public FieldBuilder(String prop, String field) {
             this(prop, field, true);
         }
 
-        public FieldInfo(String prop, String field, boolean isTrueOrNullBoolean) {
+        public FieldBuilder(String prop, String field, boolean isTrueOrNullBoolean) {
             this(prop, field, DBSSession.getType(field), isTrueOrNullBoolean);
         }
 
-        public FieldInfo(String prop, String fullField, Type type, boolean isTrueOrNullBoolean) {
+        public FieldBuilder(String prop, String fullField, Type type, boolean isTrueOrNullBoolean) {
             this.prop = prop;
             this.fullField = MarkLogicHelper.serializeKey(fullField);
             this.type = type;
@@ -493,6 +507,14 @@ class MarkLogicQueryBuilder {
             return sqb.range(sqb.element(fullField), valueType, operator, serializedValue);
         }
 
+        public StructuredQueryDefinition isNull() {
+            return sqb.not(sqb.containerQuery(sqb.element(fullField), sqb.and()));
+        }
+
+        public StructuredQueryDefinition isNotNull() {
+            return sqb.containerQuery(sqb.element(fullField), sqb.and());
+        }
+
         private Object getLiteral(Literal literal) {
             Object result;
             if (literal instanceof BooleanLiteral) {
@@ -519,7 +541,6 @@ class MarkLogicQueryBuilder {
             }
             return result;
         }
-
     }
 
 }
