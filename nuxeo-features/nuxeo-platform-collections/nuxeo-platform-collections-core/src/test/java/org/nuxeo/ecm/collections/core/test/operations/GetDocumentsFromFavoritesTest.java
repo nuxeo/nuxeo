@@ -20,6 +20,7 @@ package org.nuxeo.ecm.collections.core.test.operations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -29,8 +30,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.collections.api.FavoritesManager;
+import org.nuxeo.ecm.collections.core.automation.FetchFavorites;
 import org.nuxeo.ecm.collections.core.automation.GetDocumentsFromFavoritesOperation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -100,5 +103,13 @@ public class GetDocumentsFromFavoritesTest extends CollectionOperationsTestCase 
         // Check the result of the operation
         assertNotNull(documentsList);
         assertEquals(0, documentsList.size());
+    }
+
+    @Test
+    public void canFetchFavorites() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModel favoritesRoot = (DocumentModel) service.run(ctx, FetchFavorites.ID);
+        assertNotNull(favoritesRoot);
+        assertTrue(favoritesRoot.hasFacet("Collection"));
     }
 }
