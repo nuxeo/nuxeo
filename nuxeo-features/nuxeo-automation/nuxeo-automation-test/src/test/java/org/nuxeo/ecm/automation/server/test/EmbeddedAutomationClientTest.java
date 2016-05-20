@@ -87,6 +87,7 @@ import org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays.SimpleP
 import org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation;
 import org.nuxeo.ecm.automation.server.test.json.POJOObject;
 import org.nuxeo.ecm.automation.server.test.json.SimplePojoObjectMarshaller;
+import org.nuxeo.ecm.automation.server.test.operations.ContextInjectionOperation;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.automation.test.helpers.ExceptionTest;
 import org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest;
@@ -957,5 +958,22 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                .execute();
         // TODO NXP-17232 to use context parameters in json payload response with automation and automation client.
         // Once NXP-17232 resolved: assertions possible to get related doc ACLs.
+    }
+
+    /**
+     * @since 8.3
+     */
+    @Test
+    public void testContextInjection() throws IOException {
+        Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
+        Document folder = (Document) session.newRequest(ContextInjectionOperation.ID)
+                .setHeader(Constants.HEADER_NX_SCHEMAS, "*")
+                .setInput(root)
+                // Check for context null property marshalling
+                .setContextProperty("description", null)
+                .setContextProperty("title", "hello")
+                .execute();
+        assertEquals("hello", folder.getString("dc:title"));
+        assertNull(folder.getString("dc:description"));
     }
 }
