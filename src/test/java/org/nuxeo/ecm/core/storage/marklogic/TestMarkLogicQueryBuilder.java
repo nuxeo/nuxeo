@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 
 import java.util.Collections;
@@ -26,6 +25,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
@@ -34,16 +35,21 @@ import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.marklogic.client.query.RawQueryDefinition;
 
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
 public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
     public void testCoreFeatureQuery() throws Exception {
         // Init parameters
         SelectClause selectClause = new SelectClause();
-        selectClause.add(new StringLiteral(KEY_ID));
+        selectClause.add(new Reference(NXQL.ECM_UUID));
 
         LiteralList inPrimaryTypes = new LiteralList();
         inPrimaryTypes.addAll(Stream.of("OrderedFolder", "HiddenFile", "DocWithAge", "TemplateRoot", "TestDocument2",
