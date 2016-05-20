@@ -681,4 +681,25 @@ public class TestSQLRepositorySecurity extends SQLRepositoryTestCase {
             closeSession(bobSession);
         }
     }
+
+    @Test
+    public void shouldRemoveDuplicateACE() throws Exception {
+        // Using helper don't prevent duplicate before 7.4
+        ACL acl = new ACLImpl();
+        ACE ace = new ACE("leela", "Read");
+        ACE ace2 = new ACE("bob", "Read");
+        ACE acedup = new ACE("bob", "Read");
+        acl.add(ace);
+        acl.add(ace2);
+        acl.add(ace);
+        acl.add(acedup);
+        assertEquals(4, acl.size());
+
+        // neither setACEs but it warns about dup
+        ACE[] aces = {ace, ace2, ace, acedup};
+        acl.setACEs(aces);
+        assertEquals(4, acl.size());
+    }
+
+
 }
