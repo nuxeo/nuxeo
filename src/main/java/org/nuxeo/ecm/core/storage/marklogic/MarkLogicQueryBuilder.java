@@ -293,14 +293,10 @@ class MarkLogicQueryBuilder {
             throw new QueryParseException("Invalid IN, right hand side must be a list: " + rvalue);
         }
         FieldBuilder fieldBuilder = walkReference(lvalue);
-        StructuredQueryDefinition[] queries = ((LiteralList) rvalue).stream()
-                                                                    .map(literal -> walkEq(lvalue, literal))
-                                                                    .toArray(StructuredQueryDefinition[]::new);
-        StructuredQueryDefinition orQuery = sqb.or(queries);
         if (positive) {
-            return orQuery;
+            return fieldBuilder.in((LiteralList) rvalue);
         }
-        return sqb.not(orQuery);
+        return fieldBuilder.notIn((LiteralList) rvalue);
     }
 
     private StructuredQueryDefinition walkIsNull(Operand lvalue) {
@@ -505,6 +501,18 @@ class MarkLogicQueryBuilder {
             String valueType = ElementType.getType(value.getClass()).getKey();
             String serializedValue = MarkLogicStateSerializer.serializeValue(value);
             return sqb.range(sqb.element(fullField), valueType, operator, serializedValue);
+        }
+
+        public StructuredQueryDefinition in(LiteralList litteral) {
+            String[] serializedValues = litteral.stream()
+                                                .map(this::getLiteral)
+                                                .map(MarkLogicStateSerializer::serializeValue)
+                                                .toArray(String[]::new);
+            return sqb.value(sqb.element(fullField), serializedValues);
+        }
+
+        public StructuredQueryDefinition notIn(LiteralList litteral) {
+            return sqb.not(in(litteral));
         }
 
         public StructuredQueryDefinition isNull() {

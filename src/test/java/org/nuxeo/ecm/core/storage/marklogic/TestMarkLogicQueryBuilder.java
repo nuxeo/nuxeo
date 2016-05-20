@@ -48,6 +48,39 @@ import com.marklogic.client.query.RawQueryDefinition;
 public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
+    public void testInOperator() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        LiteralList inPrimaryTypes = new LiteralList();
+        inPrimaryTypes.add(new StringLiteral("Document"));
+        inPrimaryTypes.add(new StringLiteral("Folder"));
+        Expression expression = new Expression(new Reference(KEY_PRIMARY_TYPE), Operator.IN, inPrimaryTypes);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/in-operator.xml", query.getHandle().toString());
+
+    }
+
+    @Test
+    public void testIsNullOperator() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_LOCK_CREATED), Operator.ISNULL, null);
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/is-null-operator.xml", query.getHandle().toString());
+    }
+
+    @Test
     public void testCoreFeatureQuery() throws Exception {
         // Init parameters
         SelectClause selectClause = new SelectClause();
@@ -72,21 +105,6 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
         assertXMLFileAgainstString("query-expression/core-feature.xml", query.getHandle().toString());
-    }
-
-    @Test
-    public void testIsNullOperator() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
-
-        Expression expression = new Expression(new Reference(NXQL.ECM_LOCK_CREATED), Operator.ISNULL, null);
-
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
-
-        // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
-        assertXMLFileAgainstString("query-expression/is-null-operator.xml", query.getHandle().toString());
     }
 
 }

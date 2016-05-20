@@ -1,12 +1,11 @@
 <search xmlns="http://marklogic.com/appservices/search">
   <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
          xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <not-query>
-      <container-query>
-        <element ns="" name="ecm__lockCreated" />
-        <and-query />
-      </container-query>
-    </not-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>Document</text>
+      <text>Folder</text>
+    </value-query>
   </query>
   <options xmlns="http://marklogic.com/appservices/search">
     <extract-document-data selected="include-with-ancestors">

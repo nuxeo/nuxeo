@@ -1,96 +1,31 @@
 <search xmlns="http://marklogic.com/appservices/search">
   <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
          xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <or-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>OrderedFolder</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>HiddenFile</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>DocWithAge</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>TemplateRoot</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>TestDocument2</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>TestDocumentWithDefaultPrefetch</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>SectionRoot</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>Document</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>Folder</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>WorkspaceRoot</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>HiddenFolder</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>Section</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>TestDocument</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>Relation</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>FolderWithSearch</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>MyDocType</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>Book</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>Note</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>ComplexDoc</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>Domain</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>File</text>
-      </value-query>
-      <value-query type="string">
-        <element ns="" name="ecm__primaryType" />
-        <text>Workspace</text>
-      </value-query>
-    </or-query>
+    <value-query type="string">
+      <element ns="" name="ecm__primaryType" />
+      <text>OrderedFolder</text>
+      <text>HiddenFile</text>
+      <text>DocWithAge</text>
+      <text>TemplateRoot</text>
+      <text>TestDocument2</text>
+      <text>TestDocumentWithDefaultPrefetch</text>
+      <text>SectionRoot</text>
+      <text>Document</text>
+      <text>Folder</text>
+      <text>WorkspaceRoot</text>
+      <text>HiddenFolder</text>
+      <text>Section</text>
+      <text>TestDocument</text>
+      <text>Relation</text>
+      <text>FolderWithSearch</text>
+      <text>MyDocType</text>
+      <text>Book</text>
+      <text>Note</text>
+      <text>ComplexDoc</text>
+      <text>Domain</text>
+      <text>File</text>
+      <text>Workspace</text>
+    </value-query>
   </query>
   <options xmlns="http://marklogic.com/appservices/search">
     <extract-document-data selected="include-with-ancestors">
