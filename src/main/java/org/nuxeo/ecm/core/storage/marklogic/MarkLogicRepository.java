@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -311,6 +312,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
                 log.trace("MarkLogic:    -> " + projections.size());
             }
             return new PartialList<>(projections, totalSize);
+        } catch (FailedRequestException fre) {
+            throw new QueryParseException("Request was rejected by server", fre);
         }
     }
 
