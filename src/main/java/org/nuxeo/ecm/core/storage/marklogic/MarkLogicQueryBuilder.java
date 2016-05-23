@@ -435,8 +435,6 @@ class MarkLogicQueryBuilder {
         /** Boolean system properties only use TRUE or NULL, not FALSE, so queries must be updated accordingly. */
         private final boolean isTrueOrNullBoolean;
 
-        private final boolean hasWildcard;
-
         /**
          * Constructor for a simple field.
          */
@@ -450,7 +448,6 @@ class MarkLogicQueryBuilder {
             this.fullField = String.join("/", this.parts);
             this.type = type;
             this.isTrueOrNullBoolean = isTrueOrNullBoolean;
-            this.hasWildcard = WILDCARD_SPLIT.matcher(fullField).matches();
         }
 
         public String getFullField() {
@@ -462,11 +459,11 @@ class MarkLogicQueryBuilder {
         }
 
         public boolean isMixinTypes() {
-            return fullField.equals(DBSDocument.KEY_MIXIN_TYPES);
+            return fullField.equals(MarkLogicHelper.serializeKey(DBSDocument.KEY_MIXIN_TYPES));
         }
 
         public boolean hasWildcard() {
-            return hasWildcard;
+            return WILDCARD_SPLIT.matcher(fullField).matches();
         }
 
         public StructuredQueryDefinition eq(Literal literal) {
@@ -552,8 +549,19 @@ class MarkLogicQueryBuilder {
         }
 
         private StructuredQueryDefinition buildQuery(Function<Element, StructuredQueryDefinition> queryBuilder) {
-            StructuredQueryDefinition query = queryBuilder.apply(sqb.element(parts[parts.length - 1]));
-            for (int i = parts.length - 2; i >= 0; i--) {
+            Element element;
+            int start;
+            if ("*".equals(parts[parts.length - 1]) || type != null && type.isListType()) {
+                // element is an array, put MarkLogicHelper.ARRAY_ITEM_KEY
+                element = sqb.element(MarkLogicHelper.ARRAY_ITEM_KEY);
+                start = parts.length - 1;
+            } else {
+                // Regular case
+                element = sqb.element(parts[parts.length - 1]);
+                start = parts.length - 2;
+            }
+            StructuredQueryDefinition query = queryBuilder.apply(element);
+            for (int i = start; i >= 0; i--) {
                 if (!"*".equals(parts[i])) {
                     query = sqb.containerQuery(sqb.element(parts[i]), query);
                 }

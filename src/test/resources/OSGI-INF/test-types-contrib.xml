@@ -3,6 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="picture" src="schemas/picture.xsd" prefix="info" />
+    <schema name="dublincore" prefix="dc" src="schemas/dublincore.xsd" />
   </extension>
 
 </component>

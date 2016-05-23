@@ -114,6 +114,36 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     }
 
     @Test
+    public void testSimpleArrayCondition() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference("dc:contributors"), Operator.EQ, new StringLiteral("bob"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/simple-array-condition.xml", query.getHandle().toString());
+    }
+
+    @Test
+    public void testSimpleArrayConditionWithWildcard() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference("dc:contributors/*"), Operator.EQ, new StringLiteral("bob"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/simple-array-condition.xml", query.getHandle().toString());
+    }
+
+    @Test
     public void testCoreFeatureQuery() throws Exception {
         // Init parameters
         SelectClause selectClause = new SelectClause();
