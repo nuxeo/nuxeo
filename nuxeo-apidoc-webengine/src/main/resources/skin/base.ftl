@@ -66,6 +66,11 @@
       <@block name="middle">
          <section>
            <article role="contentinfo">
+             <#if false && onArtifact?? && Root.canAddDocumentation()>
+               <div class="tabsbutton">
+                 <a class="button" href="${This.path}/doc">Manage Documentation</a>
+               </div>
+             </#if>
              <@block name="right">
                Content
              </@block>

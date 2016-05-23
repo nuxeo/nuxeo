@@ -16,7 +16,7 @@
 <h1>${eps?size} extension points</h1>
 
 <div class="tabscontent">
-  <@tableFilterArea "extension point"/>
+  <@tableFilterArea "extension point" "filterExtensionPoints"/>
   <table id="extensionPointsTable" class="tablesorter">
   <thead>
     <tr>

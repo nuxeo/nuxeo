@@ -1022,6 +1022,7 @@ table.content td {
 .button,
 a.button,
 input[type="submit"],
+input[type="reset"],
 input[type="button"],
 input[type="text"],
 input[type="search"] {
@@ -1061,6 +1062,7 @@ select {
 .button:hover,
 a.button:hover,
 input[type="submit"]:hover,
+input[type="reset"]:hover,
 input[type="button"]:hover {
   border-color: #0079b3;
   color: #0079b3; }

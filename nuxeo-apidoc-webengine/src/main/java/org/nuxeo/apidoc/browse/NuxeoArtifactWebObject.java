@@ -69,7 +69,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @Override
     public Template getView(String viewId) {
-        return super.getView(viewId).arg(Distribution.DIST_ID, getDistributionId());
+        return super.getView(viewId).arg(Distribution.DIST_ID, getDistributionId()).arg("onArtifact", true);
     }
 
     public abstract NuxeoArtifact getNxArtifact();

@@ -79,6 +79,10 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         List<NuxeoArtifact> result = new ArrayList<>();
 
         DistributionSnapshot snap = Framework.getLocalService(SnapshotManager.class).getSnapshot(distribId, session);
+        if (!(snap instanceof RepositoryDistributionSnapshot)) {
+            return Collections.emptyList();
+        }
+
         DocumentModel dist = ((RepositoryDistributionSnapshot) snap).getDoc();
         StrBuilder q = new StrBuilder("SELECT * FROM Document WHERE ");
         q.append("ecm:path STARTSWITH '").append(dist.getPathAsString()).append("'");
@@ -126,13 +130,21 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         Map<String, ArtifactWithWeight> sortMap = new HashMap<>();
 
         for (NuxeoArtifact matchingArtifact : matchingArtifacts) {
-            NuxeoArtifact resultArtifact = resolveInTree(session, distribId, matchingArtifact, type);
-            if (resultArtifact != null) {
-                if (sortMap.containsKey(resultArtifact.getId())) {
-                    sortMap.get(resultArtifact.getId()).addHit();
-                } else {
-                    sortMap.put(resultArtifact.getId(), new ArtifactWithWeight(resultArtifact));
-                }
+            ArtifactWithWeight artifactWithWeight;
+            NuxeoArtifact matchingParentArtifact = resolveInTree(session, distribId, matchingArtifact, type);
+            if (matchingParentArtifact != null) {
+                artifactWithWeight = new ArtifactWithWeight(matchingParentArtifact);
+            } else if (matchingArtifact.getArtifactType().equals(type)) {
+                artifactWithWeight = new ArtifactWithWeight(matchingArtifact);
+            } else {
+                continue;
+            }
+
+            String id = artifactWithWeight.getArtifact().getId();
+            if (sortMap.containsKey(id)) {
+                sortMap.get(id).addHit();
+            } else {
+                sortMap.put(id, new ArtifactWithWeight(matchingParentArtifact));
             }
         }
 

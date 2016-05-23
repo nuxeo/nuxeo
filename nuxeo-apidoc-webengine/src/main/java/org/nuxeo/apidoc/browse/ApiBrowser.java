@@ -29,8 +29,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -338,31 +340,22 @@ public class ApiBrowser extends DefaultObject {
     public Object getExtensionPoints() {
         List<String> epIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getExtensionPointIds();
 
-        List<ArtifactLabel> labels = new ArrayList<ArtifactLabel>();
-        for (String id : epIds) {
-            labels.add(ArtifactLabel.createLabelFromExtensionPoint(id));
-        }
+        List<ArtifactLabel> labels = epIds.stream().map(ArtifactLabel::createLabelFromExtensionPoint).collect(Collectors.toList());
 
         Collections.sort(labels);
         return getView("listExtensionPoints").arg("eps", labels).arg(Distribution.DIST_ID,
                 ctx.getProperty(Distribution.DIST_ID));
     }
 
-    @GET
+    @POST
     @Produces("text/html")
     @Path("filterExtensionPoints")
     public Object filterExtensionPoints() {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ExtensionPointInfo.TYPE_NAME, fulltext);
-        List<String> eps = new ArrayList<String>();
-        for (NuxeoArtifact item : artifacts) {
-            eps.add(item.getId());
-        }
-        List<ArtifactLabel> labels = new ArrayList<ArtifactLabel>();
-        for (String id : eps) {
-            labels.add(ArtifactLabel.createLabelFromExtensionPoint(id));
-        }
+        List<String> eps = artifacts.stream().map(NuxeoArtifact::getId).collect(Collectors.toList());
+        List<ArtifactLabel> labels = eps.stream().map(ArtifactLabel::createLabelFromExtensionPoint).collect(Collectors.toList());
         return getView("listExtensionPoints").arg("eps", labels).arg(Distribution.DIST_ID,
                 ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
     }
@@ -373,22 +366,18 @@ public class ApiBrowser extends DefaultObject {
     public Object getContributions() {
         DistributionSnapshot snapshot = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
         List<String> cIds = snapshot.getContributionIds();
-        return getView("listContributions").arg("cIds", cIds).arg("contributions", snapshot.getContributions()).arg(
+        return getView("listContributions").arg("contributions", snapshot.getContributions()).arg(
                 Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
     }
 
-    @GET
+    @POST
     @Produces("text/html")
     @Path("filterContributions")
     public Object filterContributions() {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
-                ExtensionPointInfo.TYPE_NAME, fulltext);
-        List<String> cIds = new ArrayList<String>();
-        for (NuxeoArtifact item : artifacts) {
-            cIds.add(item.getId());
-        }
-        return getView("listContributions").arg("cIds", cIds).arg(Distribution.DIST_ID,
+                ExtensionInfo.TYPE_NAME, fulltext);
+        return getView("listContributions").arg("contributions", artifacts).arg(Distribution.DIST_ID,
                 ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
     }
 

@@ -81,11 +81,11 @@
         </div>
         <div class="flex-ctn">
           <div>
-            <a class="extensions" href="${Root.path}/current/listExtensionPoints">Contribute to an Extension</a>
+            <a class="extensions" href="${Root.path}/${distrib.key}/listExtensionPoints">Contribute to an Extension</a>
           </div>
-          <div><a class="contributions" href="${Root.path}/current/listContributions">Override a Contribution</a></div>
-          <div><a class="operations" href="${Root.path}/current/listOperations">Search Operations</a></div>
-          <div><a class="services" href="${Root.path}/current/listServices">Browse Services</a></div>
+          <div><a class="contributions" href="${Root.path}/${distrib.key}/listContributions">Override a Contribution</a></div>
+          <div><a class="operations" href="${Root.path}/${distrib.key}/listOperations">Search Operations</a></div>
+          <div><a class="services" href="${Root.path}/${distrib.key}/listServices">Browse Services</a></div>
         </div>
     </li>
   </#list>

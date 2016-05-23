@@ -40,6 +40,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -60,8 +61,10 @@ import org.xml.sax.SAXException;
 @Deploy({ "org.nuxeo.apidoc.core" })
 public class TestExtractor {
 
+    public static final String LISTENER_NAME = "attributesExtractorFlagListener";
+
     protected List<String> checks = Arrays.asList("usersocialworkspaces", "socialworkspaceactivitystream",
-            "publicarticles");
+            "publicarticles", "gadget", "org.nuxeo.opensocial.gadgets.service");
 
     protected FileBlob getBlob() {
         return new FileBlob(FileUtils.getResourceFileFromContext("sample-fragment-contrib.xml"));
@@ -72,6 +75,9 @@ public class TestExtractor {
 
     @Inject
     protected WorkManager workManager;
+
+    @Inject
+    protected EventServiceAdmin eventServiceAdmin;
 
     /**
      * Only useful with debug.
@@ -122,6 +128,44 @@ public class TestExtractor {
         myDoc = session.getDocument(myDoc.getRef());
 
         String attributes = (String) myDoc.getPropertyValue(ATTRIBUTES_PROPERTY);
+        assertNotNull(attributes);
+        assertTrue(checks.stream().allMatch(attributes::contains));
+    }
+
+    @Test
+    public void testOnExistingDocument() throws InterruptedException {
+        // Disable listener to simulate exisiting document before new attributes field
+        eventServiceAdmin.setListenerEnabledFlag(LISTENER_NAME, false);
+
+        DocumentModel myDoc = session.createDocumentModel("/", "mydoc", ExtensionInfo.TYPE_NAME);
+        myDoc.setPropertyValue("file:content", getBlob());
+        myDoc = session.createDocument(myDoc);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        workManager.awaitCompletion(5, TimeUnit.SECONDS);
+        myDoc = session.getDocument(myDoc.getRef());
+
+        // Expect that nothing is present in the attribute field
+        String attributes = (String) myDoc.getPropertyValue(ATTRIBUTES_PROPERTY);
+        assertNull(attributes);
+
+        // Enable it after document is created
+        eventServiceAdmin.setListenerEnabledFlag(LISTENER_NAME, true);
+        // Change anything other than the blob
+        myDoc.setPropertyValue("dc:title", "modification");
+        myDoc = session.saveDocument(myDoc);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        workManager.awaitCompletion(5, TimeUnit.SECONDS);
+        myDoc = session.getDocument(myDoc.getRef());
+
+        attributes = (String) myDoc.getPropertyValue(ATTRIBUTES_PROPERTY);
         assertNotNull(attributes);
         assertTrue(checks.stream().allMatch(attributes::contains));
     }

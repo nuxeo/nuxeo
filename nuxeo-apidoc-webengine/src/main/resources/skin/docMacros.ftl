@@ -88,8 +88,6 @@
         </div>
      </#list>
     </#list>
-
-    </div>
   </#if>
 </#macro>
 
@@ -102,10 +100,24 @@
 </#macro>
 
 
-<#macro tableFilterArea name>
+<#macro tableFilterArea name action>
+<#if false>
+  <!--
+  params:
+   - name: Displayed name in the placeholder.
+   - action: (optional) name of the resource that can make a fulltext search; for instance `listExtensionPoints`
+             from `org.nuxeo.apidoc.browse.ApiBrowser#filterExtensionPoints`
+  -->
+</#if>
 <p>
-  <input name="filter" id="filter-box" value="" maxlength="30" size="30" type="search" placeholder="Which ${name} are you looking for ?">
-  <input id="filter-clear-button" type="submit" value="Clear"/>
+  <#if action??><form method="POST" action="${Root.path}/${distId}/${action}"></#if>
+  <input name="fulltext" id="filter-box" value="" maxlength="30" size="30" type="search"
+    placeholder="Which ${name} are you looking for ?"<#if searchFilter??> value="${searchFilter}"</#if>/>
+  <#if action??>
+  <input id="filter-submit-button" type="submit" value="Deep Search"/>
+  </#if>
+  <input id="filter-clear-button" type="reset" value="Clear"/>
+<#if action??></form></#if>
 </p>
 </#macro>
 
@@ -115,9 +127,9 @@
     $(document).ready(function() {
         $("${name}")
         .tablesorter({sortList:[${sortList}], widgets:['zebra']})
-        .tablesorterFilter({filterContainer: "#filter-box",
+  <#if !searchFilter??>.tablesorterFilter({filterContainer: "#filter-box",
                             filterClearContainer: "#filter-clear-button",
-                            filterWaitTime: 100});
+                            filterWaitTime: 600}</#if>);
     });
 </script>
 </#macro>

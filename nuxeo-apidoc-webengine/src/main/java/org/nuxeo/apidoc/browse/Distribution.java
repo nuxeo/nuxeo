@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,21 +45,30 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.export.ArchiveFile;
+import org.nuxeo.apidoc.listener.AttributesExtractorFlagListener;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshotDesc;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
+import org.nuxeo.apidoc.worker.ExtractXmlAttributesWorker;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.work.api.Work;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -465,6 +475,31 @@ public class Distribution extends ModuleRoot {
         log.info("Documents imported.");
 
         return getView("docImportDone");
+    }
+
+    @GET
+    @Path("_reindex")
+    @Produces("text/plain")
+    public Object reindex() {
+        NuxeoPrincipal nxPrincipal = (NuxeoPrincipal) getContext().getPrincipal();
+        if (!nxPrincipal.isAdministrator()) {
+            return Response.status(404).build();
+        }
+
+        CoreSession coreSession = getContext().getCoreSession();
+        String query = String.format(
+                "SELECT ecm:uuid FROM Document WHERE ecm:primaryType in ('%s') AND ecm:isProxy = 0 AND ecm:currentLifeCycleState <> 'deleted'",
+                StringUtils.join(AttributesExtractorFlagListener.DOC_TYPES, "','"));
+
+        try (IterableQueryResult it = coreSession.queryAndFetch(query, NXQL.NXQL, QueryFilter.EMPTY);) {
+            for (Map<String, Serializable> map : it) {
+                String id = (String) map.get(NXQL.ECM_UUID);
+                Work work = new ExtractXmlAttributesWorker(coreSession.getRepositoryName(), nxPrincipal.getName(), id);
+                Framework.getLocalService(WorkManager.class).schedule(work);
+            }
+        }
+
+        return Response.ok().build();
     }
 
     public boolean isEmbeddedMode() {
