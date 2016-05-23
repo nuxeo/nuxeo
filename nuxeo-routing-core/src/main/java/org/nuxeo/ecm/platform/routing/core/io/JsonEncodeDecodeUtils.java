@@ -48,6 +48,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 7.2
  */
+@Deprecated
 public class JsonEncodeDecodeUtils {
 
     public static void encodeBlob(DocumentModel doc, String propVariableFacet, String variableName, Blob blob,
@@ -102,7 +103,6 @@ public class JsonEncodeDecodeUtils {
         jg.writeEndObject();
     }
 
-    @Deprecated
     public static Map<String, Serializable> decodeVariables(JsonNode jsnode,
             Map<String, Serializable> originalVariables, CoreSession session) throws ClassNotFoundException,
             IOException {
@@ -133,7 +133,6 @@ public class JsonEncodeDecodeUtils {
         return variables;
     }
 
-    @Deprecated
     public static void encodeVariableEntry(DocumentModel doc, String propVariableFacet, Entry<String, Serializable> e, JsonGenerator jg,
             HttpServletRequest request) throws JsonGenerationException, IOException {
         if (e.getValue() instanceof Blob) {
