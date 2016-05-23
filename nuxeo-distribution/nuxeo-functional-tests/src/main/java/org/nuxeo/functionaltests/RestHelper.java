@@ -41,6 +41,7 @@ import org.nuxeo.client.api.objects.Documents;
 import org.nuxeo.client.api.objects.acl.ACE;
 import org.nuxeo.client.api.objects.user.Group;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
+import org.nuxeo.common.utils.URIUtils;
 
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -270,6 +271,10 @@ public class RestHelper {
         }
 
         document.removePermission(username);
+    }
+
+    public static void logOnServer(String level, String message) {
+        CLIENT.get(String.format("%s/restAPI/systemLog?token=dolog&level=%s&message=%s", AbstractTest.NUXEO_URL, level, URIUtils.quoteURIPathComponent(message, true)));
     }
 
 }
