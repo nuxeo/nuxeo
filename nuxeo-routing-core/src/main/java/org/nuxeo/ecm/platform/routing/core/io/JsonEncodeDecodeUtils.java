@@ -47,6 +47,11 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * @since 7.2
+ * @deprecated since 8.3, use
+ *             {@link org.nuxeo.ecm.core.io.registry.Writer#write(Object, Class, java.lang.reflect.Type, javax.ws.rs.core.MediaType, java.io.OutputStream)}
+ *             instead. See how
+ *             {@link org.nuxeo.ecm.platform.routing.core.io.DocumentRouteWriter#writeVariables(org.nuxeo.ecm.platform.routing.api.DocumentRoute, JsonGenerator, org.nuxeo.ecm.core.io.registry.MarshallerRegistry, org.nuxeo.ecm.core.io.registry.context.RenderingContext, SchemaManager)}
+ *             uses it.
  */
 @Deprecated
 public class JsonEncodeDecodeUtils {
