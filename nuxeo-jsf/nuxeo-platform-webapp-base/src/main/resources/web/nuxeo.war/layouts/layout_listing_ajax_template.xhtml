@@ -32,7 +32,8 @@
   value="#{provider.getSortInfos().size() > 1}"
   cache="true">
 
-<c:if test="#{showListingHeader and layout.properties.showListingHeader}">
+<c:if test="#{layout.properties.showListingHeader}">
+<ui:fragment rendered="#{showListingHeader}">
   <thead>
     <tr>
       <nxl:layoutColumn>
@@ -186,6 +187,7 @@
       </nxl:layoutColumn>
     </tr>
   </thead>
+</ui:fragment>
 </c:if>
 
 </nxu:set>
