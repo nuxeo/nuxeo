@@ -200,6 +200,7 @@ public class ITRichfileUploadTest extends AbstractTest {
         // wait for message to be present for ajax request to be finished before logout
         Locator.waitForTextPresent(By.id("ambiance-notification"), "File modified");
 
+        //logout removed to avoid random exception on server (probably an unfinished ajax request)
     }
 
     protected void removeFirstUploadedItem() {
