@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -60,6 +61,7 @@ import com.marklogic.client.query.QueryManager;
 import com.marklogic.client.query.RawQueryDefinition;
 import com.marklogic.client.query.RawStructuredQueryDefinition;
 import com.marklogic.client.query.StructuredQueryBuilder;
+import com.marklogic.client.query.StructuredQueryBuilder.Element;
 import com.marklogic.client.query.StructuredQueryDefinition;
 
 /**
@@ -80,8 +82,8 @@ class MarkLogicQueryBuilder {
             + "\\[(\\d+|\\*|\\*\\d+)\\]" // index in brackets
     );
 
-    /** Splits foo.*.bar into foo, *, bar and split foo.*1.bar into foo, *1, bar with the last bar part optional */
-    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*)\\.\\*(\\d*)(?:\\.(.*))?");
+    /** Splits foo/ * /bar into foo, *, bar and split foo/*1/bar into foo, *1, bar with the last bar part optional */
+    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*)/\\*(\\d*)(?:/(.*))?");
 
     private final QueryManager queryManager;
 
@@ -396,8 +398,7 @@ class MarkLogicQueryBuilder {
             }
             firstPart = false;
         }
-        String fullField = StringUtils.join(parts, '.');
-        return new FieldBuilder(prop, fullField, type, false);
+        return new FieldBuilder(prop, parts, type, false);
     }
 
     /**
@@ -423,6 +424,9 @@ class MarkLogicQueryBuilder {
         /** NXQL property. */
         private final String prop;
 
+        /** MarkLogic field exploded by /. */
+        private final String[] parts;
+
         /** MarkLogic field including wildcards. */
         private final String fullField;
 
@@ -437,19 +441,16 @@ class MarkLogicQueryBuilder {
          * Constructor for a simple field.
          */
         public FieldBuilder(String prop, String field) {
-            this(prop, field, true);
+            this(prop, new String[] { field }, DBSSession.getType(field), true);
         }
 
-        public FieldBuilder(String prop, String field, boolean isTrueOrNullBoolean) {
-            this(prop, field, DBSSession.getType(field), isTrueOrNullBoolean);
-        }
-
-        public FieldBuilder(String prop, String fullField, Type type, boolean isTrueOrNullBoolean) {
+        public FieldBuilder(String prop, String[] parts, Type type, boolean isTrueOrNullBoolean) {
             this.prop = prop;
-            this.fullField = MarkLogicHelper.serializeKey(fullField);
+            this.parts = Arrays.stream(parts).map(MarkLogicHelper::serializeKey).toArray(String[]::new);
+            this.fullField = String.join("/", this.parts);
             this.type = type;
             this.isTrueOrNullBoolean = isTrueOrNullBoolean;
-            hasWildcard = WILDCARD_SPLIT.matcher(fullField).matches();
+            this.hasWildcard = WILDCARD_SPLIT.matcher(fullField).matches();
         }
 
         public String getFullField() {
@@ -474,10 +475,10 @@ class MarkLogicQueryBuilder {
             // - test for non existence of boolean field
             // - a platform issue
             if (value == null && isTrueOrNullBoolean) {
-                return sqb.not(sqb.value(sqb.element(fullField), true));
+                return buildQuery(element -> sqb.not(sqb.value(element, true)));
             }
             String serializedValue = MarkLogicStateSerializer.serializeValue(value);
-            return sqb.value(sqb.element(fullField), serializedValue);
+            return buildQuery(element -> sqb.value(element, serializedValue));
         }
 
         public StructuredQueryDefinition lt(Literal literal) {
@@ -500,7 +501,7 @@ class MarkLogicQueryBuilder {
             Object value = getLiteral(literal);
             String valueType = ElementType.getType(value.getClass()).getKey();
             String serializedValue = MarkLogicStateSerializer.serializeValue(value);
-            return sqb.range(sqb.element(fullField), valueType, operator, serializedValue);
+            return buildQuery(element -> sqb.range(element, valueType, operator, serializedValue));
         }
 
         public StructuredQueryDefinition in(LiteralList litteral) {
@@ -508,7 +509,7 @@ class MarkLogicQueryBuilder {
                                                 .map(this::getLiteral)
                                                 .map(MarkLogicStateSerializer::serializeValue)
                                                 .toArray(String[]::new);
-            return sqb.value(sqb.element(fullField), serializedValues);
+            return buildQuery(element -> sqb.value(element, serializedValues));
         }
 
         public StructuredQueryDefinition notIn(LiteralList litteral) {
@@ -516,11 +517,11 @@ class MarkLogicQueryBuilder {
         }
 
         public StructuredQueryDefinition isNull() {
-            return sqb.not(sqb.containerQuery(sqb.element(fullField), sqb.and()));
+            return sqb.not(isNotNull());
         }
 
         public StructuredQueryDefinition isNotNull() {
-            return sqb.containerQuery(sqb.element(fullField), sqb.and());
+            return buildQuery(element -> sqb.containerQuery(element, sqb.and()));
         }
 
         private Object getLiteral(Literal literal) {
@@ -549,6 +550,17 @@ class MarkLogicQueryBuilder {
             }
             return result;
         }
+
+        private StructuredQueryDefinition buildQuery(Function<Element, StructuredQueryDefinition> queryBuilder) {
+            StructuredQueryDefinition query = queryBuilder.apply(sqb.element(parts[parts.length - 1]));
+            for (int i = parts.length - 2; i >= 0; i--) {
+                if (!"*".equals(parts[i])) {
+                    query = sqb.containerQuery(sqb.element(parts[i]), query);
+                }
+            }
+            return query;
+        }
+
     }
 
 }
