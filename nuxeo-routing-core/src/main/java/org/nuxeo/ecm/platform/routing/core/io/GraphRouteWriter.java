@@ -18,43 +18,30 @@
  *
  */
 
-package org.nuxeo.ecm.restapi.server.jaxrs.routing.io;
+package org.nuxeo.ecm.platform.routing.core.io;
+
+import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
+import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
 import java.util.Map.Entry;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
-
-import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
+import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
+import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.routing.core.impl.jsongraph.JsonGraphRoute;
 
-@Provider
-@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON + "+nxentity" })
-public class GraphRouteWriter extends EntityWriter<JsonGraphRoute>  {
+@Setup(mode = SINGLETON, priority = REFERENCE)
+public class GraphRouteWriter extends ExtensibleEntityJsonWriter<JsonGraphRoute> {
 
-    @Context
-    JsonFactory factory;
-
-    @Context
-    protected HttpHeaders headers;
-
-    @Context
-    protected HttpServletRequest request;
-
-    @Override
-    protected String getEntityType() {
-        return "graph";
+    public GraphRouteWriter() {
+        super(ENTITY_TYPE, JsonGraphRoute.class);
     }
 
+    public static final String ENTITY_TYPE = "graph";
+
     @Override
-    protected void writeEntityBody(JsonGenerator jg, JsonGraphRoute item) throws IOException {
+    public void writeEntityBody(JsonGraphRoute item, JsonGenerator jg) throws IOException {
         for (Entry<String, Object> e : item.getGraphElements().entrySet()) {
             jg.writeObjectField(e.getKey(), e.getValue());
         }

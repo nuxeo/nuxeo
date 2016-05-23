@@ -133,6 +133,7 @@ public class JsonEncodeDecodeUtils {
         return variables;
     }
 
+    @Deprecated
     public static void encodeVariableEntry(DocumentModel doc, String propVariableFacet, Entry<String, Serializable> e, JsonGenerator jg,
             HttpServletRequest request) throws JsonGenerationException, IOException {
         if (e.getValue() instanceof Blob) {
