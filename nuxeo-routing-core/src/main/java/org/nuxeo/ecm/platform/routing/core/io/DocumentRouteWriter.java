@@ -31,10 +31,10 @@ import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
@@ -54,8 +54,6 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
 
     public static final String ENTITY_TYPE = "workflow";
 
-    private static final Object FETCH_INITATIOR = "initiator";
-
     @Inject
     UserManager userManager;
 
@@ -73,16 +71,7 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
         jg.writeStringField("title", item.getTitle());
         jg.writeStringField("state", item.getDocument().getCurrentLifeCycleState());
         jg.writeStringField("workflowModelName", item.getModelName());
-        if (ctx.getFetched(ENTITY_TYPE).contains(FETCH_INITATIOR)) {
-            NuxeoPrincipal principal = userManager.getPrincipal(item.getInitiator());
-            if (principal != null) {
-                writeEntityField("initiator", principal, jg);
-            } else {
-                jg.writeStringField("initiator", item.getInitiator());
-            }
-        } else {
-            jg.writeStringField("initiator", item.getInitiator());
-        }
+        jg.writeStringField("initiator", item.getInitiator());
 
         jg.writeArrayFieldStart("attachedDocumentIds");
         for (String docId : item.getAttachedDocuments()) {
@@ -125,7 +114,8 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
 
                 Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
                 // provides the current route to the property marshaller
-                try (Closeable resource = ctx.wrap().with(ENTITY_TYPE, item.getDocument()).open()) {
+                try (Closeable resource = ctx.wrap().with(DocumentModelJsonWriter.ENTITY_TYPE,
+                        item.getDocument()).open()) {
                     for (Field f : type.getFields()) {
                         String name = f.getName().getLocalName();
                         Property property = hasFacet ? item.getDocument().getProperty(name) : null;

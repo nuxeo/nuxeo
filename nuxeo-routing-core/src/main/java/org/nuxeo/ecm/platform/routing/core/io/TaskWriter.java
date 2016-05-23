@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
@@ -157,8 +158,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             jg.writeFieldName("layoutResource");
             jg.writeStartObject();
             jg.writeStringField("name", node.getTaskLayout());
-            jg.writeStringField("url",
-                    ctx.getBaseUrl() + "layout-manager/layouts/?layoutName=" + node.getTaskLayout());
+            jg.writeStringField("url", ctx.getBaseUrl() + "layout-manager/layouts/?layoutName=" + node.getTaskLayout());
             jg.writeEndObject();
 
             jg.writeArrayFieldStart("schemas");
@@ -197,7 +197,8 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
                 Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
                 // provides the current route to the property marshaller
-                try (Closeable resource = ctx.wrap().with(ENTITY_TYPE, node.getDocument()).open()) {
+                try (Closeable resource = ctx.wrap().with(DocumentModelJsonWriter.ENTITY_TYPE,
+                        node.getDocument()).open()) {
                     for (Field f : type.getFields()) {
                         String name = f.getName().getLocalName();
                         Property property = hasFacet ? node.getDocument().getProperty(name) : null;
@@ -232,7 +233,8 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
                 Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
                 // provides the current route to the property marshaller
-                try (Closeable resource = ctx.wrap().with(ENTITY_TYPE, route.getDocument()).open()) {
+                try (Closeable resource = ctx.wrap().with(DocumentModelJsonWriter.ENTITY_TYPE,
+                        route.getDocument()).open()) {
                     for (Field f : type.getFields()) {
                         String name = f.getName().getLocalName();
                         if (transientSchema.hasField(name)) {
