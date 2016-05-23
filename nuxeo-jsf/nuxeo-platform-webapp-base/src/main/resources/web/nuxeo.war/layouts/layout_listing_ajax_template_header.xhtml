@@ -1,0 +1,172 @@
+<ui:fragment
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:nxd="http://nuxeo.org/nxweb/document"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:a4j="http://richfaces.org/a4j">
+
+<nxu:set var="hasSeveralSorts"
+  value="#{provider.getSortInfos().size() > 1}"
+  cache="true">
+
+  <thead>
+    <tr>
+      <nxl:layoutColumn>
+        <th dir="auto">
+          <c:choose>
+            <c:when test="#{layoutColumn.properties.isListingSelectionBox}">
+              <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
+                styleClass="tipsyShow tipsyGravitySW"
+                title="#{messages['tooltip.content.select.all']}"
+                onchange="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
+                value="#{documents.selected}">
+                <a4j:ajax event="click"
+                  execute="@this"
+                  listener="#{documentListingActions.processSelectPage(contentView.name, contentView.selectionListName, documents.selected)}"
+                  render="#{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
+              </h:selectBooleanCheckbox>
+            </c:when>
+            <c:when test="#{layoutColumn.properties.isListingSelectionBoxWithCurrentDocument}">
+              <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
+                styleClass="tipsyShow tipsyGravitySW"
+                title="#{messages['tooltip.content.select.all']}"
+                onchange="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
+                value="#{documents.selected}">
+                <a4j:ajax event="click"
+                  execute="@this"
+                  listener="#{documentListingActions.checkCurrentDocAndProcessSelectPage(contentView.name, contentView.selectionListName, documents.selected, currentDocument.ref)}"
+                  render="#{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
+              </h:selectBooleanCheckbox>
+            </c:when>
+            <c:when test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
+              <c:choose>
+                <c:when test="#{provider.sortable and !empty layoutColumn.properties.sortPropertyName}">
+                  <nxu:set var="ascIndex"
+                    value="#{provider.getSortInfoIndex(layoutColumn.properties.sortPropertyName, true)}"
+                    cache="true">
+                  <nxu:set var="descIndex"
+                    value="#{provider.getSortInfoIndex(layoutColumn.properties.sortPropertyName, false)}"
+                    cache="true">
+                    <span class="contentViewHeaderSortTooltip tipsyShow tipsyGravityS" title="#{messages['contentview.setSort.help']}">
+                      <c:if test="#{useAjaxForm}">
+                        <a4j:commandLink execute="@this" immediate="true"
+                          render="#{contentIdToBeReRendered}"
+                          action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
+                          id="#{layoutColumn.widgets[0].name}_header_sort">
+                          <h:outputText value="#{layoutColumn.widgets[0].label}"
+                            rendered="#{!layoutColumn.widgets[0].translated}"
+                            styleClass="colHeader"/>
+                          <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                            rendered="#{layoutColumn.widgets[0].translated}"
+                            styleClass="colHeader"/>
+                        </a4j:commandLink>
+                      </c:if>
+                      <c:if test="#{not useAjaxForm}">
+                        <h:commandLink immediate="true"
+                          action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
+                          id="#{layoutColumn.widgets[0].name}_header_sort">
+                          <h:outputText value="#{layoutColumn.widgets[0].label}"
+                            rendered="#{!layoutColumn.widgets[0].translated}"
+                            styleClass="colHeader" />
+                          <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                            rendered="#{layoutColumn.widgets[0].translated}"
+                            styleClass="colHeader" />
+                        </h:commandLink>
+                      </c:if>
+                    </span>
+                    <f:verbatim>&amp;nbsp;</f:verbatim>
+                    <c:if test="#{ascIndex != -1}">
+                      <span class="contentViewHeaderSortTooltip tipsyShow tipsyGravityS" title="#{messages['contentview.setSort.help']}">
+                        <c:if test="#{useAjaxForm}">
+                          <a4j:commandLink execute="@this" immediate="true"
+                            render="#{contentIdToBeReRendered}"
+                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_desc">
+                            <h:graphicImage value="/icons/sort_selected_up.png" />
+                            <c:if test="#{hasSeveralSorts}">
+                              #{ascIndex + 1}
+                            </c:if>
+                          </a4j:commandLink>
+                        </c:if>
+                        <c:if test="#{not useAjaxForm}">
+                          <h:commandLink immediate="true"
+                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_desc">
+                            <h:graphicImage value="/icons/sort_selected_up.png" />
+                            <c:if test="#{hasSeveralSorts}">
+                              #{ascIndex + 1}
+                            </c:if>
+                          </h:commandLink>
+                        </c:if>
+                      </span>
+                    </c:if>
+                    <c:if test="#{descIndex != -1}">
+                      <span class="contentViewHeaderSortTooltip tipsyShow tipsyGravityS" title="#{messages['contentview.setSort.help']}">
+                        <c:if test="#{useAjaxForm}">
+                          <a4j:commandLink execute="@this" immediate="true"
+                            render="#{contentIdToBeReRendered}"
+                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_asc">
+                            <h:graphicImage value="/icons/sort_selected_down.png" />
+                            <c:if test="#{hasSeveralSorts}">
+                              #{descIndex + 1}
+                            </c:if>
+                          </a4j:commandLink>
+                        </c:if>
+                        <c:if test="#{not useAjaxForm}">
+                          <h:commandLink immediate="true"
+                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_asc">
+                            <h:graphicImage value="/icons/sort_selected_down.png" />
+                            <c:if test="#{hasSeveralSorts}">
+                              #{descIndex + 1}
+                            </c:if>
+                          </h:commandLink>
+                        </c:if>
+                      </span>
+                    </c:if>
+                    <c:if test="#{ascIndex == -1 and descIndex == -1}">
+                      <span class="contentViewHeaderSortTooltip tipsyShow tipsyGravityS" title="#{messages['contentview.setSort.help']}">
+                        <c:if test="#{useAjaxForm}">
+                          <a4j:commandLink execute="@this" immediate="true"
+                            render="#{contentIdToBeReRendered}"
+                            action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_add">
+                            <h:graphicImage value="/icons/sort_up.png" />
+                          </a4j:commandLink>
+                        </c:if>
+                        <c:if test="#{not useAjaxForm}">
+                          <h:commandLink immediate="true"
+                            action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
+                            id="#{layoutColumn.widgets[0].name}_header_sort_add">
+                            <h:graphicImage value="/icons/sort_up.png" />
+                          </h:commandLink>
+                        </c:if>
+                      </span>
+                    </c:if>
+                  </nxu:set>
+                  </nxu:set>
+                </c:when>
+                <c:otherwise>
+                  <h:outputText value="#{layoutColumn.widgets[0].label}"
+                    rendered="#{!layoutColumn.widgets[0].translated}"
+                    styleClass="colHeader" />
+                  <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
+                    rendered="#{layoutColumn.widgets[0].translated}"
+                    styleClass="colHeader" />
+                </c:otherwise>
+              </c:choose>
+            </c:when>
+          </c:choose>
+        </th>
+      </nxl:layoutColumn>
+    </tr>
+  </thead>
+
+</nxu:set>
+
+</ui:fragment>
