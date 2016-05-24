@@ -61,7 +61,7 @@ public class SnapshotRemovalPolicy implements OrphanVersionRemovalFilter {
     public List<String> getRemovableVersionIds(CoreSession session, ShallowDocumentModel deletedLiveDoc,
             List<String> versionUUIDs) {
 
-        if (canRemoveVersions(session, deletedLiveDoc, versionUUIDs)) {
+        if (!canRemoveVersions(session, deletedLiveDoc, versionUUIDs)) {
             return Collections.emptyList();
         }
         return versionUUIDs;

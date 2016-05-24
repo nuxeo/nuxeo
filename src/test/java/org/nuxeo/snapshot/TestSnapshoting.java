@@ -18,26 +18,37 @@
  */
 package org.nuxeo.snapshot;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import static org.junit.Assert.*;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(init = PublishRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.snapshot" })
 public class TestSnapshoting extends AbstractTestSnapshot {
+
+    @Inject
+    protected EventService eventService;
 
     protected String getContentHash() throws Exception {
         DocumentModelList alldocs = session.query("select * from Document where ecm:isCheckedInVersion=0 order by ecm:path");
@@ -256,5 +267,64 @@ public class TestSnapshoting extends AbstractTestSnapshot {
         doc = session.getDocument(doc.getRef());
         assertEquals("1.0+", doc.getVersionLabel());
         assertEquals("with non existing versioning value", doc.getPropertyValue("dc:title"));
+    }
+
+    @Test
+    public void testSnapshotableVersionRemovalPolicy() throws Exception {
+        root = session.createDocumentModel("/", "root", "SnapshotableFolder");
+        root = session.createDocument(root);
+
+        folder1 = session.createDocumentModel(root.getPathAsString(), "folder1", "Folder");
+        folder1.setPropertyValue("dc:title", "Folder 1");
+        folder1 = session.createDocument(folder1);
+
+        // 1 file created under /folder1 -> snapshot in 1.0
+        Snapshotable snapshotable = root.getAdapter(Snapshotable.class);
+        assertNotNull(snapshotable);
+        DocumentModel doc1 = session.createDocumentModel(folder1.getPathAsString(), "doc1", "File");
+        doc1.setPropertyValue("dc:title", "Doc 1");
+        session.createDocument(doc1);
+        Snapshot snapshot = snapshotable.createSnapshot(VersioningOption.MAJOR);
+        assertNotNull(snapshot);
+
+        // 1 other file created under /folder1 -> snapshot in 2.0
+        DocumentModel doc2 = session.createDocumentModel(folder1.getPathAsString(), "doc2", "File");
+        doc2.setPropertyValue("dc:title", "Doc 2");
+        session.createDocument(doc2);
+        // folder1 children kept in memory for final check
+        DocumentModelList children = session.getChildren(new IdRef(folder1.getId()));
+        snapshot = snapshotable.createSnapshot(VersioningOption.MAJOR);
+        assertNotNull(snapshot);
+
+        // root restored in 1.0 -> 1 other file created -> snapshot in 3.0
+        DocumentModel restored = snapshot.restore("1.0");
+        assertNotNull(restored);
+        snapshotable = restored.getAdapter(Snapshotable.class);
+        assertNotNull(snapshotable);
+        DocumentModel doc3 = session.createDocumentModel(folder1.getPathAsString(), "doc3", "File");
+        doc3.setPropertyValue("dc:title", "Doc 3");
+        session.createDocument(doc3);
+        snapshot = snapshotable.createSnapshot(VersioningOption.MAJOR);
+        assertNotNull(snapshot);
+
+        // root restore in 2.0 to check if the version of 'file2' has been kept
+        restored = snapshot.restore("2.0");
+        assertNotNull(restored);
+        // final check
+        waitForAsyncCompletion();
+        DocumentModelList sameChildren = session.getChildren(new IdRef(folder1.getId()));
+        assertEquals(children.size(), sameChildren.size());
+    }
+
+    protected void waitForAsyncCompletion() {
+        nextTransaction();
+        eventService.waitForAsyncCompletion();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 }
