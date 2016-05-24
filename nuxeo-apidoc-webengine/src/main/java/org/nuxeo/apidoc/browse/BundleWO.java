@@ -83,4 +83,8 @@ public class BundleWO extends NuxeoArtifactWebObject {
         return result;
     }
 
+    @Override
+    public String getSearchCriterion() {
+        return "'" + super.getSearchCriterion() + "' Bundle";
+    }
 }

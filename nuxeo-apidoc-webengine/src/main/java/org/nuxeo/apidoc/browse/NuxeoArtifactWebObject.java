@@ -34,6 +34,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
@@ -51,6 +53,8 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 public abstract class NuxeoArtifactWebObject extends DefaultObject {
+
+    private static final Log log = LogFactory.getLog(NuxeoArtifactWebObject.class);
 
     protected String nxArtifactId;
 
@@ -248,5 +252,9 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Map<String, String> getCategories() {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         return ds.getCategories();
+    }
+
+    public String getSearchCriterion() {
+        return String.format("'%s'", getNxArtifactId());
     }
 }

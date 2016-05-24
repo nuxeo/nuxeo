@@ -11,7 +11,7 @@
 <h1>${contributions?size} contributions</h1>
 
 <div class="tabscontent">
-  <@tableFilterArea "contribution" "filterContributions"/>
+  <@tableFilterArea "contribution" "filterContributions" searchFilter/>
   <table id="contributionsTable" class="tablesorter">
   <thead>
     <tr>

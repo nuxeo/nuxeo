@@ -19,6 +19,7 @@
 package org.nuxeo.apidoc.browse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
@@ -70,4 +72,14 @@ public class ContributionWO extends NuxeoArtifactWebObject {
         return getView("override").arg("contribution", ei).arg("selectedContribs", selectedContribs).arg("ep", ep);
     }
 
+    @Override
+    public String getSearchCriterion() {
+        String[] split = getNxArtifactId().split("--");
+        if (split.length == 2) {
+            return String.format("'%s' %s", split[0], split[1]);
+        } else if (split.length> 1) {
+            return StringUtils.join(split, " ");
+        }
+        return getNxArtifactId();
+    }
 }

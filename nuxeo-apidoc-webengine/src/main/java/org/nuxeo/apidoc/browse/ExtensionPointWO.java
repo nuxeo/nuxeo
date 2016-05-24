@@ -22,6 +22,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
@@ -59,4 +60,14 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
         return getView("simple").arg("nxItem", nxItem).arg("docs", docs);
     }
 
+    @Override
+    public String getSearchCriterion() {
+        String[] split = getNxArtifactId().split("--");
+        if (split.length == 2) {
+            return String.format("'%s' %s", split[0], split[1]);
+        } else if (split.length> 1) {
+            return StringUtils.join(split, " ");
+        }
+        return getNxArtifactId();
+    }
 }

@@ -97,4 +97,8 @@ public class OperationWO extends NuxeoArtifactWebObject {
         return "";
     }
 
+    @Override
+    public String getSearchCriterion() {
+        return "'" + super.getSearchCriterion() + "' Operation";
+    }
 }
