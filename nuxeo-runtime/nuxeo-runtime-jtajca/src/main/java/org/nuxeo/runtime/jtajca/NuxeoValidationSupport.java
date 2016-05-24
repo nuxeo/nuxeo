@@ -126,7 +126,7 @@ public class NuxeoValidationSupport {
                     return;
                 }
                 // destroy invalid connection and retry
-                LogFactory.getLog(NuxeoValidationSupport.class).error("Returning invalid connection " + ci);
+                LogFactory.getLog(NuxeoValidationSupport.class).warn("Returning invalid connection " + tryee);
                 returnConnection(tryee, ConnectionReturnAction.DESTROY);
             }
         }
