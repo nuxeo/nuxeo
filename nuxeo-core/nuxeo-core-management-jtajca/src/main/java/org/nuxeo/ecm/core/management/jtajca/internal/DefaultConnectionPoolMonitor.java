@@ -136,6 +136,8 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
             log.trace("invoked " + stack.getClass().getSimpleName() + "." + m.getName(), stackTrace);
         }
 
+        IdProvider midProvider;
+
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             try {
@@ -146,22 +148,21 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
                 if (args != null && args.length > 0) {
                     ConnectionInfo info = (ConnectionInfo) args[0];
                     ManagedConnection connection = info.getManagedConnectionInfo().getManagedConnection();
-                    IdProvider midProvider = guessProvider(connection);
-                    if (name.startsWith("get")) {
-                        MDC.put(midProvider.key(), midProvider.id(connection));
-                    } else if (name.startsWith("return")) {
-                        MDC.remove(midProvider.key());
+                    if (connection != null) {
+                        if (midProvider == null) {
+                            midProvider = guessProvider(connection);
+                        }
+                        if (name.startsWith("get")) {
+                            MDC.put(midProvider.key(), midProvider.id(connection));
+                        } else if (name.startsWith("return")) {
+                            MDC.remove(midProvider.key());
+                        }
                     }
                 }
             }
         }
 
-        protected IdProvider midProvider;
-
         protected IdProvider guessProvider(ManagedConnection connection) {
-            if (midProvider != null) {
-                return midProvider;
-            }
             if (connection instanceof ManagedConnectionImpl) {
                 return new IdProvider() {
 
@@ -187,7 +188,7 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
 
                     @Override
                     public Object id(ManagedConnection connection) {
-                        return ((AbstractManagedConnection) connection).getPhysicalConnection();
+                        return ((AbstractManagedConnection<?,?>) connection).getPhysicalConnection();
                     }
 
                 };
