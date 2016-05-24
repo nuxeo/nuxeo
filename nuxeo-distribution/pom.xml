@@ -36,7 +36,6 @@
     <module>nuxeo-distribution-tomcat-wizard-tests</module>
     <module>nuxeo-distribution-cap-webdriver-tests</module>
     <module>nuxeo-distribution-cap-funkload-tests</module>
-    <module>nuxeo-distribution-cap-selenium-tests</module>
     <module>nuxeo-distribution-cap-gatling-tests</module>
   </modules>
 
