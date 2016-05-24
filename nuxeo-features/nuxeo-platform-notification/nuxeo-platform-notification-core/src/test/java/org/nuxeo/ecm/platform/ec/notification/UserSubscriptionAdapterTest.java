@@ -24,10 +24,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -148,7 +145,5 @@ public class UserSubscriptionAdapterTest {
         assertThat(us.getUserSubscriptions("Administrator")).contains("Modification", "Creation");
 
     }
-
-
 
 }

@@ -57,10 +57,10 @@ public class SubscriptionAdapter {
     /**
      * Take the document storage propery and put it in a map.
      * <dl>
-     *   <dt>key</dt>
-     *   <dd>notificationName</dd>
-     *   <dt>value</dt>
-     *   <dd>list of subscribers</dd>
+     * <dt>key</dt>
+     * <dd>notificationName</dd>
+     * <dt>value</dt>
+     * <dd>list of subscribers</dd>
      * </dl>
      * After having modified the map, update the doc with {@link #setNotificationMap(Map)}
      *
@@ -210,7 +210,7 @@ public class SubscriptionAdapter {
      * @param targetDoc
      */
     public void copySubscriptionsTo(DocumentModel targetDoc) {
-        if(!targetDoc.hasFacet(NOTIFIABLE_FACET)) {
+        if (!targetDoc.hasFacet(NOTIFIABLE_FACET)) {
             targetDoc.addFacet(NOTIFIABLE_FACET);
         }
         targetDoc.setPropertyValue(NOTIF_PROPERTY, doc.getPropertyValue(NOTIF_PROPERTY));
