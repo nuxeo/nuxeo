@@ -99,19 +99,22 @@ public class SubscriptionAdapter {
     private void setNotificationMap(Map<String, Set<String>> map) {
         List<Map<String, Serializable>> props = new ArrayList<Map<String, Serializable>>();
         for (Entry<String, Set<String>> entry : map.entrySet()) {
-            Map<String, Serializable> propMap = new HashMap<>();
-            propMap.put(NOTIF_NAMEKEY, entry.getKey());
-            propMap.put(NOTIF_SUBSCRIBERSKEY, new ArrayList<String>(entry.getValue()));
-            props.add(propMap);
+            Set<String> subscribers = entry.getValue();
+            if (!subscribers.isEmpty()) {
+                Map<String, Serializable> propMap = new HashMap<>();
+                propMap.put(NOTIF_NAMEKEY, entry.getKey());
+                propMap.put(NOTIF_SUBSCRIBERSKEY, new ArrayList<String>(subscribers));
+                props.add(propMap);
+            }
         }
 
         if (!props.isEmpty()) {
             if (!doc.hasFacet(SubscriptionAdapter.NOTIFIABLE_FACET)) {
                 doc.addFacet(SubscriptionAdapter.NOTIFIABLE_FACET);
             }
-
-            doc.setPropertyValue(NOTIF_PROPERTY, (Serializable) props);
         }
+
+        doc.setPropertyValue(NOTIF_PROPERTY, (Serializable) props);
     }
 
     /**
