@@ -60,6 +60,7 @@ import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.tranql.connector.AbstractManagedConnection;
 import org.tranql.connector.CredentialExtractor;
 import org.tranql.connector.ExceptionSorter;
@@ -205,47 +206,7 @@ public class PooledDataSourceFactory implements ObjectFactory {
                 final LocalTransactionImpl localClientTx;
                 final boolean commitBeforeAutoCommit;
 
-                final ErrorHandler errorHandler = new ErrorHandler();
-
-                class ErrorHandler {
-
-                    boolean intx = false;
-
-                    Exception handled;
-
-                    void onerror(Exception error) {
-                        if (handled != null) {
-                            return;
-                        }
-                        if (!isFatal(error)) {
-                            return;
-                        }
-                        handled = error;
-                        if (!intx) {
-                            destroyConnection();
-                        }
-                    }
-
-                    void onstart() {
-                        intx = true;
-                    }
-
-                    boolean onend() {
-                        intx = false;
-                        if (handled == null) {
-                            return false;
-                        }
-                        destroyConnection();
-                        return true;
-                    }
-
-                    void destroyConnection() {
-                        if (exceptionSorter.rollbackOnFatalException()) {
-                            attemptRollback();
-                        }
-                        unfilteredConnectionError(handled);
-                    }
-                };
+                Exception fatalError;
 
                 ManagedJDBCConnection(UserPasswordManagedConnectionFactory mcf, Connection physicalConnection,
                         CredentialExtractor credentialExtractor, ExceptionSorter exceptionSorter, boolean commitBeforeAutoCommit) {
@@ -285,14 +246,10 @@ public class PooledDataSourceFactory implements ObjectFactory {
                         throw new LocalTransactionException("Unable to disable autoCommit", e);
                     }
                     super.localTransactionStart(isSPI);
-                    errorHandler.onstart();
                 }
 
                 @Override
                 protected void localTransactionCommit(boolean isSPI) throws ResourceException {
-                    if (errorHandler.onend()) {
-                        throw new ResourceException("connection was destroyed");
-                    }
                     Connection c = physicalConnection();
                     try {
                         if (commitBeforeAutoCommit) {
@@ -319,9 +276,6 @@ public class PooledDataSourceFactory implements ObjectFactory {
 
                 @Override
                 protected void localTransactionRollback(boolean isSPI) throws ResourceException {
-                    if (errorHandler.onend()) {
-                        return;
-                    }
                     Connection c = physicalConnection;
                     try {
                         c.rollback();
@@ -358,7 +312,31 @@ public class PooledDataSourceFactory implements ObjectFactory {
 
                 @Override
                 public void connectionError(Exception e) {
-                    errorHandler.onerror(e);
+                    if (fatalError != null) {
+                        return;
+                    }
+
+                    if (isFatal(e)) {
+                        fatalError = e;
+                        if (exceptionSorter.rollbackOnFatalException()) {
+                            if (TransactionHelper.isTransactionActive()) {
+                                // will roll-back at tx end through #localTransactionRollback
+                                TransactionHelper.setTransactionRollbackOnly();
+                            } else {
+                                attemptRollback();
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void cleanup() throws ResourceException {
+                    super.cleanup();
+                    if (fatalError != null) {
+                        ResourceException error = new ResourceException(String.format("fatal error occurred on %s, destroying", this), fatalError);
+                        LogFactory.getLog(ManagedJDBCConnection.class).warn(error.getMessage(), error.getCause());
+                        throw error;
+                    }
                 }
 
                 protected boolean isFatal(Exception e) {
@@ -381,6 +359,10 @@ public class PooledDataSourceFactory implements ObjectFactory {
                     }
                 }
 
+                @Override
+                public String toString() {
+                    return super.toString() + ". jdbc=" + physicalConnection;
+                }
             }
 
             CredentialExtractor credentialExtractor = new CredentialExtractor(subject, connectionRequestInfo, this);

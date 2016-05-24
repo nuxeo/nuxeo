@@ -19,9 +19,13 @@
     </layout>
   </appender>
 
-  <root>
-    <priority value="TRACE" />
-    <appender-ref ref="CONSOLE" />
+  <category name="org.apache.geronimo.connector.outbound.AbstractSinglePoolConnectionInterceptor">
+    <priority value="TRACE"/>
     <appender-ref ref="TRACE"/>
+  </category>
+  
+  <root>
+    <priority value="INFO" />
+    <appender-ref ref="CONSOLE" />
   </root>
 </log4j:configuration>
