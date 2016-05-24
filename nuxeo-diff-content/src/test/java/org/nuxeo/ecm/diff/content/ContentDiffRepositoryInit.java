@@ -57,6 +57,14 @@ public class ContentDiffRepositoryInit extends DefaultRepositoryInit {
         return "/rightHTMLDoc";
     }
 
+    public static String getLeftJSONDocPath() {
+        return "/leftJSONDoc";
+    }
+
+    public static String getRightJSONDocPath() {
+        return "/rightJSONDoc";
+    }
+
     public static String getLeftOfficeDocPath() {
         return "/leftOfficeDoc";
     }
@@ -80,6 +88,8 @@ public class ContentDiffRepositoryInit extends DefaultRepositoryInit {
         createFileDoc(session, "rightPlainTextDoc", "Right plain text doc", "right_doc.txt", "text/plain");
         createFileDoc(session, "leftHTMLDoc", "Left HTML doc", "left_doc.html", "text/html");
         createFileDoc(session, "rightHTMLDoc", "Right HTML doc", "right_doc.html", "text/html");
+        createFileDoc(session, "leftJSONDoc", "Left JSON doc", "left_doc.json", "application/json");
+        createFileDoc(session, "rightJSONDoc", "Right JSON doc", "right_doc.json", "application/json");
         createFileDoc(session, "leftOfficeDoc", "Left Office doc", "left_doc.odt",
                 "application/vnd.oasis.opendocument.text");
         createFileDoc(session, "rightOfficeDoc", "Right Office doc", "right_doc.odt",

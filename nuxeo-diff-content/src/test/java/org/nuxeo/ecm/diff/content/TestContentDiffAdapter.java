@@ -117,6 +117,34 @@ public class TestContentDiffAdapter {
 
     /**
      * Tests {@link ContentDiffAdapter#getFileContentDiffBlobs(DocumentModel, ContentDiffConversionType, Locale)} on
+     * JSON files.
+     */
+    @Test
+    public void testJSONFilesContentDiff() {
+
+        // Get left and right HTML docs
+        DocumentModel leftDoc = session.getDocument(new PathRef(ContentDiffRepositoryInit.getLeftJSONDocPath()));
+        DocumentModel rightDoc = session.getDocument(new PathRef(ContentDiffRepositoryInit.getRightJSONDocPath()));
+
+        // Get content diff adapter for left doc
+        ContentDiffAdapter contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
+        assertNotNull(contentDiffAdapter);
+
+        // Get content diff blobs using html conversion
+        List<Blob> contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(rightDoc,
+                ContentDiffConversionType.html, Locale.ENGLISH);
+        assertNotNull(contentDiffBlobs);
+        assertEquals(1, contentDiffBlobs.size());
+
+        Blob contentDiffBlob = contentDiffBlobs.get(0);
+        assertNotNull(contentDiffBlob);
+
+        // Check content diff
+        checkContentDiff("json_content_diff.html", contentDiffBlob);
+    }
+
+    /**
+     * Tests {@link ContentDiffAdapter#getFileContentDiffBlobs(DocumentModel, ContentDiffConversionType, Locale)} on
      * Office files using a text conversion.
      */
     @Test

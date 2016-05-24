@@ -18,5 +18,8 @@
     <contentDiffer class="org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer">
       <pattern>text/xml</pattern>
     </contentDiffer>
+    <contentDiffer class="org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer">
+      <pattern>application/json</pattern>
+    </contentDiffer>
   </extension>
 </component>
