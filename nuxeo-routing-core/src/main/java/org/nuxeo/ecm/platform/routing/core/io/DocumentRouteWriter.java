@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
@@ -54,6 +55,8 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
 
     public static final String ENTITY_TYPE = "workflow";
 
+    public static final String FETCH_INITATIOR = "initiator";
+
     @Inject
     UserManager userManager;
 
@@ -71,7 +74,17 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
         jg.writeStringField("title", item.getTitle());
         jg.writeStringField("state", item.getDocument().getCurrentLifeCycleState());
         jg.writeStringField("workflowModelName", item.getModelName());
-        jg.writeStringField("initiator", item.getInitiator());
+        if (ctx.getFetched(ENTITY_TYPE).contains(FETCH_INITATIOR)) {
+            NuxeoPrincipal principal = userManager.getPrincipal(item.getInitiator());
+            if (principal != null) {
+                writeEntityField("initiator", principal, jg);
+            } else {
+                jg.writeStringField("initiator", item.getInitiator());
+            }
+        } else {
+            jg.writeStringField("initiator", item.getInitiator());
+        }
+
 
         jg.writeArrayFieldStart("attachedDocumentIds");
         for (String docId : item.getAttachedDocuments()) {
