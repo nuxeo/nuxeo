@@ -21,8 +21,6 @@ package org.nuxeo.functionaltests.pages;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -37,8 +35,6 @@ import org.openqa.selenium.support.ui.Select;
  * Nuxeo default login page.
  */
 public class LoginPage extends AbstractPage {
-
-    private static final Log log = LogFactory.getLog(LoginPage.class);
 
     public static final String FEEDBACK_MESSAGE_DIV_XPATH = "//div[contains(@class,'feedbackMessage')]";
 

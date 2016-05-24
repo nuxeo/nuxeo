@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Anahide Tchertchian
+ *     Yannis JULIENNE
  */
 package org.nuxeo.ftest.cap;
 
@@ -51,8 +51,6 @@ import org.nuxeo.functionaltests.pages.workspace.WorkspaceRepositoryPage;
 public class ITDomainTest extends AbstractTest {
 
     private static final String TEST_NEW_DOMAIN_TITLE = "New Domain";
-
-    private static final String TEST_NEW_DOMAIN_PATH = "/" + TEST_NEW_DOMAIN_TITLE;
 
     private static final String TEST_NEW_WORKSPACE_TITLE = "Test workspace in New Domain";
 
