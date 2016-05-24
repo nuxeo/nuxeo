@@ -168,7 +168,7 @@ public class PermissionsSubPage extends AbstractPage {
         return asPage(PermissionsSubPage.class);
     }
 
-    private WebElement findDeleteButton(String permission, String userOGroupName) {
+    private WebElement findDeleteButton(String permission, String userOrGroupName) {
         List<WebElement> elements = driver.findElements(By.xpath("//div[contains(@class, 'acl-table-row effective')]"));
         for (WebElement element : elements) {
             List<WebElement> names = element.findElements(By.xpath(".//span[contains(@class, 'tag')]"));
@@ -176,7 +176,7 @@ public class PermissionsSubPage extends AbstractPage {
             if (names.size() > 0 && perms.size() > 0) {
                 String title = names.get(0).getAttribute("title");
                 String perm = perms.get(0).getText();
-                if (title.startsWith(userOGroupName) && permission.equalsIgnoreCase(perm)) {
+                if (title.startsWith(userOrGroupName) && permission.equalsIgnoreCase(perm)) {
                     return element.findElement(By.xpath(".//paper-icon-button[@icon='delete']"));
                 }
             }
