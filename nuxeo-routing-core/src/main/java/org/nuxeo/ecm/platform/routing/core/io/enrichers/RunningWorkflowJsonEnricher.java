@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class RunningWorkflowJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
-    public static final String NAME = "workflows";
+    public static final String NAME = "runningWorkflows";
 
     public RunningWorkflowJsonEnricher() {
         super(NAME);
