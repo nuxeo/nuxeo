@@ -5,10 +5,16 @@
       <element ns="" name="info__views" />
       <container-query>
         <element ns="" name="nxml__item" />
-        <value-query type="string">
-          <element ns="" name="title" />
-          <text>Original</text>
-        </value-query>
+        <and-query>
+          <value-query type="string">
+            <element ns="" name="width" />
+            <text>640</text>
+          </value-query>
+          <value-query type="string">
+            <element ns="" name="height" />
+            <text>480</text>
+          </value-query>
+        </and-query>
       </container-query>
     </container-query>
   </query>

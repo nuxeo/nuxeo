@@ -1,16 +1,15 @@
 <search xmlns="http://marklogic.com/appservices/search">
   <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
          xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <container-query>
-      <element ns="" name="info__views" />
+    <not-query>
       <container-query>
-        <element ns="" name="nxml__item" />
+        <element ns="" name="dc__contributors" />
         <value-query type="string">
-          <element ns="" name="title" />
-          <text>Original</text>
+          <element ns="" name="nxml__item" />
+          <text>bob</text>
         </value-query>
       </container-query>
-    </container-query>
+    </not-query>
   </query>
   <options xmlns="http://marklogic.com/appservices/search">
     <extract-document-data selected="include-with-ancestors">

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.marklogic;
 
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,6 +50,84 @@ import com.marklogic.client.query.RawQueryDefinition;
 @Deploy("org.nuxeo.ecm.core.schema")
 @LocalDeploy("org.nuxeo.ecm.core.storage.marklogic.tests:OSGI-INF/test-types-contrib.xml")
 public class TestMarkLogicQueryBuilder extends AbstractTest {
+
+    @Test
+    public void testEqOperatorOnBoolean() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_ISPROXY), Operator.EQ, new IntegerLiteral(0));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/eq-operator-on-boolean.xml", query.getHandle().toString());
+    }
+
+    @Test
+    public void testEqOperatorOnArray() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference("dc:contributors"), Operator.EQ, new StringLiteral("bob"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/eq-operator-on-array.xml", query.getHandle().toString());
+    }
+
+    @Test
+    public void testEqOperatorOnArrayWildcard() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference("dc:contributors/*"), Operator.EQ,
+                new StringLiteral("bob"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/eq-operator-on-array.xml", query.getHandle().toString());
+    }
+
+    @Test
+    public void testNoteqOperatorOnArray() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference("dc:contributors"), Operator.NOTEQ, new StringLiteral(
+                "bob"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/noteq-operator-on-array.xml", query.getHandle().toString());
+    }
+
+    @Test
+    public void testNoteqOperatorOnArrayWildcard() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference("dc:contributors/*"), Operator.NOTEQ, new StringLiteral(
+                "bob"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/noteq-operator-on-array.xml", query.getHandle().toString());
+    }
 
     @Test
     public void testLtOperator() throws Exception {
@@ -83,6 +162,23 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     }
 
     @Test
+    public void testNotInOperatorOnArray() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        LiteralList inContributors = new LiteralList();
+        inContributors.add(new StringLiteral("bob"));
+        inContributors.add(new StringLiteral("pete"));
+        Expression expression = new Expression(new Reference("dc:contributors"), Operator.NOTIN, inContributors);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/not-in-operator-on-array.xml", query.getHandle().toString());
+    }
+
+    @Test
     public void testIsNullOperator() throws Exception {
         SelectClause selectClause = new SelectClause();
         selectClause.add(new Reference(NXQL.ECM_UUID));
@@ -95,6 +191,41 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
         assertXMLFileAgainstString("query-expression/is-null-operator.xml", query.getHandle().toString());
+    }
+
+    @Test
+    public void testNotOperator() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Expression(new Reference("dc:title"), Operator.EQ,
+                new StringLiteral("Document 1")), Operator.NOT, null);
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/not-operator.xml", query.getHandle().toString());
+    }
+
+    @Test
+    public void testNotOperatorOnComposition() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression orExpression = new Expression( //
+                new Expression(new Reference("dc:title"), Operator.EQ, new StringLiteral("Document 1")), //
+                Operator.OR, //
+                new Expression(new Reference("dc:description"), Operator.EQ, new StringLiteral("Description 1")));
+        Expression expression = new Expression(orExpression, Operator.NOT, null);
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+        assertXMLFileAgainstString("query-expression/not-operator-on-composition.xml", query.getHandle().toString());
     }
 
     @Test
@@ -114,33 +245,20 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
     }
 
     @Test
-    public void testSimpleArrayCondition() throws Exception {
+    public void testCorrelatedWildcardReference() throws Exception {
         SelectClause selectClause = new SelectClause();
         selectClause.add(new Reference(NXQL.ECM_UUID));
 
-        Expression expression = new Expression(new Reference("dc:contributors"), Operator.EQ, new StringLiteral("bob"));
+        Expression expression = new MultiExpression(Operator.AND, Arrays.asList( //
+                new Expression(new Reference("picture:views/*1/width"), Operator.EQ, new IntegerLiteral(640)), //
+                new Expression(new Reference("picture:views/*1/height"), Operator.EQ, new IntegerLiteral(480))));
 
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
-        assertXMLFileAgainstString("query-expression/simple-array-condition.xml", query.getHandle().toString());
-    }
-
-    @Test
-    public void testSimpleArrayConditionWithWildcard() throws Exception {
-        SelectClause selectClause = new SelectClause();
-        selectClause.add(new Reference(NXQL.ECM_UUID));
-
-        Expression expression = new Expression(new Reference("dc:contributors/*"), Operator.EQ, new StringLiteral("bob"));
-
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
-
-        // Test
-        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
-        assertXMLFileAgainstString("query-expression/simple-array-condition.xml", query.getHandle().toString());
+        assertXMLFileAgainstString("query-expression/correlated-wildcard-reference.xml", query.getHandle().toString());
     }
 
     @Test

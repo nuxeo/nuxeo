@@ -19,8 +19,14 @@
 package org.nuxeo.ecm.core.storage.marklogic;
 
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -61,7 +67,6 @@ import com.marklogic.client.query.QueryManager;
 import com.marklogic.client.query.RawQueryDefinition;
 import com.marklogic.client.query.RawStructuredQueryDefinition;
 import com.marklogic.client.query.StructuredQueryBuilder;
-import com.marklogic.client.query.StructuredQueryBuilder.Element;
 import com.marklogic.client.query.StructuredQueryDefinition;
 
 /**
@@ -82,8 +87,8 @@ class MarkLogicQueryBuilder {
             + "\\[(\\d+|\\*|\\*\\d+)\\]" // index in brackets
     );
 
-    /** Splits foo/ * /bar into foo, *, bar and split foo/*1/bar into foo, *1, bar with the last bar part optional */
-    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*)/\\*(\\d*)(?:/(.*))?");
+    /** Splits foo/*1/bar into foo/*1, bar with the last bar part optional */
+    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*/\\*\\d+)(?:/(.*))?");
 
     private final QueryManager queryManager;
 
@@ -128,7 +133,7 @@ class MarkLogicQueryBuilder {
 
     public RawQueryDefinition buildQuery() {
         String options = buildOptions();
-        RawStructuredQueryDefinition query = sqb.build(walkExpression(expression));
+        RawStructuredQueryDefinition query = sqb.build(walkExpression(expression).build(sqb));
         String comboQuery = "<search xmlns=\"http://marklogic.com/appservices/search\">" + query.toString() + options
                 + "</search>";
         return queryManager.newRawCombinedQueryDefinition(new StringHandle(comboQuery));
@@ -142,9 +147,11 @@ class MarkLogicQueryBuilder {
             if (!(op instanceof Reference)) {
                 throw new QueryParseException("Projection not supported: " + op);
             }
-            FieldBuilder fieldBuilder = walkReference((Reference) op);
+            FieldInfo fieldInfo = walkReference((Reference) op);
             options.append("<extract-path>");
-            options.append(MarkLogicHelper.DOCUMENT_ROOT_PATH).append('/').append(fieldBuilder.getFullField());
+            options.append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
+                   .append('/')
+                   .append(MarkLogicHelper.serializeKey(fieldInfo.getFullField()));
             options.append("</extract-path>");
             // TODO check projection wildcard and fulltext score case (from mongodb)
         }
@@ -153,7 +160,7 @@ class MarkLogicQueryBuilder {
         return options.toString();
     }
 
-    private StructuredQueryDefinition walkExpression(Expression expression) {
+    private QueryBuilder walkExpression(Expression expression) {
         Operator op = expression.operator;
         Operand lvalue = expression.lvalue;
         Operand rvalue = expression.rvalue;
@@ -180,9 +187,9 @@ class MarkLogicQueryBuilder {
         } else if (op == Operator.GT) {
             return walkGt(lvalue, rvalue);
         } else if (op == Operator.EQ) {
-            return walkEq(lvalue, rvalue);
+            return walkEq(lvalue, rvalue, true);
         } else if (op == Operator.NOTEQ) {
-            return walkNotEq(lvalue, rvalue);
+            return walkEq(lvalue, rvalue, false);
         } else if (op == Operator.LTEQ) {
             return walkLtEq(lvalue, rvalue);
         } else if (op == Operator.GTEQ) {
@@ -210,9 +217,9 @@ class MarkLogicQueryBuilder {
         } else if (op == Operator.NOTIN) {
             return walkIn(lvalue, rvalue, false);
         } else if (op == Operator.ISNULL) {
-            return walkIsNull(lvalue);
+            return walkNull(lvalue, true);
         } else if (op == Operator.ISNOTNULL) {
-            return walkIsNotNull(lvalue);
+            return walkNull(lvalue, false);
         } else if (op == Operator.BETWEEN) {
             // walkBetween(lvalue, rvalue, true);
         } else if (op == Operator.NOTBETWEEN) {
@@ -221,121 +228,149 @@ class MarkLogicQueryBuilder {
         throw new QueryParseException("Unknown operator: " + op);
     }
 
-    private StructuredQueryDefinition walkNot(Operand lvalue) {
-        StructuredQueryDefinition query = walkOperandAsExpression(lvalue);
-        return sqb.not(query);
+    private QueryBuilder walkNot(Operand lvalue) {
+        QueryBuilder query = walkOperandAsExpression(lvalue);
+        query.not();
+        return query;
     }
 
-    private StructuredQueryDefinition walkEq(Operand lvalue, Operand rvalue) {
-        FieldBuilder leftInfo = walkReference(lvalue);
+    private QueryBuilder walkEq(Operand lvalue, Operand rvalue, boolean equals) {
+        FieldInfo leftInfo = walkReference(lvalue);
         if (leftInfo.isMixinTypes()) {
             if (!(rvalue instanceof StringLiteral)) {
                 throw new QueryParseException("Invalid EQ rhs: " + rvalue);
             }
             // TODO walk mixin types.
         }
-        return leftInfo.eq((Literal) rvalue);
+        Literal convertedLiteral = convertIfBoolean(leftInfo, (Literal) rvalue);
+        // If the literal is null it could be :
+        // - test for non existence of boolean field
+        // - a platform issue
+        if (convertedLiteral == null) {
+            return walkNull(lvalue, equals);
+        }
+        return getQueryBuilder(leftInfo, name -> new EqualQueryBuilder(name, convertedLiteral, equals));
     }
 
-    private StructuredQueryDefinition walkNotEq(Operand lvalue, Operand rvalue) {
-        StructuredQueryDefinition eq = walkEq(lvalue, rvalue);
-        return sqb.not(eq);
+    private QueryBuilder walkLt(Operand lvalue, Operand rvalue) {
+        FieldInfo leftInfo = walkReference(lvalue);
+        return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, StructuredQueryBuilder.Operator.LT,
+                (Literal) rvalue));
     }
 
-    private StructuredQueryDefinition walkLt(Operand lvalue, Operand rvalue) {
-        FieldBuilder leftInfo = walkReference(lvalue);
-        return leftInfo.lt((Literal) rvalue);
+    private QueryBuilder walkGt(Operand lvalue, Operand rvalue) {
+        FieldInfo leftInfo = walkReference(lvalue);
+        return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, StructuredQueryBuilder.Operator.GT,
+                (Literal) rvalue));
     }
 
-    private StructuredQueryDefinition walkGt(Operand lvalue, Operand rvalue) {
-        FieldBuilder leftInfo = walkReference(lvalue);
-        return leftInfo.gt((Literal) rvalue);
+    private QueryBuilder walkLtEq(Operand lvalue, Operand rvalue) {
+        FieldInfo leftInfo = walkReference(lvalue);
+        return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, StructuredQueryBuilder.Operator.LE,
+                (Literal) rvalue));
     }
 
-    private StructuredQueryDefinition walkLtEq(Operand lvalue, Operand rvalue) {
-        FieldBuilder leftInfo = walkReference(lvalue);
-        return leftInfo.lteq((Literal) rvalue);
+    private QueryBuilder walkGtEq(Operand lvalue, Operand rvalue) {
+        FieldInfo leftInfo = walkReference(lvalue);
+        return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, StructuredQueryBuilder.Operator.GE,
+                (Literal) rvalue));
     }
 
-    private StructuredQueryDefinition walkGtEq(Operand lvalue, Operand rvalue) {
-        FieldBuilder leftInfo = walkReference(lvalue);
-        return leftInfo.gteq((Literal) rvalue);
-    }
-
-    private StructuredQueryDefinition walkMultiExpression(MultiExpression expression) {
+    private QueryBuilder walkMultiExpression(MultiExpression expression) {
         return walkAnd(expression.values);
     }
 
-    private StructuredQueryDefinition walkAnd(Operand lvalue, Operand rvalue) {
+    private QueryBuilder walkAnd(Operand lvalue, Operand rvalue) {
         return walkAnd(Arrays.asList(lvalue, rvalue));
     }
 
-    private StructuredQueryDefinition walkAnd(List<Operand> values) {
-        List<StructuredQueryDefinition> queries = walkOperandAsExpression(values);
-        if (queries.size() == 1) {
-            return queries.get(0);
+    private QueryBuilder walkAnd(List<Operand> values) {
+        List<QueryBuilder> children = walkOperandAsExpression(values);
+        // Check wildcards in children in order to perform correlated constraints
+        Map<String, List<QueryBuilder>> propBaseToBuilders = new LinkedHashMap<>();
+        for (Iterator<QueryBuilder> it = children.iterator(); it.hasNext();) {
+            QueryBuilder child = it.next();
+            if (child instanceof CorrelatedContainerQueryBuilder) {
+                CorrelatedContainerQueryBuilder queryBuilder = (CorrelatedContainerQueryBuilder) child;
+                String correlatedPath = queryBuilder.getPath();
+                // Store object for this key
+                List<QueryBuilder> propBaseBuilders = propBaseToBuilders.get(correlatedPath);
+                if (propBaseBuilders == null) {
+                    propBaseToBuilders.put(correlatedPath, propBaseBuilders = new LinkedList<>());
+                }
+                propBaseBuilders.add(queryBuilder.getChild());
+                it.remove();
+            }
         }
-        return sqb.and(queries.toArray(new StructuredQueryDefinition[queries.size()]));
+        for (Entry<String, List<QueryBuilder>> entry : propBaseToBuilders.entrySet()) {
+            String correlatedPath = entry.getKey();
+            List<QueryBuilder> propBaseBuilders = entry.getValue();
+            // Build the composition query builder
+            QueryBuilder queryBuilder;
+            if (propBaseBuilders.size() == 1) {
+                queryBuilder = propBaseBuilders.get(0);
+            } else {
+                queryBuilder = new CompositionQueryBuilder(propBaseBuilders, true);
+            }
+            // Build upper container
+            children.add(new CorrelatedContainerQueryBuilder(correlatedPath, queryBuilder));
+        }
+        if (children.size() == 1) {
+            return children.get(0);
+        }
+        return new CompositionQueryBuilder(children, true);
     }
 
-    private StructuredQueryDefinition walkOr(Operand lvalue, Operand rvalue) {
+    private QueryBuilder walkOr(Operand lvalue, Operand rvalue) {
         return walkOr(Arrays.asList(lvalue, rvalue));
     }
 
-    private StructuredQueryDefinition walkOr(List<Operand> values) {
-        List<StructuredQueryDefinition> queries = walkOperandAsExpression(values);
-        if (queries.size() == 1) {
-            return queries.get(0);
+    private QueryBuilder walkOr(List<Operand> values) {
+        List<QueryBuilder> children = walkOperandAsExpression(values);
+        if (children.size() == 1) {
+            return children.get(0);
         }
-        return sqb.or(queries.toArray(new StructuredQueryDefinition[queries.size()]));
+        return new CompositionQueryBuilder(children, false);
     }
 
-    private StructuredQueryDefinition walkIn(Operand lvalue, Operand rvalue, boolean positive) {
+    private QueryBuilder walkIn(Operand lvalue, Operand rvalue, boolean positive) {
         if (!(rvalue instanceof LiteralList)) {
             throw new QueryParseException("Invalid IN, right hand side must be a list: " + rvalue);
         }
-        FieldBuilder fieldBuilder = walkReference(lvalue);
-        if (positive) {
-            return fieldBuilder.in((LiteralList) rvalue);
-        }
-        return fieldBuilder.notIn((LiteralList) rvalue);
+        FieldInfo leftInfo = walkReference(lvalue);
+        return getQueryBuilder(leftInfo, name -> new InQueryBuilder(name, (LiteralList) rvalue, positive));
     }
 
-    private StructuredQueryDefinition walkIsNull(Operand lvalue) {
-        FieldBuilder fieldBuilder = walkReference(lvalue);
-        return fieldBuilder.isNull();
-    }
-
-    private StructuredQueryDefinition walkIsNotNull(Operand lvalue) {
-        FieldBuilder fieldBuilder = walkReference(lvalue);
-        return fieldBuilder.isNotNull();
+    private QueryBuilder walkNull(Operand lvalue, boolean isNull) {
+        FieldInfo leftInfo = walkReference(lvalue);
+        return getQueryBuilder(leftInfo, name -> new IsNullQueryBuilder(name, isNull));
     }
 
     /**
      * Method used to walk on a list of {@link Expression} typed as {@link Operand}.
      */
-    private List<StructuredQueryDefinition> walkOperandAsExpression(List<Operand> operands) {
+    private List<QueryBuilder> walkOperandAsExpression(List<Operand> operands) {
         return operands.stream().map(this::walkOperandAsExpression).collect(Collectors.toList());
     }
 
     /**
      * Method used to walk on an {@link Expression} typed as {@link Operand}.
      */
-    private StructuredQueryDefinition walkOperandAsExpression(Operand operand) {
+    private QueryBuilder walkOperandAsExpression(Operand operand) {
         if (!(operand instanceof Expression)) {
             throw new IllegalArgumentException("Operand " + operand + "is not an Expression.");
         }
         return walkExpression((Expression) operand);
     }
 
-    private FieldBuilder walkReference(Operand value) {
+    private FieldInfo walkReference(Operand value) {
         if (!(value instanceof Reference)) {
             throw new QueryParseException("Invalid query, left hand side must be a property: " + value);
         }
         return walkReference((Reference) value);
     }
 
-    private FieldBuilder walkReference(Reference reference) {
+    private FieldInfo walkReference(Reference reference) {
         String name = reference.name;
         String prop = canonicalXPath(name);
         String[] parts = prop.split("/");
@@ -344,7 +379,7 @@ class MarkLogicQueryBuilder {
                 // return parseACP(prop, parts);
             }
             String field = DBSSession.convToInternal(prop);
-            return new FieldBuilder(prop, field);
+            return new FieldInfo(prop, field);
         }
 
         // Copied from Mongo
@@ -398,7 +433,8 @@ class MarkLogicQueryBuilder {
             }
             firstPart = false;
         }
-        return new FieldBuilder(prop, parts, type, false);
+        String fullField = String.join("/", parts);
+        return new FieldInfo(prop, fullField, type, false);
     }
 
     /**
@@ -419,33 +455,67 @@ class MarkLogicQueryBuilder {
         }
     }
 
-    private class FieldBuilder {
+    public Literal convertIfBoolean(FieldInfo fieldInfo, Literal literal) {
+        if (fieldInfo.type instanceof BooleanType && literal instanceof IntegerLiteral) {
+            long value = ((IntegerLiteral) literal).value;
+            if (ZERO.equals(value)) {
+                literal = fieldInfo.isTrueOrNullBoolean ? null : new BooleanLiteral(false);
+            } else if (ONE.equals(value)) {
+                literal = new BooleanLiteral(true);
+            } else {
+                throw new QueryParseException("Invalid boolean: " + value);
+            }
+        }
+        return literal;
+    }
 
-        /** NXQL property. */
+    private QueryBuilder getQueryBuilder(FieldInfo fieldInfo, Function<String, QueryBuilder> constraintBuilder) {
+        Matcher m = WILDCARD_SPLIT.matcher(fieldInfo.fullField);
+        if (m.matches()) {
+            String correlatedFieldPart = m.group(1);
+            String fieldSuffix = m.group(2);
+            if (fieldSuffix == null) {
+                fieldSuffix = MarkLogicHelper.ARRAY_ITEM_KEY;
+            }
+            return new CorrelatedContainerQueryBuilder(correlatedFieldPart, constraintBuilder.apply(fieldSuffix));
+        }
+        String path = fieldInfo.fullField;
+        // Handle the list type case - if it's not present in path
+        if (fieldInfo.type != null && fieldInfo.type.isListType() && !fieldInfo.fullField.endsWith("*")) {
+            path += '/' + MarkLogicHelper.ARRAY_ITEM_KEY;
+        }
+        return constraintBuilder.apply(path);
+    }
+
+    private class FieldInfo {
+
+        /**
+         * NXQL property.
+         */
         private final String prop;
 
-        /** MarkLogic field exploded by /. */
-        private final String[] parts;
+        /**
+         * MarkLogic field including wildcards.
+         */
+        protected final String fullField;
 
-        /** MarkLogic field including wildcards. */
-        private final String fullField;
+        protected final Type type;
 
-        private final Type type;
-
-        /** Boolean system properties only use TRUE or NULL, not FALSE, so queries must be updated accordingly. */
-        private final boolean isTrueOrNullBoolean;
+        /**
+         * Boolean system properties only use TRUE or NULL, not FALSE, so queries must be updated accordingly.
+         */
+        protected final boolean isTrueOrNullBoolean;
 
         /**
          * Constructor for a simple field.
          */
-        public FieldBuilder(String prop, String field) {
-            this(prop, new String[] { field }, DBSSession.getType(field), true);
+        public FieldInfo(String prop, String field) {
+            this(prop, field, DBSSession.getType(field), true);
         }
 
-        public FieldBuilder(String prop, String[] parts, Type type, boolean isTrueOrNullBoolean) {
+        public FieldInfo(String prop, String fullField, Type type, boolean isTrueOrNullBoolean) {
             this.prop = prop;
-            this.parts = Arrays.stream(parts).map(MarkLogicHelper::serializeKey).toArray(String[]::new);
-            this.fullField = String.join("/", this.parts);
+            this.fullField = fullField;
             this.type = type;
             this.isTrueOrNullBoolean = isTrueOrNullBoolean;
         }
@@ -459,69 +529,249 @@ class MarkLogicQueryBuilder {
         }
 
         public boolean isMixinTypes() {
-            return fullField.equals(MarkLogicHelper.serializeKey(DBSDocument.KEY_MIXIN_TYPES));
+            return fullField.equals(DBSDocument.KEY_MIXIN_TYPES);
         }
 
         public boolean hasWildcard() {
-            return WILDCARD_SPLIT.matcher(fullField).matches();
+            return fullField.contains("*");
         }
 
-        public StructuredQueryDefinition eq(Literal literal) {
-            Object value = getLiteral(literal);
-            // If the value is null it could be :
-            // - test for non existence of boolean field
-            // - a platform issue
-            if (value == null && isTrueOrNullBoolean) {
-                return buildQuery(element -> sqb.not(sqb.value(element, true)));
+    }
+
+    private static class CorrelatedContainerQueryBuilder extends AbstractNamedQueryBuilder {
+
+        private final QueryBuilder child;
+
+        public CorrelatedContainerQueryBuilder(String path, QueryBuilder child) {
+            super(path);
+            this.child = child;
+        }
+
+        @Override
+        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+            if (!name.startsWith("*")) {
+                throw new QueryParseException("A correlated query builder might finish by a wildcard, path=" + path);
             }
-            String serializedValue = MarkLogicStateSerializer.serializeValue(value);
-            return buildQuery(element -> sqb.value(element, serializedValue));
+            return sqb.containerQuery(sqb.element(MarkLogicHelper.ARRAY_ITEM_KEY), child.build(sqb));
         }
 
-        public StructuredQueryDefinition lt(Literal literal) {
-            return range(StructuredQueryBuilder.Operator.LT, literal);
+        @Override
+        public void not() {
+            child.not();
         }
 
-        public StructuredQueryDefinition gt(Literal literal) {
-            return range(StructuredQueryBuilder.Operator.GT, literal);
+        public QueryBuilder getChild() {
+            return child;
         }
 
-        public StructuredQueryDefinition lteq(Literal literal) {
-            return range(StructuredQueryBuilder.Operator.LE, literal);
+    }
+
+    private static class EqualQueryBuilder extends AbstractNamedQueryBuilder {
+
+        private final Literal literal;
+
+        private boolean equal;
+
+        public EqualQueryBuilder(String path, Literal literal, boolean equal) {
+            super(path);
+            this.literal = literal;
+            this.equal = equal;
         }
 
-        public StructuredQueryDefinition gteq(Literal literal) {
-            return range(StructuredQueryBuilder.Operator.GE, literal);
+        @Override
+        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
+            StructuredQueryDefinition query = super.build(sqb);
+            if (equal) {
+                return query;
+            }
+            return sqb.not(query);
         }
 
-        private StructuredQueryDefinition range(StructuredQueryBuilder.Operator operator, Literal literal) {
-            Object value = getLiteral(literal);
+        @Override
+        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+            // Handle the wildcard case here because semantic is different for <>
+            String serializedName = serializeName(name);
+            String serializedValue = MarkLogicStateSerializer.serializeValue(getLiteralValue(literal));
+            return sqb.value(sqb.element(serializedName), serializedValue);
+        }
+
+        @Override
+        public void not() {
+            equal = !equal;
+        }
+
+    }
+
+    private static class RangeQueryBuilder extends AbstractNamedQueryBuilder {
+
+        private StructuredQueryBuilder.Operator operator;
+
+        private final Literal literal;
+
+        public RangeQueryBuilder(String path, StructuredQueryBuilder.Operator operator, Literal literal) {
+            super(path);
+            this.operator = operator;
+            this.literal = literal;
+        }
+
+        @Override
+        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+            String serializedName = serializeName(name);
+            Object value = getLiteralValue(literal);
             String valueType = ElementType.getType(value.getClass()).getKey();
             String serializedValue = MarkLogicStateSerializer.serializeValue(value);
-            return buildQuery(element -> sqb.range(element, valueType, operator, serializedValue));
+            return sqb.range(sqb.element(serializedName), valueType, operator, serializedValue);
         }
 
-        public StructuredQueryDefinition in(LiteralList litteral) {
-            String[] serializedValues = litteral.stream()
-                                                .map(this::getLiteral)
+        @Override
+        public void not() {
+            if (operator == StructuredQueryBuilder.Operator.LT) {
+                operator = StructuredQueryBuilder.Operator.GE;
+            } else if (operator == StructuredQueryBuilder.Operator.GT) {
+                operator = StructuredQueryBuilder.Operator.LE;
+            } else if (operator == StructuredQueryBuilder.Operator.LE) {
+                operator = StructuredQueryBuilder.Operator.GT;
+            } else if (operator == StructuredQueryBuilder.Operator.GE) {
+                operator = StructuredQueryBuilder.Operator.LT;
+            }
+        }
+
+    }
+
+    private static class InQueryBuilder extends AbstractNamedQueryBuilder {
+
+        private final LiteralList literals;
+
+        private boolean in;
+
+        public InQueryBuilder(String path, LiteralList literals, boolean in) {
+            super(path);
+            this.literals = literals;
+            this.in = in;
+        }
+
+        @Override
+        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
+            StructuredQueryDefinition query = super.build(sqb);
+            if (in) {
+                return query;
+            }
+            return sqb.not(query);
+        }
+
+        @Override
+        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+            String serializedName = serializeName(name);
+            String[] serializedValues = literals.stream()
+                                                .map(this::getLiteralValue)
                                                 .map(MarkLogicStateSerializer::serializeValue)
                                                 .toArray(String[]::new);
-            return buildQuery(element -> sqb.value(element, serializedValues));
+            return sqb.value(sqb.element(serializedName), serializedValues);
         }
 
-        public StructuredQueryDefinition notIn(LiteralList litteral) {
-            return sqb.not(in(litteral));
+        @Override
+        public void not() {
+            in = !in;
         }
 
-        public StructuredQueryDefinition isNull() {
-            return sqb.not(isNotNull());
+    }
+
+    private static class IsNullQueryBuilder extends AbstractNamedQueryBuilder {
+
+        private boolean isNull;
+
+        public IsNullQueryBuilder(String path, boolean isNull) {
+            super(path);
+            this.isNull = isNull;
         }
 
-        public StructuredQueryDefinition isNotNull() {
-            return buildQuery(element -> sqb.containerQuery(element, sqb.and()));
+        @Override
+        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
+            StructuredQueryDefinition query = super.build(sqb);
+            if (isNull) {
+                return sqb.not(query);
+            }
+            return query;
         }
 
-        private Object getLiteral(Literal literal) {
+        @Override
+        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+            String serializedName = serializeName(name);
+            return sqb.containerQuery(sqb.element(serializedName), sqb.and());
+        }
+
+        @Override
+        public void not() {
+            isNull = !isNull;
+        }
+    }
+
+    private static class CompositionQueryBuilder implements QueryBuilder {
+
+        private final List<QueryBuilder> children;
+
+        private boolean and;
+
+        public CompositionQueryBuilder(List<QueryBuilder> children, boolean and) {
+            this.children = children;
+            this.and = and;
+        }
+
+        @Override
+        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
+            if (children.size() == 1) {
+                return children.get(0).build(sqb);
+            }
+            StructuredQueryDefinition[] childrenQueries = children.stream()
+                                                                  .map(child -> child.build(sqb))
+                                                                  .toArray(StructuredQueryDefinition[]::new);
+            if (and) {
+                return sqb.and(childrenQueries);
+            }
+            return sqb.or(childrenQueries);
+        }
+
+        @Override
+        public void not() {
+            and = !and;
+            children.forEach(QueryBuilder::not);
+        }
+
+    }
+
+    private static abstract class AbstractNamedQueryBuilder implements QueryBuilder {
+
+        protected final String path;
+
+        public AbstractNamedQueryBuilder(String path) {
+            this.path = path;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        @Override
+        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
+            String[] parts = path.split("/");
+            StructuredQueryDefinition query = build(sqb, parts[parts.length - 1]);
+            for (int i = parts.length - 2; i >= 0; i--) {
+                query = sqb.containerQuery(sqb.element(serializeName(parts[i])), query);
+            }
+            return query;
+        }
+
+        protected abstract StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name);
+
+    }
+
+    private interface QueryBuilder {
+
+        StructuredQueryDefinition build(StructuredQueryBuilder sqb);
+
+        void not();
+
+        default Object getLiteralValue(Literal literal) {
             Object result;
             if (literal instanceof BooleanLiteral) {
                 result = ((BooleanLiteral) literal).value;
@@ -531,15 +781,6 @@ class MarkLogicQueryBuilder {
                 result = ((DoubleLiteral) literal).value;
             } else if (literal instanceof IntegerLiteral) {
                 result = ((IntegerLiteral) literal).value;
-                if (isBoolean()) {
-                    if (ZERO.equals(result)) {
-                        result = isTrueOrNullBoolean ? null : false;
-                    } else if (ONE.equals(result)) {
-                        result = true;
-                    } else {
-                        throw new QueryParseException("Invalid boolean: " + result);
-                    }
-                }
             } else if (literal instanceof StringLiteral) {
                 result = ((StringLiteral) literal).value;
             } else {
@@ -548,25 +789,8 @@ class MarkLogicQueryBuilder {
             return result;
         }
 
-        private StructuredQueryDefinition buildQuery(Function<Element, StructuredQueryDefinition> queryBuilder) {
-            Element element;
-            int start;
-            if ("*".equals(parts[parts.length - 1]) || type != null && type.isListType()) {
-                // element is an array, put MarkLogicHelper.ARRAY_ITEM_KEY
-                element = sqb.element(MarkLogicHelper.ARRAY_ITEM_KEY);
-                start = parts.length - 1;
-            } else {
-                // Regular case
-                element = sqb.element(parts[parts.length - 1]);
-                start = parts.length - 2;
-            }
-            StructuredQueryDefinition query = queryBuilder.apply(element);
-            for (int i = start; i >= 0; i--) {
-                if (!"*".equals(parts[i])) {
-                    query = sqb.containerQuery(sqb.element(parts[i]), query);
-                }
-            }
-            return query;
+        default String serializeName(String name) {
+            return name.startsWith("*") ? MarkLogicHelper.ARRAY_ITEM_KEY : MarkLogicHelper.serializeKey(name);
         }
 
     }
