@@ -5,6 +5,8 @@
       enable="true" />
     <register class="org.nuxeo.ecm.platform.routing.core.io.enrichers.RunningWorkflowJsonEnricher"
       enable="true" />
+    <register class="org.nuxeo.ecm.platform.routing.core.io.enrichers.RunnableWorkflowJsonEnricher"
+      enable="true" />
   </extension>
 
 </component>
