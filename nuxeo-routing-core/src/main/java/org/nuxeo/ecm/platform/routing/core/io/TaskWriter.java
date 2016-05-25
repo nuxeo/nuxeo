@@ -33,6 +33,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -71,7 +72,9 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
     public static final String FETCH_ACTORS = "actors";
 
-    public static final String TARGET_DOCUMENT_IDS = "targetDocumentIds";
+    public static final String FETCH_TARGET_DOCUMENT = "targetDocuments";
+
+    public static final String TARGET_DOCUMENT = "targetDocuments";
 
     @Inject
     private SchemaManager schemaManager;
@@ -111,8 +114,16 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             jg.writeStringField("dueDate", DateParser.formatW3CDateTime(item.getDueDate()));
             jg.writeStringField("nodeName", item.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY));
 
-            jg.writeArrayFieldStart(TARGET_DOCUMENT_IDS);
+            jg.writeArrayFieldStart(TARGET_DOCUMENT);
+            final boolean isFetchTargetDocumentIds = ctx.getFetched(ENTITY_TYPE).contains(FETCH_TARGET_DOCUMENT);
             for (String docId : item.getTargetDocumentsIds()) {
+                if (isFetchTargetDocumentIds) {
+                    IdRef idRef = new IdRef(docId);
+                    if (wrapper.getSession().exists(idRef)) {
+                        writeEntity(wrapper.getSession().getDocument(idRef), jg);
+                        break;
+                    }
+                }
                 jg.writeStartObject();
                 jg.writeStringField("id", docId);
                 jg.writeEndObject();
