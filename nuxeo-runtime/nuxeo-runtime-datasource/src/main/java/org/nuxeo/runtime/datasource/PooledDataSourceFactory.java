@@ -346,7 +346,9 @@ public class PooledDataSourceFactory implements ObjectFactory {
                     try {
                         return !physicalConnection.isValid(10);
                     } catch (SQLException cause) {
-                        return false;
+                        return false; // could not state
+                    } catch (LinkageError cause) {
+                        return false; // not compliant JDBC4 driver
                     }
                 }
 
