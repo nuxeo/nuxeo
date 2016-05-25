@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.platform.routing.core.io.DocumentRouteWriter;
 import org.nuxeo.ecm.platform.routing.core.io.TaskWriter;
 import org.nuxeo.ecm.platform.routing.core.io.enrichers.TasksJsonEnricher;
+import org.nuxeo.ecm.platform.routing.core.io.enrichers.RunningWorkflowJsonEnricher;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 
@@ -127,6 +128,33 @@ public class RoutingFetchAndEnricherTest extends RoutingRestBaseTest {
         assertEquals(1, targetDocumentIdsNode.size());
         assertEquals(note.getId(), targetDocumentIdsNode.get(0).get("id").getTextValue());
     }
+
+    /**
+     * @since 8.3
+     */
+    @Test
+    public void testRunningWorkflowEnricher() throws IOException {
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", RunningWorkflowJsonEnricher.NAME);
+        response = getResponse(RequestType.GET,
+                "/id/" + note.getId(), headers);
+
+        node = mapper.readTree(response.getEntityInputStream());
+        ArrayNode workflowsNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(RunningWorkflowJsonEnricher.NAME);
+        assertEquals(1, workflowsNode.size());
+        ArrayNode attachedDocumentIdsNode = (ArrayNode) workflowsNode.get(0).get(DocumentRouteWriter.ATTACHED_DOCUMENTS);
+        assertEquals(1, attachedDocumentIdsNode.size());
+        assertEquals(note.getId(), attachedDocumentIdsNode.get(0).get("id").getTextValue());
+    }
+
 
     /**
      * @since 8.3
