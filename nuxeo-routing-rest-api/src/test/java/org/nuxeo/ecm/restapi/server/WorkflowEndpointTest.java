@@ -136,16 +136,26 @@ public class WorkflowEndpointTest extends BaseTest {
 
     protected String getCurrentTaskId(final String createdWorflowInstanceId) throws IOException,
             JsonProcessingException {
+        String taskId = getCurrentTask(createdWorflowInstanceId, null, null).get("id").getTextValue();
+        return taskId;
+    }
+
+    /**
+     * @since 8.3
+     */
+    protected JsonNode getCurrentTask(final String createdWorflowInstanceId, MultivaluedMap<String, String> queryParams, Map<String, String> headers)
+            throws IOException, JsonProcessingException {
         ClientResponse response;
         JsonNode node;
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        if (queryParams == null) {
+            queryParams = new MultivaluedMapImpl();
+        }
         queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
-        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, headers);
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(1, node.get("entries").size());
         Iterator<JsonNode> elements = node.get("entries").getElements();
-        String taskId = elements.next().get("id").getTextValue();
-        return taskId;
+        return elements.next();
     }
 
     @Test
@@ -619,10 +629,12 @@ public class WorkflowEndpointTest extends BaseTest {
                 taskAction.get("url").getTextValue());
     }
 
+    /**
+     * @since 8.3
+     */
     @Test
     public void testFethWfInitiator() throws IOException {
 
-        // Check POST /workflow
         ClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
@@ -631,7 +643,6 @@ public class WorkflowEndpointTest extends BaseTest {
         final String createdWorflowInstanceId = node.get("id").getTextValue();
 
 
-        // Check GET /workflow/{workflowInstanceId}
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("fetch." + DocumentRouteWriter.ENTITY_TYPE, DocumentRouteWriter.FETCH_INITATIOR);
         response = getResponse(RequestType.GET, "/workflow/" + createdWorflowInstanceId, queryParams);
@@ -645,10 +656,38 @@ public class WorkflowEndpointTest extends BaseTest {
         assertTrue(StringUtils.isBlank(initiatorProps.get("password").getTextValue()));
     }
 
+    /**
+     * @since 8.3
+     */
+    @Test
+    public void testFethTaskActors() throws IOException {
+
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("fetch." + TaskWriter.ENTITY_TYPE, TaskWriter.FETCH_ACTORS);
+
+        JsonNode task = getCurrentTask(createdWorflowInstanceId, queryParams, null);
+
+        ArrayNode taskActors = (ArrayNode) task.get("actors");
+        assertEquals(1, taskActors.size());
+        assertEquals("Administrator", taskActors.get(0).get("id").getTextValue());
+        // For the sake of security
+        assertTrue(StringUtils.isBlank(taskActors.get(0).get("properties").get("password").getTextValue()));
+    }
+
+    /**
+     * @since 8.3
+     */
     @Test
     public void testTasksEnricher() throws IOException {
         DocumentModel note = RestServerInit.getNote(0, session);
-        // Check POST /workflow
+
         ClientResponse response = getResponse(RequestType.POST, "/workflow",
                 getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
