@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,32 +37,14 @@ import java.util.Map;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.audit.AuditFeature;
-import org.nuxeo.ecm.platform.routing.core.io.DocumentRouteWriter;
-import org.nuxeo.ecm.platform.routing.core.io.TaskWriter;
-import org.nuxeo.ecm.platform.routing.core.io.enrichers.TasksJsonEnricher;
-import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
-import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
-import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
 import com.ibm.icu.util.Calendar;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -71,92 +52,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 /**
  * @since 7.2
  */
-@RunWith(FeaturesRunner.class)
-@Features({ EmbeddedAutomationServerFeature.class, WorkflowFeature.class, AuditFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
-@Jetty(port = 18090)
-@Deploy({ "org.nuxeo.ecm.platform.restapi.server.routing", "org.nuxeo.ecm.automation.test",
-        "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.test",
-        "org.nuxeo.ecm.platform.restapi.server", "org.nuxeo.ecm.platform.routing.default",
-        "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core", "org.nuxeo.ecm.actions" })
-public class WorkflowEndpointTest extends BaseTest {
-
-    protected String assertActorIsAdministrator(ClientResponse response) throws JsonProcessingException, IOException {
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, node.get("entries").size());
-        Iterator<JsonNode> elements = node.get("entries").getElements();
-        JsonNode element = elements.next();
-        String taskId = element.get("id").getTextValue();
-        JsonNode actors = element.get("actors");
-        assertEquals(1, actors.size());
-        String actor = actors.getElements().next().get("id").getTextValue();
-        assertEquals("Administrator", actor);
-        return taskId;
-    }
-
-    protected String getBodyForStartReviewTaskCompletion(String taskId) throws IOException {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.YEAR, 1);
-        String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
-                + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
-                + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
-                + "\"participants\": [\"user:Administrator\"],"
-                + "\"assignees\": [\"user:Administrator\"]" + "}" + "}";
-        return jsonBody;
-    }
-
-    protected String getBodyWithSecurityViolationForStartReviewTaskCompletion(String taskId) throws IOException {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.YEAR, 1);
-        String jsonBody = "{" + "\"id\": \"" + taskId + "\"," + "\"comment\": \"a comment\","
-                + "\"entity-type\": \"task\"," + "\"variables\": {" + "\"end_date\": \""
-                + DateParser.formatW3CDateTime(calendar.getTime()) + "\","
-                + "\"participants\": [\"user:Administrator\"]," + "\"review_result\": \"blabablaa\"" + "}"
-                + "}";
-        return jsonBody;
-    }
-
-    protected String getBodyForTaskCompletion(String taskId) throws IOException {
-        return "{\"entity-type\": \"task\", " + "\"id\": \"" + taskId + "\"}";
-    }
-
-    protected String getCreateAndStartWorkflowBodyContent(String workflowName, List<String> docIds) throws IOException {
-        String result = "{\"entity-type\": \"workflow\", " + "\"workflowModelName\": \"" + workflowName + "\"";
-        if (docIds != null && !docIds.isEmpty()) {
-            result += ", " + "\"attachedDocumentIds\": [";
-            for (int i = 0; i < docIds.size(); i++) {
-                result += "\"" + docIds.get(i) + "\"";
-            }
-            result += "]";
-        }
-
-        result += "}";
-        return result;
-    }
-
-    protected String getCurrentTaskId(final String createdWorflowInstanceId) throws IOException,
-            JsonProcessingException {
-        String taskId = getCurrentTask(createdWorflowInstanceId, null, null).get("id").getTextValue();
-        return taskId;
-    }
-
-    /**
-     * @since 8.3
-     */
-    protected JsonNode getCurrentTask(final String createdWorflowInstanceId, MultivaluedMap<String, String> queryParams, Map<String, String> headers)
-            throws IOException, JsonProcessingException {
-        ClientResponse response;
-        JsonNode node;
-        if (queryParams == null) {
-            queryParams = new MultivaluedMapImpl();
-        }
-        queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
-        response = getResponse(RequestType.GET, "/task", null, queryParams, null, headers);
-        node = mapper.readTree(response.getEntityInputStream());
-        assertEquals(1, node.get("entries").size());
-        Iterator<JsonNode> elements = node.get("entries").getElements();
-        return elements.next();
-    }
+public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
     @Test
     public void testAdapter() throws IOException {
@@ -627,84 +523,6 @@ public class WorkflowEndpointTest extends BaseTest {
         assertNotNull(taskAction);
         assertEquals(String.format("http://localhost:18090/api/v1/task/%s/cancel", element.get("id").getTextValue()),
                 taskAction.get("url").getTextValue());
-    }
-
-    /**
-     * @since 8.3
-     */
-    @Test
-    public void testFethWfInitiator() throws IOException {
-
-        ClientResponse response = getResponse(RequestType.POST, "/workflow",
-                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        final String createdWorflowInstanceId = node.get("id").getTextValue();
-
-
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.putSingle("fetch." + DocumentRouteWriter.ENTITY_TYPE, DocumentRouteWriter.FETCH_INITATIOR);
-        response = getResponse(RequestType.GET, "/workflow/" + createdWorflowInstanceId, queryParams);
-        node = mapper.readTree(response.getEntityInputStream());
-        JsonNode initiatorNode = node.get("initiator");
-        assertEquals("Administrator", initiatorNode.get("id").getTextValue());
-        JsonNode initiatorProps = initiatorNode.get("properties");
-        assertEquals(1, ((ArrayNode) initiatorProps.get("groups")).size());
-        assertEquals("administrators", ((ArrayNode) initiatorProps.get("groups")).get(0).getTextValue());
-        // For the sake of security
-        assertTrue(StringUtils.isBlank(initiatorProps.get("password").getTextValue()));
-    }
-
-    /**
-     * @since 8.3
-     */
-    @Test
-    public void testFethTaskActors() throws IOException {
-
-        ClientResponse response = getResponse(RequestType.POST, "/workflow",
-                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-        final String createdWorflowInstanceId = node.get("id").getTextValue();
-
-        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
-        queryParams.putSingle("fetch." + TaskWriter.ENTITY_TYPE, TaskWriter.FETCH_ACTORS);
-
-        JsonNode task = getCurrentTask(createdWorflowInstanceId, queryParams, null);
-
-        ArrayNode taskActors = (ArrayNode) task.get("actors");
-        assertEquals(1, taskActors.size());
-        assertEquals("Administrator", taskActors.get(0).get("id").getTextValue());
-        // For the sake of security
-        assertTrue(StringUtils.isBlank(taskActors.get(0).get("properties").get("password").getTextValue()));
-    }
-
-    /**
-     * @since 8.3
-     */
-    @Test
-    public void testTasksEnricher() throws IOException {
-        DocumentModel note = RestServerInit.getNote(0, session);
-
-        ClientResponse response = getResponse(RequestType.POST, "/workflow",
-                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", TasksJsonEnricher.NAME);
-        response = getResponse(RequestType.GET,
-                "/id/" + note.getId(), headers);
-
-        node = mapper.readTree(response.getEntityInputStream());
-        ArrayNode tasksNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TasksJsonEnricher.NAME);
-        assertEquals(1, tasksNode.size());
-        ArrayNode targetDocumentIdsNode = (ArrayNode) tasksNode.get(0).get(TaskWriter.TARGET_DOCUMENT_IDS);
-        assertEquals(1, targetDocumentIdsNode.size());
-        assertEquals(note.getId(), targetDocumentIdsNode.get(0).get("id").getTextValue());
     }
 
 }
