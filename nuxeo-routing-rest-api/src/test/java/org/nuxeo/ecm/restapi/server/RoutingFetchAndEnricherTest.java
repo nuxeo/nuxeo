@@ -155,7 +155,6 @@ public class RoutingFetchAndEnricherTest extends RoutingRestBaseTest {
         assertEquals(note.getId(), attachedDocumentIdsNode.get(0).get("id").getTextValue());
     }
 
-
     /**
      * @since 8.3
      */
