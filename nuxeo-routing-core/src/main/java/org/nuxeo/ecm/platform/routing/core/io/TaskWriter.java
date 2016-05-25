@@ -67,6 +67,8 @@ import org.nuxeo.runtime.api.Framework;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
+    public static final String TARGET_DOCUMENT_IDS = "targetDocumentIds";
+
     @Inject
     private SchemaManager schemaManager;
 
@@ -102,7 +104,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             jg.writeStringField("dueDate", DateParser.formatW3CDateTime(item.getDueDate()));
             jg.writeStringField("nodeName", item.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY));
 
-            jg.writeArrayFieldStart("targetDocumentIds");
+            jg.writeArrayFieldStart(TARGET_DOCUMENT_IDS);
             for (String docId : item.getTargetDocumentsIds()) {
                 jg.writeStartObject();
                 jg.writeStringField("id", docId);
