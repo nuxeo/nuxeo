@@ -19,19 +19,15 @@
 
 package org.nuxeo.ecm.platform.routing.core.io.enrichers;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
-import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -60,10 +56,8 @@ public class TasksJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
             DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
             List<Task> tasks = documentRoutingService.getTasks(document, wrapper.getSession().getPrincipal().getName(),
                     null, null, wrapper.getSession());
-            OutputStream out = new OutputStreamWithJsonWriter(jg);
-            Writer<Task> taskWriter = registry.getWriter(ctx, Task.class, APPLICATION_JSON_TYPE);
             for (Task task : tasks) {
-                taskWriter.write(task, Task.class, Task.class, APPLICATION_JSON_TYPE, out);
+                writeEntity(task, jg);
             }
         } finally {
             jg.writeEndArray();
