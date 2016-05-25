@@ -17,12 +17,14 @@
 package org.nuxeo.ecm.platform.ec.notification;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,6 +89,7 @@ public class UserSubscriptionAdapterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void itCanUnsubscribeFromANotification() throws Exception {
         SubscriptionAdapter us = doc.getAdapter(SubscriptionAdapter.class);
         // To set and get subscriptions
@@ -97,6 +100,13 @@ public class UserSubscriptionAdapterTest {
         us.removeUserNotificationSubscription("Administrator", "timetoeat");
         assertThat(us.getUserSubscriptions("Administrator")).contains("timetosleep");
         assertThat(us.getUserSubscriptions("Administrator")).doesNotContain("timetoeat");
+        List<Map<String, Serializable>> notifications = (List<Map<String, Serializable>>) doc.getPropertyValue("notif:notifications");
+        assertEquals(1, notifications.size());
+
+        us.removeUserNotificationSubscription("Administrator", "timetosleep");
+        assertThat(us.getUserSubscriptions("Administrator")).doesNotContain("timetosleep");
+        notifications = (List<Map<String, Serializable>>) doc.getPropertyValue("notif:notifications");
+        assertTrue(notifications.isEmpty());
 
     }
 
@@ -135,7 +145,5 @@ public class UserSubscriptionAdapterTest {
         assertThat(us.getUserSubscriptions("Administrator")).contains("Modification", "Creation");
 
     }
-
-
 
 }
