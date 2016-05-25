@@ -227,13 +227,13 @@ class MarkLogicQueryBuilder {
         } else if (op == Operator.OR) {
             return walkOr(lvalue, rvalue);
         } else if (op == Operator.LIKE) {
-            // walkLike(lvalue, rvalue, true, false);
+            return walkLike(lvalue, rvalue, true, false);
         } else if (op == Operator.ILIKE) {
-            // walkLike(lvalue, rvalue, true, true);
+            return walkLike(lvalue, rvalue, true, true);
         } else if (op == Operator.NOTLIKE) {
-            // walkLike(lvalue, rvalue, false, false);
+            return walkLike(lvalue, rvalue, false, false);
         } else if (op == Operator.NOTILIKE) {
-            // walkLike(lvalue, rvalue, false, true);
+            return walkLike(lvalue, rvalue, false, true);
         } else if (op == Operator.IN) {
             return walkIn(lvalue, rvalue, true);
         } else if (op == Operator.NOTIN) {
@@ -353,6 +353,15 @@ class MarkLogicQueryBuilder {
             return children.get(0);
         }
         return new CompositionQueryBuilder(children, false);
+    }
+
+    private QueryBuilder walkLike(Operand lvalue, Operand rvalue, boolean positive, boolean caseInsensitive) {
+        FieldInfo leftInfo = walkReference(lvalue);
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new QueryParseException("Invalid LIKE/ILIKE, right hand side must be a string: " + rvalue);
+        }
+        return getQueryBuilder(leftInfo, name -> new LikeQueryBuilder(name, (StringLiteral) rvalue, positive,
+                caseInsensitive));
     }
 
     private QueryBuilder walkIn(Operand lvalue, Operand rvalue, boolean positive) {
@@ -620,6 +629,101 @@ class MarkLogicQueryBuilder {
         @Override
         public void not() {
             equal = !equal;
+        }
+
+    }
+
+    private static class LikeQueryBuilder extends AbstractNamedQueryBuilder {
+
+        private static final String CASE_INSENSITIVE = "case-insensitive";
+
+        private static final String PUNCTUATION_SENSITIVE = "punctuation-sensitive";
+
+        private static final String WHITESPACE_SENSITIVE = "whitespace-sensitive";
+
+        private static final String WILDCARDED = "wildcarded";
+
+        private static final String[] BASIC_OPTIONS = new String[] { PUNCTUATION_SENSITIVE, WILDCARDED,
+                WHITESPACE_SENSITIVE };
+
+        private final StringLiteral literal;
+
+        private boolean positive;
+
+        private final boolean caseInsensitive;
+
+        public LikeQueryBuilder(String path, StringLiteral literal, boolean positive, boolean caseInsensitive) {
+            super(path);
+            this.literal = literal;
+            this.positive = positive;
+            this.caseInsensitive = caseInsensitive;
+        }
+
+        @Override
+        public StructuredQueryDefinition build(StructuredQueryBuilder sqb) {
+            StructuredQueryDefinition query = super.build(sqb);
+            if (positive) {
+                return query;
+            }
+            return sqb.not(query);
+        }
+
+        @Override
+        protected StructuredQueryDefinition build(StructuredQueryBuilder sqb, String name) {
+            String serializedName = serializeName(name);
+            String serializedValue = likeToMarkLogicWildcard(literal.value);
+            String[] options = BASIC_OPTIONS;
+            if (caseInsensitive) {
+                options = Arrays.copyOf(options, options.length + 1);
+                options[options.length - 1] = CASE_INSENSITIVE;
+            }
+            return sqb.value(sqb.element(serializedName), null, options, 1.0, serializedValue);
+        }
+
+        @Override
+        public void not() {
+            positive = !positive;
+        }
+
+        private String likeToMarkLogicWildcard(String like) {
+            StringBuilder mlValue = new StringBuilder();
+            char[] chars = like.toCharArray();
+            boolean escape = false;
+            for (char c : chars) {
+                boolean escapeNext = false;
+                switch (c) {
+                case '%':
+                    if (escape) {
+                        mlValue.append(c);
+                    } else {
+                        mlValue.append("*");
+                    }
+                    break;
+                case '_':
+                    if (escape) {
+                        mlValue.append(c);
+                    } else {
+                        mlValue.append("?");
+                    }
+                    break;
+                case '\\':
+                    if (escape) {
+                        mlValue.append("\\");
+                    } else {
+                        escapeNext = true;
+                    }
+                    break;
+                case '*':
+                case '?':
+                    mlValue.append("\\").append(c);
+                    break;
+                default:
+                    mlValue.append(c);
+                    break;
+                }
+                escape = escapeNext;
+            }
+            return mlValue.toString();
         }
 
     }

@@ -1,0 +1,18 @@
+<search xmlns="http://marklogic.com/appservices/search">
+  <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <value-query type="string">
+      <element ns="" name="dc__title" />
+      <text>Docu*?</text>
+      <term-option>punctuation-sensitive</term-option>
+      <term-option>wildcarded</term-option>
+      <term-option>whitespace-sensitive</term-option>
+      <weight>1.0</weight>
+    </value-query>
+  </query>
+  <options xmlns="http://marklogic.com/appservices/search">
+    <extract-document-data selected="include-with-ancestors">
+      <extract-path>/document/ecm__id</extract-path>
+    </extract-document-data>
+  </options>
+</search>
