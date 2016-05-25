@@ -73,9 +73,10 @@
               id="#{formId}_repeat"
               renderTime="#{useRepeatRenderTime}"
               varStatus="layoutListingStatus">
-              <c:set var="showListingHeader"
-                value="#{layoutListingStatus.index == 0}" />
-              <nxl:layout layout="#{layout}" value="#{row}" />
+              <nxu:set var="showListingHeader"
+                value="#{layoutListingStatus.index == 0}">
+                <nxl:layout layout="#{layout}" value="#{row}" />
+              </nxu:set>
             </nxu:repeat>
           </div>
         </c:when>
@@ -90,9 +91,10 @@
                     renderTime="#{useRepeatRenderTime}"
                     varStatus="layoutListingStatus"
                     end="#{(documents.size-1)/2}">
-                    <c:set var="showListingHeader"
-                      value="#{layoutListingStatus.index == 0}" />
-                    <nxl:layout layout="#{layout}" value="#{row}" />
+                    <nxu:set var="showListingHeader"
+                      value="#{layoutListingStatus.index == 0}">
+                      <nxl:layout layout="#{layout}" value="#{row}" />
+                    </nxu:set>
                   </nxu:repeat>
                 </table>
               </td>
@@ -103,9 +105,10 @@
                     renderTime="#{useRepeatRenderTime}"
                     varStatus="layoutListingStatus"
                     begin="#{(documents.size-1)/2 + 1}">
-                    <c:set var="showListingHeader"
-                      value="#{layoutListingStatus.index == documents.size/2+1}" />
-                    <nxl:layout layout="#{layout}" value="#{row}" />
+                    <nxu:set var="showListingHeader"
+                      value="#{layoutListingStatus.index == documents.size/2+1}">
+                      <nxl:layout layout="#{layout}" value="#{row}" />
+                    </nxu:set>
                   </nxu:repeat>
                 </table>
               </td>
@@ -119,9 +122,10 @@
               id="#{formId}_repeat"
               renderTime="#{useRepeatRenderTime}"
               varStatus="layoutListingStatus">
-              <c:set var="showListingHeader"
-                value="#{layoutListingStatus.index == 0}" />
-              <nxl:layout layout="#{layout}" value="#{row}" />
+              <nxu:set var="showListingHeader"
+                value="#{layoutListingStatus.index == 0}">
+                <nxl:layout layout="#{layout}" value="#{row}" />
+              </nxu:set>
             </nxu:repeat>
           </table>
         </c:otherwise>
