@@ -30,8 +30,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -44,12 +46,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.routing.core.io.DocumentRouteWriter;
+import org.nuxeo.ecm.platform.routing.core.io.TaskWriter;
+import org.nuxeo.ecm.platform.routing.core.io.enrichers.TasksJsonEnricher;
 import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
+import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
@@ -637,6 +643,29 @@ public class WorkflowEndpointTest extends BaseTest {
         assertEquals("administrators", ((ArrayNode) initiatorProps.get("groups")).get(0).getTextValue());
         // For the sake of security
         assertTrue(StringUtils.isBlank(initiatorProps.get("password").getTextValue()));
+    }
+
+    @Test
+    public void testTasksEnricher() throws IOException {
+        DocumentModel note = RestServerInit.getNote(0, session);
+        // Check POST /workflow
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", TasksJsonEnricher.NAME);
+        response = getResponse(RequestType.GET,
+                "/id/" + note.getId(), headers);
+
+        node = mapper.readTree(response.getEntityInputStream());
+        ArrayNode tasksNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TasksJsonEnricher.NAME);
+        assertEquals(1, tasksNode.size());
+        ArrayNode targetDocumentIdsNode = (ArrayNode) tasksNode.get(0).get(TaskWriter.TARGET_DOCUMENT_IDS);
+        assertEquals(1, targetDocumentIdsNode.size());
+        assertEquals(note.getId(), targetDocumentIdsNode.get(0).get("id").getTextValue());
     }
 
 }
