@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class PendingTasksJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
-    public static final String NAME = "tasks";
+    public static final String NAME = "pendingTasks";
 
     public PendingTasksJsonEnricher() {
         super(NAME);
