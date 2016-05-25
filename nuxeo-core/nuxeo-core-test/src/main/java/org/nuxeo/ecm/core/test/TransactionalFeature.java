@@ -18,16 +18,20 @@
  */
 package org.nuxeo.ecm.core.test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
+import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector;
 import org.nuxeo.runtime.test.runner.ContainerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -72,7 +76,7 @@ public class TransactionalFeature extends SimpleFeature {
         try {
             for (Waiter provider : waiters) {
                 try {
-                    Assert.assertTrue(provider.await(deadline));
+                    Assert.assertTrue(await(provider, deadline));
                 } catch (InterruptedException cause) {
                     Thread.currentThread().interrupt();
                     throw new AssertionError("interrupted while awaiting for asynch completion", cause);
@@ -87,6 +91,19 @@ public class TransactionalFeature extends SimpleFeature {
                 }
             }
         }
+    }
+
+    boolean await(Waiter waiter, long deadline) throws InterruptedException {
+        if (waiter.await(deadline)) {
+            return true;
+        }
+        try {
+            File file = new ThreadDeadlocksDetector().dump(new long[0]);
+            LogFactory.getLog(TransactionalFeature.class).warn("timed out in " + waiter.getClass() + ", thread dump available in " + file);
+        } catch (IOException cause) {
+            LogFactory.getLog(TransactionalFeature.class).warn("timed out in " + waiter.getClass() + ", cannot take thread dump", cause);
+        }
+        return false;
     }
 
     protected Class<? extends RepositoryFactory> defaultFactory;
