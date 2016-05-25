@@ -5695,6 +5695,8 @@
                       <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
                       <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                       <!-- <exclude>org.jboss.seam:*</exclude> -->
+                      <!-- To be removed after NXP-19707 -->
+                      <exclude>org.nuxeo.client:nuxeo-java-client</exclude>
                     </excludes>
                   </requireReleaseDeps>
                 </rules>
