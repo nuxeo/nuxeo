@@ -124,7 +124,7 @@ public class RoutingFetchAndEnricherTest extends RoutingRestBaseTest {
         node = mapper.readTree(response.getEntityInputStream());
         ArrayNode tasksNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(PendingTasksJsonEnricher.NAME);
         assertEquals(1, tasksNode.size());
-        ArrayNode targetDocumentIdsNode = (ArrayNode) tasksNode.get(0).get(TaskWriter.TARGET_DOCUMENT);
+        ArrayNode targetDocumentIdsNode = (ArrayNode) tasksNode.get(0).get(TaskWriter.TARGET_DOCUMENTS);
         assertEquals(1, targetDocumentIdsNode.size());
         assertEquals(note.getId(), targetDocumentIdsNode.get(0).get("id").getTextValue());
     }
@@ -175,7 +175,7 @@ public class RoutingFetchAndEnricherTest extends RoutingRestBaseTest {
 
         JsonNode task = getCurrentTask(createdWorflowInstanceId, queryParams, null);
 
-        ArrayNode taskTargetDocuments = (ArrayNode) task.get(TaskWriter.TARGET_DOCUMENT);
+        ArrayNode taskTargetDocuments = (ArrayNode) task.get(TaskWriter.TARGET_DOCUMENTS);
         assertEquals(1, taskTargetDocuments.size());
         assertEquals(note.getId(), taskTargetDocuments.get(0).get("uid").getTextValue());
     }
