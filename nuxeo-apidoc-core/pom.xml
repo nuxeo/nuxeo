@@ -154,6 +154,10 @@
       <artifactId>hibernate-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.elasticsearch</groupId>
+      <artifactId>nuxeo-elasticsearch-core</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

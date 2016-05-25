@@ -13,16 +13,13 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
+<@fulltextFilter "contribution" "filterContributions"/>
 <h1>${eps?size} extension points</h1>
-
 <div class="tabscontent">
-  <@tableFilterArea "extension point" "filterExtensionPoints" searchFilter/>
   <table id="extensionPointsTable" class="tablesorter">
   <thead>
     <tr>
-      <th>
-        Extension Point
-      </th>
+      <th><@tableFilterArea "extension point"/></th>
     </tr>
   </thead>
   <tbody>

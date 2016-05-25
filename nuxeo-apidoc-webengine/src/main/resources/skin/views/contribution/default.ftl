@@ -36,9 +36,9 @@
             <pre><code>${contributionItem.xml}</code></pre>
           </div>
           <div class="block-title">
-            <input type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none"/>
-            ${contributionItem.label}
-            <span> ${contributionItem.documentation} </span>
+            <input id="${contributionItem.id}" type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none"/>
+            <label for="${contributionItem.id}">${contributionItem.label}</label>
+            <span>${contributionItem.documentation}</span>
           </div>
         </li>
       </#list>

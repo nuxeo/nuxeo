@@ -14,11 +14,10 @@
 
 <h1>${operations?size} operations</h1>
 <div class="tabscontent">
-  <@tableFilterArea "operation"/>
   <table id="operationsTable" class="tablesorter">
     <thead>
     <tr>
-      <th>Operation</th>
+      <th><@tableFilterArea "operation"/></th>
     </tr>
     </thead>
   <tbody>

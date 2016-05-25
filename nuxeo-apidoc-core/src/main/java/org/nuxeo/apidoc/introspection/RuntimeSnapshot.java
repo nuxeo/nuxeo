@@ -519,4 +519,9 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     public List<String> getAliases() {
         return Collections.singletonList("current");
     }
+
+    @Override
+    public boolean isHidden() {
+        return false;
+    }
 }

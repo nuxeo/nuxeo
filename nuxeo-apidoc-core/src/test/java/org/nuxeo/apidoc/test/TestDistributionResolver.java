@@ -163,6 +163,11 @@ public class TestDistributionResolver {
                 }
 
                 @Override
+                public boolean isHidden() {
+                    return false;
+                }
+
+                @Override
                 public List<String> getJavaComponentIds() {
                     // TODO Auto-generated method stub
                     return null;

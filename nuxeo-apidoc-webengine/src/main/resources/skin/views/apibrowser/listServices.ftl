@@ -10,12 +10,12 @@
 
 <h1>${services?size} services</h1>
 <div class="tabscontent">
-  <@tableFilterArea "service"/>
+
   <table id="servicesTable" class="tablesorter">
   <thead>
     <tr>
       <th>
-        Service
+        <@tableFilterArea "service"/>
       </th>
     </tr>
   </thead>

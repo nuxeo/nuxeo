@@ -57,6 +57,11 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
      */
     String PROP_ALIASES = "nxdistribution:aliases";
 
+    /**
+     * @since 8.3
+     */
+    String PROP_HIDE = "nxdistribution:hide";
+
     String getKey();
 
     void cleanPreviousArtifacts();
@@ -123,4 +128,9 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
      * @since 8.3
      */
     List<String> getAliases();
+
+    /**
+     * @since 8.3
+     */
+    boolean isHidden();
 }

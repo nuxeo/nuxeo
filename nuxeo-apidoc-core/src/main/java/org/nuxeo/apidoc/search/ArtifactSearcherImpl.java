@@ -18,6 +18,8 @@
  */
 package org.nuxeo.apidoc.search;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,6 +50,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 
 public class ArtifactSearcherImpl implements ArtifactSearcher {
@@ -90,7 +95,9 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         if (fulltext != null) {
             query += " AND " + NXQL.ECM_FULLTEXT + " = " + NXQL.escapeString(fulltext);
         }
-        DocumentModelList docs = session.query(query);
+
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(query).limit(-1));
         for (DocumentModel doc : docs) {
             NuxeoArtifact artifact = mapDoc2Artifact(doc);
             if (artifact != null) {
@@ -109,7 +116,9 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         if (targetType != null) {
             query += " AND " + DocumentationItem.PROP_TARGET_TYPE + " = " + NXQL.escapeString(targetType);
         }
-        DocumentModelList docs = session.query(query);
+
+        ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(query).limit(-1));
         List<DocumentationItem> result = new ArrayList<DocumentationItem>();
         for (DocumentModel doc : docs) {
             DocumentationItem docItem = doc.getAdapter(DocumentationItem.class);

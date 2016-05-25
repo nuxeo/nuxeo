@@ -11,12 +11,12 @@
 <h1>${bundleIds?size} bundles</h1>
 
 <div class="tabscontent">
-  <@tableFilterArea "bundle"/>
+
   <table id="bundlesTable" class="tablesorter">
   <thead>
     <tr>
       <th>
-        Bundle
+        <@tableFilterArea "bundle"/>
       </th>
     </tr>
   </thead>

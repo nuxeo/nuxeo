@@ -12,12 +12,11 @@
 
 <div class="tabscontent">
 
-  <@tableFilterArea "component"/>
   <table id="componentsTable" class="tablesorter">
   <thead>
     <tr>
       <th>
-        Component Label
+        <@tableFilterArea "component"/>
       </th>
     </tr>
   </thead>

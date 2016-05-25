@@ -231,6 +231,7 @@ public class Distribution extends ModuleRoot {
                              o2.getVersion()));
                      return o2.getVersion().compareTo(o1.getVersion());
                  })
+                 .filter(s -> !s.isHidden())
                  .collect(Collectors.toList());
     }
 
@@ -253,7 +254,7 @@ public class Distribution extends ModuleRoot {
     @Produces("text/html")
     public Object doSave() throws NamingException, NotSupportedException, SystemException, RollbackException,
             HeuristicMixedException, HeuristicRollbackException {
-        if (!isEditor()) {
+        if (!canAddDocumentation()) {
             return null;
         }
         FormData formData = getContext().getForm();
@@ -290,7 +291,7 @@ public class Distribution extends ModuleRoot {
     @Produces("text/html")
     public Object doSaveExtended() throws NamingException, NotSupportedException, SystemException, SecurityException,
             RollbackException, HeuristicMixedException, HeuristicRollbackException {
-        if (!isEditor()) {
+        if (!canAddDocumentation()) {
             return null;
         }
 
@@ -406,7 +407,7 @@ public class Distribution extends ModuleRoot {
     @Path("uploadDistrib")
     @Produces("text/html")
     public Object uploadDistrib() throws IOException {
-        if (!isEditor()) {
+        if (!canAddDocumentation()) {
             return null;
         }
         Blob blob = getContext().getForm().getFirstBlob();
@@ -421,7 +422,7 @@ public class Distribution extends ModuleRoot {
     @Path("uploadDistribTmp")
     @Produces("text/html")
     public Object uploadDistribTmp() throws IOException {
-        if (!isEditor()) {
+        if (!canAddDocumentation()) {
             return null;
         }
         Blob blob = getContext().getForm().getFirstBlob();
@@ -441,7 +442,7 @@ public class Distribution extends ModuleRoot {
     @Path("uploadDistribTmpValid")
     @Produces("text/html")
     public Object uploadDistribTmpValid() {
-        if (!isEditor()) {
+        if (!canAddDocumentation()) {
             return null;
         }
 
@@ -460,7 +461,7 @@ public class Distribution extends ModuleRoot {
     @Path("uploadDoc")
     @Produces("text/html")
     public Object uploadDoc() throws IOException {
-        if (!isEditor()) {
+        if (!canAddDocumentation()) {
             return null;
         }
 

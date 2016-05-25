@@ -101,27 +101,31 @@
   </#if>
 </#macro>
 
-
-<#macro tableFilterArea name action searchFilter>
+<#macro fulltextFilter name action>
   <#if false>
   <!--
   params:
    - name: Displayed name in the placeholder.
-   - action: (optional) name of the resource that can make a fulltext search; for instance `listExtensionPoints`
+   - action: name of the resource that can make a fulltext search; for instance `listExtensionPoints`
              from `org.nuxeo.apidoc.browse.ApiBrowser#filterExtensionPoints`
   -->
   </#if>
-<p>
-  <#if action??>
-  <form method="POST" action="${Root.path}/${distId}/${action}"></#if>
-  <input name="fulltext" id="filter-box" value="" maxlength="30" size="30" type="search"
-    placeholder="Which ${name} are you looking for ?"<#if searchFilter??> value="${searchFilter}"</#if>/>
-  <#if action??>
-    <input id="filter-submit-button" type="submit" value="Deep Search"/>
+  <form id="fulltext" method="POST" action="${Root.path}/${distId}/${action}">
+    <input name="fulltext" id="fulltext-box" size="30" type="search"
+    placeholder="Find in ${name}"<#if searchFilter??> value="${searchFilter}"</#if>/>
+    <input id="filter-submit-button" type="submit" value="Search"/>
+    <input id="filter-clear-button" type="reset" value="Clear"/>
+  </form>
+</#macro>
+
+<#macro tableFilterArea name>
+  <#if false>
+  <!--
+  params:
+   - name: Displayed name in the placeholder
+  -->
   </#if>
-  <input id="filter-clear-button" type="reset" value="Clear"/>
-  <#if action??></form></#if>
-</p>
+  <input name="fulltext" id="filter-box" size="30" type="search" placeholder="Filter ${name}"/>
 </#macro>
 
 
@@ -170,12 +174,16 @@
 <script type="text/javascript">
   $(document).ready(function() {
     $("${name}")
-    .tablesorter({sortList: [${sortList}], widgets: ['zebra']})
+    .tablesorter({sortList: [${sortList}], widgets: ['zebra'], cancelSelection: false})
       <#if !searchFilter??>.tablesorterFilter({
         filterContainer: "#filter-box",
         filterClearContainer: "#filter-clear-button",
         filterWaitTime: 600
       }</#if>);
+  });
+
+  $('#filter-box').click(function(e) {
+    e.stopPropagation();
   });
 </script>
 </#macro>

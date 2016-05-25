@@ -450,4 +450,9 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         }
         return aliases;
     }
+
+    @Override
+    public boolean isHidden() {
+        return Boolean.TRUE.equals(doc.getPropertyValue(PROP_HIDE));
+    }
 }

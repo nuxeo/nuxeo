@@ -610,8 +610,8 @@ h2#contribute {
 
 @media (min-width: 67em) {
   .container.content {
-    margin-left: 10%;
-    margin-right: 10%;
+    margin-left: 8%;
+    margin-right: 8%;
   }
   .container.content.fullspace {
     margin-left: 0;
@@ -622,7 +622,6 @@ h2#contribute {
   .container.content.fullspace > div {
     padding: 3rem 12rem 2.7rem;
   }
-
 }
 
 article {
@@ -988,6 +987,11 @@ table.content td {
   background-color: transparent;
 }
 
+form#fulltext {
+  float: right;
+  margin-top: .7em;
+}
+
 .intro .main {
   font-size: 1.3rem;
   font-weight: 600;
@@ -1075,8 +1079,8 @@ a.button.primary:hover {
 
 .distributions p {
   margin: 0; }
-
 /* WIKI editor styles override */
+
 .markItUpContainer {
   border: none !important;
   background: none !important;
@@ -1100,7 +1104,89 @@ a.button.primary:hover {
   margin-bottom: 1em !important;
 }
 
+/* Google Search Frame styles */
+
+.gsc-above-wrapper-area,
+.gsc-resultsHeader,
+.gcsc-branding,
+.gs-spelling,
+.gs-fileFormat {
+  display: none;
+}
+
+.googleSearchFrame {
+  position: absolute;
+  top: 16.9em;
+  right: 2em;
+  background-color: white;
+  width: 27em;
+  min-height: 15em;
+}
+
+.googleSearchFrame ~ .tabscontent {
+  float: left;
+  width: calc(100% - 20em);
+}
+
+h1 + .tabscontent {
+  margin-top: 2em;
+}
+
+div.gsc-table-result,
+div.gsc-thumbnail-inside,
+div.gsc-url-top {
+  padding: 0;
+}
+
+.gsc-thumbnail-inside a,
+.gsc-thumbnail-inside a b,
+.gs-result div.gs-title,
+.gs-result div.gs-title *,
+.gsc-results .gsc-cursor-box .gsc-cursor-page {
+  color: #0079b3 !important;
+  text-decoration: none;
+}
+
+.gsc-thumbnail-inside a:hover,
+.gsc-thumbnail-inside a:hover b,
+.gsc-results .gsc-cursor-box .gsc-cursor-page:hover  {
+  color: #00adff !important;
+}
+
+.gs-webResult div.gs-visibleUrl,
+.gs-imageResult div.gs-visibleUrl {
+  color: #213f7d !important;
+  font-size: .8em;
+}
+
+div.gsc-webResult.gsc-result {
+  padding-top: 0;
+}
+
+.gsc-thumbnail-inside {
+  margin-bottom: .3em;
+}
+table.gsc-table-result,
+table.gsc-table-result td {
+  padding: 0;
+  border: none;
+  background-color: transparent !important;
+  font-size: .8em;
+  opacity: .8;
+}
+
+@media (max-width: 67em) {
+  .googleSearchFrame {
+    display: none;
+  }
+  .googleSearchFrame ~ .tabscontent {
+    float: none;
+    width: auto;
+  }
+}
+
 /* Helpers */
+
 .center {
   text-align: center;
 }

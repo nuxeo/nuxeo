@@ -28,6 +28,9 @@
         <row>
           <widget>aliases</widget>
         </row>
+        <row>
+          <widget>hide</widget>
+        </row>
       </rows>
       <widget name="name" type="text">
         <labels>
@@ -81,6 +84,15 @@
         <translated>false</translated>
         <fields>
           <field>nxdistribution:latestLTS</field>
+        </fields>
+      </widget>
+      <widget name="hide" type="checkbox">
+        <labels>
+          <label mode="any">Hide it</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxdistribution:hide</field>
         </fields>
       </widget>
       <widget name="aliases" type="list">
