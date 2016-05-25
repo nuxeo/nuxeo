@@ -33,6 +33,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
@@ -59,6 +60,7 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Button;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -67,10 +69,15 @@ import org.nuxeo.runtime.api.Framework;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
+    public static final String FETCH_ACTORS = "actors";
+
     public static final String TARGET_DOCUMENT_IDS = "targetDocumentIds";
 
     @Inject
     private SchemaManager schemaManager;
+
+    @Inject
+    UserManager userManager;
 
     public TaskWriter() {
         super(ENTITY_TYPE, Task.class);
@@ -113,7 +120,21 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             jg.writeEndArray();
 
             jg.writeArrayFieldStart("actors");
+            final boolean isFetchActors = ctx.getFetched(ENTITY_TYPE).contains(FETCH_ACTORS);
             for (String actorId : item.getActors()) {
+                if (isFetchActors) {
+                    NuxeoPrincipal user = userManager.getPrincipal(actorId);
+                    if (user != null) {
+                        writeEntity(user, jg);
+                        break;
+                    } else {
+                        NuxeoGroup group = userManager.getGroup(actorId);
+                        if (group !=  null) {
+                            writeEntity(group, jg);
+                            break;
+                        }
+                    }
+                }
                 jg.writeStartObject();
                 jg.writeStringField("id", actorId);
                 jg.writeEndObject();
