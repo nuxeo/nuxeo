@@ -40,11 +40,11 @@ import org.nuxeo.runtime.api.Framework;
  * @since 8.3
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
-public class TasksJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
+public class PendingTasksJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     public static final String NAME = "tasks";
 
-    public TasksJsonEnricher() {
+    public PendingTasksJsonEnricher() {
         super(NAME);
     }
 

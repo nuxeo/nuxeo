@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.platform.routing.core.io.DocumentRouteWriter;
 import org.nuxeo.ecm.platform.routing.core.io.TaskWriter;
-import org.nuxeo.ecm.platform.routing.core.io.enrichers.TasksJsonEnricher;
+import org.nuxeo.ecm.platform.routing.core.io.enrichers.PendingTasksJsonEnricher;
 import org.nuxeo.ecm.platform.routing.core.io.enrichers.RunningWorkflowJsonEnricher;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
@@ -117,12 +117,12 @@ public class RoutingFetchAndEnricherTest extends RoutingRestBaseTest {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", TasksJsonEnricher.NAME);
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", PendingTasksJsonEnricher.NAME);
         response = getResponse(RequestType.GET,
                 "/id/" + note.getId(), headers);
 
         node = mapper.readTree(response.getEntityInputStream());
-        ArrayNode tasksNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TasksJsonEnricher.NAME);
+        ArrayNode tasksNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(PendingTasksJsonEnricher.NAME);
         assertEquals(1, tasksNode.size());
         ArrayNode targetDocumentIdsNode = (ArrayNode) tasksNode.get(0).get(TaskWriter.TARGET_DOCUMENT);
         assertEquals(1, targetDocumentIdsNode.size());
