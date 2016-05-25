@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,13 +40,16 @@ import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.schema.utils.DateParser;
+import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
+import org.nuxeo.ecm.platform.routing.core.io.enrichers.RunnableWorkflowJsonEnricher;
+import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
-import com.ibm.icu.util.Calendar;
+
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -216,16 +220,26 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     @Test
     public void testTerminateParallelDocumentReviewWorkflow() throws JsonProcessingException, IOException {
 
-        // Start SerialDocumentReview on Note 0
         DocumentModel note = RestServerInit.getNote(0, session);
-        ClientResponse response = getResponse(
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", RunnableWorkflowJsonEnricher.NAME);
+        ClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId(), headers);
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        ArrayNode runnableWorkflowModels = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(RunnableWorkflowJsonEnricher.NAME);
+        // We can start both default workflow on the note
+        assertEquals(2, runnableWorkflowModels.size());
+
+        // Start SerialDocumentReview on Note 0
+        response = getResponse(
                 RequestType.POST,
                 "/workflow",
                 getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
                         Arrays.asList(new String[] { note.getId() })));
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
-        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        node = mapper.readTree(response.getEntityInputStream());
         final String createdWorflowInstanceId = node.get("id").getTextValue();
 
         // Complete first task
@@ -257,6 +271,14 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         response = getResponse(RequestType.GET, "/task");
         node = mapper.readTree(response.getEntityInputStream());
         assertEquals(0, node.get("entries").size());
+
+        response = getResponse(RequestType.GET,
+                "/id/" + note.getId(), headers);
+
+        node = mapper.readTree(response.getEntityInputStream());
+        runnableWorkflowModels = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(RunnableWorkflowJsonEnricher.NAME);
+        // Cannot start default wf because of current lifecycle state of the note
+        assertEquals(0, runnableWorkflowModels.size());
 
     }
 
