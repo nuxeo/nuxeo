@@ -128,7 +128,6 @@ public class RoutingFetchAndEnricherTest extends RoutingRestBaseTest {
         assertEquals(note.getId(), targetDocumentIdsNode.get(0).get("id").getTextValue());
     }
 
-
     /**
      * @since 8.3
      */
@@ -151,6 +150,27 @@ public class RoutingFetchAndEnricherTest extends RoutingRestBaseTest {
         ArrayNode taskTargetDocuments = (ArrayNode) task.get(TaskWriter.TARGET_DOCUMENT);
         assertEquals(1, taskTargetDocuments.size());
         assertEquals(note.getId(), taskTargetDocuments.get(0).get("uid").getTextValue());
+    }
+
+    /**
+     * @since 8.3
+     */
+    @Test
+    public void testFetchWorfklowAttachedDocuments() throws IOException {
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("fetch." + DocumentRouteWriter.ENTITY_TYPE, DocumentRouteWriter.FETCH_ATTACHED_DOCUMENTS);
+
+        ClientResponse response = getResponse(RequestType.POST, "/workflow", getCreateAndStartWorkflowBodyContent(
+                "SerialDocumentReview", Arrays.asList(new String[] { note.getId() })), queryParams, null, null);
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+
+        ArrayNode wfAttachedDocuments = (ArrayNode) node.get(DocumentRouteWriter.ATTACHED_DOCUMENTS);
+        assertEquals(1, wfAttachedDocuments.size());
+        assertEquals(note.getId(), wfAttachedDocuments.get(0).get("uid").getTextValue());
     }
 
 }
