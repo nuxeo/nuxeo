@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.dom4j.Document;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
@@ -104,10 +103,13 @@ class MarkLogicQueryBuilder {
 
     private final boolean fulltextSearchDisabled;
 
-    private Document document;
+    private final boolean distinctDocuments;
+
+    private Boolean projectionHasWildcard;
 
     public MarkLogicQueryBuilder(QueryManager queryManager, Expression expression, SelectClause selectClause,
-            OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled) {
+            OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled,
+            boolean distinctDocuments) {
         this.schemaManager = Framework.getLocalService(SchemaManager.class);
         this.queryManager = queryManager;
         this.sqb = queryManager.newStructuredQueryBuilder();
@@ -116,48 +118,68 @@ class MarkLogicQueryBuilder {
         this.orderByClause = orderByClause;
         this.pathResolver = pathResolver;
         this.fulltextSearchDisabled = fulltextSearchDisabled;
+        this.distinctDocuments = distinctDocuments;
     }
 
-    public boolean hasProjectionWildcard() {
-        for (int i = 0; i < selectClause.elements.size(); i++) {
-            Operand op = selectClause.elements.get(i);
-            if (!(op instanceof Reference)) {
-                throw new QueryParseException("Projection not supported: " + op);
-            }
-            if (walkReference(op).hasWildcard()) {
-                return true;
+    public boolean doManualProjection() {
+        // Don't do manual projection if there are no projection wildcards, as this brings no new
+        // information and is costly. The only difference is several identical rows instead of one.
+        return !distinctDocuments && hasProjectionWildcard();
+    }
+
+    private boolean hasProjectionWildcard() {
+        if (projectionHasWildcard == null) {
+            projectionHasWildcard = false;
+            for (int i = 0; i < selectClause.elements.size(); i++) {
+                Operand op = selectClause.elements.get(i);
+                if (!(op instanceof Reference)) {
+                    throw new QueryParseException("Projection not supported: " + op);
+                }
+                if (walkReference(op).hasWildcard()) {
+                    projectionHasWildcard = true;
+                    break;
+                }
             }
         }
-        return false;
+        return projectionHasWildcard;
     }
 
     public RawQueryDefinition buildQuery() {
-        String options = buildOptions();
         RawStructuredQueryDefinition query = sqb.build(walkExpression(expression).build(sqb));
-        String comboQuery = "<search xmlns=\"http://marklogic.com/appservices/search\">" + query.toString() + options
+        String options = buildOptions();
+        String comboQuery = "<search xmlns=\"http://marklogic.com/appservices/search\">" //
+                + query.toString() //
+                + options //
                 + "</search>";
         return queryManager.newRawCombinedQueryDefinition(new StringHandle(comboQuery));
     }
 
     private String buildOptions() {
-        StringBuilder options = new StringBuilder("<options xmlns=\"http://marklogic.com/appservices/search\">");
-        options.append("<extract-document-data selected=\"include-with-ancestors\">");
+        return "<options xmlns=\"http://marklogic.com/appservices/search\">" //
+                + buildProjections() //
+                + "</options>";
+    }
+
+    private String buildProjections() {
+        if (doManualProjection()) {
+            return "";
+        }
+        StringBuilder extract = new StringBuilder("<extract-document-data selected=\"include-with-ancestors\">");
         for (int i = 0; i < selectClause.elements.size(); i++) {
             Operand op = selectClause.elements.get(i);
             if (!(op instanceof Reference)) {
                 throw new QueryParseException("Projection not supported: " + op);
             }
             FieldInfo fieldInfo = walkReference((Reference) op);
-            options.append("<extract-path>");
-            options.append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
+            extract.append("<extract-path>");
+            extract.append(MarkLogicHelper.DOCUMENT_ROOT_PATH)
                    .append('/')
                    .append(MarkLogicHelper.serializeKey(fieldInfo.getFullField()));
-            options.append("</extract-path>");
-            // TODO check projection wildcard and fulltext score case (from mongodb)
+            extract.append("</extract-path>");
+            // TODO check fulltext score case (from mongodb)
         }
-        options.append("</extract-document-data>");
-        options.append("</options>");
-        return options.toString();
+        extract.append("</extract-document-data>");
+        return extract.toString();
     }
 
     private QueryBuilder walkExpression(Expression expression) {

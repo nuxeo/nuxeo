@@ -62,7 +62,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/eq-operator-on-boolean.xml", query.getHandle().toString());
     }
 
@@ -77,7 +77,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/eq-operator-on-array.xml", query.getHandle().toString());
     }
 
@@ -93,7 +93,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/eq-operator-on-array.xml", query.getHandle().toString());
     }
 
@@ -109,7 +109,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/noteq-operator-on-array.xml", query.getHandle().toString());
     }
 
@@ -125,7 +125,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/noteq-operator-on-array.xml", query.getHandle().toString());
     }
 
@@ -140,7 +140,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/lt-operator.xml", query.getHandle().toString());
     }
 
@@ -157,7 +157,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/in-operator.xml", query.getHandle().toString());
     }
 
@@ -174,7 +174,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/not-in-operator-on-array.xml", query.getHandle().toString());
     }
 
@@ -189,7 +189,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/is-null-operator.xml", query.getHandle().toString());
     }
 
@@ -205,7 +205,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/not-operator.xml", query.getHandle().toString());
     }
 
@@ -224,7 +224,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/not-operator-on-composition.xml", query.getHandle().toString());
     }
 
@@ -240,7 +240,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/wildcard-reference.xml", query.getHandle().toString());
     }
 
@@ -257,7 +257,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/correlated-wildcard-reference.xml", query.getHandle().toString());
     }
 
@@ -284,7 +284,7 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled).buildQuery();
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/core-feature.xml", query.getHandle().toString());
     }
 

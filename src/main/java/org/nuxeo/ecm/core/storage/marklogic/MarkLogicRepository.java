@@ -263,12 +263,12 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
         MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(markLogicClient.newQueryManager(),
                 evaluator.getExpression(), evaluator.getSelectClause(), orderByClause, evaluator.pathResolver,
-                evaluator.fulltextSearchDisabled);
+                evaluator.fulltextSearchDisabled, distinctDocuments);
         // TODO add select
         RawQueryDefinition query = builder.buildQuery();
         // Don't do manual projection if there are no projection wildcards, as this brings no new
         // information and is costly. The only difference is several identical rows instead of one.
-        boolean manualProjection = !distinctDocuments && builder.hasProjectionWildcard();
+        boolean manualProjection = builder.doManualProjection();
         if (manualProjection) {
             // we'll do post-treatment to re-evaluate the query to get proper wildcard projections
             // so we need the full state from the database
