@@ -36,8 +36,10 @@ import java.util.List;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
@@ -46,6 +48,7 @@ import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
+import org.nuxeo.ecm.platform.routing.core.io.DocumentRouteWriter;
 import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
@@ -608,6 +611,32 @@ public class WorkflowEndpointTest extends BaseTest {
         assertNotNull(taskAction);
         assertEquals(String.format("http://localhost:18090/api/v1/task/%s/cancel", element.get("id").getTextValue()),
                 taskAction.get("url").getTextValue());
+    }
+
+    @Test
+    public void testFethWfInitiator() throws IOException {
+
+        // Check POST /workflow
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", null));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
+
+
+        // Check GET /workflow/{workflowInstanceId}
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("fetch." + DocumentRouteWriter.ENTITY_TYPE, DocumentRouteWriter.FETCH_INITATIOR);
+        response = getResponse(RequestType.GET, "/workflow/" + createdWorflowInstanceId, queryParams);
+        node = mapper.readTree(response.getEntityInputStream());
+        JsonNode initiatorNode = node.get("initiator");
+        assertEquals("Administrator", initiatorNode.get("id").getTextValue());
+        JsonNode initiatorProps = initiatorNode.get("properties");
+        assertEquals(1, ((ArrayNode) initiatorProps.get("groups")).size());
+        assertEquals("administrators", ((ArrayNode) initiatorProps.get("groups")).get(0).getTextValue());
+        // For the sake of security
+        assertTrue(StringUtils.isBlank(initiatorProps.get("password").getTextValue()));
     }
 
 }
