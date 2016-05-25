@@ -44,7 +44,7 @@
       </#list>
       </ul>
       <input class="button primary" id="overrideGen" type="submit" value="Generate XML file" style="display:none"/>
-  </form>
+    </form>
   <script>
   function showOverrideForm(event) {
     $('#overrideStart').css("display", "none");

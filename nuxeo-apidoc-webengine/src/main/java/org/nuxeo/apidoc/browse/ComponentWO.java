@@ -19,11 +19,14 @@
 package org.nuxeo.apidoc.browse;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
@@ -43,6 +46,21 @@ public class ComponentWO extends NuxeoArtifactWebObject {
         ComponentInfo ci = getTargetComponentInfo();
         String bundleId = ci.getBundle().getBundleId();
         return getView("view").arg("bundleId", bundleId).arg("component", ci);
+    }
+
+    @GET
+    @Produces("text/xml")
+    @Path("override")
+    public Object override(@QueryParam("extensionId") String extensionId) {
+        ComponentInfo component = getTargetComponentInfo();
+        Map<String, String> extension = null;
+        if (extensionId.contains("--")) {
+            String[] split = extensionId.split("--");
+            extension = new HashMap<>();
+            extension.put("target", split[0]);
+            extension.put("point", split[1]);
+        }
+        return getView("override").arg("component", component).arg("extension", extension);
     }
 
     public ComponentInfo getTargetComponentInfo() {
