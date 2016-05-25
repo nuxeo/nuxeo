@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
@@ -52,6 +54,10 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRoute> {
+
+    public static final String ATTACHED_DOCUMENTS = "attachedDocuments";
+
+    public static final String FETCH_ATTACHED_DOCUMENTS = ATTACHED_DOCUMENTS;
 
     public static final String ENTITY_TYPE = "workflow";
 
@@ -85,12 +91,21 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
             jg.writeStringField("initiator", item.getInitiator());
         }
 
-
-        jg.writeArrayFieldStart("attachedDocumentIds");
-        for (String docId : item.getAttachedDocuments()) {
-            jg.writeStartObject();
-            jg.writeStringField("id", docId);
-            jg.writeEndObject();
+        jg.writeArrayFieldStart(ATTACHED_DOCUMENTS);
+        try (SessionWrapper wrapper = ctx.getSession(item.getDocument())) {
+            final boolean isFetchAttachedDocumentIds = ctx.getFetched(ENTITY_TYPE).contains(FETCH_ATTACHED_DOCUMENTS);
+            for (String docId : item.getAttachedDocuments()) {
+                if (isFetchAttachedDocumentIds) {
+                    IdRef idRef = new IdRef(docId);
+                    if (wrapper.getSession().exists(idRef)) {
+                        writeEntity(wrapper.getSession().getDocument(idRef), jg);
+                        break;
+                    }
+                }
+                jg.writeStartObject();
+                jg.writeStringField("id", docId);
+                jg.writeEndObject();
+            }
         }
         jg.writeEndArray();
 
