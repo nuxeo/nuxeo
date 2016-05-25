@@ -123,9 +123,34 @@ public class RoutingFetchAndEnricherTest extends RoutingRestBaseTest {
         node = mapper.readTree(response.getEntityInputStream());
         ArrayNode tasksNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(TasksJsonEnricher.NAME);
         assertEquals(1, tasksNode.size());
-        ArrayNode targetDocumentIdsNode = (ArrayNode) tasksNode.get(0).get(TaskWriter.TARGET_DOCUMENT_IDS);
+        ArrayNode targetDocumentIdsNode = (ArrayNode) tasksNode.get(0).get(TaskWriter.TARGET_DOCUMENT);
         assertEquals(1, targetDocumentIdsNode.size());
         assertEquals(note.getId(), targetDocumentIdsNode.get(0).get("id").getTextValue());
+    }
+
+
+    /**
+     * @since 8.3
+     */
+    @Test
+    public void testFetchTaskTargetDocuments() throws IOException {
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        ClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview", Arrays.asList(new String[] { note.getId() })));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("fetch." + TaskWriter.ENTITY_TYPE, TaskWriter.FETCH_TARGET_DOCUMENT);
+
+        JsonNode task = getCurrentTask(createdWorflowInstanceId, queryParams, null);
+
+        ArrayNode taskTargetDocuments = (ArrayNode) task.get(TaskWriter.TARGET_DOCUMENT);
+        assertEquals(1, taskTargetDocuments.size());
+        assertEquals(note.getId(), taskTargetDocuments.get(0).get("uid").getTextValue());
     }
 
 }
