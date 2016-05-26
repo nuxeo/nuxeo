@@ -38,9 +38,12 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.node.ArrayNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.collections.api.FavoritesManager;
+import org.nuxeo.ecm.collections.core.io.CollectionsJsonEnricher;
 import org.nuxeo.ecm.collections.core.io.FavoritesJsonEnricher;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -448,6 +451,44 @@ public class DocumentBrowsingTest extends BaseTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         node = mapper.readTree(response.getEntityInputStream());
         assertTrue(node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(FavoritesJsonEnricher.NAME).get(FavoritesJsonEnricher.IS_FAVORITE).getBooleanValue());
+    }
+
+    /**
+     * @since 8.3
+     */
+    @Test
+    public void iCanGetTheCollectionsOfADocument() throws Exception {
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", CollectionsJsonEnricher.NAME);
+
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        ClientResponse response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+
+        // The above GET will force the creation of the user workspace if it did not exist yet.
+        // Force to refresh current transaction context.
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(0, ((ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(CollectionsJsonEnricher.NAME)).size());
+        CollectionManager collectionManager = Framework.getService(CollectionManager.class);
+        collectionManager.addToNewCollection("dummyCollection", null, note, session);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        response = getResponse(RequestType.GET,
+                "repo/" + note.getRepositoryName() + "/path" + note.getPathAsString(), headers);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        node = mapper.readTree(response.getEntityInputStream());
+        ArrayNode collections = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(CollectionsJsonEnricher.NAME);
+        assertEquals(1, collections.size());
+        assertEquals("dummyCollection", collections.get(0).get("title").getTextValue());
     }
 
     @Test
