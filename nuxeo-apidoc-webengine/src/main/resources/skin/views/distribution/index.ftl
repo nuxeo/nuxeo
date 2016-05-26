@@ -5,12 +5,17 @@
 
 
 <@block name="header_scripts">
+<script>
+  $(function() {
+    $('.image-link').magnificPopup({type:'image'});
+  });
+</script>
 </@block>
 
 <@block name="right">
 <div class="explorer-home">
 <div class="fullspace intro">
-  <img src="${skinPath}/images/platform-explorer.png">
+  <img class="image-link" src="${skinPath}/images/platform-explorer.png">
   <p class="main">
   Explore services, extension points, contributions, operations of the Nuxeo Platform to build your own components.
   </p>

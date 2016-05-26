@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="${skinPath}/css/apidoc_style.css" media="screen" charset="utf-8" />
   <link rel="stylesheet" href="${skinPath}/css/code.css" media="screen" charset="utf-8" />
   <link rel="stylesheet" href="${skinPath}/script/jquery//treeview/jquery.treeview.css" media="screen" charset="utf-8">
+  <link rel="stylesheet" href="${skinPath}/css/jquery.magnific.min.css" media="screen" charset="utf-8">
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=PT+Sans+Caption:400,700">
 
   <@block name="stylesheets" />
@@ -28,6 +29,7 @@
 
    <script src="${skinPath}/script/jquery//treeview/jquery.treeview.js"></script>
    <script src="${skinPath}/script/jquery//treeview/jquery.treeview.async.js"></script>
+  <script src="${skinPath}/script/jquery.magnific.min.js"></script>
    <script src="${skinPath}/script/quickEditor.js"></script>
    <script src="${skinPath}/script/jquery.highlight-3.js"></script>
    <@block name="header_scripts" />
