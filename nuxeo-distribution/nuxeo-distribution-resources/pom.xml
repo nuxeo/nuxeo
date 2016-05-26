@@ -20,8 +20,8 @@
       <classifier>jar-with-dependencies</classifier>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.jtds</groupId>
-      <artifactId>jtds</artifactId>
+      <groupId>com.microsoft.sqlserver</groupId>
+      <artifactId>sqljdbc</artifactId>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>

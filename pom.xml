@@ -2907,6 +2907,12 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>com.microsoft.sqlserver</groupId>
+        <artifactId>sqljdbc</artifactId>
+        <version>4.2.6420</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>
         <version>2.5.1</version>

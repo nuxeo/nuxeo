@@ -73,7 +73,7 @@
       <param name="distribution" value="${distribution}" />
     </antcall>
     <copy todir="${outdir}/${distribution}/mssql/lib">
-      <artifact:file artifactId="jtds" />
+      <artifact:file groupId="com.microsoft.sqlserver" artifactId="sqljdbc" />
     </copy>
     <copy todir="${outdir}/${distribution}/mysql/lib">
       <artifact:file artifactId="mysql-connector-java" />
