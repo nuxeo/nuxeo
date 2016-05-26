@@ -85,29 +85,41 @@ public class RepositoryService extends DefaultComponent {
 
     @Override
     public void applicationStarted(ComponentContext context) {
+        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        { // open repositories without a tx active
+            Transaction tx = TransactionHelper.suspendTransaction();
+            try {
+                for (String name : repositoryManager.getRepositoryNames()) {
+                    openRepository(name);
+                }
+            } finally {
+                TransactionHelper.resumeTransaction(tx);
+            }
+        }
+        // give up if no handler configured
         RepositoryInitializationHandler handler = RepositoryInitializationHandler.getInstance();
         if (handler == null) {
             return;
         }
-        RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        boolean started = false;
-        boolean ok = false;
-        // initialize repositories with a tx active
-        try {
-            started = !TransactionHelper.isTransactionActive()
-                    && TransactionHelper.startTransaction();
-            for (String name : repositoryManager.getRepositoryNames()) {
-                initializeRepository(handler, name);
-            }
-            ok = true;
-        } finally {
-            if (started) {
-                try {
-                    if (!ok) {
-                        TransactionHelper.setTransactionRollbackOnly();
+        // invoke handler with a tx active
+        {
+            boolean started = false;
+            boolean ok = false;
+            try {
+                started = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
+                for (String name : repositoryManager.getRepositoryNames()) {
+                    initializeRepository(handler, name);
+                }
+                ok = true;
+            } finally {
+                if (started) {
+                    try {
+                        if (!ok) {
+                            TransactionHelper.setTransactionRollbackOnly();
+                        }
+                    } finally {
+                        TransactionHelper.commitOrRollbackTransaction();
                     }
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
                 }
             }
         }
