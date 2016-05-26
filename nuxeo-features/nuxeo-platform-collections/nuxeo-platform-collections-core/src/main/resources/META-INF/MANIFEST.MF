@@ -18,7 +18,7 @@ Nuxeo-Component: OSGI-INF/collection-core-types-contrib.xml,
  OSGI-INF/favorites-core-types-contrib.xml,
  OSGI-INF/favorites-service.xml,
  OSGI-INF/favorites-lifecycle-contrib.xml,
- OSGI-INF/favorites-enrichers-contrib.xml
+ OSGI-INF/json-enrichers-contrib.xml
 Bundle-SymbolicName: org.nuxeo.ecm.platform.collections.core;singleton:=true
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.nuxeo.ecm.platform.collections.api

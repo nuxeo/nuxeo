@@ -241,8 +241,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     @Override
-    public List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, final CoreSession session)
-            {
+    public List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, final CoreSession session) {
         return getVisibleCollection(collectionMember, CollectionConstants.MAX_COLLECTION_RETURNED, session);
     }
 
@@ -250,16 +249,18 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     public List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, int maxResult,
             CoreSession session) {
         List<DocumentModel> result = new ArrayList<DocumentModel>();
-        CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
-        List<String> collectionIds = collectionMemberAdapter.getCollectionIds();
-        for (int i = 0; i < collectionIds.size() && result.size() < maxResult; i++) {
-            final String collectionId = collectionIds.get(i);
-            DocumentRef documentRef = new IdRef(collectionId);
-            if (session.exists(documentRef) && session.hasPermission(documentRef, SecurityConstants.READ)
-                    && !LifeCycleConstants.DELETED_STATE.equals(session.getCurrentLifeCycleState(documentRef))) {
-                DocumentModel collection = session.getDocument(documentRef);
-                if (!collection.isVersion()) {
-                    result.add(collection);
+        if (isCollected(collectionMember)) {
+            CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
+            List<String> collectionIds = collectionMemberAdapter.getCollectionIds();
+            for (int i = 0; i < collectionIds.size() && result.size() < maxResult; i++) {
+                final String collectionId = collectionIds.get(i);
+                DocumentRef documentRef = new IdRef(collectionId);
+                if (session.exists(documentRef) && session.hasPermission(documentRef, SecurityConstants.READ)
+                        && !LifeCycleConstants.DELETED_STATE.equals(session.getCurrentLifeCycleState(documentRef))) {
+                    DocumentModel collection = session.getDocument(documentRef);
+                    if (!collection.isVersion()) {
+                        result.add(collection);
+                    }
                 }
             }
         }
