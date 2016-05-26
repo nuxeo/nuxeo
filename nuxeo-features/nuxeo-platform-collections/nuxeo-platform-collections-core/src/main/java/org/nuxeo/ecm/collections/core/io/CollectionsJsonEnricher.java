@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class CollectionsJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
 
-    public static final String NAME = "collection";
+    public static final String NAME = "collections";
 
     public CollectionsJsonEnricher() {
         super(NAME);
