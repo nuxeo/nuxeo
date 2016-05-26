@@ -74,7 +74,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
     public static final String FETCH_TARGET_DOCUMENT = "targetDocuments";
 
-    public static final String TARGET_DOCUMENTS = "targetDocuments";
+    public static final String TARGET_DOCUMENT_IDS = "targetDocumentIds";
 
     @Inject
     private SchemaManager schemaManager;
@@ -114,7 +114,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             jg.writeStringField("dueDate", DateParser.formatW3CDateTime(item.getDueDate()));
             jg.writeStringField("nodeName", item.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY));
 
-            jg.writeArrayFieldStart(TARGET_DOCUMENTS);
+            jg.writeArrayFieldStart(TARGET_DOCUMENT_IDS);
             final boolean isFetchTargetDocumentIds = ctx.getFetched(ENTITY_TYPE).contains(FETCH_TARGET_DOCUMENT);
             for (String docId : item.getTargetDocumentsIds()) {
                 if (isFetchTargetDocumentIds) {

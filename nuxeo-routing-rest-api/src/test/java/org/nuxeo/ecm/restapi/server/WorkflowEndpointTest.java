@@ -643,7 +643,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         node = mapper.readTree(response.getEntityInputStream());
         ArrayNode tasksNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(PendingTasksJsonEnricher.NAME);
         assertEquals(1, tasksNode.size());
-        ArrayNode targetDocumentIdsNode = (ArrayNode) tasksNode.get(0).get(TaskWriter.TARGET_DOCUMENTS);
+        ArrayNode targetDocumentIdsNode = (ArrayNode) tasksNode.get(0).get(TaskWriter.TARGET_DOCUMENT_IDS);
         assertEquals(1, targetDocumentIdsNode.size());
         assertEquals(note.getId(), targetDocumentIdsNode.get(0).get("id").getTextValue());
     }
@@ -669,7 +669,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         node = mapper.readTree(response.getEntityInputStream());
         ArrayNode workflowsNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS).get(RunningWorkflowJsonEnricher.NAME);
         assertEquals(1, workflowsNode.size());
-        ArrayNode attachedDocumentIdsNode = (ArrayNode) workflowsNode.get(0).get(DocumentRouteWriter.ATTACHED_DOCUMENTS);
+        ArrayNode attachedDocumentIdsNode = (ArrayNode) workflowsNode.get(0).get(DocumentRouteWriter.ATTACHED_DOCUMENT_IDS);
         assertEquals(1, attachedDocumentIdsNode.size());
         assertEquals(note.getId(), attachedDocumentIdsNode.get(0).get("id").getTextValue());
     }
@@ -693,7 +693,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         JsonNode task = getCurrentTask(createdWorflowInstanceId, queryParams, null);
 
-        ArrayNode taskTargetDocuments = (ArrayNode) task.get(TaskWriter.TARGET_DOCUMENTS);
+        ArrayNode taskTargetDocuments = (ArrayNode) task.get(TaskWriter.TARGET_DOCUMENT_IDS);
         assertEquals(1, taskTargetDocuments.size());
         assertEquals(note.getId(), taskTargetDocuments.get(0).get("uid").getTextValue());
     }
@@ -714,7 +714,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         JsonNode node = mapper.readTree(response.getEntityInputStream());
 
-        ArrayNode wfAttachedDocuments = (ArrayNode) node.get(DocumentRouteWriter.ATTACHED_DOCUMENTS);
+        ArrayNode wfAttachedDocuments = (ArrayNode) node.get(DocumentRouteWriter.ATTACHED_DOCUMENT_IDS);
         assertEquals(1, wfAttachedDocuments.size());
         assertEquals(note.getId(), wfAttachedDocuments.get(0).get("uid").getTextValue());
     }

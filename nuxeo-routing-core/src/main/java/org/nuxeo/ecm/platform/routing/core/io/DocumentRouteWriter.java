@@ -55,9 +55,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRoute> {
 
-    public static final String ATTACHED_DOCUMENTS = "attachedDocuments";
+    public static final String ATTACHED_DOCUMENT_IDS = "attachedDocumentIds";
 
-    public static final String FETCH_ATTACHED_DOCUMENTS = ATTACHED_DOCUMENTS;
+    public static final String FETCH_ATTACHED_DOCUMENTS = ATTACHED_DOCUMENT_IDS;
 
     public static final String ENTITY_TYPE = "workflow";
 
@@ -91,7 +91,7 @@ public class DocumentRouteWriter extends ExtensibleEntityJsonWriter<DocumentRout
             jg.writeStringField("initiator", item.getInitiator());
         }
 
-        jg.writeArrayFieldStart(ATTACHED_DOCUMENTS);
+        jg.writeArrayFieldStart(ATTACHED_DOCUMENT_IDS);
         try (SessionWrapper wrapper = ctx.getSession(item.getDocument())) {
             final boolean isFetchAttachedDocumentIds = ctx.getFetched(ENTITY_TYPE).contains(FETCH_ATTACHED_DOCUMENTS);
             for (String docId : item.getAttachedDocuments()) {
