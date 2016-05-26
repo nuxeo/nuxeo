@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
@@ -189,7 +190,7 @@ class MarkLogicQueryBuilder {
         // TODO handle ref and date cast
 
         if (op == Operator.STARTSWITH) {
-            // walkStartsWith(lvalue, rvalue);
+             return walkStartsWith(lvalue, rvalue);
             // } else if (NXQL.ECM_PATH.equals(name)) {
             // walkEcmPath(op, rvalue);
             // } else if (NXQL.ECM_ANCESTORID.equals(name)) {
@@ -249,6 +250,48 @@ class MarkLogicQueryBuilder {
         }
         throw new QueryParseException("Unknown operator: " + op);
     }
+
+    public QueryBuilder walkStartsWith(Operand lvalue, Operand rvalue) {
+        if (!(lvalue instanceof Reference)) {
+            throw new QueryParseException("Invalid STARTSWITH query, left hand side must be a property: " + lvalue);
+        }
+        String name = ((Reference) lvalue).name;
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new QueryParseException(
+                    "Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
+        }
+        String path = ((StringLiteral) rvalue).value;
+        if (path.length() > 1 && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+
+        if (NXQL.ECM_PATH.equals(name)) {
+            return walkStartsWithPath(path);
+        } else {
+            return walkStartsWithNonPath(lvalue, path);
+        }
+    }
+
+    protected QueryBuilder walkStartsWithPath(String path) {
+        // resolve path
+        String ancestorId = pathResolver.getIdForPath(path);
+        if (ancestorId == null) {
+            // no such path
+            // TODO XXX do better
+            return walkNull(new Reference(NXQL.ECM_UUID), true);
+        }
+        return walkEq(new Reference(ExpressionEvaluator.NXQL_ECM_ANCESTOR_IDS), new StringLiteral(ancestorId), true);
+    }
+
+    protected QueryBuilder walkStartsWithNonPath(Operand lvalue, String path) {
+        // Rebuild an OR expression, it means :
+        // - build an equal Operand
+        // - build a like Operand starting after the '/'
+        Expression equalOperand = new Expression(lvalue, Operator.EQ, new StringLiteral(path));
+        Expression likeOperand = new Expression(lvalue, Operator.LIKE, new StringLiteral(path + "/%"));
+        return walkOr(equalOperand, likeOperand);
+    }
+
 
     private QueryBuilder walkNot(Operand lvalue) {
         QueryBuilder query = walkOperandAsExpression(lvalue);

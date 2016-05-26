@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
+import static org.mockito.Mockito.mock;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 
 import java.util.Arrays;
@@ -27,6 +28,8 @@ import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
@@ -37,6 +40,7 @@ import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
+import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,6 +54,51 @@ import com.marklogic.client.query.RawQueryDefinition;
 @Deploy("org.nuxeo.ecm.core.schema")
 @LocalDeploy("org.nuxeo.ecm.core.storage.marklogic.tests:OSGI-INF/test-types-contrib.xml")
 public class TestMarkLogicQueryBuilder extends AbstractTest {
+
+    @Test
+    public void testStartsWithOperatorOnEcmPath() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_PATH), Operator.STARTSWITH, new StringLiteral(
+                "/default-domain"));
+
+        // Mock session
+        DBSSession session = mock(DBSSession.class, new Answer() {
+
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                if ("getDocumentIdByPath".equals(invocation.getMethod().getName())) {
+                    return "12345678-1234-1234-1234-123456789ABC";
+                }
+                return invocation.callRealMethod();
+            }
+
+        });
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(session, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
+        assertXMLFileAgainstString("query-expression/starts-with-operator-on-ecm-path.xml", query.getHandle()
+                                                                                                 .toString());
+    }
+
+    @Test
+    public void testStartsWithOperatorOnPath() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference("dc:title"), Operator.STARTSWITH, new StringLiteral(
+                "/default-domain"));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
+        assertXMLFileAgainstString("query-expression/starts-with-operator-on-path.xml", query.getHandle().toString());
+    }
 
     @Test
     public void testEqOperatorOnBoolean() throws Exception {

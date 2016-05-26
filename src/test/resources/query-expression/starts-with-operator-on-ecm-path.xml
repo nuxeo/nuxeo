@@ -1,0 +1,17 @@
+<search xmlns="http://marklogic.com/appservices/search">
+  <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <container-query>
+      <element ns="" name="ecm__ancestorIds" />
+      <value-query type="string">
+        <element ns="" name="nxml__item" />
+        <text>12345678-1234-1234-1234-123456789ABC</text>
+      </value-query>
+    </container-query>
+  </query>
+  <options xmlns="http://marklogic.com/appservices/search">
+    <extract-document-data selected="include-with-ancestors">
+      <extract-path>/document/ecm__id</extract-path>
+    </extract-document-data>
+  </options>
+</search>
