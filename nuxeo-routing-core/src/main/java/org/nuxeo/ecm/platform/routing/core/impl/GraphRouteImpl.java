@@ -243,7 +243,10 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
                 DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
         ArrayList<DocumentRef> docRefs = new ArrayList<DocumentRef>();
         for (String id : ids) {
-            docRefs.add(new IdRef(id));
+            IdRef idRef = new IdRef(id);
+            if (document.getCoreSession().exists(idRef)) {
+                docRefs.add(idRef);
+            }
         }
         return document.getCoreSession().getDocuments(docRefs.toArray(new DocumentRef[0]));
     }
