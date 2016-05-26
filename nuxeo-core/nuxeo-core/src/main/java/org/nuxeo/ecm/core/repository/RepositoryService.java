@@ -88,13 +88,7 @@ public class RepositoryService extends DefaultComponent {
 
     @Override
     public void applicationStarted(ComponentContext context) {
-        RepositoryInitializationHandler handler = RepositoryInitializationHandler.getInstance();
-        if (handler == null) {
-            return;
-        }
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        boolean started = false;
-        boolean ok = false;
         { // open repositories without a tx active
             Transaction tx = TransactionHelper.suspendTransaction();
             try {
@@ -105,21 +99,30 @@ public class RepositoryService extends DefaultComponent {
                 TransactionHelper.resumeTransaction(tx);
             }
         }
-        // initialize repositories with a tx active
-        try {
-            started = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
-            for (String name : repositoryManager.getRepositoryNames()) {
-                initializeRepository(handler, name);
-            }
-            ok = true;
-        } finally {
-            if (started) {
-                try {
-                    if (!ok) {
-                        TransactionHelper.setTransactionRollbackOnly();
+        // give up if no handler configured
+        RepositoryInitializationHandler handler = RepositoryInitializationHandler.getInstance();
+        if (handler == null) {
+            return;
+        }
+        // invoke handler with a tx active
+        {
+            boolean started = false;
+            boolean ok = false;
+            try {
+                started = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
+                for (String name : repositoryManager.getRepositoryNames()) {
+                    initializeRepository(handler, name);
+                }
+                ok = true;
+            } finally {
+                if (started) {
+                    try {
+                        if (!ok) {
+                            TransactionHelper.setTransactionRollbackOnly();
+                        }
+                    } finally {
+                        TransactionHelper.commitOrRollbackTransaction();
                     }
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
                 }
             }
         }
@@ -140,7 +143,8 @@ public class RepositoryService extends DefaultComponent {
         new UnrestrictedSessionRunner(name) {
 
             @Override
-            public void run() {;
+            public void run() {
+                ;
             }
 
         }.runUnrestricted();
@@ -160,8 +164,10 @@ public class RepositoryService extends DefaultComponent {
      * <p>
      * Null is returned if no repository with that name was registered.
      *
-     * @param repositoryName the repository name
-     * @return the repository instance or null if no repository with that name was registered
+     * @param repositoryName
+     *            the repository name
+     * @return the repository instance or null if no repository with that name
+     *         was registered
      */
     public Repository getRepository(String repositoryName) {
         synchronized (repositories) {
@@ -212,9 +218,11 @@ public class RepositoryService extends DefaultComponent {
     }
 
     /**
-     * Creates a new session with the given session id from the given repository.
+     * Creates a new session with the given session id from the given
+     * repository.
      * <p/>
-     * Locks repositories before entering the pool. That allows concurrency with shutdown.
+     * Locks repositories before entering the pool. That allows concurrency with
+     * shutdown.
      *
      * @since 7.2
      */
