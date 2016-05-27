@@ -21,8 +21,10 @@ package org.nuxeo.functionaltests.pages.tabs;
 
 import java.util.List;
 
+import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.WaitForJQueryAjaxOnLoading;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
@@ -35,6 +37,7 @@ import org.openqa.selenium.support.FindBy;
 /**
  * @since 7.10
  */
+@WaitForJQueryAjaxOnLoading
 public class PermissionsSubPage extends AbstractPage {
 
     // moved @Required on this element to allow read only view
@@ -132,6 +135,8 @@ public class PermissionsSubPage extends AbstractPage {
     }
 
     protected void waitForPermissionAdded(String permission, String userOrGroupName) {
+        //wait for any JQuery ajax request to complete
+        new AjaxRequestManager(driver).waitForJQueryRequests();
         Locator.waitUntilGivenFunction(input -> hasPermission(permission, userOrGroupName));
     }
 
