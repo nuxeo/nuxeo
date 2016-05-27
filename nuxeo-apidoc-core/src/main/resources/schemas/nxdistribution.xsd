@@ -11,6 +11,7 @@
 
   <xs:element name="name" type="xs:string"/>
   <xs:element name="version" type="xs:string"/>
+  <xs:element name="released" type="xs:date"/>
   <xs:element name="latestFT" type="xs:boolean" default="false"/>
   <xs:element name="latestLTS" type="xs:boolean" default="false"/>
   <xs:element name="hide" type="xs:boolean" default="false"/>

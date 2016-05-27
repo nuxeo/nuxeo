@@ -62,6 +62,11 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
      */
     String PROP_HIDE = "nxdistribution:hide";
 
+    /**
+     * @since 8.3
+     */
+    String PROP_RELEASED = "nxdistribution:released";
+
     String getKey();
 
     void cleanPreviousArtifacts();

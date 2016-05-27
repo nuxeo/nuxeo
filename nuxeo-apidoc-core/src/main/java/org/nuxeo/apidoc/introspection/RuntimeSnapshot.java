@@ -404,6 +404,11 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     @Override
+    public Date getReleaseDate() {
+        return null;
+    }
+
+    @Override
     public boolean isLive() {
         return true;
     }

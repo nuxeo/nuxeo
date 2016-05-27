@@ -18,10 +18,12 @@
  */
 package org.nuxeo.apidoc.repository;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
 import org.nuxeo.apidoc.api.BundleGroup;
@@ -49,7 +51,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     protected JavaDocHelper jdocHelper = null;
 
     public static RepositoryDistributionSnapshot create(DistributionSnapshot distrib, CoreSession session,
-            String containerPath, String label) {
+                                                        String containerPath, String label, Map<String, Serializable> properties) {
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName(distrib.getKey());
         if (label != null) {
@@ -61,6 +63,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         if (session.exists(new PathRef(targetPath))) {
             exist = true;
             doc = session.getDocument(new PathRef(targetPath));
+        }
+
+        // Set first properties passed by parameter to not override default behavior
+        if (properties != null) {
+            properties.forEach(doc::setPropertyValue);
         }
 
         doc.setPathInfo(containerPath, name);
@@ -77,12 +84,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         doc.setPropertyValue(PROP_LATEST_LTS, distrib.isLatestLTS());
         doc.setPropertyValue(PROP_VERSION, distrib.getVersion());
 
+        DocumentModel ret;
         if (exist) {
-            doc = session.saveDocument(doc);
+            ret = session.saveDocument(doc);
         } else {
-            doc = session.createDocument(doc);
+            ret = session.createDocument(doc);
         }
-        return new RepositoryDistributionSnapshot(doc);
+        return new RepositoryDistributionSnapshot(ret);
     }
 
     public static List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
@@ -332,6 +340,16 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         try {
             Calendar cal = (Calendar) getDoc().getPropertyValue("dc:created");
             return cal == null ? null : cal.getTime();
+        } catch (PropertyException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public Date getReleaseDate() {
+        try {
+            Calendar cal = (Calendar) getDoc().getPropertyValue("nxdistribution:released");
+            return cal == null ? getCreationDate() : cal.getTime();
         } catch (PropertyException e) {
             return null;
         }

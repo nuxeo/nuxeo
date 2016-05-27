@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.snapshot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -58,9 +59,9 @@ public interface SnapshotManager {
 
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session);
 
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name);
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties);
 
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, SnapshotFilter filter);
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties, SnapshotFilter filter);
 
     void validateImportedSnapshot(CoreSession session, String name, String version, String pathSegment, String title);
 

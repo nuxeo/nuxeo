@@ -22,6 +22,9 @@
           <widget>key</widget>
         </row>
         <row>
+          <widget>released</widget>
+        </row>
+        <row>
           <widget>latestFT</widget>
           <widget>latestLTS</widget>
         </row>
@@ -94,6 +97,18 @@
         <fields>
           <field>nxdistribution:hide</field>
         </fields>
+      </widget>
+      <widget name="released" type="datetime">
+        <labels>
+          <label mode="any">Release date</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxdistribution:released</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+        </properties>
       </widget>
       <widget name="aliases" type="list">
         <labels>

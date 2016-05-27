@@ -52,7 +52,6 @@ import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -155,9 +154,9 @@ public class SnapshotPersister {
     }
 
     public DistributionSnapshot persist(DistributionSnapshot snapshot, CoreSession session, String label,
-            SnapshotFilter filter) {
+                                        SnapshotFilter filter, Map<String, Serializable> properties) {
 
-        RepositoryDistributionSnapshot distribContainer = createDistributionDoc(snapshot, session, label);
+        RepositoryDistributionSnapshot distribContainer = createDistributionDoc(snapshot, session, label, properties);
 
         if (filter == null) {
             // If no filter, clean old entries
@@ -339,9 +338,9 @@ public class SnapshotPersister {
     }
 
     protected RepositoryDistributionSnapshot createDistributionDoc(DistributionSnapshot snapshot, CoreSession session,
-            String label) {
+                                                                   String label, Map<String, Serializable> properties) {
         return RepositoryDistributionSnapshot.create(snapshot, session, getDistributionRoot(session).getPathAsString(),
-                label);
+                label, properties);
     }
 
     protected DocumentModel createBundleGroupDoc(BundleGroup bundleGroup, CoreSession session, String label,

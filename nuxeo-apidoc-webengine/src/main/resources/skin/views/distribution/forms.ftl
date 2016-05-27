@@ -17,6 +17,7 @@
       <th>Name</th>
       <th>Version</th>
       <th>Creation date</th>
+      <th>Release date</th>
       <th></th>
       <th></th>
     </tr>
@@ -25,6 +26,7 @@
       <td><a class="button" href="${Root.path}/current/listBundles/">${rtSnap.name}</a></td>
       <td>${rtSnap.version}</td>
       <td>${rtSnap.creationDate?datetime}</td>
+      <td>-</td>
       <td><span class="sticker current">Current deployed distribution (live)</span></td>
       <td>
         <div id="saveBtn">
@@ -43,6 +45,10 @@
                 <td><input type="text" name="name" value="${rtSnap.name}"/></td>
               </tr>
               <tr>
+                <td class="nowrap">Release Date</td>
+                <td><input type="date" name="released" placeholder="yyyy-MM-dd" /></td>
+              </tr>
+              <tr>
                 <td class="nowrap">Version</td>
                 <td>${rtSnap.version}</td>
               </tr>
@@ -57,6 +63,10 @@
               <tr>
                 <td class="nowrap">Name</td>
                 <td><input type="text" name="name" value="${rtSnap.name}"/></td>
+              </tr>
+              <tr>
+                <td class="nowrap">Release Date</td>
+                <td><input type="date" name="released" /></td>
               </tr>
               <tr>
                 <td class="nowrap">Bundle prefixes</td>
@@ -79,6 +89,7 @@
         <td><a class="button" href="${Root.path}/${distrib.key}/listBundles/">${distrib.name}</a></td>
         <td>${distrib.version}</td>
         <td>${distrib.creationDate?datetime}</td>
+        <td>${distrib.releaseDate?datetime}</td>
         <td>
           <#if distrib.latestFT >
             <span class="sticker current">Latest FT</span>

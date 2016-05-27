@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.snapshot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,7 +44,6 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -150,18 +150,18 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public DistributionSnapshot persistRuntimeSnapshot(CoreSession session) {
-        return persistRuntimeSnapshot(session, null);
+        return persistRuntimeSnapshot(session, null, null);
     }
 
     @Override
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name) {
-        return persistRuntimeSnapshot(session, name, null);
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties) {
+        return persistRuntimeSnapshot(session, name, properties, null);
     }
 
     @Override
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, SnapshotFilter filter) {
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties, SnapshotFilter filter) {
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
-        DistributionSnapshot snap = persister.persist(liveSnapshot, session, name, filter);
+        DistributionSnapshot snap = persister.persist(liveSnapshot, session, name, filter, properties);
         addPersistentSnapshot(snap.getKey(), snap);
         return snap;
     }

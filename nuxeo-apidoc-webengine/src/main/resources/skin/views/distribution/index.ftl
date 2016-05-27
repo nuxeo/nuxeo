@@ -15,7 +15,9 @@
 <@block name="right">
 <div class="explorer-home">
 <div class="fullspace intro">
-  <img class="image-link" src="${skinPath}/images/platform-explorer.png">
+  <a class="image-link" title="Relation between Bundles, Services, extension points, contributions, operations in Nuxeo Platform" href="${skinPath}/images/platform-explorer.png">
+    <img src="${skinPath}/images/platform-explorer.png">
+  </a>
   <p class="main">
   Explore services, extension points, contributions, operations of the Nuxeo Platform to build your own components.
   </p>
@@ -67,7 +69,7 @@
   <#list snapList as distrib>
     <li>
       <time class="time" datetime="2013-04-10 18:30">
-        <span class="date">${distrib.creationDate?date}</span>
+        <span class="date">${distrib.releaseDate?date}</span>
         <#if distrib.latestFT >
           <span class="sticker current">Latest FT</span>
         <#elseif distrib.latestLTS >

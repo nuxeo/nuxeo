@@ -36,6 +36,11 @@ public class DistributionSnapshotDescImpl implements DistributionSnapshotDesc {
     }
 
     @Override
+    public Date getReleaseDate() {
+        return null;
+    }
+
+    @Override
     public String getName() {
         return name;
     }

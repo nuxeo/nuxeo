@@ -28,6 +28,8 @@ public interface DistributionSnapshotDesc {
 
     Date getCreationDate();
 
+    Date getReleaseDate();
+
     boolean isLive();
 
 }

@@ -76,6 +76,11 @@ public class TestDistributionResolver {
                 }
 
                 @Override
+                public Date getReleaseDate() {
+                    return null;
+                }
+
+                @Override
                 public List<String> getXmlComponentIds() {
                     // TODO Auto-generated method stub
                     return null;
