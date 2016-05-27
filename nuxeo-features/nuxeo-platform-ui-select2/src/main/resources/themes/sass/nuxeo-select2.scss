@@ -110,7 +110,6 @@
   border-radius: 16px;
   box-shadow: none;
   display: inline-block;
-  line-height: 13px;
   margin: .2em .3em .3em 0;
   min-height: 24px;
   padding: .4em 2em .4em 1em;
@@ -148,6 +147,10 @@
 
 .nx-page .select2-results .select2-result-label {
   padding: .2em .5em .3em;
+}
+
+.widgetPanel .select2-container .select2-choice > .select2-chosen {
+  white-space: normal;
 }
 
 // make select2 appears in front of fancybox
