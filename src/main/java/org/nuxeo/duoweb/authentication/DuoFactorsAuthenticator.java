@@ -148,6 +148,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         }
         if (session.getAttribute(ONE_FACTOR_CHECK) == null || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
             userIdent = super.handleRetrieveIdentity(httpRequest, httpResponse);
+            session = httpRequest.getSession(true);
             if (userIdent != null) {
                 try {
                     NuxeoPrincipal principal = validateUserIdentity();
