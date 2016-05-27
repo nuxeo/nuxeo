@@ -23,6 +23,7 @@ package org.nuxeo.ftest.cap;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
@@ -623,7 +624,8 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testMultipleVersionsPublicationsByApproval() throws IOException, UserNotConnectedException {
+    @Ignore("Until NXP-19709 is resolved")
+    public void testMultipleVersionsPublicationsByApproval() throws IOException, UserNotConnectedException, InterruptedException {
         // create file to be versionned and published
         login(MANAGER_USERNAME, MANAGER_USERNAME);
         open(TEST_FOLDER_URL);
@@ -720,7 +722,8 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testMultipleVersionsPublicationsByPublishOver() throws IOException, UserNotConnectedException {
+    @Ignore("Until NXP-19709 is resolved")
+    public void testMultipleVersionsPublicationsByPublishOver() throws IOException, UserNotConnectedException, InterruptedException {
         // create file to be versionned and published
         login(MANAGER_USERNAME, MANAGER_USERNAME);
         open(TEST_FOLDER_URL);
