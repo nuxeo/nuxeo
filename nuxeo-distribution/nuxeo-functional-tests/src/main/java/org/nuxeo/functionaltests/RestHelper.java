@@ -130,6 +130,14 @@ public class RestHelper {
         }
     }
 
+    public static void addUserToDelete(String userName){
+        usersToDelete.add(userName);
+    }
+
+    public static void removeUserToDelete(String userName){
+        usersToDelete.remove(userName);
+    }
+
     private static String buildUserJSON(String username, String password, String firstName, String lastName,
             String company, String email, String group) {
         StringBuilder sb = new StringBuilder();

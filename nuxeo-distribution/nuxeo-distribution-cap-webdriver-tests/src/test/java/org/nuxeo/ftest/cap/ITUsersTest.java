@@ -51,8 +51,7 @@ public class ITUsersTest extends AbstractTest {
 
     @After
     public void after() {
-        RestHelper.deleteUser("jsmith");
-        RestHelper.deleteUser(TEST_USERNAME);
+        RestHelper.cleanup();
     }
 
     @Test
@@ -74,15 +73,14 @@ public class ITUsersTest extends AbstractTest {
 
     @Test
     public void userCanChangeItsOwnPassword() throws Exception {
-        String firstname = "firstname";
-
         UsersGroupsBasePage page;
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         String username = "jsmith";
         usersTab = usersTab.searchUser(username);
         if (!usersTab.isUserFound(username)) {
-            page = usersTab.getUserCreatePage().createUser(username, firstname, "lastname1", "company1", "email1",
+            page = usersTab.getUserCreatePage().createUser(username, "firstname", "lastname1", "company1", "email1",
                     TEST_PASSWORD, "members");
+            RestHelper.addUserToDelete(username);
             // no confirmation message anymore
             // assertEquals(page.getFeedbackMessage(), "User created");
             usersTab = page.getUsersTab(true);
@@ -125,6 +123,7 @@ public class ITUsersTest extends AbstractTest {
         page = creationPage.cancelCreation().getUserCreatePage().createUser(TEST_USERNAME, firstname, "lastname1",
                 "company1", "email1", TEST_PASSWORD, "members", false);
         assertEquals("User created.", page.getInfoFeedbackMessage());
+        RestHelper.addUserToDelete(TEST_USERNAME);
 
         // search user
         usersTab = page.getUsersTab(true).searchUser(TEST_USERNAME);
@@ -179,6 +178,7 @@ public class ITUsersTest extends AbstractTest {
         usersTab = page.getUsersTab();
         usersTab = usersTab.searchUser(firstname);
         usersTab = usersTab.viewUser(TEST_USERNAME).deleteUser();
+        RestHelper.removeUserToDelete(TEST_USERNAME);
 
         // search
         usersTab = usersTab.searchUser(TEST_USERNAME);
