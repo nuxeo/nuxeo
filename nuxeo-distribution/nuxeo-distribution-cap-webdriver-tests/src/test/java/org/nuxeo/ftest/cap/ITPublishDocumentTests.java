@@ -31,7 +31,6 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Constants;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
-import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
 import org.nuxeo.functionaltests.pages.UserHomePage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.PublishTabSubPage;
@@ -42,7 +41,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
@@ -112,7 +110,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testPublishDocumentBySectionManager() throws UserNotConnectedException, IOException {
+    public void testPublishDocumentBySectionManager() throws Exception {
         login(MANAGER_USERNAME, MANAGER_USERNAME);
 
         open(TEST_FOLDER_URL);
@@ -144,8 +142,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testPublishDocumentBySectionReaderForSectionManagerApproval()
-            throws UserNotConnectedException, IOException {
+    public void testPublishDocumentBySectionReaderForSectionManagerApproval() throws Exception {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
         open(TEST_FOLDER_URL);
         PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
@@ -169,7 +166,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testPublishingApprovalBySectionManager() throws UserNotConnectedException, IOException {
+    public void testPublishingApprovalBySectionManager() throws Exception {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
         open(TEST_FOLDER_URL);
         asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false, null, null,
@@ -210,8 +207,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testPublishDocumentBySectionReaderForSectionWriterApproval()
-            throws UserNotConnectedException, IOException {
+    public void testPublishDocumentBySectionReaderForSectionWriterApproval() throws Exception {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
         open(TEST_FOLDER_URL);
         PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
@@ -276,8 +272,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testPublishDocumentBySectionReaderForSectionWriterReject()
-            throws UserNotConnectedException, IOException {
+    public void testPublishDocumentBySectionReaderForSectionWriterReject() throws Exception {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
         open(TEST_FOLDER_URL);
         PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
@@ -347,8 +342,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testPublishDocumentBySectionReaderForSectionManagerReject()
-            throws UserNotConnectedException, IOException {
+    public void testPublishDocumentBySectionReaderForSectionManagerReject() throws Exception {
         login(PUBLISHER_USERNAME, PUBLISHER_USERNAME);
         open(TEST_FOLDER_URL);
         PublishTabSubPage publishTab = asPage(DocumentBasePage.class).createFile(TEST_FILE_TITLE, "description", false,
@@ -418,7 +412,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testUnpublishBySectionManager() throws IOException, UserNotConnectedException {
+    public void testUnpublishBySectionManager() throws Exception {
         login(MANAGER_USERNAME, MANAGER_USERNAME);
 
         // Publish a file
@@ -463,7 +457,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testUnpublishBySectionWriter() throws UserNotConnectedException, IOException {
+    public void testUnpublishBySectionWriter() throws Exception {
         login(MANAGER_USERNAME, MANAGER_USERNAME);
 
         // Publish a file
@@ -511,7 +505,7 @@ public class ITPublishDocumentTests extends AbstractTest {
     }
 
     @Test
-    public void testMultiplePublications() throws UserNotConnectedException, IOException {
+    public void testMultiplePublications() throws Exception {
         // create file as admin
         login();
         open(TEST_FOLDER_URL);
@@ -625,7 +619,7 @@ public class ITPublishDocumentTests extends AbstractTest {
 
     @Test
     @Ignore("Until NXP-19709 is resolved")
-    public void testMultipleVersionsPublicationsByApproval() throws IOException, UserNotConnectedException, InterruptedException {
+    public void testMultipleVersionsPublicationsByApproval() throws Exception {
         // create file to be versionned and published
         login(MANAGER_USERNAME, MANAGER_USERNAME);
         open(TEST_FOLDER_URL);
@@ -723,7 +717,7 @@ public class ITPublishDocumentTests extends AbstractTest {
 
     @Test
     @Ignore("Until NXP-19709 is resolved")
-    public void testMultipleVersionsPublicationsByPublishOver() throws IOException, UserNotConnectedException, InterruptedException {
+    public void testMultipleVersionsPublicationsByPublishOver() throws Exception {
         // create file to be versionned and published
         login(MANAGER_USERNAME, MANAGER_USERNAME);
         open(TEST_FOLDER_URL);
