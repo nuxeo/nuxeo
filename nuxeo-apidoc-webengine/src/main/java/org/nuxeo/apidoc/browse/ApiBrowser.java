@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -153,21 +154,6 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path("filterBundles")
-    public Object filterBundles() {
-        String fulltext = getContext().getForm().getFormProperty("fulltext");
-        List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
-                BundleInfo.TYPE_NAME, fulltext);
-        List<String> bundleIds = new ArrayList<String>();
-        for (NuxeoArtifact item : artifacts) {
-            bundleIds.add(item.getId());
-        }
-        return getView("listBundles").arg("bundleIds", bundleIds).arg(Distribution.DIST_ID,
-                ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
-    }
-
-    @GET
-    @Produces("text/html")
     @Path("listComponents")
     public Object getComponents() {
         List<String> javaComponentIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getJavaComponentIds();
@@ -187,29 +173,6 @@ public class ApiBrowser extends DefaultObject {
 
         return getView("listComponents").arg("javaComponents", javaLabels).arg("xmlComponents", xmlLabels).arg(
                 Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
-    }
-
-    @GET
-    @Produces("text/html")
-    @Path("filterComponents")
-    public Object filterComponents() {
-        String fulltext = getContext().getForm().getFormProperty("fulltext");
-        List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
-                ComponentInfo.TYPE_NAME, fulltext);
-
-        List<ArtifactLabel> xmlLabels = new ArrayList<ArtifactLabel>();
-        List<ArtifactLabel> javaLabels = new ArrayList<ArtifactLabel>();
-
-        for (NuxeoArtifact item : artifacts) {
-            ComponentInfo ci = (ComponentInfo) item;
-            if (ci.isXmlPureComponent()) {
-                xmlLabels.add(ArtifactLabel.createLabelFromComponent(ci.getId()));
-            } else {
-                javaLabels.add(ArtifactLabel.createLabelFromComponent(ci.getId()));
-            }
-        }
-        return getView("listComponents").arg("javaComponents", javaLabels).arg("xmlComponents", xmlLabels).arg(
-                Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
     }
 
     @GET
@@ -316,6 +279,74 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
+    @Path("listContributions")
+    public Object getContributions() {
+        DistributionSnapshot snapshot = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
+        List<String> cIds = snapshot.getContributionIds();
+        return getView("listContributions").arg("contributions", snapshot.getContributions()).arg(
+                Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
+    }
+
+    @GET
+    @Produces("text/html")
+    @Path("listExtensionPoints")
+    public Object getExtensionPoints() {
+        List<String> epIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getExtensionPointIds();
+
+        List<ArtifactLabel> labels = epIds.stream().map(ArtifactLabel::createLabelFromExtensionPoint).collect(Collectors.toList());
+
+        Collections.sort(labels);
+        return getView("listExtensionPoints").arg("eps", labels).arg(Distribution.DIST_ID,
+                ctx.getProperty(Distribution.DIST_ID));
+    }
+
+    /**
+     * XXX Not used?
+     */
+    @POST
+    @Produces("text/html")
+    @Path("filterComponents")
+    public Object filterComponents(@FormParam("fulltext") String fulltext) {
+        List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
+                ComponentInfo.TYPE_NAME, fulltext);
+
+        List<ArtifactLabel> xmlLabels = new ArrayList<>();
+        List<ArtifactLabel> javaLabels = new ArrayList<>();
+
+        for (NuxeoArtifact item : artifacts) {
+            ComponentInfo ci = (ComponentInfo) item;
+            if (ci.isXmlPureComponent()) {
+                xmlLabels.add(ArtifactLabel.createLabelFromComponent(ci.getId()));
+            } else {
+                javaLabels.add(ArtifactLabel.createLabelFromComponent(ci.getId()));
+            }
+        }
+        return getView("listComponents").arg("javaComponents", javaLabels).arg("xmlComponents", xmlLabels).arg(
+                Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
+    }
+
+    /**
+     * XXX Not used?
+     */
+    @POST
+    @Produces("text/html")
+    @Path("filterBundles")
+    public Object filterBundles(@FormParam("fulltext") String fulltext) {
+        List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
+                BundleInfo.TYPE_NAME, fulltext);
+        List<String> bundleIds = new ArrayList<String>();
+        for (NuxeoArtifact item : artifacts) {
+            bundleIds.add(item.getId());
+        }
+        return getView("listBundles").arg("bundleIds", bundleIds).arg(Distribution.DIST_ID,
+                ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
+    }
+
+    /**
+     * XXX Not used?
+     */
+    @POST
+    @Produces("text/html")
     @Path("filterServices")
     public Object filterServices() {
         String fulltext = getContext().getForm().getFormProperty("fulltext");
@@ -334,24 +365,10 @@ public class ApiBrowser extends DefaultObject {
                 ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
     }
 
-    @GET
-    @Produces("text/html")
-    @Path("listExtensionPoints")
-    public Object getExtensionPoints() {
-        List<String> epIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getExtensionPointIds();
-
-        List<ArtifactLabel> labels = epIds.stream().map(ArtifactLabel::createLabelFromExtensionPoint).collect(Collectors.toList());
-
-        Collections.sort(labels);
-        return getView("listExtensionPoints").arg("eps", labels).arg(Distribution.DIST_ID,
-                ctx.getProperty(Distribution.DIST_ID));
-    }
-
     @POST
     @Produces("text/html")
     @Path("filterExtensionPoints")
-    public Object filterExtensionPoints() {
-        String fulltext = getContext().getForm().getFormProperty("fulltext");
+    public Object filterExtensionPoints(@FormParam("fulltext") String fulltext) {
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ExtensionPointInfo.TYPE_NAME, fulltext);
         List<String> eps = artifacts.stream().map(NuxeoArtifact::getId).collect(Collectors.toList());
@@ -360,21 +377,10 @@ public class ApiBrowser extends DefaultObject {
                 ctx.getProperty(Distribution.DIST_ID)).arg("searchFilter", fulltext);
     }
 
-    @GET
-    @Produces("text/html")
-    @Path("listContributions")
-    public Object getContributions() {
-        DistributionSnapshot snapshot = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
-        List<String> cIds = snapshot.getContributionIds();
-        return getView("listContributions").arg("contributions", snapshot.getContributions()).arg(
-                Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
-    }
-
     @POST
     @Produces("text/html")
     @Path("filterContributions")
-    public Object filterContributions() {
-        String fulltext = getContext().getForm().getFormProperty("fulltext");
+    public Object filterContributions(@FormParam("fulltext") String fulltext) {
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ExtensionInfo.TYPE_NAME, fulltext);
         return getView("listContributions").arg("contributions", artifacts).arg(Distribution.DIST_ID,

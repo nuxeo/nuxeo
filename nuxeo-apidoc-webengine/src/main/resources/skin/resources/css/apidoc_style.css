@@ -987,11 +987,6 @@ table.content td {
   background-color: transparent;
 }
 
-form#fulltext {
-  float: right;
-  margin-top: .7em;
-}
-
 .intro .main {
   font-size: 1.3rem;
   font-weight: 600;

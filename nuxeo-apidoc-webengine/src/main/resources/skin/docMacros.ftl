@@ -114,7 +114,6 @@
     <input name="fulltext" id="fulltext-box" size="30" type="search"
     placeholder="Find in ${name}"<#if searchFilter??> value="${searchFilter}"</#if>/>
     <input id="filter-submit-button" type="submit" value="Search"/>
-    <input id="filter-clear-button" type="reset" value="Clear"/>
   </form>
 </#macro>
 
@@ -183,6 +182,10 @@
   });
 
   $('#filter-box').click(function(e) {
+    e.stopPropagation();
+  });
+
+  $('#fulltext').children().click(function(e) {
     e.stopPropagation();
   });
 </script>

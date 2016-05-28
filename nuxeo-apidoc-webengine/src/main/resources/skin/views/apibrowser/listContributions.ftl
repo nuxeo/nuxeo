@@ -8,13 +8,12 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<@fulltextFilter "contribution" "filterContributions"/>
 <h1>${contributions?size} contributions</h1>
 <div class="tabscontent">
   <table id="contributionsTable" class="tablesorter">
   <thead>
     <tr>
-      <th><@tableFilterArea "contribution"/></th>
+      <th><@fulltextFilter "contribution" "filterContributions"/></th>
     </tr>
   </thead>
   <tbody>
