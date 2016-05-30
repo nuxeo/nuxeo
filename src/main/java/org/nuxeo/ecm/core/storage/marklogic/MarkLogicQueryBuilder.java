@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
@@ -83,6 +84,8 @@ class MarkLogicQueryBuilder {
     private static final Long ZERO = 0L;
 
     private static final Long ONE = 1L;
+
+    private static final String DATE_CAST = "DATE";
 
     protected final SchemaManager schemaManager;
 
@@ -193,12 +196,15 @@ class MarkLogicQueryBuilder {
         Operand rvalue = expression.rvalue;
         Reference ref = lvalue instanceof Reference ? (Reference) lvalue : null;
         String name = ref != null ? ref.name : null;
-        // TODO handle ref and date cast
+        String cast = ref != null ? ref.cast : null;
+        if (DATE_CAST.equals(cast)) {
+            checkDateLiteralForCast(op, rvalue, name);
+        }
 
         if (op == Operator.STARTSWITH) {
-             return walkStartsWith(lvalue, rvalue);
+            return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
-             return walkEcmPath(op, rvalue);
+            return walkEcmPath(op, rvalue);
             // } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
             // walkEcmFulltext(name, op, rvalue);
         } else if (op == Operator.SUM) {
@@ -255,14 +261,29 @@ class MarkLogicQueryBuilder {
         throw new QueryParseException("Unknown operator: " + op);
     }
 
-    public QueryBuilder walkStartsWith(Operand lvalue, Operand rvalue) {
+    private void checkDateLiteralForCast(Operator op, Operand value, String name) {
+        if (op == Operator.BETWEEN || op == Operator.NOTBETWEEN) {
+            LiteralList l = (LiteralList) value;
+            checkDateLiteralForCast(l.get(0), name);
+            checkDateLiteralForCast(l.get(1), name);
+        } else {
+            checkDateLiteralForCast(value, name);
+        }
+    }
+
+    private void checkDateLiteralForCast(Operand value, String name) {
+        if (value instanceof DateLiteral && !((DateLiteral) value).onlyDate) {
+            throw new QueryParseException("DATE() cast must be used with DATE literal, not TIMESTAMP: " + name);
+        }
+    }
+
+    private QueryBuilder walkStartsWith(Operand lvalue, Operand rvalue) {
         if (!(lvalue instanceof Reference)) {
             throw new QueryParseException("Invalid STARTSWITH query, left hand side must be a property: " + lvalue);
         }
         String name = ((Reference) lvalue).name;
         if (!(rvalue instanceof StringLiteral)) {
-            throw new QueryParseException(
-                    "Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
+            throw new QueryParseException("Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -276,7 +297,7 @@ class MarkLogicQueryBuilder {
         }
     }
 
-    protected QueryBuilder walkStartsWithPath(String path) {
+    private QueryBuilder walkStartsWithPath(String path) {
         // resolve path
         String ancestorId = pathResolver.getIdForPath(path);
         if (ancestorId == null) {
@@ -287,7 +308,7 @@ class MarkLogicQueryBuilder {
         return walkEq(new Reference(ExpressionEvaluator.NXQL_ECM_ANCESTOR_IDS), new StringLiteral(ancestorId), true);
     }
 
-    protected QueryBuilder walkStartsWithNonPath(Operand lvalue, String path) {
+    private QueryBuilder walkStartsWithNonPath(Operand lvalue, String path) {
         // Rebuild an OR expression, it means :
         // - build an equal Operand
         // - build a like Operand starting after the '/'
@@ -468,12 +489,22 @@ class MarkLogicQueryBuilder {
     }
 
     private FieldInfo walkReference(Reference reference) {
-        String name = reference.name;
+        FieldInfo fieldInfo = walkReference(reference.name);
+        if (DATE_CAST.equals(reference.cast)) {
+            Type type = fieldInfo.type;
+            if (!(type instanceof DateType || (type instanceof ListType && ((ListType) type).getFieldType() instanceof DateType))) {
+                throw new QueryParseException("Cannot cast to " + reference.cast + ": " + reference.name);
+            }
+        }
+        return fieldInfo;
+    }
+
+    private FieldInfo walkReference(String name) {
         String prop = canonicalXPath(name);
         String[] parts = prop.split("/");
         if (prop.startsWith(NXQL.ECM_PREFIX)) {
             if (prop.startsWith(NXQL.ECM_ACL + "/")) {
-                 return parseACP(prop, parts);
+                return parseACP(prop, parts);
             }
             String field = DBSSession.convToInternal(prop);
             return new FieldInfo(prop, field);
@@ -534,7 +565,7 @@ class MarkLogicQueryBuilder {
         return new FieldInfo(prop, fullField, type, false);
     }
 
-    protected FieldInfo parseACP(String prop, String[] parts) {
+    private FieldInfo parseACP(String prop, String[] parts) {
         if (parts.length != 3) {
             throw new QueryParseException("No such property: " + prop);
         }
