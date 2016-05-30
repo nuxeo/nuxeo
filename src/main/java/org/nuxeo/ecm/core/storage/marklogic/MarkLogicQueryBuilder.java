@@ -199,8 +199,6 @@ class MarkLogicQueryBuilder {
              return walkStartsWith(lvalue, rvalue);
         } else if (NXQL.ECM_PATH.equals(name)) {
              return walkEcmPath(op, rvalue);
-            // } else if (NXQL.ECM_ANCESTORID.equals(name)) {
-            // walkAncestorId(op, rvalue);
             // } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
             // walkEcmFulltext(name, op, rvalue);
         } else if (op == Operator.SUM) {
