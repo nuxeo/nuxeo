@@ -82,6 +82,8 @@ final class MarkLogicStateDeserializer {
             case BOOLEAN:
                 result = Boolean.parseBoolean(element.getText());
                 break;
+            // Due to MarkLogic issue on replace+apply on number we need to handle xs:double type for Delta
+            case DOUBLE:
             case LONG:
                 result = Long.parseLong(element.getText());
                 break;
@@ -137,6 +139,7 @@ final class MarkLogicStateDeserializer {
         case BOOLEAN:
             result = Boolean.class;
             break;
+        case DOUBLE:
         case LONG:
             result = Long.class;
             break;

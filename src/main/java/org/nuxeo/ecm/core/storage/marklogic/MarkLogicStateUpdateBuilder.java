@@ -65,8 +65,8 @@ class MarkLogicStateUpdateBuilder implements Function<StateDiff, PatchHandle> {
                 fillPatch(patchBuilder, subPath, (StateDiff) value);
             } else if (value instanceof ListDiff) {
                 fillPatch(patchBuilder, subPath, (ListDiff) value);
-            } else if (value instanceof Delta) {
-                Call call = patchBuilder.call().add(((Delta) value).getDeltaValue());
+            } else if (value instanceof Delta && ((Delta) value).getBase() != null) {
+                Call call = patchBuilder.call().add(((Delta) value).getDeltaValue().doubleValue());
                 patchBuilder.replaceApply(subPath, Cardinality.ONE, call);
             } else {
                 Optional<Element> fragment = MarkLogicStateSerializer.serialize(entry.getKey(), value);

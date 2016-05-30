@@ -66,6 +66,14 @@ public class TestMarkLogicStateUpdateBuilder extends AbstractTest {
     }
 
     @Test
+    public void testDeltaUpdateAfterNull() throws Exception {
+        StateDiff stateDiff = new StateDiff();
+        stateDiff.put("ecm:minorVersion", new DeltaLong(null, 1));
+        String patch = UPDATE_BUILDER.apply(stateDiff).toString();
+        assertXMLFileAgainstString("state-update-builder/delta-update-after-null.xml", patch);
+    }
+
+    @Test
     public void testListUpdate() throws Exception {
         ListDiff listDiff = new ListDiff();
         listDiff.diff = new ArrayList<>(3);

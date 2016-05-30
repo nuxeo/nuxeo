@@ -23,6 +23,7 @@ import java.util.Calendar;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.nuxeo.ecm.core.api.model.Delta;
 
 /**
  * @since 8.3
@@ -33,7 +34,7 @@ final class MarkLogicHelper {
 
     public static final String DOCUMENT_ROOT = "document";
 
-    public static final String DOCUMENT_ROOT_PATH = '/'+ DOCUMENT_ROOT;
+    public static final String DOCUMENT_ROOT_PATH = '/' + DOCUMENT_ROOT;
 
     public static final String ARRAY_ITEM_KEY = serializeKey("nxml:item");
 
@@ -68,6 +69,8 @@ final class MarkLogicHelper {
 
         BOOLEAN("xs:boolean"),
 
+        DOUBLE("xs:double"),
+
         LONG("xs:long"),
 
         CALENDAR("xs:dateTime"),
@@ -100,7 +103,7 @@ final class MarkLogicHelper {
         public static ElementType getType(Class<?> clazz) {
             if (Boolean.class.isAssignableFrom(clazz)) {
                 return BOOLEAN;
-            } else if (Long.class.isAssignableFrom(clazz)) {
+            } else if (Long.class.isAssignableFrom(clazz) || Delta.class.isAssignableFrom(clazz)) {
                 return LONG;
             } else if (Calendar.class.isAssignableFrom(clazz) || DateTime.class.isAssignableFrom(clazz)) {
                 return CALENDAR;
