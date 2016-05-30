@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.client;
 
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +30,12 @@ import org.apache.chemistry.opencmis.client.api.ObjectType;
 import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.client.api.Policy;
 import org.apache.chemistry.opencmis.client.api.SecondaryType;
+import org.apache.chemistry.opencmis.client.runtime.util.AppendOutputStream;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ContentStreamHash;
+import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
@@ -248,6 +251,11 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     }
 
     @Override
+    public String getLatestAccessibleStateId() {
+        return getPropertyValue(PropertyIds.LATEST_ACCESSIBLE_STATE_ID);
+    }
+
+    @Override
     public Document setContentStream(ContentStream contentStream, boolean overwrite) {
         ObjectId objectId = setContentStream(contentStream, overwrite, true);
         return (Document) session.getObject(objectId);
@@ -300,6 +308,38 @@ public class NuxeoDocument extends NuxeoFileableObject implements Document {
     @Override
     public String getContentUrl(String streamId) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public OutputStream createOverwriteOutputStream(String filename, String mimeType) {
+        if (session.getRepositoryInfo().getCmisVersion() == CmisVersion.CMIS_1_0) {
+            throw new CmisNotSupportedException("This method is not supported for CMIS 1.0 repositories");
+        }
+        return new AppendOutputStream(session, this, true, filename, mimeType);
+    }
+
+    @Override
+    public OutputStream createOverwriteOutputStream(String filename, String mimeType, int bufferSize) {
+        if (session.getRepositoryInfo().getCmisVersion() == CmisVersion.CMIS_1_0) {
+            throw new CmisNotSupportedException("This method is not supported for CMIS 1.0 repositories");
+        }
+        return new AppendOutputStream(session, this, true, filename, mimeType, bufferSize);
+    }
+
+    @Override
+    public OutputStream createAppendOutputStream() {
+        if (session.getRepositoryInfo().getCmisVersion() == CmisVersion.CMIS_1_0) {
+            throw new CmisNotSupportedException("This method is not supported for CMIS 1.0 repositories");
+        }
+        return new AppendOutputStream(session, this, false, null, null);
+    }
+
+    @Override
+    public OutputStream createAppendOutputStream(int bufferSize) {
+        if (session.getRepositoryInfo().getCmisVersion() == CmisVersion.CMIS_1_0) {
+            throw new CmisNotSupportedException("This method is not supported for CMIS 1.0 repositories");
+        }
+        return new AppendOutputStream(session, this, false, null, null, bufferSize);
     }
 
 }
