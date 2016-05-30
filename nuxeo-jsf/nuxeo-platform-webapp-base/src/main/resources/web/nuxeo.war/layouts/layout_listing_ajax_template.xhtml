@@ -30,14 +30,14 @@
 <ui:insert name="listing_header">
 <c:choose>
   <c:if test="#{useRepeatRenderTime}">
-    <c:if test="#{showListingHeader and layout.properties.showListingHeader}">
-      <ui:include src="/layouts/layout_listing_ajax_template_header.xhtml" />
-    </c:if>
-  </c:if>
-  <c:otherwise>
     <ui:fragment rendered="#{showListingHeader and layout.properties.showListingHeader}">
       <ui:include src="/layouts/layout_listing_ajax_template_header.xhtml" />
     </ui:fragment>
+  </c:if>
+  <c:otherwise>
+    <c:if test="#{showListingHeader and layout.properties.showListingHeader}">
+      <ui:include src="/layouts/layout_listing_ajax_template_header.xhtml" />
+    </c:if>
   </c:otherwise>
 </c:choose>
 </ui:insert>
