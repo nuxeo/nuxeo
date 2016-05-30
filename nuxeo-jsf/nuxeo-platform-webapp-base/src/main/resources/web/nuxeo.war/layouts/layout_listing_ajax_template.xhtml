@@ -29,11 +29,11 @@
 
 <ui:insert name="listing_header">
 <c:choose>
-  <c:if test="#{useRepeatRenderTime}">
+  <c:when test="#{useRepeatRenderTime}">
     <ui:fragment rendered="#{showListingHeader and layout.properties.showListingHeader}">
       <ui:include src="/layouts/layout_listing_ajax_template_header.xhtml" />
     </ui:fragment>
-  </c:if>
+  </c:when>
   <c:otherwise>
     <c:if test="#{showListingHeader and layout.properties.showListingHeader}">
       <ui:include src="/layouts/layout_listing_ajax_template_header.xhtml" />
