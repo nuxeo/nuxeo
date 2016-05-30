@@ -24,8 +24,8 @@ import javax.management.JMException;
 public class MxNamesReport extends MxAbstractReport {
 
     @Override
-    JsonObject invoke() throws IOException, JMException {
-        return invoker().search("*:*");
+    protected JsonObject doinvoke(MXComponent.Invoker invoker) throws IOException, JMException {
+        return invoker.search("*:*");
     }
 
 }

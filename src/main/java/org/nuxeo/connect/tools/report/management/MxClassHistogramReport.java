@@ -25,7 +25,7 @@ import javax.management.JMException;
 public class MxClassHistogramReport extends MxAbstractReport {
 
     @Override
-    JsonObject invoke() throws IOException, JMException {
-        return invoker().exec("com.sun.management:type=DiagnosticCommand", "gcClassHistogram", Collections.emptyList());
+    protected JsonObject doinvoke(MXComponent.Invoker invoker) throws IOException, JMException {
+        return invoker.exec("com.sun.management:type=DiagnosticCommand", "gcClassHistogram", Collections.emptyList());
     }
 }

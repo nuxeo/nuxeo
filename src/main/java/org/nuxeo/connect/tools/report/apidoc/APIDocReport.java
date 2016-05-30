@@ -14,25 +14,35 @@
  * Contributors:
  *     Stephane Lacoin at Nuxeo (aka matic)
  */
-package org.nuxeo.connect.tools.report.management;
+package org.nuxeo.connect.tools.report.apidoc;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import javax.json.JsonObject;
-import javax.management.JMException;
+import javax.json.JsonReaderFactory;
 
+import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.connect.tools.report.Report;
+import org.nuxeo.runtime.api.Framework;
 
-public abstract class MxAbstractReport implements Report {
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
-    protected abstract JsonObject doinvoke(MXComponent.Invoker invoker) throws IOException, JMException;
+/**
+ *
+ *
+ * @since 8.3
+ */
+public class APIDocReport implements Report {
 
     @Override
     public JsonObject snapshot() throws IOException {
-        try {
-            return doinvoke(MXComponent.instance.invoker);
-        } catch (JMException cause) {
-            throw new IOException("Cannot invoke mxbean", cause);
+        XStream stream = new XStream(new JettisonMappedXmlDriver());
+        stream.setMode(XStream.XPATH_RELATIVE_REFERENCES);
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            stream.toXML(new RuntimeSnapshot(), out);
+            return Framework.getService(JsonReaderFactory.class).createReader(new ByteArrayInputStream(out.toByteArray())).readObject();
         }
     }
 

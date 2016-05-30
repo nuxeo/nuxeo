@@ -1,5 +1,7 @@
 <component name="org.nuxeo.connect.tools.report">
-
+ 
+  <require phase="resolve" order="first">org.nuxeo.connect.tools.report.jsr353</require>
+  
   <implementation class="org.nuxeo.connect.tools.report.ReportComponent" />
 
   <service>org.nuxeo.connect.tools.report.ReportInvoker</service>

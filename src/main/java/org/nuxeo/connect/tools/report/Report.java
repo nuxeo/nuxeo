@@ -18,7 +18,7 @@ package org.nuxeo.connect.tools.report;
 
 import java.io.IOException;
 
-import javax.json.stream.JsonGenerator;
+import javax.json.JsonObject;
 
 /**
  *
@@ -27,16 +27,6 @@ import javax.json.stream.JsonGenerator;
  */
 public interface Report {
 
-    void snapshot(JsonGenerator out) throws IOException;
-
-    class Noop implements Report {
-
-        @Override
-        public void snapshot(JsonGenerator out) throws IOException {
-
-        }
-
-
-    }
+    JsonObject snapshot() throws IOException;
 
 }

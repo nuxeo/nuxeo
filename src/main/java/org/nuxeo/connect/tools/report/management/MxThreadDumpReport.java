@@ -24,7 +24,7 @@ import javax.management.JMException;
 public class MxThreadDumpReport extends MxAbstractReport {
 
     @Override
-    JsonObject invoke() throws IOException, JMException {
-        return invoker().exec("java.lang:type=Threading", "dumpAllThreads", true, true);
+    protected JsonObject doinvoke(MXComponent.Invoker invoker) throws IOException, JMException {
+        return invoker.exec("java.lang:type=Threading", "dumpAllThreads", true, true);
     }
 }

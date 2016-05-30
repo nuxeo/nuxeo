@@ -17,11 +17,19 @@
 package org.nuxeo.connect.tools.report;
 
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
-import javax.json.stream.JsonGenerator;
+import javax.inject.Inject;
+import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue.ValueType;
 
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -29,11 +37,51 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(ReportFeature.class)
 public class ReportTest {
 
+    @Inject
+    ReportFeature report;
+
+    void mxreport(String name, String operation, String... keys) throws IOException {
+        JsonObject json = report.snapshot(name);
+        Assertions.assertThat(json).containsKeys("request", "value");
+        Assertions.assertThat(json.getJsonObject("request").getJsonString("type")).is(new Condition<JsonString>() {
+
+            @Override
+            public boolean matches(JsonString value) {
+                return operation.equals(value.getString());
+            }
+        });
+        if (json.get("value").getValueType() == ValueType.OBJECT) {
+            Assertions.assertThat(json.getJsonObject("value")).containsKeys(keys);
+        } else {
+            json.getJsonArray("value").containsAll(Arrays.asList(keys));
+        }
+    }
+
+    @Test
+    public void mxinfos() throws IOException {
+        mxreport("mx-infos", "list", "JMImplementation", "java.util.logging");
+    }
+
+    @Test
+    public void mxnames() throws IOException {
+        mxreport("mx-names", "search", "JMImplementation", "java.util.logging");
+    }
+
+    @Test
+    public void mxattributes() throws IOException {
+        mxreport("mx-attributes", "read", "JMImplementation:type=MBeanServerDelegate");
+    }
+
+    @Test
+    public void apidoc() throws IOException {
+        JsonObject apidoc = report.snapshot("apidoc");
+        Assertions.assertThat(apidoc).containsKeys("org.nuxeo.apidoc.introspection.RuntimeSnapshot");
+        return;
+    }
 
     @Test
     public void snapshot() throws IOException {
-        try (JsonGenerator json = ReportComponent.instance.jsonFactory.createGenerator(System.out)) {
-            ReportComponent.instance.snapshot(json);
-        }
+        Framework.getService(ReportInvoker.class).snapshot(Paths.get("target"));
     }
+
 }

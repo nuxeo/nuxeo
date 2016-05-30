@@ -17,6 +17,7 @@
 package org.nuxeo.connect.tools.report;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import javax.management.MXBean;
 
@@ -35,5 +36,5 @@ public interface ReportInvoker {
      * @throws IOException
      * @since 8.3
      */
-    String snapshot(String path) throws IOException;
+    Path snapshot(Path path) throws IOException;
 }

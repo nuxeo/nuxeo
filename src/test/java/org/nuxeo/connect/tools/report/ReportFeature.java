@@ -16,13 +16,31 @@
  */
 package org.nuxeo.connect.tools.report;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import javax.json.JsonObject;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @Features(RuntimeFeature.class)
-@Deploy({"org.nuxeo.runtime.management", "org.nuxeo.connect.tools"})
+@Deploy({ "org.nuxeo.runtime.management", "org.nuxeo.connect.tools", "org.nuxeo.apidoc.core" })
 public class ReportFeature extends SimpleFeature {
 
+    JsonObject snapshot(String name) throws IOException {
+        for (ReportContribution contrib : ReportComponent.instance.configuration) {
+            if (contrib.name.equals(name)) {
+                return snapshot(contrib.instance);
+            }
+        }
+        throw new AssertionError("Cannot find report of name " + name);
+    }
+
+    JsonObject snapshot(Report report) throws IOException {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            return report.snapshot();
+        }
+    }
 }

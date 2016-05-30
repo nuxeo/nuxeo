@@ -17,14 +17,14 @@
 package org.nuxeo.connect.tools.report;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import javax.json.stream.JsonGenerator;
+import javax.json.stream.JsonGeneratorFactory;
 
-import org.nuxeo.connect.tools.report.json.JsonFactory;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -44,35 +44,38 @@ public class ReportComponent extends DefaultComponent {
 
     final ReportConfiguration configuration = new ReportConfiguration();
 
-    final JsonFactory jsonFactory = new JsonFactory();
-
     final ReportInvoker invoker = new ReportInvoker() {
 
         @Override
-        public String snapshot(String dirpath) throws IOException {
-            Path filepath = Files.createTempFile(Paths.get(dirpath), "snapshot-", ".json");
-            try (JsonGenerator json = jsonFactory.createGenerator(Files.newOutputStream(filepath, StandardOpenOption.CREATE_NEW))) {
-                ReportComponent.this.snapshot(json);
+        public Path snapshot(Path dirpath) throws IOException {
+            Path filepath = Files.createTempFile(dirpath, "snapshot-", ".json");
+            Files.delete(filepath);
+            try (OutputStream out = Files.newOutputStream(filepath, StandardOpenOption.CREATE_NEW)) {
+                ReportComponent.this.snapshot(out);
             }
-            return filepath.toString();
+            return filepath;
         }
 
     };
 
-    void snapshot(JsonGenerator json) throws IOException {
-        json.writeStartArray();
-        try {
-            for (ReportContribution contrib : configuration) {
-                json.writeStartObject();
-                try {
-                    json.write("name", contrib.name);
-                    contrib.instance.snapshot(json);
-                } finally {
-                    json.writeEnd();
+    @Override
+    public <T> T getAdapter(Class<T> typeof) {
+        if (typeof.isAssignableFrom(ReportInvoker.class)) {
+            return typeof.cast(invoker);
+        }
+        return super.getAdapter(typeof);
+    }
+
+    void snapshot(OutputStream out) throws IOException {
+        try (JsonGenerator json = Framework.getService(JsonGeneratorFactory.class).createGenerator(out)) {
+            json.writeStartObject();
+            try {
+                for (ReportContribution contrib : configuration) {
+                    json.write(contrib.name, contrib.instance.snapshot());
                 }
+            } finally {
+                json.writeEnd();
             }
-        } finally {
-            json.writeEnd();
         }
     }
 
