@@ -149,7 +149,7 @@
     <jetty.mortbay.version>6.1.26</jetty.mortbay.version>
     <shindig.version>1.1-BETA5-incubating-nx2</shindig.version>
     <apache.axiom.version>1.2.5</apache.axiom.version>
-    <chemistry.opencmis.version>0.13.0-NX1</chemistry.opencmis.version>
+    <chemistry.opencmis.version>0.14.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
     <apache.httpcomponents.version>4.3.3</apache.httpcomponents.version>
     <apache.poi.version>3.10-FINAL</apache.poi.version>
