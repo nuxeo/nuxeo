@@ -52,8 +52,8 @@ public class ContentViewElement extends WebFragmentImpl {
         super(driver, element);
     }
 
-    protected ContentViewElement reload() {
-        return getWebFragment(By.id(getId()), ContentViewElement.class);
+    protected ContentViewElement reload(String id) {
+        return getWebFragment(By.id(id), ContentViewElement.class);
     }
 
     protected String getContentViewId() {
@@ -70,16 +70,18 @@ public class ContentViewElement extends WebFragmentImpl {
     }
 
     public WebElement getActionByTitle(String title) {
-        return getElement().findElement(By.className("contentViewUpperActions"))
-                           .findElement(By.xpath("//img[@alt=\"" + title + "\"]"));
+        return getElement().findElement(By.className("contentViewUpperActions")).findElement(
+                By.xpath("//img[@alt=\"" + title + "\"]"));
     }
 
     public ContentViewElement switchToResultLayout(ResultLayout layout) {
+        // get id before element is detached from DOM (during next ajax call)
+        String id = getId();
         AjaxRequestManager a = new AjaxRequestManager(driver);
         a.watchAjaxRequests();
         getActionByTitle(layout.title).click();
         a.waitForAjaxRequests();
-        return reload();
+        return reload(id);
     }
 
     /**
@@ -112,6 +114,8 @@ public class ContentViewElement extends WebFragmentImpl {
      * @since 8.3
      */
     public ContentViewElement checkByTitle(String... titles) {
+        // get id before element is detached from DOM (during next ajax calls)
+        String id = getId();
         List<WebElement> items = getItems();
         for (WebElement item : items) {
             for (String title : titles) {
@@ -128,20 +132,22 @@ public class ContentViewElement extends WebFragmentImpl {
                 }
             }
         }
-        return reload();
+        return reload(id);
     }
 
     /**
      * @since 8.3
      */
     public ContentViewElement checkByIndex(int... indexes) {
+        // get id before element is detached from DOM (during next ajax call)
+        String id = getId();
         AjaxRequestManager a = new AjaxRequestManager(driver);
         for (int i : indexes) {
             a.watchAjaxRequests();
             getItems().get(i).findElement(By.xpath(CHECK_BOX_XPATH)).click();
             a.waitForAjaxRequests();
         }
-        return reload();
+        return reload(id);
     }
 
     /**
@@ -155,11 +161,13 @@ public class ContentViewElement extends WebFragmentImpl {
             // no item
         }
         if (selectAll != null) {
+            // get id before element is detached from DOM (during next ajax call)
+            String id = getId();
             AjaxRequestManager arm = new AjaxRequestManager(driver);
             arm.begin();
             selectAll.click();
             arm.end();
-            return reload();
+            return reload(id);
         }
         return this;
     }
@@ -168,8 +176,8 @@ public class ContentViewElement extends WebFragmentImpl {
      * @since 8.3
      */
     public WebElement getSelectionActionByTitle(String title) {
-        return getResultsPanel().findElement(By.xpath("//div[contains(@id,'nxw_cvButton_panel')]"))
-                                .findElement(By.xpath("//input[@value=\"" + title + "\"]"));
+        return getResultsPanel().findElement(By.xpath("//div[contains(@id,'nxw_cvButton_panel')]")).findElement(
+                By.xpath("//input[@value=\"" + title + "\"]"));
     }
 
 }
