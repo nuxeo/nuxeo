@@ -18,12 +18,21 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
+import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
+import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +40,7 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.RestHelper;
+import org.nuxeo.functionaltests.ScreenshotTaker;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
@@ -42,13 +52,6 @@ import org.nuxeo.functionaltests.pages.search.SearchResultsSubPage;
 import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
-import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
-import static org.nuxeo.functionaltests.Constants.WORKSPACE_TYPE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @since 6.0
@@ -77,6 +80,8 @@ public class ITSearchTabTest extends AbstractTest {
 
     protected static final String PERMANENT_DELETE_SAVED_SEARCHES_BUTTON_ID = "all_saved_searches_buttons:nxw_savedSearchesCurrentSelectionDelete_form:nxw_savedSearchesCurrentSelectionDelete";
 
+    static final Log log = LogFactory.getLog(AbstractTest.class);
+
     @Before
     public void setup() throws UserNotConnectedException, IOException {
         RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, TEST_USERNAME, "lastname1", "company1", "email1",
@@ -88,8 +93,8 @@ public class ITSearchTabTest extends AbstractTest {
         loginAsTestUser();
         open(String.format(NXDOC_URL_FORMAT, wsId));
 
-        FileDocumentBasePage filePage = asPage(DocumentBasePage.class).createFile("Test file for ITSearchTabTest", "Test File description",
-                false, null, null, null);
+        FileDocumentBasePage filePage = asPage(DocumentBasePage.class).createFile("Test file for ITSearchTabTest",
+                "Test File description", false, null, null, null);
         EditTabSubPage editTabSubPage = filePage.getEditTab();
 
         Select2WidgetElement subjectsWidget = new Select2WidgetElement(driver,
@@ -115,6 +120,10 @@ public class ITSearchTabTest extends AbstractTest {
         SearchPage searchPage = documentBasePage.goToSearchPage();
         DefaultSearchSubPage searchLayoutSubPage = searchPage.getDefaultSearch();
         Map<String, Integer> authorAggs = searchLayoutSubPage.getAvailableAuthorAggregate();
+        // take another screenshot
+        ScreenshotTaker taker = new ScreenshotTaker();
+        File screenShot = taker.takeScreenshot(driver, "ITSearchTabTest-after-authorAggs");
+        log.error("Screenshot taken : " + screenShot.getAbsolutePath());
         boolean testUserFound = false;
         for (Entry<String, Integer> e : authorAggs.entrySet()) {
             if (e.getKey().equals(TEST_USERNAME)) {
