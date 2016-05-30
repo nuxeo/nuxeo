@@ -45,7 +45,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RandomBug;
 
 @Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.ecm.platform.audit.api", "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core",
         "org.nuxeo.elasticsearch.seqgen",
@@ -126,7 +125,6 @@ public class TestAuditWithElasticSearch {
     }
 
     @Test
-    @RandomBug.Repeat(issue = "NXP-19721")
     public void shouldSupportMultiCriteriaQueries() throws Exception {
 
         LogEntryGen.generate("mydoc", "evt", "cat", 9);
