@@ -254,9 +254,9 @@ class MarkLogicQueryBuilder {
         } else if (op == Operator.ISNOTNULL) {
             return walkNull(lvalue, false);
         } else if (op == Operator.BETWEEN) {
-            // walkBetween(lvalue, rvalue, true);
+            return walkBetween(lvalue, rvalue, true);
         } else if (op == Operator.NOTBETWEEN) {
-            // walkBetween(lvalue, rvalue, false);
+            return walkBetween(lvalue, rvalue, false);
         }
         throw new QueryParseException("Unknown operator: " + op);
     }
@@ -383,6 +383,20 @@ class MarkLogicQueryBuilder {
         FieldInfo leftInfo = walkReference(lvalue);
         return getQueryBuilder(leftInfo, name -> new RangeQueryBuilder(name, StructuredQueryBuilder.Operator.GE,
                 (Literal) rvalue));
+    }
+
+    private QueryBuilder walkBetween(Operand lvalue, Operand rvalue, boolean positive) {
+        LiteralList literals = (LiteralList) rvalue;
+        Literal left = literals.get(0);
+        Literal right = literals.get(1);
+        // Rebuild an AND operator for left <= lvalue <= right
+        Expression gteExpression = new Expression(lvalue, Operator.GTEQ, left);
+        Expression lteExpression = new Expression(lvalue, Operator.LTEQ, right);
+        QueryBuilder andBuilder = walkAnd(gteExpression, lteExpression);
+        if (!positive) {
+            andBuilder.not();
+        }
+        return andBuilder;
     }
 
     private QueryBuilder walkMultiExpression(MultiExpression expression) {

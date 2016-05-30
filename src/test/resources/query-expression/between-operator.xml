@@ -1,0 +1,22 @@
+<search xmlns="http://marklogic.com/appservices/search">
+  <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <and-query>
+      <range-query type="xs:dateTime">
+        <element ns="" name="dc__created" />
+        <value>2007-01-01T00:00:00.000</value>
+        <range-operator>GE</range-operator>
+      </range-query>
+      <range-query type="xs:dateTime">
+        <element ns="" name="dc__created" />
+        <value>2008-01-01T00:00:00.000</value>
+        <range-operator>LE</range-operator>
+      </range-query>
+    </and-query>
+  </query>
+  <options xmlns="http://marklogic.com/appservices/search">
+    <extract-document-data selected="include-with-ancestors">
+      <extract-path>/document/ecm__id</extract-path>
+    </extract-document-data>
+  </options>
+</search>

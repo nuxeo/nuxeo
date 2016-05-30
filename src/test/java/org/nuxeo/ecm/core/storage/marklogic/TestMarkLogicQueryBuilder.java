@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.IntegerLiteral;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
@@ -221,6 +222,24 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/lt-operator.xml", query.getHandle().toString());
+    }
+
+    @Test
+    public void testBetweenOperator() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        LiteralList literals = new LiteralList();
+        literals.add(new DateLiteral("2007-01-01", true));
+        literals.add(new DateLiteral("2008-01-01", true));
+        Expression expression = new Expression(new Reference("dc:created"), Operator.BETWEEN, literals);
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
+        assertXMLFileAgainstString("query-expression/between-operator.xml", query.getHandle().toString());
     }
 
     @Test
