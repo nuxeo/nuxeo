@@ -1809,6 +1809,7 @@ public class DBSSession implements Session {
             return KEY_VERSION_DESCRIPTION;
         case NXQL.ECM_VERSION_VERSIONABLEID:
             return KEY_VERSION_SERIES_ID;
+        case NXQL.ECM_ANCESTORID:
         case ExpressionEvaluator.NXQL_ECM_ANCESTOR_IDS:
             return KEY_ANCESTOR_IDS;
         case ExpressionEvaluator.NXQL_ECM_PATH:
