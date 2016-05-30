@@ -1,0 +1,29 @@
+<search xmlns="http://marklogic.com/appservices/search">
+  <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <container-query>
+      <element ns="" name="ecm__acp" />
+      <container-query>
+        <element ns="" name="nxml__item" />
+        <container-query>
+          <element ns="" name="acl" />
+          <container-query>
+            <element ns="" name="nxml__item" />
+            <and-query>
+              <value-query type="string">
+                <element ns="" name="perm" />
+                <text>Read</text>
+                <text>Browse</text>
+              </value-query>
+              <value-query type="string">
+                <element ns="" name="grant" />
+                <text>true</text>
+              </value-query>
+            </and-query>
+          </container-query>
+        </container-query>
+      </container-query>
+    </container-query>
+  </query>
+  <options xmlns="http://marklogic.com/appservices/search"/>
+</search>

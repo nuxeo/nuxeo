@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.core.storage.marklogic;
 
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -88,7 +92,7 @@ class MarkLogicQueryBuilder {
     );
 
     /** Splits foo/*1/bar into foo/*1, bar with the last bar part optional */
-    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("([^*]*/\\*\\d+)(?:/(.*))?");
+    protected final static Pattern WILDCARD_SPLIT = Pattern.compile("(.*/\\*\\d+)(?:/(.*))?");
 
     private final QueryManager queryManager;
 
@@ -450,7 +454,7 @@ class MarkLogicQueryBuilder {
         String[] parts = prop.split("/");
         if (prop.startsWith(NXQL.ECM_PREFIX)) {
             if (prop.startsWith(NXQL.ECM_ACL + "/")) {
-                // return parseACP(prop, parts);
+                 return parseACP(prop, parts);
             }
             String field = DBSSession.convToInternal(prop);
             return new FieldInfo(prop, field);
@@ -508,6 +512,30 @@ class MarkLogicQueryBuilder {
             firstPart = false;
         }
         String fullField = String.join("/", parts);
+        return new FieldInfo(prop, fullField, type, false);
+    }
+
+    protected FieldInfo parseACP(String prop, String[] parts) {
+        if (parts.length != 3) {
+            throw new QueryParseException("No such property: " + prop);
+        }
+        String wildcard = parts[1];
+        if (NumberUtils.isDigits(wildcard)) {
+            throw new QueryParseException("Cannot use explicit index in ACLs: " + prop);
+        }
+        String last = parts[2];
+        String fullField;
+        if (NXQL.ECM_ACL_NAME.equals(last)) {
+            fullField = KEY_ACP + "/*/" + KEY_ACL_NAME;
+            // TODO remember wildcard correlation
+        } else {
+            String fieldLast = DBSSession.convToInternalAce(last);
+            if (fieldLast == null) {
+                throw new QueryParseException("No such property: " + prop);
+            }
+            fullField = KEY_ACP + "/*/" + KEY_ACL + '/' + wildcard + '/' + fieldLast;
+        }
+        Type type = DBSSession.getType(last);
         return new FieldInfo(prop, fullField, type, false);
     }
 

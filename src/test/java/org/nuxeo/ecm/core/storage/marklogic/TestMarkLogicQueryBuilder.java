@@ -75,7 +75,8 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
             }
 
         });
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(session, selectClause, expression, null, null, false);
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(session, selectClause, expression, null, null,
+                false);
 
         // Test
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
@@ -336,6 +337,27 @@ public class TestMarkLogicQueryBuilder extends AbstractTest {
         RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
                 evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
         assertXMLFileAgainstString("query-expression/correlated-wildcard-reference.xml", query.getHandle().toString());
+    }
+
+    @Test
+    public void testACPReference() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+        selectClause.add(new Reference("ecm:acl/*1/name"));
+
+        LiteralList inPermissions = new LiteralList();
+        inPermissions.add(new StringLiteral("Read"));
+        inPermissions.add(new StringLiteral("Browse"));
+        Expression expression = new MultiExpression(Operator.AND, Arrays.asList( //
+                new Expression(new Reference("ecm:acl/*1/permission"), Operator.IN, inPermissions), //
+                new Expression(new Reference("ecm:acl/*1/grant"), Operator.EQ, new IntegerLiteral(1))));
+
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(null, selectClause, expression, null, null, false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
+        assertXMLFileAgainstString("query-expression/acp-reference.xml", query.getHandle().toString());
     }
 
     @Test
