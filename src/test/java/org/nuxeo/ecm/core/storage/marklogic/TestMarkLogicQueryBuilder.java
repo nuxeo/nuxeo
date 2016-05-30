@@ -56,6 +56,35 @@ import com.marklogic.client.query.RawQueryDefinition;
 public class TestMarkLogicQueryBuilder extends AbstractTest {
 
     @Test
+    public void testEqOperatorOnEcmPath() throws Exception {
+        SelectClause selectClause = new SelectClause();
+        selectClause.add(new Reference(NXQL.ECM_UUID));
+
+        Expression expression = new Expression(new Reference(NXQL.ECM_PATH), Operator.EQ, new StringLiteral(
+                "/default-domain"));
+
+        // Mock session
+        DBSSession session = mock(DBSSession.class, new Answer() {
+
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                if ("getDocumentIdByPath".equals(invocation.getMethod().getName())) {
+                    return "12345678-1234-1234-1234-123456789ABC";
+                }
+                return invocation.callRealMethod();
+            }
+
+        });
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(session, selectClause, expression, null, null,
+                false);
+
+        // Test
+        RawQueryDefinition query = new MarkLogicQueryBuilder(CLIENT.newQueryManager(), evaluator.getExpression(),
+                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled, false).buildQuery();
+        assertXMLFileAgainstString("query-expression/eq-operator-on-ecm-path.xml", query.getHandle().toString());
+    }
+
+    @Test
     public void testStartsWithOperatorOnEcmPath() throws Exception {
         SelectClause selectClause = new SelectClause();
         selectClause.add(new Reference(NXQL.ECM_UUID));

@@ -191,12 +191,14 @@ class MarkLogicQueryBuilder {
         Operator op = expression.operator;
         Operand lvalue = expression.lvalue;
         Operand rvalue = expression.rvalue;
+        Reference ref = lvalue instanceof Reference ? (Reference) lvalue : null;
+        String name = ref != null ? ref.name : null;
         // TODO handle ref and date cast
 
         if (op == Operator.STARTSWITH) {
              return walkStartsWith(lvalue, rvalue);
-            // } else if (NXQL.ECM_PATH.equals(name)) {
-            // walkEcmPath(op, rvalue);
+        } else if (NXQL.ECM_PATH.equals(name)) {
+             return walkEcmPath(op, rvalue);
             // } else if (NXQL.ECM_ANCESTORID.equals(name)) {
             // walkAncestorId(op, rvalue);
             // } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
@@ -296,6 +298,25 @@ class MarkLogicQueryBuilder {
         return walkOr(equalOperand, likeOperand);
     }
 
+    private QueryBuilder walkEcmPath(Operator op, Operand rvalue) {
+        if (op != Operator.EQ && op != Operator.NOTEQ) {
+            throw new QueryParseException(NXQL.ECM_PATH + " requires = or <> operator");
+        }
+        if (!(rvalue instanceof StringLiteral)) {
+            throw new QueryParseException(NXQL.ECM_PATH + " requires literal path as right argument");
+        }
+        String path = ((StringLiteral) rvalue).value;
+        if (path.length() > 1 && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        String id = pathResolver.getIdForPath(path);
+        if (id == null) {
+            // no such path
+            // TODO XXX do better
+            return walkNull(new Reference(NXQL.ECM_UUID), true);
+        }
+        return walkEq(new Reference(NXQL.ECM_UUID), new StringLiteral(id), op == Operator.EQ);
+    }
 
     private QueryBuilder walkNot(Operand lvalue) {
         QueryBuilder query = walkOperandAsExpression(lvalue);
