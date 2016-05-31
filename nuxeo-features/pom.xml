@@ -29,7 +29,7 @@
     <module>nuxeo-platform-lang</module>
     <module>nuxeo-platform-mail</module>
     <module>nuxeo-platform-notification</module>
-    <module>nuxeo-platform-preview</module>
+    <module>preview</module>
     <module>nuxeo-platform-publisher</module>
     <module>nuxeo-platform-forum</module>
     <module>nuxeo-platform-userworkspace</module>

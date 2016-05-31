@@ -405,7 +405,7 @@
     <!-- Preview -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-preview</artifactId>
+      <artifactId>nuxeo-preview-jsf</artifactId>
     </dependency>
 
     <!-- Rendition -->
