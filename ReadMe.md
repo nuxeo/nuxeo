@@ -26,11 +26,14 @@ In addition a DocumentationService is provided to be able to :
  - check that a given contribution is deployed
  - play with Nuxeo Runtime
 
+## Parameters
+ - `org.nuxeo.apidoc.site.mode`: Enable the site mode with a more user friendly design
+ - `org.nuxeo.apidoc.hide.current.distribution`: Hide current distribution from the distribution listing
+ - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection
+
 ## Modules
 
 This plugin is composed of 2 bundles :
 
  - nuxeo-apidoc-core : for the low level API
  - nuxeo-apidoc-webengine : for JAX-RS API and Webview
-
-
