@@ -85,10 +85,10 @@ public abstract class AbstractSerializerTest extends AbstractTest {
         return state;
     }
 
-    protected State createStateWithEmptyArray() {
+    protected State createStateWithEmptyList() {
         State state = new State();
         state.put("ecm:id", "ID");
-        state.put("values", new Object[] {});
+        state.put("values", new ArrayList<>());
         return state;
     }
 

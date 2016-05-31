@@ -86,11 +86,11 @@ public class TestMarkLogicStateSerializer extends AbstractSerializerTest {
     }
 
     @Test
-    public void testStateWithEmptyArray() throws Exception {
-        State state = createStateWithEmptyArray();
+    public void testStateWithEmptyList() throws Exception {
+        State state = createStateWithEmptyList();
         String xml = MarkLogicStateSerializer.serialize(state);
         assertNotNull(xml);
-        assertXMLFileAgainstString("serializer/state-with-empty-array.xml", xml);
+        assertXMLFileAgainstString("serializer/state-with-empty-list.xml", xml);
     }
 
     @Test

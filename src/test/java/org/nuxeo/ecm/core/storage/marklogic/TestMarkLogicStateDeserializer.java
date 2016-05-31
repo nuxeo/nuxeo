@@ -82,11 +82,11 @@ public class TestMarkLogicStateDeserializer extends AbstractSerializerTest {
     }
 
     @Test
-    public void testStateWithEmptyArray() throws Exception {
-        String xml = readFile("serializer/state-with-empty-array.xml");
+    public void testStateWithEmptyList() throws Exception {
+        String xml = readFile("serializer/state-with-empty-list.xml");
         State state = MarkLogicStateDeserializer.deserialize(xml);
         assertNotNull(state);
-        State expectedState = createStateWithEmptyArray();
+        State expectedState = createStateWithEmptyList();
         assertEquals(expectedState, state);
     }
 
