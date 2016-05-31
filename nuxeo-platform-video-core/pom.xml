@@ -54,7 +54,7 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-preview</artifactId>
+      <artifactId>nuxeo-preview-core</artifactId>
     </dependency>
 
     <dependency>
