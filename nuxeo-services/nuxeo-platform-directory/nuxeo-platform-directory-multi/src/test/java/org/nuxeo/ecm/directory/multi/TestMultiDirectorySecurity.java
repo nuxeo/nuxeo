@@ -177,7 +177,7 @@ public class TestMultiDirectorySecurity {
     @Test
     public void readerCanGetEntry() throws Exception {
         // Given a reader user
-        dummyLogin.loginAs(READER_USER);
+        dummyLogin.login(READER_USER);
 
         DocumentModel entry;
         entry = dir.getEntry("1");
@@ -189,7 +189,7 @@ public class TestMultiDirectorySecurity {
     @Test
     public void readerCantCreateEntry() throws Exception {
         // Given a reader user
-        dummyLogin.loginAs(READER_USER);
+        dummyLogin.login(READER_USER);
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("uid", "5");
@@ -211,7 +211,7 @@ public class TestMultiDirectorySecurity {
     @Test
     public void superUserCanCreate() throws Exception {
         // Given a super user
-        dummyLogin.loginAs(SUPER_USER);
+        dummyLogin.login(SUPER_USER);
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("uid", "5");
@@ -229,7 +229,7 @@ public class TestMultiDirectorySecurity {
     @Test
     public void superUserCanUpdateEntry() throws Exception {
         // Given a super user
-        dummyLogin.loginAs(SUPER_USER);
+        dummyLogin.login(SUPER_USER);
 
         // multi-subdirs update
         DocumentModel e = dir.getEntry("1");
@@ -248,7 +248,7 @@ public class TestMultiDirectorySecurity {
     @Test
     public void readerUserCantUpdateEntry() throws Exception {
         // Given a reader user
-        dummyLogin.loginAs(READER_USER);
+        dummyLogin.login(READER_USER);
 
         // multi-subdirs update
         DocumentModel e = dir.getEntry("1");
@@ -273,7 +273,7 @@ public class TestMultiDirectorySecurity {
     @Test
     public void superUserCanDeleteEntry() throws Exception {
         // Given a super user
-        dummyLogin.loginAs(SUPER_USER);
+        dummyLogin.login(SUPER_USER);
 
         dir.deleteEntry("1");
         assertNull(dir.getEntry("1"));
@@ -286,7 +286,7 @@ public class TestMultiDirectorySecurity {
     @Test
     public void readerUserCantDeleteEntry() throws Exception {
         // Given a reader user
-        dummyLogin.loginAs(READER_USER);
+        dummyLogin.login(READER_USER);
 
         try {
             dir.deleteEntry("1");
@@ -302,7 +302,7 @@ public class TestMultiDirectorySecurity {
     @Test
     public void superUserCanQuery() throws Exception {
         // Given a super user
-        dummyLogin.loginAs(SUPER_USER);
+        dummyLogin.login(SUPER_USER);
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         DocumentModelList entries;
@@ -319,7 +319,7 @@ public class TestMultiDirectorySecurity {
     public void everyoneUserCanCreateAndGet() throws Exception {
         // Given a user in the everyone group
         // (default in dummy login any user is member of everyone)
-        dummyLogin.loginAs("anEveryoneUser");
+        dummyLogin.login("anEveryoneUser");
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("uid", "5");

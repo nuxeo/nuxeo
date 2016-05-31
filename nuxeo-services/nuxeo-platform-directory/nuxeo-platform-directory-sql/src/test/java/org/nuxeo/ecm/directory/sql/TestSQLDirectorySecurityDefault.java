@@ -76,7 +76,7 @@ public class TestSQLDirectorySecurityDefault {
     @Test
     public void adminCanCreateEntry() throws Exception {
         // Given the admin user
-        dummyLogin.loginAs(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
+        dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("username", "user_0");
@@ -96,7 +96,7 @@ public class TestSQLDirectorySecurityDefault {
     @Test
     public void adminCanDeleteEntry() throws Exception {
         // Given the admin user
-        dummyLogin.loginAs(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
+        dummyLogin.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
 
         // I can delete entry
         DocumentModel entry = session.getEntry("user_1");
@@ -112,7 +112,7 @@ public class TestSQLDirectorySecurityDefault {
     @Test
     public void everyoneCantCreateEntry() throws LoginException {
         // Given a user
-        dummyLogin.loginAs("aUser");
+        dummyLogin.login("aUser");
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("username", "should-not-create");
@@ -133,7 +133,7 @@ public class TestSQLDirectorySecurityDefault {
     @Test
     public void everyoneCanGetEntry() throws LoginException {
         // Given a user
-        dummyLogin.loginAs("aUser");
+        dummyLogin.login("aUser");
 
         // When I call get entry
         DocumentModel entry = session.getEntry("user_3");
@@ -144,7 +144,7 @@ public class TestSQLDirectorySecurityDefault {
 
     @Test
     public void everyoneCantDeleteEntry() throws Exception {
-        dummyLogin.loginAs("aUser");
+        dummyLogin.login("aUser");
 
         // When I call delete entry
         DocumentModel entry = session.getEntry("user_3");
@@ -163,7 +163,7 @@ public class TestSQLDirectorySecurityDefault {
 
     @Test
     public void everyoneCanSearch() throws LoginException {
-        dummyLogin.loginAs("aUser");
+        dummyLogin.login("aUser");
 
         // When I query entry
         Map<String, Serializable> map = new HashMap<String, Serializable>();

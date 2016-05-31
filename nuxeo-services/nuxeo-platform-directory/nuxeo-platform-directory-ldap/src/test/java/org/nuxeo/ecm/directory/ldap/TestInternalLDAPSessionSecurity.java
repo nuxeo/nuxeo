@@ -113,7 +113,7 @@ public class TestInternalLDAPSessionSecurity {
 
     @Test
     public void readerUserCanGetEntry() throws Exception {
-        dummyLogin.loginAs(READER_USER);
+        dummyLogin.login(READER_USER);
         DocumentModel entry = userDirSession.getEntry("Administrator");
         assertNotNull(entry);
         assertEquals("Administrator", entry.getId());
@@ -122,7 +122,7 @@ public class TestInternalLDAPSessionSecurity {
 
     @Test
     public void readerUserCanQuery() throws LoginException {
-        dummyLogin.loginAs(READER_USER);
+        dummyLogin.login(READER_USER);
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("lastName", "Manager");
         DocumentModelList entries = userDirSession.query(filter);
@@ -132,7 +132,7 @@ public class TestInternalLDAPSessionSecurity {
 
     @Test
     public void unauthorizedUserCantGetEntry() throws Exception {
-        dummyLogin.loginAs("unauthorizedUser");
+        dummyLogin.login("unauthorizedUser");
         DocumentModel entry = userDirSession.getEntry("Administrator");
         Assert.assertNull(entry);
         dummyLogin.logout();
@@ -140,7 +140,7 @@ public class TestInternalLDAPSessionSecurity {
 
     @Test
     public void everyoneGroupCanGetEntry() throws Exception {
-        dummyLogin.loginAs("anEveryoneUser");
+        dummyLogin.login("anEveryoneUser");
         DocumentModel entry = groupDirSession.getEntry("members");
         assertNotNull(entry);
         assertEquals("members", entry.getId());

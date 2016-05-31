@@ -21,16 +21,14 @@ package org.nuxeo.ecm.directory.core;
 
 import static org.junit.Assert.assertNull;
 
-import javax.security.auth.login.LoginContext;
-
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -47,18 +45,22 @@ public class TestCoreDirectoryUserNotAllowed {
 
     protected Session dirNotAllowedSession = null;
 
-    protected LoginContext loginContext;
+    @Inject
+    ClientLoginFeature login;
 
     @Before
     public void setUp() throws Exception {
-        loginContext = CoreDirectoryFeature.loginAs(CoreDirectoryFeature.USER3_NAME);
+        login.login(CoreDirectoryFeature.USER3_NAME);
         dirNotAllowedSession = coreDir.getSession();
     }
 
     @After
     public void tearDown() throws Exception {
-        dirNotAllowedSession.close();
-        CoreDirectoryFeature.logout(loginContext);
+        try {
+            dirNotAllowedSession.close();
+        } finally {
+            login.logout();
+        }
     }
 
     @Test

@@ -19,25 +19,15 @@
  */
 package org.nuxeo.ecm.directory.core;
 
-import java.security.Principal;
-import java.util.ArrayList;
-
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.CredentialsCallbackHandler;
-import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -48,7 +38,7 @@ import com.google.inject.Binder;
 import com.google.inject.Provider;
 import com.google.inject.name.Names;
 
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, ClientLoginFeature.class })
 @RepositoryConfig(init = CoreDirectoryInit.class)
 @Deploy({ //
         "org.nuxeo.ecm.directory.api", //
@@ -56,7 +46,6 @@ import com.google.inject.name.Names;
         "org.nuxeo.ecm.directory.types.contrib", //
 })
 @LocalDeploy({ //
-        "org.nuxeo.ecm.directory.core.tests:core/login-config.xml",
         "org.nuxeo.ecm.directory.core.tests:core/types-config.xml",
         "org.nuxeo.ecm.directory.core.tests:core/core-directory-config.xml" })
 public class CoreDirectoryFeature extends SimpleFeature {
@@ -94,22 +83,6 @@ public class CoreDirectoryFeature extends SimpleFeature {
                 return dir;
             }
         });
-    }
-
-    protected static LoginContext loginAs(String username) throws LoginException {
-        Principal principal = new UserPrincipal(username, new ArrayList<>(), false, false);
-        LoginContext loginContext = new LoginContext(LoginComponent.CLIENT_LOGIN,
-                new CredentialsCallbackHandler(username, username));
-        loginContext.login();
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(principal, null, loginContext.getSubject());
-        return loginContext;
-    }
-
-    protected static void logout(LoginContext loginContext) throws LoginException {
-        loginContext.logout();
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.pop();
     }
 
 }

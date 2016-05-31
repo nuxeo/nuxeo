@@ -86,7 +86,7 @@ public class TestSQLDirectorySecurityContrib {
     @Test
     public void cantCreateEntry() throws LoginException {
         // Given a reader user
-        dummyLogin.loginAs(READER_USER);
+        dummyLogin.login(READER_USER);
         try {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("username", "user_0");
@@ -108,7 +108,7 @@ public class TestSQLDirectorySecurityContrib {
 
     @Test
     public void canCreateEntry() throws Exception {
-        dummyLogin.loginAs(SUPER_USER);
+        dummyLogin.login(SUPER_USER);
         try {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("username", "user_0");
@@ -128,7 +128,7 @@ public class TestSQLDirectorySecurityContrib {
     @Test
     public void cantGetEntry() throws LoginException {
         // Given a user without right
-        dummyLogin.loginAs("aUser");
+        dummyLogin.login("aUser");
 
         DocumentModel entry = userDirSession.getEntry("user_1");
         // no DirectorySecurityException here, just null
@@ -140,7 +140,7 @@ public class TestSQLDirectorySecurityContrib {
     @Test
     public void canGetEntry() throws LoginException {
         // Given a user without right
-        dummyLogin.loginAs(READER_USER);
+        dummyLogin.login(READER_USER);
 
         DocumentModel entry = userDirSession.getEntry("user_1");
         Assert.assertNotNull(entry);
@@ -151,7 +151,7 @@ public class TestSQLDirectorySecurityContrib {
     @Test
     public void cantSearch() throws LoginException {
         // Given a user without right
-        dummyLogin.loginAs("aUser");
+        dummyLogin.login("aUser");
 
         // When I query entry
         Map<String, Serializable> map = new HashMap<String, Serializable>();
@@ -166,7 +166,7 @@ public class TestSQLDirectorySecurityContrib {
     @Test
     public void canSearch() throws LoginException {
         // Given a user without right
-        dummyLogin.loginAs(SUPER_USER);
+        dummyLogin.login(SUPER_USER);
 
         // When I query entry
         Map<String, Serializable> map = new HashMap<String, Serializable>();
@@ -180,7 +180,7 @@ public class TestSQLDirectorySecurityContrib {
     @Test
     public void groupCanCreateAndGetEntry() throws Exception {
         // Given a user member of everyone group
-        dummyLogin.loginAs("aUserEveryone");
+        dummyLogin.login("aUserEveryone");
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("groupname", "newGroup");

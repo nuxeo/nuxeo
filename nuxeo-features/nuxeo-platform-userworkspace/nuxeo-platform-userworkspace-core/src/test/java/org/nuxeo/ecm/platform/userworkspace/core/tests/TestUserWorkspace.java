@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.userworkspace.core.service.UserWorkspaceServiceImplComponent;
 import org.nuxeo.runtime.api.Framework;
@@ -52,14 +53,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.content.template", //
+@Features(PlatformFeature.class)
+@Deploy({
         "org.nuxeo.ecm.platform.userworkspace.api", //
-        "org.nuxeo.ecm.platform.dublincore", //
         "org.nuxeo.ecm.platform.userworkspace.types", //
-        "org.nuxeo.ecm.directory.api", //
-        "org.nuxeo.ecm.directory", //
-        "org.nuxeo.ecm.directory.sql", //
         "org.nuxeo.ecm.platform.userworkspace.core", //
 })
 public class TestUserWorkspace {
@@ -88,7 +85,7 @@ public class TestUserWorkspace {
 
             // check creator
             String creator = (String) uw.getProperty("dublincore", "creator");
-            assertEquals(creator, "toto");
+            assertEquals("toto", creator);
 
             // check write access
             uw.setProperty("dublibore", "description", "Toto's workspace");

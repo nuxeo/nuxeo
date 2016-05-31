@@ -45,13 +45,13 @@ public class TestDummyLogInClientModule {
 
     @Test
     public void canBuildDummyPrincipal() throws LoginException {
-        Principal dummyPrincipal = login.loginAs("dummyName");
+        Principal dummyPrincipal = login.login("dummyName");
         Assert.assertNotNull(dummyPrincipal);
     }
 
     @Test
     public void canGetCurrentDummyPrincipal() throws LoginException {
-        Principal dummyPrincipal = login.loginAs("dummyName");
+        Principal dummyPrincipal = login.login("dummyName");
         NuxeoPrincipal currentDummy = ClientLoginModule.getCurrentPrincipal();
         Assert.assertEquals(dummyPrincipal.getName(), currentDummy.getName());
     }

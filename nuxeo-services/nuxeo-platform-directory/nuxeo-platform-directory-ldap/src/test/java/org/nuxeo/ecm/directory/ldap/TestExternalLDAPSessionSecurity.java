@@ -110,7 +110,7 @@ public class TestExternalLDAPSessionSecurity {
 
     @Test
     public void readerUserCanGetEntry() throws Exception {
-        dummyLogin.loginAs(READER_USER);
+        dummyLogin.login(READER_USER);
         DocumentModel entry = userDirSession.getEntry("Administrator");
         assertNotNull(entry);
         assertEquals("Administrator", entry.getId());
@@ -119,7 +119,7 @@ public class TestExternalLDAPSessionSecurity {
 
     @Test
     public void readerUserCantDeleteEntry() throws Exception {
-        dummyLogin.loginAs(READER_USER);
+        dummyLogin.login(READER_USER);
         DocumentModel entry = userDirSession.getEntry("user1");
         assertNotNull(entry);
         userDirSession.deleteEntry("user1");
@@ -130,7 +130,7 @@ public class TestExternalLDAPSessionSecurity {
 
     @Test
     public void superUserCanDeleteEntry() throws Exception {
-        dummyLogin.loginAs(SUPER_USER);
+        dummyLogin.login(SUPER_USER);
         DocumentModel entry = userDirSession.getEntry("user1");
         assertNotNull(entry);
         userDirSession.deleteEntry("user1");
@@ -141,7 +141,7 @@ public class TestExternalLDAPSessionSecurity {
 
     @Test
     public void superUserCanCreateEntry() throws Exception {
-        dummyLogin.loginAs(SUPER_USER);
+        dummyLogin.login(SUPER_USER);
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("username", "user0");
@@ -163,7 +163,7 @@ public class TestExternalLDAPSessionSecurity {
 
     @Test
     public void unauthorizedUserCantGetEntry() throws Exception {
-        dummyLogin.loginAs("unauthorizedUser");
+        dummyLogin.login("unauthorizedUser");
         DocumentModel entry = userDirSession.getEntry("Administrator");
         Assert.assertNull(entry);
         dummyLogin.logout();
@@ -171,7 +171,7 @@ public class TestExternalLDAPSessionSecurity {
 
     @Test
     public void everyoneGroupCanGetEntry() throws Exception {
-        dummyLogin.loginAs("anEveryoneUser");
+        dummyLogin.login("anEveryoneUser");
         DocumentModel entry = groupDirSession.getEntry("members");
         assertNotNull(entry);
         assertEquals("members", entry.getId());
@@ -180,7 +180,7 @@ public class TestExternalLDAPSessionSecurity {
 
     @Test
     public void everyoneCanUpdateEntry() throws Exception {
-        dummyLogin.loginAs("anEveryoneUser");
+        dummyLogin.login("anEveryoneUser");
 
         DocumentModel entry = groupDirSession.getEntry("members");
         assertNotNull(entry);

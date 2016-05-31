@@ -23,27 +23,32 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import javax.security.auth.login.LoginContext;
+import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 
 public class TestCoreDirectoryUser extends TestCoreDirectory {
 
-    protected LoginContext loginContext;
+    @Inject
+    ClientLoginFeature login;
 
     @Override
     public void setUp() throws Exception {
-        loginContext = CoreDirectoryFeature.loginAs(CoreDirectoryFeature.USER1_NAME);
+        login.login(CoreDirectoryFeature.USER1_NAME);
         dirSession = coreDir.getSession();
     }
 
     @Override
     @After
     public void tearDown() throws Exception {
-        dirSession.close();
-        CoreDirectoryFeature.logout(loginContext);
+        try {
+            dirSession.close();
+        } finally {
+            login.logout();
+        }
     }
 
     @Test

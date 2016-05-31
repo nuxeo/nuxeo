@@ -90,7 +90,7 @@ public abstract class UnrestrictedSessionRunner {
         session = null;
         sessionIsAlreadyUnrestricted = false;
         this.repositoryName = repositoryName;
-        this.originatingUsername = originatingUser;
+        originatingUsername = originatingUser;
     }
 
     public String getOriginatingUsername() {
@@ -131,17 +131,6 @@ public abstract class UnrestrictedSessionRunner {
                     baseSession.save();
                 }
                 session = CoreInstance.openCoreSession(repositoryName);
-                if (loginContext == null && Framework.isTestModeSet()) {
-                    NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-                    if (principal instanceof SystemPrincipal) {
-                        // we are in a test that is not using authentication
-                        // =>
-                        // we're not stacking the originating user in the
-                        // authentication stack
-                        // so we're setting manually now
-                        principal.setOriginatingUser(originatingUsername);
-                    }
-                }
                 try {
                     run();
                 } finally {

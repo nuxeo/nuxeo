@@ -29,20 +29,28 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
+/**
+ * That feature should not be installed in conjunction with the
+ * org.nuxeo.ecm.platform.web.common bundle which provide the real client login
+ * infrastucture.
+ *
+ *
+ * @since 8.3
+ */
 @Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.login.test:dummy-client-login-config.xml" })
+        "org.nuxeo.ecm.platform.login:dummy-client-login-config.xml" })
 public class ClientLoginFeature extends SimpleFeature {
 
     protected LoginContext logContext = null;
 
-    public Principal loginAs(String username) throws LoginException {
-        this.logContext = Framework.login(username, username);
+    public Principal login(String username) throws LoginException {
+        logContext = Framework.login(username, username);
         return logContext.getSubject().getPrincipals().iterator().next();
     }
 
     public void logout() throws LoginException {
-        this.logContext.logout();
+        logContext.logout();
     }
 
 }
