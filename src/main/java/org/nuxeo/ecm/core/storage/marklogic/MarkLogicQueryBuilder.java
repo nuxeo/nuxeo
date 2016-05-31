@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,6 +64,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
+import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.ecm.core.storage.marklogic.MarkLogicHelper.ElementType;
 import org.nuxeo.runtime.api.Framework;
@@ -107,6 +109,8 @@ class MarkLogicQueryBuilder {
 
     private final OrderByClause orderByClause;
 
+    private final Set<String> principals;
+
     private final PathResolver pathResolver;
 
     private final boolean fulltextSearchDisabled;
@@ -115,17 +119,17 @@ class MarkLogicQueryBuilder {
 
     private Boolean projectionHasWildcard;
 
-    public MarkLogicQueryBuilder(QueryManager queryManager, Expression expression, SelectClause selectClause,
-            OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled,
-            boolean distinctDocuments) {
+    public MarkLogicQueryBuilder(QueryManager queryManager, DBSExpressionEvaluator evaluator,
+            OrderByClause orderByClause, boolean distinctDocuments) {
         this.schemaManager = Framework.getLocalService(SchemaManager.class);
         this.queryManager = queryManager;
         this.sqb = queryManager.newStructuredQueryBuilder();
-        this.expression = expression;
-        this.selectClause = selectClause;
+        this.expression = evaluator.getExpression();
+        this.selectClause = evaluator.getSelectClause();
         this.orderByClause = orderByClause;
-        this.pathResolver = pathResolver;
-        this.fulltextSearchDisabled = fulltextSearchDisabled;
+        this.principals = evaluator.principals;
+        this.pathResolver = evaluator.pathResolver;
+        this.fulltextSearchDisabled = evaluator.fulltextSearchDisabled;
         this.distinctDocuments = distinctDocuments;
     }
 
@@ -153,6 +157,17 @@ class MarkLogicQueryBuilder {
     }
 
     public RawQueryDefinition buildQuery() {
+        Expression expression = this.expression;
+        if (principals != null) {
+            // Add principals to expression
+            LiteralList principalLiterals = principals.stream()
+                                                      .map(StringLiteral::new)
+                                                      .collect(Collectors.toCollection(LiteralList::new));
+            Expression principalsExpression = new Expression(new Reference(ExpressionEvaluator.NXQL_ECM_READ_ACL),
+                    Operator.IN, principalLiterals);
+            // Build final AND expression
+            expression = new Expression(expression, Operator.AND, principalsExpression);
+        }
         RawStructuredQueryDefinition query = sqb.build(walkExpression(expression).build(sqb));
         String options = buildOptions();
         String comboQuery = "<search xmlns=\"http://marklogic.com/appservices/search\">" //

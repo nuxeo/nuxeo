@@ -261,9 +261,8 @@ public class MarkLogicRepository extends DBSRepositoryBase {
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
-        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(markLogicClient.newQueryManager(),
-                evaluator.getExpression(), evaluator.getSelectClause(), orderByClause, evaluator.pathResolver,
-                evaluator.fulltextSearchDisabled, distinctDocuments);
+        MarkLogicQueryBuilder builder = new MarkLogicQueryBuilder(markLogicClient.newQueryManager(), evaluator,
+                orderByClause, distinctDocuments);
         // TODO add select
         RawQueryDefinition query = builder.buildQuery();
         // Don't do manual projection if there are no projection wildcards, as this brings no new

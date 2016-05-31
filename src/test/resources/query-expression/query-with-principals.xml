@@ -1,0 +1,24 @@
+<search xmlns="http://marklogic.com/appservices/search">
+  <query xmlns="http://marklogic.com/appservices/search" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:search="http://marklogic.com/appservices/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <and-query>
+      <value-query type="string">
+        <element ns="" name="dc__title" />
+        <text>title</text>
+      </value-query>
+      <container-query>
+        <element ns="" name="ecm__racl" />
+        <value-query type="string">
+          <element ns="" name="nxml__item" />
+          <text>Everyone</text>
+          <text>bob</text>
+        </value-query>
+      </container-query>
+    </and-query>
+  </query>
+  <options xmlns="http://marklogic.com/appservices/search">
+    <extract-document-data selected="include-with-ancestors">
+      <extract-path>/document/ecm__id</extract-path>
+    </extract-document-data>
+  </options>
+</search>
