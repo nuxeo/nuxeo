@@ -13,6 +13,12 @@
           </fileset>
        </copy>
        <copy todir="build">
+          <fileset dir="nuxeo-apidoc-repo/target">
+             <include name="**/*.jar"/>
+             <exclude name="**/*-sources.jar"/>
+          </fileset>
+       </copy>
+       <copy todir="build">
           <fileset dir="nuxeo-apidoc-webengine/target">
              <include name="**/*.jar"/>
              <exclude name="**/*-sources.jar"/>
