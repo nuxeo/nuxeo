@@ -185,10 +185,5 @@
       <artifactId>sqljdbc</artifactId>
       <scope>runtime</scope>
     </dependency> 
-    <dependency>
-      <groupId>com.microsoft.sqlserver</groupId>
-      <artifactId>sqljdbc</artifactId>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 </project>
