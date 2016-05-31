@@ -276,6 +276,9 @@ public class WidgetTagHandler extends MetaTagHandler {
 
     protected void applyCompat(FaceletContext ctx, VariableMapper orig, Widget widgetInstance,
             boolean widgetInstanceBuilt) {
+        if (!widgetInstanceBuilt) {
+            return;
+        }
         // expose widget variable to the context as layout row has not done it already, and set unique id on
         // widget before exposing it to the context
         FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
