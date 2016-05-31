@@ -8,7 +8,7 @@ nuxeo.db.port=1433
 nuxeo.db.name=nuxeo
 nuxeo.db.user=nuxeo
 nuxeo.db.password=password
-nuxeo.db.jdbc.url=jdbc:sqlserver://${nuxeo.db.host}:${nuxeo.db.port}/${nuxeo.db.name};selectMethod=cursor
+nuxeo.db.jdbc.url=jdbc:sqlserver://${nuxeo.db.host}:${nuxeo.db.port};database=${nuxeo.db.name};selectMethod=cursor
 nuxeo.db.driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
 nuxeo.db.xadatasource=com.microsoft.sqlserver.jdbc.SQLServerXADataSource
 
