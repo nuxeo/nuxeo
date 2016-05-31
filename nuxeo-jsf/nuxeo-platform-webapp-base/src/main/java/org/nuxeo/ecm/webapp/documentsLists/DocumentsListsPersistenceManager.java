@@ -35,6 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -167,7 +168,7 @@ public class DocumentsListsPersistenceManager {
         DocumentModel doc = null;
         try {
             doc = session.getDocument(docRef);
-        } catch (DocumentNotFoundException e) {
+        } catch (DocumentSecurityException | DocumentNotFoundException e) {
             log.warn("document with ref " + ref + " was not found : " + e.getMessage());
             return null;
         }
