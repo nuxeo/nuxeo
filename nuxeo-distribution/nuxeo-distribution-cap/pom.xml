@@ -21,6 +21,7 @@
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-jsf-ui</artifactId>
       <type>zip</type>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
