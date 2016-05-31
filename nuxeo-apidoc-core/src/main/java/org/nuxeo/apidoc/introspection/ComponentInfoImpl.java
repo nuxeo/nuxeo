@@ -22,6 +22,7 @@ package org.nuxeo.apidoc.introspection;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +32,8 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
@@ -52,9 +55,9 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     protected final Collection<ExtensionInfo> extensions;
 
-    protected final List<String> serviceNames = new ArrayList<String>();
+    protected final List<String> serviceNames = new ArrayList<>();
 
-    protected final List<ServiceInfo> services = new ArrayList<ServiceInfo>();
+    protected final List<ServiceInfo> services = new ArrayList<>();
 
     protected URL xmlFileUrl;
 
@@ -65,10 +68,10 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     protected static final Log log = LogFactory.getLog(ComponentInfoImpl.class);
 
     public ComponentInfoImpl(BundleInfoImpl bundleInfo, String name) {
-        this.bundle = bundleInfo;
+        bundle = bundleInfo;
         this.name = name;
-        extensionPoints = new HashMap<String, ExtensionPointInfo>();
-        extensions = new ArrayList<ExtensionInfo>();
+        extensionPoints = new HashMap<>();
+        extensions = new ArrayList<>();
     }
 
     @Override
@@ -182,7 +185,9 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         try {
             String xml;
             if (jar.getAbsolutePath().endsWith(".xml")) {
-                xml = FileUtils.read(new FileInputStream(jar));
+                try (InputStream in = new FileInputStream(jar)) {
+                    xml = IOUtils.toString(in, Charsets.UTF_8);
+                }
             } else if (jar.isDirectory()) {
                 File file = new File(new Path(jar.getAbsolutePath()).append(parts[1]).toString());
                 if (!file.exists()) {
@@ -190,9 +195,10 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
                 }
                 xml = FileUtils.readFile(file);
             } else {
-                ZipFile jarArchive = new ZipFile(jar);
+                try (ZipFile jarArchive = new ZipFile(jar)) {
                 ZipEntry entry = jarArchive.getEntry(parts[1].substring(1));
-                xml = FileUtils.read(jarArchive.getInputStream(entry));
+                    xml = IOUtils.toString(jarArchive.getInputStream(entry), Charsets.UTF_8);
+                }
             }
             return DocumentationHelper.secureXML(xml);
         } catch (IOException e) {

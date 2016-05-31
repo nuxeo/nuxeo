@@ -79,7 +79,7 @@ public class XMLWriter {
 
     public void putXmlns(String prefix, String uri) {
         if (globalNsMap == null) {
-            globalNsMap = new ArrayList<String>();
+            globalNsMap = new ArrayList<>();
         }
         globalNsMap.add(uri);
         globalNsMap.add(prefix);
@@ -442,10 +442,12 @@ public class XMLWriter {
 
     /**
      * <p>
-     * Escape the <code>toString</code> of the given object. For use as body text.
+     * Escape the <code>toString</code> of the given object. For use as body
+     * text.
      * </p>
      *
-     * @param value escape <code>value.toString()</code>
+     * @param value
+     *            escape <code>value.toString()</code>
      * @return text with escaped delimiters
      */
     public static final String escapeBodyValue(Object value) {
@@ -474,10 +476,12 @@ public class XMLWriter {
 
     /**
      * <p>
-     * Escape the <code>toString</code> of the given object. For use in an attribute value.
+     * Escape the <code>toString</code> of the given object. For use in an
+     * attribute value.
      * </p>
      *
-     * @param value escape <code>value.toString()</code>
+     * @param value
+     *            escape <code>value.toString()</code>
      * @return text with characters restricted (for use in attributes) escaped
      */
     public static final String escapeAttributeValue(Object value) {
@@ -543,7 +547,7 @@ public class XMLWriter {
 
         void putXmlns(String prefix, String uri) {
             if (nsMap == null) {
-                nsMap = new ArrayList<String>();
+                nsMap = new ArrayList<>();
             }
             nsMap.add(uri);
             nsMap.add(prefix);

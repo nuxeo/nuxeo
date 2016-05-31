@@ -32,8 +32,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
         super(doc);
     }
 
-    public static ServiceInfoDocAdapter create(ServiceInfo si, CoreSession session, String containerPath)
-            {
+    public static ServiceInfoDocAdapter create(ServiceInfo si, CoreSession session, String containerPath) {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 

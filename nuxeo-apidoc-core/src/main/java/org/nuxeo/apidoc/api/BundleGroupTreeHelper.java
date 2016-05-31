@@ -44,13 +44,13 @@ public class BundleGroupTreeHelper {
 
     public List<BundleGroupFlatTree> getBundleGroupSubTree(String groupId) {
         BundleGroup group = distrib.getBundleGroup(groupId);
-        List<BundleGroupFlatTree> tree = new ArrayList<BundleGroupFlatTree>();
+        List<BundleGroupFlatTree> tree = new ArrayList<>();
         browseBundleGroup(group, 0, tree);
         return tree;
     }
 
     public List<BundleGroupFlatTree> getBundleGroupTree() {
-        List<BundleGroupFlatTree> tree = new ArrayList<BundleGroupFlatTree>();
+        List<BundleGroupFlatTree> tree = new ArrayList<>();
 
         List<BundleGroup> bgroups = distrib.getBundleGroups();
         Collections.sort(bgroups, new NuxeoArtifactComparator());

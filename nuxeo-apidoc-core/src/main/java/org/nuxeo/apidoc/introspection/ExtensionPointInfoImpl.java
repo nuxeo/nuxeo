@@ -35,9 +35,9 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
 
     protected final String name;
 
-    protected final Collection<ExtensionInfo> extensions = new ArrayList<ExtensionInfo>();
+    protected final Collection<ExtensionInfo> extensions = new ArrayList<>();
 
-    protected final List<Class<?>> spi = new ArrayList<Class<?>>();
+    protected final List<Class<?>> spi = new ArrayList<>();
 
     protected String[] descriptors;
 

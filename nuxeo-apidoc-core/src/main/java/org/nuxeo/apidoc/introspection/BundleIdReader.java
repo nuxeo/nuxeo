@@ -36,7 +36,7 @@ public class BundleIdReader {
 
     private static final Log log = LogFactory.getLog(BundleIdReader.class);
 
-    protected final Map<String, Long> ids = new HashMap<String, Long>();
+    protected final Map<String, Long> ids = new HashMap<>();
 
     @SuppressWarnings("unused")
     private long count = 0;
@@ -67,7 +67,7 @@ public class BundleIdReader {
     }
 
     public List<String> getBundleNames() {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.addAll(ids.keySet());
         return names;
     }

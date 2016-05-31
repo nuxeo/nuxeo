@@ -68,7 +68,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     public BundleInfoImpl(String bundleId) {
         this.bundleId = bundleId;
-        components = new ArrayList<ComponentInfo>();
+        components = new ArrayList<>();
     }
 
     @Override
@@ -180,7 +180,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
         Map<String, ResourceDocumentationItem> merged = parentLiveDoc;
         if (merged == null) {
-            merged = new HashMap<String, ResourceDocumentationItem>();
+            merged = new HashMap<>();
         }
         if (liveDoc != null) {
             for (String key : liveDoc.keySet()) {

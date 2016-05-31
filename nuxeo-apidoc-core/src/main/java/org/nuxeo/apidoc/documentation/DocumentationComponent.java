@@ -160,13 +160,13 @@ public class DocumentationComponent extends DefaultComponent implements Document
         query += " ORDER BY " + DocumentationItem.PROP_DOCUMENTATION_ID + ", dc:modified";
         List<DocumentModel> docs = session.query(query);
 
-        Map<String, List<DocumentationItem>> sortMap = new HashMap<String, List<DocumentationItem>>();
+        Map<String, List<DocumentationItem>> sortMap = new HashMap<>();
         for (DocumentModel doc : docs) {
             DocumentationItem item = doc.getAdapter(DocumentationItem.class);
 
             List<DocumentationItem> alternatives = sortMap.get(item.getId());
             if (alternatives == null) {
-                alternatives = new ArrayList<DocumentationItem>();
+                alternatives = new ArrayList<>();
                 alternatives.add(item);
                 sortMap.put(item.getId(), alternatives);
             } else {
@@ -174,14 +174,14 @@ public class DocumentationComponent extends DefaultComponent implements Document
             }
         }
 
-        List<DocumentationItem> result = new ArrayList<DocumentationItem>();
+        List<DocumentationItem> result = new ArrayList<>();
 
         for (String documentationId : sortMap.keySet()) {
             DocumentationItem bestDoc = sortMap.get(documentationId).get(0);
             result.add(bestDoc);
         }
 
-        Map<String, List<DocumentationItem>> sortedResult = new HashMap<String, List<DocumentationItem>>();
+        Map<String, List<DocumentationItem>> sortedResult = new HashMap<>();
         Map<String, String> categories = getCategories();
 
         for (DocumentationItem item : result) {
@@ -191,7 +191,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
             if (sortedResult.containsKey(label)) {
                 sortedResult.get(label).add(item);
             } else {
-                List<DocumentationItem> items = new ArrayList<DocumentationItem>();
+                List<DocumentationItem> items = new ArrayList<>();
                 items.add(item);
                 sortedResult.put(label, items);
             }
@@ -211,13 +211,13 @@ public class DocumentationComponent extends DefaultComponent implements Document
                 + DocumentationItem.PROP_DOCUMENTATION_ID + ", dc:modified";
         List<DocumentModel> docs = session.query(query);
 
-        Map<String, List<DocumentationItem>> sortMap = new HashMap<String, List<DocumentationItem>>();
+        Map<String, List<DocumentationItem>> sortMap = new HashMap<>();
         for (DocumentModel doc : docs) {
             DocumentationItem item = doc.getAdapter(DocumentationItem.class);
 
             List<DocumentationItem> alternatives = sortMap.get(item.getId());
             if (alternatives == null) {
-                alternatives = new ArrayList<DocumentationItem>();
+                alternatives = new ArrayList<>();
                 alternatives.add(item);
                 sortMap.put(item.getId(), alternatives);
             } else {
@@ -225,7 +225,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
             }
         }
 
-        List<DocumentationItem> result = new ArrayList<DocumentationItem>();
+        List<DocumentationItem> result = new ArrayList<>();
 
         for (String documentationId : sortMap.keySet()) {
             DocumentationItem bestDoc = findBestMatch(nxItem, sortMap.get(documentationId));
@@ -246,10 +246,9 @@ public class DocumentationComponent extends DefaultComponent implements Document
     }
 
     @Override
-    public List<DocumentationItem> findDocumentationItemVariants(CoreSession session, DocumentationItem item)
-            {
+    public List<DocumentationItem> findDocumentationItemVariants(CoreSession session, DocumentationItem item) {
 
-        List<DocumentationItem> result = new ArrayList<DocumentationItem>();
+        List<DocumentationItem> result = new ArrayList<>();
         List<DocumentModel> docs = findDocumentModelVariants(session, item);
 
         for (DocumentModel doc : docs) {
@@ -265,8 +264,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
         return result;
     }
 
-    public List<DocumentModel> findDocumentModelVariants(CoreSession session, DocumentationItem item)
-            {
+    public List<DocumentModel> findDocumentModelVariants(CoreSession session, DocumentationItem item) {
         String id = item.getId();
         String type = item.getTargetType();
         String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME + " WHERE "
@@ -279,8 +277,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
 
     @Override
     public DocumentationItem createDocumentationItem(CoreSession session, NuxeoArtifact item, String title,
-            String content, String type, List<String> applicableVersions, boolean approved, String renderingType)
-            {
+            String content, String type, List<String> applicableVersions, boolean approved, String renderingType) {
 
         DocumentModel doc = session.createDocumentModel(DocumentationItem.TYPE_NAME);
 
@@ -336,11 +333,11 @@ public class DocumentationComponent extends DefaultComponent implements Document
         doc.setPropertyValue(DocumentationItem.PROP_RENDERING_TYPE, item.getRenderingType());
         doc.setPropertyValue(DocumentationItem.PROP_APPLICABLE_VERSIONS, (Serializable) item.getApplicableVersion());
 
-        List<Map<String, Serializable>> atts = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> atts = new ArrayList<>();
         Map<String, String> attData = item.getAttachments();
         if (attData != null && attData.size() > 0) {
             for (String fileName : attData.keySet()) {
-                Map<String, Serializable> fileItem = new HashMap<String, Serializable>();
+                Map<String, Serializable> fileItem = new HashMap<>();
                 Blob blob = Blobs.createBlob(attData.get(fileName));
                 blob.setFilename(fileName);
 
@@ -356,15 +353,14 @@ public class DocumentationComponent extends DefaultComponent implements Document
     }
 
     @Override
-    public DocumentationItem updateDocumentationItem(CoreSession session, DocumentationItem docItem)
-            {
+    public DocumentationItem updateDocumentationItem(CoreSession session, DocumentationItem docItem) {
 
         DocumentModel existingDoc = session.getDocument(new IdRef(docItem.getUUID()));
         DocumentationItem existingDocItem = existingDoc.getAdapter(DocumentationItem.class);
 
         List<String> applicableVersions = docItem.getApplicableVersion();
         List<String> existingApplicableVersions = existingDocItem.getApplicableVersion();
-        List<String> discardedVersion = new ArrayList<String>();
+        List<String> discardedVersion = new ArrayList<>();
 
         for (String version : existingApplicableVersions) {
             if (!applicableVersions.contains(version)) {
@@ -383,7 +379,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
             }
             newName = IdUtils.generateId(newName, "-", true, 100);
 
-            DocumentModel discardedDoc = session.copy(existingDoc.getRef(), existingDoc.getParentRef(), newName);
+            DocumentModel discardedDoc = session.copy(existingDoc.getRef(), existingDoc.getParentRef(), newName, new CoreSession.CopyOption[0]);
             discardedDoc.setPropertyValue(DocumentationItem.PROP_APPLICABLE_VERSIONS, (Serializable) discardedVersion);
 
             discardedDoc = session.saveDocument(discardedDoc);
@@ -398,14 +394,14 @@ public class DocumentationComponent extends DefaultComponent implements Document
     protected List<DocumentModel> listCategories() {
         DirectoryService dm = Framework.getService(DirectoryService.class);
         try (Session session = dm.open(DIRECTORY_NAME)) {
-            return session.query(Collections.<String, Serializable> emptyMap(), null,
+            return session.query(Collections.<String, Serializable>emptyMap(), null,
                     Collections.singletonMap("ordering", "ASC"));
         }
     }
 
     @Override
     public List<String> getCategoryKeys() {
-        List<String> categories = new ArrayList<String>();
+        List<String> categories = new ArrayList<>();
         for (DocumentModel entry : listCategories()) {
             categories.add(entry.getId());
         }
@@ -414,7 +410,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
 
     @Override
     public Map<String, String> getCategories() {
-        Map<String, String> categories = new LinkedHashMap<String, String>();
+        Map<String, String> categories = new LinkedHashMap<>();
         if (!Framework.isTestModeSet()) {
             for (DocumentModel entry : listCategories()) {
                 String value = (String) entry.getProperty("vocabulary", "label");
@@ -484,7 +480,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
 
         Map<String, List<DocumentationItem>> itemsByCat = listDocumentationItems(session,
                 DefaultDocumentationType.DESCRIPTION.getValue(), targetType);
-        Map<String, DocumentationItem> result = new HashMap<String, DocumentationItem>();
+        Map<String, DocumentationItem> result = new HashMap<>();
 
         if (itemsByCat.size() > 0) {
             String labelKey = itemsByCat.keySet().iterator().next();

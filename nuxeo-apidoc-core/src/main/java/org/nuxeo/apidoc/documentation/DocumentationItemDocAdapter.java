@@ -54,7 +54,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
             return (List<String>) doc.getPropertyValue(PROP_APPLICABLE_VERSIONS);
         } catch (PropertyException e) {
             log.error("Error while reading applicable version", e);
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
     }
 
@@ -184,6 +184,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
         return getUUID();
     }
 
+    @Override
     public boolean isReadOnly() {
         return false;
     }

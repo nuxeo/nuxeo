@@ -133,10 +133,12 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
         return s1.compareTo(s2);
     }
 
+    @Override
     public String getOperationClass() {
         return operationClass;
     }
 
+    @Override
     public String getContributingComponent() {
         return contributingComponent;
     }

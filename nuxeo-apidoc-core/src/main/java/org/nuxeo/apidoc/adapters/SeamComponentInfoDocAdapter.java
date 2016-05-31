@@ -93,8 +93,7 @@ public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter imp
         return getClassName().compareTo(o.getClassName());
     }
 
-    public static SeamComponentInfo create(SeamComponentInfo sci, CoreSession session, String containerPath)
-            {
+    public static SeamComponentInfo create(SeamComponentInfo sci, CoreSession session, String containerPath) {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 

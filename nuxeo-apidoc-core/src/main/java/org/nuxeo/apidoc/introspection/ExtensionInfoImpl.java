@@ -123,6 +123,7 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         return component.getHierarchyPath() + "/" + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId();
     }
 
+    @Override
     public List<ContributionItem> getContributionItems() {
         try {
             return XMLContributionParser.extractContributionItems(getXml());
@@ -132,6 +133,7 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
         }
     }
 
+    @Override
     public ComponentInfo getComponent() {
         return component;
     }

@@ -35,7 +35,7 @@ import org.nuxeo.apidoc.introspection.SeamComponentInfoImpl;
 public class SeamRuntimeIntrospector {
 
     protected static List<String> listAllComponentsNames() {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         if (Contexts.isApplicationContextActive()) {
             for (String name : Contexts.getApplicationContext().getNames()) {
                 if (name.endsWith(".component")) {
@@ -67,7 +67,7 @@ public class SeamRuntimeIntrospector {
 
     protected static synchronized List<SeamComponentInfo> listNuxeoComponents() {
         if (components == null) {
-            components = new ArrayList<SeamComponentInfo>();
+            components = new ArrayList<>();
             for (String cName : listAllComponentsNames()) {
                 SeamComponentInfoImpl desc = new SeamComponentInfoImpl();
                 Component comp = Component.forName(cName);

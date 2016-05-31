@@ -75,7 +75,8 @@ public interface DocumentationItem extends Comparable<DocumentationItem> {
     String getTarget();
 
     /**
-     * Gets the Type of the target documented artifact (NXBundle, NXComponent ...).
+     * Gets the Type of the target documented artifact (NXBundle, NXComponent
+     * ...).
      */
     String getTargetType();
 
@@ -105,7 +106,8 @@ public interface DocumentationItem extends Comparable<DocumentationItem> {
     boolean isPlaceHolder();
 
     /**
-     * Return the id used by quick editor (can contains a real UUID for existing doc or an artifact id for new one).
+     * Return the id used by quick editor (can contains a real UUID for existing
+     * doc or an artifact id for new one).
      */
     String getEditId();
 

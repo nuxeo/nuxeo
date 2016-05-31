@@ -58,9 +58,9 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
         DocumentationService ds = Framework.getLocalService(DocumentationService.class);
         List<DocumentationItem> docItems = ds.findDocumentItems(session, item);
         Map<String, String> categories = getCategories();
-        Map<String, List<DocumentationItem>> result = new LinkedHashMap<String, List<DocumentationItem>>();
+        Map<String, List<DocumentationItem>> result = new LinkedHashMap<>();
         // put categories in result in same order
-        List<String> empty = new ArrayList<String>();
+        List<String> empty = new ArrayList<>();
         for (String catLabel : categories.values()) {
             result.put(catLabel, new ArrayList<DocumentationItem>());
             empty.add(catLabel);
@@ -189,7 +189,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
 
             @Override
             public Map<String, String> getAttachments() {
-                return new HashMap<String, String>();
+                return new HashMap<>();
             }
 
             @Override
@@ -202,6 +202,7 @@ public class AssociatedDocumentsImpl implements AssociatedDocuments {
                 return "placeholder_" + item.getId();
             }
 
+            @Override
             public boolean isReadOnly() {
                 return true;
             }

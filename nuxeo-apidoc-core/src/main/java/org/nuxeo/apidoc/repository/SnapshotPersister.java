@@ -154,7 +154,7 @@ public class SnapshotPersister {
     }
 
     public DistributionSnapshot persist(DistributionSnapshot snapshot, CoreSession session, String label,
-                                        SnapshotFilter filter, Map<String, Serializable> properties) {
+            SnapshotFilter filter, Map<String, Serializable> properties) {
 
         RepositoryDistributionSnapshot distribContainer = createDistributionDoc(snapshot, session, label, properties);
 
@@ -207,7 +207,7 @@ public class SnapshotPersister {
     public void persistOperations(DistributionSnapshot snapshot, List<OperationInfo> operations, CoreSession session,
             String label, DocumentModel parent, SnapshotFilter filter) {
         for (OperationInfo op : operations) {
-            if (filter == null || (op instanceof OperationInfoImpl && filter.includeOperation((OperationInfoImpl) op))) {
+            if (filter == null || op instanceof OperationInfoImpl && filter.includeOperation((OperationInfoImpl) op)) {
                 persistOperation(snapshot, op, session, label, parent);
             }
         }
@@ -338,7 +338,7 @@ public class SnapshotPersister {
     }
 
     protected RepositoryDistributionSnapshot createDistributionDoc(DistributionSnapshot snapshot, CoreSession session,
-                                                                   String label, Map<String, Serializable> properties) {
+            String label, Map<String, Serializable> properties) {
         return RepositoryDistributionSnapshot.create(snapshot, session, getDistributionRoot(session).getPathAsString(),
                 label, properties);
     }

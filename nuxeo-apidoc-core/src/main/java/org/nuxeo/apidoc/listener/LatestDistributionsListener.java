@@ -34,8 +34,8 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
- * Listener used to keep only one latestLTS, or latestFT When a Distribution is created or modified with the flag; it
- * makes it atomic.
+ * Listener used to keep only one latestLTS, or latestFT When a Distribution is
+ * created or modified with the flag; it makes it atomic.
  *
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 8.3
@@ -64,12 +64,12 @@ public class LatestDistributionsListener implements EventListener {
 
             String query = String.format(DISTRIBUTION_QUERY, TYPE_NAME, flag);
             session.query(query)
-                   .stream()
-                   .filter(doc -> srcDoc.getId() == null || !doc.getId().equals(srcDoc.getId()))
-                   .forEach(doc -> {
-                       doc.setPropertyValue(flag, false);
-                       session.saveDocument(doc);
-                   });
+                    .stream()
+                    .filter(doc -> srcDoc.getId() == null || !doc.getId().equals(srcDoc.getId()))
+                    .forEach(doc -> {
+                        doc.setPropertyValue(flag, false);
+                        session.saveDocument(doc);
+                    });
         });
     }
 

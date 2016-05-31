@@ -35,8 +35,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 
 public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements BundleInfo {
 
-    public static BundleInfoDocAdapter create(BundleInfo bundleInfo, CoreSession session, String containerPath)
-            {
+    public static BundleInfoDocAdapter create(BundleInfo bundleInfo, CoreSession session, String containerPath) {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName("bundle-" + bundleInfo.getId());
@@ -85,7 +84,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
 
     @Override
     public Collection<ComponentInfo> getComponents() {
-        List<ComponentInfo> components = new ArrayList<ComponentInfo>();
+        List<ComponentInfo> components = new ArrayList<>();
         List<DocumentModel> children = getCoreSession().getChildren(doc.getRef());
         for (DocumentModel child : children) {
             ComponentInfo comp = child.getAdapter(ComponentInfo.class);

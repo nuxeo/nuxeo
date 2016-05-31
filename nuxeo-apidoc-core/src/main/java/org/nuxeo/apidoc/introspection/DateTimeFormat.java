@@ -41,7 +41,8 @@ public class DateTimeFormat {
     /**
      * Parse the serialized string form into a java.util.Date
      *
-     * @param value The serialized string form of the date
+     * @param value
+     *            The serialized string form of the date
      * @return The created java.util.Date
      */
     public static Date parse(String value) {
@@ -54,7 +55,8 @@ public class DateTimeFormat {
         }
     }
 
-    private static final Pattern PATTERN = Pattern.compile("(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:[Tt](?:(\\d{2}))?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{3}))?)?([Zz])?(?:([+-])(\\d{2}):(\\d{2}))?");
+    private static final Pattern PATTERN = Pattern.compile(
+            "(\\d{4})(?:-(\\d{2}))?(?:-(\\d{2}))?(?:[Tt](?:(\\d{2}))?(?::(\\d{2}))?(?::(\\d{2}))?(?:\\.(\\d{3}))?)?([Zz])?(?:([+-])(\\d{2}):(\\d{2}))?");
 
     public static String abderaFormat(Date date) {
         StringBuilder sb = new StringBuilder();

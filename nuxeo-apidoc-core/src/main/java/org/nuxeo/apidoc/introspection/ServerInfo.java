@@ -51,7 +51,6 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.Environment;
@@ -62,14 +61,14 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
-
 import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * The entry point to the server runtime introspection To build a description of the current running server you need to
- * create a {@link ServerInfo} object using the method {@link #build(String, String)}.
+ * The entry point to the server runtime introspection To build a description of
+ * the current running server you need to create a {@link ServerInfo} object
+ * using the method {@link #build(String, String)}.
  * <p>
  * Example
  *
@@ -77,15 +76,18 @@ import org.xml.sax.SAXException;
  * ServerInfo info = ServerInfo.build();
  * </pre>
  *
- * The server name and version will be fetched from the runtime properties: {@link Environment#DISTRIBUTION_NAME} and
- * {@link Environment#DISTRIBUTION_VERSION} If you want to use another name and version just call
- * {@link #build(String, String)} instead to build your server information.
+ * The server name and version will be fetched from the runtime properties:
+ * {@link Environment#DISTRIBUTION_NAME} and
+ * {@link Environment#DISTRIBUTION_VERSION} If you want to use another name and
+ * version just call {@link #build(String, String)} instead to build your server
+ * information.
  * <p>
- * After building a <code>ServerInfo</code> object you can start browsing the bundles deployed on the server by calling
- * {@link #getBundles()} or fetch a specific bundle given its symbolic name {@link #getBundle(String)}.
+ * After building a <code>ServerInfo</code> object you can start browsing the
+ * bundles deployed on the server by calling {@link #getBundles()} or fetch a
+ * specific bundle given its symbolic name {@link #getBundle(String)}.
  * <p>
- * To write down the server information as XML use {@link #toXML(Writer)} and to read it back use
- * {@link #fromXML(Reader)}.
+ * To write down the server information as XML use {@link #toXML(Writer)} and to
+ * read it back use {@link #fromXML(Reader)}.
  * <p>
  * Example:
  *

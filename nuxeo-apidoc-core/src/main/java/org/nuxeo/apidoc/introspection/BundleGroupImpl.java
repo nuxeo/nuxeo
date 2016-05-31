@@ -35,13 +35,13 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
     protected final String name;
 
-    protected final List<BundleGroup> subGroups = new ArrayList<BundleGroup>();
+    protected final List<BundleGroup> subGroups = new ArrayList<>();
 
-    protected final List<String> bundleIds = new ArrayList<String>();
+    protected final List<String> bundleIds = new ArrayList<>();
 
     protected final String version;
 
-    protected final List<String> parentIds = new ArrayList<String>();
+    protected final List<String> parentIds = new ArrayList<>();
 
     protected Map<String, ResourceDocumentationItem> liveDoc;
 
@@ -112,7 +112,7 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
     public void addLiveDoc(Map<String, ResourceDocumentationItem> newLiveDoc) {
         if (liveDoc == null) {
-            liveDoc = new HashMap<String, ResourceDocumentationItem>();
+            liveDoc = new HashMap<>();
         }
         if (newLiveDoc != null) {
             for (String key : newLiveDoc.keySet()) {

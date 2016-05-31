@@ -18,8 +18,6 @@
  */
 package org.nuxeo.apidoc.search;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +48,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
@@ -119,7 +116,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
 
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(query).limit(-1));
-        List<DocumentationItem> result = new ArrayList<DocumentationItem>();
+        List<DocumentationItem> result = new ArrayList<>();
         for (DocumentModel doc : docs) {
             DocumentationItem docItem = doc.getAdapter(DocumentationItem.class);
             if (docItem != null) {
@@ -168,7 +165,7 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
             }
         }
 
-        List<ArtifactWithWeight> artifacts = new ArrayList<ArtifactWithWeight>(sortMap.values());
+        List<ArtifactWithWeight> artifacts = new ArrayList<>(sortMap.values());
         Collections.sort(artifacts);
 
         for (ArtifactWithWeight item : artifacts) {

@@ -118,7 +118,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     @Override
     public List<Param> getParams() {
         List<Map<String, Serializable>> maps = (List<Map<String, Serializable>>) doc.getPropertyValue(PROP_PARAMS);
-        List<Param> params = new ArrayList<Param>();
+        List<Param> params = new ArrayList<>();
         if (maps != null) {
             for (Map<String, Serializable> map : maps) {
                 Param p = new Param();
@@ -170,9 +170,9 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         doc.setPropertyValue(PROP_SINCE, oi.getSince());
         doc.setPropertyValue(PROP_OP_CLASS, oi.getOperationClass());
         doc.setPropertyValue(PROP_CONTRIBUTING_COMPONENT, oi.getContributingComponent());
-        List<Map<String, Serializable>> params = new ArrayList<Map<String, Serializable>>();
+        List<Map<String, Serializable>> params = new ArrayList<>();
         for (Param p : oi.getParams()) {
-            Map<String, Serializable> map = new HashMap<String, Serializable>();
+            Map<String, Serializable> map = new HashMap<>();
             map.put(PROP_PARAM_NAME, p.getName());
             map.put(PROP_PARAM_TYPE, p.getType());
             map.put(PROP_PARAM_WIDGET, p.getWidget());

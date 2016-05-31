@@ -52,11 +52,19 @@ public class DocumentationHelper {
     }
 
     /**
-     * Transforms Nuxeo extension point {@code <documentation>} content into HTML.
+     * Transforms Nuxeo extension point {@code <documentation>} content into
+     * HTML.
      * <p>
      * <ul>
-     * <li>standalone newlines are turned into {@code <br/>}</li>
-     * <li>{@code <code>} blocks are turned into a {@code <div class="code">} with a {@code <pre>}</li>
+     * <li>standalone newlines are turned into {@code <br/>
+     * }</li>
+     * <li>{@code <code>} blocks are turned into a {@code <div class="code">}
+     * with a {@code
+     *
+     * 
+    
+    <pre>
+     * }</li>
      * <li>{@code @author} blocks are removed</li>
      * </ul>
      */
@@ -69,7 +77,7 @@ public class DocumentationHelper {
             throw new RuntimeException("Cannot find HtmlSanitizerService");
         }
 
-        LinkedList<String> lines = new LinkedList<String>();
+        LinkedList<String> lines = new LinkedList<>();
         lines.add(P);
         boolean newline = true;
         boolean firstcode = false;

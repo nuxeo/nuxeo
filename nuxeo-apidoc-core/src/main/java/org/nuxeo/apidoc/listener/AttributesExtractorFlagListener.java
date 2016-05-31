@@ -36,7 +36,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * Listener triggered on "aboutTo*" events to let the other lister
- * org.nuxeo.apidoc.listener.AttributeExtractorWorkerListener to trigger Worker when blob are ready to be extracted.
+ * org.nuxeo.apidoc.listener.AttributeExtractorWorkerListener to trigger Worker
+ * when blob are ready to be extracted.
  *
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 8.3
@@ -60,7 +61,8 @@ public class AttributesExtractorFlagListener implements EventListener {
         }
 
         Property fileProperty = doc.getProperty("file:content");
-        // Handling "migration case", when a blob is present but without any attributes.
+        // Handling "migration case", when a blob is present but without any
+        // attributes.
         boolean force = fileProperty.getValue() != null && doc.getPropertyValue(ATTRIBUTES_PROPERTY) == null;
         if (!(force || fileProperty.isDirty() || ABOUT_TO_CREATE.equals(event.getName()))) {
             return;
@@ -70,10 +72,13 @@ public class AttributesExtractorFlagListener implements EventListener {
         if (blob == null) {
             doc.setPropertyValue(ATTRIBUTES_PROPERTY, null);
         } else {
-            // Property will be read by org.nuxeo.apidoc.listener.AttributeExtractorWorkerListener to trigger worker
+            // Property will be read by
+            // org.nuxeo.apidoc.listener.AttributeExtractorWorkerListener to
+            // trigger worker
             // when
             // everything is good.
-            // Worker cannot be triggered on "aboutTo*" events, and dirty props cannont be checked post "aboutTo*"
+            // Worker cannot be triggered on "aboutTo*" events, and dirty props
+            // cannont be checked post "aboutTo*"
             // events
             ctx.setProperty(EXTRACT_XML_ATTRIBUTES_NEEDED, true);
         }

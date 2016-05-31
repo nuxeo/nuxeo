@@ -18,10 +18,10 @@
  */
 package org.nuxeo.apidoc.test;
 
-import org.junit.Before;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 

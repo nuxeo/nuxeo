@@ -31,7 +31,8 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Listener that trigger a Worker to extract XML Attributes and store them in a property that will be indexed.
+ * Listener that trigger a Worker to extract XML Attributes and store them in a
+ * property that will be indexed.
  *
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 8.3

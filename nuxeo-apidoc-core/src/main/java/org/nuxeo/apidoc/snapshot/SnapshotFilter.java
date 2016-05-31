@@ -28,9 +28,9 @@ public class SnapshotFilter {
 
     protected final String bundleGroupName;
 
-    protected final List<String> bundlePrefixes = new ArrayList<String>();
+    protected final List<String> bundlePrefixes = new ArrayList<>();
 
-    protected final List<String> packagesPrefixes = new ArrayList<String>();
+    protected final List<String> packagesPrefixes = new ArrayList<>();
 
     public SnapshotFilter(String groupName) {
         bundleGroupName = groupName;

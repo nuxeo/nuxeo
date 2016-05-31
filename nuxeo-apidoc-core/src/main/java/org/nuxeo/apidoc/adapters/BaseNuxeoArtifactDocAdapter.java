@@ -18,6 +18,9 @@
  */
 package org.nuxeo.apidoc.adapters;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
@@ -30,16 +33,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 
-import java.util.Collections;
-import java.util.List;
-
 public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     protected static final Log log = LogFactory.getLog(BaseNuxeoArtifactDocAdapter.class);
 
     protected final DocumentModel doc;
 
-    protected static final ThreadLocal<CoreSession> localCoreSession = new ThreadLocal<CoreSession>();
+    protected static final ThreadLocal<CoreSession> localCoreSession = new ThreadLocal<>();
 
     public static void setLocalCoreSession(CoreSession session) {
         localCoreSession.set(session);

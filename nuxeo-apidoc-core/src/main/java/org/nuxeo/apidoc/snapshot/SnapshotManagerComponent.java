@@ -124,7 +124,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     @Override
     public Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session) {
 
-        Map<String, DistributionSnapshot> persistentSnapshots = new HashMap<String, DistributionSnapshot>();
+        Map<String, DistributionSnapshot> persistentSnapshots = new HashMap<>();
 
         for (DistributionSnapshot snap : readPersistentSnapshots(session)) {
             persistentSnapshots.put(snap.getKey(), snap);
@@ -135,14 +135,14 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public List<String> getPersistentSnapshotNames(CoreSession session) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.addAll(getPersistentSnapshots(session).keySet());
         return names;
     }
 
     @Override
     public List<DistributionSnapshotDesc> getAvailableDistributions(CoreSession session) {
-        List<DistributionSnapshotDesc> names = new ArrayList<DistributionSnapshotDesc>();
+        List<DistributionSnapshotDesc> names = new ArrayList<>();
         names.addAll(getPersistentSnapshots(session).values());
         names.add(0, getRuntimeSnapshot());
         return names;
@@ -159,7 +159,8 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     @Override
-    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties, SnapshotFilter filter) {
+    public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties,
+            SnapshotFilter filter) {
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
         DistributionSnapshot snap = persister.persist(liveSnapshot, session, name, filter, properties);
         addPersistentSnapshot(snap.getKey(), snap);
@@ -168,9 +169,9 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem) {
-        List<String> versions = new ArrayList<String>();
+        List<String> versions = new ArrayList<>();
 
-        List<DistributionSnapshot> distribs = new ArrayList<DistributionSnapshot>();
+        List<DistributionSnapshot> distribs = new ArrayList<>();
         distribs.addAll(getPersistentSnapshots(session).values());
         distribs.add(getRuntimeSnapshot());
 

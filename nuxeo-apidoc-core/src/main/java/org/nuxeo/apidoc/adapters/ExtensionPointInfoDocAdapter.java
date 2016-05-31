@@ -39,8 +39,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 
 public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionPointInfo {
 
-    public static ExtensionPointInfoDocAdapter create(ExtensionPointInfo xpi, CoreSession session, String containerPath)
-            {
+    public static ExtensionPointInfoDocAdapter create(ExtensionPointInfo xpi, CoreSession session, String containerPath) {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -95,7 +94,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter im
 
     @Override
     public Collection<ExtensionInfo> getExtensions() {
-        List<ExtensionInfo> result = new ArrayList<ExtensionInfo>();
+        List<ExtensionInfo> result = new ArrayList<>();
         // find root doc for distribution
         DocumentModel dist = doc;
         while (!DistributionSnapshot.TYPE_NAME.equals(dist.getType())) {

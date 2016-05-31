@@ -109,7 +109,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     @Override
     public Collection<ExtensionPointInfo> getExtensionPoints() {
-        List<ExtensionPointInfo> xps = new ArrayList<ExtensionPointInfo>();
+        List<ExtensionPointInfo> xps = new ArrayList<>();
         String query = QueryHelper.select(ExtensionPointInfo.TYPE_NAME, doc);
         DocumentModelList docs = getCoreSession().query(query);
         for (DocumentModel child : docs) {
@@ -123,7 +123,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     @Override
     public Collection<ExtensionInfo> getExtensions() {
-        List<ExtensionInfo> contribs = new ArrayList<ExtensionInfo>();
+        List<ExtensionInfo> contribs = new ArrayList<>();
         String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, doc);
         DocumentModelList docs = getCoreSession().query(query);
         for (DocumentModel child : docs) {
@@ -207,7 +207,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     @Override
     public List<ServiceInfo> getServices() {
-        List<ServiceInfo> result = new ArrayList<ServiceInfo>();
+        List<ServiceInfo> result = new ArrayList<>();
         String query = QueryHelper.select(ServiceInfo.TYPE_NAME, doc);
         DocumentModelList docs = getCoreSession().query(query);
         for (DocumentModel siDoc : docs) {

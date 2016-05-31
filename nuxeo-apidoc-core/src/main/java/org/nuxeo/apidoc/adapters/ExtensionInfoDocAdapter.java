@@ -41,8 +41,7 @@ import org.nuxeo.runtime.model.ComponentName;
 
 public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionInfo {
 
-    public static ExtensionInfoDocAdapter create(ExtensionInfo xi, CoreSession session, String containerPath)
-            {
+    public static ExtensionInfoDocAdapter create(ExtensionInfo xi, CoreSession session, String containerPath) {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
@@ -144,6 +143,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         return path.replace(toReplace, "/" + VirtualNodesConsts.Contributions_VNODE_NAME + "/" + getId());
     }
 
+    @Override
     public List<ContributionItem> getContributionItems() {
         try {
             return XMLContributionParser.extractContributionItems(getXml());

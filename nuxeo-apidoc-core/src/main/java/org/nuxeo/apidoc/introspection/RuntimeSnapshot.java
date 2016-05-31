@@ -19,7 +19,6 @@
 package org.nuxeo.apidoc.introspection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,35 +55,35 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     protected Date created;
 
-    protected final List<String> bundlesIds = new ArrayList<String>();
+    protected final List<String> bundlesIds = new ArrayList<>();
 
-    protected final List<String> javaComponentsIds = new ArrayList<String>();
+    protected final List<String> javaComponentsIds = new ArrayList<>();
 
-    protected final Map<String, String> components2Bundles = new HashMap<String, String>();
+    protected final Map<String, String> components2Bundles = new HashMap<>();
 
-    protected final Map<String, String> services2Components = new HashMap<String, String>();
+    protected final Map<String, String> services2Components = new HashMap<>();
 
-    protected final Map<String, ExtensionPointInfo> extensionPoints = new HashMap<String, ExtensionPointInfo>();
+    protected final Map<String, ExtensionPointInfo> extensionPoints = new HashMap<>();
 
-    protected final Map<String, ExtensionInfo> contributions = new HashMap<String, ExtensionInfo>();
+    protected final Map<String, ExtensionInfo> contributions = new HashMap<>();
 
-    protected final Map<String, List<String>> mavenGroups = new HashMap<String, List<String>>();
+    protected final Map<String, List<String>> mavenGroups = new HashMap<>();
 
-    protected final Map<String, List<String>> mavenSubGroups = new HashMap<String, List<String>>();
+    protected final Map<String, List<String>> mavenSubGroups = new HashMap<>();
 
-    protected final List<BundleGroup> bundleGroups = new ArrayList<BundleGroup>();
+    protected final List<BundleGroup> bundleGroups = new ArrayList<>();
 
     protected boolean seamInitialized = false;
 
-    protected List<SeamComponentInfo> seamComponents = new ArrayList<SeamComponentInfo>();
+    protected List<SeamComponentInfo> seamComponents = new ArrayList<>();
 
     protected boolean opsInitialized = false;
 
-    protected final List<OperationInfo> operations = new ArrayList<OperationInfo>();
+    protected final List<OperationInfo> operations = new ArrayList<>();
 
     protected JavaDocHelper jdocHelper;
 
-    protected final List<Class<?>> spi = new ArrayList<Class<?>>();
+    protected final List<Class<?>> spi = new ArrayList<>();
 
     public RuntimeSnapshot() {
         buildServerInfo();
@@ -145,14 +144,14 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         }
 
         // post process bundle groups
-        List<String> mvnGroupNames = new ArrayList<String>();
+        List<String> mvnGroupNames = new ArrayList<>();
         mvnGroupNames.addAll(mavenGroups.keySet());
 
         for (String mvnGroupName : mvnGroupNames) {
             List<String> artifactIds = mavenGroups.get(mvnGroupName);
             Collections.sort(artifactIds);
 
-            List<String> subGroups = new ArrayList<String>();
+            List<String> subGroups = new ArrayList<>();
 
             for (String id : artifactIds) {
                 if (id.endsWith(".api")) {
@@ -170,7 +169,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                 // no need to split the maven group into subGroups
             } else {
                 for (String grp : subGroups) {
-                    List<String> grpArtifactIds = new ArrayList<String>();
+                    List<String> grpArtifactIds = new ArrayList<>();
                     for (String aid : artifactIds) {
                         if (aid.startsWith(grp) || ("grp:" + aid).startsWith(grp)) {
                             grpArtifactIds.add(aid);
@@ -243,7 +242,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public List<String> getBundleIds() {
-        List<String> bundlesIds = new ArrayList<String>();
+        List<String> bundlesIds = new ArrayList<>();
 
         for (BundleInfoImpl info : serverInfo.getBundles()) {
             bundlesIds.add(info.getId());
@@ -260,7 +259,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public List<String> getComponentIds() {
-        List<String> componentsIds = new ArrayList<String>();
+        List<String> componentsIds = new ArrayList<>();
         componentsIds.addAll(components2Bundles.keySet());
         Collections.sort(componentsIds);
         return componentsIds;
@@ -284,7 +283,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public List<String> getServiceIds() {
-        List<String> serviceIds = new ArrayList<String>();
+        List<String> serviceIds = new ArrayList<>();
         serviceIds.addAll(services2Components.keySet());
         Collections.sort(serviceIds);
         return serviceIds;
@@ -292,7 +291,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public List<String> getExtensionPointIds() {
-        List<String> epIds = new ArrayList<String>();
+        List<String> epIds = new ArrayList<>();
         epIds.addAll(extensionPoints.keySet());
         Collections.sort(epIds);
         return epIds;
@@ -305,7 +304,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public List<String> getContributionIds() {
-        List<String> contribIds = new ArrayList<String>();
+        List<String> contribIds = new ArrayList<>();
         contribIds.addAll(contributions.keySet());
         Collections.sort(contribIds);
         return contribIds;
@@ -313,7 +312,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public List<ExtensionInfo> getContributions() {
-        List<ExtensionInfo> contribs = new ArrayList<ExtensionInfo>();
+        List<ExtensionInfo> contribs = new ArrayList<>();
         contribs.addAll(contributions.values());
         // TODO sort
         return contribs;
@@ -325,7 +324,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     }
 
     public List<String> getBundleGroupIds() {
-        List<String> grpIds = new ArrayList<String>();
+        List<String> grpIds = new ArrayList<>();
         grpIds.addAll(mavenGroups.keySet());
         Collections.sort(grpIds);
         return grpIds;
@@ -342,7 +341,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         if (res != null) {
             return res;
         } else {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
     }
 
@@ -388,7 +387,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public List<String> getXmlComponentIds() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         for (String cId : getComponentIds()) {
             if (!javaComponentsIds.contains(cId)) {
@@ -460,7 +459,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public List<String> getSeamComponentIds() {
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         for (SeamComponentInfo sci : getSeamComponents()) {
             ids.add(sci.getId());
         }

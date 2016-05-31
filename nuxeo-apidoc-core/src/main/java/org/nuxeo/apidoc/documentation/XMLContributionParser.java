@@ -41,7 +41,7 @@ public class XMLContributionParser {
 
         Element root = document.getRootElement();
 
-        for (Iterator i = root.elementIterator(); i.hasNext();) {
+        for (Iterator<?> i = root.elementIterator(); i.hasNext();) {
             Element element = (Element) i.next();
             if (!element.getName().equals("documentation")) {
                 ContributionItem fragment = parseContrib(element);
@@ -53,14 +53,14 @@ public class XMLContributionParser {
 
     public static List<ContributionItem> extractContributionItems(String xml) throws DocumentException {
 
-        List<ContributionItem> items = new ArrayList<ContributionItem>();
+        List<ContributionItem> items = new ArrayList<>();
 
         SAXReader reader = new SAXReader();
         Document document = reader.read(new StringReader(xml));
 
         Element root = document.getRootElement();
 
-        for (Iterator i = root.elementIterator(); i.hasNext();) {
+        for (Iterator<?> i = root.elementIterator(); i.hasNext();) {
             Element element = (Element) i.next();
             if (!element.getName().equals("documentation")) {
                 ContributionItem fragment = parseContrib(element);

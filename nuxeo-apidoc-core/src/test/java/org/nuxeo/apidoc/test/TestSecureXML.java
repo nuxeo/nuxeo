@@ -18,9 +18,9 @@
  */
 package org.nuxeo.apidoc.test;
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Test;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 
 public class TestSecureXML {

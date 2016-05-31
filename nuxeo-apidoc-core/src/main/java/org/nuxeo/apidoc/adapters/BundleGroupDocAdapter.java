@@ -33,8 +33,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 
 public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implements BundleGroup {
 
-    public static BundleGroupDocAdapter create(BundleGroup bundleGroup, CoreSession session, String containerPath)
-            {
+    public static BundleGroupDocAdapter create(BundleGroup bundleGroup, CoreSession session, String containerPath) {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName("bg-" + bundleGroup.getId());
@@ -63,7 +62,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
 
     @Override
     public List<String> getBundleIds() {
-        List<String> bundles = new ArrayList<String>();
+        List<String> bundles = new ArrayList<>();
         String query = QueryHelper.select(BundleInfo.TYPE_NAME, doc);
         DocumentModelList docs = getCoreSession().query(query);
         for (DocumentModel child : docs) {
@@ -86,7 +85,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
 
     @Override
     public List<BundleGroup> getSubGroups() {
-        List<BundleGroup> grps = new ArrayList<BundleGroup>();
+        List<BundleGroup> grps = new ArrayList<>();
         String query = QueryHelper.select(TYPE_NAME, doc);
         DocumentModelList docs = getCoreSession().query(query);
         for (DocumentModel child : docs) {

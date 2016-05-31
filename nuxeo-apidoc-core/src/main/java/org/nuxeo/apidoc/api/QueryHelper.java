@@ -21,7 +21,6 @@ package org.nuxeo.apidoc.api;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 
 /**
  * Helper to generate queries with proper escaping.
@@ -51,7 +50,8 @@ public class QueryHelper {
     }
 
     /**
-     * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString AND prop = value
+     * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString AND prop
+     * = value
      */
     public static String select(String type, DocumentModel doc, String prop, String value) {
         return select(type, doc) + " AND " + prop + " = " + NXQL.escapeString(value);

@@ -23,18 +23,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.apidoc.snapshot.DistributionSnapshot.PROP_LATEST_FT;
 import static org.nuxeo.apidoc.snapshot.DistributionSnapshot.PROP_LATEST_LTS;
-import static org.nuxeo.apidoc.snapshot.DistributionSnapshot.PROP_RELEASED;
-import static org.nuxeo.apidoc.snapshot.DistributionSnapshot.PROP_VERSION;
 import static org.nuxeo.apidoc.snapshot.DistributionSnapshot.TYPE_NAME;
-import static org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener.properties;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 
 import javax.inject.Inject;
 

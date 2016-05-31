@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.documentation.DocumentationComponent;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -39,8 +38,8 @@ public abstract class AbstractDocumentationItem implements DocumentationItem {
     @Override
     public int compareTo(DocumentationItem o) {
 
-        List<String> myVersions = new ArrayList<String>(getApplicableVersion());
-        List<String> otherVersions = new ArrayList<String>(o.getApplicableVersion());
+        List<String> myVersions = new ArrayList<>(getApplicableVersion());
+        List<String> otherVersions = new ArrayList<>(o.getApplicableVersion());
 
         Collections.sort(myVersions);
         Collections.sort(otherVersions);

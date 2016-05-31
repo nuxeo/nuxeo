@@ -120,7 +120,7 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem impleme
 
     @Override
     public Map<String, String> getAttachments() {
-        return new HashMap<String, String>();
+        return new HashMap<>();
     }
 
     @Override
@@ -133,6 +133,7 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem impleme
         return null;
     }
 
+    @Override
     public boolean isReadOnly() {
         return true;
     }
