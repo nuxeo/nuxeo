@@ -4,13 +4,6 @@
 
   <extension
     target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
-    point="exceptionhandler">
-    <exceptionHandler
-      class="org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoSecurityExceptionHandler" />
-  </extension>
-
-  <extension
-    target="org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService"
     point="errorhandlers">
     <errorHandlers bundle="messages" loggerName="nuxeo-error-log"
       defaultpage="/nuxeo_error.jsp">

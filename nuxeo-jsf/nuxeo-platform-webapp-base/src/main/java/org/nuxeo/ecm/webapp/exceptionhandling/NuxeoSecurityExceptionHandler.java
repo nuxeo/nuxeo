@@ -16,7 +16,7 @@
  * Contributors:
  *     ldoguin
  */
-package org.nuxeo.ecm.platform.web.common.exceptionhandling;
+package org.nuxeo.ecm.webapp.exceptionhandling;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -34,6 +34,8 @@ import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.DefaultNuxeoExceptionHandler;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
 
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.*;
@@ -100,16 +102,21 @@ public class NuxeoSecurityExceptionHandler extends DefaultNuxeoExceptionHandler 
             request.setAttribute(DISABLE_REDIRECT_REQUEST_KEY, true);
             baseURL = URIUtils.addParametersToURIQuery(baseURL, urlParameters);
             response.sendRedirect(baseURL);
-            FacesContext fContext = FacesContext.getCurrentInstance();
-            if (fContext != null) {
-                fContext.responseComplete();
-            } else {
-                log.error("Cannot set response complete: faces context is null");
-            }
+            responseComplete();
         } else {
             log.error("Cannot redirect to login page: response is already committed");
         }
         return true;
+    }
+
+    @Override
+    protected void responseComplete() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            facesContext.responseComplete();
+        } else {
+            log.error("Cannot set response complete: faces context is null");
+        }
     }
 
     protected PluggableAuthenticationService getAuthenticationService() throws ServletException {

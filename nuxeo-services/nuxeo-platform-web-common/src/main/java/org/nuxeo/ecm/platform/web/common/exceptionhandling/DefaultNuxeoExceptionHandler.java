@@ -26,7 +26,6 @@ import java.io.StringWriter;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import javax.faces.context.FacesContext;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -127,12 +126,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                     log.error("Cannot forward to error page, " + "no RequestDispatcher found for errorPage="
                             + errorPage + " handler=" + handler);
                 }
-                FacesContext fContext = FacesContext.getCurrentInstance();
-                if (fContext != null) {
-                    fContext.responseComplete();
-                } else {
-                    log.error("Cannot set response complete: faces context is null");
-                }
+                responseComplete();
             } else {
                 // do not throw an error, just log it: afterDispatch needs to
                 // be called, and sometimes the initial error is a
@@ -145,6 +139,9 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
         } catch (RuntimeException | IOException e) {
             throw new ServletException(e);
         }
+    }
+
+    protected void responseComplete() {
     }
 
     protected ErrorHandler getHandler(Throwable t) {
