@@ -12,7 +12,5 @@
   <ecm__ancestorIds>
     <nxml__item xsi:type="xs:string">00000000-0000-0000-0000-000000000000</nxml__item>
   </ecm__ancestorIds>
-  <tp__complexList>
-    <nxml__item />
-  </tp__complexList>
+  <tp__complexList />
 </document>

@@ -87,6 +87,7 @@ public class TestMarkLogicStateDeserializer extends AbstractSerializerTest {
         State state = MarkLogicStateDeserializer.deserialize(xml);
         assertNotNull(state);
         State expectedState = createStateWithEmptyList();
+        expectedState.remove("values");
         assertEquals(expectedState, state);
     }
 
@@ -120,6 +121,19 @@ public class TestMarkLogicStateDeserializer extends AbstractSerializerTest {
     }
 
     /*
+     * Test serialization of state issued from Gatling tests.
+     */
+    @Test
+    public void testStateWithEmptyState() throws Exception {
+        String xml = readFile("serializer/state-with-empty-state.xml");
+        State state = MarkLogicStateDeserializer.deserialize(xml);
+        assertNotNull(state);
+        State expectedState = createStateForStateWithEmptyState();
+        expectedState.remove("content");
+        assertEquals(expectedState, state);
+    }
+
+    /*
      * Test deserialization of state issued from TestDocument#testSetValueErrors2.
      */
     @Test
@@ -127,7 +141,8 @@ public class TestMarkLogicStateDeserializer extends AbstractSerializerTest {
         String xml = readFile("serializer/state-with-empty-state-in-list.xml");
         State state = MarkLogicStateDeserializer.deserialize(xml);
         assertNotNull(state);
-        State expectedState = createStateForStateWithEmptyMapInList();
+        State expectedState = createStateForStateWithEmptyStateInList();
+        expectedState.remove("tp:complexList");
         assertEquals(expectedState, state);
     }
 

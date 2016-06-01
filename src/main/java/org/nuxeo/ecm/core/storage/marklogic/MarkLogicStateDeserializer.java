@@ -94,8 +94,8 @@ final class MarkLogicStateDeserializer {
             default:
                 result = element.getText();
                 if (element.attribute(MarkLogicHelper.ATTRIBUTE_TYPE) == null && "".equals(result)) {
-                    // element is not xs:string type, so it's an empty list
-                    result = new ArrayList<>();
+                    // element is not xs:string type, so it's an empty list or an empty state
+                    result = null;
                 }
                 break;
             }

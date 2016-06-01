@@ -134,7 +134,17 @@ public abstract class AbstractSerializerTest extends AbstractTest {
         return expectedState;
     }
 
-    protected State createStateForStateWithEmptyMapInList() {
+    protected State createStateForStateWithEmptyState() {
+        State state = new State();
+        state.put(KEY_ID, "1b783a64-8789-4b8f-8fbc-4d25f5f6d4f4");
+        state.put(KEY_PRIMARY_TYPE, "Workspace");
+        state.put(KEY_NAME, "Bench_Gatling");
+        state.put("dc:description", "Gatling bench folder");
+        state.put("content", new State());
+        return state;
+    }
+
+    protected State createStateForStateWithEmptyStateInList() {
         State state = new State();
         state.put(KEY_ID, "326203a5-56fb-4ae7-8983-123b814c9388");
         state.put(KEY_PRIMARY_TYPE, "TestDocument");

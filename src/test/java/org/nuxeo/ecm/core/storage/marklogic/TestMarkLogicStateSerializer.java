@@ -121,15 +121,25 @@ public class TestMarkLogicStateSerializer extends AbstractSerializerTest {
     }
 
     /*
+     * Test serialization of state issued from Gatling tests.
+     */
+    @Test
+    public void testStateWithEmptyState() throws Exception {
+        State state = createStateForStateWithEmptyState();
+        String xml = MarkLogicStateSerializer.serialize(state);
+        assertNotNull(xml);
+        assertXMLFileAgainstString("serializer/state-with-empty-state.xml", xml);
+    }
+
+    /*
      * Test serialization of state issued from TestDocument#testSetValueErrors2.
      */
     @Test
     public void testStateWithEmptyStateInList() throws Exception {
-        State state = createStateForStateWithEmptyMapInList();
+        State state = createStateForStateWithEmptyStateInList();
         String xml = MarkLogicStateSerializer.serialize(state);
         assertNotNull(xml);
         assertXMLFileAgainstString("serializer/state-with-empty-state-in-list.xml", xml);
-
     }
 
 }

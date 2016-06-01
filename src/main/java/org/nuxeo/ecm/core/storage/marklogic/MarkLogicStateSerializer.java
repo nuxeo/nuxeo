@@ -66,13 +66,27 @@ final class MarkLogicStateSerializer {
         if (value == null) {
             result = Optional.empty();
         } else if (value instanceof State) {
-            result = Optional.of(serialize(key, (State) value));
+            State state = (State) value;
+            if (state.isEmpty()) {
+                result = Optional.empty();
+            } else {
+                result = Optional.of(serialize(key, state));
+            }
         } else if (value instanceof List) {
             @SuppressWarnings("unchecked")
             List<Object> values = (List<Object>) value;
-            result = Optional.of(serialize(key, values));
+            if (values.isEmpty()) {
+                result = Optional.empty();
+            } else {
+                result = Optional.of(serialize(key, values));
+            }
         } else if (value instanceof Object[]) {
-            result = Optional.of(serialize(key, Arrays.asList((Object[]) value)));
+            Object[] array = (Object[]) value;
+            if (array.length == 0) {
+                result = Optional.empty();
+            } else {
+                result = Optional.of(serialize(key, Arrays.asList(array)));
+            }
         } else {
             String nodeValue = serializeValue(value);
             Element element = DocumentHelper.createElement(MarkLogicHelper.serializeKey(key));
