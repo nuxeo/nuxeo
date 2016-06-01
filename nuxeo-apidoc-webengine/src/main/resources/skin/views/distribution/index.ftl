@@ -15,7 +15,7 @@
 <@block name="right">
 <div class="explorer-home">
 <div class="fullspace intro">
-  <a class="image-link" title="Relation between Bundles, Services, extension points, contributions, operations in Nuxeo Platform" href="${skinPath}/images/platform-explorer.png">
+  <a class="image-link" title="Relation between Bundles, Services, Extension Points, Contributions, Operations in Nuxeo Platform" href="${skinPath}/images/platform-explorer.png">
     <img src="${skinPath}/images/platform-explorer.png">
   </a>
   <p class="main">

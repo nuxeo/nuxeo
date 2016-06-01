@@ -18,7 +18,7 @@
   <table id="extensionPointsTable" class="tablesorter">
   <thead>
     <tr>
-      <th><@fulltextFilter "extension point" "filterContributions"/></th>
+      <th><@tableFilterArea "extension point"/></th>
     </tr>
   </thead>
   <tbody>
