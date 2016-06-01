@@ -22,7 +22,7 @@
   Explore services, extension points, contributions, operations of the Nuxeo Platform to build your own components.
   </p>
   <p class="second">
-  Nuxeo Platform provides Java Services declared inside components. Components are declared via XLM files. Services are configurable by an extension system.
+  The Nuxeo Platform provides Java Services declared inside components. Components are declared via XML files. Services are configurable by an extension system.
   </p>
   <#if Root.showCurrentDistribution()>
   <p class="second">
