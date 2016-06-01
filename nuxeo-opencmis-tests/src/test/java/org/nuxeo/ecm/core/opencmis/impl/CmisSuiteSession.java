@@ -1260,6 +1260,8 @@ public class CmisSuiteSession {
             fail("should throw RecoverableClientException");
         } catch (CmisInvalidArgumentException e) {
             // ok, this is what we get for a 400
+            // check message
+            assertEquals("bad name", e.getMessage());
         } catch (CmisRuntimeException e) {
             // check status code
             if (isHttp) {
@@ -1272,6 +1274,8 @@ public class CmisSuiteSession {
                     throw e;
                 }
             }
+            // check message
+            assertEquals("bad name", e.getMessage());
         }
     }
 

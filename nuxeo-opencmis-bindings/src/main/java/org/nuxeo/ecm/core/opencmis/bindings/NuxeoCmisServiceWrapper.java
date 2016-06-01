@@ -55,7 +55,7 @@ public class NuxeoCmisServiceWrapper extends ConformanceCmisServiceWrapper {
         } else if (e instanceof CmisBaseException) {
             return (CmisBaseException) e;
         } else if (e instanceof RecoverableClientException) {
-            return new CmisRuntimeException("error", e);
+            return new CmisRuntimeException(e.getMessage(), e);
         } else if (e instanceof QueryParseException) {
             return new CmisInvalidArgumentException(e.getMessage(), e);
         } else {
