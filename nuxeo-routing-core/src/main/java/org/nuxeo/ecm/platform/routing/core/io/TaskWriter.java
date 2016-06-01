@@ -72,9 +72,9 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
 
     public static final String FETCH_ACTORS = "actors";
 
-    public static final String FETCH_TARGET_DOCUMENT = "targetDocuments";
-
     public static final String TARGET_DOCUMENT_IDS = "targetDocumentIds";
+
+    public static final String FETCH_TARGET_DOCUMENT = TARGET_DOCUMENT_IDS;
 
     @Inject
     private SchemaManager schemaManager;
