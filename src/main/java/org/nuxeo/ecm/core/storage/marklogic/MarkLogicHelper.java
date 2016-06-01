@@ -103,6 +103,8 @@ final class MarkLogicHelper {
         public static ElementType getType(Class<?> clazz) {
             if (Boolean.class.isAssignableFrom(clazz)) {
                 return BOOLEAN;
+            } else if (Double.class.isAssignableFrom(clazz)) {
+                return DOUBLE;
             } else if (Long.class.isAssignableFrom(clazz) || Delta.class.isAssignableFrom(clazz)) {
                 return LONG;
             } else if (Calendar.class.isAssignableFrom(clazz) || DateTime.class.isAssignableFrom(clazz)) {

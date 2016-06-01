@@ -78,21 +78,28 @@ final class MarkLogicStateDeserializer {
             ElementType type = getElementType(element)
             // fallback on String
             .orElse(ElementType.STRING);
+            String text = element.getText();
             switch (type) {
             case BOOLEAN:
-                result = Boolean.parseBoolean(element.getText());
+                result = Boolean.parseBoolean(text);
                 break;
-            // Due to MarkLogic issue on replace+apply on number we need to handle xs:double type for Delta
             case DOUBLE:
+                // Due to MarkLogic issue on replace+apply on number we need to handle xs:double type for Delta
+                if (text.contains(".")) {
+                    result = Double.parseDouble(text);
+                } else {
+                    result = Long.parseLong(text);
+                }
+                break;
             case LONG:
-                result = Long.parseLong(element.getText());
+                result = Long.parseLong(text);
                 break;
             case CALENDAR:
-                result = MarkLogicHelper.deserializeCalendar(element.getText());
+                result = MarkLogicHelper.deserializeCalendar(text);
                 break;
             case STRING:
             default:
-                result = element.getText();
+                result = text;
                 if (element.attribute(MarkLogicHelper.ATTRIBUTE_TYPE) == null && "".equals(result)) {
                     // element is not xs:string type, so it's an empty list or an empty state
                     result = null;
@@ -116,7 +123,7 @@ final class MarkLogicStateDeserializer {
                 for (Object element : items) {
                     l.add(deserializeValue((Element) element));
                 }
-                Class<?> scalarType = scalarTypeToSerializableClass(type.get());
+                Class<?> scalarType = scalarTypeToSerializableClass(type.get(), first.getText());
                 result = l.toArray((Object[]) Array.newInstance(scalarType, l.size()));
             } else {
                 ArrayList<Serializable> l = new ArrayList<>(items.size());
@@ -133,13 +140,20 @@ final class MarkLogicStateDeserializer {
         return Optional.ofNullable(element.attributeValue(MarkLogicHelper.ATTRIBUTE_TYPE)).map(ElementType::of);
     }
 
-    private static Class<?> scalarTypeToSerializableClass(ElementType type) {
+    private static Class<?> scalarTypeToSerializableClass(ElementType type, String content) {
         Class<?> result;
         switch (type) {
         case BOOLEAN:
             result = Boolean.class;
             break;
         case DOUBLE:
+            // Due to MarkLogic issue on replace+apply on number we need to handle xs:double type for Delta
+            if (content.contains(".")) {
+                result = Double.class;
+            } else {
+                result = Long.class;
+            }
+            break;
         case LONG:
             result = Long.class;
             break;
