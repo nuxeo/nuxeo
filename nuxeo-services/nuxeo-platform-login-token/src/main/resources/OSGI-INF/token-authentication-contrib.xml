@@ -82,4 +82,14 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="startURL">
+
+    <startURLPattern>
+      <patterns>
+        <pattern>acquire_token.jsp</pattern>
+      </patterns>
+    </startURLPattern>
+
+  </extension>
+
 </component>

@@ -28,6 +28,13 @@
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/acquire_token.jsp</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
   </extension>
 
   <install>
